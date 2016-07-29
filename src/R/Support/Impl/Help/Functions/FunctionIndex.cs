@@ -61,6 +61,12 @@ namespace Microsoft.R.Support.Help.Functions {
             }
         }
 
+        public void RegisterPackageFunctions(IPackageInfo package) {
+            foreach(var f in package.Functions) {
+                _functionToPackageMap[f.Name] = package.Name;
+            }
+        }
+
         /// <summary>
         /// Given function name provides name of the containing package
         /// </summary>

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.Collections.Generic;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
@@ -14,7 +15,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         /// <summary>
         /// Locates project that is currently selected in Solution Explorer
         /// </summary>
-        IVsProject GetSelectedProject();
+        T GetSelectedProject<T>() where T: class;
 
         /// <summary>
         /// Locates project that is currently active in Solution Explorer
@@ -35,5 +36,16 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         /// Retrieves folder name of the project item templates
         /// </summary>
         string GetProjectItemTemplatesFolder();
+
+        /// <summary>
+        /// Enumerates all files in the project traversing into sub folders
+        /// and items that have child elements.
+        /// </summary>
+        IEnumerable<string> GetProjectFiles(EnvDTE.Project project);
+
+        /// <summary>
+        /// Locates project by name
+        /// </summary>
+        EnvDTE.Project GetProject(string projectName);
     }
 }

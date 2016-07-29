@@ -45,7 +45,7 @@
             </Style>
 
             <DataTemplate x:Key="PackageInfoTemplate" DataType="{x:Type viewModel:IRPackageViewModel}">
-                <Border BorderThickness="0,0,0,0" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Background="Transparent" x:Name="Container">
+                <Border BorderThickness="0,0,0,0" BorderBrush="{DynamicResource {x:Static wpf:Brushes.ActiveBorderKey}}" Background="Transparent" x:Name="Container">
                     <Grid Margin="8,4,7,4" MinHeight="32">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
@@ -184,7 +184,7 @@
                 <ControlTemplate.Triggers>
                     <!-- set the background for IsEnabled == false -->
                     <Trigger Property="IsEnabled" Value="false">
-                        <Setter Property="Background" TargetName="Bd" Value="{DynamicResource {x:Static wpf:Brushes.ListPaneBackground}}" />
+                        <Setter Property="Background" TargetName="Bd" Value="{DynamicResource {x:Static wpf:Brushes.ListPaneBackgroundKey}}" />
                     </Trigger>
 
                     <MultiTrigger>
@@ -243,7 +243,7 @@
     <DockPanel LastChildFill="True">
         <Border x:Name="UpdateButtonContainer" DockPanel.Dock="Top" BorderThickness="0,0,0,1"
                 BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}"
-                Background="{DynamicResource {x:Static wpf:Brushes.LegalMessageBackground}}">
+                Background="{DynamicResource {x:Static wpf:Brushes.LegalMessageBackgroundKey}}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto" />
@@ -252,12 +252,12 @@
                 </Grid.ColumnDefinitions>
                 <CheckBox x:Name="CheckBoxSelectAllPackages" Grid.Column="0" Margin="16, 8" VerticalAlignment="Center"
                           Checked="CheckBoxSelectAllPackages_Checked" Unchecked="CheckBoxSelectAllPackages_Unchecked"
-                          Foreground="{DynamicResource {x:Static wpf:Brushes.UIText}}" Content="{x:Static components:Resources.PackageManager_SelectAllPackages}" />
+                          Foreground="{DynamicResource {x:Static wpf:Brushes.UITextKey}}" Content="{x:Static components:Resources.PackageManager_SelectAllPackages}" />
                 <Button x:Name="ButtonUpdate" Grid.Column="2" MinWidth="100" MinHeight="24" Margin="24,8" VerticalAlignment="Center"
                         Click="ButtonUpdate_Click" Content="{x:Static components:Resources.Update}" />
             </Grid>
         </Border>
-        <Grid DockPanel.Dock="Bottom" Background="{DynamicResource {x:Static wpf:Brushes.ListPaneBackground}}">
+        <Grid DockPanel.Dock="Bottom" Background="{DynamicResource {x:Static wpf:Brushes.ListPaneBackgroundKey}}">
             <Grid Height="22" VerticalAlignment="Top" Panel.ZIndex="1">
                 <TextBlock HorizontalAlignment="Center" Text="{x:Static components:Resources.Ready}" Visibility="Collapsed" />
                 <Grid HorizontalAlignment="Center" Height="22" Visibility="{Binding Path=IsLoading, Converter={x:Static wpf:Converters.FalseIsCollapsed}}">
@@ -267,7 +267,7 @@
                     </Grid.ColumnDefinitions>
                     <view:Spinner Grid.Column="0" Width="16" Height="16" Margin="3" HorizontalAlignment="Center" VerticalAlignment="Center" />
                     <TextBlock Grid.Column="1" Text="{x:Static components:Resources.Loading}" HorizontalAlignment="Left" VerticalAlignment="Center"
-                               Foreground="{DynamicResource {x:Static wpf:Brushes.UIText}}"/>
+                               Foreground="{DynamicResource {x:Static wpf:Brushes.UITextKey}}"/>
                 </Grid>
                 <Grid.Visibility>
                     <MultiBinding Converter="{x:Static wpf:Converters.AnyIsNotCollapsed}">
@@ -275,7 +275,7 @@
                     </MultiBinding>
                 </Grid.Visibility>
             </Grid>
-            <ListBox x:Name="List" Background="{DynamicResource {x:Static wpf:Brushes.ListPaneBackground}}" Foreground="{DynamicResource {x:Static wpf:Brushes.UIText}}"
+            <ListBox x:Name="List" Background="{DynamicResource {x:Static wpf:Brushes.ListPaneBackgroundKey}}" Foreground="{DynamicResource {x:Static wpf:Brushes.UITextKey}}"
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Visible" ItemContainerStyle="{DynamicResource PackageItemStyle}"
                      VirtualizingPanel.IsVirtualizing="true" VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.CacheLength="1,2" VirtualizingPanel.CacheLengthUnit="Page"
                      PreviewKeyUp="List_PreviewKeyUp" SelectionChanged="List_SelectionChanged" HorizontalContentAlignment="Stretch" BorderThickness="0,0,0,0" 

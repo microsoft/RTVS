@@ -36,6 +36,7 @@
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="BindableBase.cs" />
     <Compile Include="Brushes.cs" />
     <Compile Include="Converters.cs" />
     <Compile Include="CommonResources.xaml.cs">

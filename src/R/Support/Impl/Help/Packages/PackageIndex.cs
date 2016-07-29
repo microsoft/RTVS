@@ -2,98 +2,171 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Common.Core;
-using Microsoft.Languages.Editor.Shell;
-using Microsoft.R.Support.Help.Definitions;
-using Microsoft.R.Support.Help.Functions;
+using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Threading;
+using Microsoft.R.Components.PackageManager.Model;
+using Microsoft.R.Host.Client;
+using Newtonsoft.Json.Linq;
+using static System.FormattableString;
 
 namespace Microsoft.R.Support.Help.Packages {
     /// <summary>
-    /// Index of packages available from the R engine. Collection 
-    /// of packages installed by the engine is furhished by a static
-    /// provider while list of the user-installed packages and 
-    /// list of per-project packages (when PackRat is used) 
-    /// are supplied by the providers exported via MEF. 
+    /// Index of packages available from the R engine.
     /// </summary>
-    public static class PackageIndex {
-        private static IEnumerable<Lazy<IPackageCollection>> _collections;
-        private static IPackageCollection _basePackages;
-        private static Dictionary<string, IPackageInfo> _packages = new Dictionary<string, IPackageInfo>();
-        /// <summary>
-        /// Collection or packages installed with the R engine.
-        /// </summary>
-        public static IEnumerable<IPackageInfo> BasePackages {
-            get {
-                if (_basePackages == null)
-                    _basePackages = new BasePackagesCollection();
+    [Export(typeof(IPackageIndex))]
+    public sealed class PackageIndex : IPackageIndex {
+        private readonly ICoreShell _shell;
+        private readonly IIntellisenseRSession _host;
+        private readonly IFunctionIndex _functionIndex;
+        private readonly ConcurrentDictionary<string, PackageInfo> _packages = new ConcurrentDictionary<string, PackageInfo>();
+        private readonly BinaryAsyncLock _buildIndexLock = new BinaryAsyncLock();
 
-                return _basePackages.Packages;
-            }
+        public static readonly IEnumerable<string> PreloadedPackages = new string[]
+            { "base", "stats", "utils", "graphics", "datasets", "methods" };
+
+        [ImportingConstructor]
+        public PackageIndex(ICoreShell shell, IIntellisenseRSession host, IFunctionIndex functionIndex) {
+            _shell = shell;
+            _host = host;
+            _functionIndex = functionIndex;
         }
 
+        #region IPackageIndex
         /// <summary>
         /// Collection of all packages (base, user and project-specific)
         /// </summary>
-        public static IReadOnlyList<IPackageInfo> Packages {
-            get {
-                if (_collections == null)
-                    _collections = EditorShell.Current.ExportProvider.GetExports<IPackageCollection>();
+        public IEnumerable<IPackageInfo> Packages => _packages.Values;
 
-                if (_collections != null) {
-                    List<IPackageInfo> packages = new List<IPackageInfo>();
+        public async Task BuildIndexAsync() {
+            var ready = await _buildIndexLock.WaitAsync();
+            try {
+                if (!ready) {
+                    var startTotalTime = DateTime.Now;
 
-                    foreach (Lazy<IPackageCollection> collection in _collections) {
-                        packages.AddRange(collection.Value.Packages);
+                    await TaskUtilities.SwitchToBackgroundThread();
+                    await _host.CreateSessionAsync();
+                    Debug.WriteLine("R function host start: {0} ms", (DateTime.Now - startTotalTime).TotalMilliseconds);
 
-                        foreach (IPackageInfo p in collection.Value.Packages) {
-                            _packages[p.Name.ToLowerInvariant()] = p;
-                        }
-                    }
+                    var startTime = DateTime.Now;
+                    // Fetch list of available packages from R session
+                    await BuildPackageListAsync();
+                    Debug.WriteLine("R package names/description: {0} ms", (DateTime.Now - startTime).TotalMilliseconds);
 
-                    packages.AddRange(BasePackages);
-                    return packages;
+                    // Populate function index for preloaded packages first
+                    startTime = DateTime.Now;
+                    await BuildPreloadedPackagesFunctionListAsync();
+                    Debug.WriteLine("R function index (preloaded): {0} ms", (DateTime.Now - startTime).TotalMilliseconds);
+
+                    // Populate function index for all remaining packages
+                    startTime = DateTime.Now;
+                    await BuildRemainingPackagesFunctionListAsync();
+                    Debug.WriteLine("R function index (remaining): {0} ms", (DateTime.Now - startTime).TotalMilliseconds);
+
+                    await _functionIndex.BuildIndexAsync(this);
+                    Debug.WriteLine("R function index total: {0} ms", (DateTime.Now - startTotalTime).TotalMilliseconds);
                 }
-
-                return new List<IPackageInfo>();
+            } finally {
+                _buildIndexLock.Release();
             }
         }
 
         /// <summary>
-        /// Collection of all packages (base, user and project-specific)
+        /// Retrieves information on the package from index. Does not attempt to locate the package
+        /// if it is not in the index such as when package was just installed.
         /// </summary>
-        public static IPackageInfo GetPackageByName(string packageName) {
-            IPackageInfo package;
-
-            // Strip quotes, if any
-            packageName = packageName.Replace("\'", string.Empty).Replace("\"", string.Empty).Trim();
-            packageName = packageName.ToLowerInvariant();
-
-            package = BasePackages.FirstOrDefault((IPackageInfo p) => p.Name.EqualsIgnoreCase(packageName));
-            if (package == null) {
-                _packages.TryGetValue(packageName, out package);
-            }
-
-            if (package == null) {
-                package = TryFindPackageNew(packageName);
-            }
-
+        public IPackageInfo GetPackageInfo(string packageName) {
+            PackageInfo package = null;
+            packageName = packageName.TrimQuotes().Trim();
+            _packages.TryGetValue(packageName, out package);
             return package;
         }
 
-        private static IPackageInfo TryFindPackageNew(string packageName) {
-            foreach (Lazy<IPackageCollection> collection in _collections) {
-                IPackageInfo package = collection.Value.Packages.FirstOrDefault((p) => p.Name.EqualsIgnoreCase(packageName));
-                if (package != null) {
-                    _packages[package.Name.ToLowerInvariant()] = package;
+        /// <summary>
+        /// Retrieves R package information by name. If package is not in the index,
+        /// attempts to locate the package in the current R session.
+        /// </summary>
+        public Task<IPackageInfo> GetPackageInfoAsync(string packageName) {
+            packageName = packageName.TrimQuotes().Trim();
+            IPackageInfo package = GetPackageInfo(packageName);
+            if (package == null) {
+                return TryAddNewPackageAsync(packageName);
+            }
+            return Task.FromResult(package);
+        }
 
-                    FunctionIndex.BuildIndexForPackage(package);
-                    return package;
+        public void WriteToDisk() {
+            foreach (var pi in _packages.Values) {
+                pi.WriteToDisk();
+            }
+        }
+        #endregion
+
+        public void Dispose() {
+            _host?.Dispose();
+        }
+
+        private async Task BuildPackageListAsync() {
+            var packages = await GetPackagesAsync();
+            foreach (var p in packages) {
+                _packages[p.Package] = new PackageInfo(_host, p.Package, p.Description, p.Version);
+            }
+        }
+
+        private async Task BuildPreloadedPackagesFunctionListAsync() {
+            foreach (var packageName in PreloadedPackages) {
+                PackageInfo pi;
+                _packages.TryGetValue(packageName, out pi);
+                if (pi != null) {
+                    await pi.LoadFunctionsIndexAsync();
                 }
             }
+        }
 
+        private async Task BuildRemainingPackagesFunctionListAsync() {
+            foreach (var pi in _packages.Values) {
+                if (!pi.Functions.Any()) {
+                    await pi.LoadFunctionsIndexAsync();
+                }
+            }
+        }
+
+        private async Task<IPackageInfo> TryAddNewPackageAsync(string packageName) {
+            var packages = await GetPackagesAsync();
+            var package = packages.FirstOrDefault(p => p.Package.EqualsOrdinal(packageName));
+            if (package != null) {
+                var p = new PackageInfo(_host, package.Package, package.Description, package.Version);
+                await p.LoadFunctionsIndexAsync();
+                _packages[packageName] = p;
+                _functionIndex.RegisterPackageFunctions(p);
+                return p;
+            }
             return null;
+        }
+
+        private async Task<IEnumerable<RPackage>> GetPackagesAsync() {
+            try {
+                await _host.CreateSessionAsync();
+                var result = await _host.Session.EvaluateAsync<JArray>(Invariant($"rtvs:::packages.installed()"), REvaluationKind.Normal);
+                return result.Select(p => p.ToObject<RPackage>());
+            } catch (TaskCanceledException) { }
+            return Enumerable.Empty<RPackage>();
+        }
+
+        internal static string CacheFolderPath =>
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"Microsoft\VisualStudio\RTVS\IntelliSense\");
+
+        public static void ClearCache() {
+            try {
+                Directory.Delete(CacheFolderPath, recursive: true);
+            } catch (IOException) { } catch (UnauthorizedAccessException) { }
         }
     }
 }

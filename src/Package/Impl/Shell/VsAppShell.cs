@@ -13,9 +13,12 @@ using System.Windows.Threading;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Wpf.Threading;
+using Microsoft.Languages.Core.Settings;
+using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.Host;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
+using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.Extensions;
 using Microsoft.VisualStudio.ComponentModelHost;
@@ -27,9 +30,10 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Utilities;
 using static System.FormattableString;
-using VsPackage = Microsoft.VisualStudio.Shell.Package;
 using IServiceProvider = System.IServiceProvider;
+using VsPackage = Microsoft.VisualStudio.Shell.Package;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
     /// <summary>
@@ -44,6 +48,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private static VsAppShell _instance;
         private static IApplicationShell _testShell;
         private IdleTimeSource _idleTimeSource;
+        private IWritableSettingsStorage _settingStorage;
 
         public static void EnsureInitialized() {
             ThreadHelper.ThrowIfNotOnUIThread();
@@ -395,6 +400,19 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 }
             }
         }
+
+        public IWritableSettingsStorage SettingsStorage {
+            get {
+                if (_settingStorage == null) {
+                    var ctrs = ExportProvider.GetExportedValue<IContentTypeRegistryService>();
+                    var contentType = ctrs.GetContentType(RContentTypeDefinition.ContentType);
+                    _settingStorage = ComponentLocatorForOrderedContentType<IWritableSettingsStorage>
+                                            .FindFirstOrderedComponent(CompositionService, contentType);
+                }
+                return _settingStorage;
+            }
+        }
+
         #endregion
 
         #region

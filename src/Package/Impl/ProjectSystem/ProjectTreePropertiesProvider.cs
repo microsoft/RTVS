@@ -3,12 +3,14 @@
 #if VS15
 using System.ComponentModel.Composition;
 using System.IO;
+using Microsoft.Common.Core;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.ProjectSystem;
+using Microsoft.VisualStudio.R.Package.Sql;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     [Export(typeof(IProjectTreePropertiesProvider))]
-    [AppliesTo(Constants.RtvsProjectCapability)]
+    [AppliesTo(ProjectConstants.RtvsProjectCapability)]
     internal sealed class ProjectTreePropertiesProvider : IProjectTreePropertiesProvider {
         public void CalculatePropertyValues(IProjectTreeCustomizablePropertyContext propertyContext,
                                             IProjectTreeCustomizablePropertyValues propertyValues) {
@@ -22,6 +24,10 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                     propertyValues.Icon = ProjectIconProvider.RDataFileNodeImage.ToProjectSystemType();
                 } else if (ext == ".md" || ext == ".rmd") {
                     propertyValues.Icon = KnownMonikers.MarkdownFile.ToProjectSystemType();
+                } else if (propertyContext.ItemName.EndsWithIgnoreCase(SProcFileExtensions.QueryFileExtension)) {
+                    propertyValues.Icon = KnownMonikers.DatabaseColumn.ToProjectSystemType();
+                } else if (propertyContext.ItemName.EndsWithIgnoreCase(SProcFileExtensions.SProcFileExtension)) {
+                    propertyValues.Icon = KnownMonikers.DatabaseStoredProcedures.ToProjectSystemType();
                 }
             }
         }

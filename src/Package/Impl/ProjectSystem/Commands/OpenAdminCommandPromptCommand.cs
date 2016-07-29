@@ -13,7 +13,7 @@ using Microsoft.VisualStudio.ProjectSystem.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     [ExportCommandGroup("AD87578C-B324-44DC-A12A-B01A6ED5C6E3")]
-    [AppliesTo(Constants.RtvsProjectCapability)]
+    [AppliesTo(ProjectConstants.RtvsProjectCapability)]
     internal sealed class OpenAdminCommandPromptCommand : CommandPromptCommand {
         public OpenAdminCommandPromptCommand() :
             base(RPackageCommandId.icmdOpenAdminCmdPromptHere) { }

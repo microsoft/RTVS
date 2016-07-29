@@ -124,14 +124,14 @@
                         </Grid.RowDefinitions>
 
                         <view:PackageList Grid.Row="0" x:Name="ListPackages" Loaded="ListPackages_Loaded" />
-                        <Border Grid.Row="1" BorderThickness="0,1,0,0" x:Name="LegalDisclaimer" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}"
-                                Background="{DynamicResource {x:Static rwpf:Brushes.LegalMessageBackground}}"
+                        <Border Grid.Row="1" BorderThickness="0,1,0,0" x:Name="LegalDisclaimer" BorderBrush="{DynamicResource {x:Static rwpf:Brushes.ActiveBorderKey}}"
+                                Background="{DynamicResource {x:Static rwpf:Brushes.LegalMessageBackgroundKey}}"
                                 Visibility="{Binding Path=ShowPackageManagerDisclaimer, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}">
 
                             <StackPanel Orientation="Vertical">
-                                <TextBlock Margin="24,12,24,12" TextWrapping="Wrap" Foreground="{DynamicResource {x:Static rwpf:Brushes.UIText}}" 
+                                <TextBlock Margin="24,12,24,12" TextWrapping="Wrap" Foreground="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}" 
                                             Text="{x:Static components:Resources.PackageManager_LegalDisclaimer}" />
-                                <CheckBox x:Name="CheckBoxSuppressLegalDisclaimer" Margin="24,0,24,12" Foreground="{DynamicResource {x:Static rwpf:Brushes.UIText}}" 
+                                <CheckBox x:Name="CheckBoxSuppressLegalDisclaimer" Margin="24,0,24,12" Foreground="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}" 
                                             Content="{x:Static components:Resources.DoNotShowThisAgain}" Checked="CheckBoxSuppressLegalDisclaimer_Checked" />
                             </StackPanel>
 
@@ -139,7 +139,7 @@
                     </Grid>
 
                     <GridSplitter Grid.Column="1" Width="4" Grid.RowSpan="2" HorizontalAlignment="Center" VerticalAlignment="Stretch" BorderThickness="1,0"
-                                  Background="{DynamicResource {x:Static rwpf:Brushes.SplitterBackgroundKey}}" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
+                                  Background="{DynamicResource {x:Static rwpf:Brushes.SplitterBackgroundKey}}" BorderBrush="{DynamicResource {x:Static rwpf:Brushes.ActiveBorderKey}}" />
 
                     <!-- right side -->
                     <view:PackageDetails x:Name="PackageDetails" Grid.Column="2" Grid.RowSpan="2" DataContext="{Binding Path=SelectedPackage}" 

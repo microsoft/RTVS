@@ -43,7 +43,9 @@
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
@@ -53,6 +55,21 @@
     <None Include="..\..\UnitTests\References.$(VisualStudioVersion)\app.config">
       <Link>app.config</Link>
     </None>
+    <None Include="Files\PropertyGridMultiple01-2.settings.r" />
+    <None Include="Files\PropertyGridMultiple01-1.settings.r" />
+    <None Include="Files\PropertyGridMultiple02-1.settings.r" />
+    <None Include="Files\PropertyGridSingle.settings.r" />
+    <None Include="Files\PropertyGridMultiple02-2.settings.r" />
+    <Content Include="Files\SqlCode2.table.baseline.sql" />
+    <Content Include="Files\SqlCode2.inline.baseline.sql" />
+    <Content Include="Files\SqlCode2.Template.sql" />
+    <Content Include="Files\SqlCode2.Query.sql" />
+    <Content Include="Files\SqlCode1.Template.sql" />
+    <Content Include="Files\SqlCode1.Query.sql" />
+    <None Include="Files\SqlCode2.r" />
+    <None Include="Files\SqlCode1.r" />
+    <Content Include="Files\SqlCode1.table.baseline.sql" />
+    <Content Include="Files\SqlCode1.inline.baseline.sql" />
     <None Include="project.14.0.json" />
     <None Include="project.15.0.json" />
     <None Include="project.json" />
@@ -124,6 +141,10 @@
       <Project>{41aa8769-0fbc-4a80-8498-21c833f0c2ac}</Project>
       <Name>Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\ProjectSystem\Test\Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.csproj">
+      <Project>{8B9B73CB-C7B4-4613-8ADA-5D8C1CF583E2}</Project>
+      <Name>Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\R\Components\Impl\Microsoft.R.Components.csproj">
       <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>
       <Name>Microsoft.R.Components</Name>
@@ -143,6 +164,10 @@
     <ProjectReference Include="..\..\R\Editor\Test\Microsoft.R.Editor.Test.csproj">
       <Project>{9066522E-780E-4409-B410-2525E6A621FC}</Project>
       <Name>Microsoft.R.Editor.Test</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\R\Interpreters\Impl\Microsoft.R.Interpreters.csproj">
+      <Project>{8445A4FB-4443-432C-94E8-1408559B7F58}</Project>
+      <Name>Microsoft.R.Interpreters</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\R\Support\Impl\Microsoft.R.Support.csproj">
       <Project>{c1957d47-b0b4-42e0-bc08-0d5e96e47fe4}</Project>
@@ -169,6 +194,9 @@
     <Compile Include="AssertionExtensions.cs" />
     <Compile Include="Assertions\MenuCommandAssertions.cs" />
     <Compile Include="Browsers\WebBrowserServicesTest.cs" />
+    <Compile Include="Project\SettingsTest.cs" />
+    <Compile Include="Project\ProjectSystem\PropertyPages\ProjectSettingsControlTest.cs" />
+    <Compile Include="Project\ProjectSystem\PropertyPages\ProjectSettingsViewModelTest.cs" />
     <Compile Include="DataInspect\ViewersTest.cs" />
     <Compile Include="DataInspect\EvaluationWrapperTest.cs" />
     <Compile Include="DataInspect\REnvironmentProviderTest.cs" />
@@ -182,7 +210,7 @@
     <Compile Include="Mocks\ReplWindowMock.cs" />
     <Compile Include="Mocks\RHistoryVisualComponentContainerFactoryMock.cs" />
     <Compile Include="Options\EncodingsTest.cs" />
-    <Compile Include="ProjectSystem\PropertyPages\RunPageViewModelTest.cs" />
+    <Compile Include="Project\ProjectSystem\PropertyPages\RunPageViewModelTest.cs" />
     <Compile Include="Project\CommandsTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RClient\RClientTest.cs" />
@@ -199,10 +227,16 @@
     <Compile Include="Repl\ExportsTest.cs" />
     <Compile Include="Shell\TestVsAppShell.cs" />
     <Compile Include="Mocks\InteractiveWindowComponentContainerFactoryMock.cs" />
+    <Compile Include="Sql\ExtensionsTest.cs" />
+    <Compile Include="Sql\SProcGeneratorTest.cs" />
+    <Compile Include="Sql\SettingsTest.cs" />
+    <Compile Include="Sql\PublishDialogTest.cs" />
+    <Compile Include="Sql\CommandTest.cs" />
     <Compile Include="SurveyNews\SurveyNewsFeedClientTest.cs" />
     <Compile Include="SurveyNews\SurveyNewsServiceTest.cs" />
     <Compile Include="SurveyNews\SurveyNewsTestFilesFixture.cs" />
     <Compile Include="Telemetry\TelemetryTest.cs" />
+    <Compile Include="ProjectTestFilesFixture.cs" />
     <Compile Include="Utilities\CollectionUtilitiesTest.cs" />
     <Compile Include="Utility\VsRHostScript.cs" />
     <Compile Include="Utility\TestInstanceFactory.cs" />

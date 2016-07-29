@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.IO.Compression;
@@ -17,7 +18,7 @@ using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     [Export(typeof(IProjectSystemServices))]
-    internal sealed class ProjectSystemServices: IProjectSystemServices {
+    internal sealed class ProjectSystemServices : IProjectSystemServices {
         public EnvDTE.Solution GetSolution() {
             DTE dte = VsAppShell.Current.GetGlobalService<DTE>();
             return dte.Solution;
@@ -33,7 +34,10 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             return null;
         }
 
-        public IVsProject GetSelectedProject() {
+        /// <summary>
+        /// Locates project that is currently active in Solution Explorer
+        /// </summary>
+        public T GetSelectedProject<T>() where T : class {
             var monSel = VsAppShell.Current.GetGlobalService<IVsMonitorSelection>();
             IntPtr hierarchy = IntPtr.Zero, selectionContainer = IntPtr.Zero;
             uint itemid;
@@ -41,7 +45,9 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
             try {
                 if (VSConstants.S_OK == monSel.GetCurrentSelection(out hierarchy, out itemid, out ms, out selectionContainer)) {
-                    return Marshal.GetObjectForIUnknown(hierarchy) as IVsProject;
+                    if (hierarchy != IntPtr.Zero) {
+                        return Marshal.GetObjectForIUnknown(hierarchy) as T;
+                    }
                 }
             } finally {
                 if (hierarchy != IntPtr.Zero) {
@@ -55,7 +61,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         }
 
         public void AddNewItem(string templateName, string name, string extension, string destinationPath) {
-            var project = GetActiveProject();
+            var project = GetSelectedProject<IVsHierarchy>()?.GetDTEProject();
             if (project != null) {
                 DTE dte = VsAppShell.Current.GetGlobalService<DTE>();
                 var solution = (Solution2)dte.Solution;
@@ -119,6 +125,9 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             }
         }
 
+        /// <summary>
+        /// Given folder, prefix and extension generates unique file name in the project folder.
+        /// </summary>
         public string GetUniqueFileName(string folder, string prefix, string extension, bool appendUnderscore = false) {
             string suffix = appendUnderscore ? "_" : string.Empty;
             string name = Path.ChangeExtension(Path.Combine(folder, prefix), extension);
@@ -134,6 +143,9 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             }
         }
 
+        /// <summary>
+        /// Retrieves folder name of the project item templates
+        /// </summary>
         public string GetProjectItemTemplatesFolder() {
             // In F5 (Experimental instance) scenario templates are deployed where the extension is.
             string assemblyPath = Assembly.GetExecutingAssembly().GetAssemblyPath();
@@ -148,5 +160,45 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             return templatesFolder;
         }
 
+        /// <summary>
+        /// Enumerates all files in the project traversing into sub folders
+        /// and items that have child elements.
+        /// </summary>
+        public IEnumerable<string> GetProjectFiles(EnvDTE.Project project) {
+            return EnumerateProjectFiles(project?.ProjectItems);
+        }
+
+        /// <summary>
+        /// Locates project by name
+        /// </summary>
+        public EnvDTE.Project GetProject(string projectName) {
+            var projects = GetSolution()?.Projects;
+            if (projects != null) {
+                foreach (EnvDTE.Project p in projects) {
+                    if (p.Name.EqualsOrdinal(projectName)) {
+                        return p;
+                    }
+                }
+            }
+            return null;
+        }
+
+        private IEnumerable<string> EnumerateProjectFiles(EnvDTE.ProjectItems items) {
+            if (items == null) {
+                yield break;
+            }
+            foreach (var item in items) {
+                var pi = item as EnvDTE.ProjectItem;
+                var fullPath = (item as EnvDTE.ProjectItem)?.Properties?.Item("FullPath")?.Value as string;
+                if (!string.IsNullOrEmpty(fullPath)) {
+                    yield return fullPath;
+                }
+                if (pi.ProjectItems?.Count != 0) {
+                    foreach (var x in EnumerateProjectFiles(pi.ProjectItems)) {
+                        yield return x;
+                    }
+                }
+            }
+        }
     }
 }
