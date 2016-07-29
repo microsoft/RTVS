@@ -278,7 +278,7 @@
     <Compile Include="Sql\NativeMethods.cs" />
     <Compile Include="Sql\Publish\RCodePlacement.cs" />
     <Compile Include="Sql\Publish\SProcScriptGenerator.cs" />
-    <Compile Include="Sql\Publish\SProcFileGenerator.cs" />
+    <Compile Include="Sql\Publish\SProcProjectFilesGenerator.cs" />
     <Compile Include="Sql\Extensions\SqlQuoteType.cs" />
     <Compile Include="Sql\Publish\SqlSProcPublishSettings.cs" />
     <Compile Include="Sql\Publish\SqlPublishDialogViewModel.cs" />

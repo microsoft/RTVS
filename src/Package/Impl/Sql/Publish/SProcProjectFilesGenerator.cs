@@ -5,7 +5,7 @@ using System.IO;
 using Microsoft.Common.Core.IO;
 
 namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
-    internal sealed class SProcFileGenerator {
+    internal sealed class SProcProjectFilesGenerator {
         /// <summary>
         /// Name of script file that contains SQL that creates R code table
         /// </summary>
@@ -17,7 +17,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
 
         private readonly IFileSystem _fs;
 
-        public SProcFileGenerator(IFileSystem fs) {
+        public SProcProjectFilesGenerator(IFileSystem fs) {
             _fs = fs;
         }
 
