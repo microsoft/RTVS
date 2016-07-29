@@ -49,5 +49,9 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
         }
 
         public void Flush() { }
+
+        internal object WriteAsync(string error) {
+            throw new NotImplementedException();
+        }
     }
 }

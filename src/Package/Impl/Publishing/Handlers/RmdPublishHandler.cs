@@ -10,7 +10,6 @@ using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Markdown.Editor.Flavor;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Extensions;
 using Microsoft.VisualStudio.R.Package.Publishing.Definitions;
 
 namespace Microsoft.VisualStudio.R.Package.Publishing {

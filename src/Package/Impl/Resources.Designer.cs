@@ -2109,6 +2109,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to package SQL stored procedure(s). Exception: {0}..
+        /// </summary>
+        public static string SqlPublishDialog_UnableToBuildDacPac {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_UnableToBuildDacPac", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Writing data into CSV file....
         /// </summary>
         public static string Status_WritingCSV {

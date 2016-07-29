@@ -899,4 +899,7 @@ Additional information:
   <data name="SqlPublishDialog_NoQuote" xml:space="preserve">
     <value>None</value>
   </data>
+  <data name="SqlPublishDialog_UnableToBuildDacPac" xml:space="preserve">
+    <value>Unable to package SQL stored procedure(s). Exception: {0}.</value>
+  </data>
 </root>

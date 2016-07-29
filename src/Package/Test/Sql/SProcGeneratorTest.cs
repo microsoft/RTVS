@@ -37,7 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
         [Test]
         public void GenerateEmpty() {
             var fs = new FileSystem();
-            var g = new SProcGenerator(_coreShell, _pss, fs);
+            var g = new SProcFileGenerator(fs);
             var settings = new SqlSProcPublishSettings(new string[0], fs);
             g.Generate(settings, _project);
         }
@@ -50,7 +50,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
         public void Generate(string rFile, RCodePlacement codePlacement, SqlQuoteType quoteType, string sprocName) {
             var fs = new FileSystem();
             var settings = new SqlSProcPublishSettings(new string[] { Path.Combine(_files.DestinationPath, rFile) }, fs);
-            var g = new SProcGenerator(_coreShell, _pss, fs);
+            var g = new SProcFileGenerator(fs);
 
             var targetProjItem = Substitute.For<EnvDTE.ProjectItem>();
             var targetProjItems = Substitute.For<EnvDTE.ProjectItems>();
@@ -73,8 +73,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
 
             targetProjItem.ProjectItems.Received().AddFromFile(sprocFile);
             if (codePlacement == RCodePlacement.Table) {
-                targetProjItem.ProjectItems.Received().AddFromFile(Path.Combine(targetFolder, SProcGenerator.PostDeploymentScriptName));
-                targetProjItem.ProjectItems.Received().AddFromFile(Path.Combine(targetFolder, SProcGenerator.CreateRCodeTableScriptName));
+                targetProjItem.ProjectItems.Received().AddFromFile(Path.Combine(targetFolder, SProcFileGenerator.PostDeploymentScriptName));
+                targetProjItem.ProjectItems.Received().AddFromFile(Path.Combine(targetFolder, SProcFileGenerator.CreateRCodeTableScriptName));
             }
 
             var mode = codePlacement == RCodePlacement.Inline ? "inline" : "table";
