@@ -52,6 +52,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             }
         }
 
+        public Uri BrokerUri { get; set; }
+
         public YesNoAsk LoadRDataOnProjectLoad { get; set; } = YesNoAsk.No;
 
         public YesNoAsk SaveRDataOnProjectUnload { get; set; } = YesNoAsk.No;

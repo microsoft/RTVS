@@ -17,7 +17,7 @@ using Microsoft.R.Support.Settings;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
     [Export(typeof(IRInteractiveWorkflowProvider))]
-    internal class VsRInteractiveWorkflowProvider : IRInteractiveWorkflowProvider {
+    internal class VsRInteractiveWorkflowProvider : IRInteractiveWorkflowProvider, IDisposable {
         private readonly IRSessionProvider _sessionProvider;
         private readonly IConnectionManagerProvider _connectionsProvider;
         private readonly IRHistoryProvider _historyProvider;
@@ -49,6 +49,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             _shell = shell;
         }
 
+        public void Dispose() {
+            if (_instanceLazy?.IsValueCreated == true) {
+                _instanceLazy?.Value?.Dispose();
+            }
+        }
+
         public IRInteractiveWorkflow GetOrCreate() {
             Interlocked.CompareExchange(ref _instanceLazy, new Lazy<IRInteractiveWorkflow>(CreateRInteractiveWorkflow),null);
             return _instanceLazy.Value;
@@ -56,7 +62,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         
         private IRInteractiveWorkflow CreateRInteractiveWorkflow() {
             var settings = RToolsSettings.Current;
-            return new RInteractiveWorkflow(_sessionProvider, _connectionsProvider, _historyProvider, _packagesProvider, _plotsProvider, _activeTextViewTracker, _debuggerModeTracker, new RHostBrokerConnector(), _shell, settings, DisposeInstance);
+            var brokerConnector = new RHostBrokerConnector(settings.BrokerUri, name: "RTVS");
+            return new RInteractiveWorkflow("REPL", _sessionProvider, _connectionsProvider, _historyProvider, _packagesProvider, _plotsProvider, _activeTextViewTracker, _debuggerModeTracker, brokerConnector, _shell, settings, DisposeInstance);
         }
 
         private void DisposeInstance() {

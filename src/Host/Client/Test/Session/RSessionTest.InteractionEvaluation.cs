@@ -24,12 +24,13 @@ namespace Microsoft.R.Host.Client.Test.Session {
         public class InteractionEvaluation : IAsyncLifetime {
             private readonly TaskObserverMethodFixture _taskObserver;
             private readonly MethodInfo _testMethod;
+            private readonly IRHostBrokerConnector _brokerConnector = new RHostBrokerConnector(name: nameof(InteractionEvaluation));
             private readonly RSession _session;
 
             public InteractionEvaluation(TestMethodFixture testMethod, TaskObserverMethodFixture taskObserver) {
                 _taskObserver = taskObserver;
                 _testMethod = testMethod.MethodInfo;
-                _session = new RSession(0, new RHostBrokerConnector(), () => { });
+                _session = new RSession(0, _brokerConnector, () => { });
             }
 
             public async Task InitializeAsync() {
@@ -43,6 +44,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
             public async Task DisposeAsync() {
                 await _session.StopHostAsync();
                 _session.Dispose();
+                _brokerConnector.Dispose();
             }
 
             [Test]
@@ -139,7 +141,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
  
             [Test]
             public async Task EvaluateAsync_DisconnectedFromTheStart() {
-                using (var session = new RSession(0, new RHostBrokerConnector(), () => { })) {
+                using (var session = new RSession(0, _brokerConnector, () => { })) {
                     // ReSharper disable once AccessToDisposedClosure
                     Func<Task> f = () => session.EvaluateAsync("x <- 1");
                     await f.ShouldThrowAsync<RHostDisconnectedException>();
@@ -166,7 +168,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
             [Test]
             public async Task BeginEvaluationAsync_DisconnectedFromTheStart() {
-                using (var session = new RSession(0, new RHostBrokerConnector(), () => { })) {
+                using (var session = new RSession(0, _brokerConnector, () => { })) {
                     // ReSharper disable once AccessToDisposedClosure
                     Func<Task> f = () => session.BeginEvaluationAsync();
                     await f.ShouldThrowAsync<RHostDisconnectedException>();
@@ -229,7 +231,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
             [Test]
             public async Task BeginInteractionAsync_DisconnectedFromTheStart() {
-                using (var session = new RSession(0, new RHostBrokerConnector(), () => { })) {
+                using (var session = new RSession(0, _brokerConnector, () => { })) {
                     // ReSharper disable once AccessToDisposedClosure
                     Func<Task> f = () => session.BeginInteractionAsync();
                     await f.ShouldThrowAsync<RHostDisconnectedException>();

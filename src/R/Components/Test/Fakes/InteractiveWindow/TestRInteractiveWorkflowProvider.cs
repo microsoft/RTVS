@@ -22,7 +22,7 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
     [Export(typeof(IRInteractiveWorkflowProvider))]
     [Export(typeof(TestRInteractiveWorkflowProvider))]
     [PartMetadata(PartMetadataAttributeNames.SkipInEditorTestCompositionCatalog, null)]
-    public class TestRInteractiveWorkflowProvider : IRInteractiveWorkflowProvider {
+    public class TestRInteractiveWorkflowProvider : IRInteractiveWorkflowProvider, IDisposable {
         private readonly IRSessionProvider _sessionProvider;
         private readonly IConnectionManagerProvider _connectionManagerProvider;
         private readonly IRHistoryProvider _historyProvider;
@@ -36,6 +36,8 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
 
         private Lazy<IRInteractiveWorkflow> _instanceLazy;
         public IRSessionCallback HostClientApp { get; set; }
+
+        public string TestName { get; set; }
 
         [ImportingConstructor]
         public TestRInteractiveWorkflowProvider(IRSessionProvider sessionProvider
@@ -61,20 +63,27 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
             _settings = settings;
         }
 
+        public void Dispose() {
+            if (_instanceLazy?.IsValueCreated == true) {
+                _instanceLazy?.Value?.Dispose();
+            }
+        }
+
         public IRInteractiveWorkflow GetOrCreate() {
             Interlocked.CompareExchange(ref _instanceLazy, new Lazy<IRInteractiveWorkflow>(CreateRInteractiveWorkflow), null);
             return _instanceLazy.Value;
         }
         
         private IRInteractiveWorkflow CreateRInteractiveWorkflow() {
-            return new RInteractiveWorkflow(_sessionProvider
+            return new RInteractiveWorkflow(TestName
+                , _sessionProvider
                 , _connectionManagerProvider
                 , _historyProvider
                 , _packagesProvider
                 , _plotsProvider
                 , _activeTextViewTracker
                 , _debuggerModeTracker
-                , _brokerConnector ?? new RHostBrokerConnector()
+                , _brokerConnector ?? new RHostBrokerConnector(name: TestName)
                 , _shell
                 , _settings
                 , DisposeInstance);

@@ -92,6 +92,13 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         }
 
         [LocCategory("Settings_REngineCategory")]
+        [DefaultValue("")]
+        public string BrokerUri {
+            get { return RToolsSettings.Current.BrokerUri?.ToString() ?? ""; }
+            set { RToolsSettings.Current.BrokerUri = value == "" ? null : new Uri(value); }
+        }
+
+        [LocCategory("Settings_REngineCategory")]
         [CustomLocDisplayName("Settings_RBasePath")]
         [LocDescription("Settings_RBasePath_Description")]
         [Editor(typeof(ChooseRFolderUIEditor), typeof(UITypeEditor))]
@@ -290,6 +297,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             _applied = false;
             base.OnClosed(e);
         }
+
         protected override void OnActivate(CancelEventArgs e) {
             // Save in-memory settings to storage. In case dialog
             // is canceled with some settings modified we will be

@@ -21,6 +21,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         private readonly IRSettings _settings;
         private readonly Action _onDispose;
         private readonly RInteractiveWorkflowOperations _operations;
+        private readonly string _name;
 
         private bool _replLostFocus;
         private bool _disposed;
@@ -38,7 +39,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
         public IInteractiveWindowVisualComponent ActiveWindow { get; private set; }
 
-        public RInteractiveWorkflow(IRSessionProvider sessionProvider
+        public RInteractiveWorkflow(string name
+            , IRSessionProvider sessionProvider
             , IConnectionManagerProvider connectionsProvider
             , IRHistoryProvider historyProvider
             , IRPackageManagerProvider packagesProvider
@@ -50,6 +52,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             , IRSettings settings
             , Action onDispose) {
 
+            _name = name;
             _activeTextViewTracker = activeTextViewTracker;
             _debuggerModeTracker = debuggerModeTracker;
             _settings = settings;
@@ -57,7 +60,9 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
             Shell = coreShell;
             BrokerConnector = brokerConnector;
-            BrokerConnector.SwitchToLocalBroker(settings.RBasePath);
+            if (settings.BrokerUri == null) {
+                BrokerConnector.SwitchToLocalBroker(settings.RBasePath);
+            }
             RSession = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, brokerConnector);
             Connections = connectionsProvider.CreateConnectionManager(this);
 
@@ -151,6 +156,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             RSession.Disconnected -= RSessionDisconnected;
             Operations.Dispose();
             Connections.Dispose();
+            BrokerConnector?.Dispose();
             _onDispose();
         }
     }

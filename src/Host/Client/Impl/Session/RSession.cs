@@ -111,6 +111,8 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         public Task<IRSessionInteraction> BeginInteractionAsync(bool isVisible = true, CancellationToken cancellationToken = default(CancellationToken)) {
+            _disposeToken.ThrowIfDisposed();
+
             if (!_isHostRunning) {
                 return CanceledBeginInteractionTask;
             }
@@ -122,6 +124,8 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         public Task<IRSessionEvaluation> BeginEvaluationAsync(CancellationToken cancellationToken = default(CancellationToken)) {
+            _disposeToken.ThrowIfDisposed();
+
             if (!_isHostRunning) {
                 return CanceledBeginEvaluationTask;
             }
@@ -179,6 +183,8 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         public async Task CancelAllAsync() {
+            _disposeToken.ThrowIfDisposed();
+
             var cancelTask = _host.CancelAllAsync();
 
             var currentRequest = Interlocked.Exchange(ref _currentRequestSource, null);
@@ -190,6 +196,8 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         public async Task EnsureHostStartedAsync(RHostStartupInfo startupInfo, IRSessionCallback callback, int timeout = 3000) {
+            _disposeToken.ThrowIfDisposed();
+
             var existingInitializationTcs = Interlocked.CompareExchange(ref _initializationTcs, new TaskCompletionSourceEx<object>(), null);
             if (existingInitializationTcs == null) {
                 await StartHostAsyncBackground(startupInfo, callback, timeout);
@@ -199,6 +207,8 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         public async Task StartHostAsync(RHostStartupInfo startupInfo, IRSessionCallback callback, int timeout = 3000) {
+            _disposeToken.ThrowIfDisposed();
+
             if (Interlocked.CompareExchange(ref _initializationTcs, new TaskCompletionSourceEx<object>(), null) != null) {
                 throw new InvalidOperationException("Another instance of RHost is running for this RSession. Stop it before starting new one.");
             }
@@ -221,6 +231,8 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         public async Task RestartHostAsync() {
+            _disposeToken.ThrowIfDisposed();
+
             await StopHostAsync();
             if (_callback != null || _startupInfo != null) {
                 await StartHostAsync(_startupInfo, _callback);
@@ -228,6 +240,8 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         public async Task StopHostAsync() {
+            _disposeToken.ThrowIfDisposed();
+
             if (_initializationTcs == null) {
                 return;
             }
@@ -300,7 +314,14 @@ namespace Microsoft.R.Host.Client.Session {
             using (var evaluation = await evaluationSource.Task) {
                 // Load RTVS R package before doing anything in R since the calls
                 // below calls may depend on functions exposed from the RTVS package
-                await LoadRtvsPackage(evaluation);
+                string libPath;
+                if (BrokerConnector.BrokerUri.Scheme == "file") {
+                    libPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetAssemblyPath());
+                } else {
+                    libPath = ".";
+                }
+                await LoadRtvsPackage(evaluation, libPath);
+
                 if (startupInfo.WorkingDirectory != null) {
                     await evaluation.SetWorkingDirectoryAsync(startupInfo.WorkingDirectory);
                 } else {
@@ -323,8 +344,7 @@ namespace Microsoft.R.Host.Client.Session {
             }
         }
 
-        private static async Task LoadRtvsPackage(IRSessionEvaluation eval) {
-            var libPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetAssemblyPath());
+        private static async Task LoadRtvsPackage(IRSessionEvaluation eval, string libPath) {
             await eval.ExecuteAsync(Invariant($"base::loadNamespace('rtvs', lib.loc = {libPath.ToRStringLiteral()})"));
         }
 

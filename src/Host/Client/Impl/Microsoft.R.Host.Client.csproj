@@ -54,6 +54,9 @@
     <Compile Include="DataInspection\REvaluationResultProperties.cs" />
     <Compile Include="DataInspection\RPromiseInfo.cs" />
     <Compile Include="DataInspection\RSessionExtensions.cs" />
+    <Compile Include="Host\UICredentials.cs" />
+    <Compile Include="Host\RemoteRHostConnector.cs" />
+    <Compile Include="Host\RHostConnector.cs" />
     <Compile Include="Host\RHost.GetBlobRequest.cs" />
     <Compile Include="Host\RHost.CreateBlobRequest.cs" />
     <Compile Include="Host\RHost.Request.cs" />
@@ -137,6 +140,7 @@
     <Compile Include="StackTracing\RSessionExtensions.cs" />
     <Compile Include="StackTracing\RStackFrame.cs" />
     <Compile Include="Telemetry\MrcTelemetryEvents.cs" />
+    <Compile Include="Transports\WebSocketClient.cs" />
     <Compile Include="Transports\WebSocketMessageTransport.cs" />
     <Compile Include="Definitions\YesNoCancel.cs" />
   </ItemGroup>
@@ -214,6 +218,11 @@
     <ProjectReference Include="..\..\..\R\Interpreters\Impl\Microsoft.R.Interpreters.csproj">
       <Project>{8445A4FB-4443-432C-94E8-1408559B7F58}</Project>
       <Name>Microsoft.R.Interpreters</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Process\src\Microsoft.R.Host.vcxproj">
+      <SetPlatform>Platform=x64</SetPlatform>
+      <Project>{131842ce-daf9-4c0e-8409-4a26ef7961a7}</Project>
+      <Name>Microsoft.R.Host</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

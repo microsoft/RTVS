@@ -8,6 +8,9 @@ using Microsoft.R.Host.Client.Host;
 
 namespace Microsoft.R.Host.Client.Test.Mocks {
     public sealed class RHostBrokerConnectorMock : IRHostBrokerConnector {
+        public void Dispose() {
+        }
+
         public Task<RHost> Connect(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken()) {
             throw new System.NotImplementedException();
         }

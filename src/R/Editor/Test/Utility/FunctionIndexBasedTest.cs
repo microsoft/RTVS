@@ -29,7 +29,7 @@ namespace Microsoft.R.Editor.Test.Utility {
             return _packageIndex.InitializeAsync(_functionIndex);
         }
 
-        public async Task DisposeAsync() {
+        public virtual async Task DisposeAsync() {
             await _packageIndex.DisposeAsync(_exportProvider);
             _exportProvider.Dispose();
         }

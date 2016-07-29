@@ -17,11 +17,12 @@ namespace Microsoft.R.Host.Client.Test.Session {
     public partial class RSessionTest {
         public class Output : IAsyncLifetime {
             private readonly MethodInfo _testMethod;
+            private readonly IRHostBrokerConnector _brokerConnector = new RHostBrokerConnector(name: nameof(Output));
             private readonly RSession _session;
 
             public Output(TestMethodFixture testMethod) {
                 _testMethod = testMethod.MethodInfo;
-                _session = new RSession(0, new RHostBrokerConnector(), () => { });
+                _session = new RSession(0, _brokerConnector, () => { });
             }
 
             public async Task InitializeAsync() {
@@ -33,6 +34,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
             public async Task DisposeAsync() {
                 await _session.StopHostAsync();
                 _session.Dispose();
+                _brokerConnector.Dispose();
             }
 
             [Test]

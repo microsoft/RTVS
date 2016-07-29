@@ -31,11 +31,17 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
     [Collection(CollectionNames.NonParallel)]
     public class IntellisenseTest : FunctionIndexBasedTest {
         private readonly EditorHostMethodFixture _editorHost;
+        private readonly IRHostBrokerConnector _brokerConnector = new RHostBrokerConnector(name: nameof(IntellisenseTest));
         private readonly IRSessionProvider _sessionProvider;
 
-        public IntellisenseTest(REditorApplicationMefCatalogFixture catalog, EditorHostMethodFixture editorHost): base(catalog) {
+        public IntellisenseTest(REditorApplicationMefCatalogFixture catalog, EditorHostMethodFixture editorHost) : base(catalog) {
             _editorHost = editorHost;
             _sessionProvider = _exportProvider.GetExportedValue<IRSessionProvider>();
+        }
+
+        public override async Task DisposeAsync() {
+            await base.DisposeAsync();
+            _brokerConnector.Dispose();
         }
 
         [Test]
@@ -117,41 +123,40 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
 
         [Test]
         public async Task R_LoadedPackageFunctionCompletion() {
-            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
-                using (new RHostScript(_sessionProvider)) {
-                    script.Type("c");
-                    script.DoIdle(200);
-                    var session = script.GetCompletionSession();
-                    session.Should().NotBeNull();
-                    script.DoIdle(500);
+            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType))
+            using (new RHostScript(_sessionProvider, _brokerConnector)) {
+                script.Type("c");
+                script.DoIdle(200);
+                var session = script.GetCompletionSession();
+                session.Should().NotBeNull();
+                script.DoIdle(500);
 
-                    var list = session.SelectedCompletionSet.Completions.ToList();
-                    var item = list.FirstOrDefault(x => x.DisplayText == "codoc");
-                    item.Should().BeNull();
+                var list = session.SelectedCompletionSet.Completions.ToList();
+                var item = list.FirstOrDefault(x => x.DisplayText == "codoc");
+                item.Should().BeNull();
 
-                    var rSession = _sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, new RHostBrokerConnector());
-                    rSession.Should().NotBeNull();
+                var rSession = _sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, _brokerConnector);
+                rSession.Should().NotBeNull();
 
-                    await rSession.ExecuteAsync("library('tools')");
+                await rSession.ExecuteAsync("library('tools')");
 
-                    script.DoIdle(1000);
+                script.DoIdle(1000);
 
-                    script.Type("{ESC}");
-                    script.DoIdle(200);
-                    script.Backspace();
-                    script.Type("{ENTER}");
-                    script.DoIdle(100);
+                script.Type("{ESC}");
+                script.DoIdle(200);
+                script.Backspace();
+                script.Type("{ENTER}");
+                script.DoIdle(100);
 
-                    script.Type("c");
-                    script.DoIdle(500);
-                    script.Backspace();
+                script.Type("c");
+                script.DoIdle(500);
+                script.Backspace();
 
-                    session = script.GetCompletionSession();
-                    session.Should().NotBeNull();
-                    list = session.SelectedCompletionSet.Completions.ToList();
-                    item = list.FirstOrDefault(x => x.DisplayText == "codoc");
-                    item.Should().NotBeNull();
-                }
+                session = script.GetCompletionSession();
+                session.Should().NotBeNull();
+                list = session.SelectedCompletionSet.Completions.ToList();
+                item = list.FirstOrDefault(x => x.DisplayText == "codoc");
+                item.Should().NotBeNull();
             }
         }
 
@@ -179,31 +184,30 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
 
         [Test]
         public async Task R_CompletionFilesUserFolder() {
-            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
-                using (new RHostScript(_sessionProvider)) {
-                    var myDocs = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                    var testFolder = Path.Combine(myDocs, "_rtvs_test_");
-                    if (!Directory.Exists(testFolder)) {
-                        Directory.CreateDirectory(testFolder);
-                    }
+            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType))
+            using (new RHostScript(_sessionProvider, _brokerConnector)) {
+                var myDocs = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                var testFolder = Path.Combine(myDocs, "_rtvs_test_");
+                if (!Directory.Exists(testFolder)) {
+                    Directory.CreateDirectory(testFolder);
+                }
 
-                    script.DoIdle(100);
-                    script.Type("x <- \"~/");
-                    script.DoIdle(1000);
-                    script.Type("{TAB}");
-                    script.DoIdle(500);
+                script.DoIdle(100);
+                script.Type("x <- \"~/");
+                script.DoIdle(1000);
+                script.Type("{TAB}");
+                script.DoIdle(500);
 
-                    var session = script.GetCompletionSession();
-                    session.Should().NotBeNull();
-                    script.DoIdle(200);
+                var session = script.GetCompletionSession();
+                session.Should().NotBeNull();
+                script.DoIdle(200);
 
-                    var list = session.SelectedCompletionSet.Completions.ToList();
-                    var item = list.FirstOrDefault(x => x.DisplayText == "_rtvs_test_");
-                    item.Should().NotBeNull();
+                var list = session.SelectedCompletionSet.Completions.ToList();
+                var item = list.FirstOrDefault(x => x.DisplayText == "_rtvs_test_");
+                item.Should().NotBeNull();
 
-                    if (Directory.Exists(testFolder)) {
-                        Directory.Delete(testFolder);
-                    }
+                if (Directory.Exists(testFolder)) {
+                    Directory.Delete(testFolder);
                 }
             }
         }
@@ -233,93 +237,89 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         //[Test]
         [Category.Interactive]
         public async Task R_CompletionFunctionBraces01() {
-            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
-                using (var hostScript = new RHostScript(_sessionProvider)) {
+            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType))
+            using (var hostScript = new RHostScript(_sessionProvider, _brokerConnector)) {
 
-                    string message = null;
-                    hostScript.Session.Output += (s, e) => {
-                        message = e.Message;
-                    };
+                string message = null;
+                hostScript.Session.Output += (s, e) => {
+                    message = e.Message;
+                };
 
-                    script.DoIdle(100);
-                    script.Type("instal");
-                    script.DoIdle(1000);
-                    script.Type("{TAB}");
-                    script.DoIdle(100);
+                script.DoIdle(100);
+                script.Type("instal");
+                script.DoIdle(1000);
+                script.Type("{TAB}");
+                script.DoIdle(100);
 
-                    string actual = script.EditorText;
-                    actual.Should().Be("install.packages()");
-                    script.View.Caret.Position.BufferPosition.Position.Should().Be(actual.Length - 1);
+                string actual = script.EditorText;
+                actual.Should().Be("install.packages()");
+                script.View.Caret.Position.BufferPosition.Position.Should().Be(actual.Length - 1);
 
-                    message.Should().NotContain("Error");
-                }
+                message.Should().NotContain("Error");
             }
         }
 
         [Test]
         public async Task R_CompletionFunctionBraces02() {
-            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
-                using (var hostScript = new RHostScript(_sessionProvider)) {
+            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType))
+            using (var hostScript = new RHostScript(_sessionProvider, _brokerConnector)) {
 
-                    string message = null;
-                    hostScript.Session.Output += (s, e) => {
-                        message = e.Message;
-                    };
+                string message = null;
+                hostScript.Session.Output += (s, e) => {
+                    message = e.Message;
+                };
 
-                    script.DoIdle(100);
-                    script.Type("bas");
-                    script.DoIdle(1000);
-                    script.Type("{TAB}");
-                    script.DoIdle(100);
+                script.DoIdle(100);
+                script.Type("bas");
+                script.DoIdle(1000);
+                script.Type("{TAB}");
+                script.DoIdle(100);
 
-                    string actual = script.EditorText;
-                    actual.Should().Be("base");
+                string actual = script.EditorText;
+                actual.Should().Be("base");
 
-                    message.Should().NotContain("Error");
-                }
+                message.Should().NotContain("Error");
             }
         }
 
         [Test]
         public async Task R_NoCompletionOnTab() {
-            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
-                using (var hostScript = new RHostScript(_sessionProvider)) {
+            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType))
+            using (var hostScript = new RHostScript(_sessionProvider, _brokerConnector)) {
 
-                    script.DoIdle(100);
-                    script.Type("f1<-function(x,y");
-                    script.DoIdle(300);
-                    script.Type("{TAB}");
-                    script.DoIdle(100);
+                script.DoIdle(100);
+                script.Type("f1<-function(x,y");
+                script.DoIdle(300);
+                script.Type("{TAB}");
+                script.DoIdle(100);
 
-                    string actual = script.EditorText;
-                    actual.Should().Be("f1<-function(x,y)");
+                string actual = script.EditorText;
+                actual.Should().Be("f1<-function(x,y)");
 
-                    script.View.Caret.Position.BufferPosition.Position.Should().Be(actual.Length);
-                }
+                script.View.Caret.Position.BufferPosition.Position.Should().Be(actual.Length);
             }
         }
 
         [Test]
         public async Task R_CompletionOnTab() {
-            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
-                using (var hostScript = new RHostScript(_sessionProvider)) {
+            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType))
+            using (var hostScript = new RHostScript(_sessionProvider, _brokerConnector)) {
 
-                    REditorSettings.ShowCompletionOnTab = true;
-                    script.DoIdle(100);
-                    script.Type("f1<-lapp");
-                    UIThreadHelper.Instance.Invoke(() => script.GetCompletionSession().Dismiss());
+                REditorSettings.ShowCompletionOnTab = true;
+                script.DoIdle(100);
+                script.Type("f1<-lapp");
+                UIThreadHelper.Instance.Invoke(() => script.GetCompletionSession().Dismiss());
 
-                    script.DoIdle(300);
-                    script.Type("{TAB}");
-                    script.DoIdle(500);
-                    script.Type("{TAB}");
-                    script.DoIdle(200);
+                script.DoIdle(300);
+                script.Type("{TAB}");
+                script.DoIdle(500);
+                script.Type("{TAB}");
+                script.DoIdle(200);
 
-                    string actual = script.EditorText;
-                    actual.Should().Be("f1<-lapply");
+                string actual = script.EditorText;
+                actual.Should().Be("f1<-lapply");
 
-                    REditorSettings.ShowCompletionOnTab = false;
-                }
+                REditorSettings.ShowCompletionOnTab = false;
             }
         }
 
@@ -384,116 +384,112 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
 
         [Test]
         public async Task R_DeclaredVariablesCompletion01() {
-            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
-                using (var hostScript = new RHostScript(_sessionProvider)) {
+            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType))
+            using (var hostScript = new RHostScript(_sessionProvider, _brokerConnector)) {
 
-                    await ExecuteRCode(hostScript.Session, "zzz111 <- 1\r\n");
-                    await ExecuteRCode(hostScript.Session, "zzz111$y222 <- 2\r\n");
+                await ExecuteRCode(hostScript.Session, "zzz111 <- 1\r\n");
+                await ExecuteRCode(hostScript.Session, "zzz111$y222 <- 2\r\n");
 
-                    PrimeIntellisenseProviders(script);
+                PrimeIntellisenseProviders(script);
 
-                    script.DoIdle(500);
-                    script.Type("zzz1");
-                    script.DoIdle(500);
-                    script.Type("{TAB}");
-                    script.DoIdle(500);
-                    script.Type("$");
-                    script.DoIdle(500);
-                    script.Type("y2");
-                    script.DoIdle(500);
-                    script.Type("{TAB}");
+                script.DoIdle(500);
+                script.Type("zzz1");
+                script.DoIdle(500);
+                script.Type("{TAB}");
+                script.DoIdle(500);
+                script.Type("$");
+                script.DoIdle(500);
+                script.Type("y2");
+                script.DoIdle(500);
+                script.Type("{TAB}");
 
-                    string expected = "zzz111$y222";
-                    string actual = script.EditorText;
+                string expected = "zzz111$y222";
+                string actual = script.EditorText;
 
-                    actual.Should().Be(expected);
-                }
+                actual.Should().Be(expected);
             }
         }
 
         [Test]
         public async Task R_DeclaredVariablesCompletion02() {
-            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
-                using (var hostScript = new RHostScript(_sessionProvider)) {
+            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType))
+            using (var hostScript = new RHostScript(_sessionProvider, _brokerConnector)) {
 
-                    await ExecuteRCode(hostScript.Session, "setClass('Person', representation(name = 'character', age = 'numeric'))\r\n");
-                    await ExecuteRCode(hostScript.Session, "hadley <- new('Person', name = 'Hadley', age = 31)\r\n");
+                await ExecuteRCode(hostScript.Session, "setClass('Person', representation(name = 'character', age = 'numeric'))\r\n");
+                await ExecuteRCode(hostScript.Session, "hadley <- new('Person', name = 'Hadley', age = 31)\r\n");
 
-                    PrimeIntellisenseProviders(script);
+                PrimeIntellisenseProviders(script);
 
-                    script.DoIdle(1000);
-                    script.Type("hadle");
-                    script.DoIdle(500);
-                    script.Type("{TAB}");
-                    script.DoIdle(500);
-                    script.Type("@");
-                    script.DoIdle(500);
-                    script.Type("na");
-                    script.DoIdle(500);
-                    script.Type("{TAB}");
+                script.DoIdle(1000);
+                script.Type("hadle");
+                script.DoIdle(500);
+                script.Type("{TAB}");
+                script.DoIdle(500);
+                script.Type("@");
+                script.DoIdle(500);
+                script.Type("na");
+                script.DoIdle(500);
+                script.Type("{TAB}");
 
-                    string expected = "hadley@name";
-                    string actual = script.EditorText;
+                string expected = "hadley@name";
+                string actual = script.EditorText;
 
-                    actual.Should().Be(expected);
-                }
+                actual.Should().Be(expected);
             }
         }
 
         [Test]
         public async Task R_DeclaredVariablesCompletion03() {
-            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
-                using (var hostScript = new RHostScript(_sessionProvider)) {
+            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType))
+            using (var hostScript = new RHostScript(_sessionProvider, _brokerConnector)) {
 
-                    await ExecuteRCode(hostScript.Session, "i1 <- 1\r\n");
-                    PrimeIntellisenseProviders(script);
-                    script.DoIdle(1000);
+                await ExecuteRCode(hostScript.Session, "i1 <- 1\r\n");
+                PrimeIntellisenseProviders(script);
+                script.DoIdle(1000);
 
-                    script.Type("i");
+                script.Type("i");
 
-                    var session = script.GetCompletionSession();
-                    session.Should().NotBeNull();
+                var session = script.GetCompletionSession();
+                session.Should().NotBeNull();
 
-                    var list = session.SelectedCompletionSet.Completions.ToList();
-                    var item = list.FirstOrDefault(x => x.DisplayText == "i1");
-                    item.Should().NotBeNull();
-                    script.DoIdle(100);
+                var list = session.SelectedCompletionSet.Completions.ToList();
+                var item = list.FirstOrDefault(x => x.DisplayText == "i1");
+                item.Should().NotBeNull();
+                script.DoIdle(100);
 
-                    script.Type("{ESC}");
-                    script.Backspace();
+                script.Type("{ESC}");
+                script.Backspace();
 
-                    script.DoIdle(100);
-                    script.Type("graphics::");
-                    script.DoIdle(300);
+                script.DoIdle(100);
+                script.Type("graphics::");
+                script.DoIdle(300);
 
-                    session = script.GetCompletionSession();
-                    session.Should().NotBeNull();
+                session = script.GetCompletionSession();
+                session.Should().NotBeNull();
 
-                    list = session.SelectedCompletionSet.Completions.ToList();
-                    item = list.FirstOrDefault(x => x.DisplayText == "i1");
-                    item.Should().BeNull();
-                }
+                list = session.SelectedCompletionSet.Completions.ToList();
+                item = list.FirstOrDefault(x => x.DisplayText == "i1");
+                item.Should().BeNull();
             }
         }
 
         [Test]
         public async Task R_PackageVariablesCompletion() {
-            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
-                using (var hostScript = new RHostScript(_sessionProvider)) {
-                    PrimeIntellisenseProviders(script);
-                    script.DoIdle(1000);
+            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType))
+            using (var hostScript = new RHostScript(_sessionProvider, _brokerConnector)) {
+                PrimeIntellisenseProviders(script);
+                script.DoIdle(1000);
 
-                    script.Type("mtcars$");
+                script.Type("mtcars$");
 
-                    var session = script.GetCompletionSession();
-                    session.Should().NotBeNull();
-                    script.DoIdle(1000);
+                var session = script.GetCompletionSession();
+                session.Should().NotBeNull();
+                script.DoIdle(1000);
 
-                    var list = session.SelectedCompletionSet.Completions.ToList();
-                    var item = list.FirstOrDefault(x => x.DisplayText == "cyl");
-                    item.Should().NotBeNull();
-                    script.DoIdle(100);
-                }
+                var list = session.SelectedCompletionSet.Completions.ToList();
+                var item = list.FirstOrDefault(x => x.DisplayText == "cyl");
+                item.Should().NotBeNull();
+                script.DoIdle(100);
             }
         }
 
