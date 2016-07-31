@@ -4,6 +4,7 @@
 using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Interpreters;
 using Microsoft.R.Host.Client.Install;
 using Microsoft.R.Host.Client.Session;
@@ -22,13 +23,12 @@ namespace Microsoft.R.Host.Client.Test.Session {
             public CancelAll(TestMethodFixture testMethod, TaskObserverMethodFixture taskObserver) {
                 _taskObserver = taskObserver;
                 _testMethod = testMethod.MethodInfo;
-                _session = new RSession(0, () => {});
+                _session = new RSession(0, new RHostBrokerConnector(), () => {});
             }
 
             public async Task InitializeAsync() {
                 await _session.StartHostAsync(new RHostStartupInfo {
-                    Name = _testMethod.Name,
-                    RBasePath = new RInstallation().GetRInstallPath()
+                    Name = _testMethod.Name
                 }, null, 50000);
 
                 _taskObserver.ObserveTaskFailure(_session.RHost.GetRHostRunTask());

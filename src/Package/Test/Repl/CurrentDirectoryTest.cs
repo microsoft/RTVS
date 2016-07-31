@@ -12,6 +12,7 @@ using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Test.Fakes.Trackers;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Support.Settings;
 using Microsoft.UnitTests.Core.XUnit;
@@ -36,7 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
             var plotsProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRPlotManagerProvider>();
             var activeTextViewTracker = new ActiveTextViewTrackerMock(string.Empty, string.Empty);
             var debuggerModeTracker = new TestDebuggerModeTracker();
-            _interactiveWorkflow = new RInteractiveWorkflow(sessionProvider, connectionsProvider, historyProvider, packagesProvider, plotsProvider, activeTextViewTracker, debuggerModeTracker, VsAppShell.Current, RToolsSettings.Current, () => { });
+            _interactiveWorkflow = new RInteractiveWorkflow(sessionProvider, connectionsProvider, historyProvider, packagesProvider, plotsProvider, activeTextViewTracker, debuggerModeTracker, new RHostBrokerConnector(), VsAppShell.Current, RToolsSettings.Current, () => { });
         }
 
         public void Dispose() {

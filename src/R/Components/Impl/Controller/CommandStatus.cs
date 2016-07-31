@@ -9,8 +9,10 @@ namespace Microsoft.R.Components.Controller {
         NotSupported = 0,
         Supported = 1,
         Enabled = 2,
-        SupportedAndEnabled = 3,
         Latched = 4,
         Invisible = 8,
+
+        SupportedAndEnabled = Supported | Enabled,
+        SupportedAndInvisible = Supported | Invisible,
     }
 }

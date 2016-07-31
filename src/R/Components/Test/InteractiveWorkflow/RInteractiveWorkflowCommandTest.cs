@@ -13,6 +13,7 @@ using Microsoft.R.Components.InteractiveWorkflow.Commands;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Test.Fakes.Trackers;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Test;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
@@ -42,9 +43,9 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
 
         public async Task InitializeAsync() {
             var settings = _exportProvider.GetExportedValue<IRSettings>();
+            _workflow.BrokerConnector.SwitchToLocalBroker(settings.RBasePath);
             await _workflow.RSession.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name,
-                RBasePath = settings.RBasePath,
                 RHostCommandLineArguments = settings.RCommandLineArguments,
                 CranMirrorName = settings.CranMirror,
                 CodePage = settings.RCodePage

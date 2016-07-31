@@ -454,7 +454,7 @@
     <value>Unable to access path {0}. Exception: {1}.</value>
   </data>
   <data name="RPathChanged_RestartRToApplyChanges" xml:space="preserve">
-    <value>Path to local R installation has been changed. You must reset Interactive Window for this change to take effect.</value>
+    <value>Path to local R installation has been changed. You must connect to the new R path to take effect.</value>
   </data>
   <data name="ChooseDirectory" xml:space="preserve">
     <value>Choose Directory</value>

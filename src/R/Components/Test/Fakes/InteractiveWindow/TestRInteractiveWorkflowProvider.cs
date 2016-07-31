@@ -13,6 +13,7 @@ using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.UnitTests.Core.Mef;
 
 namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
@@ -29,6 +30,7 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
         private readonly IRSettings _settings;
         private readonly IActiveWpfTextViewTracker _activeTextViewTracker;
         private readonly IDebuggerModeTracker _debuggerModeTracker;
+        private readonly IRHostBrokerConnector _brokerConnector;
 
         private Lazy<IRInteractiveWorkflow> _instanceLazy;
         public IRSessionCallback HostClientApp { get; set; }
@@ -41,9 +43,10 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
             , IRPlotManagerProvider plotsProvider
             , IActiveWpfTextViewTracker activeTextViewTracker
             , IDebuggerModeTracker debuggerModeTracker
+            // Required for the tests that create TestRInteractiveWorkflowProvider explicitly
+            , [Import(AllowDefault = true)] IRHostBrokerConnector brokerConnector
             , ICoreShell shell
             , IRSettings settings) {
-
             _sessionProvider = sessionProvider;
             _connectionManagerProvider = connectionManagerProvider;
             _historyProvider = historyProvider;
@@ -51,6 +54,7 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
             _plotsProvider = plotsProvider;
             _activeTextViewTracker = activeTextViewTracker;
             _debuggerModeTracker = debuggerModeTracker;
+            _brokerConnector = brokerConnector;
             _shell = shell;
             _settings = settings;
         }
@@ -61,7 +65,17 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
         }
         
         private IRInteractiveWorkflow CreateRInteractiveWorkflow() {
-            return new RInteractiveWorkflow(_sessionProvider, _connectionManagerProvider, _historyProvider, _packagesProvider, _plotsProvider, _activeTextViewTracker, _debuggerModeTracker, _shell, _settings, DisposeInstance);
+            return new RInteractiveWorkflow(_sessionProvider
+                , _connectionManagerProvider
+                , _historyProvider
+                , _packagesProvider
+                , _plotsProvider
+                , _activeTextViewTracker
+                , _debuggerModeTracker
+                , _brokerConnector ?? new RHostBrokerConnector()
+                , _shell
+                , _settings
+                , DisposeInstance);
         }
 
         private void DisposeInstance() {

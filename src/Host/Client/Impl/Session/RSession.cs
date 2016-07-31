@@ -25,10 +25,7 @@ namespace Microsoft.R.Host.Client.Session {
         private readonly static string DefaultPrompt = "> ";
         private readonly static Task<IRSessionEvaluation> CanceledBeginEvaluationTask;
         private readonly static Task<IRSessionInteraction> CanceledBeginInteractionTask;
-        private readonly static Task<ulong> CanceledSendBlobTask;
-        private readonly static Task<byte[]> CanceledGetBlobTask;
-        private readonly static Task CanceledDestoryBlobTask;
-
+        
         private readonly BufferBlock<RSessionRequestSource> _pendingRequestSources = new BufferBlock<RSessionRequestSource>();
         private readonly BufferBlock<RSessionEvaluationSource> _pendingEvaluationSources = new BufferBlock<RSessionEvaluationSource>();
 
@@ -56,8 +53,10 @@ namespace Microsoft.R.Host.Client.Session {
         private volatile bool _isHostRunning;
         private volatile bool _delayedMutatedOnReadConsole;
         private volatile IRSessionCallback _callback;
+        private volatile RHostStartupInfo _startupInfo;
 
         public int Id { get; }
+        internal IRHostBrokerConnector BrokerConnector { get; }
         public string Prompt { get; private set; } = DefaultPrompt;
         public int MaxLength { get; private set; } = 0x1000;
         public bool IsHostRunning => _isHostRunning;
@@ -74,13 +73,11 @@ namespace Microsoft.R.Host.Client.Session {
         static RSession() {
             CanceledBeginEvaluationTask = TaskUtilities.CreateCanceled<IRSessionEvaluation>(new RHostDisconnectedException());
             CanceledBeginInteractionTask = TaskUtilities.CreateCanceled<IRSessionInteraction>(new RHostDisconnectedException());
-            CanceledSendBlobTask = TaskUtilities.CreateCanceled<ulong>(new RHostDisconnectedException());
-            CanceledGetBlobTask = TaskUtilities.CreateCanceled<byte[]>(new RHostDisconnectedException());
-            CanceledDestoryBlobTask = TaskUtilities.CreateCanceled(new RHostDisconnectedException());
         }
 
-        public RSession(int id, Action onDispose) {
+        public RSession(int id, IRHostBrokerConnector brokerConnector, Action onDispose) {
             Id = id;
+            BrokerConnector = brokerConnector;
             _onDispose = onDispose;
             _disposeToken = DisposeToken.Create<RSession>();
             _disableMutatingOnReadConsole = new CountdownDisposable(() => {
@@ -156,7 +153,7 @@ namespace Microsoft.R.Host.Client.Session {
 
         public async Task<ulong> CreateBlobAsync(byte[] data, CancellationToken ct = default(CancellationToken)) {
             if (!IsHostRunning) {
-                return await CanceledSendBlobTask;
+                throw new RHostDisconnectedException();
             }
 
             await _afterHostStartedTask;
@@ -164,13 +161,13 @@ namespace Microsoft.R.Host.Client.Session {
             try {
                 return await _host.CreateBlobAsync(data, ct);
             } catch (MessageTransportException) when (!IsHostRunning) {
-                return await CanceledSendBlobTask;
+                throw new RHostDisconnectedException();
             }
         }
 
         public async Task<byte[]> GetBlobAsync(ulong blobId, CancellationToken ct = default(CancellationToken)) {
             if (!IsHostRunning) {
-                return await CanceledGetBlobTask;
+                throw new RHostDisconnectedException();
             }
 
             await _afterHostStartedTask;
@@ -178,13 +175,13 @@ namespace Microsoft.R.Host.Client.Session {
             try {
                 return await _host.GetBlobAsync(blobId, ct);
             } catch (MessageTransportException) when (!IsHostRunning) {
-                return await CanceledGetBlobTask;
+                throw new RHostDisconnectedException();
             }
         }
 
         public async Task DestroyBlobsAsync(IEnumerable<ulong> blobIds, CancellationToken ct = default(CancellationToken)) {
             if (!IsHostRunning) {
-                await CanceledDestoryBlobTask;
+                throw new RHostDisconnectedException();
             }
 
             // Get a snapshot before yielding in case this is a lazy enumerable.
@@ -195,7 +192,7 @@ namespace Microsoft.R.Host.Client.Session {
             try {
                 await _host.DestroyBlobsAsync(blobIds, ct);
             } catch (MessageTransportException) when (!IsHostRunning) {
-                await CanceledDestoryBlobTask;
+                throw new RHostDisconnectedException();
             }
         }
 
@@ -224,10 +221,6 @@ namespace Microsoft.R.Host.Client.Session {
                 throw new InvalidOperationException("Another instance of RHost is running for this RSession. Stop it before starting new one.");
             }
 
-            if (string.IsNullOrEmpty(startupInfo.RBasePath)) {
-                throw new ArgumentException("Path to R must be specified");
-            } 
-
             await StartHostAsyncBackground(startupInfo, callback, timeout);
         }
 
@@ -235,7 +228,7 @@ namespace Microsoft.R.Host.Client.Session {
             await TaskUtilities.SwitchToBackgroundThread();
 
             _callback = callback;
-            _host = new RHost(startupInfo != null ? startupInfo.Name : "Empty", this);
+            _startupInfo = startupInfo;
             ClearPendingRequests(new RHostDisconnectedException());
             ScheduleAfterHostStarted(startupInfo);
 
@@ -243,6 +236,13 @@ namespace Microsoft.R.Host.Client.Session {
             _hostRunTask = CreateAndRunHost(startupInfo, timeout);
 
             await initializationTask;
+        }
+
+        public async Task RestartHostAsync() {
+            await StopHostAsync();
+            if (_callback != null || _startupInfo != null) {
+                await StartHostAsync(_startupInfo, _callback);
+            }
         }
 
         public async Task StopHostAsync() {
@@ -295,7 +295,8 @@ namespace Microsoft.R.Host.Client.Session {
 
         private async Task CreateAndRunHost(RHostStartupInfo startupInfo, int timeout) {
             try {
-                await _host.CreateAndRun(new RInstallation().GetRInstallPath(startupInfo.RBasePath, new SupportedRVersionRange()), startupInfo.RHostDirectory, startupInfo.RHostCommandLineArguments, timeout);
+                _host = await BrokerConnector.ConnectToRHost(startupInfo.Name, this, startupInfo.RHostCommandLineArguments, timeout);
+                await _host.Run();
             } catch (OperationCanceledException oce) {
                 _initializationTcs.TrySetCanceled(oce);
             } catch (MessageTransportException mte) {

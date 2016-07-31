@@ -61,6 +61,7 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Browsers\WebBrowserRole.cs" />
+    <Compile Include="Commands\AsyncCommandRangeToOleMenuCommandShim.cs" />
     <Compile Include="Commands\CommandAsyncToOleMenuCommandShim.cs" />
     <Compile Include="Commands\CommandAsyncToOleMenuCommandShimFactory.cs" />
     <Compile Include="Commands\OleControllerChain.cs" />

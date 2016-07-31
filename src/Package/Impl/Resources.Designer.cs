@@ -1039,7 +1039,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Path to local R installation has been changed. You must reset Interactive Window for this change to take effect..
+        ///   Looks up a localized string similar to Path to local R installation has been changed. You must connect to the new R path to take effect..
         /// </summary>
         public static string RPathChanged_RestartRToApplyChanges {
             get {

@@ -12,6 +12,7 @@ using Microsoft.R.Components.InteractiveWorkflow.Implementation;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Plots;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Support.Settings;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
@@ -55,7 +56,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         
         private IRInteractiveWorkflow CreateRInteractiveWorkflow() {
             var settings = RToolsSettings.Current;
-            return new RInteractiveWorkflow(_sessionProvider, _connectionsProvider, _historyProvider, _packagesProvider, _plotsProvider, _activeTextViewTracker, _debuggerModeTracker, _shell, settings, DisposeInstance);
+            return new RInteractiveWorkflow(_sessionProvider, _connectionsProvider, _historyProvider, _packagesProvider, _plotsProvider, _activeTextViewTracker, _debuggerModeTracker, new RHostBrokerConnector(), _shell, settings, DisposeInstance);
         }
 
         private void DisposeInstance() {

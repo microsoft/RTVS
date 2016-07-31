@@ -6,7 +6,9 @@ using System.ComponentModel.Composition;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Threading;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Support.Settings;
 
 namespace Microsoft.R.Support.Help {
@@ -15,12 +17,14 @@ namespace Microsoft.R.Support.Help {
         private static readonly Guid SessionId = new Guid("8BEF9C06-39DC-4A64-B7F3-0C68353362C9");
         private readonly ICoreShell _coreShell;
         private readonly IRSessionProvider _sessionProvider;
+        private readonly IRHostBrokerConnector _brokerConnector;
         private readonly BinaryAsyncLock _lock = new BinaryAsyncLock();
 
         [ImportingConstructor]
-        public IntelliSenseRSession(ICoreShell coreShell, IRSessionProvider sessionProvider) {
+        public IntelliSenseRSession(ICoreShell coreShell, IRSessionProvider sessionProvider, IRInteractiveWorkflowProvider workflowProvider) {
             _coreShell = coreShell;
             _sessionProvider = sessionProvider;
+            _brokerConnector = workflowProvider.GetOrCreate().BrokerConnector;
         }
 
         /// <summary>
@@ -40,14 +44,13 @@ namespace Microsoft.R.Support.Help {
             await _lock.WaitAsync();
             try {
                 if (Session == null) {
-                    Session = _sessionProvider.GetOrCreate(SessionId);
+                    Session = _sessionProvider.GetOrCreate(SessionId, _brokerConnector);
                 }
 
                 if (!Session.IsHostRunning) {
                     int timeout = _coreShell.IsUnitTestEnvironment ? 10000 : 3000;
                     await Session.StartHostAsync(new RHostStartupInfo {
                         Name = "IntelliSense",
-                        RBasePath = RToolsSettings.Current.RBasePath,
                         CranMirrorName = RToolsSettings.Current.CranMirror,
                         CodePage = RToolsSettings.Current.RCodePage
                     }, null, timeout);

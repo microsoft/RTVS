@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
+using Microsoft.R.Host.Client.Host;
 using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client {
@@ -16,9 +17,10 @@ namespace Microsoft.R.Host.Client {
 
         static void Main(string[] args) {
             Console.CancelKeyPress += Console_CancelKeyPress;
-            var host = new RHost("Program", new Program());
-            host.CreateAndRun(args[0]).GetAwaiter().GetResult();
+            var localConnector = new LocalRHostConnector(args[0]);
+            var host = localConnector.ConnectToRHost("Program", new Program()).GetAwaiter().GetResult();
             _evaluator = host;
+            host.Run().GetAwaiter().GetResult();
         }
 
         private static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e) {

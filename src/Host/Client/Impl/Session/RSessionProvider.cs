@@ -5,35 +5,36 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.R.Host.Client.Host;
 
 namespace Microsoft.R.Host.Client.Session {
     [Export(typeof(IRSessionProvider))]
     public class RSessionProvider : IRSessionProvider {
-        private int _sessionCounter;
-        private readonly ConcurrentDictionary<Guid, IRSession> _sessions = new ConcurrentDictionary<Guid, IRSession>();
+        private readonly ConcurrentDictionary<Guid, RSession> _sessions = new ConcurrentDictionary<Guid, RSession>();
         private readonly DisposeToken _disposeToken = DisposeToken.Create<RSessionProvider>();
+        private int _sessionCounter;
 
-        public IRSession GetOrCreate(Guid guid) {
+        public IRSession GetOrCreate(Guid guid, IRHostBrokerConnector brokerConnector) {
             _disposeToken.ThrowIfDisposed();
-            return _sessions.GetOrAdd(guid, id => new RSession(Interlocked.Increment(ref _sessionCounter), () => DisposeSession(guid)));
+            return _sessions.GetOrAdd(guid, id => new RSession(Interlocked.Increment(ref _sessionCounter), brokerConnector, () => DisposeSession(guid)));
         }
 
         public IEnumerable<IRSession> GetSessions() {
             return _sessions.Values;
         }
 
-        public async Task<IRSessionEvaluation> BeginEvaluationAsync(RHostStartupInfo startupInfo, CancellationToken cancellationToken = new CancellationToken()) {
-            var session = GetOrCreate(Guid.NewGuid());
+        public async Task<IRSessionEvaluation> BeginEvaluationAsync(IRHostBrokerConnector brokerConnector, RHostStartupInfo startupInfo, CancellationToken cancellationToken = default(CancellationToken)) {
+            var session = GetOrCreate(Guid.NewGuid(), brokerConnector);
             cancellationToken.ThrowIfCancellationRequested();
 
             try {
                 await session.StartHostAsync(new RHostStartupInfo {
                     Name = "IsolatedRHost" + session.Id,
-                    RBasePath = startupInfo.RBasePath,
                     CranMirrorName = startupInfo.CranMirrorName,
                     CodePage = startupInfo.CodePage
                 }, null);
@@ -50,6 +51,12 @@ namespace Microsoft.R.Host.Client.Session {
             }
         }
 
+        public Task RestartSessions(IRHostBrokerConnector brokerConnector) {
+            var sessions = _sessions.Values.Where(s => s.BrokerConnector.Equals(brokerConnector)).ToList();
+            var sessionRestartTasks = sessions.Select(s => s.RestartHostAsync());
+            return Task.WhenAll(sessionRestartTasks);
+        }
+
         public void Dispose() {
             if (!_disposeToken.TryMarkDisposed()) {
                 return;
@@ -61,7 +68,7 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         private void DisposeSession(Guid guid) {
-            IRSession session;
+            RSession session;
             _sessions.TryRemove(guid, out session);
         }
 

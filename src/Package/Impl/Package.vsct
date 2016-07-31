@@ -47,6 +47,17 @@
       </Menu>
       <!-- End R history context context menu -->
 
+      <!-- R Status Bar connections context menu -->
+      <Menu guid="guidRToolsCmdSet" id="connectionsStatusBarContextMenu" type="Context">
+        <CommandFlag>DontCache</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>R Host Connection Context</ButtonText>
+        </Strings>
+      </Menu>
+      <!-- R Status Bar connections context menu -->
+
       <!-- R debugger Autos/Locals/Watch context menu -->
       <Menu guid="guidRToolsCmdSet" id="debuggerRContextMenu" priority="0x0301" type="Context">
         <Parent guid="guidVSDebugGroup" id="IDG_DEBUG_DISPLAY"/>
@@ -467,11 +478,12 @@
         <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveToolbar"/>
       </Group>
 
-
       <Group guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup" priority="0x300" />
       <Group guid="guidRToolsCmdSet" id="projectAddItemContextMenuGroup" priority="0x310" />
       <Group guid="guidRToolsCmdSet" id="projectCmdPromptContextMenuGroup" priority="0x320" />
 
+      <Group guid="guidRToolsCmdSet" id="connectionsStatusBarMruGroup" priority="0x700" />
+      <Group guid="guidRToolsCmdSet" id="connectionsStatusBarReconnectGroup" priority="0x710" />
     </Groups>
 
     <Buttons>
@@ -1276,6 +1288,28 @@
         </Strings>
       </Button>
       <!-- End history window buttons -->
+      
+      <!-- Connections Status Bar buttons -->
+      <Button guid="guidRToolsCmdSet" id="icmdMruConnectionsDynamic" priority="0x1000"  type="Button">
+        <Parent guid="guidRToolsCmdSet" id="connectionsStatusBarMruGroup" />
+        <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DynamicItemStart</CommandFlag>
+        <Strings>
+          <ButtonText>Connection</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdReconnect" priority="0x0200" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="connectionsStatusBarReconnectGroup"/>
+        <Icon guid="ImageCatalogGuid" id="ConnectArrow"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Reconnect</ButtonText>
+        </Strings>
+      </Button>
+      <!-- End Connections Status Bar buttons -->
 
       <Button guid="guidRToolsCmdSet" id="icmdGoToFormattingOptions" priority="0x0200" type="Button">
         <Parent guid="guidRToolsCmdSet" id="groupRContextFormat"/>
@@ -1731,6 +1765,16 @@
     </CommandPlacement>
     <!-- End R history context menu -->
 
+    <!-- R Status Bar connections context menu -->
+    <CommandPlacement guid="guidRToolsCmdSet" id="connectionsStatusBarMruGroup" priority="0x100">
+      <Parent guid="guidRToolsCmdSet" id="connectionsStatusBarContextMenu"/>
+    </CommandPlacement>
+    
+    <CommandPlacement guid="guidRToolsCmdSet" id="connectionsStatusBarReconnectGroup" priority="0x200">
+      <Parent guid="guidRToolsCmdSet" id="connectionsStatusBarContextMenu"/>
+    </CommandPlacement>
+    <!-- R Status Bar connections context menu -->
+
     <!-- RD/RDM code editor context menu -->
     <!-- Clipboard group -->
     <CommandPlacement guid="guidSHLMainMenu" id="IDG_VS_EDIT_CUTCOPY" priority="0x0100">
@@ -2140,7 +2184,10 @@
       <IDSymbol name="rHistoryContextMenu" value="102" />
       <!-- R debugger Autos/Locals/Watch context menu. -->
       <IDSymbol name="debuggerRContextMenu" value="103" />
+      <!-- R Variable Explorer context menu. -->
       <IDSymbol name="variableExplorerContextMenu" value="104"/>
+      <!-- R Status Bar connections context menu. -->
+      <IDSymbol name="connectionsStatusBarContextMenu" value="105"/>
 
       <!-- R code editor context menu formatting group: ECMD_FORMATSELECTION, icmdGoToFormattingOptions -->
       <IDSymbol name="groupRContextFormat" value="120" />
@@ -2263,6 +2310,10 @@
       <IDSymbol name="icmdDeleteSelectedHistoryEntries" value="1204" />
       <IDSymbol name="icmdDeleteAllHistoryEntries" value="1205" />
       <IDSymbol name="icmdToggleMultilineSelection" value="1206" />
+      
+      <!-- Connections Status Bar -->
+      <IDSymbol name="icmdReconnect" value="1700" />
+      <IDSymbol name="icmdMruConnectionsDynamic" value="1750" />
 
       <IDSymbol name="plotToolbarFileGroup" value="0x1000" />
       <IDSymbol name="plotToolbarCopyGroup" value="0x1200" />
@@ -2282,6 +2333,8 @@
       <IDSymbol name="projectAddItemContextMenuGroup" value="0x2027"/>
       <IDSymbol name="projectCmdPromptContextMenuGroup" value="0x2028"/>
       <IDSymbol name="editorNavContextMenuGroup" value="0x2029"/>
+      <IDSymbol name="connectionsStatusBarMruGroup" value="0x2040"/>
+      <IDSymbol name="connectionsStatusBarReconnectGroup" value="0x2041"/>
 
       <!-- Variable Explorer -->
       <IDSymbol name="variableWindowToolBarId" value="0x2030" />

@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel;
 using System.Drawing.Design;
 using Microsoft.Common.Core.Enums;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Interpreters;
 using Microsoft.R.Host.Client.Install;
@@ -100,7 +101,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
                 value = ValidateRBasePath(value);
                 if (value != null) {
                     if (RToolsSettings.Current.RBasePath != value && !_allowLoadingFromStorage) {
-                        VsAppShell.Current.ShowErrorMessage(Resources.RPathChanged_RestartRToApplyChanges);
+                        VsAppShell.Current.ShowMessage(Resources.RPathChanged_RestartRToApplyChanges, MessageButtons.OK);
                     }
                     RToolsSettings.Current.RBasePath = value;
                 }

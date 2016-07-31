@@ -16,6 +16,7 @@ using Microsoft.R.Editor.Settings;
 using Microsoft.R.Editor.Snippets;
 using Microsoft.R.Editor.Test.Utility;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.R.Support.Settings;
 using Microsoft.UnitTests.Core.Threading;
@@ -128,7 +129,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                     var item = list.FirstOrDefault(x => x.DisplayText == "codoc");
                     item.Should().BeNull();
 
-                    var rSession = _sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
+                    var rSession = _sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, new RHostBrokerConnector());
                     rSession.Should().NotBeNull();
 
                     await rSession.ExecuteAsync("library('tools')");

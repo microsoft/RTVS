@@ -4,6 +4,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.R.Host.Client.Host;
 
 namespace Microsoft.R.Host.Client {
     public interface IRSession : IRExpressionEvaluator, IRBlobService, IDisposable {
@@ -26,6 +27,7 @@ namespace Microsoft.R.Host.Client {
         Task<IRSessionEvaluation> BeginEvaluationAsync(CancellationToken cancellationToken = default(CancellationToken));
         Task CancelAllAsync();
         Task StartHostAsync(RHostStartupInfo startupInfo, IRSessionCallback callback, int timeout = 3000);
+        Task RestartHostAsync();
         Task StopHostAsync();
 
         IDisposable DisableMutatedOnReadConsole();

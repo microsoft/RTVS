@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Design;
+using Microsoft.R.Components.ConnectionManager.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Commands;
 using Microsoft.R.Components.Sql;
@@ -128,6 +129,10 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 CreateRCmdSetCommand(RPackageCommandId.icmdClearPlots, interactiveWorkflow.Plots.Commands.RemoveAll),
                 CreateRCmdSetCommand(RPackageCommandId.icmdRemovePlot, interactiveWorkflow.Plots.Commands.RemoveCurrent),
                 CreateRCmdSetCommand(RPackageCommandId.icmdEndLocator, interactiveWorkflow.Plots.Commands.EndLocator),
+
+                // Connection manager commands
+                CreateRCmdSetCommand(RPackageCommandId.icmdReconnect, new ReconnectCommand(interactiveWorkflow)),
+                CreateRCmdSetCommand(RPackageCommandId.icmdMruConnectionsDynamicStart, new SwitchToConnectionCommand(interactiveWorkflow))
             };
         }
     }

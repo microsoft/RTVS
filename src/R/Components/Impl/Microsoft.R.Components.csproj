@@ -71,22 +71,29 @@
     <Compile Include="Application\Configuration\Definitions\ConfigurationSettingValueType.cs" />
     <Compile Include="Application\Configuration\Definitions\IConfigurationSetting.cs" />
     <Compile Include="Application\Configuration\Definitions\IConfigurationSettingsReader.cs" />
+    <Compile Include="ConnectionManager\Commands\ReconnectCommand.cs" />
+    <Compile Include="ConnectionManager\ConnectionEventArgs.cs" />
+    <Compile Include="ConnectionManager\IConnection.cs" />
     <Compile Include="ConnectionManager\IConnectionManager.cs" />
     <Compile Include="ConnectionManager\IConnectionManagerProvider.cs" />
     <Compile Include="ConnectionManager\IConnectionManagerVisualComponent.cs" />
     <Compile Include="ConnectionManager\IConnectionManagerVisualComponentContainerFactory.cs" />
+    <Compile Include="ConnectionManager\Commands\SwitchToConnectionCommand.cs" />
     <Compile Include="ConnectionManager\Implementation\ConnectionManager.cs" />
+    <Compile Include="ConnectionManager\Implementation\LocalConnection.cs" />
     <Compile Include="ConnectionManager\Implementation\RPackageManagerProvider.cs" />
     <Compile Include="ConnectionManager\Implementation\ViewModel\ConnectionStatusBarViewModel.cs" />
     <Compile Include="ConnectionManager\Implementation\View\ConnectionStatusBar.xaml.cs">
       <DependentUpon>ConnectionStatusBar.xaml</DependentUpon>
     </Compile>
     <Compile Include="ConnectionManager\Implementation\View\DesignTime\DesignTimeConnectionStatusBarViewModel.cs" />
+    <Compile Include="ConnectionManager\ConnectionManagerCommandIds.cs" />
     <Compile Include="ConnectionManager\ViewModel\IConnectionStatusBarViewModel.cs" />
     <Compile Include="ContentTypes\RContentTypeDefinition.cs" />
     <Compile Include="Controller\CommandResult.cs" />
     <Compile Include="Controller\CommandStatus.cs" />
     <Compile Include="Controller\IAsyncCommand.cs" />
+    <Compile Include="Controller\IAsyncCommandRange.cs" />
     <Compile Include="Controller\ICommandTarget.cs" />
     <Compile Include="Extensions\CoreShellExtensions.cs" />
     <Compile Include="Extensions\TextBufferExtensions.cs" />
@@ -196,9 +203,9 @@
     <Compile Include="Plots\ViewModel\IRPlotManagerViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources.Designer.cs">
-      <DependentUpon>Resources.resx</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Resources\Images.cs" />
     <Compile Include="InteractiveWorkflow\Commands\SourceRScriptCommand.cs" />
@@ -258,8 +265,8 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="PackageManager\Implementation\View\PackageSourcesOptionsControl.resx">
       <DependentUpon>PackageSourcesOptionsControl.cs</DependentUpon>

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.R.Host.Client.Host;
 
 namespace Microsoft.R.Host.Client.Test.Mocks {
     public sealed class RSessionMock : IRSession {
@@ -80,6 +81,14 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
         }
 
         public Task StartHostAsync(RHostStartupInfo startupInfo, IRSessionCallback callback, int timeout = 3000) {
+            IsHostRunning = true;
+            Connected?.Invoke(this, new RConnectedEventArgs(string.Empty));
+            return Task.CompletedTask;
+        }
+
+        public Task RestartHostAsync() {
+            IsHostRunning = false;
+            Disconnected?.Invoke(this, EventArgs.Empty);
             IsHostRunning = true;
             Connected?.Invoke(this, new RConnectedEventArgs(string.Empty));
             return Task.CompletedTask;

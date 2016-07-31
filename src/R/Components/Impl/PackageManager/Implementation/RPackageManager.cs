@@ -130,12 +130,12 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             // separate package query session to avoid freezing the REPL.
             try {
                 var startupInfo = new RHostStartupInfo {
-                    RBasePath = _settings.RBasePath,
                     CranMirrorName = _settings.CranMirror,
                     CodePage = _settings.RCodePage
                 };
 
-                using (var eval = await _sessionProvider.BeginEvaluationAsync(startupInfo)) {
+                var brokerConnector = _interactiveWorkflow.BrokerConnector;
+                using (var eval = await _sessionProvider.BeginEvaluationAsync(brokerConnector, startupInfo)) {
                     // Get the repos and libpaths from the REPL session and set them
                     // in the package query session
                     var repositories = (await DeparseRepositoriesAsync());
