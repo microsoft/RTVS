@@ -99,7 +99,7 @@ namespace Microsoft.R.RtvsPackage.Test {
             }
 
             await _session.SetCodePageAsync(codepage);
-            var res = await eval.EvaluateAsync(expr, REvaluationKind.Normal);
+            var res = await _session.EvaluateAsync(expr, REvaluationKind.Normal);
             res.Error.Should().BeNullOrEmpty();
             res.Result.Should().NotBeNull();
             res.RawResult.Should().BeNull();
