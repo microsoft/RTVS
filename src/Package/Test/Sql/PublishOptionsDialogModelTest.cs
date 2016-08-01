@@ -83,6 +83,22 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             model.Settings.QuoteType.Should().Be(SqlQuoteType.None);
         }
 
+        [Test(ThreadType.UI)]
+        public void SelectTargetType() {
+            var model = new SqlPublishOptionsDialogViewModel(_coreShell, _pss, _storage, _pcsp);
+            model.SelectedTargetTypeIndex = 1;
+            model.Settings.TargetType.Should().Be(PublishTargetType.Database);
+            model.TargetHasName.Should().BeTrue();
+
+            model.SelectedTargetTypeIndex = 2;
+            model.Settings.TargetType.Should().Be(PublishTargetType.Project);
+            model.TargetHasName.Should().BeTrue();
+
+            model.SelectedTargetTypeIndex = 0;
+            model.Settings.TargetType.Should().Be(PublishTargetType.Dacpac);
+            model.TargetHasName.Should().BeFalse();
+        }
+
         [Test]
         public void NoDbProjectList() {
             _storage.GetInteger(SqlSProcPublishSettings.TargetTypeSettingName, (int)PublishTargetType.Dacpac).Returns((int)PublishTargetType.Project);

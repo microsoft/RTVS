@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -11,6 +12,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Wpf;
 using Microsoft.Languages.Core.Settings;
+using Microsoft.R.Components.Application.Configuration;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -29,10 +31,16 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         private int _selectedTargetTypeIndex;
         private int _selectedCodePlacementIndex;
         private int _selectedQuoteTypeIndex;
+        private string _targetTooltip;
+
+        class DbConnectionData {
+            public string Name;
+            public string ConnectionString;
+        }
 
         private IReadOnlyList<string> _targets = new List<string>();
         private IReadOnlyList<string> _targetProjects = new List<string>();
-        private IReadOnlyList<string> _targetConnections = new List<string>();
+        private IReadOnlyList<DbConnectionData> _targetConnections = new List<DbConnectionData>();
 
         public Task InitializationTask { get; private set; } = Task.CompletedTask;
 
@@ -45,6 +53,8 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             set {
                 if (_selectedTargetTypeIndex != value) {
                     _selectedTargetTypeIndex = value;
+                    Settings.TargetType = TargetTypeFromName(TargetTypeNames[_selectedTargetTypeIndex]);
+                    SetProperty(ref _selectedTargetTypeIndex, value);
                     PopulateTargets();
                     UpdateState();
                 }
@@ -61,6 +71,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
                 if (_selectedCodePlacementIndex != value) {
                     _selectedCodePlacementIndex = value;
                     Settings.CodePlacement = (RCodePlacement)value;
+                    SetProperty(ref _selectedCodePlacementIndex, value);
                     UpdateState();
                 }
             }
@@ -74,8 +85,8 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             get { return _selectedQuoteTypeIndex; }
             set {
                 if (_selectedQuoteTypeIndex != value) {
-                    _selectedQuoteTypeIndex = value;
                     Settings.QuoteType = (SqlQuoteType)value;
+                    SetProperty(ref _selectedQuoteTypeIndex, value);
                 }
             }
         }
@@ -91,14 +102,25 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             get { return _selectedTargetIndex; }
             set {
                 if (_selectedTargetIndex != value) {
-                    _selectedTargetIndex = value;
-                    if (Settings.TargetType == PublishTargetType.Database) {
-                        Settings.TargetDatabaseConnection = Targets[_selectedTargetIndex];
-                    } else if (Settings.TargetType == PublishTargetType.Project) {
-                        Settings.TargetProject = Targets[_selectedTargetIndex];
+                    TargetTooltip = string.Empty;
+                    if (value >= 0) {
+                        var name = Targets[value];
+                        if (Settings.TargetType == PublishTargetType.Database) {
+                            Settings.TargetDatabaseConnection = _targetConnections.FirstOrDefault(c => c.Name.EqualsOrdinal(name))?.ConnectionString;
+                            TargetTooltip = Settings.TargetDatabaseConnection;
+                        } else if (Settings.TargetType == PublishTargetType.Project) {
+                            Settings.TargetProject = Targets[value];
+                            TargetTooltip = Settings.TargetProject;
+                        }
                     }
+                    SetProperty(ref _selectedTargetIndex, value);
                 }
             }
+        }
+
+        public string TargetTooltip {
+            get { return _targetTooltip; }
+            set { SetProperty(ref _targetTooltip, value); }
         }
 
         /// <summary>
@@ -153,6 +175,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         }
 
         public void UpdateState() {
+            TargetHasName = Settings.TargetType != PublishTargetType.Dacpac;
             GenerateTable = Settings.CodePlacement == RCodePlacement.Table;
             CanGenerate = (!GenerateTable || !string.IsNullOrEmpty(Settings.TableName)) && Targets?.Count > 0;
         }
@@ -161,12 +184,10 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             switch (Settings.TargetType) {
                 case PublishTargetType.Dacpac:
                     Targets = new List<string>();
-                    TargetHasName = false;
                     break;
 
                 case PublishTargetType.Project:
                     PopulateProjectList();
-                    TargetHasName = true;
                     break;
 
                 case PublishTargetType.Database:
@@ -181,10 +202,11 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
                 var index = -1;
                 _targetConnections = connections;
                 if (!string.IsNullOrEmpty(Settings.TargetDatabaseConnection)) {
-                    var indices = _targetConnections.IndexWhere(x => x.EqualsIgnoreCase(Settings.TargetDatabaseConnection));
+                    var indices = _targetConnections.IndexWhere(c => c.ConnectionString.EqualsIgnoreCase(Settings.TargetDatabaseConnection));
                     index = indices.DefaultIfEmpty(-1).First();
                 }
-                Targets = _targetConnections;
+                Targets = _targetConnections.Select(c => c.Name).ToList();
+                ForceSelectedTargetIndexUpdate();
                 SelectedTargetIndex = index >= 0 ? index : 0;
                 UpdateState();
             });
@@ -199,8 +221,13 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
                     index = indices.DefaultIfEmpty(-1).First();
                 }
                 Targets = _targetProjects;
+                ForceSelectedTargetIndexUpdate();
                 SelectedTargetIndex = index >= 0 ? index : 0;
             }
+        }
+
+        private void ForceSelectedTargetIndexUpdate() {
+            _selectedTargetIndex = -1;
         }
 
         private IReadOnlyList<string> GetDatabaseProjects() {
@@ -223,17 +250,19 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             return projects;
         }
 
-        private Task GetDatabaseConnectionsAsync(Action<IReadOnlyList<string>> action) {
+        private Task GetDatabaseConnectionsAsync(Action<IReadOnlyList<DbConnectionData>> action) {
             var tcs = new TaskCompletionSource<int>();
             var project = _pss.GetSelectedProject<IVsHierarchy>();
             if (project != null) {
                 project.GetDbConnections(_pcsp).ContinueWith(t => {
-                    var connections = new List<string>();
+                    var connections = new List<DbConnectionData>();
                     if (t.IsCompleted) {
-                        connections.AddRange(t.Result);
+                        foreach (var s in t.Result) {
+                            connections.Add(new DbConnectionData { Name = s.Name, ConnectionString = s.Value });
+                        }
                     }
                     if (connections.Count == 0) {
-                        connections.Add(Resources.SqlPublishDialog_NoDatabaseConnections);
+                        connections.Add(new DbConnectionData { Name = Resources.SqlPublishDialog_NoDatabaseConnections });
                     }
                     _coreShell.DispatchOnUIThread(() => {
                         action(connections);
@@ -266,6 +295,18 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
                 Resources.SqlPublishDialog_TargetTypeProject
             };
             SelectedTargetTypeIndex = (int)Settings.TargetType;
+        }
+
+        private static PublishTargetType TargetTypeFromName(string name) {
+            if (name.EqualsOrdinal(Resources.SqlPublishDialog_TargetTypeDacpac)) {
+                return PublishTargetType.Dacpac;
+            } else if (name.EqualsOrdinal(Resources.SqlPublishDialog_TargetTypeDatabase)) {
+                return PublishTargetType.Database;
+            } else if (name.EqualsOrdinal(Resources.SqlPublishDialog_TargetTypeProject)) {
+                return PublishTargetType.Project;
+            }
+            Debug.Fail("Unknown target type name");
+            return PublishTargetType.Dacpac;
         }
     }
 }

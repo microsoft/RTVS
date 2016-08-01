@@ -7,22 +7,23 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.R.Components.Application.Configuration;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Sql {
     internal static class ProjectExtensions {
-        public static async Task<IEnumerable<string>> GetDbConnections(this IVsHierarchy hierarchy, IProjectConfigurationSettingsProvider provider) {
+        public static async Task<IEnumerable<IConfigurationSetting>> GetDbConnections(this IVsHierarchy hierarchy, IProjectConfigurationSettingsProvider provider) {
+            var dict = new Dictionary<string, string>();
             var configuredProject = hierarchy?.GetConfiguredProject();
             if (configuredProject != null) {
                 using (var access = await provider.OpenProjectSettingsAccessAsync(configuredProject)) {
                     return access.Settings
-                            .Where(s => s.EditorType.EqualsOrdinal(ConnectionStringEditor.ConnectionStringEditorName))
-                            .Select(c => c.Value);
+                            .Where(s => s.EditorType.EqualsOrdinal(ConnectionStringEditor.ConnectionStringEditorName));
                 }
             }
-            return Enumerable.Empty<string>();
+            return Enumerable.Empty<IConfigurationSetting>();
         }
 
         /// <summary>

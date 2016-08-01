@@ -6,9 +6,12 @@ using System.Windows.Controls;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.VisualStudio.PlatformUI;
+using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Packages.R;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
     /// <summary>
@@ -37,6 +40,11 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         private void Close(bool saveSettings) {
             if (saveSettings) {
                 _model.SaveSettings();
+
+                var uiShell = _appShell.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+                var guid = RGuidList.RCmdSetGuid;
+                var o = new object();
+                uiShell.PostExecCommand(ref guid, RPackageCommandId.icmdPublishSProc, 0, ref o);
             }
             Close();
         }

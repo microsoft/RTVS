@@ -11,7 +11,7 @@
              ShowInTaskbar="False" WindowStyle="SingleBorderWindow" WindowStartupLocation="CenterOwner" 
              Background="{DynamicResource {x:Static wpf:Brushes.BackgroundBrushKey}}" 
              Foreground="{DynamicResource {x:Static wpf:Brushes.UITextKey}}"
-            mc:Ignorable="d" Width="435" Height="270">
+            mc:Ignorable="d" Width="435" Height="306">
     <Grid Margin="12" Background="Transparent">
         <Grid.RowDefinitions>
             <RowDefinition Height="42" />
@@ -37,7 +37,11 @@
         <ComboBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" x:Name="TargetList" 
                   ItemsSource="{Binding Path=Targets}" SelectedIndex="{Binding Path=SelectedTargetIndex, Mode=TwoWay}"
                   HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="24" IsEditable="False"
-                  IsEnabled="{Binding Path=TargetHasName}"/>
+                  IsEnabled="{Binding Path=TargetHasName}">
+            <ComboBox.ToolTip>
+                <ToolTip Content="{Binding Path=TargetTooltip}" />
+            </ComboBox.ToolTip>            
+        </ComboBox>
 
         <Label x:Name="CodePlacementLabel" Grid.Row="2" Grid.Column="0" Content="{x:Static package:Resources.SqlPublishDialog_RCodePlacement}" />
         <ComboBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" 

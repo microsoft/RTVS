@@ -312,7 +312,8 @@
       <Group guid="guidRToolsCmdSet" id="dataSubMenuSProcGroup" priority="0x0400">
         <Parent guid="guidRToolsCmdSet" id="dataSubMenu"/>
       </Group>
-
+      <Group guid="guidRToolsCmdSet" id="dataContextMenuSProcGroup" priority="0x0000" />
+      
       <!-- Directory flyout -->
       <Group guid="guidRToolsCmdSet" id="directorySubMenuGroup" priority="0x0100">
         <Parent guid="guidRToolsCmdSet" id="directorySubMenu"/>
@@ -1944,7 +1945,11 @@
     <CommandPlacement guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup" priority="0x0000">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_PROJNODE"/>
     </CommandPlacement>
-    <CommandPlacement guid="guidRToolsCmdSet" id="dataSubMenuSProcGroup" priority="0x0100">
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdPublishSProc" priority="0x0100">
+      <Parent guid="guidRToolsCmdSet" id="dataContextMenuSProcGroup"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidRToolsCmdSet" id="dataContextMenuSProcGroup" priority="0x0100">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_PROJNODE"/>
     </CommandPlacement>
 
@@ -2357,6 +2362,7 @@
       <IDSymbol name="dataSubMenuImportGroup" value="0x2342"/>
       <IDSymbol name="dataSubMenuDatabaseGroup" value="0x2343"/>
       <IDSymbol name="dataSubMenuSProcGroup" value="0x2344"/>
+      <IDSymbol name="dataContextMenuSProcGroup" value="0x2345"/>
       <IDSymbol name="publishPreviewSubMenuGroup" value="0x2360"/>
       <IDSymbol name="publishPublishSubMenuGroup" value="0x2370"/>
       <IDSymbol name="feedbackSubMenu" value="0x2380"/>

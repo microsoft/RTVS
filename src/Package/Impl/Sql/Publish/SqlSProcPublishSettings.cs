@@ -63,7 +63,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         }
 
         public void Save(IWritableSettingsStorage settingsStorage) {
-            settingsStorage.SetString(TargetTypeSettingName, TargetProject);
+            settingsStorage.SetInteger(TargetTypeSettingName,(int)TargetType);
             settingsStorage.SetString(TargetDatabaseConnectionSettingName, TargetDatabaseConnection);
             settingsStorage.SetString(TargetProjectSettingName, TargetProject);
             settingsStorage.SetString(TableNameSettingName, TableName);

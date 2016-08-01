@@ -13,7 +13,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
 
         public void Deploy(DacPackage package, string connectionString, string databaseName) {
             var services = new DacServices(connectionString);
-            services.Deploy(package, databaseName);
+            services.Deploy(package, databaseName, upgradeExisting: true);
         }
 
         public DacPackage Load(string dacpacPath) {

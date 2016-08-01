@@ -9,6 +9,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
+using Microsoft.R.Components.Sql;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -33,7 +34,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         }
 
         public void Publish(SqlSProcPublishSettings settings, IEnumerable<string> sprocFiles) {
-            switch(settings.TargetType) {
+            switch (settings.TargetType) {
                 case PublishTargetType.Project:
                     PublishToProject(settings, sprocFiles);
                     break;
@@ -51,7 +52,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// <summary>
         /// Packages stored procedures into a DACPAC.
         /// </summary>
-         private void PublishToDacPac(SqlSProcPublishSettings settings, IEnumerable<string> sprocFiles) {
+        private void PublishToDacPac(SqlSProcPublishSettings settings, IEnumerable<string> sprocFiles) {
             var project = _pss.GetSelectedProject<IVsHierarchy>()?.GetDTEProject();
             var dacpacPath = Path.ChangeExtension(project.FullName, DacPacExtension);
             CreateDacPac(settings, sprocFiles, dacpacPath);
@@ -62,11 +63,13 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// </summary>
         private void PublishToDatabase(SqlSProcPublishSettings settings, IEnumerable<string> sprocFiles) {
             var project = _pss.GetSelectedProject<IVsHierarchy>();
-             var dacpacPath = Path.ChangeExtension(Path.GetTempFileName(), DacPacExtension);
+            var dacpacPath = Path.ChangeExtension(Path.GetTempFileName(), DacPacExtension);
 
             CreateDacPac(settings, sprocFiles, dacpacPath);
             var package = _dacServices.Load(dacpacPath);
-            _dacServices.Deploy(package, settings.TargetDatabaseConnection, null);
+            var dbName = settings.TargetDatabaseConnection.GetValue(ConnectionStringConverter.OdbcDatabaseKey);
+            var connection = settings.TargetDatabaseConnection.OdbcToSqlClient();
+            _dacServices.Deploy(package, connection, dbName);
         }
 
         /// <summary>
