@@ -39,6 +39,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
                     DacPackageExtensions.BuildPackage(dacpacPath, model,
                                         new PackageMetadata { Name = packageName, Description = string.Empty, Version = "1.0" },
                                         new PackageOptions());
+                    _outputWindow.WriteAsync(MessageCategory.General, string.Format(CultureInfo.InvariantCulture, Resources.SqlPublish_PublishDacpacSuccess, dacpacPath)).DoNotWait();
                 } catch(DacServicesException ex) {
                     var error = string.Format(CultureInfo.InvariantCulture, Resources.SqlPublishDialog_UnableToBuildDacPac, ex.Message);
                     _outputWindow.WriteAsync(MessageCategory.Error, error).DoNotWait();

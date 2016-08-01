@@ -9,10 +9,14 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Telemetry;
 using Microsoft.R.Components.Sql;
+using Microsoft.VisualStudio.R.Package.Logging;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Package.Telemetry;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Telemetry;
 
 namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
     /// <summary>
@@ -21,6 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
     internal sealed class SProcPublisher {
         private const string DacPacExtension = "dacpac";
 
+        private readonly OutputWindowLogWriter _outputWindow;
         private readonly IApplicationShell _appShell;
         private readonly IProjectSystemServices _pss;
         private readonly IFileSystem _fs;
@@ -31,6 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             _pss = pss;
             _fs = fs;
             _dacServices = dacServices;
+            _outputWindow = new OutputWindowLogWriter(VSConstants.OutputWindowPaneGuid.BuildOutputPane_guid, string.Empty);
         }
 
         public void Publish(SqlSProcPublishSettings settings, IEnumerable<string> sprocFiles) {
@@ -56,6 +62,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             var project = _pss.GetSelectedProject<IVsHierarchy>()?.GetDTEProject();
             var dacpacPath = Path.ChangeExtension(project.FullName, DacPacExtension);
             CreateDacPac(settings, sprocFiles, dacpacPath);
+            RtvsTelemetry.Current?.TelemetryService.ReportEvent(TelemetryArea.SQL, SqlTelemetryEvents.SqlDacPacPublish);
         }
 
         /// <summary>
@@ -67,9 +74,13 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
 
             CreateDacPac(settings, sprocFiles, dacpacPath);
             var package = _dacServices.Load(dacpacPath);
+
             var dbName = settings.TargetDatabaseConnection.GetValue(ConnectionStringConverter.OdbcDatabaseKey);
             var connection = settings.TargetDatabaseConnection.OdbcToSqlClient();
             _dacServices.Deploy(package, connection, dbName);
+
+            _outputWindow.WriteAsync(MessageCategory.General, string.Format(CultureInfo.InvariantCulture, Resources.SqlPublish_PublishDatabaseSuccess, connection)).DoNotWait();
+            RtvsTelemetry.Current?.TelemetryService.ReportEvent(TelemetryArea.SQL, SqlTelemetryEvents.SqlDatabasePublish);
         }
 
         /// <summary>
@@ -82,6 +93,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
                 var targetProject = GetProjectByName(settings.TargetProject);
                 var generator = new SProcProjectFilesGenerator(_pss, _fs);
                 generator.Generate(settings, targetProject);
+                RtvsTelemetry.Current?.TelemetryService.ReportEvent(TelemetryArea.SQL, SqlTelemetryEvents.SqlProjectPublish);
             } catch (Exception ex) {
                 _appShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableGenerateSqlFiles, ex.Message));
                 GeneralLog.Write(ex);

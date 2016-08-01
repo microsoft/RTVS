@@ -917,4 +917,13 @@ Additional information:
   <data name="SqlPublishDialog_NoDatabaseProjects" xml:space="preserve">
     <value>&lt;No database projects&gt;</value>
   </data>
+  <data name="SqlPublishDialog_PublishButton" xml:space="preserve">
+    <value>Publish</value>
+  </data>
+  <data name="SqlPublish_PublishDacpacSuccess" xml:space="preserve">
+    <value>Publishing complete. DACPAC: {0}.</value>
+  </data>
+  <data name="SqlPublish_PublishDatabaseSuccess" xml:space="preserve">
+    <value>Publishing complete. Connection {0}.</value>
+  </data>
 </root>

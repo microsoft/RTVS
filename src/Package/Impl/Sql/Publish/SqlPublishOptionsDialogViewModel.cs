@@ -24,7 +24,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         private readonly IWritableSettingsStorage _settingsStorage;
         private readonly IProjectConfigurationSettingsProvider _pcsp;
 
-        private bool _canGenerate;
+        private bool _canPublish;
         private bool _targetHasName;
         private bool _generateTable;
         private int _selectedTargetIndex;
@@ -127,9 +127,9 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// Determines if current settings are valid.
         /// Controls enabled/disabled state of OK button.
         /// </summary>
-        public bool CanGenerate {
-            get { return _canGenerate; }
-            set { SetProperty(ref _canGenerate, value); }
+        public bool CanPublish {
+            get { return _canPublish; }
+            set { SetProperty(ref _canPublish, value); }
         }
 
         /// <summary>
@@ -177,7 +177,10 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         public void UpdateState() {
             TargetHasName = Settings.TargetType != PublishTargetType.Dacpac;
             GenerateTable = Settings.CodePlacement == RCodePlacement.Table;
-            CanGenerate = (!GenerateTable || !string.IsNullOrEmpty(Settings.TableName)) && Targets?.Count > 0;
+            CanPublish = !GenerateTable || !string.IsNullOrEmpty(Settings.TableName);
+            if (Settings.TargetType != PublishTargetType.Dacpac) {
+                CanPublish &= Targets?.Count > 0;
+            }
         }
 
         private void PopulateTargets() {

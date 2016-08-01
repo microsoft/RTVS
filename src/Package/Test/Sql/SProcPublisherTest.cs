@@ -2,11 +2,13 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
+using System.Data.Odbc;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
 using Microsoft.Common.Core.IO;
+using Microsoft.R.Components.Sql;
 using Microsoft.SqlServer.Dac;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
@@ -69,14 +71,19 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             var fs = new FileSystem();
             var settings = new SqlSProcPublishSettings();
             settings.TargetType = PublishTargetType.Database;
-            settings.TargetDatabaseConnection = "dbConn1";
+
+            var odbc = new OdbcConnectionStringBuilder();
+            odbc[ConnectionStringConverter.OdbcDriverKey] = "SQL Server";
+            odbc[ConnectionStringConverter.OdbcServerKey] = "(local)";
+            odbc[ConnectionStringConverter.OdbcDatabaseKey] = "AventureWorks";
+            settings.TargetDatabaseConnection = odbc.ConnectionString;
 
             SetupProjectMocks("project.rproj");
 
             var builder = Substitute.For<IDacPacBuilder>();
             _dacServices.GetBuilder(null).ReturnsForAnyArgs(builder);
             _dacServices.When(x => x.Deploy(Arg.Any<DacPackage>(), Arg.Any<string>(), Arg.Any<string>())).Do(c => {
-                ((string)c.Args()[1]).Should().Be(settings.TargetDatabaseConnection);
+                ((string)c.Args()[1]).Should().Be("Data Source=(local);Initial Catalog=AventureWorks;Integrated Security=True");
             });
 
             var files = new string[] { Path.Combine(_files.DestinationPath, rFile) };

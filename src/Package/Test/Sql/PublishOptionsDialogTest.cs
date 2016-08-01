@@ -29,7 +29,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             dlg.DataContext.Should().BeOfType(typeof(SqlPublishOptionsDialogViewModel));
 
             var model = dlg.DataContext as SqlPublishOptionsDialogViewModel;
-            model.CanGenerate.Should().BeFalse();
+
+            model.Settings.TargetType.Should().Be(PublishTargetType.Dacpac);
+            model.TargetHasName.Should().BeFalse();
+            model.CanPublish.Should().BeTrue();
             model.GenerateTable.Should().BeFalse();
             model.Settings.Should().NotBeNull();
         }

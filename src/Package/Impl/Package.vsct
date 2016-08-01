@@ -1546,7 +1546,7 @@
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
-          <ButtonText>&amp;Publishing Options...</ButtonText>
+          <ButtonText>P&amp;ublish With Options...</ButtonText>
         </Strings>
       </Button>
 

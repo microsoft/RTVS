@@ -157,30 +157,34 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
         [Test(ThreadType.UI)]
         public async Task DbConnectionsList() {
             var s1 = Substitute.For<IConfigurationSetting>();
-            s1.Value.Returns("dbConn1");
+            s1.Name.Returns("dbConn1");
+            s1.Value.Returns("dbConn1_String");
             s1.EditorType.Returns(ConnectionStringEditor.ConnectionStringEditorName);
 
             var s2 = Substitute.For<IConfigurationSetting>();
-            s2.Value.Returns("dbConn2");
+            s2.Name.Returns("dbConn2");
+            s2.Value.Returns("dbConn2_String");
             s2.EditorType.Returns(ConnectionStringEditor.ConnectionStringEditorName);
 
             var s3 = Substitute.For<IConfigurationSetting>();
-            s3.Value.Returns("dbConn3");
+            s3.Name.Returns("dbConn3");
+            s3.Value.Returns("dbConn3_String");
             s3.EditorType.Returns(ConnectionStringEditor.ConnectionStringEditorName);
 
             var s4 = Substitute.For<IConfigurationSetting>();
-            s4.Value.Returns("dbConn4");
+            s4.Name.Returns("dbConn4");
+            s4.Value.Returns("dbConn4_String");
 
             ConfigureSettingAccessMock(new IConfigurationSetting[] { s1, s4, s2, s3 });
 
             _storage.GetInteger(SqlSProcPublishSettings.TargetTypeSettingName, (int)PublishTargetType.Dacpac).Returns((int)PublishTargetType.Database);
-            _storage.GetString(SqlSProcPublishSettings.TargetDatabaseConnectionSettingName, Arg.Any<string>()).Returns(("dbConn2"));
+            _storage.GetString(SqlSProcPublishSettings.TargetDatabaseConnectionSettingName, Arg.Any<string>()).Returns(("dbConn2_String"));
 
             var model = new SqlPublishOptionsDialogViewModel(_coreShell, _pss, _storage, _pcsp);
             await model.InitializationTask;
 
             model.Settings.TargetType.Should().Be(PublishTargetType.Database);
-            model.Settings.TargetDatabaseConnection.Should().Be("dbConn2");
+            model.Settings.TargetDatabaseConnection.Should().Be("dbConn2_String");
 
             model.Targets.Should().HaveCount(3);
             model.Targets[0].Should().Be("dbConn1");

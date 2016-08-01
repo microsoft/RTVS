@@ -61,8 +61,8 @@
                   ItemsSource="{Binding Path=QuoteTypeNames}" SelectedIndex="{Binding Path=SelectedQuoteTypeIndex, Mode=TwoWay}" 
                   HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="24" IsEditable="False" />
 
-        <Button x:Name="OKButton" Grid.Row="5" Grid.Column="2" Content="{x:Static components:Resources.Ok}" IsDefault="True" 
-                IsEnabled="{Binding Path=CanGenerate}"
+        <Button x:Name="OKButton" Grid.Row="5" Grid.Column="2" Content="{x:Static package:Resources.SqlPublishDialog_PublishButton}" IsDefault="True" 
+                IsEnabled="{Binding Path=CanPublish}"
                 HorizontalAlignment="Center" VerticalAlignment="Center" Width="76" Height="24" Click="OKButton_Click" />
         <Button x:Name="CancelButton" Grid.Row="5" Grid.Column="3" Content="{x:Static components:Resources.Cancel}" IsCancel="True"
                 HorizontalAlignment="Center" VerticalAlignment="Center" Width="76" Height="24" Click="CancelButton_Click" />

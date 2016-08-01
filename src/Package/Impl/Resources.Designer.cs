@@ -1965,6 +1965,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Publishing complete. DACPAC: {0}..
+        /// </summary>
+        public static string SqlPublish_PublishDacpacSuccess {
+            get {
+                return ResourceManager.GetString("SqlPublish_PublishDacpacSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publishing complete. Connection {0}..
+        /// </summary>
+        public static string SqlPublish_PublishDatabaseSuccess {
+            get {
+                return ResourceManager.GetString("SqlPublish_PublishDatabaseSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Publishing failed. Exception: {0}..
         /// </summary>
         public static string SqlPublish_PublishError {
@@ -2051,6 +2069,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string SqlPublishDialog_NoSProcFiles {
             get {
                 return ResourceManager.GetString("SqlPublishDialog_NoSProcFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publish.
+        /// </summary>
+        public static string SqlPublishDialog_PublishButton {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_PublishButton", resourceCulture);
             }
         }
         
