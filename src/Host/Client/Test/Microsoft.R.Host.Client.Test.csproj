@@ -37,6 +37,7 @@
     <Compile Include="ExecutionTracing\BreakpointsTest.cs" />
     <Compile Include="Mocks\RHostBrokerConnectorMock.cs" />
     <Compile Include="RtvsPackage\BlobsTest.cs" />
+    <Compile Include="Session\RSessionTest.Blobs.cs" />
     <Compile Include="StackTracing\CallStackTest.cs" />
     <Compile Include="ExecutionTracing\DebugReplTest.cs" />
     <Compile Include="EventTaskSources.cs" />
