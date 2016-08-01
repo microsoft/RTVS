@@ -48,17 +48,14 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             sb.AppendLine(Invariant($"INSERT INTO {settings.TableName.ToSqlName(settings.QuoteType)}"));
 
             int i = 0;
-            foreach (var filePath in sprocMap.Keys) {
-                var sprocName = sprocMap[filePath];
-                if (!string.IsNullOrEmpty(sprocName)) {
-                    var content = GetRFileContent(filePath);
-                    sb.Append(Invariant($"VALUES ('{sprocName.ToSqlName(settings.QuoteType)}', '{content}')"));
-                    if (i < sprocMap.Count - 1) {
-                        sb.Append(',');
-                    }
-                    sb.AppendLine(string.Empty);
-                    i++;
+            foreach (var sprocName in sprocMap.Keys) {
+                var content = sprocMap[sprocName];
+                sb.Append(Invariant($"VALUES ('{sprocName.ToSqlName(settings.QuoteType)}', '{content}')"));
+                if (i < sprocMap.Count - 1) {
+                    sb.Append(',');
                 }
+                sb.AppendLine(string.Empty);
+                i++;
             }
             return sb.ToString();
         }

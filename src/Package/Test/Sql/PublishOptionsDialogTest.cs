@@ -3,6 +3,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.Common.Core.IO;
 using Microsoft.Languages.Core.Settings;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
@@ -21,8 +22,9 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             var pss = Substitute.For<IProjectSystemServices>();
             var pcsp = Substitute.For<IProjectConfigurationSettingsProvider>();
             var storage = Substitute.For<IWritableSettingsStorage>();
+            var fs = Substitute.For<IFileSystem>();
 
-            var dlg = new SqlPublshOptionsDialog(appShell, pss, pcsp);
+            var dlg = new SqlPublshOptionsDialog(appShell, pss, fs, pcsp);
             dlg.Title.Should().Be(Resources.SqlPublishDialog_Title);
             dlg.DataContext.Should().BeOfType(typeof(SqlPublishOptionsDialogViewModel));
 

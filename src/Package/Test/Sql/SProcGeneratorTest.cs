@@ -6,7 +6,6 @@ using System.IO;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Utility;
-using Microsoft.Languages.Core.Settings;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Sql;
@@ -61,6 +60,13 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             rootProjItems.Item("R").Returns((EnvDTE.ProjectItem)null);
             rootProjItems.AddFolder("R").Returns(targetProjItem);
             _project.ProjectItems.Returns(rootProjItems);
+
+            var templateFile = Path.Combine(_files.DestinationPath, Path.GetFileNameWithoutExtension(rFile) + SProcFileExtensions.SProcFileExtension);
+
+            _pss.GetProjectFiles(_project).Returns(new string[] {
+                Path.Combine(_files.DestinationPath, rFile),
+                Path.Combine(_files.DestinationPath, Path.GetFileNameWithoutExtension(rFile) + SProcFileExtensions.QueryFileExtension),
+                templateFile });
 
             settings.CodePlacement = codePlacement;
             settings.QuoteType = quoteType;
