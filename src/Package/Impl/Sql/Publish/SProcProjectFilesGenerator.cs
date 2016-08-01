@@ -1,8 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.Collections.Generic;
 using System.IO;
 using Microsoft.Common.Core.IO;
+using Microsoft.VisualStudio.R.Package.ProjectSystem;
 
 namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
     internal sealed class SProcProjectFilesGenerator {
@@ -15,9 +17,11 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// </summary>
         internal const string PostDeploymentScriptName = "RCode.PostDeployment.sql";
 
+        private readonly IProjectSystemServices _pss;
         private readonly IFileSystem _fs;
 
-        public SProcProjectFilesGenerator(IFileSystem fs) {
+        public SProcProjectFilesGenerator(IProjectSystemServices pss, IFileSystem fs) {
+            _pss = pss;
             _fs = fs;
         }
 
@@ -33,11 +37,11 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
 
             var targetProjectItem = targetProject.ProjectItems.Item("R") ?? targetProject.ProjectItems.AddFolder("R");
 
+            var sprocMap = CreateStoredProcedureFiles(settings, targetProject, targetFolder, targetProjectItem);
             if (settings.CodePlacement == RCodePlacement.Table) {
                 CreateRCodeTableFile(settings, targetProject, targetFolder, targetProjectItem);
-                CreatePostDeploymentScriptFile(settings, targetProject, targetFolder, targetProjectItem);
+                CreatePostDeploymentScriptFile(settings, targetProject, targetFolder, targetProjectItem, sprocMap);
             }
-            CreateStoredProcedureFiles(settings, targetProject, targetFolder, targetProjectItem);
         }
 
         /// <summary>
@@ -57,11 +61,14 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// Generates SQL post deployment script that pushes R code into a table
         /// as well as 
         /// </summary>
-        private void CreatePostDeploymentScriptFile(SqlSProcPublishSettings settings, EnvDTE.Project targetProject, string targetFolder, EnvDTE.ProjectItem targetProjectItem) {
+        private void CreatePostDeploymentScriptFile(SqlSProcPublishSettings settings, 
+            EnvDTE.Project targetProject, string targetFolder, 
+            EnvDTE.ProjectItem targetProjectItem,
+            IReadOnlyDictionary<string, string> sprocMap) {
             var postDeploymentScript = Path.Combine(targetFolder, PostDeploymentScriptName);
 
             var g = new SProcScriptGenerator(_fs);
-            var script = g.CreatePostDeploymentScript(settings);
+            var script = g.CreatePostDeploymentScript(settings, sprocMap);
 
             _fs.WriteAllText(postDeploymentScript, script);
 
@@ -69,18 +76,21 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             item.Properties.Item("BuildAction").Value = "PostDeploy";
         }
 
-        private void CreateStoredProcedureFiles(SqlSProcPublishSettings settings, EnvDTE.Project targetProject, string targetFolder, EnvDTE.ProjectItem targetProjectItem) {
+        private IReadOnlyDictionary<string, string> CreateStoredProcedureFiles(SqlSProcPublishSettings settings, EnvDTE.Project targetProject, string targetFolder, EnvDTE.ProjectItem targetProjectItem) {
             var g = new SProcScriptGenerator(_fs);
-            var sprocs = g.CreateStoredProcedureScripts(settings);
 
-            foreach (var sprocName in sprocs.Keys) {
-                var template = sprocs[sprocName];
+            var sprocFiles = targetProject.GetSProcFiles(_pss);
+            var sprocMap = g.CreateStoredProcedureScripts(settings, sprocFiles);
+
+            foreach (var sprocName in sprocMap.Keys) {
+                var template = sprocMap[sprocName];
                 if (!string.IsNullOrEmpty(template)) {
                     var sprocFile = Path.ChangeExtension(Path.Combine(targetFolder, sprocName), ".sql");
                     _fs.WriteAllText(sprocFile, template);
                     targetProjectItem.ProjectItems.AddFromFile(sprocFile);
                 }
             }
+            return sprocMap;
         }
     }
 }

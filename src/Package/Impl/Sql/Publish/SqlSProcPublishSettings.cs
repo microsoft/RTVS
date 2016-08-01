@@ -1,9 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using Microsoft.Common.Core.IO;
+using Microsoft.Languages.Core.Settings;
 
 namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
     /// <summary>
@@ -12,19 +10,12 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
     internal class SqlSProcPublishSettings {
         public const string DefaultRCodeTableName = "RCodeTable";
 
-        private readonly List<string> _files = new List<string>();
-        private readonly Dictionary<string, string> _sprocNameMap = new Dictionary<string, string>();
-        private readonly IFileSystem _fs;
-
-        /// <summary>
-        /// List of files
-        /// </summary>
-        public IReadOnlyList<string> Files => _files;
-
-        /// <summary>
-        /// List of stored procedure names
-        /// </summary>
-        public IReadOnlyDictionary<string, string> SProcNames => _sprocNameMap;
+        internal const string TargetTypeSettingName = "SqlSprocPublishTargetType";
+        internal const string TargetDatabaseConnectionSettingName = "SqlSprocPublishTargetDatabase";
+        internal const string TargetProjectSettingName = "SqlSprocPublishTargetProject";
+        internal const string TableNameSettingName = "SqlSprocPublishTableName";
+        internal const string CodePlacementSettingName = "SqlSprocPublishCodePlacement";
+        internal const string QuoteTypeSettingName = "SqlSprocPublishQuoteType";
 
         /// <summary>
         /// Target SQL table name
@@ -32,9 +23,19 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         public string TableName { get; set; } = DefaultRCodeTableName;
 
         /// <summary>
+        /// Target database connection name
+        /// </summary>
+        public string TargetDatabaseConnection { get; set; }
+
+        /// <summary>
         /// Target database project name
         /// </summary>
         public string TargetProject { get; set; }
+
+        /// <summary>
+        /// Target database project name
+        /// </summary>
+        public PublishTargetType TargetType { get; set; } = PublishTargetType.Dacpac;
 
         /// <summary>
         /// Determines where to place R code in SQL
@@ -46,18 +47,28 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// </summary>
         public SqlQuoteType QuoteType { get; set; } = SqlQuoteType.None;
 
-        public SqlSProcPublishSettings(IEnumerable<string> files, IFileSystem fs) {
-            _files.AddRange(files);
-            _fs = fs;
-            LoadSProcNames();
+        public SqlSProcPublishSettings() { }
+
+        public SqlSProcPublishSettings(ISettingsStorage settingsStorage) {
+            Load(settingsStorage);
         }
 
-        private void LoadSProcNames() {
-            _sprocNameMap.Clear();
-            foreach (var file in Files) {
-                var sprocName = _fs.GetSProcNameFromTemplate(file);
-                _sprocNameMap[file] = sprocName;
-            }
+        private void Load(ISettingsStorage settingsStorage) {
+            TargetType = (PublishTargetType)settingsStorage.GetInteger(TargetTypeSettingName, (int)PublishTargetType.Dacpac);
+            TargetDatabaseConnection = settingsStorage.GetString(TargetDatabaseConnectionSettingName, string.Empty);
+            TargetProject = settingsStorage.GetString(TargetProjectSettingName, string.Empty);
+            TableName = settingsStorage.GetString(TableNameSettingName, SqlSProcPublishSettings.DefaultRCodeTableName);
+            CodePlacement = (RCodePlacement)settingsStorage.GetInteger(CodePlacementSettingName, (int)RCodePlacement.Inline);
+            QuoteType = (SqlQuoteType)settingsStorage.GetInteger(QuoteTypeSettingName, (int)SqlQuoteType.None);
+        }
+
+        public void Save(IWritableSettingsStorage settingsStorage) {
+            settingsStorage.SetString(TargetTypeSettingName, TargetProject);
+            settingsStorage.SetString(TargetDatabaseConnectionSettingName, TargetDatabaseConnection);
+            settingsStorage.SetString(TargetProjectSettingName, TargetProject);
+            settingsStorage.SetString(TableNameSettingName, TableName);
+            settingsStorage.SetInteger(CodePlacementSettingName, (int)CodePlacement);
+            settingsStorage.SetInteger(QuoteTypeSettingName, (int)QuoteType);
         }
     }
 }

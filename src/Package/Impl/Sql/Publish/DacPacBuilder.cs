@@ -10,7 +10,7 @@ using Microsoft.SqlServer.Dac;
 using Microsoft.SqlServer.Dac.Model;
 using Microsoft.VisualStudio.R.Package.Logging;
 
-namespace Microsoft.VisualStudio.R.Package.Sql.DacPac {
+namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
     // 
     /// <summary>
     /// Data-tier application package builder.
@@ -18,7 +18,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.DacPac {
     /// <remarks>
     /// Based on Based on https://github.com/Microsoft/DACExtensions/blob/master/SampleConsoleApp/ModelEndToEnd.cs
     /// </remarks>
-    internal sealed class DacPacBuilder {
+    internal sealed class DacPacBuilder: IDacPacBuilder {
         private readonly OutputWindowLogWriter _outputWindow;
         private readonly ICoreShell _coreShell;
 

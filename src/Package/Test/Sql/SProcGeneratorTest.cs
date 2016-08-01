@@ -6,6 +6,7 @@ using System.IO;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Utility;
+using Microsoft.Languages.Core.Settings;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Sql;
@@ -37,8 +38,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
         [Test]
         public void GenerateEmpty() {
             var fs = new FileSystem();
-            var g = new SProcProjectFilesGenerator(fs);
-            var settings = new SqlSProcPublishSettings(new string[0], fs);
+            var g = new SProcProjectFilesGenerator(_pss, fs);
+            var settings = new SqlSProcPublishSettings();
             g.Generate(settings, _project);
         }
 
@@ -49,8 +50,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
         [InlineData("sqlcode2.r", RCodePlacement.Table, SqlQuoteType.Quote, "a b")]
         public void Generate(string rFile, RCodePlacement codePlacement, SqlQuoteType quoteType, string sprocName) {
             var fs = new FileSystem();
-            var settings = new SqlSProcPublishSettings(new string[] { Path.Combine(_files.DestinationPath, rFile) }, fs);
-            var g = new SProcProjectFilesGenerator(fs);
+            var settings = new SqlSProcPublishSettings();
+            var g = new SProcProjectFilesGenerator(_pss, fs);
 
             var targetProjItem = Substitute.For<EnvDTE.ProjectItem>();
             var targetProjItems = Substitute.For<EnvDTE.ProjectItems>();

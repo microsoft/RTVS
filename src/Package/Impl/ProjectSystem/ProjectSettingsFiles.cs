@@ -4,7 +4,7 @@
 using Microsoft.Common.Core;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
-    internal static class ProjectSettings {
+    internal static class ProjectSettingsFiles {
         public const string SettingsFilePattern = "*settings*.r";
 
         public static bool IsProjectSettingFile(string fileName) {

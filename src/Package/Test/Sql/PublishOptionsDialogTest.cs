@@ -3,10 +3,10 @@
 
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
-using Microsoft.Common.Core.IO;
 using Microsoft.Languages.Core.Settings;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
+using Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Sql.Publish;
 using NSubstitute;
@@ -14,19 +14,19 @@ using NSubstitute;
 namespace Microsoft.VisualStudio.R.Package.Test.Sql {
     [ExcludeFromCodeCoverage]
     [Category.Sql]
-    public class PublishDialogTest {
+    public class PublishOptionsDialogTest {
         [Test(ThreadType.UI)]
         public void Constructor() {
             var appShell = Substitute.For<IApplicationShell>();
             var pss = Substitute.For<IProjectSystemServices>();
-            var fs = Substitute.For<IFileSystem>();
+            var pcsp = Substitute.For<IProjectConfigurationSettingsProvider>();
             var storage = Substitute.For<IWritableSettingsStorage>();
 
-            var dlg = new SqlPublshDialog(appShell, pss, fs, new string[] { @"C:\file.r", @"C:\file.x" });
+            var dlg = new SqlPublshOptionsDialog(appShell, pss, pcsp);
             dlg.Title.Should().Be(Resources.SqlPublishDialog_Title);
-            dlg.DataContext.Should().BeOfType(typeof(SqlPublishDialogViewModel));
+            dlg.DataContext.Should().BeOfType(typeof(SqlPublishOptionsDialogViewModel));
 
-            var model = dlg.DataContext as SqlPublishDialogViewModel;
+            var model = dlg.DataContext as SqlPublishOptionsDialogViewModel;
             model.CanGenerate.Should().BeFalse();
             model.GenerateTable.Should().BeFalse();
             model.Settings.Should().NotBeNull();

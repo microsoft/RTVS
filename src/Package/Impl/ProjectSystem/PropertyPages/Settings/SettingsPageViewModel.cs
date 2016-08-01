@@ -120,10 +120,10 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         }
 
         private void EnumerateSettingFiles(string directory) {
-            var entries = _fileSystem.GetFileSystemEntries(directory, ProjectSettings.SettingsFilePattern, SearchOption.AllDirectories);
+            var entries = _fileSystem.GetFileSystemEntries(directory, ProjectSettingsFiles.SettingsFilePattern, SearchOption.AllDirectories);
             foreach (var entry in entries) {
                 var fileName = Path.GetFileName(entry);
-                if (ProjectSettings.IsProjectSettingFile(fileName)) {
+                if (ProjectSettingsFiles.IsProjectSettingFile(fileName)) {
                     var relativePath = entry.MakeRRelativePath(_projectPath);
                     _filesMap[relativePath] = entry;
                 }

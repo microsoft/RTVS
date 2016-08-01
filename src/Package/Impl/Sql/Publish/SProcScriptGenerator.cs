@@ -43,21 +43,21 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// Generates SQL post deployment script that pushes R code into a table
         /// as well as 
         /// </summary>
-        public string CreatePostDeploymentScript(SqlSProcPublishSettings settings) {
+        public string CreatePostDeploymentScript(SqlSProcPublishSettings settings, IReadOnlyDictionary<string, string> sprocMap) {
             var sb = new StringBuilder();
             sb.AppendLine(Invariant($"INSERT INTO {settings.TableName.ToSqlName(settings.QuoteType)}"));
 
-            for (int i = 0; i < settings.Files.Count; i++) {
-                var filePath = settings.Files[i];
-
-                var sprocName = settings.SProcNames[filePath];
+            int i = 0;
+            foreach (var filePath in sprocMap.Keys) {
+                var sprocName = sprocMap[filePath];
                 if (!string.IsNullOrEmpty(sprocName)) {
                     var content = GetRFileContent(filePath);
                     sb.Append(Invariant($"VALUES ('{sprocName.ToSqlName(settings.QuoteType)}', '{content}')"));
-                    if (i < settings.Files.Count - 1) {
+                    if (i < sprocMap.Count - 1) {
                         sb.Append(',');
                     }
                     sb.AppendLine(string.Empty);
+                    i++;
                 }
             }
             return sb.ToString();
@@ -66,10 +66,10 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// <summary>
         /// Creates code for stored procedures
         /// </summary>
-        public IDictionary<string, string> CreateStoredProcedureScripts(SqlSProcPublishSettings settings) {
+        public IReadOnlyDictionary<string, string> CreateStoredProcedureScripts(SqlSProcPublishSettings settings, IEnumerable<string> sprocFiles) {
             var dict = new Dictionary<string, string>();
-            foreach (var rFilePath in settings.Files) {
-                var sprocName = settings.SProcNames[rFilePath];
+            foreach (var rFilePath in sprocFiles) {
+                var sprocName = _fs.GetSProcNameFromTemplate(rFilePath);
                 if (!string.IsNullOrEmpty(sprocName)) {
                     string template;
                     if (settings.CodePlacement == RCodePlacement.Inline) {

@@ -22,7 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
         }
 
         private static bool HasSpaces(this string s) {
-            return s.FirstOrDefault(c => char.IsWhiteSpace(c)) != default(char);
+            return s.Any(c => char.IsWhiteSpace(c));
         }
     }
 }

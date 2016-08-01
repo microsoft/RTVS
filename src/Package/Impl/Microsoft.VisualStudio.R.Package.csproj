@@ -222,7 +222,7 @@
     <Compile Include="ProjectSystem\PropertyPages\Run\RunPropertyPage.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ProjectSystem\ProjectSettings.cs" />
+    <Compile Include="ProjectSystem\ProjectSettingsFiles.cs" />
     <Compile Include="ProjectSystem\PropertyPages\Settings\SettingsPageControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -265,25 +265,32 @@
     <Compile Include="Repl\Shiny\StopShinyAppCommand.cs" />
     <Compile Include="Repl\Shiny\RunShinyAppCommand.cs" />
     <Compile Include="Shell\AppShellExtensions.cs" />
+    <Compile Include="Sql\Commands\PublishSProcOptionsCommand.cs" />
     <Compile Include="Sql\Commands\PublishSProcCommand.cs" />
     <Compile Include="Sql\Commands\ManageDsnCommand.cs" />
     <Compile Include="Sql\Commands\AddDsnCommand.cs" />
     <Compile Include="Sql\Commands\ConfigurationSettingCommand.cs" />
     <Compile Include="Sql\ConnectionStringEditor.cs" />
     <Compile Include="Sql\Commands\AddDbConnectionCommand.cs" />
-    <Compile Include="Sql\DacPac\DacPacBuilder.cs" />
+    <Compile Include="Sql\Extensions\ProjectExtensions.cs" />
+    <Compile Include="Sql\Publish\DacPacBuilder.cs" />
     <Compile Include="Sql\DragDrop\DataObject.cs" />
     <Compile Include="Sql\DragDrop\DropHandler.cs" />
     <Compile Include="Sql\DragDrop\DropHandlerProvider.cs" />
     <Compile Include="Sql\NativeMethods.cs" />
+    <Compile Include="Sql\Publish\DacPackageServices.cs" />
+    <Compile Include="Sql\Publish\Definitions\IDacPacBuilder.cs" />
+    <Compile Include="Sql\Publish\Definitions\IDacPackageServices.cs" />
+    <Compile Include="Sql\Publish\PublishTargetType.cs" />
     <Compile Include="Sql\Publish\RCodePlacement.cs" />
+    <Compile Include="Sql\Publish\SProcPublisher.cs" />
     <Compile Include="Sql\Publish\SProcScriptGenerator.cs" />
     <Compile Include="Sql\Publish\SProcProjectFilesGenerator.cs" />
     <Compile Include="Sql\Extensions\SqlQuoteType.cs" />
     <Compile Include="Sql\Publish\SqlSProcPublishSettings.cs" />
-    <Compile Include="Sql\Publish\SqlPublishDialogViewModel.cs" />
-    <Compile Include="Sql\Publish\SqlPublshDialog.xaml.cs">
-      <DependentUpon>SqlPublshDialog.xaml</DependentUpon>
+    <Compile Include="Sql\Publish\SqlPublishOptionsDialogViewModel.cs" />
+    <Compile Include="Sql\Publish\SqlPublshOptionsDialog.xaml.cs">
+      <DependentUpon>SqlPublshOptionsDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Sql\Extensions\SqlStringExtensions.cs" />
     <Compile Include="Sql\Extensions\SProcFileExtensions.cs" />
@@ -1336,7 +1343,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Sql\Publish\SqlPublshDialog.xaml">
+    <Page Include="Sql\Publish\SqlPublshOptionsDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

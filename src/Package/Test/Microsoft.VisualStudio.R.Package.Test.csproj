@@ -228,9 +228,10 @@
     <Compile Include="Shell\TestVsAppShell.cs" />
     <Compile Include="Mocks\InteractiveWindowComponentContainerFactoryMock.cs" />
     <Compile Include="Sql\ExtensionsTest.cs" />
+    <Compile Include="Sql\PublishOptionsDialogModelTest.cs" />
     <Compile Include="Sql\SProcGeneratorTest.cs" />
     <Compile Include="Sql\SettingsTest.cs" />
-    <Compile Include="Sql\PublishDialogTest.cs" />
+    <Compile Include="Sql\PublishOptionsDialogTest.cs" />
     <Compile Include="Sql\CommandTest.cs" />
     <Compile Include="SurveyNews\SurveyNewsFeedClientTest.cs" />
     <Compile Include="SurveyNews\SurveyNewsServiceTest.cs" />
