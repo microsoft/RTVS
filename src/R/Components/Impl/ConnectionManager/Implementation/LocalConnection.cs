@@ -12,7 +12,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         private readonly IRHostBrokerConnector _brokerConnector;
 
         public LocalConnection(string name, string rBasePath, DateTime timeStamp, IRSessionProvider sessionProvider, IRHostBrokerConnector brokerConnector) {
-            Id = rBasePath;
+            Id = new Uri(rBasePath);
             Name = name;
             RBasePath = rBasePath;
             TimeStamp = timeStamp;
@@ -20,7 +20,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             _brokerConnector = brokerConnector;
         }
 
-        public string Id { get; }
+        public Uri Id { get; }
         public string Name { get; }
         public string RBasePath { get; }
         public DateTime TimeStamp { get; }

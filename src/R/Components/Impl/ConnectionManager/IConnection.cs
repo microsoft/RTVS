@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.R.Components.ConnectionManager {
     public interface IConnection {
-        string Id { get; }
+        Uri Id { get; }
         string Name { get; }
         DateTime TimeStamp { get; }
 

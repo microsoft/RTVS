@@ -6,6 +6,6 @@ using System.Threading.Tasks;
 
 namespace Microsoft.R.Host.Client.Host {
     public interface IRHostConnector {
-        Task<RHost> ConnectToRHost(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = default(CancellationToken));
+        Task<RHost> Connect(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

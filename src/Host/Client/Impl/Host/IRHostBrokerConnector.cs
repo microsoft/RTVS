@@ -5,14 +5,9 @@ using System;
 
 namespace Microsoft.R.Host.Client.Host {
     public interface IRHostBrokerConnector : IRHostConnector {
-        /// <summary>
-        /// String token that allows to identify broker that is used to connect to RHost
-        /// For local connections, it is a path to the RHost
-        /// For remote connections, it is a URL
-        /// </summary>
-        string BrokerId { get; }
+        Uri BrokerUri { get; }
 
-        event EventHandler BrokerIdChanged;
+        event EventHandler BrokerChanged;
 
         void SwitchToLocalBroker(string rBasePath, string rHostDirectory = null);
     }

@@ -47,11 +47,11 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
             _disposableBag = DisposableBag.Create<ConnectionManager>()
                 .Add(_statusBarViewModel)
-                .Add(() => _brokerConnector.BrokerIdChanged -= BrokerIdChanged)
+                .Add(() => _brokerConnector.BrokerChanged -= BrokerChanged)
                 .Add(() => interactiveWorkflow.RSession.Connected -= RSessionOnConnected)
                 .Add(() => interactiveWorkflow.RSession.Disconnected -= RSessionOnDisconnected);
 
-            _brokerConnector.BrokerIdChanged += BrokerIdChanged;
+            _brokerConnector.BrokerChanged += BrokerChanged;
             // TODO: Temporary solution - need to separate RHost errors and network connection issues
             interactiveWorkflow.RSession.Connected += RSessionOnConnected;
             interactiveWorkflow.RSession.Disconnected += RSessionOnDisconnected;
@@ -84,7 +84,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             return newConnection;
         }
         
-        private void BrokerIdChanged(object sender, EventArgs eventArgs) {
+        private void BrokerChanged(object sender, EventArgs eventArgs) {
             UpdateActiveConnection();
         }
 
@@ -99,7 +99,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         private void UpdateActiveConnection() {
-            ActiveConnection = RecentConnections.FirstOrDefault(c => c.Id.EqualsIgnoreCase(_brokerConnector.BrokerId));
+            ActiveConnection = RecentConnections.FirstOrDefault(c => c.Id == _brokerConnector.BrokerUri);
         }
     }
 }

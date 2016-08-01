@@ -41,7 +41,7 @@ namespace Microsoft.R.Host.Client.Host {
             _log = new LinesLog(FileLogWriter.InTempFolder("Microsoft.R.Host.BrokerConnector"));
         }
 
-        public async Task<RHost> ConnectToRHost(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken()) {
+        public async Task<RHost> Connect(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken()) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             var rhostDirectory = _rhostDirectory ?? Path.GetDirectoryName(typeof(RHost).Assembly.GetAssemblyPath());
@@ -147,15 +147,6 @@ namespace Microsoft.R.Host.Client.Host {
             var host = new RHost(name, callbacks, transportTcs.Task.Result, process.Id, cts);
             process.Exited += delegate { host.Dispose(); };
             return host;
-
-            //using (this)
-            //using (_) {
-
-            //        
-            //    } finally {
-
-            //    }
-            //}
         }
 
 

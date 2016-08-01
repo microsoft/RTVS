@@ -10,21 +10,22 @@ namespace Microsoft.R.Host.Client.Host {
     public sealed class RHostBrokerConnector : IRHostBrokerConnector {
         private volatile IRHostConnector _hostConnector;
 
-        public string BrokerId { get; private set; }
+        public Uri BrokerUri { get; private set; }
 
-        public event EventHandler BrokerIdChanged;
+        public event EventHandler BrokerChanged;
 
         public RHostBrokerConnector() {
             SwitchToLocalBroker(null);
         }
 
         public void SwitchToLocalBroker(string rBasePath, string rHostDirectory = null) {
-            _hostConnector = new LocalRHostConnector(new RInstallation().GetRInstallPath(rBasePath, new SupportedRVersionRange()), rHostDirectory);
-            BrokerId = rBasePath;
-            BrokerIdChanged?.Invoke(this, new EventArgs());
+            var installPath = new RInstallation().GetRInstallPath(rBasePath, new SupportedRVersionRange());
+            _hostConnector = new LocalRHostConnector(installPath, rHostDirectory);
+            BrokerUri = new Uri(installPath);
+            BrokerChanged?.Invoke(this, new EventArgs());
         }
 
-        public Task<RHost> ConnectToRHost(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken())
-            => _hostConnector.ConnectToRHost(name, callbacks, rCommandLineArguments, timeout, cancellationToken);
+        public Task<RHost> Connect(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken())
+            => _hostConnector.Connect(name, callbacks, rCommandLineArguments, timeout, cancellationToken);
     }
 }
