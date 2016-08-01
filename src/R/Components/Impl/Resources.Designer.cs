@@ -394,6 +394,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error: Package {0} can&apos;t be updated because Interactive Window is disconnected from R Session..
+        /// </summary>
+        public static string PackageManager_CantUpdatePackageNoRSession {
+            get {
+                return ResourceManager.GetString("PackageManager_CantUpdatePackageNoRSession", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error: {0}.
         /// </summary>
         public static string PackageManager_EvalError {

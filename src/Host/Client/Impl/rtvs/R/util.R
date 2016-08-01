@@ -198,3 +198,29 @@ rmarkdown_publish <- function(blob_id, output_format, encoding) {
     rmarkdown::render(rmdpath, output_format = output_format, output_file = output_filepath,  output_dir = tempdir(), encoding = encoding);
     readBin(output_filepath, 'raw', file.info(output_filepath)$size);
 }
+
+as.lock_state <- function(x) {
+    factor(x, levels = c(0, 1, 2), labels = c('unlocked', 'locked_by_r_session', 'locked_by_other'));
+}
+
+package_lock_state <- function(package_name, lib_path) {
+    files <- dir(path = paste0(lib_path,'/', package_name), pattern = '\\.', recursive = TRUE, ignore.case = TRUE, full.names = TRUE)
+    fstate <- call_embedded('get_file_lock_state', files);
+    as.lock_state(fstate);
+}
+
+package_uninstall <- function(package_name, lib_path) {
+    lock_state <- package_lock_state(package_name, lib_path);
+    if (lock_state == 'unlocked') {
+        remove.packages(package_name, lib = lib_path);
+    }
+    lock_state
+}
+
+package_update <- function(package_name, lib_path) {
+    lock_state <- package_uninstall(package_name, lib_path)
+    if (lock_state == 'unlocked') {
+        install.packages(package_name, lib = lib_path);
+    }
+    lock_state
+}

@@ -206,30 +206,20 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 await ReloadLoadedPackagesAsync();
             }
 
-            if (package.IsLoaded) {
-                return;
-            }
-
-            try {
-                var libPath = package.LibraryPath.ToRPath();
-                var packageLockState = _packageManager.GetPackageLockState(package.Name, libPath);
-                if (packageLockState == PackageLockState.Unlocked) {
+            if (!package.IsLoaded) {
+                try {
+                    var libPath = package.LibraryPath.ToRPath();
                     try {
-                        await _packageManager.UninstallPackageAsync(package.Name, libPath);
+                        var packageLockState = await _packageManager.UpdatePackageAsync(package.Name, libPath);
+                        if (packageLockState != PackageLockState.Unlocked) {
+                            ShowPackageLockedMessage(packageLockState, package.Name);
+                        }
                     } catch (RHostDisconnectedException) {
-                        AddErrorMessage(string.Format(CultureInfo.CurrentCulture, Resources.PackageManager_CantUninstallPackageNoRSession, package.Name));
+                        AddErrorMessage(string.Format(CultureInfo.CurrentCulture, Resources.PackageManager_CantUpdatePackageNoRSession, package.Name));
                     }
-
-                    try {
-                        await _packageManager.InstallPackageAsync(package.Name, libPath);
-                    } catch (RHostDisconnectedException) {
-                        AddErrorMessage(string.Format(CultureInfo.CurrentCulture, Resources.PackageManager_CantInstallPackageNoRSession, package.Name));
-                    }
-                } else {
-                    ShowPackageLockedMessage(packageLockState, package.Name);
+                } catch (RPackageManagerException ex) {
+                    AddErrorMessage(ex.Message);
                 }
-            } catch (RPackageManagerException ex) {
-                AddErrorMessage(ex.Message);
             }
 
             await ReloadInstalledAndLoadedPackagesAsync();
@@ -266,10 +256,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             if (!package.IsLoaded) {
                 try {
                     var libPath = package.LibraryPath.ToRPath();
-                    var packageLockState = _packageManager.GetPackageLockState(package.Name, libPath);
-                    if (packageLockState == PackageLockState.Unlocked) {
-                        await _packageManager.UninstallPackageAsync(package.Name, libPath);
-                    } else {
+                    var packageLockState = await _packageManager.UninstallPackageAsync(package.Name, libPath);
+                    if (packageLockState != PackageLockState.Unlocked) {
                         ShowPackageLockedMessage(packageLockState, package.Name);
                     }
                 } catch (RHostDisconnectedException) {

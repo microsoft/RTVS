@@ -180,6 +180,9 @@
   <data name="PackageManager_CantUninstallPackageNoRSession" xml:space="preserve">
     <value>Error: Package {0} can't be uninstalled because Interactive Window is disconnected from R Session.</value>
   </data>
+  <data name="PackageManager_CantUpdatePackageNoRSession" xml:space="preserve">
+    <value>Error: Package {0} can't be updated because Interactive Window is disconnected from R Session.</value>
+  </data>
   <data name="PackageManager_SearchIncomplete" xml:space="preserve">
     <value>Retrieving results from one or more sources</value>
   </data>

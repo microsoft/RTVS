@@ -60,15 +60,9 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             }
         }
 
-        public async Task UninstallPackageAsync(string name, string libraryPath) {
-            using (var request = await _interactiveWorkflow.RSession.BeginInteractionAsync()) {
-                if (string.IsNullOrEmpty(libraryPath)) {
-                    await request.UninstallPackageAsync(name);
-                } else {
-                    await request.UninstallPackageAsync(name, libraryPath);
-                }
-            }
-        }
+        public Task<PackageLockState> UninstallPackageAsync(string name, string libraryPath) => _interactiveWorkflow.RSession.EvaluateAsync<PackageLockState>($"rtvs:::package_uninstall({name.ToRStringLiteral()}, {libraryPath.ToRStringLiteral()})", REvaluationKind.Normal);
+
+        public Task<PackageLockState> UpdatePackageAsync(string name, string libraryPath) => _interactiveWorkflow.RSession.EvaluateAsync<PackageLockState>($"rtvs:::package_update({name.ToRStringLiteral()}, {libraryPath.ToRStringLiteral()})", REvaluationKind.Normal);
 
         public async Task LoadPackageAsync(string name, string libraryPath) {
             using (var request = await _interactiveWorkflow.RSession.BeginInteractionAsync()) {
@@ -96,23 +90,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             return result.Select(p => (string)((JValue)p).Value).ToArray();
         }
 
-        public PackageLockState GetPackageLockState(string name, string libraryPath) {
-            string dllPath = GetPackageDllPath(name, libraryPath);
-            if (!string.IsNullOrEmpty(dllPath)) {
-                var processes = RestartManager.GetProcessesUsingFiles(new string[] { dllPath }).ToArray();
-                if (processes != null) {
-                    if (processes.Length == 1 && processes[0].Id == _interactiveWorkflow.RSession.ProcessId) {
-                        return PackageLockState.LockedByRSession;
-                    }
-
-                    if (processes.Length > 0) {
-                        return PackageLockState.LockedByOther;
-                    }
-                }
-            }
-
-            return PackageLockState.Unlocked;
-        }
+        public Task<PackageLockState> GetPackageLockStateAsync(string name, string libraryPath) 
+            => _interactiveWorkflow.RSession.EvaluateAsync<PackageLockState>($"rtvs:::package_lock_state({name.ToRStringLiteral()}, {libraryPath.ToRStringLiteral()})", REvaluationKind.Normal);
 
         private string GetPackageDllPath(string name, string libraryPath) {
             string pkgFolder = Path.Combine(libraryPath.Replace("/", "\\"), name);

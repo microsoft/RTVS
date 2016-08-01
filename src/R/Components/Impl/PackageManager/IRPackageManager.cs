@@ -51,14 +51,36 @@ namespace Microsoft.R.Components.PackageManager {
         Task InstallPackageAsync(string name, string libraryPath);
 
         /// <summary>
-        /// Uninstall a package by sending remove.packages() to the REPL.
+        /// Uninstall a package by evaluating rtvs:::package_uninstall.
         /// </summary>
         /// <param name="name">Package name.</param>
         /// <param name="libraryPath">
         ///     Optional library path (in any format) where the package is installed.
         ///     Pass null to use the defaults for the session ie. in .libPaths().
         /// </param>
-        Task UninstallPackageAsync(string name, string libraryPath);
+        /// <returns>
+        /// <see cref="PackageLockState.Unlocked"/>  if the package was successfully 
+        /// installed. <see cref="PackageLockState.LockedByRSession"/> or <see cref="PackageLockState.LockedByOther"/> 
+        /// if the package was found to be installed and loaded in the REPL or 
+        /// loaded by another process.
+        /// </returns>
+        Task<PackageLockState> UninstallPackageAsync(string name, string libraryPath);
+
+        /// <summary>
+        /// Uninstall and Install a package by evaluating rtvs:::package_update.
+        /// </summary>
+        /// <param name="name">Package name.</param>
+        /// <param name="libraryPath">
+        ///     Optional library path (in any format) where the package is installed.
+        ///     Pass null to use the defaults for the session ie. in .libPaths().
+        /// </param>
+        /// <returns>
+        /// <see cref="PackageLockState.Unlocked"/>  if the package was successfully 
+        /// installed. <see cref="PackageLockState.LockedByRSession"/> or <see cref="PackageLockState.LockedByOther"/> 
+        /// if the package was found to be installed and loaded in the REPL or 
+        /// loaded by another process.
+        /// </returns>
+        Task<PackageLockState> UpdatePackageAsync(string name, string libraryPath);
 
         /// <summary>
         /// Load a package by sending library() to the REPL.
@@ -105,6 +127,6 @@ namespace Microsoft.R.Components.PackageManager {
         /// <param name="name">Package name.</param>
         /// <param name="libraryPath">Library path (in any format).</param>
         /// <returns>Lock state.</returns>
-        PackageLockState GetPackageLockState(string name, string libraryPath);
+        Task<PackageLockState> GetPackageLockStateAsync(string name, string libraryPath);
     }
 }
