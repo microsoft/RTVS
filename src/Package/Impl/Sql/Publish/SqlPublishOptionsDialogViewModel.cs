@@ -34,6 +34,8 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         private IReadOnlyList<string> _targetProjects;
         private IReadOnlyList<string> _targetConnections;
 
+        public Task InitializationTask { get; private set; } = Task.CompletedTask;
+
         /// <summary>
         /// Target types: DACPAC, database, project
         /// </summary>
@@ -41,9 +43,11 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         public int SelectedTargetTypeIndex {
             get { return _selectedTargetTypeIndex; }
             set {
-                _selectedTargetTypeIndex = value;
-                PopulateTargets();
-                UpdateState();
+                if (_selectedTargetTypeIndex != value) {
+                    _selectedTargetTypeIndex = value;
+                    PopulateTargets();
+                    UpdateState();
+                }
             }
         }
 
@@ -54,9 +58,11 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         public int SelectedCodePlacementIndex {
             get { return _selectedCodePlacementIndex; }
             set {
-                _selectedCodePlacementIndex = value;
-                Settings.CodePlacement = (RCodePlacement)value;
-                UpdateState();
+                if (_selectedCodePlacementIndex != value) {
+                    _selectedCodePlacementIndex = value;
+                    Settings.CodePlacement = (RCodePlacement)value;
+                    UpdateState();
+                }
             }
         }
 
@@ -67,8 +73,10 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         public int SelectedQuoteTypeIndex {
             get { return _selectedQuoteTypeIndex; }
             set {
-                _selectedQuoteTypeIndex = value;
-                Settings.QuoteType = (SqlQuoteType)value;
+                if (_selectedQuoteTypeIndex != value) {
+                    _selectedQuoteTypeIndex = value;
+                    Settings.QuoteType = (SqlQuoteType)value;
+                }
             }
         }
 
@@ -82,11 +90,13 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         public int SelectedTargetIndex {
             get { return _selectedTargetIndex; }
             set {
-                _selectedTargetIndex = value;
-                if (Settings.TargetType == PublishTargetType.Database) {
-                    Settings.TargetDatabaseConnection = Targets[_selectedTargetIndex];
-                } else if (Settings.TargetType == PublishTargetType.Project) {
-                    Settings.TargetProject = Targets[_selectedTargetIndex];
+                if (_selectedTargetIndex != value) {
+                    _selectedTargetIndex = value;
+                    if (Settings.TargetType == PublishTargetType.Database) {
+                        Settings.TargetDatabaseConnection = Targets[_selectedTargetIndex];
+                    } else if (Settings.TargetType == PublishTargetType.Project) {
+                        Settings.TargetProject = Targets[_selectedTargetIndex];
+                    }
                 }
             }
         }
@@ -133,7 +143,6 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
 
             Settings = new SqlSProcPublishSettings(settingsStorage);
 
-            PopulateTargets();
             SelectCodePlacementMode();
             SelectQuoteType();
             SelectTargetType();
@@ -145,7 +154,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
 
         public void UpdateState() {
             GenerateTable = Settings.CodePlacement == RCodePlacement.Table;
-            CanGenerate = (!GenerateTable || !string.IsNullOrEmpty(Settings.TableName)) && Targets.Count > 0;
+            CanGenerate = (!GenerateTable || !string.IsNullOrEmpty(Settings.TableName)) && Targets?.Count > 0;
         }
 
         private void PopulateTargets() {
@@ -161,14 +170,14 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
                     break;
 
                 case PublishTargetType.Database:
-                    PopulateConnectionsListAsync();
+                    InitializationTask = PopulateConnectionsListAsync();
                     TargetHasName = false;
                     break;
             }
         }
 
-        private void PopulateConnectionsListAsync() {
-            GetDatabaseConnectionsAsync((connections) => {
+        private Task PopulateConnectionsListAsync() {
+            return GetDatabaseConnectionsAsync((connections) => {
                 var index = -1;
                 _targetConnections = connections;
                 if (!string.IsNullOrEmpty(Settings.TargetDatabaseConnection)) {
@@ -177,6 +186,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
                 }
                 Targets = _targetConnections;
                 SelectedTargetIndex = index >= 0 ? index : 0;
+                UpdateState();
             });
         }
 
@@ -213,7 +223,8 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             return projects;
         }
 
-        private void GetDatabaseConnectionsAsync(Action<IReadOnlyList<string>> action) {
+        private Task GetDatabaseConnectionsAsync(Action<IReadOnlyList<string>> action) {
+            var tcs = new TaskCompletionSource<int>();
             var project = _pss.GetSelectedProject<IVsHierarchy>();
             if (project != null) {
                 project.GetDbConnections(_pcsp).ContinueWith(t => {
@@ -224,9 +235,13 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
                     if (connections.Count == 0) {
                         connections.Add(Resources.SqlPublishDialog_NoDatabaseConnections);
                     }
-                    _coreShell.DispatchOnUIThread(() => action(connections));
+                    _coreShell.DispatchOnUIThread(() => {
+                        action(connections);
+                        tcs.SetResult(0);
+                    });
                 });
             }
+            return tcs.Task;
         }
 
         private void SelectCodePlacementMode() {
