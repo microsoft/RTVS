@@ -51,38 +51,24 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
         }
 
         public async Task InstallPackageAsync(string name, string libraryPath) {
-            if (!_interactiveWorkflow.RSession.IsHostRunning) {
-                throw new RPackageManagerException(Resources.PackageManager_EvalSessionNotAvailable);
-            }
-
-            try {
-                using (var request = await _interactiveWorkflow.RSession.BeginInteractionAsync()) {
-                    if (string.IsNullOrEmpty(libraryPath)) {
-                        await request.InstallPackageAsync(name);
-                    } else {
-                        await request.InstallPackageAsync(name, libraryPath);
-                    }
+            using (var request = await _interactiveWorkflow.RSession.BeginInteractionAsync()) {
+                if (string.IsNullOrEmpty(libraryPath)) {
+                    await request.InstallPackageAsync(name);
+                } else {
+                    await request.InstallPackageAsync(name, libraryPath);
                 }
-            } catch (RHostDisconnectedException ex) {
-                throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
             }
         }
 
-        public async Task UninstallPackageAsync(string name, string libraryPath) {
-            if (!_interactiveWorkflow.RSession.IsHostRunning) {
-                throw new RPackageManagerException(Resources.PackageManager_EvalSessionNotAvailable);
+        public async Task<PackageLockState> UninstallPackageAsync(string name, string libraryPath) {
+            using (var eval = await _interactiveWorkflow.RSession.BeginEvaluationAsync()) {
+                return await eval.EvaluateAsync<PackageLockState>($"rtvs:::package_uninstall({name.ToRStringLiteral()}, {libraryPath.ToRStringLiteral()})", REvaluationKind.Normal);
             }
+        }
 
-            try {
-                using (var request = await _interactiveWorkflow.RSession.BeginInteractionAsync()) {
-                    if (string.IsNullOrEmpty(libraryPath)) {
-                        await request.UninstallPackageAsync(name);
-                    } else {
-                        await request.UninstallPackageAsync(name, libraryPath);
-                    }
-                }
-            } catch (RHostDisconnectedException ex) {
-                throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
+        public async Task<PackageLockState> UpdatePackageAsync(string name, string libraryPath) {
+            using (var eval = await _interactiveWorkflow.RSession.BeginEvaluationAsync()) {
+                return await eval.EvaluateAsync<PackageLockState>($"rtvs:::package_update({name.ToRStringLiteral()}, {libraryPath.ToRStringLiteral()})", REvaluationKind.Normal);
             }
         }
 
@@ -144,22 +130,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             }
         }
 
-        public PackageLockState GetPackageLockState(string name, string libraryPath) {
-            string dllPath = GetPackageDllPath(name, libraryPath);
-            if (!string.IsNullOrEmpty(dllPath)) {
-                var processes = RestartManager.GetProcessesUsingFiles(new string[] { dllPath }).ToArray();
-                if (processes != null) {
-                    if (processes.Length == 1 && processes[0].Id == _interactiveWorkflow.RSession.ProcessId) {
-                        return PackageLockState.LockedByRSession;
-                    }
-
-                    if (processes.Length > 0) {
-                        return PackageLockState.LockedByOther;
-                    }
-                }
-            }
-
-            return PackageLockState.Unlocked;
+        public Task<PackageLockState> GetPackageLockStateAsync(string name, string libraryPath) {
+            return _interactiveWorkflow.RSession.EvaluateAsync<PackageLockState>($"rtvs:::package_lock_state({name.ToRStringLiteral()}, {libraryPath.ToRStringLiteral()})", REvaluationKind.Normal);
         }
 
         private string GetPackageDllPath(string name, string libraryPath) {

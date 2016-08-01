@@ -269,8 +269,10 @@ namespace Microsoft.R.Components.Test.PackageManager {
             var abn = pkgs.Should().ContainSingle(pkg => pkg.Package == "abn").Which;
             var cairo = pkgs.Should().ContainSingle(pkg => pkg.Package == "Cairo").Which;
 
-            _workflow.Packages.GetPackageLockState(abn.Package, abn.LibPath).Should().Be(PackageLockState.LockedByRSession);
-            _workflow.Packages.GetPackageLockState(cairo.Package, cairo.LibPath).Should().Be(PackageLockState.LockedByRSession);
+            var abnState = await _workflow.Packages.GetPackageLockStateAsync(abn.Package, abn.LibPath);
+            abnState.Should().Be(PackageLockState.LockedByRSession);
+            var cairoState = await _workflow.Packages.GetPackageLockStateAsync(cairo.Package, cairo.LibPath);
+            cairoState.Should().Be(PackageLockState.LockedByRSession);
         }
 
         [Test]
@@ -284,7 +286,8 @@ namespace Microsoft.R.Components.Test.PackageManager {
             var pkgs = await _workflow.Packages.GetInstalledPackagesAsync();
             var abn = pkgs.Should().ContainSingle(pkg => pkg.Package == "abn").Which;
 
-            _workflow.Packages.GetPackageLockState(abn.Package, abn.LibPath).Should().Be(PackageLockState.Unlocked);
+            var abnState = await _workflow.Packages.GetPackageLockStateAsync(abn.Package, abn.LibPath);
+            abnState.Should().Be(PackageLockState.Unlocked);
         }
 
         private async Task EvaluateCode(string code, string expectedResult = null, string expectedError = null) {
