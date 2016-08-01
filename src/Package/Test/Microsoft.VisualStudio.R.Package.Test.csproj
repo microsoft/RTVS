@@ -229,6 +229,7 @@
     <Compile Include="Mocks\InteractiveWindowComponentContainerFactoryMock.cs" />
     <Compile Include="Sql\ExtensionsTest.cs" />
     <Compile Include="Sql\PublishOptionsDialogModelTest.cs" />
+    <Compile Include="Sql\SProcPublisherTest.cs" />
     <Compile Include="Sql\SProcGeneratorTest.cs" />
     <Compile Include="Sql\SettingsTest.cs" />
     <Compile Include="Sql\PublishOptionsDialogTest.cs" />

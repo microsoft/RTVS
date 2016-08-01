@@ -9,7 +9,6 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
-using Microsoft.SqlServer.Dac;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -90,11 +89,11 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         }
 
         private void CreateDacPac(SqlSProcPublishSettings settings, IEnumerable<string> sprocFiles, string dacpacPath) {
-            var dacpac = new DacPacBuilder(_appShell);
             var project = _pss.GetSelectedProject<IVsHierarchy>()?.GetDTEProject();
             var g = new SProcScriptGenerator(_fs);
             var scripts = g.CreateStoredProcedureScripts(settings, sprocFiles);
-            dacpac.Build(dacpacPath, project.Name, scripts.Values);
+            var builder = _dacServices.GetBuilder(_appShell);
+            builder.Build(dacpacPath, project.Name, scripts.Values);
         }
 
         private EnvDTE.Project GetProjectByName(string projectName) {

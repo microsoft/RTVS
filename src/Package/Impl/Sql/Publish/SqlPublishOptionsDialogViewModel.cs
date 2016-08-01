@@ -30,9 +30,9 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         private int _selectedCodePlacementIndex;
         private int _selectedQuoteTypeIndex;
 
-        private IReadOnlyList<string> _targets;
-        private IReadOnlyList<string> _targetProjects;
-        private IReadOnlyList<string> _targetConnections;
+        private IReadOnlyList<string> _targets = new List<string>();
+        private IReadOnlyList<string> _targetProjects = new List<string>();
+        private IReadOnlyList<string> _targetConnections = new List<string>();
 
         public Task InitializationTask { get; private set; } = Task.CompletedTask;
 
