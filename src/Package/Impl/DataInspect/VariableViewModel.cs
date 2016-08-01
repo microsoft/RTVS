@@ -8,6 +8,8 @@ using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.OS;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Editor.Data;
@@ -16,6 +18,7 @@ using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.DataInspect.Office;
+using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Shell;
 using static System.FormattableString;
 using static Microsoft.R.DataInspection.REvaluationResultProperties;
@@ -152,7 +155,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public string OpenInCsvAppCommandTooltip { get; private set; }
 
         private void OpenInCsvApp(object parameter) {
-            CsvAppFileIO.OpenDataCsvApp(DebugEvaluation).DoNotWait();
+            CsvAppFileIO.OpenDataCsvApp(DebugEvaluation, VsAppShell.Current,  new FileSystem(), ProcessServices.Current).DoNotWait();
         }
 
         /// <summary>

@@ -22,6 +22,7 @@ namespace Microsoft.Common.Core.IO {
 
         IFileVersionInfo GetVersionInfo(string path);
         void DeleteFile(string path);
+        void DeleteDirectory(string path, bool recursive);
         string[] GetFileSystemEntries(string path, string searchPattern, SearchOption options);
     }
 }
