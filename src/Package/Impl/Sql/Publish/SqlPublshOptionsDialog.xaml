@@ -30,14 +30,15 @@
 
         <Label x:Name="TargetTypeLabel" Grid.Row="0" Grid.Column="0" Content="{x:Static package:Resources.SqlPublishDialog_TargetType}" />
         <ComboBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" x:Name="TargetTypeList" 
-                  ItemsSource="{Binding Path=TargetTypeNames}" SelectedIndex="{Binding Path=SelectedTargetTypeIndex, Mode=TwoWay}"
-                  HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="24" IsEditable="False" />
+                  ItemsSource="{Binding Path=TargetTypeNames}" SelectedIndex="{Binding Path=SelectedTargetTypeIndex}"
+                  HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="24" IsEditable="False"
+                  SelectionChanged="TargetTypeList_SelectionChanged"/>
 
         <Label x:Name="TargetNameLabel" Grid.Row="1" Grid.Column="0" Content="{x:Static package:Resources.SqlPublishDialog_Target}" />
         <ComboBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" x:Name="TargetList" 
-                  ItemsSource="{Binding Path=Targets}" SelectedIndex="{Binding Path=SelectedTargetIndex, Mode=TwoWay}"
+                  ItemsSource="{Binding Path=Targets}" SelectedIndex="{Binding Path=SelectedTargetIndex}"
                   HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="24" IsEditable="False"
-                  IsEnabled="{Binding Path=TargetHasName}">
+                  IsEnabled="{Binding Path=TargetHasName}" SelectionChanged="TargetList_SelectionChanged">
             <ComboBox.ToolTip>
                 <ToolTip Content="{Binding Path=TargetTooltip}" />
             </ComboBox.ToolTip>            
@@ -46,8 +47,9 @@
         <Label x:Name="CodePlacementLabel" Grid.Row="2" Grid.Column="0" Content="{x:Static package:Resources.SqlPublishDialog_RCodePlacement}" />
         <ComboBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" 
                   x:Name="CodePlacementList"
-                  ItemsSource="{Binding Path=CodePlacementNames}" SelectedIndex="{Binding Path=SelectedCodePlacementIndex, Mode=TwoWay}" 
-                  HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="24" IsEditable="False"/>
+                  ItemsSource="{Binding Path=CodePlacementNames}" SelectedIndex="{Binding Path=SelectedCodePlacementIndex}" 
+                  HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="24" IsEditable="False"
+                  SelectionChanged="CodePlacementList_SelectionChanged"/>
 
         <Label x:Name="TableNameLabel" Grid.Row="3" Grid.Column="0" Content="{x:Static package:Resources.SqlPublishDialog_TableName}" />
         <TextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" 
@@ -58,8 +60,9 @@
         <Label x:Name="QuoteTypeLabel" Grid.Row="4" Grid.Column="0" Content="{x:Static package:Resources.SqlPublishDialog_QuoteType}" />
         <ComboBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" 
                   x:Name="QuoteTypeList"
-                  ItemsSource="{Binding Path=QuoteTypeNames}" SelectedIndex="{Binding Path=SelectedQuoteTypeIndex, Mode=TwoWay}" 
-                  HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="24" IsEditable="False" />
+                  ItemsSource="{Binding Path=QuoteTypeNames}" SelectedIndex="{Binding Path=SelectedQuoteTypeIndex}" 
+                  HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="24" IsEditable="False"
+                  SelectionChanged="QuoteTypeList_SelectionChanged"/>
 
         <Button x:Name="OKButton" Grid.Row="5" Grid.Column="2" Content="{x:Static package:Resources.SqlPublishDialog_PublishButton}" IsDefault="True" 
                 IsEnabled="{Binding Path=CanPublish}"

@@ -50,5 +50,21 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         private void OKButton_Click(object sender, RoutedEventArgs e) => SaveSettingsAndClose();
         private void CancelButton_Click(object sender, RoutedEventArgs e) => Close();
         private void TableName_TextChanged(object sender, TextChangedEventArgs e) => _model.UpdateState();
+
+        private void TargetTypeList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            _model.SelectedTargetTypeIndex = TargetTypeList.SelectedIndex;
+        }
+
+        private void TargetList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            _model.SelectedTargetIndex = TargetList.SelectedIndex;
+        }
+
+        private void CodePlacementList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            _model.SelectedCodePlacementIndex = CodePlacementList.SelectedIndex;
+        }
+
+        private void QuoteTypeList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            _model.SelectedQuoteTypeIndex = QuoteTypeList.SelectedIndex;
+        }
     }
 }
