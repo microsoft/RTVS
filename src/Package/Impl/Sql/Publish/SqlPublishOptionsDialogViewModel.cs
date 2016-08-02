@@ -94,8 +94,12 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// </summary>
         public IReadOnlyList<string> Targets {
             get { return _targets; }
-            set { _targets.ReplaceWith(value); }
+            set {
+                _targets.ReplaceWith(value);
+                _selectedTargetIndex = -1;
+            }
         }
+
         public int SelectedTargetIndex {
             get { return _selectedTargetIndex; }
             set {
@@ -208,7 +212,6 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
                 index = indices.DefaultIfEmpty(-1).First();
             }
             Targets = _targetConnections.Select(c => c.Name).ToList();
-            ForceSelectedTargetIndexUpdate();
             SelectedTargetIndex = index >= 0 ? index : 0;
             UpdateState();
         }
@@ -222,13 +225,8 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
                     index = indices.DefaultIfEmpty(-1).First();
                 }
                 Targets = _targetProjects;
-                ForceSelectedTargetIndexUpdate();
                 SelectedTargetIndex = index >= 0 ? index : 0;
             }
-        }
-
-        private void ForceSelectedTargetIndexUpdate() {
-            _selectedTargetIndex = -1;
         }
 
         private IReadOnlyList<string> GetDatabaseProjects() {
