@@ -5,6 +5,7 @@ using System.ComponentModel.Composition;
 using System.IO;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.ProjectSystem;
+using Microsoft.VisualStudio.R.Package.Sql;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     [Export(typeof(IProjectTreePropertiesProvider))]

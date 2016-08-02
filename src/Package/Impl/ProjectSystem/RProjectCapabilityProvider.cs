@@ -13,7 +13,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     internal sealed class RProjectCapabilityProvider : ProjectCapabilitiesFromImportXmlProvider {
         [ImportingConstructor]
         public RProjectCapabilityProvider(UnconfiguredProject unconfiguredProject)
-            : base(Constants.RtvsRulesPropsRelativePath, unconfiguredProject, Constants.RtvsRulesPropsRelativePath, Constants.RtvsProjectCapability) { }
+            : base(ProjectConstants.RtvsRulesPropsRelativePath, unconfiguredProject, 
+                   ProjectConstants.RtvsRulesPropsRelativePath, ProjectConstants.RtvsProjectCapability) { }
     }
 }
 #endif
