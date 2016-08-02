@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -77,7 +78,8 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             var connection = settings.TargetDatabaseConnection.OdbcToSqlClient();
             _dacServices.Deploy(package, connection, dbName);
 
-            _outputWindow.WriteAsync(MessageCategory.General, string.Format(CultureInfo.InvariantCulture, Resources.SqlPublish_PublishDatabaseSuccess, connection)).DoNotWait();
+            var message = Environment.NewLine + string.Format(CultureInfo.InvariantCulture, Resources.SqlPublish_PublishDatabaseSuccess, connection);
+            _outputWindow.WriteAsync(MessageCategory.General, message).DoNotWait();
             RtvsTelemetry.Current?.TelemetryService.ReportEvent(TelemetryArea.SQL, SqlTelemetryEvents.SqlDatabasePublish);
         }
 

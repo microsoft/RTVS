@@ -1956,7 +1956,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Publishing complete. DACPAC: {0}..
+        ///   Looks up a localized string similar to Publishing complete. DACPAC: {0}.
         /// </summary>
         public static string SqlPublish_PublishDacpacSuccess {
             get {
@@ -1965,7 +1965,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Publishing complete. Connection {0}..
+        ///   Looks up a localized string similar to Publishing complete. Connection {0}.
         /// </summary>
         public static string SqlPublish_PublishDatabaseSuccess {
             get {
@@ -1974,7 +1974,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Publishing failed. Exception: {0}..
+        ///   Looks up a localized string similar to Publishing failed. Exception: {0}.
         /// </summary>
         public static string SqlPublish_PublishError {
             get {

@@ -906,7 +906,7 @@ Additional information:
     <value>DACPAC</value>
   </data>
   <data name="SqlPublish_PublishError" xml:space="preserve">
-    <value>Publishing failed. Exception: {0}.</value>
+    <value>Publishing failed. Exception: {0}</value>
   </data>
   <data name="SqlPublishDialog_NoDatabaseConnections" xml:space="preserve">
     <value>&lt;No database connections&gt;</value>
@@ -918,9 +918,9 @@ Additional information:
     <value>Publish</value>
   </data>
   <data name="SqlPublish_PublishDacpacSuccess" xml:space="preserve">
-    <value>Publishing complete. DACPAC: {0}.</value>
+    <value>Publishing complete. DACPAC: {0}</value>
   </data>
   <data name="SqlPublish_PublishDatabaseSuccess" xml:space="preserve">
-    <value>Publishing complete. Connection {0}.</value>
+    <value>Publishing complete. Connection {0}</value>
   </data>
 </root>

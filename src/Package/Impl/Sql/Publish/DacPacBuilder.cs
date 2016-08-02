@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using Microsoft.Common.Core;
@@ -39,9 +40,10 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
                     DacPackageExtensions.BuildPackage(dacpacPath, model,
                                         new PackageMetadata { Name = packageName, Description = string.Empty, Version = "1.0" },
                                         new PackageOptions());
-                    _outputWindow.WriteAsync(MessageCategory.General, string.Format(CultureInfo.InvariantCulture, Resources.SqlPublish_PublishDacpacSuccess, dacpacPath)).DoNotWait();
+                    var message = Environment.NewLine + string.Format(CultureInfo.InvariantCulture, Resources.SqlPublish_PublishDacpacSuccess, dacpacPath);
+                    _outputWindow.WriteAsync(MessageCategory.General, message).DoNotWait();
                 } catch(DacServicesException ex) {
-                    var error = string.Format(CultureInfo.InvariantCulture, Resources.SqlPublishDialog_UnableToBuildDacPac, ex.Message);
+                    var error = Environment.NewLine + string.Format(CultureInfo.InvariantCulture, Resources.SqlPublishDialog_UnableToBuildDacPac, ex.Message);
                     _outputWindow.WriteAsync(MessageCategory.Error, error).DoNotWait();
                     // _coreShell.ShowErrorMessage(error);
                 }
