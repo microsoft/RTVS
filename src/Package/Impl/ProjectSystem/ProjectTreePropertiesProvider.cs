@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.ProjectSystem;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     [Export(typeof(IProjectTreePropertiesProvider))]
-    [AppliesTo(Constants.RtvsProjectCapability)]
+    [AppliesTo(ProjectConstants.RtvsProjectCapability)]
     internal sealed class ProjectTreePropertiesProvider : IProjectTreePropertiesProvider {
         public void CalculatePropertyValues(IProjectTreeCustomizablePropertyContext propertyContext,
                                             IProjectTreeCustomizablePropertyValues propertyValues) {
