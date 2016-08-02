@@ -26,7 +26,7 @@ namespace Microsoft.R.Host.Client {
 
         private static readonly Task<REvaluationResult> RhostDisconnectedEvaluationResult = TaskUtilities.CreateCanceled<REvaluationResult>(new RHostDisconnectedException());
         private static readonly Task<ulong> RhostDisconnectedCreateBlobResult = TaskUtilities.CreateCanceled<ulong>(new RHostDisconnectedException());
-        private static readonly Task<ulong> RhostDisconnectedGetBlobResult = TaskUtilities.CreateCanceled<ulong>(new RHostDisconnectedException());
+        private static readonly Task<byte[]> RhostDisconnectedGetBlobResult = TaskUtilities.CreateCanceled<byte[]>(new RHostDisconnectedException());
 
         public static IRContext TopLevelContext { get; } = new RContext(RContextType.TopLevel);
         
@@ -213,13 +213,6 @@ namespace Microsoft.R.Host.Client {
             }
 
             return Task.WhenAny(CreateBlobAsyncWorker(data, cancellationToken), _cancelCreateBlobAfterRunTask).Unwrap();
-        }
-
-            if (ct.IsCancellationRequested) {
-                Task.FromCanceled<long>(ct);
-            }
-
-            return Task.WhenAny(CreateBlobAsyncWorker(data, ct), _cancelSendBlobAfterRunTask).Unwrap();
         }
 
         private async Task<ulong> CreateBlobAsyncWorker(byte[] data, CancellationToken cancellationToken) {
@@ -505,7 +498,7 @@ namespace Microsoft.R.Host.Client {
             try {
                 _runTask = RunWorker(ct);
                 _cancelEvaluationAfterRunTask = _runTask.ContinueWith(t => RhostDisconnectedEvaluationResult).Unwrap();
-                _cancelSendBlobAfterRunTask = _runTask.ContinueWith(t => RhostDisconnectedSendBlobResult).Unwrap();
+                _cancelCreateBlobAfterRunTask = _runTask.ContinueWith(t => RhostDisconnectedCreateBlobResult).Unwrap();
                 _cancelGetBlobAfterRunTask = _runTask.ContinueWith(t => RhostDisconnectedGetBlobResult).Unwrap();
                 await _runTask;
             } catch (OperationCanceledException) when (ct.IsCancellationRequested) {

@@ -151,21 +151,19 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
 
-        public Task<ulong> CreateBlobAsync(byte[] data, CancellationToken ct = default(CancellationToken)) {
-            return DoBlobServiceAsync(_host?.CreateBlobAsync(data, ct));
-        }
+        public Task<ulong> CreateBlobAsync(byte[] data, CancellationToken ct = default(CancellationToken)) =>
+            DoBlobServiceAsync(_host?.CreateBlobAsync(data, ct));
+        
 
-        public Task<byte[]> GetBlobAsync(ulong blobId, CancellationToken ct = default(CancellationToken)) {
-            return DoBlobServiceAsync(_host?.GetBlobAsync(blobId, ct));
-        }
-
-        public Task DestroyBlobsAsync(IEnumerable<ulong> blobIds, CancellationToken ct = default(CancellationToken)) {
-            return DoBlobServiceAsync(new Lazy<Task<long>>(async () => {
+        public Task<byte[]> GetBlobAsync(ulong blobId, CancellationToken ct = default(CancellationToken)) =>
+            DoBlobServiceAsync(_host?.GetBlobAsync(blobId, ct));
+        
+        public Task DestroyBlobsAsync(IEnumerable<ulong> blobIds, CancellationToken ct = default(CancellationToken)) => 
+            DoBlobServiceAsync(new Lazy<Task<long>>(async () => {
                 await _host.DestroyBlobsAsync(blobIds, ct);
                 return 0;
             }).Value);
-        }
-
+        
         private async Task<T> DoBlobServiceAsync<T>(Task<T> work) {
             if (!IsHostRunning) {
                 throw new RHostDisconnectedException();

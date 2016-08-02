@@ -26,13 +26,12 @@ namespace Microsoft.R.Host.Client.Test.Session {
             public Blobs(TestMethodFixture testMethod, TaskObserverMethodFixture taskObserver) {
                 _taskObserver = taskObserver;
                 _testMethod = testMethod.MethodInfo;
-                _session = new RSession(0, () => { });
+                _session = new RSession(0, new RHostBrokerConnector(), () => { });
             }
 
             public async Task InitializeAsync() {
                 await _session.StartHostAsync(new RHostStartupInfo {
-                    Name = _testMethod.Name,
-                    RBasePath = new RInstallation().GetRInstallPath()
+                    Name = _testMethod.Name
                 }, null, 50000);
 
                 _taskObserver.ObserveTaskFailure(_session.RHost.GetRHostRunTask());
@@ -45,7 +44,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
             [Test(DisplayName = "CreateBlob_DisconnectedFromTheStart")]
             public async Task CreateBlob_DisconnectedFromTheStart() {
-                using (var session = new RSession(0, () => { })) {
+                using (var session = new RSession(0, new RHostBrokerConnector(), () => { })) {
                     var data = new byte[] { 1, 2, 3, 4, 5 };
                     Func<Task> f = () => session.CreateBlobAsync(data);
                     await f.ShouldThrowAsync<RHostDisconnectedException>();
@@ -82,7 +81,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
             [Test(DisplayName = "GetBlob_DisconnectedFromTheStart")]
             public async Task GetBlob_DisconnectedFromTheStart() {
-                using (var session = new RSession(0, () => { })) {
+                using (var session = new RSession(0, new RHostBrokerConnector(), () => { })) {
                     Func<Task> f = () => session.GetBlobAsync(1);
                     await f.ShouldThrowAsync<RHostDisconnectedException>();
                 }
@@ -119,7 +118,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
             [Test(DisplayName = "DestroyBlob_DisconnectedFromTheStart")]
             public async Task DestroyBlob_DisconnectedFromTheStart() {
-                using (var session = new RSession(0, () => { })) {
+                using (var session = new RSession(0, new RHostBrokerConnector(), () => { })) {
                     var blobids = new ulong[] { 1, 2, 3, 4, 5 };
                     Func<Task> f = () => session.DestroyBlobsAsync(blobids);
                     await f.ShouldThrowAsync<RHostDisconnectedException>();
