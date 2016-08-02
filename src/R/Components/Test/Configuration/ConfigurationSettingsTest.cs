@@ -136,7 +136,7 @@ c1 <- 'DSN'
             ConfigurationParser cp;
             var settings = GetSettings(content, out cp);
 
-            settings.Should().HaveCount(0);
+            settings.Should().BeEmpty();
             cp.Errors.Should().HaveCount(expectedCount);
             if (expectedCount > 0) {
                 cp.Errors[0].LineNumber.Should().Be(expectedLineNumber);

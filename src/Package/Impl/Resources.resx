@@ -839,9 +839,6 @@ Additional information:
   <data name="Yes" xml:space="preserve">
     <value>Yes</value>
   </data>
-  <data name="SqlPublishDialog_GenerateStoredProcedures" xml:space="preserve">
-    <value>Generate stored procedures</value>
-  </data>
   <data name="SqlPublishDialog_HeaderFile" xml:space="preserve">
     <value>File</value>
   </data>
@@ -854,17 +851,14 @@ Additional information:
   <data name="SqlPublishDialog_TableName" xml:space="preserve">
     <value>Table name:</value>
   </data>
-  <data name="SqlPublishDialog_TargetProject" xml:space="preserve">
-    <value>Target project:</value>
+  <data name="SqlPublishDialog_Target" xml:space="preserve">
+    <value>Target:</value>
   </data>
   <data name="Error_UnableToReadSqlPublishSettings" xml:space="preserve">
     <value>Unable to read SQL publishing settings from {0}. Exception: {1}</value>
   </data>
   <data name="SqlPublishDialog_Title" xml:space="preserve">
-    <value>Publish R Code to SQL</value>
-  </data>
-  <data name="Error_UnableGenerateSqlFiles" xml:space="preserve">
-    <value>Unable to create SQL files. Exception: {0}</value>
+    <value>R Code to SQL Publishing Options</value>
   </data>
   <data name="SqlPublishDialog_RCodeInline" xml:space="preserve">
     <value>In stored procedure @script parameter</value>
@@ -874,9 +868,6 @@ Additional information:
   </data>
   <data name="SqlPublishDialog_RCodePlacement" xml:space="preserve">
     <value>R code placement:</value>
-  </data>
-  <data name="SqlPublishDialog_NoDbProject" xml:space="preserve">
-    <value>Unable to find database project in the Solution. Please create a database project which will receive SQL files with the R code.</value>
   </data>
   <data name="SqlPublishDialog_NoSProcFiles" xml:space="preserve">
     <value>The selected project does not contain any R Script with SQL files.</value>
@@ -892,5 +883,38 @@ Additional information:
   </data>
   <data name="SqlPublishDialog_NoQuote" xml:space="preserve">
     <value>None</value>
+  </data>
+  <data name="SqlPublishDialog_UnableToBuildDacPac" xml:space="preserve">
+    <value>Unable to package SQL stored procedure(s). Exception: {0}.</value>
+  </data>
+  <data name="SqlPublishDialog_TargetType" xml:space="preserve">
+    <value>Publish to:</value>
+  </data>
+  <data name="SqlPublishDialog_TargetTypeDatabase" xml:space="preserve">
+    <value>Database</value>
+  </data>
+  <data name="SqlPublishDialog_TargetTypeProject" xml:space="preserve">
+    <value>Project</value>
+  </data>
+  <data name="SqlPublishDialog_TargetTypeDacpac" xml:space="preserve">
+    <value>DACPAC</value>
+  </data>
+  <data name="SqlPublish_PublishError" xml:space="preserve">
+    <value>Publishing failed. Exception: {0}</value>
+  </data>
+  <data name="SqlPublishDialog_NoDatabaseConnections" xml:space="preserve">
+    <value>&lt;No database connections&gt;</value>
+  </data>
+  <data name="SqlPublishDialog_NoDatabaseProjects" xml:space="preserve">
+    <value>&lt;No database projects&gt;</value>
+  </data>
+  <data name="SqlPublishDialog_PublishButton" xml:space="preserve">
+    <value>Publish</value>
+  </data>
+  <data name="SqlPublish_PublishDacpacSuccess" xml:space="preserve">
+    <value>Publishing complete. DACPAC: {0}</value>
+  </data>
+  <data name="SqlPublish_PublishDatabaseSuccess" xml:space="preserve">
+    <value>Publishing complete. Connection {0}</value>
   </data>
 </root>

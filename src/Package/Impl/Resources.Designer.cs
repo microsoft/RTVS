@@ -386,15 +386,6 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to create SQL files. Exception: {0}.
-        /// </summary>
-        public static string Error_UnableGenerateSqlFiles {
-            get {
-                return ResourceManager.GetString("Error_UnableGenerateSqlFiles", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Cannot delete variable(s). Exception {0}.
         /// </summary>
         public static string Error_UnableToDeleteVariable {
@@ -1947,6 +1938,33 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Publishing complete. DACPAC: {0}.
+        /// </summary>
+        public static string SqlPublish_PublishDacpacSuccess {
+            get {
+                return ResourceManager.GetString("SqlPublish_PublishDacpacSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publishing complete. Connection {0}.
+        /// </summary>
+        public static string SqlPublish_PublishDatabaseSuccess {
+            get {
+                return ResourceManager.GetString("SqlPublish_PublishDatabaseSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publishing failed. Exception: {0}.
+        /// </summary>
+        public static string SqlPublish_PublishError {
+            get {
+                return ResourceManager.GetString("SqlPublish_PublishError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Square brackets.
         /// </summary>
         public static string SqlPublishDialog_BracketQuote {
@@ -1961,15 +1979,6 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string SqlPublishDialog_DoubleQuote {
             get {
                 return ResourceManager.GetString("SqlPublishDialog_DoubleQuote", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Generate stored procedures.
-        /// </summary>
-        public static string SqlPublishDialog_GenerateStoredProcedures {
-            get {
-                return ResourceManager.GetString("SqlPublishDialog_GenerateStoredProcedures", resourceCulture);
             }
         }
         
@@ -2001,11 +2010,20 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to find database project in the Solution. Please create a database project which will receive SQL files with the R code..
+        ///   Looks up a localized string similar to &lt;No database connections&gt;.
         /// </summary>
-        public static string SqlPublishDialog_NoDbProject {
+        public static string SqlPublishDialog_NoDatabaseConnections {
             get {
-                return ResourceManager.GetString("SqlPublishDialog_NoDbProject", resourceCulture);
+                return ResourceManager.GetString("SqlPublishDialog_NoDatabaseConnections", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;No database projects&gt;.
+        /// </summary>
+        public static string SqlPublishDialog_NoDatabaseProjects {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_NoDatabaseProjects", resourceCulture);
             }
         }
         
@@ -2024,6 +2042,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string SqlPublishDialog_NoSProcFiles {
             get {
                 return ResourceManager.GetString("SqlPublishDialog_NoSProcFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publish.
+        /// </summary>
+        public static string SqlPublishDialog_PublishButton {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_PublishButton", resourceCulture);
             }
         }
         
@@ -2073,20 +2100,65 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Target project:.
+        ///   Looks up a localized string similar to Target:.
         /// </summary>
-        public static string SqlPublishDialog_TargetProject {
+        public static string SqlPublishDialog_Target {
             get {
-                return ResourceManager.GetString("SqlPublishDialog_TargetProject", resourceCulture);
+                return ResourceManager.GetString("SqlPublishDialog_Target", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Publish R Code to SQL.
+        ///   Looks up a localized string similar to Publish to:.
+        /// </summary>
+        public static string SqlPublishDialog_TargetType {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_TargetType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DACPAC.
+        /// </summary>
+        public static string SqlPublishDialog_TargetTypeDacpac {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_TargetTypeDacpac", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Database.
+        /// </summary>
+        public static string SqlPublishDialog_TargetTypeDatabase {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_TargetTypeDatabase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Project.
+        /// </summary>
+        public static string SqlPublishDialog_TargetTypeProject {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_TargetTypeProject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R Code to SQL Publishing Options.
         /// </summary>
         public static string SqlPublishDialog_Title {
             get {
                 return ResourceManager.GetString("SqlPublishDialog_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to package SQL stored procedure(s). Exception: {0}..
+        /// </summary>
+        public static string SqlPublishDialog_UnableToBuildDacPac {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_UnableToBuildDacPac", resourceCulture);
             }
         }
         

@@ -71,6 +71,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public const int icmdAddDsn = 810;
         public const int icmdManageDsn = 811;
         public const int icmdPublishSProc = 812;
+        public const int icmdPublishSProcOptions = 813;
 
         // Window management
         public const int icmdShowReplWindow = 901;

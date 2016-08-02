@@ -2,12 +2,11 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.ComponentModel.Composition;
-using System.IO;
+using System.Globalization;
 using System.Linq;
-using Microsoft.Common.Core;
+using Microsoft.Common.Core.IO;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Sql.Publish;
@@ -26,11 +25,19 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
     internal sealed class PublishSProcCommand : ICommandGroupHandler {
         private readonly IApplicationShell _appShell;
         private readonly IProjectSystemServices _pss;
+        private readonly IFileSystem _fs;
+        private readonly IDacPackageServices _dacServices;
 
         [ImportingConstructor]
-        public PublishSProcCommand(IApplicationShell appShell, IProjectSystemServices pss) {
+        public PublishSProcCommand(IApplicationShell appShell, IProjectSystemServices pss) : 
+            this(appShell, pss, new FileSystem(), new DacPackageServices()) {
+        }
+
+        public PublishSProcCommand(IApplicationShell appShell, IProjectSystemServices pss, IFileSystem fs, IDacPackageServices dacServices) {
             _appShell = appShell;
             _pss = pss;
+            _fs = fs;
+            _dacServices = dacServices;
         }
 
         public CommandStatusResult GetCommandStatus(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus progressiveStatus) {
@@ -51,20 +58,17 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
         private void Handle() {
             var project = _pss.GetSelectedProject<IVsHierarchy>()?.GetDTEProject();
             if (project != null) {
-                if (SqlPublishDialogViewModel.GetDatabaseProjectsInSolution(_pss).Count > 0) {
-                    var rFiles = _pss.GetProjectFiles(project).Where(x => Path.GetExtension(x).EqualsIgnoreCase(".R"));
-                    var sqlFiles = new HashSet<string>(_pss.GetProjectFiles(project).Where(x => Path.GetExtension(x).EqualsIgnoreCase(".sql")));
-                    var sprocFiles = rFiles.Where(x =>
-                                sqlFiles.Contains(x.ToQueryFilePath(), StringComparer.OrdinalIgnoreCase) &&
-                                sqlFiles.Contains(x.ToSProcFilePath(), StringComparer.OrdinalIgnoreCase));
-                    if (sprocFiles.Any()) {
-                        var dlg = new SqlPublshDialog(_appShell, _pss, sprocFiles);
-                        dlg.ShowModal();
-                    } else {
-                        _appShell.ShowErrorMessage(Resources.SqlPublishDialog_NoSProcFiles);
+                var sprocFiles = project.GetSProcFiles(_pss);
+                if (sprocFiles.Any()) {
+                    try {
+                        var publisher = new SProcPublisher(_appShell, _pss, _fs, _dacServices);
+                        var settings = new SqlSProcPublishSettings(_appShell.SettingsStorage);
+                        publisher.Publish(settings, sprocFiles);
+                    } catch(Exception ex) {
+                        _appShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.SqlPublish_PublishError, ex.Message));
                     }
                 } else {
-                    _appShell.ShowErrorMessage(Resources.SqlPublishDialog_NoDbProject);
+                    _appShell.ShowErrorMessage(Resources.SqlPublishDialog_NoSProcFiles);
                 }
             }
         }

@@ -7,7 +7,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     /// <summary>
     /// R application project properties
     /// </summary>
-    internal interface IRProjectProperties {
+    public interface IRProjectProperties {
         /// <summary>
         /// Defines if REPL is to be reset before starting the application.
         /// </summary>

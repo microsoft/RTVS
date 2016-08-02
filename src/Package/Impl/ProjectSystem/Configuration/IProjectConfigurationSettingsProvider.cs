@@ -12,7 +12,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration {
     /// 'Add Database Connection' command. Dispose object to release access
     /// to the collection. All access is read/write. Do not cache the object.
     /// </summary>
-    internal interface IProjectConfigurationSettingsProvider {
+    public interface IProjectConfigurationSettingsProvider {
         Task<IProjectConfigurationSettingsAccess> OpenProjectSettingsAccessAsync(UnconfiguredProject project, IRProjectProperties propertes);
         Task<IProjectConfigurationSettingsAccess> OpenProjectSettingsAccessAsync(ConfiguredProject project);
     }

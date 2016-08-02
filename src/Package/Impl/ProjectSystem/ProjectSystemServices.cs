@@ -12,7 +12,6 @@ using System.Runtime.InteropServices;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.Common.Core;
-using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using static System.FormattableString;
@@ -35,6 +34,9 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             return null;
         }
 
+        /// <summary>
+        /// Locates project that is currently active in Solution Explorer
+        /// </summary>
         public T GetSelectedProject<T>() where T : class {
             var monSel = VsAppShell.Current.GetGlobalService<IVsMonitorSelection>();
             IntPtr hierarchy = IntPtr.Zero, selectionContainer = IntPtr.Zero;
@@ -123,6 +125,9 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             }
         }
 
+        /// <summary>
+        /// Given folder, prefix and extension generates unique file name in the project folder.
+        /// </summary>
         public string GetUniqueFileName(string folder, string prefix, string extension, bool appendUnderscore = false) {
             string suffix = appendUnderscore ? "_" : string.Empty;
             string name = Path.ChangeExtension(Path.Combine(folder, prefix), extension);
@@ -138,6 +143,9 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             }
         }
 
+        /// <summary>
+        /// Retrieves folder name of the project item templates
+        /// </summary>
         public string GetProjectItemTemplatesFolder() {
             // In F5 (Experimental instance) scenario templates are deployed where the extension is.
             string assemblyPath = Assembly.GetExecutingAssembly().GetAssemblyPath();
@@ -152,8 +160,27 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             return templatesFolder;
         }
 
+        /// <summary>
+        /// Enumerates all files in the project traversing into sub folders
+        /// and items that have child elements.
+        /// </summary>
         public IEnumerable<string> GetProjectFiles(EnvDTE.Project project) {
             return EnumerateProjectFiles(project?.ProjectItems);
+        }
+
+        /// <summary>
+        /// Locates project by name
+        /// </summary>
+        public EnvDTE.Project GetProject(string projectName) {
+            var projects = GetSolution()?.Projects;
+            if (projects != null) {
+                foreach (EnvDTE.Project p in projects) {
+                    if (p.Name.EqualsOrdinal(projectName)) {
+                        return p;
+                    }
+                }
+            }
+            return null;
         }
 
         private IEnumerable<string> EnumerateProjectFiles(EnvDTE.ProjectItems items) {
