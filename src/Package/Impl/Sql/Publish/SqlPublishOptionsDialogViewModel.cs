@@ -58,6 +58,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
                     Settings.TargetType = TargetTypeFromName(TargetTypeNames[_selectedTargetTypeIndex]);
                     SetProperty(ref _selectedTargetTypeIndex, value);
                     InitializationTask = PopulateTargetsAsync().ContinueWith(t => UpdateState());
+                    InitializationTask.DoNotWait();
                 }
             }
         }
