@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -16,7 +15,6 @@ using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Telemetry;
 using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.Telemetry;
 
 namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
     /// <summary>
@@ -89,36 +87,18 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// </summary>
         private void PublishToProject(SqlSProcPublishSettings settings, IEnumerable<string> sprocFiles) {
             Check.ArgumentNull(nameof(settings), settings.TargetProject);
-            try {
-                var targetProject = GetProjectByName(settings.TargetProject);
-                var generator = new SProcProjectFilesGenerator(_pss, _fs);
-                generator.Generate(settings, targetProject);
-                RtvsTelemetry.Current?.TelemetryService.ReportEvent(TelemetryArea.SQL, SqlTelemetryEvents.SqlProjectPublish);
-            } catch (Exception ex) {
-                _appShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableGenerateSqlFiles, ex.Message));
-                GeneralLog.Write(ex);
-                if (ex.IsCriticalException()) {
-                    throw ex;
-                }
-            }
+            var targetProject = _pss.GetProject(settings.TargetProject);
+            var generator = new SProcProjectFilesGenerator(_pss, _fs);
+            generator.Generate(settings, targetProject);
+            RtvsTelemetry.Current?.TelemetryService.ReportEvent(TelemetryArea.SQL, SqlTelemetryEvents.SqlProjectPublish);
         }
 
         private void CreateDacPac(SqlSProcPublishSettings settings, IEnumerable<string> sprocFiles, string dacpacPath) {
             var project = _pss.GetSelectedProject<IVsHierarchy>()?.GetDTEProject();
             var g = new SProcScriptGenerator(_fs);
-            var scripts = g.CreateStoredProcedureScripts(settings, sprocFiles);
+            var sprocMap = g.CreateStoredProcedureScripts(settings, sprocFiles);
             var builder = _dacServices.GetBuilder(_appShell);
-            builder.Build(dacpacPath, project.Name, scripts.Values);
-        }
-
-        private EnvDTE.Project GetProjectByName(string projectName) {
-            var projects = _pss.GetSolution().Projects;
-            foreach (EnvDTE.Project p in projects) {
-                if (p.Name.EqualsOrdinal(projectName)) {
-                    return p;
-                }
-            }
-            return null;
+            builder.Build(dacpacPath, project.Name, sprocMap.Scripts);
         }
     }
 }

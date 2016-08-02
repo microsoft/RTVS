@@ -7,12 +7,12 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Wpf;
+using Microsoft.Common.Wpf.Collections;
 using Microsoft.Languages.Core.Settings;
-using Microsoft.R.Components.Application.Configuration;
+using Microsoft.R.Components.Extensions;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -38,11 +38,9 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             public string ConnectionString;
         }
 
-        private IReadOnlyList<string> _targets = new List<string>();
+        private BatchObservableCollection<string> _targets = new BatchObservableCollection<string>();
         private IReadOnlyList<string> _targetProjects = new List<string>();
         private IReadOnlyList<DbConnectionData> _targetConnections = new List<DbConnectionData>();
-
-        public Task InitializationTask { get; private set; } = Task.CompletedTask;
 
         /// <summary>
         /// Target types: DACPAC, database, project
@@ -96,7 +94,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// </summary>
         public IReadOnlyList<string> Targets {
             get { return _targets; }
-            set { SetProperty(ref _targets, value); }
+            set { _targets.ReplaceWith(value); }
         }
         public int SelectedTargetIndex {
             get { return _selectedTargetIndex; }
@@ -184,6 +182,8 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         }
 
         private void PopulateTargets() {
+            _coreShell.AssertIsOnMainThread();
+
             switch (Settings.TargetType) {
                 case PublishTargetType.Dacpac:
                     Targets = new List<string>();
@@ -194,25 +194,23 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
                     break;
 
                 case PublishTargetType.Database:
-                    InitializationTask = PopulateConnectionsListAsync();
-                    TargetHasName = false;
+                    PopulateConnectionsList();
                     break;
             }
         }
 
-        private Task PopulateConnectionsListAsync() {
-            return GetDatabaseConnectionsAsync((connections) => {
-                var index = -1;
-                _targetConnections = connections;
-                if (!string.IsNullOrEmpty(Settings.TargetDatabaseConnection)) {
-                    var indices = _targetConnections.IndexWhere(c => c.ConnectionString.EqualsIgnoreCase(Settings.TargetDatabaseConnection));
-                    index = indices.DefaultIfEmpty(-1).First();
-                }
-                Targets = _targetConnections.Select(c => c.Name).ToList();
-                ForceSelectedTargetIndexUpdate();
-                SelectedTargetIndex = index >= 0 ? index : 0;
-                UpdateState();
-            });
+        private void PopulateConnectionsList() {
+            var connections = GetDatabaseConnections();
+            var index = -1;
+            _targetConnections = connections;
+            if (!string.IsNullOrEmpty(Settings.TargetDatabaseConnection)) {
+                var indices = _targetConnections.IndexWhere(c => c.ConnectionString.EqualsIgnoreCase(Settings.TargetDatabaseConnection));
+                index = indices.DefaultIfEmpty(-1).First();
+            }
+            Targets = _targetConnections.Select(c => c.Name).ToList();
+            ForceSelectedTargetIndexUpdate();
+            SelectedTargetIndex = index >= 0 ? index : 0;
+            UpdateState();
         }
 
         private void PopulateProjectList() {
@@ -253,12 +251,11 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             return projects;
         }
 
-        private Task GetDatabaseConnectionsAsync(Action<IReadOnlyList<DbConnectionData>> action) {
-            var tcs = new TaskCompletionSource<int>();
+        private IReadOnlyList<DbConnectionData> GetDatabaseConnections() {
+            var connections = new List<DbConnectionData>();
             var project = _pss.GetSelectedProject<IVsHierarchy>();
             if (project != null) {
                 project.GetDbConnections(_pcsp).ContinueWith(t => {
-                    var connections = new List<DbConnectionData>();
                     if (t.IsCompleted) {
                         foreach (var s in t.Result) {
                             connections.Add(new DbConnectionData { Name = s.Name, ConnectionString = s.Value });
@@ -267,13 +264,9 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
                     if (connections.Count == 0) {
                         connections.Add(new DbConnectionData { Name = Resources.SqlPublishDialog_NoDatabaseConnections });
                     }
-                    _coreShell.DispatchOnUIThread(() => {
-                        action(connections);
-                        tcs.SetResult(0);
-                    });
                 });
             }
-            return tcs.Task;
+            return connections;
         }
 
         private void SelectCodePlacementMode() {

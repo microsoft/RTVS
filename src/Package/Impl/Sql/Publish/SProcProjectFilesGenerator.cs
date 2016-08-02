@@ -63,8 +63,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// </summary>
         private void CreatePostDeploymentScriptFile(SqlSProcPublishSettings settings, 
             EnvDTE.Project targetProject, string targetFolder, 
-            EnvDTE.ProjectItem targetProjectItem,
-            IReadOnlyDictionary<string, string> sprocMap) {
+            EnvDTE.ProjectItem targetProjectItem, SProcMap sprocMap) {
             var postDeploymentScript = Path.Combine(targetFolder, PostDeploymentScriptName);
 
             var g = new SProcScriptGenerator(_fs);
@@ -76,16 +75,16 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             item.Properties.Item("BuildAction").Value = "PostDeploy";
         }
 
-        private IReadOnlyDictionary<string, string> CreateStoredProcedureFiles(SqlSProcPublishSettings settings, EnvDTE.Project targetProject, string targetFolder, EnvDTE.ProjectItem targetProjectItem) {
+        private SProcMap CreateStoredProcedureFiles(SqlSProcPublishSettings settings, EnvDTE.Project targetProject, string targetFolder, EnvDTE.ProjectItem targetProjectItem) {
             var g = new SProcScriptGenerator(_fs);
 
             var sprocFiles = targetProject.GetSProcFiles(_pss);
             var sprocMap = g.CreateStoredProcedureScripts(settings, sprocFiles);
 
-            foreach (var sprocName in sprocMap.Keys) {
-                var template = sprocMap[sprocName];
+            foreach (var name in sprocMap) {
+                var template = sprocMap[name];
                 if (!string.IsNullOrEmpty(template)) {
-                    var sprocFile = Path.ChangeExtension(Path.Combine(targetFolder, sprocName), ".sql");
+                    var sprocFile = Path.ChangeExtension(Path.Combine(targetFolder, name), ".sql");
                     _fs.WriteAllText(sprocFile, template);
                     targetProjectItem.ProjectItems.AddFromFile(sprocFile);
                 }

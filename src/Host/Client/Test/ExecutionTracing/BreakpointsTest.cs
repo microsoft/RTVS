@@ -231,7 +231,7 @@ namespace Microsoft.R.ExecutionTracing.Test {
                 await bp2Hit.ShouldBeHitAtNextPromptAsync();
 
                 await bp2.DeleteAsync();
-                tracer.Breakpoints.Should().HaveCount(0);
+                tracer.Breakpoints.Should().BeEmpty();
 
                 await tracer.ContinueAsync();
 

@@ -50,32 +50,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         }
 
         private void OKButton_Click(object sender, RoutedEventArgs e)  => Close(true);
-        private void CancelButton_Click(object sender, RoutedEventArgs e) => Close(false);
+        private void CancelButton_Click(object sender, RoutedEventArgs e) => Close();
         private void TableName_TextChanged(object sender, TextChangedEventArgs e) => _model.UpdateState();
-
-        private void CodePlacementList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            var s = CodePlacementList.SelectedItem as string;
-            var placement = s.EqualsOrdinal(Package.Resources.SqlPublishDialog_RCodeInline) ? RCodePlacement.Inline : RCodePlacement.Table;
-            _model.Settings.CodePlacement = placement;
-            _model.UpdateState();
-        }
-
-        private void QuoteTypetList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            var s = QuoteTypeList.SelectedItem as string;
-            SqlQuoteType quoteType;
-            if (s.EqualsOrdinal(Package.Resources.SqlPublishDialog_BracketQuote)) {
-                quoteType = SqlQuoteType.Bracket;
-            } else if(s.EqualsOrdinal(Package.Resources.SqlPublishDialog_NoQuote)) {
-                quoteType = SqlQuoteType.None;
-            } else {
-                quoteType = SqlQuoteType.Quote;
-            }
-            _model.Settings.QuoteType = quoteType;
-        }
-
-        private void TargetTypeList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            var s = TargetTypeList.SelectedItem as string;
-            _model.TargetHasName = !s.EqualsOrdinal(Package.Resources.SqlPublishDialog_TargetTypeDacpac);
-        }
     }
 }

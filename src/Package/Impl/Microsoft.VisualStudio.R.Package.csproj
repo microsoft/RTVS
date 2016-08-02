@@ -283,6 +283,7 @@
     <Compile Include="Sql\Publish\Definitions\IDacPackageServices.cs" />
     <Compile Include="Sql\Publish\PublishTargetType.cs" />
     <Compile Include="Sql\Publish\RCodePlacement.cs" />
+    <Compile Include="Sql\Publish\SProcMap.cs" />
     <Compile Include="Sql\Publish\SProcPublisher.cs" />
     <Compile Include="Sql\Publish\SProcScriptGenerator.cs" />
     <Compile Include="Sql\Publish\SProcProjectFilesGenerator.cs" />

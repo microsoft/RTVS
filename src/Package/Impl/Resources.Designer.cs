@@ -386,15 +386,6 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to create SQL files. Exception: {0}.
-        /// </summary>
-        public static string Error_UnableGenerateSqlFiles {
-            get {
-                return ResourceManager.GetString("Error_UnableGenerateSqlFiles", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Cannot delete variable(s). Exception {0}.
         /// </summary>
         public static string Error_UnableToDeleteVariable {

@@ -37,6 +37,15 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         /// </summary>
         string GetProjectItemTemplatesFolder();
 
+        /// <summary>
+        /// Enumerates all files in the project traversing into sub folders
+        /// and items that have child elements.
+        /// </summary>
         IEnumerable<string> GetProjectFiles(EnvDTE.Project project);
+
+        /// <summary>
+        /// Locates project by name
+        /// </summary>
+        EnvDTE.Project GetProject(string projectName);
     }
 }

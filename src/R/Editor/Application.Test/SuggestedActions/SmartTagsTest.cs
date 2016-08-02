@@ -50,7 +50,7 @@ namespace Microsoft.R.Editor.Application.Test.SuggestedActions {
                 });
 
                 sets.Should().NotBeNull();
-                sets.Should().HaveCount(0);
+                sets.Should().BeEmpty();
                 session.Dismiss();
                 script.DoIdle(200);
 

@@ -277,10 +277,10 @@ namespace Microsoft.Languages.Core.Test.Text {
             TextRangeCollection<TextRange> target = MakeCollection();
 
             IReadOnlyList<int> list = target.GetItemsContainingInclusiveEnd(0);
-            list.Should().HaveCount(0);
+            list.Should().BeEmpty();
 
             list = target.GetItemsContainingInclusiveEnd(-2);
-            list.Should().HaveCount(0);
+            list.Should().BeEmpty();
 
             list = target.GetItemsContainingInclusiveEnd(1);
             list.Should().HaveCount(1);
@@ -312,13 +312,13 @@ namespace Microsoft.Languages.Core.Test.Text {
             list[0].Should().Be(2);
 
             list = target.GetItemsContainingInclusiveEnd(8);
-            list.Should().HaveCount(0);
+            list.Should().BeEmpty();
 
             list = target.GetItemsContainingInclusiveEnd(10);
-            list.Should().HaveCount(0);
+            list.Should().BeEmpty();
 
             list = target.GetItemsContainingInclusiveEnd(Int32.MaxValue);
-            list.Should().HaveCount(0);
+            list.Should().BeEmpty();
         }
 
         [Test]
@@ -327,10 +327,10 @@ namespace Microsoft.Languages.Core.Test.Text {
             TextRangeCollection<TextRange> target = MakeCollection();
 
             IReadOnlyList<TextRange> list = target.ItemsInRange(TextRange.EmptyRange);
-            list.Should().HaveCount(0);
+            list.Should().BeEmpty();
 
             list = target.ItemsInRange(TextRange.FromBounds(-10, -1));
-            list.Should().HaveCount(0);
+            list.Should().BeEmpty();
 
             list = target.ItemsInRange(TextRange.FromBounds(0, Int32.MaxValue));
             list.Should().HaveCount(3);
@@ -345,7 +345,7 @@ namespace Microsoft.Languages.Core.Test.Text {
             list.Should().HaveCount(3);
 
             list = target.ItemsInRange(TextRange.FromBounds(1, 1));
-            list.Should().HaveCount(0); // Zero-length ranges can't contain anything
+            list.Should().BeEmpty(); // Zero-length ranges can't contain anything
 
             list = target.ItemsInRange(TextRange.FromBounds(1, 2));
             list.Should().HaveCount(1);

@@ -29,26 +29,23 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             _fs = fs;
         }
 
-        public string CreateRCodeTableScript(SqlSProcPublishSettings settings) {
-            var sb = new StringBuilder();
-            sb.AppendLine(Invariant($"CREATE TABLE {settings.TableName.ToSqlName(settings.QuoteType)}"));
-            sb.AppendLine("(");
-            sb.AppendLine(Invariant($"{SProcColumnName} NVARCHAR(64),"));
-            sb.AppendLine(Invariant($"{RCodeColumnName} NVARCHAR(max)"));
-            sb.AppendLine(")");
-            return sb.ToString();
-        }
+        public string CreateRCodeTableScript(SqlSProcPublishSettings settings) => Invariant(
+$@"CREATE TABLE {settings.TableName.ToSqlName(settings.QuoteType)}
+(
+{SProcColumnName} NVARCHAR(64),
+{RCodeColumnName} NVARCHAR(max)
+)");
 
         /// <summary>
         /// Generates SQL post deployment script that pushes R code into a table
         /// as well as 
         /// </summary>
-        public string CreatePostDeploymentScript(SqlSProcPublishSettings settings, IReadOnlyDictionary<string, string> sprocMap) {
+        public string CreatePostDeploymentScript(SqlSProcPublishSettings settings, SProcMap sprocMap) {
             var sb = new StringBuilder();
             sb.AppendLine(Invariant($"INSERT INTO {settings.TableName.ToSqlName(settings.QuoteType)}"));
 
             int i = 0;
-            foreach (var sprocName in sprocMap.Keys) {
+            foreach (var sprocName in sprocMap) {
                 var content = sprocMap[sprocName];
                 sb.Append(Invariant($"VALUES ('{sprocName.ToSqlName(settings.QuoteType)}', '{content}')"));
                 if (i < sprocMap.Count - 1) {
@@ -63,8 +60,8 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// <summary>
         /// Creates code for stored procedures
         /// </summary>
-        public IReadOnlyDictionary<string, string> CreateStoredProcedureScripts(SqlSProcPublishSettings settings, IEnumerable<string> sprocFiles) {
-            var dict = new Dictionary<string, string>();
+        public SProcMap CreateStoredProcedureScripts(SqlSProcPublishSettings settings, IEnumerable<string> sprocFiles) {
+            var sprocMap = new SProcMap();
             foreach (var rFilePath in sprocFiles) {
                 var sprocName = _fs.GetSProcNameFromTemplate(rFilePath);
                 if (!string.IsNullOrEmpty(sprocName)) {
@@ -75,11 +72,11 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
                         template = FillSprocTableTemplate(rFilePath, sprocName, settings.TableName, settings.QuoteType);
                     }
                     if (!string.IsNullOrEmpty(template)) {
-                        dict[sprocName] = template;
+                        sprocMap[sprocName] = template;
                     }
                 }
             }
-            return dict;
+            return sprocMap;
         }
 
         /// <summary>
@@ -101,19 +98,18 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             var sprocTemplateFile = rFilePath.ToSProcFilePath();
             var sprocTemplate = GetSqlFileContent(sprocTemplateFile);
 
-            var format =
-@"BEGIN
+            var declarations = Invariant(
+$@"BEGIN
 DECLARE @RCodeQuery NVARCHAR(max);
 DECLARE @RCode NVARCHAR(max);
 DECLARE @ParmDefinition NVARCHAR(max);
 
-SET @RCodeQuery = N'SELECT @RCodeOUT = RCode FROM {0} WHERE SProcName = ''{1}''';
+SET @RCodeQuery = N'SELECT @RCodeOUT = RCode FROM {codeTableName.ToSqlName(quoteType)} WHERE SProcName = ''{sprocName}''';
 SET @ParmDefinition = N'@RCodeOUT NVARCHAR(max) OUTPUT';
 
 EXEC sp_executesql @RCodeQuery, @ParmDefinition, @RCodeOUT=@RCode OUTPUT;
 SELECT @RCode;
-";
-            var declarations = string.Format(CultureInfo.InvariantCulture, format, codeTableName.ToSqlName(quoteType), sprocName);
+");
             sprocTemplate = sprocTemplate.Replace("BEGIN", declarations);
             sprocTemplate = sprocTemplate.Replace("N'_RCODE_'", "@RCode");
 

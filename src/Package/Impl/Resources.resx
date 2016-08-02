@@ -866,9 +866,6 @@ Additional information:
   <data name="SqlPublishDialog_Title" xml:space="preserve">
     <value>R Code to SQL Publishing Options</value>
   </data>
-  <data name="Error_UnableGenerateSqlFiles" xml:space="preserve">
-    <value>Unable to create SQL files. Exception: {0}</value>
-  </data>
   <data name="SqlPublishDialog_RCodeInline" xml:space="preserve">
     <value>In stored procedure @script parameter</value>
   </data>

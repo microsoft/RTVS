@@ -50,7 +50,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             model.CodePlacementNames.Should().HaveCount(2);
             model.SelectedCodePlacementIndex.Should().Be(0);
 
-            model.Targets.Should().HaveCount(0);
+            model.Targets.Should().BeEmpty();
             model.TargetHasName.Should().BeFalse();
             model.GenerateTable.Should().BeFalse();
 
@@ -147,7 +147,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             _storage.GetInteger(SqlSProcPublishSettings.TargetTypeSettingName, (int)PublishTargetType.Dacpac).Returns((int)PublishTargetType.Database);
 
             var model = new SqlPublishOptionsDialogViewModel(_coreShell, _pss, _storage, _pcsp);
-            await model.InitializationTask;
 
             model.Settings.TargetType.Should().Be(PublishTargetType.Database);
             model.Targets.Should().HaveCount(1);
@@ -181,7 +180,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             _storage.GetString(SqlSProcPublishSettings.TargetDatabaseConnectionSettingName, Arg.Any<string>()).Returns(("dbConn2_String"));
 
             var model = new SqlPublishOptionsDialogViewModel(_coreShell, _pss, _storage, _pcsp);
-            await model.InitializationTask;
 
             model.Settings.TargetType.Should().Be(PublishTargetType.Database);
             model.Settings.TargetDatabaseConnection.Should().Be("dbConn2_String");
