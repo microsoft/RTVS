@@ -40,10 +40,14 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
                     DacPackageExtensions.BuildPackage(dacpacPath, model,
                                         new PackageMetadata { Name = packageName, Description = string.Empty, Version = "1.0" },
                                         new PackageOptions());
-                    var message = Environment.NewLine + string.Format(CultureInfo.InvariantCulture, Resources.SqlPublish_PublishDacpacSuccess, dacpacPath);
+                    var message = Environment.NewLine + 
+                        string.Format(CultureInfo.InvariantCulture, Resources.SqlPublish_PublishDacpacSuccess, dacpacPath) +
+                        Environment.NewLine;
                     _outputWindow.WriteAsync(MessageCategory.General, message).DoNotWait();
                 } catch(DacServicesException ex) {
-                    var error = Environment.NewLine + string.Format(CultureInfo.InvariantCulture, Resources.SqlPublishDialog_UnableToBuildDacPac, ex.Message);
+                    var error = Environment.NewLine + 
+                        string.Format(CultureInfo.InvariantCulture, Resources.SqlPublishDialog_UnableToBuildDacPac, ex.Message) +
+                        Environment.NewLine;
                     _outputWindow.WriteAsync(MessageCategory.Error, error).DoNotWait();
                     // _coreShell.ShowErrorMessage(error);
                 }

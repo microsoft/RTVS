@@ -78,7 +78,9 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             var connection = settings.TargetDatabaseConnection.OdbcToSqlClient();
             _dacServices.Deploy(package, connection, dbName);
 
-            var message = Environment.NewLine + string.Format(CultureInfo.InvariantCulture, Resources.SqlPublish_PublishDatabaseSuccess, connection);
+            var message = Environment.NewLine + 
+                string.Format(CultureInfo.InvariantCulture, Resources.SqlPublish_PublishDatabaseSuccess, connection) + 
+                Environment.NewLine;
             _outputWindow.WriteAsync(MessageCategory.General, message).DoNotWait();
             RtvsTelemetry.Current?.TelemetryService.ReportEvent(TelemetryArea.SQL, SqlTelemetryEvents.SqlDatabasePublish);
         }
