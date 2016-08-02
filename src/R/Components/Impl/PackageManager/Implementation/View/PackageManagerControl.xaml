@@ -64,10 +64,7 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="16"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="1" x:Name="MultiSourceErrorStatusMessageTextBlock" Style="{StaticResource StatusMessageTextBlockStyle}">
-                        <Run Text="{x:Static components:Resources.PackageManager_Error}"/>
-                        <Run Text="{Binding Path=FirstError, Mode=OneWay}" />
-                </TextBlock>
+                <TextBlock Grid.Column="1" x:Name="MultiSourceErrorStatusMessageTextBlock" Style="{StaticResource StatusMessageTextBlockStyle}" Text="{Binding Path=FirstError, Mode=OneWay}" />
                 <Button Grid.Column="2" x:Name="ButtonDismiss" VerticalAlignment="Center" Content="{x:Static components:Resources.Dismiss}"
                             Click="ButtonDismiss_Click" Style="{StaticResource LinkButtonStyle}"/>
                 <Button Grid.Column="3" x:Name="ButtonDismissAll" VerticalAlignment="Center" Content="{x:Static components:Resources.DismissAll}" 

@@ -222,12 +222,6 @@
   <data name="CtrlEnter" xml:space="preserve">
     <value>Control+Enter</value>
   </data>
-  <data name="MicrosoftRHostStopped" xml:space="preserve">
-    <value>R Host process is stopped. Click Reset to start a new one.</value>
-  </data>
-  <data name="MicrosoftRHostStopping" xml:space="preserve">
-    <value>Stopping R Session...</value>
-  </data>
   <data name="InputIsTooLong" xml:space="preserve">
     <value>Input is too long - no more than {0} characters expected.</value>
   </data>
@@ -459,8 +453,8 @@
   <data name="Error_ExceptionAccessingPath" xml:space="preserve">
     <value>Unable to access path {0}. Exception: {1}.</value>
   </data>
-  <data name="RPathChangedRestartVS" xml:space="preserve">
-    <value>You must restart Visual Studio after changing path to the R installation.</value>
+  <data name="RPathChanged_RestartRToApplyChanges" xml:space="preserve">
+    <value>Path to local R installation has been changed. You must connect to the new R path to take effect.</value>
   </data>
   <data name="ChooseDirectory" xml:space="preserve">
     <value>Choose Directory</value>

@@ -17,6 +17,7 @@ namespace Microsoft.VisualStudio.R.Package.Wpf {
 
         public static void Apply() {
             OverrideBrushes();
+            OverrideFontKeys();
             OverrideStyleKeys();
         }
 
@@ -56,14 +57,46 @@ namespace Microsoft.VisualStudio.R.Package.Wpf {
             Brushes.IndicatorFillBrushKey = ProgressBarColors.IndicatorFillBrushKey;
 
             var colorResources = GetColorResources();
-            Brushes.BackgroundBrushKey = colorResources.TryGetThemeKey("BackgroundBrushKey");
-            Brushes.ContentMouseOverBrushKey = colorResources.TryGetThemeKey("ContentMouseOverBrushKey");
-            Brushes.ContentMouseOverTextBrushKey = colorResources.TryGetThemeKey("ContentMouseOverTextBrushKey");
-            Brushes.ContentInactiveSelectedBrushKey = colorResources.TryGetThemeKey("ContentInactiveSelectedBrushKey");
-            Brushes.ContentInactiveSelectedTextBrushKey = colorResources.TryGetThemeKey("ContentInactiveSelectedTextBrushKey");
-            Brushes.ContentSelectedBrushKey = colorResources.TryGetThemeKey("ContentSelectedBrushKey");
-            Brushes.ContentSelectedTextBrushKey = colorResources.TryGetThemeKey("ContentSelectedTextBrushKey");
-            Brushes.ContentBrushKey = colorResources.TryGetThemeKey("ContentBrushKey");
+            Brushes.BackgroundBrushKey = colorResources["BackgroundBrushKey"];
+            Brushes.ContentMouseOverBrushKey = colorResources["ContentMouseOverBrushKey"];
+            Brushes.ContentMouseOverTextBrushKey = colorResources["ContentMouseOverTextBrushKey"];
+            Brushes.ContentInactiveSelectedBrushKey = colorResources["ContentInactiveSelectedBrushKey"];
+            Brushes.ContentInactiveSelectedTextBrushKey = colorResources["ContentInactiveSelectedTextBrushKey"];
+            Brushes.ContentSelectedBrushKey = colorResources["ContentSelectedBrushKey"];
+            Brushes.ContentSelectedTextBrushKey = colorResources["ContentSelectedTextBrushKey"];
+            Brushes.ContentBrushKey = colorResources["ContentBrushKey"];
+
+            Brushes.StatusBarBuildingBrushKey = EnvironmentColors.StatusBarBuildingBrushKey;
+            Brushes.StatusBarBuildingColorKey = EnvironmentColors.StatusBarBuildingColorKey;
+            Brushes.StatusBarBuildingTextBrushKey = EnvironmentColors.StatusBarBuildingTextBrushKey;
+            Brushes.StatusBarBuildingTextColorKey = EnvironmentColors.StatusBarBuildingTextColorKey;
+            Brushes.StatusBarDebuggingBrushKey = EnvironmentColors.StatusBarDebuggingBrushKey;
+            Brushes.StatusBarDebuggingColorKey = EnvironmentColors.StatusBarDebuggingColorKey;
+            Brushes.StatusBarDebuggingTextBrushKey = EnvironmentColors.StatusBarDebuggingTextBrushKey;
+            Brushes.StatusBarDebuggingTextColorKey = EnvironmentColors.StatusBarDebuggingTextColorKey;
+            Brushes.StatusBarDefaultBrushKey = EnvironmentColors.StatusBarDefaultBrushKey;
+            Brushes.StatusBarDefaultColorKey = EnvironmentColors.StatusBarDefaultColorKey;
+            Brushes.StatusBarDefaultTextBrushKey = EnvironmentColors.StatusBarDefaultTextBrushKey;
+            Brushes.StatusBarDefaultTextColorKey = EnvironmentColors.StatusBarDefaultTextColorKey;
+            Brushes.StatusBarHighlightBrushKey = EnvironmentColors.StatusBarHighlightBrushKey;
+            Brushes.StatusBarHighlightColorKey = EnvironmentColors.StatusBarHighlightColorKey;
+            Brushes.StatusBarHighlightTextBrushKey = EnvironmentColors.StatusBarHighlightTextBrushKey;
+            Brushes.StatusBarHighlightTextColorKey = EnvironmentColors.StatusBarHighlightTextColorKey;
+            Brushes.StatusBarNoSolutionBrushKey = EnvironmentColors.StatusBarNoSolutionBrushKey;
+            Brushes.StatusBarNoSolutionColorKey = EnvironmentColors.StatusBarNoSolutionColorKey;
+            Brushes.StatusBarNoSolutionTextBrushKey = EnvironmentColors.StatusBarNoSolutionTextBrushKey;
+            Brushes.StatusBarNoSolutionTextColorKey = EnvironmentColors.StatusBarNoSolutionTextColorKey;
+            Brushes.StatusBarTextBrushKey = EnvironmentColors.StatusBarTextBrushKey;
+            Brushes.StatusBarTextColorKey = EnvironmentColors.StatusBarTextColorKey;
+        }
+
+        private static void OverrideFontKeys() {
+            FontKeys.CaptionFontFamilyKey = VsFonts.CaptionFontFamilyKey;
+            FontKeys.CaptionFontSizeKey = VsFonts.CaptionFontSizeKey;
+            FontKeys.CaptionFontWeightKey = VsFonts.CaptionFontWeightKey;
+            FontKeys.EnvironmentFontFamilyKey = VsFonts.EnvironmentFontFamilyKey;
+            FontKeys.EnvironmentFontSizeKey = VsFonts.EnvironmentFontSizeKey;
+            FontKeys.EnvironmentBoldFontWeightKey = VsFonts.EnvironmentBoldFontWeightKey;
         }
 
         private static object TryGetThemeKey(this IDictionary<string, ThemeResourceKey> dict, string name) {

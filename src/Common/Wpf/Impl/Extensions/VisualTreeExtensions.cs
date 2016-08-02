@@ -1,11 +1,16 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Media;
+using Microsoft.Common.Core;
 
 namespace Microsoft.Common.Wpf.Extensions {
     public static class VisualTreeExtensions {
+        public static T FindFirstVisualChildBreadthFirst<T>(this DependencyObject obj) where T : DependencyObject => obj.TraverseBreadthFirst(EnumerateVisualChildren).OfType<T>().FirstOrDefault();
+
         public static T FindFirstVisualChildOfType<T>(DependencyObject o) where T : DependencyObject {
             if (o is T) {
                 return o as T;
@@ -40,5 +45,12 @@ namespace Microsoft.Common.Wpf.Extensions {
             }
             return null;
         }
+
+        private static IEnumerable<DependencyObject> EnumerateVisualChildren(DependencyObject obj) {
+            int childrenCount = VisualTreeHelper.GetChildrenCount(obj);
+            for (int i = 0; i < childrenCount; i++) {
+                yield return VisualTreeHelper.GetChild(obj, i);
+            }
+        } 
     }
 }

@@ -11,6 +11,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Enums;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Settings.Mirrors;
 using Microsoft.R.Interpreters;
@@ -33,12 +34,23 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         private string _workingDirectory;
         private int _codePage;
         private bool _showPackageManagerDisclaimer = true;
+        private string _rBasePath;
 
         /// <summary>
         /// Path to 64-bit R installation such as 
         /// 'C:\Program Files\R\R-3.2.2' without bin\x64
         /// </summary>
-        public string RBasePath { get; set; }
+        public string RBasePath {
+            get { return _rBasePath; }
+            set {
+                if (_rBasePath.EqualsIgnoreCase(value)) {
+                    return;
+                }
+                _rBasePath = value;
+                var workflow = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
+                workflow.Connections.AddOrUpdateLocalConnection(_rBasePath, _rBasePath);
+            }
+        }
 
         public YesNoAsk LoadRDataOnProjectLoad { get; set; } = YesNoAsk.No;
 
@@ -113,7 +125,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         public RToolsSettingsImplementation() {
             // Default settings. Will be overwritten with actual
             // settings (if any) when settings are loaded from storage
-            RBasePath = new RInstallation().GetRInstallPath();
+            _rBasePath = new RInstallation().GetRInstallPath();
             _workingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         }
 

@@ -56,6 +56,7 @@
     <Compile Include="Fakes\Search\TestSearchControl.cs" />
     <Compile Include="Fakes\Search\TestSearchControlProvider.cs" />
     <Compile Include="Fakes\Shell\TestCoreShell.cs" />
+    <Compile Include="Fakes\StatusBar\TestStatusBar.cs" />
     <Compile Include="Fakes\Trackers\TestActiveWpfTextViewTracker.cs" />
     <Compile Include="Fakes\Trackers\TestDebuggerModeTracker.cs" />
     <Compile Include="Fakes\Undo\AutoEnclose.cs" />
@@ -92,6 +93,7 @@
     <Compile Include="InteractiveWorkflow\RInteractiveWorkflowCommandTest.cs" />
     <Compile Include="Script\InstallPackagesTest.cs" />
     <Compile Include="Sql\SqlDbTest.cs" />
+    <Compile Include="StubFactories\ConnectionManagerProviderStubFactory.cs" />
     <Compile Include="StubFactories\InteractiveWorkflowStubFactory.cs" />
     <Compile Include="StubFactories\RHistoryStubFactory.cs" />
     <Compile Include="StubFactories\RHistoryProviderStubFactory.cs" />
@@ -197,6 +199,7 @@
     <Content Include="Files\Packages\readme.txt" />
     <Content Include="Files\Repos\Repo1\web\packages\rtvslib1\index.html" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
 </Project>

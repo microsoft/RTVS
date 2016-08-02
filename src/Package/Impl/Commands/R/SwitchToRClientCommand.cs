@@ -43,7 +43,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
                 RToolsSettings.Current.RBasePath = rClientPath;
                 page.SaveSettings();
             }
-            _shell.ShowMessage(Resources.RPathChangedRestartVS, MessageButtons.OK);
+            _shell.ShowMessage(Resources.RPathChanged_RestartRToApplyChanges, MessageButtons.OK);
         }
     }
 }

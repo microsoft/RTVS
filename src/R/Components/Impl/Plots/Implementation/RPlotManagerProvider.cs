@@ -4,13 +4,12 @@
 using System.ComponentModel.Composition;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
-using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Components.Plots.Implementation {
     [Export(typeof(IRPlotManagerProvider))]
     internal class RPlotManagerProvider : IRPlotManagerProvider {
-        public IRPlotManager CreatePlotManager(IRSessionProvider sessionProvider, IRSettings settings, IRInteractiveWorkflow interactiveWorkflow) {
-            return new RPlotManager(sessionProvider, settings, interactiveWorkflow, () => { });
+        public IRPlotManager CreatePlotManager(IRSettings settings, IRInteractiveWorkflow interactiveWorkflow) {
+            return new RPlotManager(settings, interactiveWorkflow, () => { });
         }
     }
 }

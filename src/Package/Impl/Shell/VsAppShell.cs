@@ -248,6 +248,13 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             return BrowseForFileSave(IntPtr.Zero, filter, initialPath, title);
         }
 
+        public void UpdateCommandStatus(bool immediate) {
+            DispatchOnUIThread(() => {
+                var uiShell = GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+                uiShell.UpdateCommandUI(immediate ? 1 : 0);
+            });
+        }
+
         /// <summary>
         /// Returns host locale ID
         /// </summary>

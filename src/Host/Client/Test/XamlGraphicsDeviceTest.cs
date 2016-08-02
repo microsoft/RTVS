@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using FluentAssertions;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Interpreters;
 using Microsoft.R.Host.Client.Install;
 using Microsoft.R.Host.Client.Session;
@@ -237,10 +238,9 @@ namespace Microsoft.R.Host.Client.Test {
 
         private async Task<XDocument> RunGraphicsTest(string code, string outputFilePath) {
             using (var sessionProvider = new RSessionProvider()) {
-                var session = sessionProvider.GetOrCreate(Guid.NewGuid());
+                var session = sessionProvider.GetOrCreate(Guid.NewGuid(), new RHostBrokerConnector());
                 await session.StartHostAsync(new RHostStartupInfo {
-                    Name = _testMethod.Name,
-                    RBasePath = new RInstallation().GetRInstallPath()
+                    Name = _testMethod.Name
                 }, new RHostClientTestApp(), 50000);
 
                 using (var interaction = await session.BeginInteractionAsync()) {

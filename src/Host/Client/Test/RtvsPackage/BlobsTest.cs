@@ -6,10 +6,10 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.R.Interpreters;
-using Microsoft.R.Host.Client.Install;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Script;
+using Microsoft.R.Interpreters;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 using Newtonsoft.Json;
@@ -26,13 +26,12 @@ namespace Microsoft.R.Host.Client.Test.RtvsPackage {
         public BlobsTest(TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo;
             _sessionProvider = new RSessionProvider();
-            _session = _sessionProvider.GetOrCreate(Guid.NewGuid());
+            _session = _sessionProvider.GetOrCreate(Guid.NewGuid(), new RHostBrokerConnector());
         }
 
         public async Task InitializeAsync() {
             await _session.StartHostAsync(new RHostStartupInfo {
-                Name = _testMethod.Name,
-                RBasePath = new RInstallation().GetRInstallPath()
+                Name = _testMethod.Name
             }, new RHostClientTestApp(), 50000);
         }
 
@@ -58,14 +57,12 @@ namespace Microsoft.R.Host.Client.Test.RtvsPackage {
         [Test]
         [Category.R.RtvsPackage]
         public async Task RawResultNull() {
-            using (var eval = await _session.BeginEvaluationAsync()) {
-                var res = await eval.EvaluateAsync("NULL", REvaluationKind.RawResult);
-                res.Result.Should().BeNull();
-                res.RawResult.Should().Equal(new byte[0]);
+            var res = await _session.EvaluateAsync("NULL", REvaluationKind.RawResult);
+            res.Result.Should().BeNull();
+            res.RawResult.Should().Equal(new byte[0]);
 
-                var bytes = await _session.EvaluateAsync<byte[]>("NULL", REvaluationKind.Normal);
-                bytes.Should().Equal(new byte[0]);
-            }
+            var bytes = await _session.EvaluateAsync<byte[]>("NULL", REvaluationKind.Normal);
+            bytes.Should().Equal(new byte[0]);
         }
 
         [Test]

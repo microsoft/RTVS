@@ -10,12 +10,11 @@ using Microsoft.R.Components.Search;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Constants = Microsoft.VisualStudio.OLE.Interop.Constants;
 
-namespace Microsoft.VisualStudio.R.Package.PackageManager {
+namespace Microsoft.VisualStudio.R.Package.ToolWindows {
     [Guid(WindowGuidString)]
     internal class PackageManagerWindowPane : VisualComponentToolWindow<IRPackageManagerVisualComponent>, IOleCommandTarget {
         private readonly IRSession _session;
@@ -39,9 +38,6 @@ namespace Microsoft.VisualStudio.R.Package.PackageManager {
 
         protected override void OnCreate() {
             Component = new RPackageManagerVisualComponent(_packageManager, this, _session, _searchControlProvider, _settings, _coreShell);
-            // TODO: Implement RPackageManagerVisualComponent.Controller
-            //_commandTarget = new CommandTargetToOleShim(null, Component.Controller);
-
             base.OnCreate();
         }
 

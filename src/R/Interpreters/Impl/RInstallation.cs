@@ -333,7 +333,7 @@ namespace Microsoft.R.Interpreters {
             if (versions.Count > 0) {
                 versions.Sort();
                 Version highest = versions[versions.Count - 1];
-                return Path.Combine(baseRFolder, String.Format(CultureInfo.InvariantCulture, "R-{0}.{1}.{2}", highest.Major, highest.Minor, highest.Build));
+                return Path.Combine(baseRFolder, string.Format(CultureInfo.InvariantCulture, "R-{0}.{1}.{2}", highest.Major, highest.Minor, highest.Build));
             }
 
             return string.Empty;

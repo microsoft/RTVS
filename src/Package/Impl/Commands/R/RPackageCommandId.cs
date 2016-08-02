@@ -134,5 +134,9 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         // Shiny
         public const int icmdRunShinyApp = 1601;
         public const int icmdStopShinyApp = 1602;
+
+        // Connections Status Bar
+        public const int icmdReconnect = 1700;
+        public const int icmdMruConnectionsDynamicStart = 1750;
     }
 }

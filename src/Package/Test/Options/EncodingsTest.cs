@@ -33,10 +33,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Options {
 
                         string s = null;
                         completed = Task.Run(async () => {
-                            using (var e = await script.Session.BeginEvaluationAsync()) {
-                                var res = await e.EvaluateAsync("Sys.getlocale()", REvaluationKind.Normal);
-                                s = res.Result.ToString();
-                            }
+                            var res = await script.Session.EvaluateAsync("Sys.getlocale()", REvaluationKind.Normal);
+                            s = res.Result.ToString();
                         }).Wait(5000);
 
                         completed.Should().BeTrue(because: "Sys.getlocale() didn't complete within 5000 ms");

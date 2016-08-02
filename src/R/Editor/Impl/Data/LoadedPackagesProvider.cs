@@ -25,15 +25,13 @@ namespace Microsoft.R.Editor.Data {
         }
 
         private async Task UpdateListOfLoadedPackagesAsync() {
-            using (var e = await Session.BeginEvaluationAsync()) {
-                string result;
-                try {
-                    result = await e.EvaluateAsync<string>("paste0(.packages(), collapse = ' ')", REvaluationKind.Normal);
-                } catch (RException) {
-                    return;
-                }
-                ParseSearchResponse(result);
+            string result;
+            try {
+                result = await Session.EvaluateAsync<string>("paste0(.packages(), collapse = ' ')", REvaluationKind.Normal);
+            } catch (RException) {
+                return;
             }
+            ParseSearchResponse(result);
         }
 
         private void ParseSearchResponse(string response) {

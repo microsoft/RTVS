@@ -3,10 +3,9 @@
 
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
-using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Components.Plots {
     public interface IRPlotManagerProvider {
-        IRPlotManager CreatePlotManager(IRSessionProvider sessionProvider, IRSettings settings, IRInteractiveWorkflow interactiveWorkflow);
+        IRPlotManager CreatePlotManager(IRSettings settings, IRInteractiveWorkflow interactiveWorkflow);
     }
 }

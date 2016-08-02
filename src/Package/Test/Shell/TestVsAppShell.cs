@@ -5,7 +5,11 @@ using System;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading;
+using Microsoft.Common.Core.Extensions;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Core.Settings;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.Test.Shell;
@@ -30,6 +34,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
     sealed class TestVsAppShell : TestShellBase, IApplicationShell {
         private IServiceProvider _sp;
         private static TestVsAppShell _instance;
+        private static object _shellLock = new object();
         private IWritableSettingsStorage _settingStorage;
 
         private TestVsAppShell() {
@@ -47,10 +52,22 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
             // need smaller MEF catalog which excludes certain 
             // VS-specific implementations.
             UIThreadHelper.Instance.Invoke(() => {
-                _instance = new TestVsAppShell();
+                lock (_shellLock) {
+                    if (_instance == null){
+                        _instance = new TestVsAppShell();
+                        RToolsSettings.Current = new TestRToolsSettings();
 
-                VsAppShell.Current = _instance;
-                RToolsSettings.Current = new TestRToolsSettings();
+                        var batch = new CompositionBatch()
+                            .AddValue(RToolsSettings.Current)
+                            .AddValue<ICoreShell>(_instance)
+                            .AddValue<IEditorShell>(_instance)
+                            .AddValue<IApplicationShell>(_instance)
+                            .AddValue(_instance);
+                        VsTestCompositionCatalog.Current.Container.Compose(batch);
+
+                        VsAppShell.Current = _instance;
+                    }
+                }
             });
         }
 

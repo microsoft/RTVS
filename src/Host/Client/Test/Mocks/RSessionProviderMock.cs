@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Test.Mocks;
 
 namespace Microsoft.R.Host.Client.Mocks {
@@ -14,7 +15,7 @@ namespace Microsoft.R.Host.Client.Mocks {
         public void Dispose() {
         }
 
-        public IRSession GetOrCreate(Guid guid) {
+        public IRSession GetOrCreate(Guid guid, IRHostBrokerConnector brokerConnector) {
             IRSession session;
             if (!_sessions.TryGetValue(guid, out session)) {
                 session = new RSessionMock();
@@ -27,6 +28,9 @@ namespace Microsoft.R.Host.Client.Mocks {
             return _sessions.Values;
         }
 
-        public Task<IRSessionEvaluation> BeginEvaluationAsync(RHostStartupInfo startupInfo, CancellationToken cancellationToken = new CancellationToken()) => new RSessionMock().BeginEvaluationAsync(cancellationToken);
+        public Task<IRSessionEvaluation> BeginEvaluationAsync(IRHostBrokerConnector hostFactory, RHostStartupInfo startupInfo, CancellationToken cancellationToken = new CancellationToken()) 
+            => new RSessionMock().BeginEvaluationAsync(cancellationToken);
+
+        public Task RestartSessions(IRHostBrokerConnector brokerConnector) => Task.CompletedTask;
     }
 }

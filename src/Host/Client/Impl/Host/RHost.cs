@@ -6,8 +6,6 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
@@ -17,8 +15,6 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.R.Host.Client.Host;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using WebSocketSharp;
-using WebSocketSharp.Server;
 using static System.FormattableString;
 using System.Collections.Generic;
 
@@ -28,32 +24,20 @@ namespace Microsoft.R.Host.Client {
         public const string RHostExe = "Microsoft.R.Host.exe";
         public const string RBinPathX64 = @"bin\x64";
 
-        private static readonly TimeSpan HeartbeatTimeout =
-#if DEBUG
-            // In debug mode, increase the timeout significantly, so that when the host is paused in debugger,
-            // the client won't immediately timeout and disconnect.
-            TimeSpan.FromMinutes(10);
-#else
-            TimeSpan.FromSeconds(5);
-#endif
-        private static Task<REvaluationResult> _rhostDisconnectedEvaluationResult = TaskUtilities.CreateCanceled<REvaluationResult>(new RHostDisconnectedException());
+        private static readonly Task<REvaluationResult> RhostDisconnectedEvaluationResult = TaskUtilities.CreateCanceled<REvaluationResult>(new RHostDisconnectedException());
+        private static readonly Task<ulong> RhostDisconnectedSendBlobResult = TaskUtilities.CreateCanceled<ulong>(new RHostDisconnectedException());
 
         public static IRContext TopLevelContext { get; } = new RContext(RContextType.TopLevel);
-
-        private static bool showConsole = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("RTVS_HOST_CONSOLE"));
-
-        private IMessageTransport _transport;
-        private readonly object _transportLock = new object();
-        private readonly TaskCompletionSource<IMessageTransport> _transportTcs = new TaskCompletionSource<IMessageTransport>();
-
-        private readonly CancellationTokenSource _cts = new CancellationTokenSource();
+        
+        private readonly IMessageTransport _transport;
+        private readonly CancellationTokenSource _cts;
         private readonly string _name;
         private readonly IRCallbacks _callbacks;
         private readonly LinesLog _log;
         private readonly FileLogWriter _fileLogWriter;
-        private Process _process;
         private volatile Task _runTask;
         private volatile Task<REvaluationResult> _cancelEvaluationAfterRunTask;
+        private volatile Task<ulong> _cancelSendBlobAfterRunTask;
         private int _rLoopDepth;
         private long _lastMessageId = 0;
         private readonly ConcurrentDictionary<ulong, Request> _requests = new ConcurrentDictionary<ulong, Request>();
@@ -61,13 +45,16 @@ namespace Microsoft.R.Host.Client {
         private TaskCompletionSource<object> _cancelAllTcs;
         private CancellationTokenSource _cancelAllCts = new CancellationTokenSource();
 
-        public int? ProcessId => _process?.Id;
+        public int? ProcessId { get; }
 
-        public RHost(string name, IRCallbacks callbacks) {
+        public RHost(string name, IRCallbacks callbacks, IMessageTransport transport, int? processId, CancellationTokenSource cts) {
             Check.ArgumentStringNullOrEmpty(nameof(name), name);
 
             _callbacks = callbacks;
             _name = name;
+            _transport = transport;
+            ProcessId = processId;
+            _cts = cts;
 
             _fileLogWriter = FileLogWriter.InTempFolder("Microsoft.R.Host.Client" + "_" + name);
             _log = new LinesLog(_fileLogWriter);
@@ -214,10 +201,14 @@ namespace Microsoft.R.Host.Client {
             await RespondAsync(request, ct, input);
         }
 
-        public Task<ulong> CreateBlobAsync(byte[] data, CancellationToken cancellationToken) =>
-            cancellationToken.IsCancellationRequested || _runTask == null || _runTask.IsCompleted
-                ? Task.FromCanceled<ulong>(new CancellationToken(true))
-                : CreateBlobAsyncWorker(data, cancellationToken);
+        public Task<ulong> CreateBlobAsync(byte[] data, CancellationToken ct) {
+
+            if (ct.IsCancellationRequested) {
+                Task.FromCanceled<long>(ct);
+            }
+
+            return Task.WhenAny(CreateBlobAsyncWorker(data, ct), _cancelSendBlobAfterRunTask).Unwrap();
+        }
 
         private async Task<ulong> CreateBlobAsyncWorker(byte[] data, CancellationToken cancellationToken) {
             await TaskUtilities.SwitchToBackgroundThread();
@@ -248,7 +239,7 @@ namespace Microsoft.R.Host.Client {
 
         public Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind, CancellationToken ct) {
             if (_cancelEvaluationAfterRunTask == null || _cancelEvaluationAfterRunTask.IsCompleted) { 
-                return _rhostDisconnectedEvaluationResult;
+                return RhostDisconnectedEvaluationResult;
             }
 
             if (ct.IsCancellationRequested) {
@@ -483,24 +474,19 @@ namespace Microsoft.R.Host.Client {
             }
         }
 
-        public async Task Run(IMessageTransport transport, CancellationToken ct) {
+        public async Task Run(CancellationToken ct = default(CancellationToken)) {
             TaskUtilities.AssertIsOnBackgroundThread();
 
             if (_runTask != null) {
                 throw new InvalidOperationException("This host is already running.");
             }
 
-            if (transport != null) {
-                lock (_transportLock) {
-                    _transport = transport;
-                }
-            } else if (_transport == null) {
-                throw new ArgumentNullException(nameof(transport));
-            }
+            ct = CancellationTokenSource.CreateLinkedTokenSource(ct, _cts.Token).Token;
 
             try {
                 _runTask = RunWorker(ct);
-                _cancelEvaluationAfterRunTask = _runTask.ContinueWith(t => _rhostDisconnectedEvaluationResult).Unwrap();
+                _cancelEvaluationAfterRunTask = _runTask.ContinueWith(t => RhostDisconnectedEvaluationResult).Unwrap();
+                _cancelSendBlobAfterRunTask = _runTask.ContinueWith(t => RhostDisconnectedSendBlobResult).Unwrap();
                 await _runTask;
             } catch (OperationCanceledException) when (ct.IsCancellationRequested) {
                 // Expected cancellation, do not propagate, just exit process
@@ -516,131 +502,7 @@ namespace Microsoft.R.Host.Client {
                 _requests.Clear();
             }
         }
-
-        private WebSocketMessageTransport CreateWebSocketMessageTransport() {
-            lock (_transportLock) {
-                if (_transport != null) {
-                    throw new MessageTransportException("More than one incoming connection.");
-                }
-
-                var transport = new WebSocketMessageTransport();
-                _transportTcs.SetResult(_transport = transport);
-                return transport;
-            }
-        }
-
-        public async Task CreateAndRun(string rHome, string rhostDirectory = null, string rCommandLineArguments = null, int timeout = 3000, CancellationToken ct = default(CancellationToken)) {
-            await TaskUtilities.SwitchToBackgroundThread();
-
-            rhostDirectory = rhostDirectory ?? Path.GetDirectoryName(typeof(RHost).Assembly.GetAssemblyPath());
-            rCommandLineArguments = rCommandLineArguments ?? string.Empty;
-
-            string rhostExe = Path.Combine(rhostDirectory, RHostExe);
-            string rBinPath = Path.Combine(rHome, RBinPathX64);
-
-            if (!File.Exists(rhostExe)) {
-                throw new RHostBinaryMissingException();
-            }
-
-            // Grab an available port from the ephemeral port range (per RFC 6335 8.1.2) for the server socket.
-
-            WebSocketServer server = null;
-            var rnd = new Random();
-            const int ephemeralRangeStart = 49152;
-            var ports =
-                from port in Enumerable.Range(ephemeralRangeStart, 0x10000 - ephemeralRangeStart)
-                let pos = rnd.NextDouble()
-                orderby pos
-                select port;
-
-            foreach (var port in ports) {
-                ct.ThrowIfCancellationRequested();
-
-                server = new WebSocketServer(port) {
-                    ReuseAddress = false,
-                    WaitTime = HeartbeatTimeout,
-                };
-                server.AddWebSocketService("/", CreateWebSocketMessageTransport);
-
-                try {
-                    server.Start();
-                    break;
-                } catch (SocketException ex) {
-                    if (ex.SocketErrorCode == SocketError.AddressAlreadyInUse) {
-                        server = null;
-                    } else {
-                        throw new MessageTransportException(ex);
-                    }
-                } catch (WebSocketException ex) {
-                    throw new MessageTransportException(ex);
-                }
-            }
-
-            if (server == null) {
-                throw new MessageTransportException(new SocketException((int)SocketError.AddressAlreadyInUse));
-            }
-
-            var psi = new ProcessStartInfo {
-                FileName = rhostExe,
-                UseShellExecute = false
-            };
-
-            var shortHome = new StringBuilder(NativeMethods.MAX_PATH);
-            NativeMethods.GetShortPathName(rHome, shortHome, shortHome.Capacity);
-            psi.EnvironmentVariables["R_HOME"] = shortHome.ToString();
-
-            psi.EnvironmentVariables["PATH"] = rBinPath + ";" + Environment.GetEnvironmentVariable("PATH");
-
-            if (_name != null) {
-                psi.Arguments += " --rhost-name " + _name;
-            }
-
-            psi.Arguments += Invariant($" --rhost-connect ws://127.0.0.1:{server.Port}");
-
-            if (!showConsole) {
-                psi.CreateNoWindow = true;
-            }
-
-            if (!string.IsNullOrWhiteSpace(rCommandLineArguments)) {
-                psi.Arguments += Invariant($" {rCommandLineArguments}");
-            }
-
-            using (this)
-            using (_process = Process.Start(psi)) {
-                _log.RHostProcessStarted(psi);
-                _process.EnableRaisingEvents = true;
-                _process.Exited += delegate { Dispose(); };
-
-                try {
-                    ct = CancellationTokenSource.CreateLinkedTokenSource(ct, _cts.Token).Token;
-
-                    // Timeout increased to allow more time in test and code coverage runs.
-                    await Task.WhenAny(_transportTcs.Task, Task.Delay(timeout)).Unwrap();
-                    if (!_transportTcs.Task.IsCompleted) {
-                        _log.FailedToConnectToRHost();
-                        throw new RHostTimeoutException("Timed out waiting for R host process to connect");
-                    }
-
-                    await Run(null, ct);
-                } catch (Exception) {
-                    // TODO: delete when we figure out why host occasionally times out in code coverage runs.
-                    //await _log.WriteFormatAsync(MessageCategory.Error, "Exception running R Host: {0}", ex.Message);
-                    throw;
-                } finally {
-                    if (!_process.HasExited) {
-                        try {
-                            _process.WaitForExit(500);
-                            if (!_process.HasExited) {
-                                _process.Kill();
-                                _process.WaitForExit();
-                            }
-                        } catch (InvalidOperationException) { }
-                    }
-                    _log.RHostProcessExited();
-                }
-            }
-        }
-
+        
         internal Task GetRHostRunTask() => _runTask;
     }
 }

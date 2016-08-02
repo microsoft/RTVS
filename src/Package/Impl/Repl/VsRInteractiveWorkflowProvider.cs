@@ -5,19 +5,21 @@ using System;
 using System.ComponentModel.Composition;
 using System.Threading;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Shell;
+using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Implementation;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Plots;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Support.Settings;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
     [Export(typeof(IRInteractiveWorkflowProvider))]
     internal class VsRInteractiveWorkflowProvider : IRInteractiveWorkflowProvider {
         private readonly IRSessionProvider _sessionProvider;
+        private readonly IConnectionManagerProvider _connectionsProvider;
         private readonly IRHistoryProvider _historyProvider;
         private readonly IRPackageManagerProvider _packagesProvider;
         private readonly IRPlotManagerProvider _plotsProvider;
@@ -29,6 +31,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
         [ImportingConstructor]
         public VsRInteractiveWorkflowProvider(IRSessionProvider sessionProvider
+            , IConnectionManagerProvider connectionsProvider
             , IRHistoryProvider historyProvider
             , IRPackageManagerProvider packagesProvider
             , IRPlotManagerProvider plotsProvider
@@ -37,6 +40,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             , ICoreShell shell) {
 
             _sessionProvider = sessionProvider;
+            _connectionsProvider = connectionsProvider;
             _historyProvider = historyProvider;
             _packagesProvider = packagesProvider;
             _plotsProvider = plotsProvider;
@@ -52,7 +56,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         
         private IRInteractiveWorkflow CreateRInteractiveWorkflow() {
             var settings = RToolsSettings.Current;
-            return new RInteractiveWorkflow(_sessionProvider, _historyProvider, _packagesProvider, _plotsProvider, _activeTextViewTracker, _debuggerModeTracker, _shell, settings, DisposeInstance);
+            return new RInteractiveWorkflow(_sessionProvider, _connectionsProvider, _historyProvider, _packagesProvider, _plotsProvider, _activeTextViewTracker, _debuggerModeTracker, new RHostBrokerConnector(), _shell, settings, DisposeInstance);
         }
 
         private void DisposeInstance() {

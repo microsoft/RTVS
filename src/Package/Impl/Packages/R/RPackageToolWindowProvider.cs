@@ -13,8 +13,7 @@ using Microsoft.R.Components.View;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Help;
 using Microsoft.VisualStudio.R.Package.History;
-using Microsoft.VisualStudio.R.Package.PackageManager;
-using Microsoft.VisualStudio.R.Package.Plots;
+using Microsoft.VisualStudio.R.Package.ToolWindows;
 using Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.VisualStudio.R.Packages.R {

@@ -2,22 +2,18 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using Microsoft.Common.Core;
-using Microsoft.R.Components.InteractiveWorkflow;
+using System.Threading.Tasks;
+using Microsoft.R.Components.Controller;
 using Microsoft.R.Host.Client;
-using Microsoft.VisualStudio.R.Package.Commands;
-using Microsoft.VisualStudio.R.Packages.R;
 
-namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
-    internal sealed class InterruptRCommand : PackageCommand {
+namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
+    public sealed class InterruptRCommand : IAsyncCommand {
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
         private readonly IRSession _session;
         private readonly IDebuggerModeTracker _debuggerModeTracker;
         private volatile bool _enabled;
 
-        public InterruptRCommand(IRInteractiveWorkflow interactiveWorkflow, IDebuggerModeTracker debuggerModeTracker)
-            : base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdInterruptR) {
-
+        public InterruptRCommand(IRInteractiveWorkflow interactiveWorkflow, IDebuggerModeTracker debuggerModeTracker) {
             _interactiveWorkflow = interactiveWorkflow;
             _session = interactiveWorkflow.RSession;
             _debuggerModeTracker = debuggerModeTracker;
@@ -37,24 +33,28 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
         private void OnAfterRequest(object sender, RAfterRequestEventArgs e) {
             _enabled = true;
         }
-
-        protected override void SetStatus() {
-            var window = _interactiveWorkflow.ActiveWindow;
-            if (window != null) {
-                Visible = true;
-                Enabled = _session.IsHostRunning && _enabled && !_debuggerModeTracker.IsInBreakMode;
-            } else {
-                Visible = false;
-                Enabled = false;
+        
+        public CommandStatus Status {
+            get {
+                var status = CommandStatus.Supported;
+                if (_interactiveWorkflow.ActiveWindow == null) {
+                    status |= CommandStatus.Invisible;
+                } else if (_session.IsHostRunning && _enabled && !_debuggerModeTracker.IsInBreakMode) {
+                    status |= CommandStatus.Enabled;
+                }
+                return status;
             }
         }
 
-        protected override void Handle() {
+        public async Task<CommandResult> InvokeAsync() {
             if (_enabled) {
                 _interactiveWorkflow.Operations.ClearPendingInputs();
-                _session.CancelAllAsync().DoNotWait();
+                await _session.CancelAllAsync();
                 _enabled = false;
+                return CommandResult.Executed;
             }
+
+            return CommandResult.NotSupported;
         }
     }
 }

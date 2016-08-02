@@ -10,17 +10,16 @@ using Microsoft.R.Components.Plots.Implementation.ViewModel;
 using Microsoft.R.Components.Plots.ViewModel;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.View;
-using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Components.Plots.Implementation {
     public class RPlotManagerVisualComponent : IRPlotManagerVisualComponent {
         private IRPlotManagerViewModel ViewModel { get; }
 
-        public RPlotManagerVisualComponent(IRPlotManager plotManager, IVisualComponentContainer<IRPlotManagerVisualComponent> container, IRSession session, IRSettings settings, ICoreShell coreShell) {
+        public RPlotManagerVisualComponent(IRPlotManager plotManager, IVisualComponentContainer<IRPlotManagerVisualComponent> container, IRSettings settings, ICoreShell coreShell) {
             Container = container;
             Controller = null;
             ViewModel = new RPlotManagerViewModel(plotManager);
-            Control = new RPlotManagerControl() {
+            Control = new RPlotManagerControl {
                 DataContext = ViewModel,
             };
         }

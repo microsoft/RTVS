@@ -801,24 +801,6 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R Host process is stopped. Click Reset to start a new one..
-        /// </summary>
-        public static string MicrosoftRHostStopped {
-            get {
-                return ResourceManager.GetString("MicrosoftRHostStopped", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Stopping R Session....
-        /// </summary>
-        public static string MicrosoftRHostStopping {
-            get {
-                return ResourceManager.GetString("MicrosoftRHostStopping", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to R Tools News.
         /// </summary>
         public static string NewsWindowTitle {
@@ -1048,11 +1030,11 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You must restart Visual Studio after changing path to the R installation..
+        ///   Looks up a localized string similar to Path to local R installation has been changed. You must connect to the new R path to take effect..
         /// </summary>
-        public static string RPathChangedRestartVS {
+        public static string RPathChanged_RestartRToApplyChanges {
             get {
-                return ResourceManager.GetString("RPathChangedRestartVS", resourceCulture);
+                return ResourceManager.GetString("RPathChanged_RestartRToApplyChanges", resourceCulture);
             }
         }
         
