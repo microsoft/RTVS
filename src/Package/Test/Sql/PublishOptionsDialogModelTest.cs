@@ -37,7 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             _storage = Substitute.For<IWritableSettingsStorage>();
         }
 
-        [Test]
+        [Test(ThreadType.UI)]
         public void Constructor() {
             var model = new SqlPublishOptionsDialogViewModel(_coreShell, _pss, _storage, _pcsp);
 
@@ -99,16 +99,17 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             model.TargetHasName.Should().BeFalse();
         }
 
-        [Test]
-        public void NoDbProjectList() {
+        [Test(ThreadType.UI)]
+        public async Task NoDbProjectList() {
             _storage.GetInteger(SqlSProcPublishSettings.TargetTypeSettingName, (int)PublishTargetType.Dacpac).Returns((int)PublishTargetType.Project);
             var model = new SqlPublishOptionsDialogViewModel(_coreShell, _pss, _storage, _pcsp);
+            await model.InitializationTask;
             model.Settings.TargetType.Should().Be(PublishTargetType.Project);
             model.Targets.Should().HaveCount(1);
             model.Targets[0].Should().Be(Resources.SqlPublishDialog_NoDatabaseProjects);
         }
 
-        [Test]
+        [Test(ThreadType.UI)]
         public void ProjectList() {
             var projects = Substitute.For<EnvDTE.Projects>();
             var p1 = Substitute.For<EnvDTE.Project>();
@@ -138,7 +139,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             model.Targets[0].Should().Be("project1");
             model.Targets[1].Should().Be("project2");
             model.SelectedTargetIndex.Should().Be(1);
-         }
+        }
 
         [Test(ThreadType.UI)]
         public async Task NoDbConnections() {
@@ -147,6 +148,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             _storage.GetInteger(SqlSProcPublishSettings.TargetTypeSettingName, (int)PublishTargetType.Dacpac).Returns((int)PublishTargetType.Database);
 
             var model = new SqlPublishOptionsDialogViewModel(_coreShell, _pss, _storage, _pcsp);
+            await model.InitializationTask;
 
             model.Settings.TargetType.Should().Be(PublishTargetType.Database);
             model.Targets.Should().HaveCount(1);
@@ -180,6 +182,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             _storage.GetString(SqlSProcPublishSettings.TargetDatabaseConnectionSettingName, Arg.Any<string>()).Returns(("dbConn2_String"));
 
             var model = new SqlPublishOptionsDialogViewModel(_coreShell, _pss, _storage, _pcsp);
+            await model.InitializationTask;
 
             model.Settings.TargetType.Should().Be(PublishTargetType.Database);
             model.Settings.TargetDatabaseConnection.Should().Be("dbConn2_String");

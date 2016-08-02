@@ -37,19 +37,17 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             _model.UpdateState();
         }
 
-        private void Close(bool saveSettings) {
-            if (saveSettings) {
-                _model.SaveSettings();
+        private void SaveSettingsAndClose() {
+            _model.SaveSettings();
 
-                var uiShell = _appShell.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-                var guid = RGuidList.RCmdSetGuid;
-                var o = new object();
-                uiShell.PostExecCommand(ref guid, RPackageCommandId.icmdPublishSProc, 0, ref o);
-            }
+            var uiShell = _appShell.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+            var guid = RGuidList.RCmdSetGuid;
+            var o = new object();
+            uiShell.PostExecCommand(ref guid, RPackageCommandId.icmdPublishSProc, 0, ref o);
             Close();
         }
 
-        private void OKButton_Click(object sender, RoutedEventArgs e)  => Close(true);
+        private void OKButton_Click(object sender, RoutedEventArgs e) => SaveSettingsAndClose();
         private void CancelButton_Click(object sender, RoutedEventArgs e) => Close();
         private void TableName_TextChanged(object sender, TextChangedEventArgs e) => _model.UpdateState();
     }
