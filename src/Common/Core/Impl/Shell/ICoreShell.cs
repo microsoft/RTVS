@@ -91,11 +91,16 @@ namespace Microsoft.Common.Core.Shell {
         string ShowSaveFileDialog(string filter, string initialPath = null, string title = null);
 
         /// <summary>
+        /// Informs the environment to update the state of the commands
+        /// </summary>
+        /// <param name="immediate">True if the update is performed immediately</param>
+        void UpdateCommandStatus(bool immediate = false);
+
+        /// <summary>
         /// Application telemetry service
         /// </summary>
         ITelemetryService TelemetryService { get; }
 
-        /// <summary>
         /// <summary>
         /// Tells if code runs in unit test environment
         /// </summary>

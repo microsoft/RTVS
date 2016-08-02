@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Interpreters;
 using Microsoft.R.Host.Client.Install;
 using Microsoft.R.Host.Client.Session;
@@ -26,7 +27,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
         public void Lifecycle() {
             var disposed = false;
 
-            var session = new RSession(0, () => disposed = true);
+            var session = new RSession(0, new RHostBrokerConnector(), () => disposed = true);
             disposed.Should().BeFalse();
 
             session.MonitorEvents();
@@ -46,14 +47,13 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [Test]
         [Category.R.Session]
         public async Task StartStop() {
-            var session = new RSession(0, () => { });
+            var session = new RSession(0, new RHostBrokerConnector(), () => { });
 
             session.HostStarted.Status.Should().Be(TaskStatus.Canceled);
             session.IsHostRunning.Should().BeFalse();
-
+            
             await session.StartHostAsync(new RHostStartupInfo {
-                Name = _testMethod.Name,
-                RBasePath = new RInstallation().GetRInstallPath()
+                Name = _testMethod.Name
             }, null, 50000);
 
             session.HostStarted.Status.Should().Be(TaskStatus.RanToCompletion);
@@ -68,10 +68,9 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [Test]
         [Category.R.Session]
         public async Task DoubleStart() {
-            var session = new RSession(0, () => { });
+            var session = new RSession(0, new RHostBrokerConnector(), () => { });
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo {
-                Name = _testMethod.Name,
-                RBasePath = new RInstallation().GetRInstallPath()
+                Name = _testMethod.Name
             }, null, 50000);
 
             Func<Task> f = () => ParallelTools.InvokeAsync(4, i => start());
@@ -88,8 +87,8 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [Category.R.Session]
         public async Task StartStopMultipleSessions() {
             Func<int, Task<RSession>> start = async i => {
-                var session = new RSession(i, () => { });
-                await session.StartHostAsync(new RHostStartupInfo { Name = _testMethod.Name, RBasePath = new RInstallation().GetRInstallPath() }, null, 50000);
+                var session = new RSession(i, new RHostBrokerConnector(), () => { });
+                await session.StartHostAsync(new RHostStartupInfo { Name = _testMethod.Name }, null, 50000);
                 return session;
             };
 
@@ -103,11 +102,10 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [Test]
         [Category.R.Session]
         public void StartRHostMissing() {
-            var session = new RSession(0, () => { });
+            var session = new RSession(0, new RHostBrokerConnector(), () => { });
+            session.BrokerConnector.SwitchToLocalBroker(@"C:\", Environment.SystemDirectory);
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo {
-                Name = _testMethod.Name,
-                RBasePath = @"C:\",
-                RHostDirectory = Environment.SystemDirectory
+                Name = _testMethod.Name
             }, null, 10000);
 
             start.ShouldThrow<RHostBinaryMissingException>();
@@ -116,10 +114,10 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [Test(Skip="https://github.com/Microsoft/RTVS/issues/1196")]
         [Category.R.Session]
         public async Task StopBeforeInitialized() {
-            var session = new RSession(0, () => { });
+            var session = new RSession(0, new RHostBrokerConnector(), () => { });
+            session.BrokerConnector.SwitchToLocalBroker(@"C:\", Environment.SystemDirectory);
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo {
-                Name = _testMethod.Name,
-                RHostDirectory = Environment.SystemDirectory
+                Name = _testMethod.Name
             }, null, 10000);
 
             Task.Run(start).DoNotWait();

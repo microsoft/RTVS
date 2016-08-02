@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Interpreters;
 using Microsoft.R.Support.Settings;
 
@@ -21,12 +22,11 @@ namespace Microsoft.R.Host.Client.Test.Script {
         public RHostScript(IRSessionProvider sessionProvider, IRSessionCallback clientApp = null) {
             SessionProvider = sessionProvider;
 
-            Session = SessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
+            Session = SessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, new RHostBrokerConnector());
             Session.IsHostRunning.Should().BeFalse();
-
+            
             Session.StartHostAsync(new RHostStartupInfo {
                 Name = "RHostScript",
-                RBasePath = RToolsSettings.Current.RBasePath,
                 RHostCommandLineArguments = RToolsSettings.Current.RCommandLineArguments,
                 CranMirrorName = RToolsSettings.Current.CranMirror,
                 CodePage = RToolsSettings.Current.RCodePage

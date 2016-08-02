@@ -9,7 +9,8 @@ namespace Microsoft.R.Components.View {
     /// Represents UI element that holds visual component
     /// (typically a tool window)
     /// </summary>
-    public interface IVisualComponentContainer<out T> where T : IVisualComponent {
+    public interface IVisualComponentContainer<out T>
+    {
         T Component { get; }
         string CaptionText { get; set; }
         string StatusText { get; set; }

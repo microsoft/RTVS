@@ -15,6 +15,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
             "Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.dll",
         };
 
-        public static ICompositionCatalog Current { get; } = new EditorTestCompositionCatalog(_assemblies);
+        public static EditorTestCompositionCatalog Current { get; } = new EditorTestCompositionCatalog(_assemblies);
     }
 }

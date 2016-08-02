@@ -11,6 +11,7 @@ using Microsoft.R.Interpreters;
 using Microsoft.R.DataInspection;
 using Microsoft.R.ExecutionTracing;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Install;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test;
@@ -31,13 +32,12 @@ namespace Microsoft.R.StackTracing.Test {
         public CallStackTest(TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo;
             _sessionProvider = new RSessionProvider();
-            _session = _sessionProvider.GetOrCreate(Guid.NewGuid());
+            _session = _sessionProvider.GetOrCreate(Guid.NewGuid(), new RHostBrokerConnector());
         }
 
         public async Task InitializeAsync() {
             await _session.StartHostAsync(new RHostStartupInfo {
-                Name = _testMethod.Name,
-                RBasePath = new RInstallation().GetRInstallPath()
+                Name = _testMethod.Name
             }, new RHostClientTestApp(), 50000);
         }
 

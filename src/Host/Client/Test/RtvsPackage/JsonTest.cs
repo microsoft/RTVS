@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Interpreters;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Install;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Script;
@@ -28,13 +29,13 @@ namespace Microsoft.R.RtvsPackage.Test {
         public JsonTest(TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo;
             _sessionProvider = new RSessionProvider();
-            _session = _sessionProvider.GetOrCreate(Guid.NewGuid());
+            _session = _sessionProvider.GetOrCreate(Guid.NewGuid(), new RHostBrokerConnector());
         }
 
         public async Task InitializeAsync() {
+            var hostFactory = new LocalRHostConnector(new RInstallation().GetRInstallPath());
             await _session.StartHostAsync(new RHostStartupInfo {
-                Name = _testMethod.Name,
-                RBasePath = new RInstallation().GetRInstallPath()
+                Name = _testMethod.Name
             }, new RHostClientTestApp(), 50000);
         }
 
@@ -78,14 +79,12 @@ namespace Microsoft.R.RtvsPackage.Test {
                 json = expr;
             }
 
-            using (var eval = await _session.BeginEvaluationAsync()) {
-                var res = await eval.EvaluateAsync(expr, REvaluationKind.Normal);
-                res.Error.Should().BeNullOrEmpty();
-                res.Result.Should().NotBeNull();
-                res.RawResult.Should().BeNull();
-                var actualJson = JsonConvert.SerializeObject(res.Result).ToUnicodeQuotes();
-                actualJson.Should().Be(json);
-            }
+            var res = await _session.EvaluateAsync(expr, REvaluationKind.Normal);
+            res.Error.Should().BeNullOrEmpty();
+            res.Result.Should().NotBeNull();
+            res.RawResult.Should().BeNull();
+            var actualJson = JsonConvert.SerializeObject(res.Result).ToUnicodeQuotes();
+            actualJson.Should().Be(json);
         }
 
         [CompositeTest]
@@ -99,15 +98,13 @@ namespace Microsoft.R.RtvsPackage.Test {
                 json = expr;
             }
 
-            using (var eval = await _session.BeginEvaluationAsync()) {
-                await eval.SetCodePageAsync(codepage); 
-                var res = await eval.EvaluateAsync(expr, REvaluationKind.Normal);
-                res.Error.Should().BeNullOrEmpty();
-                res.Result.Should().NotBeNull();
-                res.RawResult.Should().BeNull();
-                var actualJson = JsonConvert.SerializeObject(res.Result).ToUnicodeQuotes();
-                actualJson.Should().Be(json);
-            }
+            await _session.SetCodePageAsync(codepage);
+            var res = await _session.EvaluateAsync(expr, REvaluationKind.Normal);
+            res.Error.Should().BeNullOrEmpty();
+            res.Result.Should().NotBeNull();
+            res.RawResult.Should().BeNull();
+            var actualJson = JsonConvert.SerializeObject(res.Result).ToUnicodeQuotes();
+            actualJson.Should().Be(json);
         }
 
         [CompositeTest]
@@ -125,11 +122,9 @@ namespace Microsoft.R.RtvsPackage.Test {
         [InlineData("list(x = 1, x = 2)")]
         [InlineData("as.environment(list(x = 1, x = 2))")]
         public async Task SerializeError(string expr) {
-            using (var eval = await _session.BeginEvaluationAsync()) {
-                var res = await eval.EvaluateAsync($"rtvs::toJSON({expr})", REvaluationKind.Normal);
-                res.Error.Should().NotBeNullOrEmpty();
-                res.RawResult.Should().BeNull();
-            }
+            var res = await _session.EvaluateAsync($"rtvs::toJSON({expr})", REvaluationKind.Normal);
+            res.Error.Should().NotBeNullOrEmpty();
+            res.RawResult.Should().BeNull();
         }
     }
 }

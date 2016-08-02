@@ -59,7 +59,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
                     await evaluation.SaveWorkspaceAsync(file);
                 } catch (RException ex) {
                     var message = string.Format(CultureInfo.CurrentCulture, Resources.SaveWorkspaceFailedMessageFormat, file, ex.Message);
-                    VsAppShell.Current.ShowErrorMessage(message);
+                    _appShell.ShowErrorMessage(message);
                 } catch (OperationCanceledException) {
                 }
             }

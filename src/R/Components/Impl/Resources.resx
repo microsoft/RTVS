@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="MicrosoftRHostDisconnected" xml:space="preserve">
+    <value>Interactive Window is disconnected from R Session. Click Reset to reconnect.</value>
+  </data>
   <data name="MicrosoftRHostStopped" xml:space="preserve">
     <value>R Host process is stopped. Click Reset to start a new one.</value>
   </data>
@@ -154,16 +157,31 @@
     <value>Each package is licensed to you by its owner. Microsoft is not responsible for, nor does it grant any licenses to, third-party packages.</value>
   </data>
   <data name="PackageManager_PackageLockedByRSession" xml:space="preserve">
-    <value>Package {0} can't be uninstalled because it has been loaded into R. You need to reset R before package can be uninstalled.</value>
+    <value>Error: Package {0} can't be uninstalled because it has been loaded into R. You need to reset R before package can be uninstalled.</value>
   </data>
   <data name="PackageManager_PackageLocked" xml:space="preserve">
-    <value>Package {0} can't be uninstalled because one of its files is locked by other process.</value>
+    <value>Error: Package {0} can't be uninstalled because one of its files is locked by other process.</value>
   </data>
   <data name="PackageManager_PackageSources" xml:space="preserve">
     <value>Package sources:</value>
   </data>
-  <data name="PackageManager_Error" xml:space="preserve">
-    <value>Error: </value>
+  <data name="PackageManager_NoLoadedPackagesNoRSession" xml:space="preserve">
+    <value>Warning: Interactive Window is disconnected from R Session, so there is no information about loaded packages.</value>
+  </data>
+  <data name="PackageManager_CantLoadPackageNoRSession" xml:space="preserve">
+    <value>Error: Package {0} can't be loaded because Interactive Window is disconnected from R Session.</value>
+  </data>
+  <data name="PackageManager_CantUnloadPackageNoRSession" xml:space="preserve">
+    <value>Error: Package {0} can't be unloaded because Interactive Window is disconnected from R Session.</value>
+  </data>
+  <data name="PackageManager_CantInstallPackageNoRSession" xml:space="preserve">
+    <value>Error: Package {0} can't be installed because Interactive Window is disconnected from R Session.</value>
+  </data>
+  <data name="PackageManager_CantUninstallPackageNoRSession" xml:space="preserve">
+    <value>Error: Package {0} can't be uninstalled because Interactive Window is disconnected from R Session.</value>
+  </data>
+  <data name="PackageManager_CantUpdatePackageNoRSession" xml:space="preserve">
+    <value>Error: Package {0} can't be updated because Interactive Window is disconnected from R Session.</value>
   </data>
   <data name="PackageManager_SearchIncomplete" xml:space="preserve">
     <value>Retrieving results from one or more sources</value>

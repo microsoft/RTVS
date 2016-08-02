@@ -7,8 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.R.Interpreters;
-using Microsoft.R.Host.Client.Install;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Stubs;
 using Microsoft.UnitTests.Core.Threading;
@@ -27,14 +26,13 @@ namespace Microsoft.R.Host.Client.Test.Session {
             public ReadInput(TestMethodFixture testMethod, TaskObserverMethodFixture taskObserver) {
                 _taskObserver = taskObserver;
                 _testMethod = testMethod.MethodInfo;
-                _session = new RSession(0, () => { });
+                _session = new RSession(0, new RHostBrokerConnector(), () => { });
                 _callback = new RSessionCallbackStub();
             }
 
             public async Task InitializeAsync() {
                 await _session.StartHostAsync(new RHostStartupInfo {
-                    Name = _testMethod.Name,
-                    RBasePath = new RInstallation().GetRInstallPath()
+                    Name = _testMethod.Name
                 }, _callback, 50000);
 
                 _taskObserver.ObserveTaskFailure(_session.RHost.GetRHostRunTask());

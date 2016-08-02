@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Design;
+using Microsoft.R.Components.ConnectionManager.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Commands;
 using Microsoft.R.Components.Sql;
@@ -16,8 +17,6 @@ using Microsoft.VisualStudio.R.Package.Feedback;
 using Microsoft.VisualStudio.R.Package.Help;
 using Microsoft.VisualStudio.R.Package.History;
 using Microsoft.VisualStudio.R.Package.Options.R.Tools;
-using Microsoft.VisualStudio.R.Package.PackageManager;
-using Microsoft.VisualStudio.R.Package.Plots.Commands;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration;
 using Microsoft.VisualStudio.R.Package.Repl;
@@ -28,8 +27,10 @@ using Microsoft.VisualStudio.R.Package.Repl.Workspace;
 using Microsoft.VisualStudio.R.Package.RPackages.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Sql;
+using Microsoft.VisualStudio.R.Package.ToolWindows;
 using Microsoft.VisualStudio.R.Package.Windows;
 using Microsoft.VisualStudio.Utilities;
+using static Microsoft.VisualStudio.R.Package.Commands.CommandAsyncToOleMenuCommandShimFactory;
 
 namespace Microsoft.VisualStudio.R.Packages.R {
     internal static class PackageCommands {
@@ -80,17 +81,13 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new StepOutCommand(interactiveWorkflow),
                 new StepIntoCommand(interactiveWorkflow),
 
-                new CommandAsyncToOleMenuCommandShim(
-                    RGuidList.RCmdSetGuid, RPackageCommandId.icmdSourceRScript,
-                    new SourceRScriptCommand(interactiveWorkflow, textViewTracker, false)),
-                new CommandAsyncToOleMenuCommandShim(
-                    RGuidList.RCmdSetGuid, RPackageCommandId.icmdSourceRScriptWithEcho,
-                    new SourceRScriptCommand(interactiveWorkflow, textViewTracker, true)),
+                CreateRCmdSetCommand(RPackageCommandId.icmdSourceRScript, new SourceRScriptCommand(interactiveWorkflow, textViewTracker, false)),
+                CreateRCmdSetCommand(RPackageCommandId.icmdSourceRScriptWithEcho, new SourceRScriptCommand(interactiveWorkflow, textViewTracker, true)),
 
                 new RunShinyAppCommand(interactiveWorkflow),
                 new StopShinyAppCommand(interactiveWorkflow),
 
-                new InterruptRCommand(interactiveWorkflow, debuggerModeTracker),
+                CreateRCmdSetCommand(RPackageCommandId.icmdInterruptR, new InterruptRCommand(interactiveWorkflow, debuggerModeTracker)),
                 new ResetReplCommand(interactiveWorkflow),
                 
                 // Directory management
@@ -109,45 +106,33 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new CheckForPackageUpdatesCommand(),
 
                 // Window commands
-                new ShowPlotWindowsCommand(),
                 new ShowRInteractiveWindowsCommand(interactiveWorkflowProvider, interactiveWorkflowComponentContainerFactory),
                 new ShowVariableWindowCommand(),
-                new ShowHelpWindowCommand(),
+
+                new ShowToolWindowCommand<HelpWindowPane>(RPackageCommandId.icmdShowHelpWindow),
+                new ShowToolWindowCommand<HistoryWindowPane>(RPackageCommandId.icmdShowHistoryWindow),
+                new ShowToolWindowCommand<PackageManagerWindowPane>(RPackageCommandId.icmdShowPackagesWindow),
+                new ShowToolWindowCommand<PlotManagerWindowPane>(RPackageCommandId.icmdShowPlotWindow),
+
                 new ShowHelpOnCurrentCommand(interactiveWorkflow, textViewTracker, replTracker),
                 new SearchWebForCurrentCommand(interactiveWorkflow, textViewTracker, replTracker, wbs),
-                new ShowHistoryWindowCommand(),
                 new GotoEditorWindowCommand(textViewTracker, contentTypeRegistryService),
                 new GotoSolutionExplorerCommand(),
-                new ShowPackageManagerWindowCommand(),
 
                 // Plot commands
-                new CommandAsyncToOleMenuCommandShim(
-                    RGuidList.RCmdSetGuid, RPackageCommandId.icmdExportPlotAsImage,
-                    interactiveWorkflow.Plots.Commands.ExportAsImage),
-                new CommandAsyncToOleMenuCommandShim(
-                    RGuidList.RCmdSetGuid, RPackageCommandId.icmdExportPlotAsPdf,
-                    interactiveWorkflow.Plots.Commands.ExportAsPdf),
-                new CommandAsyncToOleMenuCommandShim(
-                    RGuidList.RCmdSetGuid, RPackageCommandId.icmdCopyPlotAsBitmap,
-                    interactiveWorkflow.Plots.Commands.CopyAsBitmap),
-                new CommandAsyncToOleMenuCommandShim(
-                    RGuidList.RCmdSetGuid, RPackageCommandId.icmdCopyPlotAsMetafile,
-                    interactiveWorkflow.Plots.Commands.CopyAsMetafile),
-                new CommandAsyncToOleMenuCommandShim(
-                    RGuidList.RCmdSetGuid, RPackageCommandId.icmdNextPlot,
-                    interactiveWorkflow.Plots.Commands.Next),
-                new CommandAsyncToOleMenuCommandShim(
-                    RGuidList.RCmdSetGuid, RPackageCommandId.icmdPrevPlot,
-                    interactiveWorkflow.Plots.Commands.Previous),
-                new CommandAsyncToOleMenuCommandShim(
-                    RGuidList.RCmdSetGuid, RPackageCommandId.icmdClearPlots,
-                    interactiveWorkflow.Plots.Commands.RemoveAll),
-                new CommandAsyncToOleMenuCommandShim(
-                    RGuidList.RCmdSetGuid, RPackageCommandId.icmdRemovePlot,
-                    interactiveWorkflow.Plots.Commands.RemoveCurrent),
-                new CommandAsyncToOleMenuCommandShim(
-                    RGuidList.RCmdSetGuid, RPackageCommandId.icmdEndLocator,
-                    interactiveWorkflow.Plots.Commands.EndLocator),
+                CreateRCmdSetCommand(RPackageCommandId.icmdExportPlotAsImage, interactiveWorkflow.Plots.Commands.ExportAsImage),
+                CreateRCmdSetCommand(RPackageCommandId.icmdExportPlotAsPdf, interactiveWorkflow.Plots.Commands.ExportAsPdf),
+                CreateRCmdSetCommand(RPackageCommandId.icmdCopyPlotAsBitmap, interactiveWorkflow.Plots.Commands.CopyAsBitmap),
+                CreateRCmdSetCommand(RPackageCommandId.icmdCopyPlotAsMetafile, interactiveWorkflow.Plots.Commands.CopyAsMetafile),
+                CreateRCmdSetCommand(RPackageCommandId.icmdNextPlot, interactiveWorkflow.Plots.Commands.Next),
+                CreateRCmdSetCommand(RPackageCommandId.icmdPrevPlot, interactiveWorkflow.Plots.Commands.Previous),
+                CreateRCmdSetCommand(RPackageCommandId.icmdClearPlots, interactiveWorkflow.Plots.Commands.RemoveAll),
+                CreateRCmdSetCommand(RPackageCommandId.icmdRemovePlot, interactiveWorkflow.Plots.Commands.RemoveCurrent),
+                CreateRCmdSetCommand(RPackageCommandId.icmdEndLocator, interactiveWorkflow.Plots.Commands.EndLocator),
+
+                // Connection manager commands
+                CreateRCmdSetCommand(RPackageCommandId.icmdReconnect, new ReconnectCommand(interactiveWorkflow)),
+                CreateRCmdSetCommand(RPackageCommandId.icmdMruConnectionsDynamicStart, new SwitchToConnectionCommand(interactiveWorkflow))
             };
         }
     }

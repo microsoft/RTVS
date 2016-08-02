@@ -171,18 +171,16 @@ namespace Microsoft.R.ExecutionTracing {
 
         public Task<bool> StepOutAsync(CancellationToken cancellationToken = default(CancellationToken)) =>
             StepAsync(cancellationToken, "c", async inter => {
-                using (var eval = await Session.BeginEvaluationAsync(cancellationToken)) {
-                    try {
-                        // EvaluateAsync will push a new toplevel context on the context stack before
-                        // evaluating the expression, so tell browser_set_debug to skip 1 toplevel context
-                        // before locating the target context for step-out.
-                        await eval.ExecuteAsync("rtvs:::browser_set_debug(1, 1)", REvaluationKind.Normal);
-                    } catch (RException) {
-                        _stepTcs.TrySetResult(false);
-                        return false;
-                    }
-                    return true;
+                try {
+                    // EvaluateAsync will push a new toplevel context on the context stack before
+                    // evaluating the expression, so tell browser_set_debug to skip 1 toplevel context
+                    // before locating the target context for step-out.
+                    await Session.ExecuteAsync("rtvs:::browser_set_debug(1, 1)", REvaluationKind.Normal, cancellationToken);
+                } catch (RException) {
+                    _stepTcs.TrySetResult(false);
+                    return false;
                 }
+                return true;
             });
 
         /// <returns>

@@ -64,6 +64,8 @@ namespace Microsoft.Languages.Editor.Test.Fakes.Shell {
             return SaveFilePath;
         }
 
+        public void UpdateCommandStatus(bool immediate) { }
+
         public int LocaleId => 1033;
 
         public string LastShownMessage { get; private set; }

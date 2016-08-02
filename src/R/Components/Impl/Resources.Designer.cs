@@ -187,6 +187,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Interactive Window is disconnected from R Session. Click Reset to reconnect..
+        /// </summary>
+        public static string MicrosoftRHostDisconnected {
+            get {
+                return ResourceManager.GetString("MicrosoftRHostDisconnected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Starting R Session....
         /// </summary>
         public static string MicrosoftRHostStarting {
@@ -349,11 +358,47 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error: .
+        ///   Looks up a localized string similar to Error: Package {0} can&apos;t be installed because Interactive Window is disconnected from R Session..
         /// </summary>
-        public static string PackageManager_Error {
+        public static string PackageManager_CantInstallPackageNoRSession {
             get {
-                return ResourceManager.GetString("PackageManager_Error", resourceCulture);
+                return ResourceManager.GetString("PackageManager_CantInstallPackageNoRSession", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error: Package {0} can&apos;t be loaded because Interactive Window is disconnected from R Session..
+        /// </summary>
+        public static string PackageManager_CantLoadPackageNoRSession {
+            get {
+                return ResourceManager.GetString("PackageManager_CantLoadPackageNoRSession", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error: Package {0} can&apos;t be uninstalled because Interactive Window is disconnected from R Session..
+        /// </summary>
+        public static string PackageManager_CantUninstallPackageNoRSession {
+            get {
+                return ResourceManager.GetString("PackageManager_CantUninstallPackageNoRSession", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error: Package {0} can&apos;t be unloaded because Interactive Window is disconnected from R Session..
+        /// </summary>
+        public static string PackageManager_CantUnloadPackageNoRSession {
+            get {
+                return ResourceManager.GetString("PackageManager_CantUnloadPackageNoRSession", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error: Package {0} can&apos;t be updated because Interactive Window is disconnected from R Session..
+        /// </summary>
+        public static string PackageManager_CantUpdatePackageNoRSession {
+            get {
+                return ResourceManager.GetString("PackageManager_CantUpdatePackageNoRSession", resourceCulture);
             }
         }
         
@@ -448,6 +493,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Warning: Interactive Window is disconnected from R Session, so there is no information about loaded packages..
+        /// </summary>
+        public static string PackageManager_NoLoadedPackagesNoRSession {
+            get {
+                return ResourceManager.GetString("PackageManager_NoLoadedPackagesNoRSession", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Not available in this source.
         /// </summary>
         public static string PackageManager_NotAvailableInSource {
@@ -466,7 +520,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Package {0} can&apos;t be uninstalled because one of its files is locked by other process..
+        ///   Looks up a localized string similar to Error: Package {0} can&apos;t be uninstalled because one of its files is locked by other process..
         /// </summary>
         public static string PackageManager_PackageLocked {
             get {
@@ -475,7 +529,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Package {0} can&apos;t be uninstalled because it has been loaded into R. You need to reset R before package can be uninstalled..
+        ///   Looks up a localized string similar to Error: Package {0} can&apos;t be uninstalled because it has been loaded into R. You need to reset R before package can be uninstalled..
         /// </summary>
         public static string PackageManager_PackageLockedByRSession {
             get {

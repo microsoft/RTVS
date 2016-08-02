@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using FluentAssertions;
 using Microsoft.Common.Core.OS;
+using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager;
@@ -35,9 +36,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
 
         public ProjectCommandsTest() {
             var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+            var connectionsProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IConnectionManagerProvider>();
             var historyProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRHistoryProvider>();
             var packagesProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRPackageManagerProvider>();
-            _interactiveWorkflowProvider = TestRInteractiveWorkflowProviderFactory.Create(sessionProvider, historyProvider, packagesProvider);
+            _interactiveWorkflowProvider = TestRInteractiveWorkflowProviderFactory.Create(sessionProvider, connectionsProvider, historyProvider, packagesProvider);
         }
 
         [Test]

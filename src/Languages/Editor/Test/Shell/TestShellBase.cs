@@ -36,6 +36,8 @@ namespace Microsoft.Languages.Editor.Test.Shell {
             return null;
         }
 
+        public void UpdateCommandStatus(bool immediate) { }
+
         public void DoIdle() {
             UIThreadHelper.Instance.Invoke(() => Idle?.Invoke(null, EventArgs.Empty));
             DoEvents();

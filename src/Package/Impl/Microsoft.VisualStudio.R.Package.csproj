@@ -61,7 +61,9 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Browsers\WebBrowserRole.cs" />
+    <Compile Include="Commands\AsyncCommandRangeToOleMenuCommandShim.cs" />
     <Compile Include="Commands\CommandAsyncToOleMenuCommandShim.cs" />
+    <Compile Include="Commands\CommandAsyncToOleMenuCommandShimFactory.cs" />
     <Compile Include="Commands\OleControllerChain.cs" />
     <Compile Include="Commands\R\SwitchToRClientCommand.cs" />
     <Compile Include="Commands\SessionCommand.cs" />
@@ -173,7 +175,6 @@
     <Compile Include="Help\HelpWindowPane.cs" />
     <Compile Include="Help\NativeMethods.cs" />
     <Compile Include="Help\ShowHelpOnCurrentCommand.cs" />
-    <Compile Include="Help\ShowHelpWindowCommand.cs" />
     <Compile Include="Help\HelpPreviousCommand.cs" />
     <Compile Include="History\Commands\CopySelectedHistoryCommand.cs" />
     <Compile Include="History\Commands\HistoryWindowVsStd2KCmdIdDown.cs" />
@@ -194,18 +195,16 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Options\R\Tools\EncodingTypeConverter.cs" />
-    <Compile Include="PackageManager\ShowPackageManagerWindowCommand.cs" />
     <Compile Include="History\Commands\ToggleMultilineHistorySelectionCommand.cs" />
     <Compile Include="History\HistoryWindowPane.cs" />
-    <Compile Include="History\Commands\ShowHistoryWindowCommand.cs" />
     <Compile Include="Options\Attributes\SurveyNewsPolicyTypeConverter.cs" />
     <Compile Include="Options\R\Tools\SurveyNewsCommand.cs" />
-    <Compile Include="PackageManager\VsRPackageManagerVisualComponent.cs" />
-    <Compile Include="PackageManager\PackageManagerWindowPane.cs" />
+    <Compile Include="ToolWindows\VsRPackageManagerVisualComponent.cs" />
+    <Compile Include="ToolWindows\PackageManagerWindowPane.cs" />
     <Compile Include="Packages\Attributes\ProvideCodeExpansionPathAttribute.cs" />
     <Compile Include="Packages\Attributes\ProvideCodeExpansionsAttribute.cs" />
-    <Compile Include="Plots\PlotManagerWindowPane.cs" />
-    <Compile Include="Plots\VsRPlotManagerVisualComponent.cs" />
+    <Compile Include="ToolWindows\PlotManagerWindowPane.cs" />
+    <Compile Include="ToolWindows\VsRPlotManagerVisualComponent.cs" />
     <Compile Include="ProjectSystem\Configuration\IProjectConfigurationSettingsAccess.cs" />
     <Compile Include="ProjectSystem\Configuration\IProjectConfigurationSettingsProvider.cs" />
     <Compile Include="ProjectSystem\Configuration\ProjectConfigurationSettingsProvider.cs" />
@@ -285,6 +284,7 @@
     </Compile>
     <Compile Include="Sql\Extensions\SqlStringExtensions.cs" />
     <Compile Include="Sql\Extensions\SProcFileExtensions.cs" />
+    <Compile Include="StatusBar\VsStatusBar.cs" />
     <Compile Include="Utilities\IdeUtilities.cs" />
     <Compile Include="Windows\ToolWindowPaneFactory.cs" />
     <Compile Include="History\VsRHistoryVisualComponentContainerFactory.cs" />
@@ -368,7 +368,6 @@
     <Compile Include="Editors\IObjectInstanceFactory.cs" />
     <Compile Include="Logging\OutputWindowLog.cs" />
     <Compile Include="Packages\R\PackageCommands.cs" />
-    <Compile Include="Plots\Commands\ShowPlotWindowsCommand.cs" />
     <Compile Include="Publishing\Definitions\IMarkdownFlavorPublishHandler.cs" />
     <Compile Include="Publishing\Handlers\RmdPublishHandler.cs" />
     <Compile Include="Publishing\Commands\PreviewCommand.cs" />
@@ -417,7 +416,6 @@
     <Compile Include="Repl\Commands\ReplCommandTargetProvider.cs" />
     <Compile Include="Repl\Commands\ReplCommandController.cs" />
     <Compile Include="Repl\Workspace\LoadWorkspaceCommand.cs" />
-    <Compile Include="Repl\Workspace\InterruptRCommand.cs" />
     <Compile Include="Repl\Workspace\SaveWorkspaceCommand.cs" />
     <Compile Include="DataInspect\Commands\ImportDataSetTextFileCommand.cs" />
     <Compile Include="DataInspect\Commands\ImportDataSetUrlCommand.cs" />
@@ -1355,7 +1353,9 @@
       <StrongName>StrongName</StrongName>
     </FilesToSign>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Plots\Commands\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\Common\BuildTasks\Microsoft.Common.BuildTasks.targets" />
   <Target Name="AddToVsixSources" AfterTargets="GetVsixSourceItems">

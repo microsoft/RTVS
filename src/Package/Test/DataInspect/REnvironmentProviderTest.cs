@@ -10,7 +10,9 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
+using Microsoft.R.Host.Client.Test.Mocks;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.R.Interpreters;
 using Microsoft.UnitTests.Core.XUnit;
@@ -30,13 +32,12 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         public REnvironmentProviderTest(TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo;
             _sessionProvider = new RSessionProvider();
-            _session = _sessionProvider.GetOrCreate(Guid.NewGuid());
+            _session = _sessionProvider.GetOrCreate(Guid.NewGuid(), new RHostBrokerConnector());
         }
 
         public async Task InitializeAsync() {
             await _session.StartHostAsync(new RHostStartupInfo {
-                Name = _testMethod.Name,
-                RBasePath = new RInstallation().GetRInstallPath()
+                Name = _testMethod.Name
             }, new RHostClientTestApp(), 50000);
         }
 
