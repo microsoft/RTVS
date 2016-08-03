@@ -16,6 +16,7 @@ using Microsoft.R.Host.Client;
 using Microsoft.R.StackTracing;
 using Microsoft.R.Support.Help;
 using Microsoft.VisualStudio.Utilities;
+using static System.FormattableString;
 using static Microsoft.R.DataInspection.REvaluationResultProperties;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
@@ -86,12 +87,18 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 // May be a package object line mtcars$
                 variableName = TrimToTrailingSelector(variableName);
                 var session = Workflow.RSession;
+
                 IReadOnlyList<IREvaluationResultInfo> infoList = null;
-                try {
-                    infoList = session.DescribeChildrenAsync(REnvironments.GlobalEnv, 
-                               variableName, HasChildrenProperty | AccessorKindProperty,
-                               null, _maxResults).WaitTimeout(_maxWaitTime);
-                } catch(TimeoutException) { }
+                Task.Run(async () => {
+                    try {
+                        var exists = await session.EvaluateAsync<bool>(Invariant($"exists('{variableName}')"), REvaluationKind.Normal);
+                        if (exists) {
+                            infoList = await session.DescribeChildrenAsync(REnvironments.GlobalEnv,
+                                           variableName, HasChildrenProperty | AccessorKindProperty,
+                                           null, _maxResults);
+                        }
+                    } catch (Exception) { }
+                }).Wait(_maxWaitTime);
 
                 if (infoList != null) {
                     return infoList
