@@ -32,14 +32,6 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             return dialog;
         }
 
-        public static async Task<SqlPublshOptionsDialog> CreateAsync(
-            IApplicationShell appShell, IProjectSystemServices pss,
-            IFileSystem fs, IProjectConfigurationSettingsProvider pcsp) {
-            var dialog = new SqlPublshOptionsDialog(appShell, pss, fs, pcsp);
-            await dialog.InitializeAsync();
-            return dialog;
-        }
-
         private SqlPublshOptionsDialog(IApplicationShell appShell, IProjectSystemServices pss, IProjectConfigurationSettingsProvider pcsp) :
             this(appShell, pss, new FileSystem(), pcsp) {
             InitializeComponent();
