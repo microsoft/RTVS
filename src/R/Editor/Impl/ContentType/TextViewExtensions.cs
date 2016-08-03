@@ -84,10 +84,8 @@ namespace Microsoft.R.Editor {
                     int caretPosition = -1;
                     if (textView.Selection.SelectedSpans.Count > 0) {
                         span = textView.Selection.SelectedSpans[0];
-                        // Make sure span is reasonable (single line and only contains one item)
                         if (span.Length > 0) {
-                            line = position.Snapshot.GetLineFromPosition(span.Start + 1);
-                            caretPosition = Math.Min(position.Position, line.Start + (line.Length - line.GetText().TrimStart().Length + 1));
+                            return textView.TextBuffer.CurrentSnapshot.GetText(span);
                         }
                     }
                     line = line ?? position.GetContainingLine();
