@@ -26,7 +26,10 @@ setwd <- function(dir) {
 
 redirect_functions <- function(...) {
   attach(as.environment(
-           list(View = rtvs:::view, library = rtvs:::library)
+           list(View = rtvs:::view,
+                library = rtvs:::library,
+                install.packages = rtvs:::install.packages,
+                remove.packages = rtvs:::remove.packages)
          ), name = ".rtvs", warn.conflicts = FALSE)
 }
 
@@ -51,11 +54,11 @@ show_file <- function(files, header, title, delete.file) {
 }
 
 install.packages <- function(...) {
-  utils::Internal(install.packages(...))
+  utils::install.packages(...)
   invisible(rtvs:::send_notification('!PackagesInstalled'))
 }
 
 remove.packages <- function(...) {
-  utils::Internal(remove.packages(...))
+  utils::remove.packages(...)
   invisible(rtvs:::send_notification('!PackagesRemoved'))
 }

@@ -16,6 +16,8 @@ namespace Microsoft.R.Host.Client {
         event EventHandler<EventArgs> Disconnected;
         event EventHandler<EventArgs> Disposed;
         event EventHandler<EventArgs> DirectoryChanged;
+        event EventHandler<EventArgs> PackagesInstalled;
+        event EventHandler<EventArgs> PackagesRemoved;
 
         int Id { get; }
         int? ProcessId { get; }

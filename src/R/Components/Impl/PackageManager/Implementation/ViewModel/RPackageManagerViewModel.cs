@@ -59,6 +59,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             Items = new ReadOnlyObservableCollection<object>(_items);
 
             _session.Mutated += RSessionMutated;
+            _session.PackagesInstalled += OnPackagesInstalled;
+            _session.PackagesRemoved += OnPackagesInstalled;
         }
 
         public ReadOnlyObservableCollection<object> Items { get; }
@@ -696,8 +698,17 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 .DoNotWait();
         }
 
+        private void OnPackagesInstalled(object sender, EventArgs e) {
+            ReloadInstalledAndLoadedPackagesAsync().DoNotWait();
+        }
+        private void OnPackagesRemoved(object sender, EventArgs e) {
+            ReloadInstalledAndLoadedPackagesAsync().DoNotWait();
+        }
+
         public void Dispose() {
             _session.Mutated -= RSessionMutated;
+            _session.PackagesInstalled -= OnPackagesInstalled;
+            _session.PackagesRemoved -= OnPackagesRemoved;
         }
 
         private enum SelectedTab {
