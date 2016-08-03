@@ -22,6 +22,9 @@ using NSubstitute;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 #endif
+#if VS15
+using Microsoft.VisualStudio.ProjectSystem.Properties;
+#endif
 
 namespace Microsoft.VisualStudio.R.Package.Test.Sql {
     [ExcludeFromCodeCoverage]
