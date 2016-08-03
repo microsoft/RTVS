@@ -131,5 +131,23 @@ function(a) {
                 .And.HaveSignatureEnd(content.Length);
         }
 
+        [Test]
+        public void ParameterTest07() {
+            string content = "x <- a(b( ), )";
+            AstRoot ast = RParser.Parse(content);
+
+            ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
+            var parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, textBuffer.CurrentSnapshot, 12);
+            parametersInfo.Should().NotBeNull()
+                .And.HaveFunctionCall()
+                .And.HaveFunctionName("a")
+                .And.HaveParameterIndex(1);
+
+            parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, textBuffer.CurrentSnapshot, 13);
+            parametersInfo.Should().NotBeNull()
+                .And.HaveFunctionCall()
+                .And.HaveFunctionName("a")
+                .And.HaveParameterIndex(1);
+        }
     }
 }
