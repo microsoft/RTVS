@@ -38,8 +38,9 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
         }
 
         [Test(ThreadType.UI)]
-        public void Constructor() {
-            var model = new SqlPublishOptionsDialogViewModel(_coreShell, _pss, _storage, _pcsp);
+        public async Task Constructor() {
+            var settings = new SqlSProcPublishSettings(_storage);
+            var model = await SqlPublishOptionsDialogViewModel.CreateAsync(settings, _coreShell, _pss, _pcsp);
 
             model.TargetTypeNames.Should().HaveCount(3);
             model.SelectedTargetTypeIndex.Should().Be(0);
@@ -60,41 +61,48 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             model.Settings.TargetType.Should().Be(PublishTargetType.Dacpac);
         }
 
-        [Test]
-        public void SelectCodePlacement() {
-            var model = new SqlPublishOptionsDialogViewModel(_coreShell, _pss, _storage, _pcsp);
-            model.SelectedCodePlacementIndex = 1;
+        [Test(ThreadType.UI)]
+        public async Task SelectCodePlacement() {
+            var settings = new SqlSProcPublishSettings(_storage);
+            var model = await SqlPublishOptionsDialogViewModel.CreateAsync(settings, _coreShell, _pss, _pcsp);
+
+            model.SelectCodePlacement(1);
             model.Settings.CodePlacement.Should().Be(RCodePlacement.Table);
             model.GenerateTable.Should().BeTrue();
 
-            model.SelectedCodePlacementIndex = 0;
+            model.SelectCodePlacement(0);
             model.Settings.CodePlacement.Should().Be(RCodePlacement.Inline);
             model.GenerateTable.Should().BeFalse();
         }
 
-        [Test]
-        public void SelectQuoteType() {
-            var model = new SqlPublishOptionsDialogViewModel(_coreShell, _pss, _storage, _pcsp);
-            model.SelectedQuoteTypeIndex = 1;
+        [Test(ThreadType.UI)]
+        public async Task SelectQuoteType() {
+            var settings = new SqlSProcPublishSettings(_storage);
+            var model = await SqlPublishOptionsDialogViewModel.CreateAsync(settings, _coreShell, _pss, _pcsp);
+
+            model.SelectQuoteType(1);
             model.Settings.QuoteType.Should().Be(SqlQuoteType.Bracket);
-            model.SelectedQuoteTypeIndex = 2;
+            model.SelectQuoteType(2);
             model.Settings.QuoteType.Should().Be(SqlQuoteType.Quote);
-            model.SelectedQuoteTypeIndex = 0;
+            model.SelectQuoteType(0);
             model.Settings.QuoteType.Should().Be(SqlQuoteType.None);
         }
 
         [Test(ThreadType.UI)]
-        public void SelectTargetType() {
-            var model = new SqlPublishOptionsDialogViewModel(_coreShell, _pss, _storage, _pcsp);
-            model.SelectedTargetTypeIndex = 1;
+        public async Task SelectTargetType() {
+            var settings = new SqlSProcPublishSettings(_storage);
+
+            var model = await SqlPublishOptionsDialogViewModel.CreateAsync(settings, _coreShell, _pss, _pcsp);
+            await model.SelectTargetTypeAsync(1);
+
             model.Settings.TargetType.Should().Be(PublishTargetType.Database);
             model.TargetHasName.Should().BeTrue();
 
-            model.SelectedTargetTypeIndex = 2;
+            await model.SelectTargetTypeAsync(2);
             model.Settings.TargetType.Should().Be(PublishTargetType.Project);
             model.TargetHasName.Should().BeTrue();
 
-            model.SelectedTargetTypeIndex = 0;
+            await model.SelectTargetTypeAsync(0);
             model.Settings.TargetType.Should().Be(PublishTargetType.Dacpac);
             model.TargetHasName.Should().BeFalse();
         }
@@ -102,15 +110,17 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
         [Test(ThreadType.UI)]
         public async Task NoDbProjectList() {
             _storage.GetInteger(SqlSProcPublishSettings.TargetTypeSettingName, (int)PublishTargetType.Dacpac).Returns((int)PublishTargetType.Project);
-            var model = new SqlPublishOptionsDialogViewModel(_coreShell, _pss, _storage, _pcsp);
-            await model.InitializationTask;
+
+            var settings = new SqlSProcPublishSettings(_storage);
+            var model = await SqlPublishOptionsDialogViewModel.CreateAsync(settings, _coreShell, _pss, _pcsp);
+
             model.Settings.TargetType.Should().Be(PublishTargetType.Project);
             model.Targets.Should().HaveCount(1);
             model.Targets[0].Should().Be(Resources.SqlPublishDialog_NoDatabaseProjects);
         }
 
         [Test(ThreadType.UI)]
-        public void ProjectList() {
+        public async Task ProjectList() {
             var projects = Substitute.For<EnvDTE.Projects>();
             var p1 = Substitute.For<EnvDTE.Project>();
             p1.FileName.Returns("project1.sqlproj");
@@ -130,7 +140,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             _storage.GetInteger(SqlSProcPublishSettings.TargetTypeSettingName, (int)PublishTargetType.Dacpac).Returns((int)PublishTargetType.Project);
             _storage.GetString(SqlSProcPublishSettings.TargetProjectSettingName, Arg.Any<string>()).Returns(("project2"));
 
-            var model = new SqlPublishOptionsDialogViewModel(_coreShell, _pss, _storage, _pcsp);
+            var settings = new SqlSProcPublishSettings(_storage);
+            var model = await SqlPublishOptionsDialogViewModel.CreateAsync(settings, _coreShell, _pss, _pcsp);
 
             model.Settings.TargetType.Should().Be(PublishTargetType.Project);
             model.Settings.TargetProject.Should().Be("project2");
@@ -147,8 +158,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
 
             _storage.GetInteger(SqlSProcPublishSettings.TargetTypeSettingName, (int)PublishTargetType.Dacpac).Returns((int)PublishTargetType.Database);
 
-            var model = new SqlPublishOptionsDialogViewModel(_coreShell, _pss, _storage, _pcsp);
-            await model.InitializationTask;
+            var settings = new SqlSProcPublishSettings(_storage);
+            var model = await SqlPublishOptionsDialogViewModel.CreateAsync(settings, _coreShell, _pss, _pcsp);
 
             model.Settings.TargetType.Should().Be(PublishTargetType.Database);
             model.Targets.Should().HaveCount(1);
@@ -181,8 +192,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             _storage.GetInteger(SqlSProcPublishSettings.TargetTypeSettingName, (int)PublishTargetType.Dacpac).Returns((int)PublishTargetType.Database);
             _storage.GetString(SqlSProcPublishSettings.TargetDatabaseConnectionSettingName, Arg.Any<string>()).Returns(("dbConn2_String"));
 
-            var model = new SqlPublishOptionsDialogViewModel(_coreShell, _pss, _storage, _pcsp);
-            await model.InitializationTask;
+            var settings = new SqlSProcPublishSettings(_storage);
+            var model = await SqlPublishOptionsDialogViewModel.CreateAsync(settings, _coreShell, _pss, _pcsp);
 
             model.Settings.TargetType.Should().Be(PublishTargetType.Database);
             model.Settings.TargetDatabaseConnection.Should().Be("dbConn2_String");

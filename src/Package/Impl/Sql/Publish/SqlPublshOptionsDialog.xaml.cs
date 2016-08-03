@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Common.Core;
@@ -18,27 +19,53 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
     /// Interaction logic for SqlPublsh.xaml
     /// </summary>
     public partial class SqlPublshOptionsDialog : DialogWindow {
-        private readonly SqlPublishOptionsDialogViewModel _model;
         private readonly IApplicationShell _appShell;
         private readonly IProjectSystemServices _pss;
+        private readonly IProjectConfigurationSettingsProvider _pcsp;
+        private SqlPublishOptionsDialogViewModel _model;
 
-        public SqlPublshOptionsDialog(IApplicationShell appShell, IProjectSystemServices pss, IProjectConfigurationSettingsProvider pcsp) :
-            this(appShell, pss, new FileSystem(), pcsp) {
-            InitializeComponent();
+        public static async Task<SqlPublshOptionsDialog> CreateAsync(
+            IApplicationShell appShell, IProjectSystemServices pss, 
+            IProjectConfigurationSettingsProvider pcsp) {
+            var dialog = new SqlPublshOptionsDialog(appShell, pss, pcsp);
+            await dialog.InitializeAsync();
+            return dialog;
         }
 
-        internal SqlPublshOptionsDialog(IApplicationShell appShell, IProjectSystemServices pss, IFileSystem fs, IProjectConfigurationSettingsProvider pcsp) {
+        public static async Task<SqlPublshOptionsDialog> CreateAsync(
+            IApplicationShell appShell, IProjectSystemServices pss,
+            IFileSystem fs, IProjectConfigurationSettingsProvider pcsp) {
+            var dialog = new SqlPublshOptionsDialog(appShell, pss, fs, pcsp);
+            await dialog.InitializeAsync();
+            return dialog;
+        }
+
+        private SqlPublshOptionsDialog(IApplicationShell appShell, IProjectSystemServices pss, IProjectConfigurationSettingsProvider pcsp) :
+            this(appShell, pss, new FileSystem(), pcsp) {
+            InitializeComponent();
+
+            TargetTypeList.SelectedIndex = _model.SelectedTargetTypeIndex;
+            TargetList.SelectedIndex = _model.SelectedTargetIndex;
+            CodePlacementList.SelectedIndex = _model.SelectedQuoteTypeIndex;
+            QuoteTypeList.SelectedIndex = _model.SelectedQuoteTypeIndex;
+        }
+
+        private SqlPublshOptionsDialog(IApplicationShell appShell, IProjectSystemServices pss, IFileSystem fs, IProjectConfigurationSettingsProvider pcsp) {
             _appShell = appShell;
             _pss = pss;
-            _model = new SqlPublishOptionsDialogViewModel(appShell, pss, appShell.SettingsStorage, pcsp);
+            _pcsp = pcsp;
 
             Title = Package.Resources.SqlPublishDialog_Title;
+        }
+
+        private async Task InitializeAsync() {
+            var settings = new SqlSProcPublishSettings(_appShell.SettingsStorage);
+            _model = await SqlPublishOptionsDialogViewModel.CreateAsync(settings, _appShell, _pss, _pcsp);
             DataContext = _model;
-            _model.UpdateState();
         }
 
         private void SaveSettingsAndClose() {
-            _model.SaveSettings();
+            _model.Settings.Save(_appShell.SettingsStorage);
 
             var uiShell = _appShell.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
             var guid = RGuidList.RCmdSetGuid;
@@ -52,19 +79,21 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         private void TableName_TextChanged(object sender, TextChangedEventArgs e) => _model.UpdateState();
 
         private void TargetTypeList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            _model.SelectedTargetTypeIndex = TargetTypeList.SelectedIndex;
+            _model.SelectTargetTypeAsync(TargetTypeList.SelectedIndex).ContinueWith(t => {
+                _appShell.DispatchOnUIThread(() => TargetList.SelectedIndex = _model.SelectedTargetIndex);
+            }).DoNotWait();
         }
 
         private void TargetList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            _model.SelectedTargetIndex = TargetList.SelectedIndex;
+            _model.SelectTarget(TargetList.SelectedIndex);
         }
 
         private void CodePlacementList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            _model.SelectedCodePlacementIndex = CodePlacementList.SelectedIndex;
+            _model.SelectCodePlacement(CodePlacementList.SelectedIndex);
         }
 
         private void QuoteTypeList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            _model.SelectedQuoteTypeIndex = QuoteTypeList.SelectedIndex;
+            _model.SelectQuoteType(QuoteTypeList.SelectedIndex);
         }
     }
 }
