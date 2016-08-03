@@ -82,7 +82,7 @@ namespace Microsoft.R.Editor.Completion.Engine {
             }
 
             if (IsInObjectMemberName(context.AstRoot.TextProvider, context.Position)) {
-                providers.Add(new WorkspaceVariableCompletionProvider(shell));
+                providers.Add(new WorkspaceVariableCompletionProvider(shell, shell.ExportProvider.GetExportedValue<IVariablesProvider>()));
                 return providers;
             }
 
@@ -103,7 +103,7 @@ namespace Microsoft.R.Editor.Completion.Engine {
             }
 
             if (!context.IsInNameSpace()) {
-                providers.Add(new WorkspaceVariableCompletionProvider(shell));
+                providers.Add(new WorkspaceVariableCompletionProvider(shell, shell.ExportProvider.GetExportedValue<IVariablesProvider>()));
             }
 
             return providers;
