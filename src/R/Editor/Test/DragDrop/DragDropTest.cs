@@ -58,7 +58,10 @@ namespace Microsoft.R.Editor.Test.Formatting {
 
             var rp = fullPath.MakeRRelativePath(_files.DestinationPath);
             data.GetData(DataObjectFormats.VSProjectItems).Returns(MakeStream(new string[] { fullPath }));
-            data.GetPlainText(_files.DestinationPath, DragDropKeyStates.None).Should().Be(Invariant($"iconv(readLines('{rp}', encoding = 'UTF-8', warn = FALSE), from = 'UTF-8', to = 'ASCII', sub = '')"));
+            data.GetPlainText(_files.DestinationPath, DragDropKeyStates.None)
+                .Should().Be(
+                    Invariant($@"iconv(paste(readLines('{rp}', encoding = 'UTF-8', warn = FALSE), collapse='\n'), from = 'UTF-8', to = 'ASCII', sub = '')")
+                );
         }
 
         private MemoryStream MakeStream(string[] files) {

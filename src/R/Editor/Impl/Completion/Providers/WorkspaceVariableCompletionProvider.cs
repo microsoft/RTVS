@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Windows.Media;
 using Microsoft.Common.Core.Shell;
@@ -18,13 +17,11 @@ namespace Microsoft.R.Editor.Completion.Providers {
     /// </summary>
     public sealed class WorkspaceVariableCompletionProvider : IRCompletionListProvider {
         private readonly ICoreShell _shell;
+        private readonly IVariablesProvider _variablesProvider;
 
-        [Import]
-        private IVariablesProvider VariablesProvider { get; set; }
-
-        public WorkspaceVariableCompletionProvider(ICoreShell shell) {
+        public WorkspaceVariableCompletionProvider(ICoreShell shell, IVariablesProvider provider) {
             _shell = shell;
-            _shell.CompositionService.SatisfyImportsOnce(this);
+            _variablesProvider = provider;
         }
 
         #region IRCompletionListProvider
@@ -37,9 +34,9 @@ namespace Microsoft.R.Editor.Completion.Providers {
 
             string variableName = context.Session.TextView.GetVariableNameBeforeCaret();
 
-            VariablesProvider.Initialize();
-            int memberCount = VariablesProvider.GetMemberCount(variableName);
-            IReadOnlyCollection<INamedItemInfo> members = VariablesProvider.GetMembers(variableName, 200);
+            _variablesProvider.Initialize();
+            int memberCount = _variablesProvider.GetMemberCount(variableName);
+            IReadOnlyCollection<INamedItemInfo> members = _variablesProvider.GetMembers(variableName, 200);
             // Get list of functions in the package
             foreach (var v in members) {
                 Debug.Assert(v != null);

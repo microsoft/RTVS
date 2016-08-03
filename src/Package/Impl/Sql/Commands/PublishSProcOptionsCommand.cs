@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Sql.Publish;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration;
+using System.Threading.Tasks;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
@@ -19,7 +20,7 @@ using Microsoft.VisualStudio.ProjectSystem;
 namespace Microsoft.VisualStudio.R.Package.Sql {
     [ExportCommandGroup("AD87578C-B324-44DC-A12A-B01A6ED5C6E3")]
     [AppliesTo(ProjectConstants.RtvsProjectCapability)]
-    internal sealed class PublishSProcOptionsCommand : ICommandGroupHandler {
+    internal sealed class PublishSProcOptionsCommand : IAsyncCommandGroupHandler {
         private readonly IApplicationShell _appShell;
         private readonly IProjectSystemServices _pss;
         private readonly IProjectConfigurationSettingsProvider _pcsp;
@@ -31,24 +32,20 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
             _pcsp = pcsp;
         }
 
-        public CommandStatusResult GetCommandStatus(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus progressiveStatus) {
+        public Task<CommandStatusResult> GetCommandStatusAsync(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus progressiveStatus) {
             if (commandId == RPackageCommandId.icmdPublishSProcOptions) {
-                return new CommandStatusResult(true, commandText, CommandStatus.Enabled | CommandStatus.Supported);
+                return Task.FromResult(new CommandStatusResult(true, commandText, CommandStatus.Enabled | CommandStatus.Supported));
             }
-            return CommandStatusResult.Unhandled;
+            return Task.FromResult(CommandStatusResult.Unhandled);
         }
 
-        public bool TryHandleCommand(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, long commandExecuteOptions, IntPtr variantArgIn, IntPtr variantArgOut) {
+        public async Task<bool> TryHandleCommandAsync(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, long commandExecuteOptions, IntPtr variantArgIn, IntPtr variantArgOut) {
             if (commandId == RPackageCommandId.icmdPublishSProcOptions) {
-                Handle();
+                var dlg = await SqlPublshOptionsDialog.CreateAsync(_appShell, _pss, _pcsp);
+                dlg.ShowModal();
                 return true;
             }
             return false;
-        }
-
-        private void Handle() {
-            var dlg = new SqlPublshOptionsDialog(_appShell, _pss, _pcsp);
-            dlg.ShowModal();
         }
     }
 }
