@@ -49,3 +49,13 @@ show_file <- function(files, header, title, delete.file) {
     invisible(rtvs:::send_notification('!ShowFile', files[[i]], tabName, delete.file))
   }
 }
+
+install.packages <- function(...) {
+  utils::Internal(install.packages(...))
+  invisible(rtvs:::send_notification('!PackagesInstalled'))
+}
+
+remove.packages <- function(...) {
+  utils::Internal(remove.packages(...))
+  invisible(rtvs:::send_notification('!PackagesRemoved'))
+}
