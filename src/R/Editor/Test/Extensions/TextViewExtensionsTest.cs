@@ -24,6 +24,8 @@ namespace Microsoft.R.Editor.Test.Formatting {
         [InlineData("abc$def", 5, "def")]
         [InlineData("`a bc`@`d ef `", 1, "`a bc`")]
         [InlineData("`a bc`@`d ef `", 8, "`d ef `")]
+        [InlineData("#item", 2, "item")]
+        [InlineData("x <- 1 # item", 10, "item")]
         public void GetIdentifierUnderCaret(string content, int caretPosition, string expected) {
             var textView = MakeTextView(content, caretPosition);
             Span span;
