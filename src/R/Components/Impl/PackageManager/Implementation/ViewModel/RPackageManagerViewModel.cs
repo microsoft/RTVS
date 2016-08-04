@@ -31,8 +31,6 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         private readonly BinaryAsyncLock _installedAndLoadedLock;
         private readonly BatchObservableCollection<object> _items;
 
-        private volatile IReadOnlyList<RPackage> _availablePackagesCache;
-
         private volatile IList<IRPackageViewModel> _availablePackages;
         private volatile IList<IRPackageViewModel> _installedPackages;
         private volatile IList<IRPackageViewModel> _loadedPackages;
@@ -384,11 +382,11 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             }
         }
 
-        private async Task EnsureAvailablePackagesLoadedAsync(bool updateStateOnly = false) {
+        private async Task EnsureAvailablePackagesLoadedAsync() {
             var availablePackagesLoaded = await _availableLock.WaitAsync();
             try {
-                if (!availablePackagesLoaded || updateStateOnly) {
-                    await LoadAvailablePackagesAsync(updateStateOnly);
+                if (!availablePackagesLoaded) {
+                    await LoadAvailablePackagesAsync();
                 }
             } catch (RPackageManagerException ex) {
                 _coreShell.DispatchOnUIThread(() => AddErrorMessage(ex.Message));
@@ -397,17 +395,11 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             }
         }
 
-        private async Task LoadAvailablePackagesAsync(bool updateStateOnly = false) {
+        private async Task LoadAvailablePackagesAsync() {
             await TaskUtilities.SwitchToBackgroundThread();
 
             var vmAvailablePackages = new List<IRPackageViewModel>();
-            IReadOnlyList<RPackage> availablePackages = null;
-            if (updateStateOnly) {
-                availablePackages = _availablePackagesCache;
-            }
-            if (availablePackages == null) {
-                availablePackages = _availablePackagesCache = await _packageManager.GetAvailablePackagesAsync();
-            }
+            var availablePackages = await _packageManager.GetAvailablePackagesAsync();
 
             var installedPackages = _installedPackages.ToDictionary(p => p.Name, p => p);
             foreach (var package in availablePackages) {
@@ -443,8 +435,6 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         private async Task ReloadAvailablePackagesAsync() {
             IsLoading = true;
             await ReloadInstalledAndLoadedPackagesAsync();
-            // Updating state only for performance reasons
-            await EnsureAvailablePackagesLoadedAsync(updateStateOnly: true);
             await ReplaceItemsAsync(SelectedTab.AvailablePackages);
         }
 
