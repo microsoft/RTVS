@@ -3,10 +3,12 @@
 
 using System;
 using System.ComponentModel.Composition;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.UnitTests.Core.Mef;
 
 namespace Microsoft.R.Components.Test.Fakes.Trackers {
+    [ExcludeFromCodeCoverage]
     [Export(typeof(IDebuggerModeTracker))]
     [Export(typeof(TestDebuggerModeTracker))]
     [PartMetadata(PartMetadataAttributeNames.SkipInEditorTestCompositionCatalog, null)]

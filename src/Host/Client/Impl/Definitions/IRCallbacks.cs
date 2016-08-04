@@ -73,5 +73,8 @@ namespace Microsoft.R.Host.Client {
         /// </summary>
         /// <returns></returns>
         void ViewObject(string expression, string title);
+
+        void PackagesInstalled();
+        void PackagesRemoved();
     }
 }

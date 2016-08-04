@@ -1,9 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.R.Components.PackageManager.Model;
 
 namespace Microsoft.R.Components.Test.PackageManager {
+    [ExcludeFromCodeCoverage]
     internal static class TestPackages {
         public static readonly RPackage RtvsLib1 = new RPackage {
             Package = RtvsLib1Description.Package,

@@ -446,6 +446,14 @@ namespace Microsoft.R.Host.Client {
                                 await _callbacks.WebBrowser(message.GetString(0, "url"));
                                 break;
 
+                            case "!PackagesInstalled":
+                                _callbacks.PackagesInstalled();
+                                break;
+
+                            case "!PackagesRemoved":
+                                _callbacks.PackagesRemoved();
+                                break;
+
                             default:
                                 throw ProtocolError($"Unrecognized host message name:", message);
                         }

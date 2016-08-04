@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.R.Components.History.Implementation;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -12,6 +13,7 @@ using Microsoft.VisualStudio.Text;
 using Xunit;
 
 namespace Microsoft.R.Components.Test.History {
+    [ExcludeFromCodeCoverage]
     public class RHistoryTests {
         private readonly IExportProvider _exportProvider;
         private readonly IRInteractiveWorkflow _interactiveWorkflow;

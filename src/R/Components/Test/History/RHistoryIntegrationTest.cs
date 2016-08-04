@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Components.ContentTypes;
@@ -16,6 +17,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.R.Components.Test.History {
+    [ExcludeFromCodeCoverage]
     public class RHistoryIntegrationTest : IDisposable {
         private readonly IExportProvider _exportProvider;
         private readonly ITextBufferFactoryService _textBufferFactory;

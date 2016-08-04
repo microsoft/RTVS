@@ -2,11 +2,13 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Microsoft.Common.Core;
 using Microsoft.R.Components.Search;
 
 namespace Microsoft.R.Components.Test.Fakes.Search {
+    [ExcludeFromCodeCoverage]
     internal class TestSearchControl : ISearchControl {
         private readonly ISearchHandler _handler;
         private readonly SearchControlSettings _settings;

@@ -15,8 +15,6 @@ using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Tasks;
 using Microsoft.R.Host.Client.Host;
-using Microsoft.R.Host.Client.Install;
-using Microsoft.R.Interpreters;
 using static System.FormattableString;
 using Task = System.Threading.Tasks.Task;
 
@@ -37,6 +35,8 @@ namespace Microsoft.R.Host.Client.Session {
         public event EventHandler<EventArgs> Disconnected;
         public event EventHandler<EventArgs> Disposed;
         public event EventHandler<EventArgs> DirectoryChanged;
+        public event EventHandler<EventArgs> PackagesInstalled;
+        public event EventHandler<EventArgs> PackagesRemoved;
 
         /// <summary>
         /// ReadConsole requires a task even if there are no pending requests
@@ -570,6 +570,14 @@ namespace Microsoft.R.Host.Client.Session {
         void IRCallbacks.ViewObject(string obj, string title) {
             var callback = _callback;
             callback?.ViewObject(obj, title);
+        }
+
+        void IRCallbacks.PackagesInstalled() {
+            PackagesInstalled?.Invoke(this, EventArgs.Empty);
+        }
+
+        void IRCallbacks.PackagesRemoved() {
+            PackagesRemoved?.Invoke(this, EventArgs.Empty);
         }
     }
 }
