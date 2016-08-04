@@ -96,7 +96,9 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         }
 
         public async Task ReloadItemsAsync() {
-            switch (_selectedTab) {
+                await _coreShell.SwitchToMainThreadAsync();
+
+                switch (_selectedTab) {
                 case SelectedTab.AvailablePackages:
                     await ReloadAvailablePackagesAsync();
                     break;
@@ -412,6 +414,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         }
 
         public async Task SwitchToInstalledPackagesAsync() {
+            await _coreShell.SwitchToMainThreadAsync();
+
             if (await SetTabAsync(SelectedTab.InstalledPackages)) {
                 await ReloadInstalledAndLoadedPackagesAsync();
                 await ReplaceItemsAsync();
