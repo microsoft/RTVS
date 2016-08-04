@@ -62,7 +62,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
 
             _session.Mutated += RSessionMutated;
             _session.PackagesInstalled += OnPackagesInstalled;
-            _session.PackagesRemoved += OnPackagesInstalled;
+            _session.PackagesRemoved += OnPackagesRemoved;
         }
 
         public ReadOnlyObservableCollection<object> Items { get; }
