@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -12,6 +13,7 @@ using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.InteractiveWindow;
 
 namespace Microsoft.R.Components.Test.InteractiveWorkflow {
+    [ExcludeFromCodeCoverage]
     public class RInteractiveEvaluatorTest : IDisposable {
         private readonly IExportProvider _exportProvider;
         private readonly IRInteractiveWorkflowProvider _workflowProvider;

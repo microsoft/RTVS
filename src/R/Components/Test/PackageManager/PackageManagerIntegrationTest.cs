@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -22,6 +23,8 @@ using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 using Xunit;
 
 namespace Microsoft.R.Components.Test.PackageManager {
+    [ExcludeFromCodeCoverage]
+    [Category.PackageManager]
     public class PackageManagerIntegrationTest : IAsyncLifetime {
         private readonly IExportProvider _exportProvider;
         private readonly TestRInteractiveWorkflowProvider _workflowProvider;
@@ -43,7 +46,6 @@ namespace Microsoft.R.Components.Test.PackageManager {
         }
 
         [Test]
-        [Category.PackageManager]
         public async Task AvailablePackagesCranRepo() {
             var result = await _workflow.Packages.GetAvailablePackagesAsync();
 
@@ -60,7 +62,6 @@ namespace Microsoft.R.Components.Test.PackageManager {
         }
 
         [Test]
-        [Category.PackageManager]
         public async Task AvailablePackagesLocalRepo() {
             await TestRepositories.SetLocalRepoAsync(_workflow.RSession, _repoPath);
 
@@ -79,7 +80,6 @@ namespace Microsoft.R.Components.Test.PackageManager {
         }
 
         [Test]
-        [Category.PackageManager]
         public async Task InstalledPackagesDefault() {
             // Get the installed packages from the default locations
             var result = await _workflow.Packages.GetInstalledPackagesAsync();
@@ -100,7 +100,6 @@ namespace Microsoft.R.Components.Test.PackageManager {
         }
 
         [Test]
-        [Category.PackageManager]
         public async Task InstalledPackagesCustomLibPathNoPackages() {
             // Setup library path to point to the test folder, don't install anything in it
             await TestLibraries.SetLocalLibsAsync(_workflow.RSession, _libPath);
@@ -113,7 +112,6 @@ namespace Microsoft.R.Components.Test.PackageManager {
         }
 
         [Test]
-        [Category.PackageManager]
         public async Task InstalledPackagesCustomLibPathOnePackage() {
             // Setup library path to point to the test folder, install a package into it
             await TestRepositories.SetLocalRepoAsync(_workflow.RSession, _repoPath);
@@ -125,7 +123,6 @@ namespace Microsoft.R.Components.Test.PackageManager {
         }
 
         [Test]
-        [Category.PackageManager]
         public async Task InstalledPackagesMultiLibsSamePackage() {
             // Install the same package in 2 different libraries
             await TestRepositories.SetLocalRepoAsync(_workflow.RSession, _repoPath);
@@ -154,7 +151,6 @@ namespace Microsoft.R.Components.Test.PackageManager {
         }
 
         [Test]
-        [Category.PackageManager]
         public async Task InstallAndUninstallPackageSpecifiedLib() {
             await TestRepositories.SetLocalRepoAsync(_workflow.RSession, _repoPath);
 
@@ -172,7 +168,6 @@ namespace Microsoft.R.Components.Test.PackageManager {
         }
 
         [Test]
-        [Category.PackageManager]
         public async Task InstallPackageDefaultLib() {
             await TestRepositories.SetLocalRepoAsync(_workflow.RSession, _repoPath);
             await TestLibraries.SetLocalLibsAsync(_workflow.RSession, _libPath);
@@ -184,7 +179,6 @@ namespace Microsoft.R.Components.Test.PackageManager {
         }
 
         [Test]
-        [Category.PackageManager]
         public async Task LoadAndUnloadPackage() {
             await TestRepositories.SetLocalRepoAsync(_workflow.RSession, _repoPath);
             await TestLibraries.SetLocalLibsAsync(_workflow.RSession, _libPath);
@@ -208,7 +202,6 @@ namespace Microsoft.R.Components.Test.PackageManager {
         }
 
         [Test]
-        [Category.PackageManager]
         public async Task GetLoadedPackages() {
             await TestRepositories.SetLocalRepoAsync(_workflow.RSession, _repoPath);
             await TestLibraries.SetLocalLibsAsync(_workflow.RSession, _libPath);
@@ -225,7 +218,6 @@ namespace Microsoft.R.Components.Test.PackageManager {
         }
 
         [Test]
-        [Category.PackageManager]
         public async Task LibraryPaths() {
             await TestRepositories.SetLocalRepoAsync(_workflow.RSession, _repoPath);
             await TestLibraries.SetLocalLibsAsync(_workflow.RSession, _libPath);
@@ -235,7 +227,6 @@ namespace Microsoft.R.Components.Test.PackageManager {
         }
 
         [Test]
-        [Category.PackageManager]
         public async Task GetPackageLockStateLockByRSession() {
             await TestLibraries.SetLocalLibsAsync(_workflow.RSession, _libPath);
             await InstallPackageAsync(_workflow.RSession, "abn", _libPath);
@@ -253,7 +244,6 @@ namespace Microsoft.R.Components.Test.PackageManager {
         }
 
         [Test]
-        [Category.PackageManager]
         public async Task GetPackageLockStateUnlocked() {
             await TestLibraries.SetLocalLibsAsync(_workflow.RSession, _libPath);
             await InstallPackageAsync(_workflow.RSession, "abn", _libPath);

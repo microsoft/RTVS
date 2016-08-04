@@ -3,10 +3,12 @@
 
 using System;
 using System.ComponentModel.Composition;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Microsoft.VisualStudio.Language.Intellisense.Utilities;
 
 namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
+    [ExcludeFromCodeCoverage]
     [Export(typeof(IWaitIndicator))]
     internal sealed class TestWaitIndicator : IWaitIndicator {
         public IWaitContext StartWait(string title, string message, bool allowCancel) {

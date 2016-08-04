@@ -3,6 +3,7 @@
 
 using System;
 using System.ComponentModel.Composition;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager;
@@ -17,6 +18,7 @@ using Microsoft.R.Host.Client.Host;
 using Microsoft.UnitTests.Core.Mef;
 
 namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
+    [ExcludeFromCodeCoverage]
     [Export(typeof(IRInteractiveWorkflowProvider))]
     [Export(typeof(TestRInteractiveWorkflowProvider))]
     [PartMetadata(PartMetadataAttributeNames.SkipInEditorTestCompositionCatalog, null)]
