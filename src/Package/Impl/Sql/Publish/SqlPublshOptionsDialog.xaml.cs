@@ -36,15 +36,6 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         private SqlPublshOptionsDialog(IApplicationShell appShell, IProjectSystemServices pss, IProjectConfigurationSettingsProvider pcsp) :
             this(appShell, pss, new FileSystem(), pcsp) {
             InitializeComponent();
-
-            InitializeAsync().ContinueWith(async (t) => {
-                await _appShell.SwitchToMainThreadAsync();
-
-                TargetTypeList.SelectedIndex = _model.SelectedTargetTypeIndex;
-                TargetList.SelectedIndex = _model.SelectedTargetIndex;
-                CodePlacementList.SelectedIndex = _model.SelectedQuoteTypeIndex;
-                QuoteTypeList.SelectedIndex = _model.SelectedQuoteTypeIndex;
-            }).DoNotWait();
         }
 
         private SqlPublshOptionsDialog(IApplicationShell appShell, IProjectSystemServices pss, IFileSystem fs, IProjectConfigurationSettingsProvider pcsp) {
@@ -58,7 +49,12 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         private async Task InitializeAsync() {
             var settings = new SqlSProcPublishSettings(_appShell.SettingsStorage);
             _model = await SqlPublishOptionsDialogViewModel.CreateAsync(settings, _appShell, _pss, _pcsp);
+
             DataContext = _model;
+            TargetTypeList.SelectedIndex = _model.SelectedTargetTypeIndex;
+            TargetList.SelectedIndex = _model.SelectedTargetIndex;
+            CodePlacementList.SelectedIndex = _model.SelectedQuoteTypeIndex;
+            QuoteTypeList.SelectedIndex = _model.SelectedQuoteTypeIndex;
         }
 
         private void SaveSettingsAndClose() {
