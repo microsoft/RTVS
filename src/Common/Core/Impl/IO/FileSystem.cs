@@ -73,6 +73,10 @@ namespace Microsoft.Common.Core.IO {
             File.Delete(path);
         }
 
+        public void DeleteDirectory(string path, bool recursive) {
+            Directory.Delete(path, recursive);
+        }
+
         public string[] GetFileSystemEntries(string path, string searchPattern, SearchOption options) {
             return Directory.GetFileSystemEntries(path, searchPattern, options);
         }

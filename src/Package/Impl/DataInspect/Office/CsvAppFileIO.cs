@@ -10,6 +10,8 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.OS;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -28,15 +30,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
         private const string _variableNameReplacement = "variable";
         private static int _busy;
 
-        public static async Task OpenDataCsvApp(IREvaluationResultInfo result) {
-            await VsAppShell.Current.SwitchToMainThreadAsync();
+        public static async Task OpenDataCsvApp(IREvaluationResultInfo result, IApplicationShell appShell, IFileSystem fileSystem, IProcessServices processServices) {
+            await appShell.SwitchToMainThreadAsync();
 
             if (Interlocked.Exchange(ref _busy, 1) > 0) {
                 return;
             }
 
-            var workflowProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
-            var workflow = workflowProvider.GetOrCreate();
+            var workflow = appShell.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
             var session = workflow.RSession;
 
             var folder = GetTempCsvFilesFolder();
@@ -44,23 +45,23 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
                 Directory.CreateDirectory(folder);
             }
 
+            var pss = appShell.ExportProvider.GetExportedValue<IProjectSystemServices>();
             var variableName = result.Name ?? _variableNameReplacement;
-            var csvFileName = MakeCsvFileName(variableName);
+            var csvFileName = MakeCsvFileName(appShell, pss, variableName);
 
-            var pss = VsAppShell.Current.ExportProvider.GetExportedValue<IProjectSystemServices>();
             var file = pss.GetUniqueFileName(folder, csvFileName, "csv", appendUnderscore: true);
 
             string currentStatusText;
-            var statusBar = VsAppShell.Current.GetGlobalService<IVsStatusbar>(typeof(SVsStatusbar));
+            var statusBar = appShell.GetGlobalService<IVsStatusbar>(typeof(SVsStatusbar));
             statusBar.GetText(out currentStatusText);
 
             try {
                 statusBar.SetText(Resources.Status_WritingCSV);
-                await CreateCsvAndStartProcess(result, session, file);
+                await CreateCsvAndStartProcess(result, session, file, fileSystem, processServices);
             } catch (Win32Exception ex) {
-                VsAppShell.Current.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotOpenCsv, ex.Message));
+                appShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotOpenCsv, ex.Message));
             } catch (IOException ex) {
-                VsAppShell.Current.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotOpenCsv, ex.Message));
+                appShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotOpenCsv, ex.Message));
             } finally {
                 statusBar.SetText(currentStatusText);
             }
@@ -68,7 +69,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
             Interlocked.Exchange(ref _busy, 0);
         }
 
-        private static async Task CreateCsvAndStartProcess(IREvaluationResultInfo result, IRSession session, string fileName) {
+        private static async Task CreateCsvAndStartProcess(IREvaluationResultInfo result, IRSession session, string fileName, IFileSystem fileSystem, IProcessServices processServices) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             var sep = CultureInfo.CurrentCulture.TextInfo.ListSeparator;
@@ -76,20 +77,20 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
 
             using (var e = await session.BeginEvaluationAsync()) {
                 var csvData = await e.EvaluateAsync<byte[]>($"rtvs:::export_to_csv({result.Expression}, sep={sep.ToRStringLiteral()}, dec={dec.ToRStringLiteral()})", REvaluationKind.Normal);
-                File.WriteAllBytes(fileName, csvData);
+                fileSystem.FileWriteAllBytes(fileName, csvData);
             }
 
-            if (File.Exists(fileName)) {
-                Process.Start(fileName);
+            if (fileSystem.FileExists(fileName)) {
+                processServices.Start(fileName);
             }
         }
 
-        public static void Close() {
+        public static void Close(IFileSystem fileSystem) {
             var folder = GetTempCsvFilesFolder();
-            if (Directory.Exists(folder)) {
+            if (fileSystem.DirectoryExists(folder)) {
                 // Note: some files may still be locked if they are opened in Excel
                 try {
-                    Directory.Delete(folder, recursive: true);
+                    fileSystem.DeleteDirectory(folder, recursive: true);
                 } catch (IOException) { } catch (UnauthorizedAccessException) { }
             }
         }
@@ -99,13 +100,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
             return Path.Combine(folder, @"RTVS_CSV_Exports\");
         }
 
-        private static string MakeCsvFileName(string variableName) {
-            var pss = VsAppShell.Current.ExportProvider.GetExportedValue<IProjectSystemServices>();
+        private static string MakeCsvFileName(IApplicationShell appShell, IProjectSystemServices pss, string variableName) {
             var project = pss.GetActiveProject();
             var projectName = project?.FileName;
 
-            var contentTypeService = VsAppShell.Current.ExportProvider.GetExportedValue<IContentTypeRegistryService>();
-            var viewTracker = VsAppShell.Current.ExportProvider.GetExportedValue<IActiveWpfTextViewTracker>();
+            var contentTypeService = appShell.ExportProvider.GetExportedValue<IContentTypeRegistryService>();
+            var viewTracker = appShell.ExportProvider.GetExportedValue<IActiveWpfTextViewTracker>();
 
             var activeView = viewTracker.GetLastActiveTextView(contentTypeService.GetContentType(RContentTypeDefinition.ContentType));
             var filePath = activeView.GetFilePath();
