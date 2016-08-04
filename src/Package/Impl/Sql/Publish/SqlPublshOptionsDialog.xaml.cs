@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
+using Microsoft.R.Components.Extensions;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
@@ -36,10 +37,14 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             this(appShell, pss, new FileSystem(), pcsp) {
             InitializeComponent();
 
-            TargetTypeList.SelectedIndex = _model.SelectedTargetTypeIndex;
-            TargetList.SelectedIndex = _model.SelectedTargetIndex;
-            CodePlacementList.SelectedIndex = _model.SelectedQuoteTypeIndex;
-            QuoteTypeList.SelectedIndex = _model.SelectedQuoteTypeIndex;
+            InitializeAsync().ContinueWith(async (t) => {
+                await _appShell.SwitchToMainThreadAsync();
+
+                TargetTypeList.SelectedIndex = _model.SelectedTargetTypeIndex;
+                TargetList.SelectedIndex = _model.SelectedTargetIndex;
+                CodePlacementList.SelectedIndex = _model.SelectedQuoteTypeIndex;
+                QuoteTypeList.SelectedIndex = _model.SelectedQuoteTypeIndex;
+            }).DoNotWait();
         }
 
         private SqlPublshOptionsDialog(IApplicationShell appShell, IProjectSystemServices pss, IFileSystem fs, IProjectConfigurationSettingsProvider pcsp) {
