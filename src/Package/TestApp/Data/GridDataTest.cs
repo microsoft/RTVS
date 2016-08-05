@@ -182,6 +182,14 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
 
         [Test]
         [Category.R.DataGrid]
+        public Task DataFrameNAGrid() => Test("df.test <- data.frame(c(1, as.integer(NA)), c(2.0, as.double(NA)), c(as.Date('2011-12-31'), as.Date(NA)))", 1, 1, new[,] {
+            { null, "c.1..as.integer.NA..", "c.2..as.double.NA..",  "c.as.Date..2011.12.31....as.Date.NA.." },
+            { "1",  "1",                    "2",                    "2011-12-31" },
+            { "2",  "NA",                   "NA",                   "NA" },
+        });
+
+        [Test]
+        [Category.R.DataGrid]
         public Task DataFrameSortedGrid() => Test("iris", 48, 3, new[,] {
             { null, "Petal.Length", "Petal.Width",  "Species" },
             { "24", "1.7",          "0.5",          "setosa" },
