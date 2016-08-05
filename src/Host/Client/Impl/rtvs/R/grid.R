@@ -53,7 +53,9 @@ grid_data <- function(x, rows, cols, row_selector) {
   max_length <- 100 - 3
   data <- c(lapply(1:ncol(x), function(i) {
     lapply(format(x[,i], trim = TRUE, justify = "none"), function(s) {
-      if (nchar(s) <= max_length) s else paste0(substr(s, 1, max_length), '...', collapse = '')
+        if (is.na(s)) { 'NA' }
+        else if (nchar(s) <= max_length) { s }
+        else { paste0(substr(s, 1, max_length), '...', collapse = '') }
     })
   }), recursive = TRUE)
 

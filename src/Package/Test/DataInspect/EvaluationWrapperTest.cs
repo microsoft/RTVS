@@ -453,6 +453,41 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
         [Test]
         [Category.Variable.Explorer]
+        public async Task DataFrameNATest() {
+            var script = "df.test <- data.frame(c(1, as.integer(NA)), c(2.0, as.double(NA)), c(as.Date('2011-12-31'), as.Date(NA)))";
+            var expectation = new VariableExpectation() { Name = "df.test", Value = "2 obs. of  3 variables", TypeName = "list", Class = "data.frame", HasChildren = true, CanShowDetail = true };
+
+            using (var hostScript = new VariableRHostScript()) {
+                var evaluation = (VariableViewModel)await hostScript.EvaluateAndAssert(
+                    script,
+                    expectation,
+                    VariableRHostScript.AssertEvaluationWrapper);
+
+                Range rowRange = new Range(0, 2);
+                Range columnRange = new Range(0, 3);
+                var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, new GridRange(rowRange, columnRange));
+
+                grid.ColumnHeader.Range.Should().Be(columnRange);
+                grid.ColumnHeader[0].Should().Be("c.1..as.integer.NA..");
+                grid.ColumnHeader[1].Should().Be("c.2..as.double.NA..");
+                grid.ColumnHeader[2].Should().Be("c.as.Date..2011.12.31....as.Date.NA..");
+
+                grid.RowHeader.Range.Should().Be(rowRange);
+                grid.RowHeader[0].Should().Be("1");
+                grid.RowHeader[1].Should().Be("2");
+
+                grid.Grid.Range.Should().Be(new GridRange(rowRange, columnRange));
+                grid.Grid[0, 0].Should().Be("1");
+                grid.Grid[0, 1].Should().Be("2");
+                grid.Grid[0, 2].Should().Be("2011-12-31");
+                grid.Grid[1, 0].Should().Be("NA");
+                grid.Grid[1, 1].Should().Be("NA");
+                grid.Grid[1, 2].Should().Be("NA");
+            }
+        }
+
+        [Test]
+        [Category.Variable.Explorer]
         public async Task DataFrameLangTest() {
             var script = "df.lang <- data.frame(col1=c('a','中'),col2=c('國','d'),row.names = c('マイクロソフト','row2'));";
             var expectation = new VariableExpectation() { Name = "df.lang", Value = "2 obs. of  2 variables", TypeName = "list", Class = "data.frame", HasChildren = true, CanShowDetail = true };
