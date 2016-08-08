@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.Help;
@@ -22,12 +23,14 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         private readonly IRSession _session;
         private readonly IRSettings _settings;
         private readonly ICoreShell _coreShell;
+        private readonly IFileSystem _fileSystem;
 
-        public RSessionCallback(IInteractiveWindow interactiveWindow, IRSession session, IRSettings settings, ICoreShell coreShell) {
+        public RSessionCallback(IInteractiveWindow interactiveWindow, IRSession session, IRSettings settings, ICoreShell coreShell, IFileSystem fileSystem) {
             _interactiveWindow = interactiveWindow;
             _session = session;
             _settings = settings;
             _coreShell = coreShell;
+            _fileSystem = fileSystem;
         }
 
         /// <summary>
@@ -112,6 +115,14 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         public Task ViewFile(string fileName, string tabName, bool deleteFile) {
             var viewer = _coreShell.ExportProvider.GetExportedValue<IObjectViewer>();
             return viewer?.ViewFile(fileName, tabName, deleteFile);
+        }
+
+        public Task<string> SaveFile(string filename, byte[] data) {
+            return Task.Run(() => {
+                string destPath = _fileSystem.GetDownloadsPath(filename);
+                _fileSystem.FileWriteAllBytes(destPath, data);
+                return destPath;
+            });
         }
     }
 }

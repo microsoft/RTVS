@@ -62,5 +62,11 @@ namespace Microsoft.R.Host.Client {
         /// Presents file content
         /// </summary>
         Task ViewFile(string fileName, string tabName, bool deleteFile);
+
+        /// <summary>
+        /// Saves data to file sent from RHost.
+        /// </summary>
+        /// <param name="id"></param>
+        Task<string> SaveFile(string filename, byte[] data);
     }
 }

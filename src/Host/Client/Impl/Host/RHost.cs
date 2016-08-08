@@ -453,7 +453,10 @@ namespace Microsoft.R.Host.Client {
                             case "!PackagesRemoved":
                                 _callbacks.PackagesRemoved();
                                 break;
-
+                            case "!FetchFile":
+                                var destPath = await _callbacks.SaveFile(message.GetString(0, "file_path"), message.Blob);
+                                await _callbacks.WriteConsoleEx(destPath, OutputType.Error, ct);
+                                break;
                             default:
                                 throw ProtocolError($"Unrecognized host message name:", message);
                         }

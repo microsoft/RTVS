@@ -125,6 +125,11 @@ namespace Microsoft.R.Host.Client {
             Console.Error.WriteLineAsync("PackagesRemoved").DoNotWait();
         }
 
+        public async Task<string> SaveFile(string fileName, byte[] data) {
+            await Console.Error.WriteAsync(Invariant($"fetch_file({fileName})"));
+            return fileName;
+        }
+
         private async Task<string> ReadLineAsync(string prompt, CancellationToken ct) {
             while (true) {
                 await Console.Out.WriteAsync($"|{_nesting}| {prompt}");

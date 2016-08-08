@@ -28,5 +28,7 @@ namespace Microsoft.Common.Core.IO {
         void DeleteDirectory(string path, bool recursive);
         string[] GetFileSystemEntries(string path, string searchPattern, SearchOption options);
         void CreateDirectory(string path);
+
+        string GetDownloadsPath(string fileName = "");
     }
 }
