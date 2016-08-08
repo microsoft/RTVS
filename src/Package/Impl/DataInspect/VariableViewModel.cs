@@ -61,7 +61,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 ShowDetailCommandTooltip = Resources.ShowDetailCommandTooltip;
             }
 
-            CanShowOpenCsv = result.CanCoerceToDataFrame && (result.Length > 1 || (result.Length == 1 && result.TypeName == "S4"));
+            CanShowOpenCsv = result.CanCoerceToDataFrame && (result.Length > 1 || result.TypeName == "S4");
             if (CanShowOpenCsv) {
                 OpenInCsvAppCommand = new DelegateCommand(OpenInCsvApp, o => CanShowOpenCsv);
                 OpenInCsvAppCommandTooltip = Resources.OpenCsvAppCommandTooltip;
