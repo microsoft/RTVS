@@ -454,14 +454,14 @@ namespace Microsoft.R.Host.Client {
                                 _callbacks.PackagesRemoved();
                                 break;
                             case "!FetchFile":
-                                var destPath = await _callbacks.SaveFile(message.GetString(0, "file_path"), message.Blob);
+                                var destPath = await _callbacks.SaveFileAsync(message.GetString(0, "file_path"), message.Blob);
                                 await _callbacks.WriteConsoleEx(destPath, OutputType.Error, ct);
                                 break;
                             default:
                                 throw ProtocolError($"Unrecognized host message name:", message);
                         }
                     } catch (OperationCanceledException) when (!ct.IsCancellationRequested) {
-                        // Cancelled via _cancelAllCts - just move onto the next message.
+                        // Canceled via _cancelAllCts - just move onto the next message.
                     }
                 }
             } finally {

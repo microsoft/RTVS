@@ -117,7 +117,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             return viewer?.ViewFile(fileName, tabName, deleteFile);
         }
 
-        public Task<string> SaveFile(string filename, byte[] data) {
+        public Task<string> SaveFileAsync(string filename, byte[] data) {
             return Task.Run(() => {
                 string destPath = _fileSystem.GetDownloadsPath(filename);
                 _fileSystem.FileWriteAllBytes(destPath, data);

@@ -83,10 +83,10 @@ namespace Microsoft.R.Host.Client.Test.Stubs {
             return Task.CompletedTask;
         }
 
-        public Task<string> SaveFile(string fileName, byte[] data) {
+        public Task<string> SaveFileAsync(string fileName, byte[] data) {
             SaveFileCalls.Add(new Tuple<string, byte[]>(fileName, data));
             SaveFileHandler?.Invoke(fileName, data);
-            return Task.FromResult<string>(string.Empty);
+            return Task.FromResult(string.Empty);
         }
     }
 }

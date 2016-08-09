@@ -56,8 +56,8 @@ namespace Microsoft.R.Host.Client.Test.Script {
             throw new NotImplementedException();
         }
 
-        public Task<string> SaveFile(string fileName, byte[] data) {
-            return Task.FromResult<string>(string.Empty);
+        public Task<string> SaveFileAsync(string fileName, byte[] data) {
+            return Task.FromResult(string.Empty);
         }
     }
 }

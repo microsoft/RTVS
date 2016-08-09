@@ -67,6 +67,6 @@ namespace Microsoft.R.Host.Client {
         /// Saves data to file sent from RHost.
         /// </summary>
         /// <param name="id"></param>
-        Task<string> SaveFile(string filename, byte[] data);
+        Task<string> SaveFileAsync(string filename, byte[] data);
     }
 }

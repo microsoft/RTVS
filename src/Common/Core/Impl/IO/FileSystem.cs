@@ -58,7 +58,7 @@ namespace Microsoft.Common.Core.IO {
             NativeMethods.GetLongPathName(path, sb, sb.Capacity);
             return sb.ToString();
         }
-
+         
         public string ToShortPath(string path) {
             var sb = new StringBuilder(NativeMethods.MAX_PATH);
             NativeMethods.GetShortPathName(path, sb, sb.Capacity);
@@ -88,15 +88,15 @@ namespace Microsoft.Common.Core.IO {
 
         public string GetDownloadsPath(string fileName) {
             if (string.IsNullOrWhiteSpace(fileName)) {
-                return GetKnownFolder(KnownFolderGuids.Downloads);
+                return GetKnownFolderPath(KnownFolderGuids.Downloads);
             } else {
-                return Path.Combine(GetKnownFolder(KnownFolderGuids.Downloads), fileName);
+                return Path.Combine(GetKnownFolderPath(KnownFolderGuids.Downloads), fileName);
             }
         }
 
-        private string GetKnownFolder(string knownFolder) {
+        private string GetKnownFolderPath(string knownFolder) {
             IntPtr knownFolderPath;
-            uint flags = NativeMethods.KnownFolderflags.KF_FLAG_DEFAULT_PATH;
+            uint flags = (uint)NativeMethods.KnownFolderflags.KF_FLAG_DEFAULT_PATH;
             int result = NativeMethods.SHGetKnownFolderPath(new Guid(knownFolder), flags, IntPtr.Zero, out knownFolderPath);
             if (result >= 0) {
                 return Marshal.PtrToStringUni(knownFolderPath);
@@ -108,18 +108,19 @@ namespace Microsoft.Common.Core.IO {
         private static class NativeMethods {
             public const int MAX_PATH = 260;
 
-            public class KnownFolderflags {
-                public const uint KF_FLAG_DEFAULT = 0x00000000;
-                public const uint KF_FLAG_SIMPLE_IDLIST = 0x00000100;
-                public const uint KF_FLAG_NOT_PARENT_RELATIVE = 0x00000200;
-                public const uint KF_FLAG_DEFAULT_PATH = 0x00000400;
-                public const uint KF_FLAG_INIT = 0x00000800;
-                public const uint KF_FLAG_NO_ALIAS = 0x00001000;
-                public const uint KF_FLAG_DONT_UNEXPAND = 0x00002000;
-                public const uint KF_FLAG_DONT_VERIFY = 0x00004000;
-                public const uint KF_FLAG_CREATE = 0x00008000;
-                public const uint KF_FLAG_NO_APPCONTAINER_REDIRECTION = 0x00010000;
-                public const uint KF_FLAG_ALIAS_ONLY = 0x80000000;
+            [Flags]
+            public enum KnownFolderflags : uint {
+                KF_FLAG_DEFAULT = 0x00000000,
+                KF_FLAG_SIMPLE_IDLIST = 0x00000100,
+                KF_FLAG_NOT_PARENT_RELATIVE = 0x00000200,
+                KF_FLAG_DEFAULT_PATH = 0x00000400,
+                KF_FLAG_INIT = 0x00000800,
+                KF_FLAG_NO_ALIAS = 0x00001000,
+                KF_FLAG_DONT_UNEXPAND = 0x00002000,
+                KF_FLAG_DONT_VERIFY = 0x00004000,
+                KF_FLAG_CREATE = 0x00008000,
+                KF_FLAG_NO_APPCONTAINER_REDIRECTION = 0x00010000,
+                KF_FLAG_ALIAS_ONLY = 0x80000000,
             }
 
             [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
