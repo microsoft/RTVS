@@ -579,5 +579,10 @@ namespace Microsoft.R.Host.Client.Session {
         void IRCallbacks.PackagesRemoved() {
             PackagesRemoved?.Invoke(this, EventArgs.Empty);
         }
+
+        Task<string> IRCallbacks.SaveFileAsync(string filename, byte[] data) {
+            var callback = _callback;
+            return callback != null ? callback.SaveFileAsync(filename, data) : Task.FromResult(string.Empty);
+        }
     }
 }

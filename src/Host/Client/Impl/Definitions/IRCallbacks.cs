@@ -76,5 +76,11 @@ namespace Microsoft.R.Host.Client {
 
         void PackagesInstalled();
         void PackagesRemoved();
+
+        /// <summary>
+        /// Called when user invokes rtvs:::fetch_file() in R.
+        /// </summary>
+        /// <param name="id"></param>
+        Task<string> SaveFileAsync(string filename, byte[] data);
     }
 }

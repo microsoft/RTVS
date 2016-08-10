@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.History;
@@ -68,7 +69,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                         CurrentWindow.TextView.VisualElement.SizeChanged += VisualElement_SizeChanged;
                         CurrentWindow.OutputBuffer.Changed += OutputBuffer_Changed;
                     }
-                    await Session.StartHostAsync(startupInfo, new RSessionCallback(CurrentWindow, Session, _settings, _coreShell));
+                    await Session.StartHostAsync(startupInfo, new RSessionCallback(CurrentWindow, Session, _settings, _coreShell, new FileSystem()));
                 }
                 return ExecutionResult.Success;
             } catch (RHostBinaryMissingException) {
