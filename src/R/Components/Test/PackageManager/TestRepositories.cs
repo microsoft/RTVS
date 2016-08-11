@@ -20,7 +20,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
             return eval.ExecuteAsync(code);
         }
         public static Task SetCranRepoAsync(IRExpressionEvaluator eval) {
-            var code = @"options(repos=list(CRAN='[http://cran.r-project.org\](http://cran.r-project.org\)'";
+            var code = @"options(repos=list(CRAN='http://cran.r-project.org'))";
             return eval.ExecuteAsync(code);
         }
     }
