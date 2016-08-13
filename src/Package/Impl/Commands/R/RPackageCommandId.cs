@@ -130,6 +130,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public const int icmdOpenCmdPromptHere = 1506;
         public const int icmdOpenAdminCmdPromptHere = 1507;
         public const int icmdSourceSelectedFilesWithEcho = 1508;
+        public const int icmdSetAsStartUpRScript = 1509;
 
         // Shiny
         public const int icmdRunShinyApp = 1601;

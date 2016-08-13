@@ -199,6 +199,7 @@
     <Compile Include="History\HistoryWindowPane.cs" />
     <Compile Include="Options\Attributes\SurveyNewsPolicyTypeConverter.cs" />
     <Compile Include="Options\R\Tools\SurveyNewsCommand.cs" />
+    <Compile Include="ProjectSystem\Commands\SetAsStartUpRScriptCommand.cs" />
     <Compile Include="ToolWindows\VsRPackageManagerVisualComponent.cs" />
     <Compile Include="ToolWindows\PackageManagerWindowPane.cs" />
     <Compile Include="Packages\Attributes\ProvideCodeExpansionPathAttribute.cs" />

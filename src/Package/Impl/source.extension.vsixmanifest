@@ -131,6 +131,8 @@
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.VisualStudio.ImageCatalog.dll" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.Data.ConnectionUI.dll" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.Data.ConnectionUI.Dialog.dll" />
+    <Asset Type="Microsoft.VisualStudio.Assembly" Path="zlib.dll" />
+    <Asset Type="Microsoft.VisualStudio.Assembly" Path="zip.dll" />
     <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Debugger.dll" />
     <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Host.Client.dll" />
     <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Host.Protocol.dll" />

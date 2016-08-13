@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -30,5 +31,9 @@ namespace Microsoft.Common.Core.IO {
         void CreateDirectory(string path);
 
         string GetDownloadsPath(string fileName = "");
+
+        string CompressFile(string path);
+        string CompressDirectory(string path);
+        string CompressDirectory(string path, Func<string, bool> filter);
     }
 }

@@ -61,6 +61,7 @@ namespace Microsoft.R.Host.Client.Session {
         public int MaxLength { get; private set; } = 0x1000;
         public bool IsHostRunning => _isHostRunning;
         public Task HostStarted => _initializationTcs?.Task ?? Task.FromCanceled(new CancellationToken(true));
+        public bool IsRemoteSession { get; }
 
         public int? ProcessId => _host?.ProcessId;
 
@@ -90,6 +91,8 @@ namespace Microsoft.R.Host.Client.Session {
             });
 
             _afterHostStartedTask = TaskUtilities.CreateCanceled(new RHostDisconnectedException());
+
+            IsRemoteSession = brokerConnector.IsRemoteConnection();
         }
 
         private void OnMutated() {
