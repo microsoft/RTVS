@@ -111,7 +111,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
                     }
 
                     if (TransferProjectOnRun.HasValue) {
-                        await props.SetTransferProjectAsync(TransferProjectOnRun.Value);
+                        await props.SetTransferProjectOnRunAsync(TransferProjectOnRun.Value);
                     }
                 }
 

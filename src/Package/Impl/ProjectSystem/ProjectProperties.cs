@@ -2,20 +2,19 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.ComponentModel.Composition;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
+using Microsoft.Common.Core.IO;
 using Microsoft.VisualStudio.ProjectSystem;
+using Microsoft.VisualStudio.R.Package.ProjectSystem;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
-using System.Collections.Generic;
 #endif
 #if VS15
 using Microsoft.VisualStudio.ProjectSystem.Properties;
 #endif
-using Microsoft.Common.Core;
-using Microsoft.Common.Core.IO;
-using Microsoft.VisualStudio.R.Package.ProjectSystem;
-
 
 namespace Microsoft.VisualStudio.R.Package {
     [Export(typeof(ProjectProperties))]
@@ -33,7 +32,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// Defines if REPL is to be reset before starting the application.
         /// </summary>
         public async Task<bool> GetResetReplOnRunAsync() {
-            var runProps = await this.GetConfigurationRunPropertiesAsync();
+            var runProps = await GetConfigurationRunPropertiesAsync();
             var val = await runProps.ResetReplOnRun.GetEvaluatedValueAsync();
             return ParseBooleanProperty(val, false);
         }
@@ -42,7 +41,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// Defines if REPL is to be reset before starting the application.
         /// </summary>
         public async Task SetResetReplOnRunAsync(bool val) {
-            var runProps = await this.GetConfigurationRunPropertiesAsync();
+            var runProps = await GetConfigurationRunPropertiesAsync();
             await runProps.ResetReplOnRun.SetValueAsync(val);
         }
 
@@ -50,7 +49,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// Gets command line arguments of the application.
         /// </summary>
         public async Task<string> GetCommandLineArgsAsync() {
-            var runProps = await this.GetConfigurationRunPropertiesAsync();
+            var runProps = await GetConfigurationRunPropertiesAsync();
             return await runProps.CommandLineArgs.GetEvaluatedValueAsync();
         }
 
@@ -58,7 +57,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// Sets command line arguments of the application.
         /// </summary>
         public async Task SetCommandLineArgsAsync(string val) {
-            var runProps = await this.GetConfigurationRunPropertiesAsync();
+            var runProps = await GetConfigurationRunPropertiesAsync();
             await runProps.CommandLineArgs.SetValueAsync(val);
         }
 
@@ -66,7 +65,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// Defines which file contains the application entry point.
         /// </summary>
         public async Task<string> GetStartupFileAsync() {
-            var runProps = await this.GetConfigurationRunPropertiesAsync();
+            var runProps = await GetConfigurationRunPropertiesAsync();
             return await runProps.StartupFile.GetEvaluatedValueAsync();
         }
 
@@ -74,7 +73,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// Defines which file contains the application entry point.
         /// </summary>
         public async Task SetStartupFileAsync(string val) {
-            var runProps = await this.GetConfigurationRunPropertiesAsync();
+            var runProps = await GetConfigurationRunPropertiesAsync();
             await runProps.StartupFile.SetValueAsync(val);
         }
 
@@ -87,7 +86,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// In order to read the actual settings, use <see cref="ConfigurationSettingCollection"/>
         /// </remarks>
         public async Task<string> GetSettingsFileAsync() {
-            var runProps = await this.GetConfigurationSettingsPropertiesAsync();
+            var runProps = await GetConfigurationSettingsPropertiesAsync();
             return await runProps.SettingsFile.GetEvaluatedValueAsync();
         }
 
@@ -100,7 +99,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// In order to read the actual settings, use <see cref="ConfigurationSettingCollection"/>
         /// </remarks>
         public async Task SetSettingsFileAsync(string rFilePath) {
-            var runProps = await this.GetConfigurationSettingsPropertiesAsync();
+            var runProps = await GetConfigurationSettingsPropertiesAsync();
             await runProps.SettingsFile.SetValueAsync(rFilePath);
         }
 
@@ -111,7 +110,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// Default destination is ~/RTVSProjects/.
         /// </remarks>
         public async Task<string> GetRemoteProjectPathAsync() {
-            var runProps = await this.GetConfigurationRunPropertiesAsync();
+            var runProps = await GetConfigurationRunPropertiesAsync();
             var remotePath = await runProps.RemoteProjectPath.GetEvaluatedValueAsync();
             if (string.IsNullOrWhiteSpace(remotePath)) {
                 return "~/RTVSProjects/";
@@ -126,7 +125,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// Default destination is ~/RTVSProjects/.
         /// </remarks>
         public async Task SetRemoteProjectPathAsync(string remoteProjectPath) {
-            var runProps = await this.GetConfigurationRunPropertiesAsync();
+            var runProps = await GetConfigurationRunPropertiesAsync();
             await runProps.RemoteProjectPath.SetValueAsync(remoteProjectPath);
         }
 
@@ -138,7 +137,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// and R Settings files.
         /// </remarks>
         public async Task<string> GetFileFilterAsync() {
-            var runProps = await this.GetConfigurationRunPropertiesAsync();
+            var runProps = await GetConfigurationRunPropertiesAsync();
             var filter = await runProps.TransferFilesFilter.GetEvaluatedValueAsync();
             if (string.IsNullOrWhiteSpace(filter)) {
                 return ".r;.rmd;.rsettings";
@@ -154,7 +153,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// and R Settings files.
         /// </remarks>
         public async Task SetFileFilterAsync(string fileTransferFilter) {
-            var runProps = await this.GetConfigurationRunPropertiesAsync();
+            var runProps = await GetConfigurationRunPropertiesAsync();
             await runProps.TransferFilesFilter.SetValueAsync(fileTransferFilter);
         }
 
@@ -162,7 +161,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// Defines if project has to be transfered to remote host during run.
         /// </summary>
         public async Task<bool> GetTransferProjectOnRunAsync() {
-            var runProps = await this.GetConfigurationRunPropertiesAsync();
+            var runProps = await GetConfigurationRunPropertiesAsync();
             var val = await runProps.TransferProjectOnRun.GetEvaluatedValueAsync();
             return ParseBooleanProperty(val, false);
         }
@@ -170,8 +169,8 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         /// Defines if project has to be transfered to remote host during run.
         /// </summary>
-        public async Task SetTransferProjectAsync(bool val) {
-            var runProps = await this.GetConfigurationRunPropertiesAsync();
+        public async Task SetTransferProjectOnRunAsync(bool val) {
+            var runProps = await GetConfigurationRunPropertiesAsync();
             await runProps.TransferProjectOnRun.SetValueAsync(val);
         }
 
@@ -179,33 +178,24 @@ namespace Microsoft.VisualStudio.R.Package {
         /// Gets all the R script files in the current project.
         /// </summary>
         public IEnumerable<string> GetRFilePaths() {
-            IList<string> files = new List<string>();
-            string projectDir = Path.GetDirectoryName(this.ConfiguredProject.UnconfiguredProject.FullPath);
-            var projDir = _fileSystem.GetDirectoryInfo(projectDir);
-
-            Stack<IDirectoryInfo> dirs = new Stack<IDirectoryInfo>();
-            dirs.Push(projDir);
-
-            while (dirs.Count > 0) {
-                var dir = dirs.Pop();
-                foreach (var info in dir.EnumerateFileSystemInfos()) {
-                    var subdir = info as IDirectoryInfo;
-                    if (subdir != null) {
-                        dirs.Push(subdir);
-                    } else if (info.FullName.EndsWithIgnoreCase(".R")) {
-                        files.Add(info.FullName.Remove(0, projDir.FullName.Length + 1));
-                    }
+            IList<string> rFiles = new List<string>();
+            string projectDir = Path.GetDirectoryName(ConfiguredProject.UnconfiguredProject.FullPath);
+            var allFiles = _fileSystem.GetDirectoryInfo(projectDir).GetAllFiles();
+            
+            foreach(var file in allFiles) {
+                if (file.FullName.EndsWithIgnoreCase(".R")) {
+                    rFiles.Add(file.FullName.MakeRelativePath(projectDir));
                 }
             }
 
-            return (IEnumerable<string>)files;
+            return rFiles;
         }
 
         /// <summary>
         /// Gets the current project name.
         /// </summary>
         public string GetProjectName() {
-            var projectName = Path.GetFileNameWithoutExtension(this.ConfiguredProject.UnconfiguredProject.FullPath);
+            var projectName = Path.GetFileNameWithoutExtension(ConfiguredProject.UnconfiguredProject.FullPath);
             return projectName;
         }
 

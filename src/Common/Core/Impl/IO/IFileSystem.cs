@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Microsoft.Extensions.FileSystemGlobbing;
 
 namespace Microsoft.Common.Core.IO {
     public interface IFileSystem {
@@ -34,6 +35,6 @@ namespace Microsoft.Common.Core.IO {
 
         string CompressFile(string path);
         string CompressDirectory(string path);
-        string CompressDirectory(string path, Func<string, bool> filter);
+        string CompressDirectory(string path, Matcher matcher, Action<string> callback);
     }
 }

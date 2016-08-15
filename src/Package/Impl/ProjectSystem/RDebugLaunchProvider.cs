@@ -5,17 +5,18 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
+using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Debugger;
 using Microsoft.R.Debugger.PortSupplier;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Extensions;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.VisualStudio.ProjectSystem;
-using static System.FormattableString;
-using System.Threading;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Debuggers;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
@@ -25,6 +26,7 @@ using Microsoft.VisualStudio.ProjectSystem.VS.Debuggers;
 using Microsoft.VisualStudio.ProjectSystem.Debug;
 using Microsoft.VisualStudio.ProjectSystem.VS.Debug;
 #endif
+using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     // ExportDebugger must match rule name in ..\Rules\Debugger.xaml.
@@ -46,7 +48,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         internal IFileSystem FileSystem { get; set; } = new FileSystem();
 
         private IRSession Session => _interactiveWorkflow.RSession;
-        private IRCallbacks Callbacks => (IRCallbacks)_interactiveWorkflow.RSession;
+        private TextWriter ProgressOutputWriter => _interactiveWorkflow.ActiveWindow.InteractiveWindow.OutputWriter;
 
         public override Task<bool> CanLaunchAsync(DebugLaunchOptions launchOptions) {
             return Task.FromResult(true);
@@ -92,7 +94,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             string filterString = await _properties.GetFileFilterAsync();
 
             var activeProject = _pss.GetActiveProject();
-            if (transferFiles && Session.IsRemoteSession && activeProject != null) {
+            if (transferFiles && Session.IsRemote && activeProject != null) {
                 await SendProjectAsync(activeProject, remotePath, filterString);
             }
 
@@ -103,7 +105,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                 _interactiveWorkflow.ActiveWindow?.InteractiveWindow.WriteErrorLine(Resources.Launch_NoStartupFile);
                 return;
             }
-            await SourceFileAsync(transferFiles, startupFile, Invariant($"{Resources.Launch_StartupFileDoesNotExist} {startupFile}"));
+            await SourceFileAsync(transferFiles, startupFile, $"{Resources.Launch_StartupFileDoesNotExist} {startupFile}");
 
             var settingsFile = await _properties.GetSettingsFileAsync();
             if (!string.IsNullOrWhiteSpace(settingsFile)) {
@@ -111,11 +113,11 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                     var dirPath = Path.GetDirectoryName(activeProject.FullName);
                     settingsFile = settingsFile.MakeAbsolutePathFromRRelative(dirPath);
                     if (FileSystem.FileExists(settingsFile)) {
-                        if (Session.IsRemoteSession) {
+                        if (Session.IsRemote) {
                             var remoteSettingsPath = GetRemoteSettingsFile(settingsFile, dirPath, remotePath);
-                            await SourceFileAsync(transferFiles, remoteSettingsPath, Invariant($"{Resources.Launch_SettingsFileDoesNotExist} {settingsFile}"));
+                            await SourceFileAsync(transferFiles, remoteSettingsPath, $"{Resources.Launch_SettingsFileDoesNotExist} {settingsFile}");
                         } else {
-                            await SourceFileAsync(transferFiles, settingsFile, Invariant($"{Resources.Launch_SettingsFileDoesNotExist} {settingsFile}"));
+                            await SourceFileAsync(transferFiles, settingsFile, $"{Resources.Launch_SettingsFileDoesNotExist} {settingsFile}");
                         }
                     }
                 }
@@ -123,49 +125,55 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         }
 
         private async Task SourceFileAsync(bool transferFiles, string file, string errorMessage) {
-            bool fExists = false;
-            if (transferFiles && Session.IsRemoteSession) {
-                fExists = await Session.EvaluateAsync<bool>(Invariant($"file.exists({file.ToRPath().ToRStringLiteral()})"), REvaluationKind.Normal);
+            bool fileExists = false;
+            if (transferFiles && Session.IsRemote) {
+                try {
+                    fileExists = await Session.EvaluateAsync<bool>($"file.exists({file.ToRPath().ToRStringLiteral()})", REvaluationKind.Normal);
+                } catch (RHostDisconnectedException) {
+                    ProgressOutputWriter.WriteLine("Unable to verify if file exists on remote host.");
+                }
             } else {
-                fExists = FileSystem.FileExists(file);
+                fileExists = FileSystem.FileExists(file);
             }
 
-            if (!fExists) {
+            if (!fileExists) {
                 _interactiveWorkflow.ActiveWindow?.InteractiveWindow.WriteErrorLine(errorMessage);
                 return;
             }
 
-            await Callbacks.WriteConsoleEx($"Sourcing: {file}\n", OutputType.Output, CancellationToken.None);
+            ProgressOutputWriter.WriteLine($"Sourcing: {file}");
             await _interactiveWorkflow.Operations.SourceFileAsync(file, echo: false).SilenceException<Exception>();
         }
 
         private async Task SendProjectAsync(EnvDTE.Project project, string remotePath, string filterString) {
-            await Callbacks.WriteConsoleEx("Preparing to transfer project.\n", OutputType.Output, CancellationToken.None);
+            ProgressOutputWriter.WriteLine("Preparing to transfer project.");
 
             var projectDir = Path.GetDirectoryName(project.FullName);
             var projectName = Path.GetFileNameWithoutExtension(project.FullName);
-            var filter = new TransferFileFilter(filterString);
 
-            await Callbacks.WriteConsoleEx($"Remote destination: {remotePath}\n", OutputType.Output, CancellationToken.None);
-            await Callbacks.WriteConsoleEx($"File filter applied: {filterString}\n", OutputType.Output, CancellationToken.None);
-            await Callbacks.WriteConsoleEx("Compressing project files for transfer:\n", OutputType.Output, CancellationToken.None);
+            string[] filterSplitter = { ";" };
+            Matcher matcher = new Matcher(StringComparison.InvariantCultureIgnoreCase);
+            matcher.AddIncludePatterns(filterString.Split(filterSplitter, StringSplitOptions.RemoveEmptyEntries));
 
-            var compressedFilePath = await Task.Run(() => FileSystem.CompressDirectory(projectDir, (p) => {
-                Callbacks.WriteConsoleEx($"Compressing: {p}\n", OutputType.Output, CancellationToken.None).Wait();
-                return filter.Match(p);
-            }));
+            ProgressOutputWriter.WriteLine($"Remote destination: {remotePath}");
+            ProgressOutputWriter.WriteLine($"File filter applied: {filterString}");
+            ProgressOutputWriter.WriteLine("Compressing project files for transfer: ");
 
+            var compressedFilePath = FileSystem.CompressDirectory(projectDir, matcher, (p) => {
+                ProgressOutputWriter.WriteLine($"Compressing: {p}");
+            });
+            
             using (var fts = new FileTransferSession(Session, FileSystem)) {
-                await Callbacks.WriteConsoleEx("Transferring project to remote host...", OutputType.Output, CancellationToken.None);
+                ProgressOutputWriter.Write("Transferring project to remote host...");
                 var remoteFile = await fts.SendFileAsync(compressedFilePath);
-                await Session.EvaluateAsync<string>(Invariant($"rtvs:::save_project({remoteFile.Id}, {projectName.ToRStringLiteral()}, '{remotePath.ToRPath()}')"), REvaluationKind.Normal);
+                await Session.EvaluateAsync<string>($"rtvs:::save_to_project_folder({remoteFile.Id}, {projectName.ToRStringLiteral()}, '{remotePath.ToRPath()}')", REvaluationKind.Normal);
             }
 
-            await Callbacks.WriteConsoleEx(" Completed.\n", OutputType.Output, CancellationToken.None);
+            ProgressOutputWriter.WriteLine(" done.");
         }
 
         private async Task<string> GetStartupFileAsync(bool transferFiles, EnvDTE.Project project) {
-            if (transferFiles && Session.IsRemoteSession) { // remote
+            if (transferFiles && Session.IsRemote) { // remote
                 var projectName = Path.GetFileNameWithoutExtension(project.FullName);
                 var remotePath = (await _properties.GetRemoteProjectPathAsync()).ToRPath();
                 var startUpFile = (await _properties.GetStartupFileAsync()).ToRPath();
@@ -181,32 +189,5 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             return remoteProjectPath + localSettingsPath.Remove(0, localSettingsPath.Length);
         }
 
-        private class TransferFileFilter {
-            List<string> filterPatterns;
-            public TransferFileFilter(string filterString) {
-                string[] patterns = filterString.Split(separator, StringSplitOptions.RemoveEmptyEntries);
-                filterPatterns = new List<string>(patterns);
-            }
-            private static string[] separator = { ";"};
-
-            public bool Match(string path) {
-                var result = false;
-                foreach (string pattern in filterPatterns) {
-                    if (pattern == "*.*") {
-                        result = true;
-                    } else if (pattern.StartsWith("*.") || pattern.StartsWith("*.")) {
-                        result = Path.GetExtension(path) == Path.GetExtension(pattern);
-                    } else {
-                        result = Path.GetFileName(path) == pattern;
-                    }
-
-                    if (result) {
-                        break;
-                    }
-                }
-
-                return result;
-            }
-        }
     }
 }

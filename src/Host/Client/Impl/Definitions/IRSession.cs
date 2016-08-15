@@ -24,7 +24,7 @@ namespace Microsoft.R.Host.Client {
         string Prompt { get; }
         bool IsHostRunning { get; }
         Task HostStarted { get; }
-        bool IsRemoteSession { get; }
+        bool IsRemote { get; }
 
         Task<IRSessionInteraction> BeginInteractionAsync(bool isVisible = true, CancellationToken cancellationToken = default(CancellationToken));
         Task<IRSessionEvaluation> BeginEvaluationAsync(CancellationToken cancellationToken = default(CancellationToken));

@@ -7,6 +7,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Runtime.InteropServices;
 using System.Text;
+using Microsoft.Extensions.FileSystemGlobbing;
 
 namespace Microsoft.Common.Core.IO {
     public sealed class FileSystem : IFileSystem {
@@ -59,55 +60,43 @@ namespace Microsoft.Common.Core.IO {
 
         public string CompressFile(string path) {
             string compressedFilePath = Path.GetTempFileName();
-            using (FileStream sourceFileStream = File.OpenRead(path)) {
-                using (FileStream compressedFileStream = File.Create(compressedFilePath)) {
-                    using (GZipStream stream = new GZipStream(compressedFileStream, CompressionLevel.Optimal)) {
-                        // 81920 is the default compression buffer size
-                        sourceFileStream.CopyTo(compressedFileStream, 81920);
-                    }
-                }
+            using (FileStream sourceFileStream = File.OpenRead(path))
+            using (FileStream compressedFileStream = File.Create(compressedFilePath))
+            using (GZipStream stream = new GZipStream(compressedFileStream, CompressionLevel.Optimal)) {
+                // 81920 is the default compression buffer size
+                sourceFileStream.CopyTo(compressedFileStream, 81920);
             }
+
             return compressedFilePath;
         }
 
-        public string CompressDirectory(string path) =>
-            CompressDirectory(path, (p) => true);
+        public string CompressDirectory(string path) {
+            Matcher matcher = new Matcher(StringComparison.InvariantCultureIgnoreCase);
+            matcher.AddInclude("*.*");
+            return CompressDirectory(path, matcher, (p) => { });
+        }
 
-        public string CompressDirectory(string path, Func<string, bool> filter) {
+        public string CompressDirectory(string path, Matcher matcher, Action<string> callback) {
             string zipFilePath = Path.GetTempFileName();
-            using (FileStream zipStream = new FileStream(zipFilePath, FileMode.Create)) {
-                using (ZipArchive archive = new ZipArchive(zipStream, ZipArchiveMode.Create)) {
-                    Stack<string> dirs = new Stack<string>();
-                    dirs.Push(path);
-                    while (dirs.Count > 0) {
-                        string dirPath = dirs.Pop();
-                        var subdirs = Directory.GetDirectories(dirPath);
-                        foreach (string subdir in subdirs) {
-                            bool addDir = true;
-                            if (filter != null) {
-                                addDir = filter(subdir);
-                            }
-                            if (addDir) {
-                                dirs.Push(subdir);
-                            }
-                        }
+            using (FileStream zipStream = new FileStream(zipFilePath, FileMode.Create)) 
+            using (ZipArchive archive = new ZipArchive(zipStream, ZipArchiveMode.Create)) {
+                Queue<string> dirs = new Queue<string>();
+                dirs.Enqueue(path);
+                while (dirs.Count > 0) {
+                    var dir = dirs.Dequeue();
+                    var subdirs = Directory.GetDirectories(dir);
+                    foreach(var subdir in subdirs) {
+                        dirs.Enqueue(subdir);
+                    }
 
-                        var files = Directory.GetFiles(dirPath);
-                        foreach (string file in files) {
-                            bool addFile = true;
-                            if (filter != null) {
-                                addFile = filter(file);
-                            }
-
-                            if (addFile) {
-                                string entryName = file.Remove(0, path.Length + 1).Replace('\\', '/');
-                                archive.CreateEntryFromFile(file, entryName);
-                            }
-                        }
+                    var files = matcher.GetResultsInFullPath(dir);
+                    foreach (var file in files) {
+                        callback?.Invoke(file);
+                        string entryName = file.MakeRelativePath(dir).Replace('\\', '/');
+                        archive.CreateEntryFromFile(file, entryName);
                     }
                 }
             }
-
             return zipFilePath;
         }
 

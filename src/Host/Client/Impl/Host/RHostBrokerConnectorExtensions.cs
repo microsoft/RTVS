@@ -7,7 +7,8 @@ using Microsoft.Common.Core;
 namespace Microsoft.R.Host.Client.Host {
     public static class RHostBrokerConnectorExtensions {
         public static bool IsRemoteConnection(this IRHostBrokerConnector brokerConnector) {
-            return brokerConnector.BrokerUri.Scheme.StartsWithIgnoreCase("http");
+            // Any URI the does not start with 'file' is remote.
+            return !brokerConnector.BrokerUri.Scheme.StartsWithIgnoreCase("file");
         }
     }
 }

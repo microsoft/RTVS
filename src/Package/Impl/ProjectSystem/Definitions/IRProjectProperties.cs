@@ -101,7 +101,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         /// <summary>
         /// Defines if project has to be transfered to remote host during run.
         /// </summary>
-        Task SetTransferProjectAsync(bool val);
+        Task SetTransferProjectOnRunAsync(bool val);
 
         /// <summary>
         /// Gets all the R script files in the current project.

@@ -5,12 +5,12 @@ using System;
 using System.Collections.Immutable;
 using System.ComponentModel.Composition;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring;
 using Microsoft.VisualStudio.R.Package.Commands;
-using Microsoft.VisualStudio.R.Package.Shell;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
@@ -22,11 +22,13 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     internal sealed class SetAsStartUpRScriptCommand : IAsyncCommandGroupHandler {
         private readonly ConfiguredProject _configuredProject;
         private readonly IRInteractiveWorkflowProvider _interactiveWorkflowProvider;
+        private readonly ICoreShell _coreShell;
 
         [ImportingConstructor]
-        public SetAsStartUpRScriptCommand(ConfiguredProject configuredProject, IRInteractiveWorkflowProvider interactiveWorkflowProvider) {
+        public SetAsStartUpRScriptCommand(ConfiguredProject configuredProject, IRInteractiveWorkflowProvider interactiveWorkflowProvider, ICoreShell coreShell) {
             _configuredProject = configuredProject;
             _interactiveWorkflowProvider = interactiveWorkflowProvider;
+            _coreShell = coreShell;
         }
 
         public Task<CommandStatusResult> GetCommandStatusAsync(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus progressiveStatus) {
@@ -38,7 +40,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
 
 
         public async Task<bool> TryHandleCommandAsync(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, long commandExecuteOptions, IntPtr variantArgIn, IntPtr variantArgOut) {
-            VsAppShell.Current.AssertIsOnMainThread();
+            _coreShell.AssertIsOnMainThread();
             if (commandId != RPackageCommandId.icmdSetAsStartUpRScript) {
                 return false;
             }
