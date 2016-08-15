@@ -3,6 +3,7 @@
 
 using System;
 using System.IO;
+using Microsoft.Common.Core.Disposables;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.R.Host.Broker.Logging {
@@ -19,13 +20,8 @@ namespace Microsoft.R.Host.Broker.Logging {
             _writer = null;
         }
 
-        private sealed class Scope : IDisposable {
-            public void Dispose() {
-            }
-        }
-
         public IDisposable BeginScope<TState>(TState state) {
-            return new Scope();
+            return Disposable.Empty;
         }
 
         public bool IsEnabled(LogLevel logLevel) {
