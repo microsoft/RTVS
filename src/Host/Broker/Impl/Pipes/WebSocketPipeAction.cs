@@ -37,13 +37,13 @@ namespace Microsoft.R.Host.Broker.Pipes {
             }
         }
 
-        private static async Task WebSocketToPipeWorker(WebSocket socket, IMessagePipeEnd pipe, CancellationToken ct) {
-            var cancellationToken = new CancellationToken();
-
+        private static async Task WebSocketToPipeWorker(WebSocket socket, IMessagePipeEnd pipe, CancellationToken cancellationToken) {
             const int blockSize = 0x10000;
             var buffer = new MemoryStream(blockSize);
 
             while (true) {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 int index = (int)buffer.Length;
                 buffer.SetLength(index + blockSize);
 
@@ -59,11 +59,11 @@ namespace Microsoft.R.Host.Broker.Pipes {
             }
         }
 
-        private static async Task PipeToWebSocketWorker(WebSocket socket, IMessagePipeEnd pipe, CancellationToken ct) {
-            var cancellationToken = new CancellationToken();
-
+        private static async Task PipeToWebSocketWorker(WebSocket socket, IMessagePipeEnd pipe, CancellationToken cancellationToken) {
             while (true) {
-                var message = await pipe.ReadAsync(ct);
+                cancellationToken.ThrowIfCancellationRequested();
+
+                var message = await pipe.ReadAsync(cancellationToken);
                 await socket.SendAsync(new ArraySegment<byte>(message, 0, message.Length), WebSocketMessageType.Binary, true, cancellationToken);
             }
         }
