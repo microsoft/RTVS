@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Threading;
 using Newtonsoft.Json;
 
 namespace Microsoft.R.Host.Client.Host {
@@ -37,7 +38,7 @@ namespace Microsoft.R.Host.Client.Host {
         private readonly string _name;
         private readonly string _rhostDirectory;
         private readonly string _rHome;
-        private readonly SemaphoreSlim _connectSemaphore = new SemaphoreSlim(1, 1);
+        private readonly BinaryAsyncLock _connectLock = new BinaryAsyncLock();
 
         private Process _brokerProcess;
         private bool _isConnected;
@@ -51,7 +52,7 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         public override void Dispose() {
-            if (IsDisposed) {
+            if (!DisposableBag.TryMarkDisposed()) {
                 return;
             }
 
@@ -82,24 +83,22 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         protected override async Task ConnectToBrokerAsync() {
-            if (IsDisposed) {
-                throw new ObjectDisposedException(typeof(LocalRHostConnector).FullName);
-            }
-
+            DisposableBag.ThrowIfDisposed();
             await TaskUtilities.SwitchToBackgroundThread();
 
             try {
-                await _connectSemaphore.WaitAsync();
-                if (!_isConnected) {
+                if (await _connectLock.WaitAsync()) {
                     CreateHttpClient();
                     await ConnectToBrokerWorker();
                 }
             } finally {
-                _connectSemaphore.Release();
+                _connectLock.Release();
             }
         }
 
         private async Task ConnectToBrokerWorker() {
+            Trace.Assert(!_isConnected);
+
             string rhostBrokerExe = Path.Combine(_rhostDirectory, RHostBrokerExe);
             if (!File.Exists(rhostBrokerExe)) {
                 throw new RHostBinaryMissingException();
@@ -133,6 +132,7 @@ namespace Microsoft.R.Host.Client.Host {
                     process.Exited += delegate {
                         cts.Cancel();
                         _isConnected = false;
+                        _connectLock.Reset();
                     };
 
                     await serverUriPipe.WaitForConnectionAsync(cts.Token);

@@ -17,7 +17,7 @@ namespace Microsoft.R.Host.Client.Host {
                 IntPtr.Zero, uri.Host.ToString(), IntPtr.Zero, 0, userName, userName.Capacity, password, password.Capacity, ref save,
                 NativeMethods.CREDUI_FLAGS_EXCLUDE_CERTIFICATES/* | NativeMethods.CREDUI_FLAGS_DO_NOT_PERSIST*/);
             if (err != 0) {
-                throw new UnauthorizedAccessException("No credentials entered.");
+                throw new OperationCanceledException("No credentials entered.");
             }
 
             return new NetworkCredential(userName.ToString(), password.ToString());

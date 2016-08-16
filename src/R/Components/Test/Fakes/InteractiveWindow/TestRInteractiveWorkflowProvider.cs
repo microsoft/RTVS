@@ -75,8 +75,7 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
         }
         
         private IRInteractiveWorkflow CreateRInteractiveWorkflow() {
-            return new RInteractiveWorkflow(TestName
-                , _sessionProvider
+            return new RInteractiveWorkflow(_sessionProvider
                 , _connectionManagerProvider
                 , _historyProvider
                 , _packagesProvider

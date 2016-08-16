@@ -40,7 +40,7 @@ namespace Microsoft.R.ExecutionTracing.Test {
         public async Task DisposeAsync() {
             await _session.StopHostAsync();
             _sessionProvider.Dispose();
-            _brokerConnector?.Dispose();
+            _brokerConnector.Dispose();
         }
 
         [Test]

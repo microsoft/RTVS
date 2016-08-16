@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebSockets.Client;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Logging;
 using Microsoft.R.Host.Protocol;
 using Newtonsoft.Json;
@@ -25,13 +26,13 @@ namespace Microsoft.R.Host.Client.Host {
             TimeSpan.FromSeconds(5);
 #endif
 
+        protected DisposableBag DisposableBag { get; } = DisposableBag.Create<RHostConnector>();
+
         private readonly LinesLog _log;
         private HttpClient _broker;
         private string _interpreterId;
 
         protected HttpClient Broker => _broker;
-
-        public bool IsDisposed { get; private set; }
 
         protected RHostConnector(string interpreterId) {
             _interpreterId = interpreterId;
@@ -52,7 +53,7 @@ namespace Microsoft.R.Host.Client.Host {
         protected abstract void ConfigureWebSocketRequest(HttpWebRequest request);
 
         public virtual void Dispose() {
-            IsDisposed = true;
+            DisposableBag.TryMarkDisposed();
         }
 
         protected abstract Task ConnectToBrokerAsync();
@@ -73,10 +74,7 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         public async Task<RHost> Connect(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken()) {
-            if (IsDisposed) {
-                throw new ObjectDisposedException(typeof(LocalRHostConnector).FullName);
-            }
-
+            DisposableBag.ThrowIfDisposed();
             await TaskUtilities.SwitchToBackgroundThread();
 
             await ConnectToBrokerAsync();
@@ -89,7 +87,18 @@ namespace Microsoft.R.Host.Client.Host {
             };
             var requestContent = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
 
-            (await _broker.PutAsync($"/sessions/{name}", requestContent, cancellationToken)).EnsureSuccessStatusCode();
+            try {
+                (await _broker.PutAsync($"/sessions/{name}", requestContent, cancellationToken)).EnsureSuccessStatusCode();
+            } catch (HttpRequestException ex) {
+                // If UICredentials was canceled by the user, we'll get HttpRequestException(WebException(OperationCanceledException)) here.
+                // Unwrap all the extraneous layers, and rethrow the cancellation.
+                var oce = ex?.InnerException?.InnerException as OperationCanceledException;
+                if (oce != null) {
+                    throw oce;
+                }
+
+                throw new RHostDisconnectedException("HTTP error while creating session: " + ex.Message, ex);
+            }
 
             var wsClient = new WebSocketClient {
                 KeepAliveInterval = HeartbeatTimeout,
@@ -113,5 +122,6 @@ namespace Microsoft.R.Host.Client.Host {
             var host = new RHost(name, callbacks, transport, null, cts);
             return host;
         }
+
     }
 }

@@ -22,17 +22,19 @@ namespace Microsoft.R.Host.Client {
             _socket = socket;
         }
 
-        public async Task<Message> ReceiveAsync(CancellationToken ct = default(CancellationToken)) {
+        public async Task<Message> ReceiveAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             const int blockSize = 0x10000;
             var buffer = new MemoryStream(blockSize);
 
             while (true) {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 int index = (int)buffer.Length;
                 buffer.SetLength(index + blockSize);
 
                 WebSocketReceiveResult wsrr;
                 try {
-                    wsrr = await _socket.ReceiveAsync(new ArraySegment<byte>(buffer.GetBuffer(), index, blockSize), ct);
+                    wsrr = await _socket.ReceiveAsync(new ArraySegment<byte>(buffer.GetBuffer(), index, blockSize), cancellationToken);
                 } catch (IOException ex) {
                     throw new MessageTransportException(ex);
                 } catch (SocketException ex) {
@@ -44,18 +46,18 @@ namespace Microsoft.R.Host.Client {
                 buffer.SetLength(index + wsrr.Count);
 
                 if (wsrr.CloseStatus != null) {
-                    throw new OperationCanceledException("Connection closed by host.");
+                    throw new MessageTransportException("Connection closed by host.");
                 } else if (wsrr.EndOfMessage) {
                     return new Message(buffer.ToArray());
                 }
             }
         }
 
-        public async Task SendAsync(Message message, CancellationToken ct = default(CancellationToken)) {
+        public async Task SendAsync(Message message, CancellationToken cancellationToken = default(CancellationToken)) {
             var data = message.ToBytes();
-            await _sendLock.WaitAsync(ct);
+            await _sendLock.WaitAsync(cancellationToken);
             try {
-                await _socket.SendAsync(new ArraySegment<byte>(data), WebSocketMessageType.Binary, true, ct);
+                await _socket.SendAsync(new ArraySegment<byte>(data), WebSocketMessageType.Binary, true, cancellationToken);
             } catch (IOException ex) {
                 throw new MessageTransportException(ex);
             } catch (SocketException ex) {

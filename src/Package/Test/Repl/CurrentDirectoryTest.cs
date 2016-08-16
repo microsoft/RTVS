@@ -39,7 +39,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
             var debuggerModeTracker = new TestDebuggerModeTracker();
             var brokerConnector = new RHostBrokerConnector(name: nameof(CurrentDirectoryTest));
             _interactiveWorkflow = new RInteractiveWorkflow(
-                nameof(CurrentDirectoryTest),
                 sessionProvider, connectionsProvider, historyProvider, packagesProvider, plotsProvider, activeTextViewTracker,
                 debuggerModeTracker, brokerConnector, VsAppShell.Current, RToolsSettings.Current, () => { });
         }
