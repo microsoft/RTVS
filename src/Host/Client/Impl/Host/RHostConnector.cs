@@ -58,7 +58,11 @@ namespace Microsoft.R.Host.Client.Host {
         protected abstract Task ConnectToBrokerAsync();
 
         public async Task PingAsync() {
-            (await _broker.PostAsync("/ping", new StringContent(""))).EnsureSuccessStatusCode();
+            try {
+                (await _broker.PostAsync("/ping", new StringContent(""))).EnsureSuccessStatusCode();
+            } catch (HttpRequestException ex) {
+                throw new RHostDisconnectedException("Broker did not respond to ping", ex);
+            }
         }
 
         private async Task PingWorker() {

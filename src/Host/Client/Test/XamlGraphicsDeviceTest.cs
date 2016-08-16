@@ -31,10 +31,11 @@ namespace Microsoft.R.Host.Client.Test {
         private const int DefaultHeight = 360;
 
         private readonly MethodInfo _testMethod;
-        private readonly IRHostBrokerConnector _brokerConnector = new RHostBrokerConnector(name: nameof(XamlGraphicsDeviceTest));
+        private readonly IRHostBrokerConnector _brokerConnector;
 
         public XamlGraphicsDeviceTest(TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo;
+            _brokerConnector = new RHostBrokerConnector(name: nameof(XamlGraphicsDeviceTest));
         }
 
         public void Dispose() {

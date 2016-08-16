@@ -31,12 +31,13 @@ namespace Microsoft.R.DataInspection.Test {
         private const REvaluationResultProperties AllFields = unchecked((REvaluationResultProperties)~0);
 
         private readonly MethodInfo _testMethod;
-        private readonly IRHostBrokerConnector _brokerConnector = new RHostBrokerConnector(name: nameof(ValuesTest));
+        private readonly IRHostBrokerConnector _brokerConnector;
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _session;
 
         public ValuesTest(TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo;
+            _brokerConnector = new RHostBrokerConnector(name: nameof(ValuesTest));
             _sessionProvider = new RSessionProvider();
             _session = _sessionProvider.GetOrCreate(Guid.NewGuid(), _brokerConnector);
         }

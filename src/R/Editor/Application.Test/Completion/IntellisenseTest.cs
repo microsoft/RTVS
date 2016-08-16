@@ -31,11 +31,12 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
     [Collection(CollectionNames.NonParallel)]
     public class IntellisenseTest : FunctionIndexBasedTest {
         private readonly EditorHostMethodFixture _editorHost;
-        private readonly IRHostBrokerConnector _brokerConnector = new RHostBrokerConnector(name: nameof(IntellisenseTest));
+        private readonly IRHostBrokerConnector _brokerConnector;
         private readonly IRSessionProvider _sessionProvider;
 
         public IntellisenseTest(REditorApplicationMefCatalogFixture catalog, EditorHostMethodFixture editorHost) : base(catalog) {
             _editorHost = editorHost;
+            _brokerConnector = new RHostBrokerConnector(name: nameof(IntellisenseTest));
             _sessionProvider = _exportProvider.GetExportedValue<IRSessionProvider>();
         }
 

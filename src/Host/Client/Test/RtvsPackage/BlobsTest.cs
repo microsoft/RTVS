@@ -20,12 +20,13 @@ namespace Microsoft.R.Host.Client.Test.RtvsPackage {
     [ExcludeFromCodeCoverage]
     public class BlobsTest : IAsyncLifetime {
         private readonly MethodInfo _testMethod;
-        private readonly IRHostBrokerConnector _brokerConnector = new RHostBrokerConnector(name: nameof(BlobsTest));
+        private readonly IRHostBrokerConnector _brokerConnector;
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _session;
 
         public BlobsTest(TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo;
+            _brokerConnector = new RHostBrokerConnector(name: nameof(BlobsTest));
             _sessionProvider = new RSessionProvider();
             _session = _sessionProvider.GetOrCreate(Guid.NewGuid(), _brokerConnector);
         }

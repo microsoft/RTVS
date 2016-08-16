@@ -21,12 +21,13 @@ namespace Microsoft.R.ExecutionTracing.Test {
     [Category.R.ExecutionTracing]
     public class BreakpointsTest : IAsyncLifetime {
         private readonly MethodInfo _testMethod;
-        private readonly IRHostBrokerConnector _brokerConnector = new RHostBrokerConnector(name: nameof(BreakpointsTest));
+        private readonly IRHostBrokerConnector _brokerConnector;
         private readonly RSessionProvider _sessionProvider;
         private readonly IRSession _session;
 
         public BreakpointsTest(TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo;
+            _brokerConnector = new RHostBrokerConnector(name: nameof(BreakpointsTest));
             _sessionProvider = new RSessionProvider();
             _session = _sessionProvider.GetOrCreate(Guid.NewGuid(), _brokerConnector);
         }

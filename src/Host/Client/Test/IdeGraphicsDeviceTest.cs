@@ -35,11 +35,12 @@ namespace Microsoft.R.Host.Client.Test {
         public List<string> PlotFilePaths { get; } = new List<string>();
         public List<PlotMessage> OriginalPlotMessages { get; } = new List<PlotMessage>();
 
-        private readonly IRHostBrokerConnector _brokerConnector = new RHostBrokerConnector(name: nameof(IdeGraphicsDeviceTest));
+        private readonly IRHostBrokerConnector _brokerConnector;
 
         public IdeGraphicsDeviceTest(GraphicsDeviceTestFilesFixture files, TestMethodFixture testMethod) {
             _files = files;
             _testMethod = testMethod.MethodInfo;
+            _brokerConnector = new RHostBrokerConnector(name: nameof(IdeGraphicsDeviceTest));
         }
 
         public void Dispose() {
