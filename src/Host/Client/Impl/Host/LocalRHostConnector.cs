@@ -88,8 +88,10 @@ namespace Microsoft.R.Host.Client.Host {
 
             try {
                 if (await _connectLock.WaitAsync()) {
-                    CreateHttpClient();
-                    await ConnectToBrokerWorker();
+                    if (!_isConnected) {
+                        CreateHttpClient();
+                        await ConnectToBrokerWorker();
+                    }
                 }
             } finally {
                 _connectLock.Release();

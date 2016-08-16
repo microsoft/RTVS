@@ -5,15 +5,14 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebSockets.Client;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Logging;
+using Microsoft.R.Host.BrokerServices;
 using Microsoft.R.Host.Protocol;
-using Newtonsoft.Json;
 
 namespace Microsoft.R.Host.Client.Host {
     internal abstract class RHostConnector : IRHostConnector {
@@ -81,14 +80,12 @@ namespace Microsoft.R.Host.Client.Host {
 
             rCommandLineArguments = rCommandLineArguments ?? string.Empty;
 
-            var request = new SessionCreateRequest {
-                InterpreterId = _interpreterId,
-                CommandLineArguments = rCommandLineArguments,
-            };
-            var requestContent = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
-
             try {
-                (await _broker.PutAsync($"/sessions/{name}", requestContent, cancellationToken)).EnsureSuccessStatusCode();
+                var sessions = new SessionsWebService(_broker);
+                await sessions.PutAsync(name, new SessionCreateRequest {
+                    InterpreterId = _interpreterId,
+                    CommandLineArguments = rCommandLineArguments,
+                });
             } catch (HttpRequestException ex) {
                 // If UICredentials was canceled by the user, we'll get HttpRequestException(WebException(OperationCanceledException)) here.
                 // Unwrap all the extraneous layers, and rethrow the cancellation.

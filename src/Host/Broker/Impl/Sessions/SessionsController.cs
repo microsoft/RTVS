@@ -4,17 +4,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.R.Host.Broker.Interpreters;
 using Microsoft.R.Host.Broker.Pipes;
-using Microsoft.R.Host.Protocol;
+using Microsoft.R.Host.Broker.Protocol;
 using Microsoft.R.Host.Broker.Security;
+using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Broker.Sessions {
     [Authorize(Policy = Policies.RUser)]
     [Route("/sessions")]
-    public class SessionsController : Controller {
+    public class SessionsController : Controller, ISessionsWebService {
         private readonly InterpreterManager _interpManager;
         private readonly SessionManager _sessionManager;
 
@@ -24,12 +26,12 @@ namespace Microsoft.R.Host.Broker.Sessions {
         }
 
         [HttpGet]
-        public IEnumerable<SessionInfo> Get() {
-            yield break;
+        public Task<IEnumerable<SessionInfo>> GetAsync() {
+            return Task.FromResult(Enumerable.Empty<SessionInfo>());
         }
 
         [HttpPut("{id}")]
-        public SessionInfo Put(string id, [FromBody] SessionCreateRequest request) {
+        public Task<SessionInfo> PutAsync(string id, [FromBody] SessionCreateRequest request) {
             SecureString securePassword = null;
             string password = User.FindFirst(Claims.Password)?.Value;
             if (password != null) {
@@ -41,7 +43,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
 
             var interp = _interpManager.Interpreters.First(ip => ip.Info.Id ==  request.InterpreterId);
             var session = _sessionManager.CreateSession(User.Identity, id, interp, securePassword, request.CommandLineArguments);
-            return session.Info;
+            return Task.FromResult(session.Info);
         }
 
         [HttpGet("{id}/pipe")]

@@ -37,11 +37,14 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Net.Http" />
+    <Reference Include="System.ServiceModel" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="BrokerServices\WebService.cs" />
+    <Compile Include="BrokerServices\SessionsWebService.cs" />
     <Compile Include="DataInspection\IRActiveBindingInfo.cs" />
     <Compile Include="DataInspection\IRErrorInfo.cs" />
     <Compile Include="DataInspection\IREvaluationResultInfo.cs" />

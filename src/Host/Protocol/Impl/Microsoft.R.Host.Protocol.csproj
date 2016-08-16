@@ -47,6 +47,7 @@
     <Compile Include="Message.cs" />
     <Compile Include="SessionCreateRequest.cs" />
     <Compile Include="SessionInfo.cs" />
+    <Compile Include="ISessionsWebService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="project.json" />
