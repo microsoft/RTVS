@@ -8,5 +8,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
         public string Id { get; set; }
 
         public string InterpreterId { get; set; }
+
+        public string CommandLineArguments { get; set; }
     }
 }

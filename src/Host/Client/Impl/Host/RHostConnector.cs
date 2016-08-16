@@ -83,16 +83,13 @@ namespace Microsoft.R.Host.Client.Host {
 
             rCommandLineArguments = rCommandLineArguments ?? string.Empty;
 
-            var request = new { InterpreterId = _interpreterId };
+            var request = new {
+                InterpreterId = _interpreterId,
+                CommandLineArguments = rCommandLineArguments,
+            };
             var requestContent = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
 
-            try {
-                (await _broker.PutAsync($"/sessions/{name}", requestContent, cancellationToken)).EnsureSuccessStatusCode();
-            } catch (HttpRequestException) {
-                throw;
-            } catch (OperationCanceledException) {
-                throw;
-            }
+            (await _broker.PutAsync($"/sessions/{name}", requestContent, cancellationToken)).EnsureSuccessStatusCode();
 
             var wsClient = new WebSocketClient {
                 KeepAliveInterval = HeartbeatTimeout,

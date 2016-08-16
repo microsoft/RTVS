@@ -6,5 +6,7 @@ using System;
 namespace Microsoft.R.Host.Broker.Sessions {
     public struct SessionCreateRequest {
         public string InterpreterId { get; set; }
+
+        public string CommandLineArguments { get; set; }
     }
 }

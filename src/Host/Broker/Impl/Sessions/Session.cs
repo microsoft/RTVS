@@ -26,17 +26,23 @@ namespace Microsoft.R.Host.Broker.Sessions {
 
         public SessionManager Manager { get; }
 
+        public IIdentity User { get; }
+
+        /// <remarks>
+        /// Unique for a given <see cref="User"/> only.
+        /// </remarks>
         public string Id { get; }
 
         public Interpreter Interpreter { get; }
 
-        public IIdentity User { get; }
+        public string CommandLineArguments { get; }
 
         public Process Process => _process;
 
         public SessionInfo Info => new SessionInfo {
             Id = Id,
-            InterpreterId = Interpreter.Info.Id
+            InterpreterId = Interpreter.Id,
+            CommandLineArguments = CommandLineArguments,
         };
 
         static Session() {
@@ -54,11 +60,12 @@ namespace Microsoft.R.Host.Broker.Sessions {
             }
         }
 
-        internal Session(SessionManager manager, string id, Interpreter interpreter, IIdentity user) {
+        internal Session(SessionManager manager, IIdentity user, string id, Interpreter interpreter, string commandLineArguments) {
             Manager = manager;
-            Id = id;
             Interpreter = interpreter;
             User = user;
+            Id = id;
+            CommandLineArguments = commandLineArguments;
         }
 
         public void StartHost(SecureString password, ILogger outputLogger, ILogger messageLogger) {
@@ -68,7 +75,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
             var psi = new ProcessStartInfo(rhostExePath) {
                 UseShellExecute = false,
                 CreateNoWindow = false,
-                Arguments = $"--rhost-name {Id}",
+                Arguments = $"--rhost-name \"{Id}\" {CommandLineArguments}",
                 RedirectStandardInput = true,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true

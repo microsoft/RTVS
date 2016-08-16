@@ -46,7 +46,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
             }
         }
 
-        public Session CreateSession(string id, Interpreter interpreter, IIdentity user, SecureString password) {
+        public Session CreateSession(IIdentity user, string id, Interpreter interpreter, SecureString password, string commandLineArguments) {
             Session session;
 
             lock (_sessions) {
@@ -62,7 +62,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
                     userSessions.Remove(oldSession);
                 }
 
-                session = new Session(this, id, interpreter, user);
+                session = new Session(this, user, id, interpreter, commandLineArguments);
                 userSessions.Add(session);
             }
 

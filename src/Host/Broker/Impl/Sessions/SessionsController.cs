@@ -39,7 +39,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
             }
 
             var interp = _interpManager.Interpreters.First(ip => ip.Info.Id ==  request.InterpreterId);
-            var session = _sessionManager.CreateSession(id, interp, User.Identity, securePassword);
+            var session = _sessionManager.CreateSession(User.Identity, id, interp, securePassword, request.CommandLineArguments);
             return session.Info;
         }
 
