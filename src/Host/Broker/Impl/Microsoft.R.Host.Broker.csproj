@@ -92,13 +92,10 @@
     <Compile Include="Startup\StartupOptions.cs" />
     <Compile Include="Startup\Program.cs" />
     <Compile Include="Sessions\Session.cs" />
-    <Compile Include="Sessions\SessionCreateRequest.cs" />
     <Compile Include="Sessions\SessionManager.cs" />
-    <Compile Include="Sessions\SessionInfo.cs" />
     <Compile Include="Sessions\SessionsController.cs" />
     <Compile Include="Pipes\IMessagePipeEnd.cs" />
     <Compile Include="Pipes\MessagePipe.cs" />
-    <Compile Include="Interpreters\InterpreterInfo.cs" />
     <Compile Include="Interpreters\InterpreterOptions.cs" />
     <Compile Include="Security\RUserAuthorizationRequirement.cs" />
     <Compile Include="Security\SecurityOptions.cs" />

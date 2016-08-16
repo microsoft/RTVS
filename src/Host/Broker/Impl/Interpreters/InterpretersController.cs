@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.R.Host.Protocol;
 using Microsoft.R.Host.Broker.Security;
 
 namespace Microsoft.R.Host.Broker.Interpreters {

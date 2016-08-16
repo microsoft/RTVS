@@ -13,6 +13,7 @@ using Microsoft.Common.Core;
 using Microsoft.Extensions.Logging;
 using Microsoft.R.Host.Broker.Interpreters;
 using Microsoft.R.Host.Broker.Pipes;
+using Microsoft.R.Host.Protocol;
 using Microsoft.R.Host.Broker.Startup;
 
 namespace Microsoft.R.Host.Broker.Sessions {

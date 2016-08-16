@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.R.Host.Broker.Interpreters;
 using Microsoft.R.Host.Broker.Pipes;
+using Microsoft.R.Host.Protocol;
 using Microsoft.R.Host.Broker.Security;
 
 namespace Microsoft.R.Host.Broker.Sessions {

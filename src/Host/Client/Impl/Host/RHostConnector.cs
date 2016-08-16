@@ -5,13 +5,13 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Net.Security;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebSockets.Client;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
+using Microsoft.R.Host.Protocol;
 using Newtonsoft.Json;
 
 namespace Microsoft.R.Host.Client.Host {
@@ -83,7 +83,7 @@ namespace Microsoft.R.Host.Client.Host {
 
             rCommandLineArguments = rCommandLineArguments ?? string.Empty;
 
-            var request = new {
+            var request = new SessionCreateRequest {
                 InterpreterId = _interpreterId,
                 CommandLineArguments = rCommandLineArguments,
             };
