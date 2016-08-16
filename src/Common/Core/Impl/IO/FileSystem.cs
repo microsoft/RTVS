@@ -7,6 +7,8 @@ using System.IO;
 using System.IO.Compression;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
+
 using Microsoft.Extensions.FileSystemGlobbing;
 
 namespace Microsoft.Common.Core.IO {
@@ -73,10 +75,10 @@ namespace Microsoft.Common.Core.IO {
         public string CompressDirectory(string path) {
             Matcher matcher = new Matcher(StringComparison.InvariantCultureIgnoreCase);
             matcher.AddInclude("*.*");
-            return CompressDirectory(path, matcher, (p) => { });
+            return CompressDirectory(path, matcher, new Progress<string>((p) => { }), CancellationToken.None);
         }
 
-        public string CompressDirectory(string path, Matcher matcher, Action<string> callback) {
+        public string CompressDirectory(string path, Matcher matcher, IProgress<string> progress, CancellationToken ct) {
             string zipFilePath = Path.GetTempFileName();
             using (FileStream zipStream = new FileStream(zipFilePath, FileMode.Create)) 
             using (ZipArchive archive = new ZipArchive(zipStream, ZipArchiveMode.Create)) {
@@ -91,7 +93,10 @@ namespace Microsoft.Common.Core.IO {
 
                     var files = matcher.GetResultsInFullPath(dir);
                     foreach (var file in files) {
-                        callback?.Invoke(file);
+                        if (ct.IsCancellationRequested) {
+                            return string.Empty;
+                        }
+                        progress?.Report(file);
                         string entryName = file.MakeRelativePath(dir).Replace('\\', '/');
                         archive.CreateEntryFromFile(file, entryName);
                     }

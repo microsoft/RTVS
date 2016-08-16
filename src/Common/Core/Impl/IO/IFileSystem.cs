@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using Microsoft.Extensions.FileSystemGlobbing;
 
 namespace Microsoft.Common.Core.IO {
@@ -35,6 +36,6 @@ namespace Microsoft.Common.Core.IO {
 
         string CompressFile(string path);
         string CompressDirectory(string path);
-        string CompressDirectory(string path, Matcher matcher, Action<string> callback);
+        string CompressDirectory(string path, Matcher matcher, IProgress<string> progress, CancellationToken ct);
     }
 }

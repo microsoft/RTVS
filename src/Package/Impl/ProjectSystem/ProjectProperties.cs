@@ -4,6 +4,7 @@
 using System.ComponentModel.Composition;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
@@ -113,7 +114,7 @@ namespace Microsoft.VisualStudio.R.Package {
             var runProps = await GetConfigurationRunPropertiesAsync();
             var remotePath = await runProps.RemoteProjectPath.GetEvaluatedValueAsync();
             if (string.IsNullOrWhiteSpace(remotePath)) {
-                return "~/RTVSProjects/";
+                return "~/";
             }
             return remotePath;
         }
@@ -133,14 +134,13 @@ namespace Microsoft.VisualStudio.R.Package {
         /// Gets the filter string that selects files to be sent to remote host.
         /// </summary>
         /// <remarks>
-        /// Default filter string is ".r;.rmd;.rsettings". This selects all R script files, R markdown, 
-        /// and R Settings files.
+        /// Default filter string is ".r;.rmd;". This selects all R script files, R markdown files.
         /// </remarks>
         public async Task<string> GetFileFilterAsync() {
             var runProps = await GetConfigurationRunPropertiesAsync();
             var filter = await runProps.TransferFilesFilter.GetEvaluatedValueAsync();
             if (string.IsNullOrWhiteSpace(filter)) {
-                return ".r;.rmd;.rsettings";
+                return "*.r;*.rmd;";
             }
             return filter;
         }
@@ -149,8 +149,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// Gets the filter string that selects files to be sent to remote host.
         /// </summary>
         /// <remarks>
-        /// Default filter string is ".r;.rmd;.rsettings". This selects all R script files, R markdown, 
-        /// and R Settings files.
+        /// Default filter string is ".r;.rmd;". This selects all R script files, R markdown files.
         /// </remarks>
         public async Task SetFileFilterAsync(string fileTransferFilter) {
             var runProps = await GetConfigurationRunPropertiesAsync();
@@ -178,17 +177,9 @@ namespace Microsoft.VisualStudio.R.Package {
         /// Gets all the R script files in the current project.
         /// </summary>
         public IEnumerable<string> GetRFilePaths() {
-            IList<string> rFiles = new List<string>();
             string projectDir = Path.GetDirectoryName(ConfiguredProject.UnconfiguredProject.FullPath);
             var allFiles = _fileSystem.GetDirectoryInfo(projectDir).GetAllFiles();
-            
-            foreach(var file in allFiles) {
-                if (file.FullName.EndsWithIgnoreCase(".R")) {
-                    rFiles.Add(file.FullName.MakeRelativePath(projectDir));
-                }
-            }
-
-            return rFiles;
+            return allFiles.Where((file) => file.FullName.EndsWithIgnoreCase(".R")).Select((file) => file.FullName.MakeRelativePath(projectDir));
         }
 
         /// <summary>

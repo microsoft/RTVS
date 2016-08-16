@@ -159,9 +159,9 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             ProgressOutputWriter.WriteLine($"File filter applied: {filterString}");
             ProgressOutputWriter.WriteLine("Compressing project files for transfer: ");
 
-            var compressedFilePath = FileSystem.CompressDirectory(projectDir, matcher, (p) => {
+            var compressedFilePath = FileSystem.CompressDirectory(projectDir, matcher, new Progress<string>((p) => {
                 ProgressOutputWriter.WriteLine($"Compressing: {p}");
-            });
+            }), CancellationToken.None);
             
             using (var fts = new FileTransferSession(Session, FileSystem)) {
                 ProgressOutputWriter.Write("Transferring project to remote host...");
