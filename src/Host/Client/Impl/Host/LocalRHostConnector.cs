@@ -41,7 +41,6 @@ namespace Microsoft.R.Host.Client.Host {
         private readonly BinaryAsyncLock _connectLock = new BinaryAsyncLock();
 
         private Process _brokerProcess;
-        private bool _isConnected;
 
         public LocalRHostConnector(string name, string rHome, string rhostDirectory = null)
             : base(InterpreterId) {
@@ -49,26 +48,6 @@ namespace Microsoft.R.Host.Client.Host {
             _name = name;
             _rhostDirectory = rhostDirectory ?? Path.GetDirectoryName(typeof(RHost).Assembly.GetAssemblyPath());
             _rHome = rHome;
-        }
-
-        public override void Dispose() {
-            if (!DisposableBag.TryMarkDisposed()) {
-                return;
-            }
-
-            base.Dispose();
-
-            if (_brokerProcess != null) {
-                if (!_brokerProcess.HasExited) {
-                    try {
-                        _brokerProcess.Kill();
-                    } catch (Win32Exception) {
-                    } catch (InvalidOperationException) {
-                    }
-
-                    _brokerProcess = null;
-                }
-            }
         }
 
         protected override HttpClientHandler GetHttpClientHandler() {
@@ -88,7 +67,7 @@ namespace Microsoft.R.Host.Client.Host {
 
             try {
                 if (await _connectLock.WaitAsync()) {
-                    if (!_isConnected) {
+                    if (_brokerProcess == null) {
                         CreateHttpClient();
                         await ConnectToBrokerWorker();
                     }
@@ -99,7 +78,7 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         private async Task ConnectToBrokerWorker() {
-            Trace.Assert(!_isConnected);
+            Trace.Assert(_brokerProcess == null);
 
             string rhostBrokerExe = Path.Combine(_rhostDirectory, RHostBrokerExe);
             if (!File.Exists(rhostBrokerExe)) {
@@ -133,7 +112,7 @@ namespace Microsoft.R.Host.Client.Host {
                     var cts = new CancellationTokenSource(10000);
                     process.Exited += delegate {
                         cts.Cancel();
-                        _isConnected = false;
+                        _brokerProcess = null;
                         _connectLock.Reset();
                     };
 
@@ -169,15 +148,22 @@ namespace Microsoft.R.Host.Client.Host {
                 }
 
                 _brokerProcess = process;
-                _isConnected = true;
+                DisposableBag.Add(DisposeBrokerProcess);
             } finally {
-                if (!_isConnected) {
+                if (_brokerProcess == null) {
                     try {
                         process?.Kill();
                     } catch (Exception) {
+                    } finally {
+                        process?.Dispose();
                     }
                 }
             }
+        }
+
+        private void DisposeBrokerProcess() {
+            _brokerProcess?.Kill();
+            _brokerProcess?.Dispose();
         }
     }
 }

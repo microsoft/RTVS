@@ -37,7 +37,7 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
         private Lazy<IRInteractiveWorkflow> _instanceLazy;
         public IRSessionCallback HostClientApp { get; set; }
 
-        public string TestName { get; set; }
+        public string BrokerConnectorName { get; set; }
 
         [ImportingConstructor]
         public TestRInteractiveWorkflowProvider(IRSessionProvider sessionProvider
@@ -82,7 +82,7 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
                 , _plotsProvider
                 , _activeTextViewTracker
                 , _debuggerModeTracker
-                , _brokerConnector ?? new RHostBrokerConnector(name: TestName)
+                , _brokerConnector ?? new RHostBrokerConnector(name: BrokerConnectorName)
                 , _shell
                 , _settings
                 , DisposeInstance);

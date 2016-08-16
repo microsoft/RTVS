@@ -40,7 +40,7 @@ namespace Microsoft.R.Host.Client.Host {
             BrokerChanged?.Invoke(this, new EventArgs());
         }
 
-        public Task<RHost> Connect(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken())
-            => _hostConnector.Connect(name, callbacks, rCommandLineArguments, timeout, cancellationToken);
+        public Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken())
+            => _hostConnector.ConnectAsync(name, callbacks, rCommandLineArguments, timeout, cancellationToken);
     }
 }

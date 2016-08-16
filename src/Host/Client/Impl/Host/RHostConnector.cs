@@ -51,7 +51,7 @@ namespace Microsoft.R.Host.Client.Host {
 
         protected abstract void ConfigureWebSocketRequest(HttpWebRequest request);
 
-        public virtual void Dispose() {
+        public void Dispose() {
             DisposableBag.TryMarkDisposed();
         }
 
@@ -76,7 +76,7 @@ namespace Microsoft.R.Host.Client.Host {
             }
         }
 
-        public async Task<RHost> Connect(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken()) {
+        public async Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken()) {
             DisposableBag.ThrowIfDisposed();
             await TaskUtilities.SwitchToBackgroundThread();
 

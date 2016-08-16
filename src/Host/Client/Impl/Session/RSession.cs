@@ -291,7 +291,7 @@ namespace Microsoft.R.Host.Client.Session {
 
         private async Task CreateAndRunHost(RHostStartupInfo startupInfo, int timeout) {
             try {
-                _host = await BrokerConnector.Connect(startupInfo.Name, this, startupInfo.RHostCommandLineArguments, timeout);
+                _host = await BrokerConnector.ConnectAsync(startupInfo.Name, this, startupInfo.RHostCommandLineArguments, timeout);
                 await _host.Run();
             } catch (OperationCanceledException oce) {
                 _initializationTcs.TrySetCanceled(oce);
