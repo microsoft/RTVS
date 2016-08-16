@@ -8,6 +8,7 @@ using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Client {
     internal class WebSocketMessageTransport : IMessageTransport {

@@ -11,7 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Microsoft.Extensions.Logging;
-using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Broker.Pipes {
     public class MessagePipe {

@@ -111,7 +111,6 @@
     <Compile Include="Host\RHostBinaryMissingException.cs" />
     <Compile Include="Definitions\OutputType.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Definitions\Message.cs" />
     <Compile Include="Host\RHostLoggingExtensions.cs" />
     <Compile Include="Session\RAfterRequestEventArgs.cs" />
     <Compile Include="Session\RBeforeRequestEventArgs.cs" />
@@ -223,6 +222,10 @@
       <SetPlatform>Platform=x64</SetPlatform>
       <Project>{131842ce-daf9-4c0e-8409-4a26ef7961a7}</Project>
       <Name>Microsoft.R.Host</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Protocol\Impl\Microsoft.R.Host.Protocol.csproj">
+      <Project>{c46e5f53-4caf-4c65-b173-ca8140fb41e0}</Project>
+      <Name>Microsoft.R.Host.Protocol</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

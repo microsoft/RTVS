@@ -14,6 +14,7 @@
       <File Source="$(var.BinDir)\Microsoft.R.Debugger.dll" />
       <File Source="$(var.BinDir)\Microsoft.R.Editor.dll" />
       <File Source="$(var.BinDir)\Microsoft.R.Host.Client.dll" />
+      <File Source="$(var.BinDir)\Microsoft.R.Host.Protocol.dll" />
       <File Source="$(var.BinDir)\Microsoft.R.Host.Broker.exe" />
       <File Source="$(var.BinDir)\Microsoft.R.Support.dll" />
       <File Source="$(var.BinDir)\Microsoft.R.Interpreters.dll" />

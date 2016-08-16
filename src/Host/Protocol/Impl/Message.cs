@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 
-namespace Microsoft.R.Host.Client {
+namespace Microsoft.R.Host.Protocol {
     public class Message {
         public readonly ulong Id;
         public readonly ulong RequestId;
