@@ -67,9 +67,7 @@
       <File Source="$(var.BinDir)\Microsoft.AspNetCore.WebSockets.Protocol.dll" />
       <File Source="$(var.BinDir)\Microsoft.AspNetCore.WebSockets.Server.dll" />
       <File Source="$(var.BinDir)\Microsoft.AspNetCore.WebUtilities.dll" />
-      <File Source="$(var.BinDir)\Microsoft.CodeAnalysis.CSharp.Desktop.dll" />
       <File Source="$(var.BinDir)\Microsoft.CodeAnalysis.CSharp.dll" />
-      <File Source="$(var.BinDir)\Microsoft.CodeAnalysis.Desktop.dll" />
       <File Source="$(var.BinDir)\Microsoft.CodeAnalysis.dll" />
       <File Source="$(var.BinDir)\Microsoft.DotNet.InternalAbstractions.dll" />
       <File Source="$(var.BinDir)\Microsoft.Extensions.Caching.Abstractions.dll" />
