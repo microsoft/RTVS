@@ -5,9 +5,9 @@ using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace Microsoft.R.Host.Broker.Interpreters {
-    public class InterpreterInfo {
-        public string Name { get; set; }
+namespace Microsoft.R.Host.Protocol {
+    public struct InterpreterInfo {
+        public string Id { get; set; }
 
         public string Path { get; set; }
 

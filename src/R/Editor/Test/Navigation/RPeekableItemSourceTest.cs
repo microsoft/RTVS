@@ -83,8 +83,7 @@ x <- function(a) {
 
         [Test]
         public void PeekInternalFunction01() {
-            var provider = _exportProvider.GetExportedValue<IRSessionProvider>();
-            using (new RHostScript(provider)) {
+            using (new RHostScript(_exportProvider)) {
                 string content = @"lm()";
                 RunInternalItemPeekTest(content, 0, 1, "lm");
             }

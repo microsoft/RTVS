@@ -50,7 +50,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private void ConnectionStateChanged(object sender, ConnectionEventArgs e) {
             _shell.DispatchOnUIThread(() => {
                 IsConnected = e.State;
-                SelectedConnection = e.Connection.Name;
+                SelectedConnection = e.Connection?.Name;
             });
         }
     }

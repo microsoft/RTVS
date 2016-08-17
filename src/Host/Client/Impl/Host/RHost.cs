@@ -17,13 +17,10 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 using System.Collections.Generic;
+using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Client {
     public sealed partial class RHost : IDisposable, IRExpressionEvaluator, IRBlobService {
-        public const int DefaultPort = 5118;
-        public const string RHostExe = "Microsoft.R.Host.exe";
-        public const string RBinPathX64 = @"bin\x64";
-
         private static readonly Task<REvaluationResult> RhostDisconnectedEvaluationResult = TaskUtilities.CreateCanceled<REvaluationResult>(new RHostDisconnectedException());
         private static readonly Task<ulong> RhostDisconnectedCreateBlobResult = TaskUtilities.CreateCanceled<ulong>(new RHostDisconnectedException());
         private static readonly Task<byte[]> RhostDisconnectedGetBlobResult = TaskUtilities.CreateCanceled<byte[]>(new RHostDisconnectedException());
@@ -250,7 +247,9 @@ namespace Microsoft.R.Host.Client {
         }
 
         public Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind, CancellationToken ct) {
-            if (_cancelEvaluationAfterRunTask == null || _cancelEvaluationAfterRunTask.IsCompleted) { 
+            if (_cancelEvaluationAfterRunTask == null) {
+                throw new InvalidOperationException("Host was not started");
+            } else if (_cancelEvaluationAfterRunTask.IsCompleted) { 
                 return RhostDisconnectedEvaluationResult;
             }
 
@@ -474,6 +473,16 @@ namespace Microsoft.R.Host.Client {
         private async Task RunWorker(CancellationToken ct) {
             TaskUtilities.AssertIsOnBackgroundThread();
 
+            // Spin until the worker task is registered.
+            while (_runTask == null) {
+                await Task.Yield();
+            }
+
+            // Create cancellation tasks before proceeding with anything else, to avoid race conditions in usage of those tasks.
+            _cancelEvaluationAfterRunTask = _runTask.ContinueWith(t => RhostDisconnectedEvaluationResult).Unwrap();
+            _cancelCreateBlobAfterRunTask = _runTask.ContinueWith(t => RhostDisconnectedCreateBlobResult).Unwrap();
+            _cancelGetBlobAfterRunTask = _runTask.ContinueWith(t => RhostDisconnectedGetBlobResult).Unwrap(); ;
+
             try {
                 var message = await ReceiveMessageAsync(ct);
                 if (!message.IsNotification || message.Name != "!Microsoft.R.Host") {
@@ -508,9 +517,6 @@ namespace Microsoft.R.Host.Client {
 
             try {
                 _runTask = RunWorker(ct);
-                _cancelEvaluationAfterRunTask = _runTask.ContinueWith(t => RhostDisconnectedEvaluationResult).Unwrap();
-                _cancelCreateBlobAfterRunTask = _runTask.ContinueWith(t => RhostDisconnectedCreateBlobResult).Unwrap();
-                _cancelGetBlobAfterRunTask = _runTask.ContinueWith(t => RhostDisconnectedGetBlobResult).Unwrap();
                 await _runTask;
             } catch (OperationCanceledException) when (ct.IsCancellationRequested) {
                 // Expected cancellation, do not propagate, just exit process

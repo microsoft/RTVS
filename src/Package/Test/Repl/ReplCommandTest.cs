@@ -38,7 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
             _debuggerModeTracker = new VsDebuggerModeTracker();
 
             _componentContainerFactory = new InteractiveWindowComponentContainerFactoryMock();
-            _workflowProvider = TestRInteractiveWorkflowProviderFactory.Create(debuggerModeTracker: _debuggerModeTracker);
+            _workflowProvider = TestRInteractiveWorkflowProviderFactory.Create(nameof(ReplCommandTest), debuggerModeTracker: _debuggerModeTracker);
             _workflow = _workflowProvider.GetOrCreate();
         }
 

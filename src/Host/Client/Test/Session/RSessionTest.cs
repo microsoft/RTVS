@@ -13,13 +13,19 @@ using Microsoft.R.Host.Client.Session;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
+using Xunit;
 
 namespace Microsoft.R.Host.Client.Test.Session {
-    public partial class RSessionTest {
+    public partial class RSessionTest : IDisposable {
         private readonly MethodInfo _testMethod;
+        private readonly IRHostBrokerConnector _brokerConnector = new RHostBrokerConnector(name: nameof(RSessionTest));
 
         public RSessionTest(TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo;
+        }
+
+        public void Dispose() {
+            _brokerConnector.Dispose();
         }
 
         [Test]
@@ -27,7 +33,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
         public void Lifecycle() {
             var disposed = false;
 
-            var session = new RSession(0, new RHostBrokerConnector(), () => disposed = true);
+            var session = new RSession(0, _brokerConnector, () => disposed = true);
             disposed.Should().BeFalse();
 
             session.MonitorEvents();
@@ -47,7 +53,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [Test]
         [Category.R.Session]
         public async Task StartStop() {
-            var session = new RSession(0, new RHostBrokerConnector(), () => { });
+            var session = new RSession(0, _brokerConnector, () => { });
 
             session.HostStarted.Status.Should().Be(TaskStatus.Canceled);
             session.IsHostRunning.Should().BeFalse();
@@ -68,7 +74,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [Test]
         [Category.R.Session]
         public async Task DoubleStart() {
-            var session = new RSession(0, new RHostBrokerConnector(), () => { });
+            var session = new RSession(0, _brokerConnector, () => { });
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name
             }, null, 50000);
@@ -87,8 +93,8 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [Category.R.Session]
         public async Task StartStopMultipleSessions() {
             Func<int, Task<RSession>> start = async i => {
-                var session = new RSession(i, new RHostBrokerConnector(), () => { });
-                await session.StartHostAsync(new RHostStartupInfo { Name = _testMethod.Name }, null, 50000);
+                var session = new RSession(i, _brokerConnector, () => { });
+                await session.StartHostAsync(new RHostStartupInfo { Name = _testMethod.Name + i }, null, 50000);
                 return session;
             };
 
@@ -102,7 +108,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [Test]
         [Category.R.Session]
         public void StartRHostMissing() {
-            var session = new RSession(0, new RHostBrokerConnector(), () => { });
+            var session = new RSession(0, _brokerConnector, () => { });
             session.BrokerConnector.SwitchToLocalBroker(@"C:\", Environment.SystemDirectory);
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name
@@ -114,7 +120,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [Test(Skip="https://github.com/Microsoft/RTVS/issues/1196")]
         [Category.R.Session]
         public async Task StopBeforeInitialized() {
-            var session = new RSession(0, new RHostBrokerConnector(), () => { });
+            var session = new RSession(0, _brokerConnector, () => { });
             session.BrokerConnector.SwitchToLocalBroker(@"C:\", Environment.SystemDirectory);
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name

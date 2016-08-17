@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel.Composition;
 using System.Threading;
+using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.History;
@@ -17,7 +18,9 @@ using Microsoft.R.Support.Settings;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
     [Export(typeof(IRInteractiveWorkflowProvider))]
-    internal class VsRInteractiveWorkflowProvider : IRInteractiveWorkflowProvider {
+    internal class VsRInteractiveWorkflowProvider : IRInteractiveWorkflowProvider, IDisposable {
+        private readonly DisposableBag _disposableBag = DisposableBag.Create<VsRInteractiveWorkflowProvider>();
+
         private readonly IRSessionProvider _sessionProvider;
         private readonly IConnectionManagerProvider _connectionsProvider;
         private readonly IRHistoryProvider _historyProvider;
@@ -49,14 +52,23 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             _shell = shell;
         }
 
+        public void Dispose() {
+            _disposableBag.TryMarkDisposed();
+        }
+
         public IRInteractiveWorkflow GetOrCreate() {
-            Interlocked.CompareExchange(ref _instanceLazy, new Lazy<IRInteractiveWorkflow>(CreateRInteractiveWorkflow),null);
+            _disposableBag.ThrowIfDisposed();
+
+            Interlocked.CompareExchange(ref _instanceLazy, new Lazy<IRInteractiveWorkflow>(CreateRInteractiveWorkflow), null);
             return _instanceLazy.Value;
         }
-        
+
         private IRInteractiveWorkflow CreateRInteractiveWorkflow() {
             var settings = RToolsSettings.Current;
-            return new RInteractiveWorkflow(_sessionProvider, _connectionsProvider, _historyProvider, _packagesProvider, _plotsProvider, _activeTextViewTracker, _debuggerModeTracker, new RHostBrokerConnector(), _shell, settings, DisposeInstance);
+            var brokerConnector = new RHostBrokerConnector(settings.BrokerUri, name: "RTVS");
+            var workflow = new RInteractiveWorkflow(_sessionProvider, _connectionsProvider, _historyProvider, _packagesProvider, _plotsProvider, _activeTextViewTracker, _debuggerModeTracker, brokerConnector, _shell, settings, DisposeInstance);
+            _disposableBag.Add(workflow);
+            return workflow;
         }
 
         private void DisposeInstance() {

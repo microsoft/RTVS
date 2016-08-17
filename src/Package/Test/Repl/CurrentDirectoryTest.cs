@@ -37,7 +37,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
             var plotsProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRPlotManagerProvider>();
             var activeTextViewTracker = new ActiveTextViewTrackerMock(string.Empty, string.Empty);
             var debuggerModeTracker = new TestDebuggerModeTracker();
-            _interactiveWorkflow = new RInteractiveWorkflow(sessionProvider, connectionsProvider, historyProvider, packagesProvider, plotsProvider, activeTextViewTracker, debuggerModeTracker, new RHostBrokerConnector(), VsAppShell.Current, RToolsSettings.Current, () => { });
+            var brokerConnector = new RHostBrokerConnector(name: nameof(CurrentDirectoryTest));
+            _interactiveWorkflow = new RInteractiveWorkflow(
+                sessionProvider, connectionsProvider, historyProvider, packagesProvider, plotsProvider, activeTextViewTracker,
+                debuggerModeTracker, brokerConnector, VsAppShell.Current, RToolsSettings.Current, () => { });
         }
 
         public void Dispose() {

@@ -2,19 +2,14 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using Microsoft.Common.Core;
-using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Collections.Concurrent;
 using System.Text;
-using Newtonsoft.Json;
-using static System.FormattableString;
 using System.Diagnostics;
 using System.IO;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using static System.FormattableString;
 
-namespace Microsoft.R.Host.Client {
+namespace Microsoft.R.Host.Protocol {
     public class Message {
         public readonly ulong Id;
         public readonly ulong RequestId;

@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
+
 namespace Microsoft.R.Components.Settings {
     public interface IRSettings {
         bool AlwaysSaveHistory { get; set; }
@@ -12,6 +14,8 @@ namespace Microsoft.R.Components.Settings {
         /// 'C:\Program Files\R\R-3.2.2' without bin\x64
         /// </summary>
         string RBasePath { get; set; }
+
+        Uri BrokerUri { get; set; }
 
         /// <summary>
         /// Selected CRAN mirror

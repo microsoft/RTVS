@@ -20,13 +20,14 @@ namespace Microsoft.R.Host.Client.Test.Session {
         public class ReadInput : IAsyncLifetime {
             private readonly TaskObserverMethodFixture _taskObserver;
             private readonly MethodInfo _testMethod;
+            private readonly IRHostBrokerConnector _brokerConnector = new RHostBrokerConnector(name: nameof(ReadInput));
             private readonly RSession _session;
             private readonly RSessionCallbackStub _callback;
 
             public ReadInput(TestMethodFixture testMethod, TaskObserverMethodFixture taskObserver) {
                 _taskObserver = taskObserver;
                 _testMethod = testMethod.MethodInfo;
-                _session = new RSession(0, new RHostBrokerConnector(), () => { });
+                _session = new RSession(0, _brokerConnector, () => { });
                 _callback = new RSessionCallbackStub();
             }
 
@@ -41,6 +42,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
             public async Task DisposeAsync() {
                 await _session.StopHostAsync();
                 _session.Dispose();
+                _brokerConnector.Dispose();
             }
 
             [Test]

@@ -5,9 +5,11 @@ using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Interpreters;
 using Microsoft.R.Support.Settings;
+using Microsoft.UnitTests.Core.Mef;
 
 namespace Microsoft.R.Host.Client.Test.Script {
     [ExcludeFromCodeCoverage]
@@ -19,10 +21,14 @@ namespace Microsoft.R.Host.Client.Test.Script {
 
         public static Version RVersion => new RInstallation().GetInstallationData(RToolsSettings.Current.RBasePath, new SupportedRVersionRange()).Version;
 
-        public RHostScript(IRSessionProvider sessionProvider, IRSessionCallback clientApp = null) {
+        public RHostScript(IExportProvider exportProvider, IRSessionCallback clientApp = null)
+            : this(exportProvider.GetExportedValue<IRSessionProvider>(), exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate().BrokerConnector, clientApp) { 
+        }
+
+        public RHostScript(IRSessionProvider sessionProvider, IRHostBrokerConnector brokerConnector, IRSessionCallback clientApp = null) {
             SessionProvider = sessionProvider;
 
-            Session = SessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, new RHostBrokerConnector());
+            Session = SessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, brokerConnector);
             Session.IsHostRunning.Should().BeFalse();
             
             Session.StartHostAsync(new RHostStartupInfo {

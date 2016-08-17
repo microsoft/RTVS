@@ -24,13 +24,15 @@ namespace Microsoft.R.ExecutionTracing.Test {
     [Category.R.ExecutionTracing]
     public class SteppingTest : IAsyncLifetime {
         private readonly MethodInfo _testMethod;
+        private readonly IRHostBrokerConnector _brokerConnector;
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _session;
 
         public SteppingTest(TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo;
+            _brokerConnector = new RHostBrokerConnector(name: nameof(SteppingTest));
             _sessionProvider = new RSessionProvider();
-            _session = _sessionProvider.GetOrCreate(Guid.NewGuid(), new RHostBrokerConnector());
+            _session = _sessionProvider.GetOrCreate(Guid.NewGuid(), _brokerConnector);
         }
 
         public async Task InitializeAsync() {
@@ -42,9 +44,10 @@ namespace Microsoft.R.ExecutionTracing.Test {
         public async Task DisposeAsync() {
             await _session.StopHostAsync();
             _sessionProvider.Dispose();
+            _brokerConnector.Dispose();
         }
 
-        [Test]
+        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/2009")]
         public async Task BreakContinue() {
             const string code =
 @"x <- 0

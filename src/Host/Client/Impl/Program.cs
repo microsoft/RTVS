@@ -17,8 +17,8 @@ namespace Microsoft.R.Host.Client {
 
         static void Main(string[] args) {
             Console.CancelKeyPress += Console_CancelKeyPress;
-            var localConnector = new LocalRHostConnector(args[0]);
-            var host = localConnector.Connect("Program", new Program()).GetAwaiter().GetResult();
+            var localConnector = new LocalRHostConnector("Program", args[0]);
+            var host = localConnector.ConnectAsync("Program", new Program()).GetAwaiter().GetResult();
             _evaluator = host;
             host.Run().GetAwaiter().GetResult();
         }

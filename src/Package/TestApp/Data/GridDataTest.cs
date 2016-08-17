@@ -31,13 +31,15 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         }
 
         private readonly MethodInfo _testMethod;
+        private readonly IRHostBrokerConnector _brokerConnector;
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _session;
 
         public GridDataTest(TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo;
+            _brokerConnector = new RHostBrokerConnector(name: nameof(GridDataTest));
             _sessionProvider = new RSessionProvider();
-            _session = _sessionProvider.GetOrCreate(Guid.NewGuid(), new RHostBrokerConnector());
+            _session = _sessionProvider.GetOrCreate(Guid.NewGuid(), _brokerConnector);
         }
 
         public async Task InitializeAsync() {
@@ -49,6 +51,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         public async Task DisposeAsync() {
             await _session.StopHostAsync();
             _sessionProvider.Dispose();
+            _brokerConnector.Dispose();
         }
 
         private static IEnumerable<T> ToEnumerable<T>(IRange<T> range) {

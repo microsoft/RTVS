@@ -19,6 +19,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
             var code = $"options(repos=list(LOCAL=\"file:///{localRepoPath.ToRPath()}\"))";
             return eval.ExecuteAsync(code);
         }
+
         public static Task SetCranRepoAsync(IRExpressionEvaluator eval) {
             var code = @"options(repos=list(CRAN='http://cran.r-project.org'))";
             return eval.ExecuteAsync(code);

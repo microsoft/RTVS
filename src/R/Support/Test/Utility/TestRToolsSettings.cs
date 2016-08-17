@@ -119,5 +119,10 @@ namespace Microsoft.R.Support.Test.Utility {
         }
 
         public bool EvaluateActiveBindings { get; set; } = false;
+
+        public Uri BrokerUri {
+            get { return null; } 
+            set { }
+        }
     }
 }
