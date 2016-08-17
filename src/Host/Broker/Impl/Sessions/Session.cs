@@ -98,9 +98,8 @@ namespace Microsoft.R.Host.Broker.Sessions {
             };
 
             _process.ErrorDataReceived += (sender, e) => {
-                if (outputLogger != null) {
-                    outputLogger.LogTrace(e.Data);
-                }
+                var process = (Process)sender;
+                outputLogger?.LogTrace($"(pid {process.Id} stderr):{Environment.NewLine} {e.Data}");
             };
 
             _process.Exited += delegate {

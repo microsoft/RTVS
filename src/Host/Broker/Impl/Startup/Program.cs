@@ -86,14 +86,14 @@ namespace Microsoft.R.Host.Broker.Startup {
                 applicationLifetime.ApplicationStarted.Register(() => Task.Run(() => {
                     using (pipe) {
                         string serverUriStr = JsonConvert.SerializeObject(serverAddresses.Addresses);
-                        _logger.LogInformation($"Writing server.urls to pipe '{pipeName}':{Environment.NewLine}{serverUriStr}");
+                        _logger.LogTrace($"Writing server.urls to pipe '{pipeName}':{Environment.NewLine}{serverUriStr}");
 
                         var serverUriData = Encoding.UTF8.GetBytes(serverUriStr);
                         pipe.Write(serverUriData, 0, serverUriData.Length);
                         pipe.Flush();
                     }
 
-                    _logger.LogInformation($"Wrote server.urls to pipe '{pipeName}'.");
+                    _logger.LogTrace($"Wrote server.urls to pipe '{pipeName}'.");
                 }));
             }
 

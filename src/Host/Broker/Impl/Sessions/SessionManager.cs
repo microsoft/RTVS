@@ -46,8 +46,8 @@ namespace Microsoft.R.Host.Broker.Sessions {
         public Session CreateSession(IIdentity user, string id, Interpreter interpreter, SecureString password, string commandLineArguments) {
             Session session;
 
+            List<Session> userSessions;
             lock (_sessions) {
-                List<Session> userSessions;
                 _sessions.TryGetValue(user.Name, out userSessions);
                 if (userSessions == null) {
                     _sessions[user.Name] = userSessions = new List<Session>();
@@ -60,13 +60,17 @@ namespace Microsoft.R.Host.Broker.Sessions {
                 }
 
                 session = new Session(this, user, id, interpreter, commandLineArguments);
-                userSessions.Add(session);
             }
 
             session.StartHost(
                 password,
                 _loggingOptions.LogHostOutput ? _hostOutputLogger : null,
                 _loggingOptions.LogPackets ? _messageLogger : null);
+
+            lock (_sessions) {
+                userSessions.Add(session);
+            }
+
             return session;
         }
     }

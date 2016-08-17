@@ -49,6 +49,10 @@ namespace Microsoft.R.Host.Broker.Sessions {
         [HttpGet("{id}/pipe")]
         public IActionResult GetPipe(string id) {
             var session = _sessionManager.GetSession(User.Identity, id);
+            if (session?.Process?.HasExited ?? true) {
+                return NotFound();
+            }
+
             return new WebSocketPipeAction(session);
         }
     }
