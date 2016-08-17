@@ -84,6 +84,7 @@
     <Compile Include="Logging\FileLoggerProvider.cs" />
     <Compile Include="Logging\LoggingOptions.cs" />
     <Compile Include="NativeMethods.cs" />
+    <Compile Include="Pipes\IOwnedMessagePipeEnd.cs" />
     <Compile Include="Pipes\ProcessHelpers.cs" />
     <Compile Include="Pipes\WebSocketPipeAction.cs" />
     <Compile Include="Security\Claims.cs" />

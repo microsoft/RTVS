@@ -146,7 +146,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
             _process = null;
         }
 
-        public IMessagePipeEnd ConnectClient() {
+        public IOwnedMessagePipeEnd ConnectClient() {
             if (_pipe == null) {
                 throw new InvalidOperationException("Host process not started");
             }

@@ -26,72 +26,55 @@ namespace Microsoft.R.Host.Broker.Pipes {
         private Queue<byte[]> _unsentPendingRequests = new Queue<byte[]>();
 
         private byte[] _handshake;
-        private IMessagePipeEnd _hostEnd, _clientEnd;
+        private IMessagePipeEnd _hostEnd;
+        private IOwnedMessagePipeEnd _clientEnd;
 
-        private abstract class PipeEnd : IMessagePipeEnd {
-            protected MessagePipe Pipe { get; }
+        private sealed class HostEnd : IMessagePipeEnd {
+            private readonly MessagePipe _pipe;
 
-            protected PipeEnd(MessagePipe pipe, ref IMessagePipeEnd end) {
-                Pipe = pipe;
-                if (Interlocked.CompareExchange(ref end, this, null) != null) {
-                    throw new InvalidOperationException($"Pipe already has a {GetType().Name}");
-                }
+            public HostEnd(MessagePipe pipe) {
+                _pipe = pipe;
             }
 
-            public abstract void Dispose();
-
-            public abstract Task<byte[]> ReadAsync(CancellationToken cancellationToken);
-
-            public abstract void Write(byte[] message);
-        }
-
-        private sealed class HostEnd : PipeEnd {
-            public HostEnd(MessagePipe pipe)
-                : base(pipe, ref pipe._hostEnd) {
+            public void Write(byte[] message) {
+                _pipe.LogMessage(MessageOrigin.Host, message);
+                _pipe._hostMessages.Post(message);
             }
 
-            public override void Dispose() {
-                throw new InvalidOperationException("Host end of the pipe should not be disposed.");
-            }
-
-            public override void Write(byte[] message) {
-                Pipe.LogMessage(MessageOrigin.Host, message);
-                Pipe._hostMessages.Post(message);
-            }
-
-            public override async Task<byte[]> ReadAsync(CancellationToken cancellationToken) {
-                return await Pipe._clientMessages.ReceiveAsync();
+            public async Task<byte[]> ReadAsync(CancellationToken cancellationToken) {
+                return await _pipe._clientMessages.ReceiveAsync();
             }
         }
 
-        private sealed class ClientEnd : PipeEnd {
+        private sealed class ClientEnd : IOwnedMessagePipeEnd {
+            private readonly MessagePipe _pipe;
             private bool _isFirstRead = true;
 
-            public ClientEnd(MessagePipe pipe)
-                : base(pipe, ref pipe._clientEnd) {
+            public ClientEnd(MessagePipe pipe) {
+                _pipe = pipe;
             }
 
-            public override void Dispose() {
-                var unsent = new Queue<byte[]>(Pipe._sentPendingRequests.OrderBy(kv => kv.Key).Select(kv => kv.Value));
-                Pipe._sentPendingRequests.Clear();
-                Volatile.Write(ref Pipe._unsentPendingRequests, unsent);
-                Volatile.Write(ref Pipe._clientEnd, null);
+            public void Dispose() {
+                var unsent = new Queue<byte[]>(_pipe._sentPendingRequests.OrderBy(kv => kv.Key).Select(kv => kv.Value));
+                _pipe._sentPendingRequests.Clear();
+                Volatile.Write(ref _pipe._unsentPendingRequests, unsent);
+                Volatile.Write(ref _pipe._clientEnd, null);
             }
 
-            public override void Write(byte[] message) {
-                Pipe.LogMessage(MessageOrigin.Client, message);
+            public void Write(byte[] message) {
+                _pipe.LogMessage(MessageOrigin.Client, message);
 
                 ulong id, requestId;
                 Parse(message, out id, out requestId);
 
                 byte[] request;
-                Pipe._sentPendingRequests.TryRemove(requestId, out request);
+                _pipe._sentPendingRequests.TryRemove(requestId, out request);
 
-                Pipe._clientMessages.Post(message);
+                _pipe._clientMessages.Post(message);
             }
 
-            public override async Task<byte[]> ReadAsync(CancellationToken cancellationToken) {
-                var handshake = Pipe._handshake;
+            public async Task<byte[]> ReadAsync(CancellationToken cancellationToken) {
+                var handshake = _pipe._handshake;
                 if (_isFirstRead) {
                     _isFirstRead = false;
                     if (handshake != null) {
@@ -100,19 +83,19 @@ namespace Microsoft.R.Host.Broker.Pipes {
                 }
 
                 byte[] message;
-                if (Pipe._unsentPendingRequests.Count != 0) {
-                    message = Pipe._unsentPendingRequests.Dequeue();
+                if (_pipe._unsentPendingRequests.Count != 0) {
+                    message = _pipe._unsentPendingRequests.Dequeue();
                 } else {
-                    message = await Pipe._hostMessages.ReceiveAsync();
+                    message = await _pipe._hostMessages.ReceiveAsync();
                 }
 
                 ulong id, requestId;
                 Parse(message, out id, out requestId);
 
                 if (handshake == null) {
-                    Pipe._handshake = message;
+                    _pipe._handshake = message;
                 } else if (requestId == ulong.MaxValue) {
-                    Pipe._sentPendingRequests.TryAdd(id, message);
+                    _pipe._sentPendingRequests.TryAdd(id, message);
                 }
 
                 return message;
@@ -131,7 +114,11 @@ namespace Microsoft.R.Host.Broker.Pipes {
         /// object is owned by the pipe, and should not be disposed.
         /// </remarks>
         public IMessagePipeEnd ConnectHost() {
-            return new HostEnd(this);
+            if (Interlocked.CompareExchange(ref _hostEnd, new HostEnd(this), null) != null) {
+                throw new InvalidOperationException($"Pipe already has a host end");
+            }
+
+            return _hostEnd;
         }
 
         /// <summary>
@@ -142,8 +129,12 @@ namespace Microsoft.R.Host.Broker.Pipes {
         /// one end can be active at once. The existing end must be disposed before calling this method
         /// to create a new one.
         /// </remarks>
-        public IMessagePipeEnd ConnectClient() {
-            return new ClientEnd(this);
+        public IOwnedMessagePipeEnd ConnectClient() {
+            if (Interlocked.CompareExchange(ref _clientEnd, new ClientEnd(this), null) != null) {
+                throw new InvalidOperationException($"Pipe already has a client end");
+            }
+
+            return _clientEnd;
         }
 
         private static void Parse(byte[] message, out ulong id, out ulong requestId) {

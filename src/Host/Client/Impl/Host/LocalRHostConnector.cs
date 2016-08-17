@@ -162,7 +162,11 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         private void DisposeBrokerProcess() {
-            _brokerProcess?.Kill();
+            try {
+                _brokerProcess?.Kill();
+            } catch (Exception) {
+            }
+
             _brokerProcess?.Dispose();
         }
     }
