@@ -66,7 +66,7 @@ namespace Microsoft.R.Host.Client.Host {
             await TaskUtilities.SwitchToBackgroundThread();
 
             try {
-                if (await _connectLock.WaitAsync()) {
+                if (!await _connectLock.WaitAsync()) {
                     if (_brokerProcess == null) {
                         CreateHttpClient();
                         await ConnectToBrokerWorker();
