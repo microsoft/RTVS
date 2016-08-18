@@ -16,6 +16,7 @@ using Microsoft.R.Host.Protocol;
 namespace Microsoft.R.Host.Broker.Pipes {
     public class MessagePipe {
         private readonly ILogger _logger;
+        private int _pid;
 
         // TODO: this is a bottleneck, since all VS-host traffic flows through the pipe.
         // Need to check if BufferBlock is fast enough, and see if there are any better substitutes if not.
@@ -113,11 +114,12 @@ namespace Microsoft.R.Host.Broker.Pipes {
         /// Can only be called once for a given instance of <see cref="MessagePipe"/>. The returned
         /// object is owned by the pipe, and should not be disposed.
         /// </remarks>
-        public IMessagePipeEnd ConnectHost() {
+        public IMessagePipeEnd ConnectHost(int pid) {
             if (Interlocked.CompareExchange(ref _hostEnd, new HostEnd(this), null) != null) {
                 throw new InvalidOperationException($"Pipe already has a host end");
             }
 
+            _pid = pid;
             return _hostEnd;
         }
 
@@ -157,13 +159,13 @@ namespace Microsoft.R.Host.Broker.Pipes {
                 message = new Message(messageData);
             } catch (InvalidDataException ex) {
                 _logger.Log(LogLevel.Error, 0, messageData, ex, delegate {
-                    return $"Malformed {origin} message:{Environment.NewLine}{BitConverter.ToString(messageData)}";
+                    return $"Malformed {origin.ToString().ToLowerInvariant()} message:{Environment.NewLine}{BitConverter.ToString(messageData)}";
                 });
                 return;
             }
 
             _logger.Log(LogLevel.Trace, 0, message, null, delegate {
-                var sb = new StringBuilder($"{origin}: #{message.Id}# {message.Name} ");
+                var sb = new StringBuilder($"|{_pid}|{(origin == MessageOrigin.Host ? ">" : "<")} #{message.Id}# {message.Name} ");
 
                 if (message.IsResponse) {
                     sb.Append($"#{message.RequestId}# ");

@@ -93,6 +93,8 @@ namespace Microsoft.R.Host.Client.Host {
                         FileName = rhostBrokerExe,
                         UseShellExecute = false,
                         Arguments =
+                            $" --logging:logHostOutput true" +
+                            $" --logging:logPackets true" +
                             $" --server.urls http://127.0.0.1:0" + // :0 means first available ephemeral port
                             $" --startup:name \"{_name}\"" +
                             $" --startup:writeServerUrlsToPipe {pipeName}" +

@@ -67,6 +67,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
                 password,
                 _loggingOptions.LogHostOutput ? _hostOutputLogger : null,
                 _loggingOptions.LogPackets ? _messageLogger : null);
+
             return session;
         }
     }

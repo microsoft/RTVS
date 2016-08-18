@@ -98,9 +98,8 @@ namespace Microsoft.R.Host.Broker.Sessions {
             };
 
             _process.ErrorDataReceived += (sender, e) => {
-                if (outputLogger != null) {
-                    outputLogger.LogTrace(e.Data);
-                }
+                var process = (Process)sender;
+                outputLogger?.LogTrace($"|{process.Id}|: {e.Data}");
             };
 
             _process.Exited += delegate {
@@ -111,7 +110,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
             _process.BeginErrorReadLine();
 
             _pipe = new MessagePipe(messageLogger);
-            var hostEnd = _pipe.ConnectHost();
+            var hostEnd = _pipe.ConnectHost(_process.Id);
 
             ClientToHostWorker(_process.StandardInput.BaseStream, hostEnd).DoNotWait();
             HostToClientWorker(_process.StandardOutput.BaseStream, hostEnd).DoNotWait();
