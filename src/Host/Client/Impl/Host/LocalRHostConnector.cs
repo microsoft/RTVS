@@ -2,13 +2,10 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
 using System.Net;
-using System.Net.Http;
-using System.Net.Security;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,7 +29,6 @@ namespace Microsoft.R.Host.Client.Host {
 #else
             TimeSpan.FromSeconds(5);
 #endif
-
         private static readonly NetworkCredential _credentials = new NetworkCredential("RTVS", Guid.NewGuid().ToString());
 
         private readonly string _name;
@@ -50,15 +46,7 @@ namespace Microsoft.R.Host.Client.Host {
             _rHome = rHome;
         }
 
-        protected override HttpClientHandler GetHttpClientHandler() {
-            return new HttpClientHandler {
-                Credentials = _credentials
-            };
-        }
-
-        protected override void ConfigureWebSocketRequest(HttpWebRequest request) {
-            request.AuthenticationLevel = AuthenticationLevel.MutualAuthRequested;
-            request.Credentials = _credentials;
+        protected override void UpdateCredentials() {
         }
 
         protected override async Task ConnectToBrokerAsync() {
@@ -68,7 +56,6 @@ namespace Microsoft.R.Host.Client.Host {
             try {
                 if (!await _connectLock.WaitAsync()) {
                     if (_brokerProcess == null) {
-                        CreateHttpClient();
                         await ConnectToBrokerWorker();
                     }
                 }
@@ -146,7 +133,7 @@ namespace Microsoft.R.Host.Client.Host {
                         throw new RHostDisconnectedException($"Unexpected number of endpoint URIs received from broker: {serverUriStr}");
                     }
 
-                    Broker.BaseAddress = serverUri[0];
+                    CreateHttpClient(serverUri[0], _credentials);
                 }
 
                 _brokerProcess = process;
@@ -170,6 +157,14 @@ namespace Microsoft.R.Host.Client.Host {
             }
 
             _brokerProcess?.Dispose();
+        }
+
+        protected override void OnAuthenticationSucceeded() {
+        }
+
+        protected override bool OnAuthenticationFailed() {
+            // Local broker authentication should never fail - if it does, it's a bug, and we want to surface it right away.
+            return false;
         }
     }
 }

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.R.Host.Protocol;
 
-namespace Microsoft.R.Host.Broker.Protocol {
+namespace Microsoft.R.Host.Client.BrokerServices {
     public interface ISessionsWebService {
         Task<IEnumerable<SessionInfo>> GetAsync();
 
