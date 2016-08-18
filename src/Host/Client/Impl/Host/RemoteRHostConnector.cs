@@ -61,17 +61,10 @@ namespace Microsoft.R.Host.Client.Host {
             _credentials.Password = password;
         }
 
-        protected override void OnAuthenticationSucceeded() {
-            CredUIConfirmCredentials(_authority, true);
-            _ignoreSavedCredentials = false;
+        protected override void OnCredentialsValidated(bool isValid) {
+            CredUIConfirmCredentials(_authority, isValid);
+            _ignoreSavedCredentials = !isValid;
             _credentialsValidated.Set();
-        }
-
-        protected override bool OnAuthenticationFailed() {
-            CredUIConfirmCredentials(_authority, false);
-            _ignoreSavedCredentials = true;
-            _credentialsValidated.Set();
-            return true;
         }
     }
 }

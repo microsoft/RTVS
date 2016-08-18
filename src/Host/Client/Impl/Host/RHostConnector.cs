@@ -74,18 +74,10 @@ namespace Microsoft.R.Host.Client.Host {
         protected abstract void UpdateCredentials();
 
         /// <summary>
-        /// Called whenever HTTP authentication succeeds.
+        /// Called after the request that used credentials updated by an earlier call to <see cref="UpdateCredentials"/> completes.
         /// </summary>
-        protected abstract void OnAuthenticationSucceeded();
-
-        /// <summary>
-        /// Called whenever HTTP authentication fails (i.e. server returns HTTP 403).
-        /// </summary>
-        /// <returns>
-        /// <see langword="true"/> if <see cref="Credentials"/> were updated, and HTTP request should be retried.
-        /// <see langword="false"/> if <see cref="Credentials"/> were not updated, and HTTP request should be canceled.
-        /// </returns>
-        protected abstract bool OnAuthenticationFailed();
+        /// <param name="isValid">Whether the credentials were accepted or rejected by the server.</param>
+        protected abstract void OnCredentialsValidated(bool isValid);
 
         protected abstract Task ConnectToBrokerAsync();
 
@@ -118,7 +110,7 @@ namespace Microsoft.R.Host.Client.Host {
             var sessions = new SessionsWebService(HttpClient);
 
             while (true) {
-                bool authFailed = false;
+                bool isValidCredentials = true;
                 try {
                     UpdateCredentials();
                     await sessions.PutAsync(name, new SessionCreateRequest {
@@ -126,19 +118,13 @@ namespace Microsoft.R.Host.Client.Host {
                         CommandLineArguments = rCommandLineArguments,
                     });
                     break;
-                } catch (UnauthorizedAccessException ex) {
-                    if (OnAuthenticationFailed()) {
-                        authFailed = true;
-                        continue;
-                    } else {
-                        throw new OperationCanceledException("HTTP authentication failed while creating session, and no new credentials were provided", ex);
-                    }
+                } catch (UnauthorizedAccessException) {
+                    isValidCredentials = false;
+                    continue;
                 } catch (HttpRequestException ex) {
                     throw new RHostDisconnectedException("HTTP error while creating session: " + ex.Message, ex);
                 } finally {
-                    if (!authFailed) {
-                        OnAuthenticationSucceeded();
-                    }
+                    OnCredentialsValidated(isValidCredentials);
                 }
             }
 
@@ -164,23 +150,17 @@ namespace Microsoft.R.Host.Client.Host {
 
             WebSocket socket;
             while (true) {
-                bool authFailed = false;
+                bool isValidCredentials = true;
                 try {
                     socket = await wsClient.ConnectAsync(pipeUri, cancellationToken);
                     break;
                 } catch (UnauthorizedAccessException ex) {
-                    if (OnAuthenticationFailed()) {
-                        authFailed = true;
-                        continue;
-                    } else {
-                        throw new OperationCanceledException("HTTP authentication failed while connecting to session pipe, and no new credentials were provided", ex);
-                    }
+                    isValidCredentials = false;
+                    continue;
                 } catch (Exception ex) when (ex is InvalidOperationException || ex is WebException || ex is ProtocolViolationException) {
                     throw new RHostDisconnectedException("HTTP error while connecting to session pipe: " + ex.Message, ex);
                 } finally {
-                    if (!authFailed) {
-                        OnAuthenticationSucceeded();
-                    }
+                    OnCredentialsValidated(isValidCredentials);
                 }
             }
 

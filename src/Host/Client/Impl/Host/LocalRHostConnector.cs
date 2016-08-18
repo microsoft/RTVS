@@ -159,12 +159,13 @@ namespace Microsoft.R.Host.Client.Host {
             _brokerProcess?.Dispose();
         }
 
-        protected override void OnAuthenticationSucceeded() {
-        }
-
-        protected override bool OnAuthenticationFailed() {
-            // Local broker authentication should never fail - if it does, it's a bug, and we want to surface it right away.
-            return false;
+        protected override void OnCredentialsValidated(bool isValid) {
+            if (!isValid) {
+                // Local broker authentication should never fail - if it does, it's a bug, and we want to surface it right away.
+                const string message = "Authentication failed for local broker";
+                Trace.Fail(message);
+                throw new RHostDisconnectedException(message);
+            }
         }
     }
 }
