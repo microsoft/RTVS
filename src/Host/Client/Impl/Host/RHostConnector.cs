@@ -110,9 +110,11 @@ namespace Microsoft.R.Host.Client.Host {
             var sessions = new SessionsWebService(HttpClient);
 
             while (true) {
-                bool isValidCredentials = true;
+                bool? isValidCredentials = null;
                 try {
                     UpdateCredentials();
+                    isValidCredentials = true;
+
                     await sessions.PutAsync(name, new SessionCreateRequest {
                         InterpreterId = _interpreterId,
                         CommandLineArguments = rCommandLineArguments,
@@ -124,7 +126,9 @@ namespace Microsoft.R.Host.Client.Host {
                 } catch (HttpRequestException ex) {
                     throw new RHostDisconnectedException("HTTP error while creating session: " + ex.Message, ex);
                 } finally {
-                    OnCredentialsValidated(isValidCredentials);
+                    if (isValidCredentials != null) {
+                        OnCredentialsValidated(isValidCredentials.Value);
+                    }
                 }
             }
 
@@ -150,17 +154,20 @@ namespace Microsoft.R.Host.Client.Host {
 
             WebSocket socket;
             while (true) {
-                bool isValidCredentials = true;
+                bool? isValidCredentials = null;
                 try {
                     socket = await wsClient.ConnectAsync(pipeUri, cancellationToken);
+                    isValidCredentials = true;
                     break;
-                } catch (UnauthorizedAccessException ex) {
+                } catch (UnauthorizedAccessException) {
                     isValidCredentials = false;
                     continue;
                 } catch (Exception ex) when (ex is InvalidOperationException || ex is WebException || ex is ProtocolViolationException) {
                     throw new RHostDisconnectedException("HTTP error while connecting to session pipe: " + ex.Message, ex);
                 } finally {
-                    OnCredentialsValidated(isValidCredentials);
+                    if (isValidCredentials != null) {
+                        OnCredentialsValidated(isValidCredentials.Value);
+                    }
                 }
             }
 

@@ -33,24 +33,31 @@ namespace Microsoft.R.Host.Client.Host {
             // This can happen when two sessions are being created concurrently, and we don't want to pop the credential prompt twice -
             // the first prompt should be validated and saved, and then the same credentials will be reused for the second session.
             _credentialsValidated.WaitOne();
+            bool prompted = false;
+            try {
+                var userNameBuilder = new StringBuilder(CREDUI_MAX_USERNAME_LENGTH + 1);
+                var passwordBuilder = new StringBuilder(CREDUI_MAX_PASSWORD_LENGTH + 1);
 
-            var userNameBuilder = new StringBuilder(CREDUI_MAX_USERNAME_LENGTH + 1);
-            var passwordBuilder = new StringBuilder(CREDUI_MAX_PASSWORD_LENGTH + 1);
+                bool save = false;
 
-            bool save = false;
+                int flags = CREDUI_FLAGS_EXCLUDE_CERTIFICATES | CREDUI_FLAGS_PERSIST | CREDUI_FLAGS_EXPECT_CONFIRMATION | CREDUI_FLAGS_GENERIC_CREDENTIALS;
+                if (_ignoreSavedCredentials) {
+                    flags |= CREDUI_FLAGS_ALWAYS_SHOW_UI;
+                }
 
-            int flags = CREDUI_FLAGS_EXCLUDE_CERTIFICATES | CREDUI_FLAGS_PERSIST | CREDUI_FLAGS_EXPECT_CONFIRMATION | CREDUI_FLAGS_GENERIC_CREDENTIALS;
-            if (_ignoreSavedCredentials) {
-                flags |= CREDUI_FLAGS_ALWAYS_SHOW_UI;
+                int err = CredUIPromptForCredentials(IntPtr.Zero, _authority, IntPtr.Zero, 0, userNameBuilder, userNameBuilder.Capacity, passwordBuilder, passwordBuilder.Capacity, ref save, flags);
+                if (err != 0) {
+                    throw new OperationCanceledException("No credentials entered.");
+                }
+
+                prompted = true;
+                userName = userNameBuilder.ToString();
+                password = passwordBuilder.ToString();
+            } finally {
+                if (!prompted) {
+                    _credentialsValidated.Set();
+                }
             }
-
-            int err = CredUIPromptForCredentials(IntPtr.Zero, _authority, IntPtr.Zero, 0, userNameBuilder, userNameBuilder.Capacity, passwordBuilder, passwordBuilder.Capacity, ref save, flags);
-            if (err != 0) {
-                throw new OperationCanceledException("No credentials entered.");
-            }
-
-            userName = userNameBuilder.ToString();
-            password = passwordBuilder.ToString();
         }
 
         protected override void UpdateCredentials() {
