@@ -5,11 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.R.Host.Broker.Protocol;
 using Microsoft.R.Host.Protocol;
-using Newtonsoft.Json;
 
-namespace Microsoft.R.Host.BrokerServices {
+namespace Microsoft.R.Host.Client.BrokerServices {
     public class SessionsWebService : WebService, ISessionsWebService {
         public SessionsWebService(HttpClient httpClient)
             : base(httpClient) {

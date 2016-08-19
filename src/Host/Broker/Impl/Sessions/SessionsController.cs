@@ -9,14 +9,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.R.Host.Broker.Interpreters;
 using Microsoft.R.Host.Broker.Pipes;
-using Microsoft.R.Host.Broker.Protocol;
 using Microsoft.R.Host.Broker.Security;
 using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Broker.Sessions {
     [Authorize(Policy = Policies.RUser)]
     [Route("/sessions")]
-    public class SessionsController : Controller, ISessionsWebService {
+    public class SessionsController : Controller {
         private readonly InterpreterManager _interpManager;
         private readonly SessionManager _sessionManager;
 

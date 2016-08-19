@@ -43,6 +43,7 @@
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="BrokerServices\ISessionsWebService.cs" />
     <Compile Include="BrokerServices\WebService.cs" />
     <Compile Include="BrokerServices\SessionsWebService.cs" />
     <Compile Include="DataInspection\IRActiveBindingInfo.cs" />
@@ -57,7 +58,6 @@
     <Compile Include="DataInspection\REvaluationResultProperties.cs" />
     <Compile Include="DataInspection\RPromiseInfo.cs" />
     <Compile Include="DataInspection\RSessionExtensions.cs" />
-    <Compile Include="Host\UICredentials.cs" />
     <Compile Include="Host\RemoteRHostConnector.cs" />
     <Compile Include="Host\RHostConnector.cs" />
     <Compile Include="Host\RHost.GetBlobRequest.cs" />

@@ -3,17 +3,26 @@
 
 using System;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace Microsoft.R.Host.BrokerServices {
+namespace Microsoft.R.Host.Client.BrokerServices {
     public class WebService {
         protected HttpClient HttpClient { get; }
 
         public WebService(HttpClient httpClient) {
             HttpClient = httpClient;
+        }
+
+        private static HttpResponseMessage EnsureSuccessStatusCode(HttpResponseMessage response) {
+            if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden) {
+                throw new UnauthorizedAccessException();
+            }
+
+            return response.EnsureSuccessStatusCode();
         }
 
         public async Task<TResponse> HttpGetAsync<TResponse>(Uri uri) =>
@@ -25,7 +34,7 @@ namespace Microsoft.R.Host.BrokerServices {
         public async Task HttpPutAsync<TRequest>(Uri uri, TRequest request) {
             var requestBody = JsonConvert.SerializeObject(request);
             var content = new StringContent(requestBody, Encoding.UTF8, "application/json");
-            (await HttpClient.PutAsync(uri, content)).EnsureSuccessStatusCode();
+            EnsureSuccessStatusCode(await HttpClient.PutAsync(uri, content));
         }
 
         public Task HttpPutAsync<TRequest>(UriTemplate uriTemplate, TRequest request, params object[] args) =>
@@ -34,7 +43,7 @@ namespace Microsoft.R.Host.BrokerServices {
         public async Task<TResponse> HttpPutAsync<TRequest, TResponse>(Uri uri, TRequest request) {
             var requestBody = JsonConvert.SerializeObject(request);
             var content = new StringContent(requestBody, Encoding.UTF8, "application/json");
-            var response = (await HttpClient.PutAsync(uri, content)).EnsureSuccessStatusCode();
+            var response = EnsureSuccessStatusCode(await HttpClient.PutAsync(uri, content));
             var responseBody = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<TResponse>(responseBody);
         }

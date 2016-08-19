@@ -53,5 +53,8 @@ namespace Microsoft.R.Host.Client {
             int ulPasswordMaxChars,
             ref bool pfSave,
             int dwFlags);
+
+        [DllImport("credui", CharSet = CharSet.Auto)]
+        public static extern int CredUIConfirmCredentials(string pszTargetName, bool bConfirm);
     }
 }
