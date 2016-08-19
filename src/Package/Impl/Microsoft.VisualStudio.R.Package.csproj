@@ -199,6 +199,7 @@
     <Compile Include="History\HistoryWindowPane.cs" />
     <Compile Include="Options\Attributes\SurveyNewsPolicyTypeConverter.cs" />
     <Compile Include="Options\R\Tools\SurveyNewsCommand.cs" />
+    <Compile Include="ProjectSystem\Commands\SetAsStartUpRScriptCommand.cs" />
     <Compile Include="ToolWindows\VsRPackageManagerVisualComponent.cs" />
     <Compile Include="ToolWindows\PackageManagerWindowPane.cs" />
     <Compile Include="Packages\Attributes\ProvideCodeExpansionPathAttribute.cs" />
@@ -1486,12 +1487,19 @@
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.CodeAnalysis.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Odachi.AspNetCore.Authentication.Basic.dll" />
       <VSIXSourceItem Include="$(OutputPath)\libuv.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\zip.dll" />
       <VSIXSourceItem Include="$(OutputPath)\ItemTemplates\**\*.*">
         <VSIXSubPath>ItemTemplates</VSIXSubPath>
       </VSIXSourceItem>
       <VSIXSourceItem Include="$(OutputPath)\ProjectTemplates\**\*.*">
         <VSIXSubPath>ProjectTemplates</VSIXSubPath>
       </VSIXSourceItem>
+    </ItemGroup>
+    <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " >
+        <VSIXSourceItem Include="$(OutputPath)\zlibd.dll" />
+    </ItemGroup>
+    <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " >
+        <VSIXSourceItem Include="$(OutputPath)\zlib.dll" />
     </ItemGroup>
   </Target>
   <Target Name="AfterBuild">

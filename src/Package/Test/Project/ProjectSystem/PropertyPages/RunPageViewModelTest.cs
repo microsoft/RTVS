@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
@@ -126,6 +128,11 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
             public string StartupFile { get; set; }
             public string CommandLineArgs { get; set; }
             public string SettingsFile { get; set; }
+            public string RemoteProjectPath { get; set; }
+            public string FileFilter { get; set; }
+            public bool TransferProjectOnRun { get; set; }
+            public IEnumerable<string> RFilePaths { get; set; }
+            public string ProjectName { get; set; }
 
             public TestProjectProperties(bool resetReplOnRun, string startupFile, string commandLineArgs) {
                 ResetReplOnRun = resetReplOnRun;
@@ -137,6 +144,11 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
             public Task<string> GetStartupFileAsync() => Task.FromResult(StartupFile);
             public Task<string> GetCommandLineArgsAsync() => Task.FromResult(CommandLineArgs);
             public Task<string> GetSettingsFileAsync() => Task.FromResult(SettingsFile);
+            public Task<string> GetRemoteProjectPathAsync() => Task.FromResult(RemoteProjectPath);
+            public Task<string> GetFileFilterAsync() => Task.FromResult(RemoteProjectPath);
+            public Task<bool> GetTransferProjectOnRunAsync() => Task.FromResult(TransferProjectOnRun);
+            public IEnumerable<string> GetRFilePaths() => RFilePaths;
+            public string GetProjectName() => ProjectName;
 
             public Task SetResetReplOnRunAsync(bool val) {
                 ResetReplOnRun = val;
@@ -154,6 +166,21 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
 
             public Task SetSettingsFileAsync(string file) {
                 SettingsFile = file;
+                return Task.CompletedTask;
+            }
+
+            public Task SetRemoteProjectPathAsync(string remoteProjectPath) {
+                RemoteProjectPath = remoteProjectPath;
+                return Task.CompletedTask;
+            }
+
+            public Task SetFileFilterAsync(string fileTransferFilter) {
+                FileFilter = fileTransferFilter;
+                return Task.CompletedTask;
+            }
+
+            public Task SetTransferProjectOnRunAsync(bool val) {
+                TransferProjectOnRun = val;
                 return Task.CompletedTask;
             }
         }

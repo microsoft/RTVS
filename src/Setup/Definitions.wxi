@@ -34,4 +34,10 @@
   <?define LangList=ENU?>
   <?define LcidList=1033?>
   <?endif?>
+
+  <?ifdef Debug?>
+  <?define ZlibName="zlibd"?>
+  <?else?>
+  <?define ZlibName="zlib"?>
+  <?endif?>
 </Include>

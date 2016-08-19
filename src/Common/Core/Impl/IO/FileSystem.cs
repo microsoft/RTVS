@@ -4,55 +4,37 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
+
+using Microsoft.Extensions.FileSystemGlobbing;
 
 namespace Microsoft.Common.Core.IO {
     public sealed class FileSystem : IFileSystem {
-        public IFileSystemWatcher CreateFileSystemWatcher(string path, string filter) {
-            return new FileSystemWatcherProxy(path, filter);
-        }
+        public IFileSystemWatcher CreateFileSystemWatcher(string path, string filter) => new FileSystemWatcherProxy(path, filter);
+        
+        public IDirectoryInfo GetDirectoryInfo(string directoryPath) => new DirectoryInfoProxy(directoryPath);
+        
+        public bool FileExists(string path) => File.Exists(path);
 
-        public IDirectoryInfo GetDirectoryInfo(string directoryPath) {
-            return new DirectoryInfoProxy(directoryPath);
-        }
+        public string ReadAllText(string path) => File.ReadAllText(path);
+        
+        public void WriteAllText(string path, string content) => File.WriteAllText(path, content);
+        
+        public IEnumerable<string> FileReadAllLines(string path) => File.ReadLines(path);
+        
+        public void FileWriteAllLines(string path, IEnumerable<string> contents) => File.WriteAllLines(path, contents);
 
-        public bool FileExists(string path) {
-            return File.Exists(path);
-        }
+        public byte[] FileReadAllBytes(string path) => File.ReadAllBytes(path);
+        
+        public void FileWriteAllBytes(string path, byte[] bytes) => File.WriteAllBytes(path, bytes);
 
-        public string ReadAllText(string path) {
-            return File.ReadAllText(path);
-        }
+        public bool DirectoryExists(string path) => Directory.Exists(path);
 
-        public void WriteAllText(string path, string content) {
-            File.WriteAllText(path, content);
-        }
-
-        public IEnumerable<string> FileReadAllLines(string path) {
-            return File.ReadLines(path);
-        }
-
-        public void FileWriteAllLines(string path, IEnumerable<string> contents) {
-            File.WriteAllLines(path, contents);
-        }
-
-        public byte[] FileReadAllBytes(string path) {
-            return File.ReadAllBytes(path);
-        }
-
-        public void FileWriteAllBytes(string path, byte[] bytes) {
-            File.WriteAllBytes(path, bytes);
-        }
-
-        public bool DirectoryExists(string path) {
-            return Directory.Exists(path);
-        }
-
-        public FileAttributes GetFileAttributes(string path) {
-            return File.GetAttributes(path);
-        }
-
+        public FileAttributes GetFileAttributes(string path) => File.GetAttributes(path);
+        
         public string ToLongPath(string path) {
             var sb = new StringBuilder(NativeMethods.MAX_PATH);
             NativeMethods.GetLongPathName(path, sb, sb.Capacity);
@@ -70,20 +52,57 @@ namespace Microsoft.Common.Core.IO {
             return new FileVersionInfo(fvi.FileMajorPart, fvi.FileMinorPart);
         }
 
-        public void DeleteFile(string path) {
-            File.Delete(path);
+        public void DeleteFile(string path) => File.Delete(path);
+
+        public void DeleteDirectory(string path, bool recursive) => Directory.Delete(path, recursive);
+
+        public string[] GetFileSystemEntries(string path, string searchPattern, SearchOption options) => Directory.GetFileSystemEntries(path, searchPattern, options);
+        
+        public void CreateDirectory(string path) => Directory.CreateDirectory(path);
+
+        public string CompressFile(string path) {
+            string compressedFilePath = Path.GetTempFileName();
+            using (FileStream sourceFileStream = File.OpenRead(path))
+            using (FileStream compressedFileStream = File.Create(compressedFilePath))
+            using (GZipStream stream = new GZipStream(compressedFileStream, CompressionLevel.Optimal)) {
+                // 81920 is the default compression buffer size
+                sourceFileStream.CopyTo(compressedFileStream, 81920);
+            }
+
+            return compressedFilePath;
         }
 
-        public void DeleteDirectory(string path, bool recursive) {
-            Directory.Delete(path, recursive);
+        public string CompressDirectory(string path) {
+            Matcher matcher = new Matcher(StringComparison.InvariantCultureIgnoreCase);
+            matcher.AddInclude("*.*");
+            return CompressDirectory(path, matcher, new Progress<string>((p) => { }), CancellationToken.None);
         }
 
-        public string[] GetFileSystemEntries(string path, string searchPattern, SearchOption options) {
-            return Directory.GetFileSystemEntries(path, searchPattern, options);
-        }
+        public string CompressDirectory(string path, Matcher matcher, IProgress<string> progress, CancellationToken ct) {
+            string zipFilePath = Path.GetTempFileName();
+            using (FileStream zipStream = new FileStream(zipFilePath, FileMode.Create)) 
+            using (ZipArchive archive = new ZipArchive(zipStream, ZipArchiveMode.Create)) {
+                Queue<string> dirs = new Queue<string>();
+                dirs.Enqueue(path);
+                while (dirs.Count > 0) {
+                    var dir = dirs.Dequeue();
+                    var subdirs = Directory.GetDirectories(dir);
+                    foreach(var subdir in subdirs) {
+                        dirs.Enqueue(subdir);
+                    }
 
-        public void CreateDirectory(string path) {
-            Directory.CreateDirectory(path);
+                    var files = matcher.GetResultsInFullPath(dir);
+                    foreach (var file in files) {
+                        if (ct.IsCancellationRequested) {
+                            return string.Empty;
+                        }
+                        progress?.Report(file);
+                        string entryName = file.MakeRelativePath(dir).Replace('\\', '/');
+                        archive.CreateEntryFromFile(file, entryName);
+                    }
+                }
+            }
+            return zipFilePath;
         }
 
         public string GetDownloadsPath(string fileName) {

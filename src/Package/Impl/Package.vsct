@@ -1431,7 +1431,19 @@
         </Strings>
       </Button>
 
-      <Button guid="guidRToolsCmdSet" id="icmdOpenContainingFolder" priority="0x0300" type="Button">
+      <Button guid="guidRToolsCmdSet" id="icmdSetAsStartUpRScript" priority="0x0300" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup"/>
+        <Icon guid="ImageCatalogGuid" id="Settings"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Set As StartUp R Script</ButtonText>
+          <LocCanonicalName>SetAsStartUpRScript</LocCanonicalName>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdOpenContainingFolder" priority="0x0400" type="Button">
         <Parent guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup"/>
         <Icon guid="ImageCatalogGuid" id="OpenFolder"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
@@ -1443,7 +1455,7 @@
         </Strings>
       </Button>
 
-      <Button guid="guidRToolsCmdSet" id="icmdCopyItemPath" priority="0x0400" type="Button">
+      <Button guid="guidRToolsCmdSet" id="icmdCopyItemPath" priority="0x0500" type="Button">
         <Parent guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup"/>
         <Icon guid="ImageCatalogGuid" id="NavigationPath"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
@@ -2381,6 +2393,7 @@
       <IDSymbol name="icmdOpenCmdPromptHere" value = "1506" />
       <IDSymbol name="icmdOpenAdminCmdPromptHere" value = "1507" />
       <IDSymbol name="icmdSourceSelectedFilesWithEcho" value="1508"/>
+      <IDSymbol name="icmdSetAsStartUpRScript" value="1509"/>
 
       <!-- Shiny -->
       <IDSymbol name="icmdRunShinyApp" value="1601"/>
