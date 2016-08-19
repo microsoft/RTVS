@@ -3,7 +3,8 @@
   <?define ProductName ="Microsoft R Host" ?>
   <?define BinDir="$(var.OutDir)" ?>
   <?define SourceDir=".." ?>
-  <?if $(var.Configuration) = Debug?>
+  
+  <?ifdef Debug?>
   <?define ZlibName="zlibd"?>
   <?else?>
   <?define ZlibName="zlib"?>
