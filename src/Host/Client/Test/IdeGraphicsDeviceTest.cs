@@ -40,7 +40,8 @@ namespace Microsoft.R.Host.Client.Test {
         public IdeGraphicsDeviceTest(GraphicsDeviceTestFilesFixture files, TestMethodFixture testMethod) {
             _files = files;
             _testMethod = testMethod.MethodInfo;
-            _brokerConnector = new RHostBrokerConnector(name: nameof(IdeGraphicsDeviceTest));
+            _brokerConnector = new RHostBrokerConnector();
+            _brokerConnector.SwitchToLocalBroker(nameof(IdeGraphicsDeviceTest));
         }
 
         public void Dispose() {

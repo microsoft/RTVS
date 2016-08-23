@@ -23,16 +23,24 @@ using Xunit;
 namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]   // required for tests using R Host 
-    public class ViewersTest {
+    public class ViewersTest : IAsyncLifetime {
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRHostBrokerConnector _brokerConnector;
         private readonly IObjectDetailsViewerAggregator _aggregator;
+        private readonly IRInteractiveWorkflow _workflow;
 
         public ViewersTest() {
             _sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
             _aggregator = VsAppShell.Current.ExportProvider.GetExportedValue<IObjectDetailsViewerAggregator>();
-            _brokerConnector = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate().BrokerConnector;
+
+            _workflow = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
+            _brokerConnector = _workflow.BrokerConnector;
+            
         }
+
+        public Task InitializeAsync() => _workflow.Connections.ConnectAsync(_workflow.Connections.RecentConnections[0]);
+
+        public Task DisposeAsync() => Task.CompletedTask;
 
         [Test]
         [Category.Viewers]

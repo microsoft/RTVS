@@ -15,11 +15,14 @@ namespace Microsoft.R.Host.Client.Host {
         private readonly string _authority;
         private bool _ignoreSavedCredentials;
 
-        public RemoteRHostConnector(Uri brokerUri)
-            : base(brokerUri.Fragment) {
+        public override Uri BrokerUri { get; }
+
+        public RemoteRHostConnector(Uri brokerUri, string rCommandLineArguments = null)
+            : base(brokerUri.Fragment, rCommandLineArguments) {
 
             _credentials = new NetworkCredential();
-            _authority = new UriBuilder() { Scheme = brokerUri.Scheme, Host = brokerUri.Host, Port = brokerUri.Port }.ToString();
+            _authority = new UriBuilder { Scheme = brokerUri.Scheme, Host = brokerUri.Host, Port = brokerUri.Port }.ToString();
+            BrokerUri = brokerUri;
 
             CreateHttpClient(brokerUri, _credentials);
         }

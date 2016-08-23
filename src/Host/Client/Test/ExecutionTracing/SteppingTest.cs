@@ -30,7 +30,8 @@ namespace Microsoft.R.ExecutionTracing.Test {
 
         public SteppingTest(TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo;
-            _brokerConnector = new RHostBrokerConnector(name: nameof(SteppingTest));
+            _brokerConnector = new RHostBrokerConnector();
+            _brokerConnector.SwitchToLocalBroker(nameof(SteppingTest));
             _sessionProvider = new RSessionProvider();
             _session = _sessionProvider.GetOrCreate(Guid.NewGuid(), _brokerConnector);
         }

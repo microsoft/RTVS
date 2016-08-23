@@ -91,7 +91,6 @@
     <Compile Include="RComponentsMefCatalogFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="InteractiveWorkflow\RInteractiveWorkflowCommandTest.cs" />
-    <Compile Include="Script\InstallPackagesTest.cs" />
     <Compile Include="Sql\SqlDbTest.cs" />
     <Compile Include="StubFactories\ConnectionManagerProviderStubFactory.cs" />
     <Compile Include="StubFactories\InteractiveWorkflowStubFactory.cs" />

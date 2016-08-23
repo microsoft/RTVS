@@ -32,7 +32,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
         public REnvironmentProviderTest(TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo;
-            _brokerConnector = new RHostBrokerConnector(name: nameof(REnvironmentProviderTest));
+            _brokerConnector = new RHostBrokerConnector();
+            _brokerConnector.SwitchToLocalBroker(nameof(REnvironmentProviderTest));
             _sessionProvider = new RSessionProvider();
             _session = _sessionProvider.GetOrCreate(Guid.NewGuid(), _brokerConnector);
         }

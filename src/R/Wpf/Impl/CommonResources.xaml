@@ -4,7 +4,12 @@
                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
                     xmlns:wpf="clr-namespace:Microsoft.R.Wpf"
+                    xmlns:selectors="clr-namespace:Microsoft.Common.Wpf.Selectors;assembly=Microsoft.R.Common.Wpf"
                     mc:Ignorable="d">
+    <!-- Selectors -->
+    <selectors:TypeDataTemplateSelector x:Key="TypeDataTemplateSelector" />
+    
+    <!-- Templates -->
     <ControlTemplate x:Key="TabHeaderToggleButton" TargetType="{x:Type RadioButton}">
         <Grid>
             <Grid.RowDefinitions>
@@ -52,6 +57,40 @@
         </Grid>
     </ControlTemplate>
 
+    <ControlTemplate x:Key="FillingListBoxItemTemplate" TargetType="{x:Type ListBoxItem}">
+        <Border x:Name="Border" BorderThickness="0" Background="{TemplateBinding Background}" Padding="0" SnapsToDevicePixels="true">
+            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+        </Border>
+        <ControlTemplate.Triggers>
+            <!-- set the background for IsEnabled == false -->
+            <Trigger Property="IsEnabled" Value="false">
+                <Setter Property="Background" TargetName="Border" Value="{DynamicResource {x:Static wpf:Brushes.ListPaneBackgroundKey}}" />
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" TargetName="Border" Value="{DynamicResource {x:Static wpf:Brushes.ContentMouseOverBrushKey}}" />
+                <Setter Property="TextBlock.Foreground" Value="{DynamicResource {x:Static wpf:Brushes.ContentMouseOverTextBrushKey}}" />
+            </Trigger>
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="Selector.IsSelectionActive" Value="False" />
+                    <Condition Property="IsSelected" Value="True" />
+                </MultiTrigger.Conditions>
+                <Setter Property="Background" TargetName="Border" Value="{DynamicResource {x:Static wpf:Brushes.ContentInactiveSelectedBrushKey}}" />
+                <Setter Property="TextBlock.Foreground" TargetName="Border" Value="{DynamicResource {x:Static wpf:Brushes.ContentInactiveSelectedTextBrushKey}}" />
+            </MultiTrigger>
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="Selector.IsSelectionActive" Value="True" />
+                    <Condition Property="IsSelected" Value="True" />
+                </MultiTrigger.Conditions>
+                <Setter Property="Background" TargetName="Border" Value="{DynamicResource {x:Static wpf:Brushes.ContentSelectedBrushKey}}" />
+                <Setter Property="TextBlock.Foreground" TargetName="Border" Value="{DynamicResource {x:Static wpf:Brushes.ContentSelectedTextBrushKey}}" />
+            </MultiTrigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+    
     <!-- Default styles -->
     <Style x:Key="{x:Type ComboBox}" TargetType="{x:Type ComboBox}" BasedOn="{StaticResource {x:Static wpf:StyleKeys.ThemedComboStyleKey}}"/>
     <Style x:Key="{x:Type ScrollBar}" TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource {x:Static wpf:StyleKeys.ScrollBarStyleKey}}"/>
@@ -59,6 +98,7 @@
     <Style x:Key="{x:Type Button}" TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Static wpf:StyleKeys.ButtonStyleKey}}"/>
     <Style x:Key="{x:Type TextBox}" TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Static wpf:StyleKeys.TextBoxStyleKey}}"/>
 
+    <!-- Named styles -->
     <Style x:Key="TooltipStyle" TargetType="{x:Type TextBlock}">
         <Setter Property="TextWrapping" Value="Wrap" />
         <Setter Property="MaxWidth" Value="300" />
@@ -70,7 +110,41 @@
         <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
-
+    
+    <Style x:Key="ToolWindowButtonStyle" TargetType="{x:Type Button}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border x:Name="border" SnapsToDevicePixels="True"
+                            BorderBrush="{TemplateBinding BorderBrush}" 
+                            BorderThickness="{TemplateBinding BorderThickness}" 
+                            Background="{TemplateBinding Background}">
+                        <ContentPresenter x:Name="contentPresenter" Focusable="False" RecognizesAccessKey="True"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          Content="{TemplateBinding Content}"
+                                          ContentStringFormat="{TemplateBinding ContentStringFormat}"
+                                          Margin="{TemplateBinding Padding}"
+                                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.ToolWindowButtonHoverActiveKey}}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Brushes.ToolWindowButtonHoverActiveBorderKey}}" />
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.ToolWindowButtonDownKey}}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Brushes.ToolWindowButtonDownBorderKey}}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    
     <Style TargetType="{x:Type Hyperlink}" x:Key="HyperlinkStyle">
         <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.ControlLinkTextKey}}" />
 
@@ -91,6 +165,27 @@
         </Style.Triggers>
     </Style>
 
+    <Style x:Key="FocusVisual">
+        <Setter Property="Control.Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Rectangle Margin="2" SnapsToDevicePixels="true" Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" StrokeThickness="1" StrokeDashArray="1 2" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="FillingListBoxItemStyle" TargetType="{x:Type ListBoxItem}">
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" />
+        <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}" />
+        <Setter Property="Template" Value="{StaticResource FillingListBoxItemTemplate}" />
+    </Style>
+
+    <!--Icons-->
     <DrawingBrush x:Key="StatusBarUpTriangle">
         <DrawingBrush.Drawing>
             <GeometryDrawing Brush="{DynamicResource {x:Static wpf:Brushes.StatusBarDefaultTextBrushKey}}" Geometry="F1M0,0 -1,1 1,1" />
@@ -213,6 +308,54 @@
                 <DrawingGroup.Children>
                     <GeometryDrawing Brush="#FFFF0000" Geometry="F1M45,13a54,54 0,0 1,-54 54,54 54,0 0,1 -54,-54 54,54 0,0 1,54 -54,54 54,0 0,1 54,54" />
                     <GeometryDrawing Brush="{DynamicResource {x:Static wpf:Brushes.StatusBarDefaultTextBrushKey}}" Geometry="F1M0,0q0,-2.1875 -0.898437,-3.75 -0.898438,-1.5625 -3.085938,-2.46094 -1.523437,-0.625 -3.554687,-0.74218 -2.03125,-0.15625 -4.726563,-0.15625l-5.429687,0 0,15.66406 4.609375,0q3.59375,0 6.015625,-0.35156 2.421875,-0.35157 4.0625,-1.60157 1.5625,-1.21093 2.265625,-2.65625 0.742187,-1.48437 0.742187,-3.94531zm23.398438,40.35158 -18.320313,0 -15.859375,-21.3281 -6.914062,0 0,21.3281 -14.921875,0 0,-58.16408 25.15625,0q5.15625,0 8.867187,0.58594 3.710938,0.58594 6.953125,2.53906 3.28125,1.95313 5.195313,5.07813 1.953125,3.08593 1.953125,7.77343 0,6.44532 -3.007813,10.50782 -2.96875,4.0625 -8.515625,6.7578l19.414063,24.9219" />
+                </DrawingGroup.Children>
+            </DrawingGroup>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+
+    <PathGeometry FillRule="NonZero" x:Key="GeometryRLocal" Figures="M 0.5 2 C 0.223 2 0 2.223 0 2.5 L 0 25.5 C 0 25.777 0.223 26 0.5 26 L 8.375 26 L 8.375 4 L 15.615234 4 C 16.648348 4 17.60125 4.1217177 18.470703 4.3671875 C 19.340154 4.6126571 20.095817 4.987114 20.740234 5.4882812 C 21.384651 5.9792209 21.886132 6.5990687 22.244141 7.3457031 C 22.612381 8.0821113 22.796875 8.9434393 22.796875 9.9355469 C 22.796875 10.712868 22.678622 11.429398 22.443359 12.083984 C 22.218325 12.728342 21.892504 13.306964 21.462891 13.818359 C 21.043508 14.319528 20.531235 14.749446 19.927734 15.107422 C 19.334461 15.465399 18.666627 15.743171 17.919922 15.9375 L 17.919922 15.996094 C 18.318846 16.221108 18.664302 16.471893 18.960938 16.748047 C 19.257575 17.013972 19.540692 17.291744 19.806641 17.578125 C 20.072591 17.864506 20.33217 18.192342 20.587891 18.560547 C 20.853842 18.918523 21.145797 19.335695 21.462891 19.816406 L 25.375 26 L 31.5 26 C 31.777 26 32 25.777 32 25.5 L 32 2.5 C 32 2.223 31.777 2 31.5 2 L 0.5 2 z M 12.009766 6.9609375 L 12.009766 14.111328 L 15.048828 14.111328 C 15.611413 14.111328 16.127129 14.021532 16.597656 13.847656 C 17.078411 13.673781 17.494016 13.422996 17.841797 13.095703 C 18.189579 12.76841 18.459948 12.370875 18.654297 11.900391 C 18.848641 11.429907 18.945312 10.903301 18.945312 10.320312 C 18.945313 9.2668365 18.614094 8.4428284 17.949219 7.8496094 C 17.284344 7.2563904 16.326043 6.9609375 15.078125 6.9609375 L 12.009766 6.9609375 z M 12.009766 17.070312 L 12.009766 26 L 14.5 26 C 14.777 26 15 26.223 15 26.5 L 15 27.5 C 15 27.777 14.777 28 14.5 28 L 6.5 28 C 6.223 28 6 28.223 6 28.5 L 6 29.5 C 6 29.777 6.223 30 6.5 30 L 25.5 30 C 25.777 30 26 29.777 26 29.5 L 26 28.5 C 26 28.223 25.777 28 25.5 28 L 17.5 28 C 17.223 28 17 27.777 17 27.5 L 17 26.5 C 17 26.223 17.223 26 17.5 26 L 21.109375 26 L 17.597656 20.109375 C 17.280562 19.567296 16.96702 19.104995 16.660156 18.726562 C 16.363518 18.337902 16.055374 18.02086 15.738281 17.775391 C 15.431414 17.529921 15.094803 17.352741 14.726562 17.240234 C 14.358324 17.127727 13.944672 17.070312 13.484375 17.070312 L 12.009766 17.070312 z"/>
+
+    <DrawingBrush x:Key="IconRLocalInactive">
+        <DrawingBrush.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Children>
+                    <GeometryDrawing Brush="Transparent" Geometry="F1M0,0 32,0 32,32 0,32Z" />
+                    <GeometryDrawing Brush="{DynamicResource {x:Static wpf:Brushes.ContentInactiveSelectedBrushKey}}" Geometry="{StaticResource GeometryRLocal}" />
+                </DrawingGroup.Children>
+            </DrawingGroup>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+
+    <DrawingBrush x:Key="IconRLocalConnected">
+        <DrawingBrush.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Children>
+                    <GeometryDrawing Brush="Transparent" Geometry="F1M0,0 32,0 32,32 0,32Z" />
+                    <GeometryDrawing Brush="#FF329932" Geometry="{StaticResource GeometryRLocal}" />
+                </DrawingGroup.Children>
+            </DrawingGroup>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+
+    <PathGeometry FillRule="NonZero" x:Key="GeometryRCloud" Figures="M 13 2 A 11 11 0 0 0 2 13 A 11 11 0 0 0 3.3613281 18.296875 C 1.4095641 18.977953 0 20.815976 0 23 C 0 25.761424 2.238576 28 5 28 L 6.4003906 28 L 6.4003906 6 L 13.640625 6 C 14.673739 6 15.626641 6.1217177 16.496094 6.3671875 C 17.365545 6.6126571 18.121208 6.9871139 18.765625 7.4882812 C 19.410042 7.9792209 19.911522 8.5990647 20.269531 9.3457031 C 20.637771 10.082111 20.822266 10.94344 20.822266 11.935547 C 20.822266 12.712868 20.704013 13.429398 20.46875 14.083984 C 20.243716 14.728342 19.917893 15.306964 19.488281 15.818359 C 19.068898 16.319528 18.556626 16.749446 17.953125 17.107422 C 17.359852 17.465399 16.692017 17.743171 15.945312 17.9375 L 15.945312 17.996094 C 16.344236 18.221108 16.689692 18.471892 16.986328 18.748047 C 17.282965 19.013972 17.566082 19.291744 17.832031 19.578125 C 18.097981 19.864506 18.35756 20.192342 18.613281 20.560547 C 18.879232 20.918523 19.171187 21.335695 19.488281 21.816406 L 23.400391 28 L 24 28 L 28 28 C 30.209139 28 32 26.209139 32 24 C 32 21.790861 30.209139 20 28 20 L 27.458984 20 A 4 4 0 0 0 28 18 A 4 4 0 0 0 24 14 A 4 4 0 0 0 23.945312 14.001953 A 11 11 0 0 0 24 13 A 11 11 0 0 0 13 2 z M 10.035156 8.9609375 L 10.035156 16.111328 L 13.074219 16.111328 C 13.636805 16.111328 14.15252 16.021531 14.623047 15.847656 C 15.103802 15.67378 15.519407 15.422996 15.867188 15.095703 C 16.21497 14.76841 16.485339 14.370875 16.679688 13.900391 C 16.874033 13.429907 16.970703 12.903303 16.970703 12.320312 C 16.970704 11.266837 16.639484 10.442828 15.974609 9.8496094 C 15.309734 9.2563904 14.351434 8.9609375 13.103516 8.9609375 L 10.035156 8.9609375 z M 10.035156 19.070312 L 10.035156 28 L 19.134766 28 L 15.623047 22.109375 C 15.305953 21.567296 14.992411 21.104996 14.685547 20.726562 C 14.388909 20.337903 14.080766 20.02086 13.763672 19.775391 C 13.456806 19.529921 13.120194 19.352741 12.751953 19.240234 C 12.383715 19.127722 11.970063 19.070312 11.509766 19.070312 L 10.035156 19.070312 z"/>
+
+    <DrawingBrush x:Key="IconRCloudInactive">
+        <DrawingBrush.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Children>
+                    <GeometryDrawing Brush="Transparent" Geometry="F1M0,0 32,0 32,32 0,32Z" />
+                    <GeometryDrawing Brush="{DynamicResource {x:Static wpf:Brushes.ContentInactiveSelectedBrushKey}}" Geometry="{StaticResource GeometryRCloud}" />
+                </DrawingGroup.Children>
+            </DrawingGroup>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+    
+    <DrawingBrush x:Key="IconRCloudConnected">
+        <DrawingBrush.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Children>
+                    <GeometryDrawing Brush="Transparent" Geometry="F1M0,0 32,0 32,32 0,32Z" />
+                    <GeometryDrawing Brush="#FF329932" Geometry="{StaticResource GeometryRCloud}" />
                 </DrawingGroup.Children>
             </DrawingGroup>
         </DrawingBrush.Drawing>

@@ -200,6 +200,8 @@
     <Compile Include="Options\Attributes\SurveyNewsPolicyTypeConverter.cs" />
     <Compile Include="Options\R\Tools\SurveyNewsCommand.cs" />
     <Compile Include="ProjectSystem\Commands\SetAsStartUpRScriptCommand.cs" />
+    <Compile Include="ToolWindows\ConnectionManagerWindowPane.cs" />
+    <Compile Include="ToolWindows\VsConnectionManagerVisualComponentContainerFactory.cs" />
     <Compile Include="ToolWindows\VsRPackageManagerVisualComponent.cs" />
     <Compile Include="ToolWindows\PackageManagerWindowPane.cs" />
     <Compile Include="Packages\Attributes\ProvideCodeExpansionPathAttribute.cs" />
@@ -479,7 +481,6 @@
     <Compile Include="TaskList\VsTaskList.cs" />
     <Compile Include="TaskList\VsTaskListProvider.cs" />
     <Compile Include="Telemetry\Data\FolderUtility.cs" />
-    <Compile Include="Telemetry\Data\RPackageData.cs" />
     <Compile Include="Telemetry\Data\RPackageType.cs" />
     <Compile Include="Telemetry\Data\ToolWindowData.cs" />
     <Compile Include="Telemetry\Definitions\IRtvsTelemetry.cs" />
@@ -1495,11 +1496,11 @@
         <VSIXSubPath>ProjectTemplates</VSIXSubPath>
       </VSIXSourceItem>
     </ItemGroup>
-    <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " >
-        <VSIXSourceItem Include="$(OutputPath)\zlibd.dll" />
+    <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+      <VSIXSourceItem Include="$(OutputPath)\zlibd.dll" />
     </ItemGroup>
-    <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " >
-        <VSIXSourceItem Include="$(OutputPath)\zlib.dll" />
+    <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+      <VSIXSourceItem Include="$(OutputPath)\zlib.dll" />
     </ItemGroup>
   </Target>
   <Target Name="AfterBuild">

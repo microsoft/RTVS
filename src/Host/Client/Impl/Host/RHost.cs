@@ -17,6 +17,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 using System.Collections.Generic;
+using System.Runtime;
 using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Client {

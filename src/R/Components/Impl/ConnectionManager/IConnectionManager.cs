@@ -3,16 +3,28 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 
 namespace Microsoft.R.Components.ConnectionManager {
     public interface IConnectionManager : IDisposable {
+        IConnectionManagerVisualComponent GetOrCreateVisualComponent(IConnectionManagerVisualComponentContainerFactory value, int id);
+
         bool IsConnected { get; }
         IConnection ActiveConnection { get; }
+
+        /// <summary>
+        /// Represent saved connections in the order of usage (latest first)
+        /// </summary>
         ReadOnlyCollection<IConnection> RecentConnections { get; }
 
         event EventHandler RecentConnectionsChanged;
         event EventHandler<ConnectionEventArgs> ConnectionStateChanged;
 
-        void AddOrUpdateLocalConnection(string name, string rBasePath);
+        IConnection AddOrUpdateConnection(string name, string path, string rCommandLineArguments);
+        IConnection GetOrAddConnection(string name, string path, string rCommandLineArguments);
+        bool TryRemove(Uri id);
+
+        Task ConnectAsync(string name, string path, string rCommandLineArguments);
+        Task ConnectAsync(IConnection connection);
     }
 }

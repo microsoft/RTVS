@@ -24,7 +24,8 @@ namespace Microsoft.R.Host.Client.Test.Session {
             public CancelAll(TestMethodFixture testMethod, TaskObserverMethodFixture taskObserver) {
                 _taskObserver = taskObserver;
                 _testMethod = testMethod.MethodInfo;
-                _brokerConnector = new RHostBrokerConnector(name: nameof(CancelAll));
+                _brokerConnector = new RHostBrokerConnector();
+                _brokerConnector.SwitchToLocalBroker(nameof(RSessionTest) + nameof(CancelAll));
                 _session = new RSession(0, _brokerConnector, () => {});
             }
 

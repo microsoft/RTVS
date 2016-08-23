@@ -50,13 +50,7 @@ namespace Microsoft.R.Host.Client.Session {
                 }
             }
         }
-
-        public Task RestartSessions(IRHostBrokerConnector brokerConnector) {
-            var sessions = _sessions.Values.Where(s => s.BrokerConnector.Equals(brokerConnector)).ToList();
-            var sessionRestartTasks = sessions.Select(s => s.RestartHostAsync());
-            return Task.WhenAll(sessionRestartTasks);
-        }
-
+        
         public void Dispose() {
             if (!_disposeToken.TryMarkDisposed()) {
                 return;

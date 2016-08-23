@@ -16,6 +16,7 @@ using Microsoft.VisualStudio.R.Package.Options.R.Tools;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Telemetry;
 using Microsoft.VisualStudio.Shell;
+using Newtonsoft.Json;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R {
     public class RToolsOptionsPage : DialogPage {
@@ -81,38 +82,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         public bool MultilineHistorySelection {
             get { return RToolsSettings.Current.MultilineHistorySelection; }
             set { RToolsSettings.Current.MultilineHistorySelection = value; }
-        }
-
-        [LocCategory("Settings_REngineCategory")]
-        [CustomLocDisplayName("Settings_RCommandLineArguments")]
-        [LocDescription("Settings_RCommandLineArguments_Description")]
-        public string RCommandLineArguments {
-            get { return RToolsSettings.Current.RCommandLineArguments; }
-            set { RToolsSettings.Current.RCommandLineArguments = value; }
-        }
-
-        [LocCategory("Settings_REngineCategory")]
-        [DefaultValue("")]
-        public string BrokerUri {
-            get { return RToolsSettings.Current.BrokerUri?.ToString() ?? ""; }
-            set { RToolsSettings.Current.BrokerUri = value == "" ? null : new Uri(value); }
-        }
-
-        [LocCategory("Settings_REngineCategory")]
-        [CustomLocDisplayName("Settings_RBasePath")]
-        [LocDescription("Settings_RBasePath_Description")]
-        [Editor(typeof(ChooseRFolderUIEditor), typeof(UITypeEditor))]
-        public string RVersion {
-            get { return RToolsSettings.Current.RBasePath; }
-            set {
-                value = ValidateRBasePath(value);
-                if (value != null) {
-                    if (RToolsSettings.Current.RBasePath != value && !_allowLoadingFromStorage) {
-                        VsAppShell.Current.ShowMessage(Resources.RPathChanged_RestartRToApplyChanges, MessageButtons.OK);
-                    }
-                    RToolsSettings.Current.RBasePath = value;
-                }
-            }
         }
 
         [LocCategory("Settings_REngineCategory")]
@@ -231,6 +200,13 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         public bool ShowPackageManagerDisclaimer {
             get { return RToolsSettings.Current.ShowPackageManagerDisclaimer; }
             set { RToolsSettings.Current.ShowPackageManagerDisclaimer = value; }
+        }
+
+        [Browsable(false)]
+        [DefaultValue(null)]
+        public string Connections {
+            get { return JsonConvert.SerializeObject(RToolsSettings.Current.Connections); }
+            set { RToolsSettings.Current.Connections = value != null ? JsonConvert.DeserializeObject<ConnectionInfo[]>(value) : new ConnectionInfo[0]; }
         }
 
         /// <summary>

@@ -57,9 +57,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
             Shell = coreShell;
             BrokerConnector = brokerConnector;
-            if (settings.BrokerUri == null) {
-                BrokerConnector.SwitchToLocalBroker(settings.RBasePath);
-            }
+
             RSession = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, brokerConnector);
             Connections = connectionsProvider.CreateConnectionManager(this);
 
@@ -153,7 +151,6 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             RSession.Disconnected -= RSessionDisconnected;
             Operations.Dispose();
             Connections.Dispose();
-            BrokerConnector?.Dispose();
             _onDispose();
         }
     }

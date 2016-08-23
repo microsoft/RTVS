@@ -36,7 +36,8 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
 
         public IntellisenseTest(REditorApplicationMefCatalogFixture catalog, EditorHostMethodFixture editorHost) : base(catalog) {
             _editorHost = editorHost;
-            _brokerConnector = new RHostBrokerConnector(name: nameof(IntellisenseTest));
+            _brokerConnector = new RHostBrokerConnector();
+            _brokerConnector.SwitchToLocalBroker(nameof(IntellisenseTest));
             _sessionProvider = _exportProvider.GetExportedValue<IRSessionProvider>();
         }
 

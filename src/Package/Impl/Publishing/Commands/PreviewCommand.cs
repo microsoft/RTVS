@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
@@ -76,7 +77,12 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
 
             IMarkdownFlavorPublishHandler flavorHandler = GetFlavorHandler(TextView.TextBuffer);
             if (flavorHandler != null) {
-                if (!InstallPackages.IsInstalled(flavorHandler.RequiredPackageName, 5000, RToolsSettings.Current.RBasePath)) {
+                var workflow = _workflowProvider.GetOrCreate();
+                var getPackagesTask = workflow.Packages.GetInstalledPackagesAsync();
+                getPackagesTask.Wait(5000);
+                var packages = getPackagesTask.Result;
+            
+                if (!packages.Any(p => p.Package.EqualsIgnoreCase(flavorHandler.RequiredPackageName))) {
                     _coreShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_PackageMissing, flavorHandler.RequiredPackageName));
                     return CommandResult.Disabled;
                 }
@@ -107,7 +113,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
                     return CommandResult.Executed;
                 }
 
-                var session = _workflowProvider.GetOrCreate().RSession;
+                var session = workflow.RSession;
                 _lastCommandTask = flavorHandler.PublishAsync(session, _coreShell, _fs, inputFilePath, _outputFilePath, Format, tb.GetEncoding()).ContinueWith(t => LaunchViewer());
             }
             return CommandResult.Executed;

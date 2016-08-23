@@ -8,8 +8,9 @@ namespace Microsoft.R.Components.ConnectionManager {
     public interface IConnection {
         Uri Id { get; }
         string Name { get; }
+        string Path { get; }
+        bool IsRemote { get; }
         DateTime TimeStamp { get; }
-
-        Task ConnectAsync();
+        string RCommandLineArguments { get; }
     }
 }

@@ -29,7 +29,8 @@ namespace Microsoft.R.RtvsPackage.Test {
 
         public JsonTest(TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo;
-            _brokerConnector = new RHostBrokerConnector(name: nameof(JsonTest));
+            _brokerConnector = new RHostBrokerConnector();
+            _brokerConnector.SwitchToLocalBroker(nameof(JsonTest));
             _sessionProvider = new RSessionProvider();
             _session = _sessionProvider.GetOrCreate(Guid.NewGuid(), _brokerConnector);
         }

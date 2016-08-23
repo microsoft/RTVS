@@ -1,13 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Windows;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Wpf;
 using Microsoft.R.Components.ConnectionManager.ViewModel;
-using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
     internal class ConnectionStatusBarViewModel : BindableBase, IConnectionStatusBarViewModel {
@@ -26,7 +24,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
             connectionManager.ConnectionStateChanged += ConnectionStateChanged;
             IsConnected = connectionManager.IsConnected;
-            SelectedConnection = "Local R v3.3.3";
+            SelectedConnection = connectionManager.ActiveConnection?.Name;
         }
 
         public void Dispose() {

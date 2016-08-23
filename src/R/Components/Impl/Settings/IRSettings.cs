@@ -10,24 +10,16 @@ namespace Microsoft.R.Components.Settings {
         bool MultilineHistorySelection { get; set; }
 
         /// <summary>
-        /// Path to 64-bit R installation such as 
-        /// 'C:\Program Files\R\R-3.2.2' without bin\x64
+        /// Array of saved connections
+        /// Sorted by latest usage
         /// </summary>
-        string RBasePath { get; set; }
-
-        Uri BrokerUri { get; set; }
-
+        ConnectionInfo[] Connections { get; set; }
+        
         /// <summary>
         /// Selected CRAN mirror
         /// </summary>
         string CranMirror { get; set; }
-
-        /// <summary>
-        /// Additional command line arguments to pass
-        /// to the R Host process
-        /// </summary>
-        string RCommandLineArguments { get; set; }
-
+        
         /// <summary>
         /// Current working directory for REPL
         /// </summary>

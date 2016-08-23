@@ -30,7 +30,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
         public RPackageManagerViewModelTest(RComponentsMefCatalogFixture catalog, TestMethodFixture testMethod, TestFilesFixture testFiles) {
             _exportProvider = catalog.CreateExportProvider();
             var workflowProvider = _exportProvider.GetExportedValue<TestRInteractiveWorkflowProvider>();
-            workflowProvider.BrokerConnectorName = nameof(RPackageManagerViewModelTest);
+            workflowProvider.BrokerName = nameof(RPackageManagerViewModelTest);
             _workflow = workflowProvider.GetOrCreate();
             _testMethod = testMethod.MethodInfo;
             _testFiles = testFiles;
@@ -38,10 +38,10 @@ namespace Microsoft.R.Components.Test.PackageManager {
 
         public async Task InitializeAsync() {
             var settings = _exportProvider.GetExportedValue<IRSettings>();
-            _workflow.BrokerConnector.SwitchToLocalBroker(settings.RBasePath);
+            _workflow.BrokerConnector.SwitchToLocalBroker(settings.Connections[0].Name, settings.Connections[0].Path, settings.Connections[0].RCommandLineArguments);
+
             await _workflow.RSession.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name,
-                RHostCommandLineArguments = settings.RCommandLineArguments,
                 CranMirrorName = settings.CranMirror,
                 CodePage = settings.RCodePage,
             }, null, 50000);

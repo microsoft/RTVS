@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:wpf="clr-namespace:Microsoft.R.Wpf;assembly=Microsoft.R.Wpf"
+             xmlns:rwpf="clr-namespace:Microsoft.R.Wpf;assembly=Microsoft.R.Wpf"
              xmlns:components="clr-namespace:Microsoft.R.Components"
              xmlns:view="clr-namespace:Microsoft.R.Components.PackageManager.Implementation.View"
              xmlns:designTime="clr-namespace:Microsoft.R.Components.PackageManager.Implementation.View.DesignTime"
@@ -17,35 +17,8 @@
                 <view:PackageManagerResources />
             </ResourceDictionary.MergedDictionaries>
 
-            <!-- style for install, uninstall and update buttons -->
-            <Style x:Key="ButtonStyle" TargetType="{x:Type Button}">
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type Button}">
-                            <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
-                                <ContentPresenter x:Name="contentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" Focusable="False" RecognizesAccessKey="True"
-                                                  ContentStringFormat="{TemplateBinding ContentStringFormat}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                  Margin="{TemplateBinding Padding}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
-                            </Border>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-                <Setter Property="Background" Value="Transparent" />
-                <Setter Property="BorderBrush" Value="Transparent" />
-                <Style.Triggers>
-                    <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.ToolWindowButtonHoverActiveKey}}" />
-                        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Brushes.ToolWindowButtonHoverActiveBorderKey}}" />
-                    </Trigger>
-                    <Trigger Property="IsPressed" Value="True">
-                        <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.ToolWindowButtonDownKey}}" />
-                        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Brushes.ToolWindowButtonDownBorderKey}}" />
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-
-            <DataTemplate x:Key="PackageInfoTemplate" DataType="{x:Type viewModel:IRPackageViewModel}">
-                <Border BorderThickness="0,0,0,0" BorderBrush="{DynamicResource {x:Static wpf:Brushes.ActiveBorderKey}}" Background="Transparent" x:Name="Container">
+            <DataTemplate DataType="{x:Type viewModel:IRPackageViewModel}">
+                <Border BorderThickness="0,0,0,0" BorderBrush="{DynamicResource {x:Static rwpf:Brushes.ActiveBorderKey}}" Background="Transparent" x:Name="Container">
                     <Grid Margin="8,4,7,4" MinHeight="32">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
@@ -56,14 +29,14 @@
 
                         <!-- check box -->
                         <CheckBox Grid.Column="0" Margin="0,1,8,0" VerticalAlignment="Center" IsChecked="{Binding Path=IsChecked}"
-                                  Visibility="{Binding Path=CheckBoxesEnabled, RelativeSource={RelativeSource AncestorType={x:Type view:PackageList}}, Converter={x:Static wpf:Converters.FalseIsCollapsed}}"/>
+                                  Visibility="{Binding Path=CheckBoxesEnabled, RelativeSource={RelativeSource AncestorType={x:Type view:PackageList}}, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"/>
 
                         <!-- Load button -->
-                        <Button x:Name="ButtonLoad" Grid.Column="1" Style="{StaticResource ButtonStyle}" Click="ButtonLoad_Click"
+                        <Button x:Name="ButtonLoad" Grid.Column="1" Style="{StaticResource ToolWindowButtonStyle}" Click="ButtonLoad_Click"
                                 VerticalAlignment="Center">
                             <Button.Visibility>
-                                <MultiBinding Converter="{x:Static wpf:Converters.AllIsNotHidden}">
-                                    <Binding Path="IsLoaded" Converter="{x:Static wpf:Converters.Not}" />
+                                <MultiBinding Converter="{x:Static rwpf:Converters.AllIsNotHidden}">
+                                    <Binding Path="IsLoaded" Converter="{x:Static rwpf:Converters.Not}" />
                                     <Binding Path="IsInstalled" />
                                 </MultiBinding>
                             </Button.Visibility>
@@ -74,8 +47,8 @@
                         </Button>
 
                         <!-- Unload button -->
-                        <Button x:Name="ButtonUnload" Grid.Column="1" Style="{StaticResource ButtonStyle}" Click="ButtonUnload_Click" 
-                                        Visibility="{Binding Path=IsLoaded, Converter={x:Static wpf:Converters.FalseIsCollapsed}}" VerticalAlignment="Center">
+                        <Button x:Name="ButtonUnload" Grid.Column="1" Style="{StaticResource ToolWindowButtonStyle}" Click="ButtonUnload_Click" 
+                                        Visibility="{Binding Path=IsLoaded, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}" VerticalAlignment="Center">
                             <Button.ToolTip>
                                 <TextBlock Text="{Binding Path=Name, StringFormat={x:Static components:Resources.PackageManager_UnloadButtonToolTip}}" />
                             </Button.ToolTip>
@@ -85,7 +58,7 @@
                         <!-- title & summary-->
                         <StackPanel Grid.Column="2" Margin="0,-1,0,1">
                             <StackPanel.ToolTip>
-                                <ToolTip Visibility="{Binding Path=Description, Mode=OneWay, Converter={x:Static wpf:Converters.NullOrEmptyIsCollapsed}}">
+                                <ToolTip Visibility="{Binding Path=Description, Mode=OneWay, Converter={x:Static rwpf:Converters.NullOrEmptyIsCollapsed}}">
                                     <TextBlock Style="{StaticResource TooltipStyle}">
                                         <Run Text="{Binding Path=Name, Mode=OneWay}" FontWeight="Bold" />
                                         <LineBreak />
@@ -94,7 +67,7 @@
                                 </ToolTip>
                             </StackPanel.ToolTip>
                             <TextBlock FontWeight="Bold" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" VerticalAlignment="Center" Text="{Binding Path=Name, Mode=OneWay}"
-                                       FontSize="{Binding ElementName=Self, Path=FontSize, Converter={x:Static wpf:Converters.Scale122}}" Margin="4,0,0,0" />
+                                       FontSize="{Binding ElementName=Self, Path=FontSize, Converter={x:Static rwpf:Converters.Scale122}}" Margin="4,0,0,0" />
                             <TextBlock Text="{Binding Path=Title, Mode=OneWay}" Margin="4,0,0,0" />
                         </StackPanel>
 
@@ -109,21 +82,21 @@
                             <!-- installed version -->
                             <TextBlock x:Name="TextInstalledVersion" Grid.Column="0" Margin="4,0,4,0" VerticalAlignment="Center"
                                        Text="{Binding Path=InstalledVersion, StringFormat={}v{0}}" HorizontalAlignment="Right"
-                                       Visibility="{Binding Path=IsInstalled, Converter={x:Static wpf:Converters.FalseIsCollapsed}}"
+                                       Visibility="{Binding Path=IsInstalled, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"
                                        ToolTip="{Binding Path=InstalledVersion, StringFormat={x:Static components:Resources.PackageManager_InstalledVersionToolTip}}" />
 
                             <!-- version to install. It occupies the same position as the installed version -->
                             <TextBlock x:Name="_versionToInstall" Grid.Column="0" Margin="2,0,4,0" VerticalAlignment="Center" TextAlignment="Right"
                                        Text="{Binding Path=LatestVersion, StringFormat={}v{0}}"
-                                       Visibility="{Binding Path=IsInstalled, Converter={x:Static wpf:Converters.TrueIsCollapsed}}"
+                                       Visibility="{Binding Path=IsInstalled, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}"
                                        ToolTip="{Binding Path=LatestVersion, StringFormat={x:Static components:Resources.PackageManager_LatestVersionToolTip}}">
                             </TextBlock>
 
                             <!-- uninstall button -->
-                            <Button x:Name="ButtonUninstall" Grid.Column="1" Style="{StaticResource ButtonStyle}" Click="ButtonUninstall_Click"
+                            <Button x:Name="ButtonUninstall" Grid.Column="1" Style="{StaticResource ToolWindowButtonStyle}" Click="ButtonUninstall_Click"
                                     ToolTip="{x:Static components:Resources.PackageManager_UninstallButtonToolTip}">
                                 <Button.Visibility>
-                                    <MultiBinding Converter="{x:Static wpf:Converters.AllIsNotHidden}">
+                                    <MultiBinding Converter="{x:Static rwpf:Converters.AllIsNotHidden}">
                                         <Binding Path="CanBeUninstalled" />
                                         <Binding Path="IsInstalled" />
                                     </MultiBinding>
@@ -132,8 +105,8 @@
                             </Button>
 
                             <!-- install button -->
-                            <Button x:Name="ButtonInstall" Grid.Column="1" Style="{StaticResource ButtonStyle}" Click="ButtonInstall_Click" 
-                                    Visibility="{Binding Path=IsInstalled, Converter={x:Static wpf:Converters.TrueIsCollapsed}}">
+                            <Button x:Name="ButtonInstall" Grid.Column="1" Style="{StaticResource ToolWindowButtonStyle}" Click="ButtonInstall_Click" 
+                                    Visibility="{Binding Path=IsInstalled, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}">
                                 <Button.ToolTip>
                                     <TextBlock>
                                         <TextBlock.Text>
@@ -149,7 +122,7 @@
 
                             <!-- version to update to -->
                             <TextBlock x:Name="TextVersionToUpdateTo" Grid.Column="2" Margin="2,0,4,0" VerticalAlignment="Center" TextAlignment="Right"
-                                       Visibility="{Binding Path=IsUpdateAvailable, Mode=OneWay, Converter={x:Static wpf:Converters.FalseIsCollapsed}}"
+                                       Visibility="{Binding Path=IsUpdateAvailable, Mode=OneWay, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"
                                        Text="{Binding Path=LatestVersion, StringFormat={}v{0}}">
                                 <TextBlock.ToolTip>
                                     <Binding Path="LatestVersion" StringFormat="{x:Static components:Resources.PackageManager_LatestVersionToolTip}" />
@@ -157,8 +130,8 @@
                             </TextBlock>
 
                             <!-- update button -->
-                            <Button x:Name="ButtonUpdate" Grid.Column="3" Style="{StaticResource ButtonStyle}" Click="ButtonUpdate_Click"
-                                    Visibility="{Binding Path=IsUpdateAvailable, Mode=OneWay, Converter={x:Static wpf:Converters.FalseIsCollapsed}}">
+                            <Button x:Name="ButtonUpdate" Grid.Column="3" Style="{StaticResource ToolWindowButtonStyle}" Click="ButtonUpdate_Click"
+                                    Visibility="{Binding Path=IsUpdateAvailable, Mode=OneWay, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}">
                                 <Button.ToolTip>
                                     <TextBlock>
                                         <TextBlock.Text>
@@ -176,66 +149,8 @@
                 </Border>
             </DataTemplate>
 
-            <!-- Template used by ListBoxItem that represents a package. -->
-            <ControlTemplate x:Key="ListBoxItemTemplate" TargetType="{x:Type ListBoxItem}">
-                <Border x:Name="Bd" BorderThickness="0" Background="{TemplateBinding Background}" Padding="0" SnapsToDevicePixels="true">
-                    <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
-                </Border>
-                <ControlTemplate.Triggers>
-                    <!-- set the background for IsEnabled == false -->
-                    <Trigger Property="IsEnabled" Value="false">
-                        <Setter Property="Background" TargetName="Bd" Value="{DynamicResource {x:Static wpf:Brushes.ListPaneBackgroundKey}}" />
-                    </Trigger>
-
-                    <MultiTrigger>
-                        <MultiTrigger.Conditions>
-                            <Condition Property="IsMouseOver" Value="True" />
-                        </MultiTrigger.Conditions>
-                        <Setter Property="Background" TargetName="Bd" Value="{DynamicResource {x:Static wpf:Brushes.ContentMouseOverBrushKey}}" />
-                        <Setter Property="TextBlock.Foreground" Value="{DynamicResource {x:Static wpf:Brushes.ContentMouseOverTextBrushKey}}" />
-                    </MultiTrigger>
-                    <MultiTrigger>
-                        <MultiTrigger.Conditions>
-                            <Condition Property="Selector.IsSelectionActive" Value="False" />
-                            <Condition Property="IsSelected" Value="True" />
-                        </MultiTrigger.Conditions>
-                        <Setter Property="Background" TargetName="Bd" Value="{DynamicResource {x:Static wpf:Brushes.ContentInactiveSelectedBrushKey}}" />
-                        <Setter Property="TextBlock.Foreground" Value="{DynamicResource {x:Static wpf:Brushes.ContentInactiveSelectedTextBrushKey}}" />
-                    </MultiTrigger>
-                    <MultiTrigger>
-                        <MultiTrigger.Conditions>
-                            <Condition Property="Selector.IsSelectionActive" Value="True" />
-                            <Condition Property="IsSelected" Value="True" />
-                        </MultiTrigger.Conditions>
-                        <Setter Property="Background" TargetName="Bd" Value="{DynamicResource {x:Static wpf:Brushes.ContentSelectedBrushKey}}" />
-                        <Setter Property="TextBlock.Foreground" TargetName="Bd" Value="{DynamicResource {x:Static wpf:Brushes.ContentSelectedTextBrushKey}}" />
-                    </MultiTrigger>
-                </ControlTemplate.Triggers>
-            </ControlTemplate>
-
-            <Style x:Key="FocusVisual">
-                <Setter Property="Control.Template">
-                    <Setter.Value>
-                        <ControlTemplate>
-                            <Rectangle Margin="2" SnapsToDevicePixels="true" Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" StrokeThickness="1" StrokeDashArray="1 2" />
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-
-            <!-- the base style of the ListBoxItem. -->
-            <Style x:Key="ListBoxItemStyle" TargetType="{x:Type ListBoxItem}">
-                <Setter Property="Padding" Value="0" />
-                <Setter Property="SnapsToDevicePixels" Value="True" />
-                <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" />
-                <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" />
-                <Setter Property="Background" Value="Transparent" />
-                <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}" />
-            </Style>
-
             <!-- the style of the ListBoxItem when the item is a package. -->
-            <Style x:Key="PackageItemStyle" TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource ListBoxItemStyle}">
-                <Setter Property="Template" Value="{StaticResource ListBoxItemTemplate}" />
+            <Style x:Key="PackageItemStyle" TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource FillingListBoxItemStyle}">
                 <EventSetter Event="MouseDoubleClick" Handler="List_MouseDoubleClick" />
             </Style>
         </ResourceDictionary>
@@ -243,7 +158,7 @@
     <DockPanel LastChildFill="True">
         <Border x:Name="UpdateButtonContainer" DockPanel.Dock="Top" BorderThickness="0,0,0,1"
                 BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}"
-                Background="{DynamicResource {x:Static wpf:Brushes.LegalMessageBackgroundKey}}">
+                Background="{DynamicResource {x:Static rwpf:Brushes.LegalMessageBackgroundKey}}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto" />
@@ -252,35 +167,35 @@
                 </Grid.ColumnDefinitions>
                 <CheckBox x:Name="CheckBoxSelectAllPackages" Grid.Column="0" Margin="16, 8" VerticalAlignment="Center"
                           Checked="CheckBoxSelectAllPackages_Checked" Unchecked="CheckBoxSelectAllPackages_Unchecked"
-                          Foreground="{DynamicResource {x:Static wpf:Brushes.UITextKey}}" Content="{x:Static components:Resources.PackageManager_SelectAllPackages}" />
+                          Foreground="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}" Content="{x:Static components:Resources.PackageManager_SelectAllPackages}" />
                 <Button x:Name="ButtonUpdate" Grid.Column="2" MinWidth="100" MinHeight="24" Margin="24,8" VerticalAlignment="Center"
                         Click="ButtonUpdate_Click" Content="{x:Static components:Resources.Update}" />
             </Grid>
         </Border>
-        <Grid DockPanel.Dock="Bottom" Background="{DynamicResource {x:Static wpf:Brushes.ListPaneBackgroundKey}}">
+        <Grid DockPanel.Dock="Bottom" Background="{DynamicResource {x:Static rwpf:Brushes.ListPaneBackgroundKey}}">
             <Grid Height="22" VerticalAlignment="Top" Panel.ZIndex="1">
                 <TextBlock HorizontalAlignment="Center" Text="{x:Static components:Resources.Ready}" Visibility="Collapsed" />
-                <Grid HorizontalAlignment="Center" Height="22" Visibility="{Binding Path=IsLoading, Converter={x:Static wpf:Converters.FalseIsCollapsed}}">
+                <Grid HorizontalAlignment="Center" Height="22" Visibility="{Binding Path=IsLoading, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <view:Spinner Grid.Column="0" Width="16" Height="16" Margin="3" HorizontalAlignment="Center" VerticalAlignment="Center" />
                     <TextBlock Grid.Column="1" Text="{x:Static components:Resources.Loading}" HorizontalAlignment="Left" VerticalAlignment="Center"
-                               Foreground="{DynamicResource {x:Static wpf:Brushes.UITextKey}}"/>
+                               Foreground="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}"/>
                 </Grid>
                 <Grid.Visibility>
-                    <MultiBinding Converter="{x:Static wpf:Converters.AnyIsNotCollapsed}">
+                    <MultiBinding Converter="{x:Static rwpf:Converters.AnyIsNotCollapsed}">
                         <Binding Path="IsLoading" />
                     </MultiBinding>
                 </Grid.Visibility>
             </Grid>
-            <ListBox x:Name="List" Background="{DynamicResource {x:Static wpf:Brushes.ListPaneBackgroundKey}}" Foreground="{DynamicResource {x:Static wpf:Brushes.UITextKey}}"
+            <ListBox x:Name="List" Background="{DynamicResource {x:Static rwpf:Brushes.ListPaneBackgroundKey}}" Foreground="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}"
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Visible" ItemContainerStyle="{DynamicResource PackageItemStyle}"
                      VirtualizingPanel.IsVirtualizing="true" VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.CacheLength="1,2" VirtualizingPanel.CacheLengthUnit="Page"
                      PreviewKeyUp="List_PreviewKeyUp" SelectionChanged="List_SelectionChanged" HorizontalContentAlignment="Stretch" BorderThickness="0,0,0,0" 
-                     Visibility="{Binding Path=IsLoading, Converter={x:Static wpf:Converters.TrueIsCollapsed}}"
-                     ItemsSource="{Binding Path=Items}" SelectedItem="{Binding Path=SelectedPackage, Mode=OneWay}" ItemTemplate="{StaticResource PackageInfoTemplate}">
+                     Visibility="{Binding Path=IsLoading, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}"
+                     ItemsSource="{Binding Path=Items}" SelectedItem="{Binding Path=SelectedPackage, Mode=OneWay}" ItemTemplateSelector="{StaticResource TypeDataTemplateSelector}">
                 <!-- set the template to disable the background change when the IsEnabled is false. -->
                 <ListBox.Template>
                     <ControlTemplate TargetType="{x:Type ListBox}">

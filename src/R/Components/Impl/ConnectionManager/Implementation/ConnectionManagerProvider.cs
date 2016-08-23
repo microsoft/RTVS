@@ -6,7 +6,6 @@ using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.StatusBar;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Host;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation {
     [Export(typeof(IConnectionManagerProvider))]

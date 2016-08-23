@@ -44,7 +44,7 @@ namespace Microsoft.R.Components.ConnectionManager.Commands {
 
             if (index < _recentConnections.Count) {
                 var connection = _recentConnections[index];
-                await connection.ConnectAsync();
+                await _connnectionManager.ConnectAsync(connection);
             }
             return CommandResult.Executed;
         }

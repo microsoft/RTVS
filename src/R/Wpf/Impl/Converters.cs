@@ -29,8 +29,9 @@ namespace Microsoft.R.Wpf {
         public static IValueConverter TrueIsCrossCursor { get; } = LambdaConverter.Create<bool>(x => x ? Cursors.Cross : Cursors.Arrow);
 
         public static IMultiValueConverter Any { get; } = LambdaConverter.CreateMulti<bool>(x => x.Any());
-        public static IMultiValueConverter AnyIsNotHidden { get; } = LambdaConverter.CreateMulti<bool>(args => args.Any(x => x) ? Visibility.Visible : Visibility.Hidden);
-        public static IMultiValueConverter AnyIsNotCollapsed { get; } = LambdaConverter.CreateMulti<bool>(args => args.Any(x => x) ? Visibility.Visible : Visibility.Collapsed);
+        public static IMultiValueConverter AnyIsNotHidden { get; } = LambdaConverter.CreateMulti<bool>(args => args.Any() ? Visibility.Visible : Visibility.Hidden);
+        public static IMultiValueConverter AnyIsNotCollapsed { get; } = LambdaConverter.CreateMulti<bool>(args => args.Any() ? Visibility.Visible : Visibility.Collapsed);
+        public static IMultiValueConverter All { get; } = LambdaConverter.CreateMulti<bool>(args => args.All(x => x));
         public static IMultiValueConverter AllIsNotHidden { get; } = LambdaConverter.CreateMulti<bool>(args => args.All(x => x) ? Visibility.Visible : Visibility.Hidden);
         public static IMultiValueConverter AllIsNotCollapsed { get; } = LambdaConverter.CreateMulti<bool>(args => args.All(x => x) ? Visibility.Visible : Visibility.Collapsed);
         public static IMultiValueConverter Max { get; } = LambdaConverter.CreateMulti<double>(x => x.Max());

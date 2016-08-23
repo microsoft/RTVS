@@ -31,13 +31,19 @@ namespace Microsoft.R.Host.Client.Host {
 
         private readonly LinesLog _log;
         private string _interpreterId;
+        private readonly string _rCommandLineArguments;
 
         protected HttpClientHandler HttpClientHandler { get; private set; }
 
         protected HttpClient HttpClient { get; private set; }
 
-        protected RHostConnector(string interpreterId) {
+        public abstract Uri BrokerUri { get; }
+
+        public bool IsRemote => !BrokerUri.IsFile;
+
+        protected RHostConnector(string interpreterId, string rCommandLineArguments) {
             _interpreterId = interpreterId;
+            _rCommandLineArguments = rCommandLineArguments ?? string.Empty;
             _log = new LinesLog(FileLogWriter.InTempFolder("Microsoft.R.Host.BrokerConnector"));
         }
 
@@ -100,13 +106,12 @@ namespace Microsoft.R.Host.Client.Host {
             }
         }
 
-        public async Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken()) {
+        public async Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken()) {
             DisposableBag.ThrowIfDisposed();
             await TaskUtilities.SwitchToBackgroundThread();
 
             await ConnectToBrokerAsync();
 
-            rCommandLineArguments = rCommandLineArguments ?? string.Empty;
             var sessions = new SessionsWebService(HttpClient);
 
             while (true) {
@@ -117,7 +122,7 @@ namespace Microsoft.R.Host.Client.Host {
 
                     await sessions.PutAsync(name, new SessionCreateRequest {
                         InterpreterId = _interpreterId,
-                        CommandLineArguments = rCommandLineArguments,
+                        CommandLineArguments = _rCommandLineArguments
                     });
                     break;
                 } catch (UnauthorizedAccessException) {
