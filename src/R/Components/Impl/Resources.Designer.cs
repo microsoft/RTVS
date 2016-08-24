@@ -844,7 +844,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Are you sure you want to remove all plots?.
+        ///   Looks up a localized string similar to Are you sure you want to remove all plots from {0}?.
         /// </summary>
         public static string Plots_RemoveAllPlotsWarning {
             get {
@@ -853,7 +853,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Are you sure you want to remove the current plot?.
+        ///   Looks up a localized string similar to Are you sure you want to remove the current plot from {0}?.
         /// </summary>
         public static string Plots_RemoveCurrentPlotWarning {
             get {

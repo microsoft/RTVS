@@ -349,10 +349,10 @@
     <value>Selected connection has unsaved changes. Do you want to save them?</value>
   </data>
   <data name="Plots_RemoveAllPlotsWarning" xml:space="preserve">
-    <value>Are you sure you want to remove all plots?</value>
+    <value>Are you sure you want to remove all plots from {0}?</value>
   </data>
   <data name="Plots_RemoveCurrentPlotWarning" xml:space="preserve">
-    <value>Are you sure you want to remove the current plot?</value>
+    <value>Are you sure you want to remove the current plot from {0}?</value>
   </data>
   <data name="Plots_RemoveSelectedPlotWarning" xml:space="preserve">
     <value>Are you sure you want to remove the selected plot?</value>

@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Controller;
@@ -25,7 +26,8 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
         }
 
         public async Task<CommandResult> InvokeAsync() {
-            if (InteractiveWorkflow.Shell.ShowMessage(Resources.Plots_RemoveAllPlotsWarning, MessageButtons.YesNo) == MessageButtons.Yes) {
+            var msg = string.Format(CultureInfo.CurrentUICulture, Resources.Plots_RemoveAllPlotsWarning, ViewModel.DeviceName);
+            if (InteractiveWorkflow.Shell.ShowMessage(msg, MessageButtons.YesNo) == MessageButtons.Yes) {
                 try {
                     await ViewModel.ClearAllPlotsAsync();
                 } catch (RPlotManagerException ex) {
