@@ -820,7 +820,7 @@
 
       <!-- Plots flyout -->
       <Button guid="guidRToolsCmdSet" id="icmdPlotHistoryWindow" priority="0x0055" type="Button">
-        <Icon guid="ImageCatalogGuid" id="ShowFullHistory"/>
+        <Icon guid="ImageCatalogGuid" id="ChartFilter"/>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
