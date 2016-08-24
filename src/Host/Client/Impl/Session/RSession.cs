@@ -318,8 +318,8 @@ namespace Microsoft.R.Host.Client.Session {
                 // Load RTVS R package before doing anything in R since the calls
                 // below calls may depend on functions exposed from the RTVS package
                 var libPath = BrokerConnector.IsRemote 
-                    ? Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetAssemblyPath()) 
-                    : ".";
+                    ? "."
+                    : Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetAssemblyPath());
 
                 await LoadRtvsPackage(evaluation, libPath);
 
