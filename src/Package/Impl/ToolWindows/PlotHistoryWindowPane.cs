@@ -39,9 +39,8 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
             _coreShell = coreShell;
 
             // this value matches with icmdShowPlotWindow's Icon in VSCT file
-            BitmapImageMoniker = KnownMonikers.History;
-            Caption = "R Plot History";
-            //Caption = Resources.PlotWindowCaption;
+            BitmapImageMoniker = KnownMonikers.ChartFilter;
+            Caption = Resources.PlotHistoryWindowCaption;
             ToolBar = new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.plotHistoryWindowToolBarId);
         }
 
