@@ -409,14 +409,15 @@ namespace Microsoft.R.Components.Plots.Implementation {
         }
 
         private async void RSession_Disconnected(object sender, EventArgs e) {
-            await RSessionDisconnected();
+            await RSessionDisconnectedAsync();
         }
 
-        private async Task RSessionDisconnected() {
-            var visualComponents = _visualComponents.Values.ToArray();
-            foreach (var visualComponent in visualComponents) {
+        private async Task RSessionDisconnectedAsync() {
+            foreach (var visualComponent in _assignedVisualComponents.Values) {
                 await visualComponent.UnassignAsync();
+                _unassignedVisualComponents.Add(visualComponent);
             }
+            _assignedVisualComponents.Clear();
 
             await ClearHistoryAsync();
         }
