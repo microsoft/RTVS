@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Implementation;
 using Microsoft.UnitTests.Core.Mef;
@@ -11,6 +12,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.R.Components.Test.Fakes.Trackers {
+    [ExcludeFromCodeCoverage]
     [Export(typeof(IActiveWpfTextViewTracker))]
     [Export(typeof(TestActiveWpfTextViewTracker))]
     [PartMetadata(PartMetadataAttributeNames.SkipInEditorTestCompositionCatalog, null)]

@@ -7,7 +7,9 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
+using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.Settings;
@@ -21,6 +23,7 @@ using Microsoft.VisualStudio.Text.Projection;
 
 namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
     public sealed class RInteractiveEvaluator : IInteractiveEvaluator {
+        private readonly IConnectionManager _connections;
         private readonly ICoreShell _coreShell;
         private readonly IRSettings _settings;
         private readonly CountdownDisposable _evaluatorRequest;
@@ -29,13 +32,14 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         public IRHistory History { get; }
         public IRSession Session { get; }
 
-        public RInteractiveEvaluator(IRSession session, IRHistory history, ICoreShell coreShell, IRSettings settings) {
+        public RInteractiveEvaluator(IRSession session, IRHistory history, IConnectionManager connections, ICoreShell coreShell, IRSettings settings) {
             History = history;
             Session = session;
             Session.Output += SessionOnOutput;
             Session.Disconnected += SessionOnDisconnected;
             Session.BeforeRequest += SessionOnBeforeRequest;
             Session.AfterRequest += SessionOnAfterRequest;
+            _connections = connections;
             _coreShell = coreShell;
             _settings = settings;
             _evaluatorRequest = new CountdownDisposable();
@@ -57,7 +61,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 if (!Session.IsHostRunning) {
                     var startupInfo = new RHostStartupInfo {
                         Name = "REPL",
-                        RHostCommandLineArguments = _settings.RCommandLineArguments,
+                        RHostCommandLineArguments = _connections.ActiveConnection.RCommandLineArguments,
                         CranMirrorName = _settings.CranMirror,
                         CodePage = _settings.RCodePage,
                         WorkingDirectory = _settings.WorkingDirectory,
@@ -68,7 +72,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                         CurrentWindow.TextView.VisualElement.SizeChanged += VisualElement_SizeChanged;
                         CurrentWindow.OutputBuffer.Changed += OutputBuffer_Changed;
                     }
-                    await Session.StartHostAsync(startupInfo, new RSessionCallback(CurrentWindow, Session, _settings, _coreShell));
+                    await Session.StartHostAsync(startupInfo, new RSessionCallback(CurrentWindow, Session, _settings, _coreShell, new FileSystem()));
                 }
                 return ExecutionResult.Success;
             } catch (RHostBinaryMissingException) {

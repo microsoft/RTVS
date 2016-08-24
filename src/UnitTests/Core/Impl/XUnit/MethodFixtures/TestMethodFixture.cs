@@ -10,8 +10,10 @@ namespace Microsoft.UnitTests.Core.XUnit.MethodFixtures {
     [ExcludeFromCodeCoverage]
     public class TestMethodFixture : MethodFixtureBase {
         public MethodInfo MethodInfo { get; private set; }
-        
+        public string DisplayName { get; private set; }
+
         public override Task<Task<RunSummary>> InitializeAsync(IXunitTestCase testCase, MethodInfo methodInfo, IMessageBus messageBus) {
+            DisplayName = testCase.DisplayName;
             MethodInfo = methodInfo;
             return base.InitializeAsync(testCase, methodInfo, messageBus);
         }

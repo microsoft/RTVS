@@ -2,7 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using Microsoft.Common.Core.IO;
 
 namespace Microsoft.Common.Core {
     public static class IOExtensions {
@@ -36,5 +38,27 @@ namespace Microsoft.Common.Core {
             }
             return null;
         }
+
+        /// <summary>
+        /// Recursively enumerate sub-directories and gets all files for the given <paramref name="basedir"/>
+        /// </summary>
+        public static IEnumerable<IFileSystemInfo> GetAllFiles(this IDirectoryInfo basedir) {
+            List<IFileSystemInfo> files = new List<IFileSystemInfo>();
+            Queue<IDirectoryInfo> dirs = new Queue<IDirectoryInfo>();
+            dirs.Enqueue(basedir);
+            while (dirs.Count > 0) {
+                var dir = dirs.Dequeue();
+                foreach (var info in dir.EnumerateFileSystemInfos()) {
+                    var subdir = info as IDirectoryInfo;
+                    if (subdir != null) {
+                        dirs.Enqueue(subdir);
+                    } else {
+                        files.Add(info);
+                    }
+                }
+            }
+            return files;
+        }
+
     }
 }

@@ -2,12 +2,14 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.ComponentModel.Composition;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
+    [ExcludeFromCodeCoverage]
     [Export(typeof(IInteractiveWindowEditorFactoryService))]
     internal sealed class TestInteractiveWindowEditorsFactoryService : IInteractiveWindowEditorFactoryService {
         private const string ContentType = "text";

@@ -17,8 +17,8 @@ namespace Microsoft.R.Host.Client {
 
         static void Main(string[] args) {
             Console.CancelKeyPress += Console_CancelKeyPress;
-            var localConnector = new LocalRHostConnector(args[0]);
-            var host = localConnector.Connect("Program", new Program()).GetAwaiter().GetResult();
+            var localConnector = new LocalRHostConnector("Program", args[0]);
+            var host = localConnector.ConnectAsync("Program", new Program()).GetAwaiter().GetResult();
             _evaluator = host;
             host.Run().GetAwaiter().GetResult();
         }
@@ -115,6 +115,19 @@ namespace Microsoft.R.Host.Client {
 
         public async Task ShowFile(string fileName, string tabName, bool deleteFile) {
             await Console.Error.WriteAsync(Invariant($"ShowFile({fileName}, {tabName}, {deleteFile})"));
+        }
+
+        public void PackagesInstalled() {
+            Console.Error.WriteLineAsync("PackagesInstalled").DoNotWait();
+        }
+
+        public void PackagesRemoved() {
+            Console.Error.WriteLineAsync("PackagesRemoved").DoNotWait();
+        }
+
+        public async Task<string> SaveFileAsync(string fileName, byte[] data) {
+            await Console.Error.WriteAsync(Invariant($"fetch_file({fileName})"));
+            return fileName;
         }
 
         private async Task<string> ReadLineAsync(string prompt, CancellationToken ct) {

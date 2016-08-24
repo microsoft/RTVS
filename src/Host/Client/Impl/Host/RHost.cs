@@ -17,15 +17,14 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 using System.Collections.Generic;
+using System.Runtime;
+using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Client {
     public sealed partial class RHost : IDisposable, IRExpressionEvaluator, IRBlobService {
-        public const int DefaultPort = 5118;
-        public const string RHostExe = "Microsoft.R.Host.exe";
-        public const string RBinPathX64 = @"bin\x64";
-
         private static readonly Task<REvaluationResult> RhostDisconnectedEvaluationResult = TaskUtilities.CreateCanceled<REvaluationResult>(new RHostDisconnectedException());
-        private static readonly Task<ulong> RhostDisconnectedSendBlobResult = TaskUtilities.CreateCanceled<ulong>(new RHostDisconnectedException());
+        private static readonly Task<ulong> RhostDisconnectedCreateBlobResult = TaskUtilities.CreateCanceled<ulong>(new RHostDisconnectedException());
+        private static readonly Task<byte[]> RhostDisconnectedGetBlobResult = TaskUtilities.CreateCanceled<byte[]>(new RHostDisconnectedException());
 
         public static IRContext TopLevelContext { get; } = new RContext(RContextType.TopLevel);
         
@@ -37,7 +36,8 @@ namespace Microsoft.R.Host.Client {
         private readonly FileLogWriter _fileLogWriter;
         private volatile Task _runTask;
         private volatile Task<REvaluationResult> _cancelEvaluationAfterRunTask;
-        private volatile Task<ulong> _cancelSendBlobAfterRunTask;
+        private volatile Task<ulong> _cancelCreateBlobAfterRunTask;
+        private volatile Task<byte[]> _cancelGetBlobAfterRunTask;
         private int _rLoopDepth;
         private long _lastMessageId = 0;
         private readonly ConcurrentDictionary<ulong, Request> _requests = new ConcurrentDictionary<ulong, Request>();
@@ -201,13 +201,16 @@ namespace Microsoft.R.Host.Client {
             await RespondAsync(request, ct, input);
         }
 
-        public Task<ulong> CreateBlobAsync(byte[] data, CancellationToken ct) {
-
-            if (ct.IsCancellationRequested) {
-                Task.FromCanceled<long>(ct);
+        public Task<ulong> CreateBlobAsync(byte[] data, CancellationToken cancellationToken) {
+            if (_cancelCreateBlobAfterRunTask == null || _cancelCreateBlobAfterRunTask.IsCompleted) {
+                return RhostDisconnectedCreateBlobResult;
             }
 
-            return Task.WhenAny(CreateBlobAsyncWorker(data, ct), _cancelSendBlobAfterRunTask).Unwrap();
+            if (cancellationToken.IsCancellationRequested) {
+                return Task.FromCanceled<ulong>(cancellationToken);
+            }
+
+            return Task.WhenAny(CreateBlobAsyncWorker(data, cancellationToken), _cancelCreateBlobAfterRunTask).Unwrap();
         }
 
         private async Task<ulong> CreateBlobAsyncWorker(byte[] data, CancellationToken cancellationToken) {
@@ -216,10 +219,17 @@ namespace Microsoft.R.Host.Client {
             return await request.Task;
         }
 
-        public Task<byte[]> GetBlobAsync(ulong id, CancellationToken cancellationToken) =>
-            cancellationToken.IsCancellationRequested || _runTask == null || _runTask.IsCompleted
-                ? Task.FromCanceled<byte[]>(new CancellationToken(true))
-                : GetBlobAsyncWorker(id, cancellationToken);
+        public Task<byte[]> GetBlobAsync(ulong id, CancellationToken cancellationToken) {
+            if (_cancelGetBlobAfterRunTask == null || _cancelGetBlobAfterRunTask.IsCompleted) {
+                return RhostDisconnectedGetBlobResult;
+            }
+
+            if (cancellationToken.IsCancellationRequested) {
+                return Task.FromCanceled<byte[]>(cancellationToken);
+            }
+
+            return Task.WhenAny(GetBlobAsyncWorker(id, cancellationToken), _cancelGetBlobAfterRunTask).Unwrap();
+        }
 
         private async Task<byte[]> GetBlobAsyncWorker(ulong id, CancellationToken cancellationToken) {
             await TaskUtilities.SwitchToBackgroundThread();
@@ -238,12 +248,14 @@ namespace Microsoft.R.Host.Client {
         }
 
         public Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind, CancellationToken ct) {
-            if (_cancelEvaluationAfterRunTask == null || _cancelEvaluationAfterRunTask.IsCompleted) { 
+            if (_cancelEvaluationAfterRunTask == null) {
+                throw new InvalidOperationException("Host was not started");
+            } else if (_cancelEvaluationAfterRunTask.IsCompleted) { 
                 return RhostDisconnectedEvaluationResult;
             }
 
             if (ct.IsCancellationRequested) {
-                Task.FromCanceled<REvaluationResult>(ct);
+                return Task.FromCanceled<REvaluationResult>(ct);
             }
 
             return Task.WhenAny(EvaluateAsyncWorker(expression, kind, ct), _cancelEvaluationAfterRunTask).Unwrap();
@@ -447,11 +459,22 @@ namespace Microsoft.R.Host.Client {
                                 await _callbacks.WebBrowser(message.GetString(0, "url"));
                                 break;
 
+                            case "!PackagesInstalled":
+                                _callbacks.PackagesInstalled();
+                                break;
+
+                            case "!PackagesRemoved":
+                                _callbacks.PackagesRemoved();
+                                break;
+                            case "!FetchFile":
+                                var destPath = await _callbacks.SaveFileAsync(message.GetString(0, "file_path"), message.Blob);
+                                await _callbacks.WriteConsoleEx(destPath, OutputType.Error, ct);
+                                break;
                             default:
                                 throw ProtocolError($"Unrecognized host message name:", message);
                         }
                     } catch (OperationCanceledException) when (!ct.IsCancellationRequested) {
-                        // Cancelled via _cancelAllCts - just move onto the next message.
+                        // Canceled via _cancelAllCts - just move onto the next message.
                     }
                 }
             } finally {
@@ -463,6 +486,16 @@ namespace Microsoft.R.Host.Client {
 
         private async Task RunWorker(CancellationToken ct) {
             TaskUtilities.AssertIsOnBackgroundThread();
+
+            // Spin until the worker task is registered.
+            while (_runTask == null) {
+                await Task.Yield();
+            }
+
+            // Create cancellation tasks before proceeding with anything else, to avoid race conditions in usage of those tasks.
+            _cancelEvaluationAfterRunTask = _runTask.ContinueWith(t => RhostDisconnectedEvaluationResult).Unwrap();
+            _cancelCreateBlobAfterRunTask = _runTask.ContinueWith(t => RhostDisconnectedCreateBlobResult).Unwrap();
+            _cancelGetBlobAfterRunTask = _runTask.ContinueWith(t => RhostDisconnectedGetBlobResult).Unwrap(); ;
 
             try {
                 var message = await ReceiveMessageAsync(ct);
@@ -498,8 +531,6 @@ namespace Microsoft.R.Host.Client {
 
             try {
                 _runTask = RunWorker(ct);
-                _cancelEvaluationAfterRunTask = _runTask.ContinueWith(t => RhostDisconnectedEvaluationResult).Unwrap();
-                _cancelSendBlobAfterRunTask = _runTask.ContinueWith(t => RhostDisconnectedSendBlobResult).Unwrap();
                 await _runTask;
             } catch (OperationCanceledException) when (ct.IsCancellationRequested) {
                 // Expected cancellation, do not propagate, just exit process

@@ -5,10 +5,9 @@ using System;
 
 namespace Microsoft.R.Host.Client.Host {
     public interface IRHostBrokerConnector : IRHostConnector {
-        Uri BrokerUri { get; }
-
         event EventHandler BrokerChanged;
-
-        void SwitchToLocalBroker(string rBasePath, string rHostDirectory = null);
+        
+        void SwitchToLocalBroker(string name, string rBasePath = null, string rHostDirectory = null);
+        void SwitchToRemoteBroker(Uri uri);
     }
 }

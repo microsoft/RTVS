@@ -3,6 +3,7 @@
 
 using System;
 using System.ComponentModel.Composition;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager;
@@ -17,10 +18,11 @@ using Microsoft.R.Host.Client.Host;
 using Microsoft.UnitTests.Core.Mef;
 
 namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
+    [ExcludeFromCodeCoverage]
     [Export(typeof(IRInteractiveWorkflowProvider))]
     [Export(typeof(TestRInteractiveWorkflowProvider))]
     [PartMetadata(PartMetadataAttributeNames.SkipInEditorTestCompositionCatalog, null)]
-    public class TestRInteractiveWorkflowProvider : IRInteractiveWorkflowProvider {
+    public class TestRInteractiveWorkflowProvider : IRInteractiveWorkflowProvider, IDisposable {
         private readonly IRSessionProvider _sessionProvider;
         private readonly IConnectionManagerProvider _connectionManagerProvider;
         private readonly IRHistoryProvider _historyProvider;
@@ -34,6 +36,8 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
 
         private Lazy<IRInteractiveWorkflow> _instanceLazy;
         public IRSessionCallback HostClientApp { get; set; }
+
+        public string BrokerName { get; set; }
 
         [ImportingConstructor]
         public TestRInteractiveWorkflowProvider(IRSessionProvider sessionProvider
@@ -59,12 +63,20 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
             _settings = settings;
         }
 
+        public void Dispose() {
+            if (_instanceLazy?.IsValueCreated == true) {
+                _instanceLazy?.Value?.Dispose();
+            }
+        }
+
         public IRInteractiveWorkflow GetOrCreate() {
             Interlocked.CompareExchange(ref _instanceLazy, new Lazy<IRInteractiveWorkflow>(CreateRInteractiveWorkflow), null);
             return _instanceLazy.Value;
         }
         
         private IRInteractiveWorkflow CreateRInteractiveWorkflow() {
+            var brokerConnector = _brokerConnector ?? new RHostBrokerConnector();
+            brokerConnector.SwitchToLocalBroker(BrokerName);
             return new RInteractiveWorkflow(_sessionProvider
                 , _connectionManagerProvider
                 , _historyProvider
@@ -72,13 +84,14 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
                 , _plotsProvider
                 , _activeTextViewTracker
                 , _debuggerModeTracker
-                , _brokerConnector ?? new RHostBrokerConnector()
+                , brokerConnector
                 , _shell
                 , _settings
-                , DisposeInstance);
+                , () => DisposeInstance(brokerConnector));
         }
 
-        private void DisposeInstance() {
+        private void DisposeInstance(IRHostBrokerConnector brokerConnector) {
+            brokerConnector.Dispose();
             _instanceLazy = null;
         }
     }

@@ -18,12 +18,15 @@ namespace Microsoft.R.Host.Client.Test.Session {
         public class CancelAll : IAsyncLifetime {
             private readonly TaskObserverMethodFixture _taskObserver;
             private readonly MethodInfo _testMethod;
+            private readonly IRHostBrokerConnector _brokerConnector;
             private readonly RSession _session;
 
             public CancelAll(TestMethodFixture testMethod, TaskObserverMethodFixture taskObserver) {
                 _taskObserver = taskObserver;
                 _testMethod = testMethod.MethodInfo;
-                _session = new RSession(0, new RHostBrokerConnector(), () => {});
+                _brokerConnector = new RHostBrokerConnector();
+                _brokerConnector.SwitchToLocalBroker(nameof(RSessionTest) + nameof(CancelAll));
+                _session = new RSession(0, _brokerConnector, () => {});
             }
 
             public async Task InitializeAsync() {
@@ -37,6 +40,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
             public async Task DisposeAsync() {
                 await _session.StopHostAsync();
                 _session.Dispose();
+                _brokerConnector.Dispose();
             }
 
             [Test]

@@ -26,13 +26,16 @@ namespace Microsoft.R.StackTracing.Test {
     [ExcludeFromCodeCoverage]
     public class CallStackTest : IAsyncLifetime {
         private readonly MethodInfo _testMethod;
+        private readonly IRHostBrokerConnector _brokerConnector;
         private readonly RSessionProvider _sessionProvider;
         private readonly IRSession _session;
 
         public CallStackTest(TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo;
+            _brokerConnector = new RHostBrokerConnector();
+            _brokerConnector.SwitchToLocalBroker(nameof(CallStackTest));
             _sessionProvider = new RSessionProvider();
-            _session = _sessionProvider.GetOrCreate(Guid.NewGuid(), new RHostBrokerConnector());
+            _session = _sessionProvider.GetOrCreate(Guid.NewGuid(), _brokerConnector);
         }
 
         public async Task InitializeAsync() {
@@ -44,6 +47,7 @@ namespace Microsoft.R.StackTracing.Test {
         public async Task DisposeAsync() {
             await _session.StopHostAsync();
             _sessionProvider.Dispose();
+            _brokerConnector.Dispose();
         }
 
         [Test]

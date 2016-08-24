@@ -4,10 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Common.Core.Diagnostics;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager.Model;
@@ -85,24 +84,14 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             return result.Select(p => (string)((JValue)p).Value).ToArray();
         }
 
-        public async Task<string[]> GetLibraryPathsAsync() {
+        public async Task<string> GetLibraryPathAsync() {
             var result = await WrapRException(_interactiveWorkflow.RSession.LibraryPathsAsync());
-            return result.Select(p => (string)((JValue)p).Value).ToArray();
+            var rBasePath = _interactiveWorkflow.Connections.ActiveConnection.Id.LocalPath.ToRPath();
+            return result.Select(p => ((string)((JValue)p).Value).ToRPath()).FirstOrDefault(s => !s.StartsWithIgnoreCase(rBasePath));
         }
 
         public Task<PackageLockState> GetPackageLockStateAsync(string name, string libraryPath) 
             => _interactiveWorkflow.RSession.EvaluateAsync<PackageLockState>($"rtvs:::package_lock_state({name.ToRStringLiteral()}, {libraryPath.ToRStringLiteral()})", REvaluationKind.Normal);
-
-        private string GetPackageDllPath(string name, string libraryPath) {
-            string pkgFolder = Path.Combine(libraryPath.Replace("/", "\\"), name);
-            if (Directory.Exists(pkgFolder)) {
-                string dllPath = Path.Combine(pkgFolder, "libs", "x64", name + ".dll");
-                if (File.Exists(dllPath)) {
-                    return dllPath;
-                }
-            }
-            return null;
-        }
 
         private async Task<IReadOnlyList<RPackage>> GetPackagesAsync(Func<IRExpressionEvaluator, Task<JArray>> queryFunc) {
             // Fetching of installed and available packages is done in a

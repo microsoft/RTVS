@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.IO;
 using Microsoft.Languages.Core.Settings;
@@ -17,14 +18,13 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
     [Category.Sql]
     public class PublishOptionsDialogTest {
         [Test(ThreadType.UI)]
-        public void Constructor() {
+        public async Task Constructor() {
             var appShell = Substitute.For<IApplicationShell>();
             var pss = Substitute.For<IProjectSystemServices>();
             var pcsp = Substitute.For<IProjectConfigurationSettingsProvider>();
             var storage = Substitute.For<IWritableSettingsStorage>();
-            var fs = Substitute.For<IFileSystem>();
 
-            var dlg = new SqlPublshOptionsDialog(appShell, pss, fs, pcsp);
+            var dlg = await SqlPublshOptionsDialog.CreateAsync(appShell, pss, pcsp);
             dlg.Title.Should().Be(Resources.SqlPublishDialog_Title);
             dlg.DataContext.Should().BeOfType(typeof(SqlPublishOptionsDialogViewModel));
 
@@ -32,7 +32,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
 
             model.Settings.TargetType.Should().Be(PublishTargetType.Dacpac);
             model.TargetHasName.Should().BeFalse();
-            model.CanPublish.Should().BeTrue();
             model.GenerateTable.Should().BeFalse();
             model.Settings.Should().NotBeNull();
         }

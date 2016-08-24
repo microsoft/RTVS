@@ -25,15 +25,13 @@ namespace Microsoft.R.Interpreters {
 
         private readonly IRegistry _registry;
         private readonly IFileSystem _fileSystem;
-        private readonly IProcessServices _processServices;
 
         public RInstallation(): 
-            this(new RegistryImpl(), new FileSystem(), new ProcessServices()) { }
+            this(new RegistryImpl(), new FileSystem()) { }
 
-        public RInstallation(IRegistry registry, IFileSystem fileSystem, IProcessServices processServices) {
+        public RInstallation(IRegistry registry, IFileSystem fileSystem) {
             _registry = registry;
             _fileSystem = fileSystem;
-            _processServices = processServices;
         }
 
         /// <summary>

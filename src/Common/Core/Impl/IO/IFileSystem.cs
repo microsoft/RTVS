@@ -1,8 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
+using Microsoft.Extensions.FileSystemGlobbing;
 
 namespace Microsoft.Common.Core.IO {
     public interface IFileSystem {
@@ -25,7 +28,14 @@ namespace Microsoft.Common.Core.IO {
 
         IFileVersionInfo GetVersionInfo(string path);
         void DeleteFile(string path);
+        void DeleteDirectory(string path, bool recursive);
         string[] GetFileSystemEntries(string path, string searchPattern, SearchOption options);
         void CreateDirectory(string path);
+
+        string GetDownloadsPath(string fileName = "");
+
+        string CompressFile(string path);
+        string CompressDirectory(string path);
+        string CompressDirectory(string path, Matcher matcher, IProgress<string> progress, CancellationToken ct);
     }
 }

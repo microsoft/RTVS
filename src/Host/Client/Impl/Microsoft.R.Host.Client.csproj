@@ -37,11 +37,15 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Net.Http" />
+    <Reference Include="System.ServiceModel" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="BrokerServices\ISessionsWebService.cs" />
+    <Compile Include="BrokerServices\WebService.cs" />
+    <Compile Include="BrokerServices\SessionsWebService.cs" />
     <Compile Include="DataInspection\IRActiveBindingInfo.cs" />
     <Compile Include="DataInspection\IRErrorInfo.cs" />
     <Compile Include="DataInspection\IREvaluationResultInfo.cs" />
@@ -54,6 +58,9 @@
     <Compile Include="DataInspection\REvaluationResultProperties.cs" />
     <Compile Include="DataInspection\RPromiseInfo.cs" />
     <Compile Include="DataInspection\RSessionExtensions.cs" />
+    <Compile Include="Host\NullRHostConnector.cs" />
+    <Compile Include="Host\RemoteRHostConnector.cs" />
+    <Compile Include="Host\RHostConnector.cs" />
     <Compile Include="Definitions\PlotDeviceProperties.cs" />
     <Compile Include="Host\RHost.GetBlobRequest.cs" />
     <Compile Include="Host\RHost.CreateBlobRequest.cs" />
@@ -87,6 +94,7 @@
     <Compile Include="ExecutionTracing\RSessionExtensions.cs" />
     <Compile Include="ExecutionTracing\RSourceLocation.cs" />
     <Compile Include="Host\LocalRHostConnector.cs" />
+    <Compile Include="Host\RHostBrokerConnectorExtensions.cs" />
     <Compile Include="Install\RInstallationExtensions.cs" />
     <Compile Include="Extensions\DirectoryExtensions.cs" />
     <Compile Include="NativeMethods.cs" />
@@ -109,7 +117,6 @@
     <Compile Include="Host\RHostBinaryMissingException.cs" />
     <Compile Include="Definitions\OutputType.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Definitions\Message.cs" />
     <Compile Include="Host\RHostLoggingExtensions.cs" />
     <Compile Include="Session\RAfterRequestEventArgs.cs" />
     <Compile Include="Session\RBeforeRequestEventArgs.cs" />
@@ -138,6 +145,7 @@
     <Compile Include="StackTracing\RSessionExtensions.cs" />
     <Compile Include="StackTracing\RStackFrame.cs" />
     <Compile Include="Telemetry\MrcTelemetryEvents.cs" />
+    <Compile Include="Transports\WebSocketClient.cs" />
     <Compile Include="Transports\WebSocketMessageTransport.cs" />
     <Compile Include="Definitions\YesNoCancel.cs" />
   </ItemGroup>
@@ -215,6 +223,15 @@
     <ProjectReference Include="..\..\..\R\Interpreters\Impl\Microsoft.R.Interpreters.csproj">
       <Project>{8445A4FB-4443-432C-94E8-1408559B7F58}</Project>
       <Name>Microsoft.R.Interpreters</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Process\src\Microsoft.R.Host.vcxproj">
+      <SetPlatform>Platform=x64</SetPlatform>
+      <Project>{131842ce-daf9-4c0e-8409-4a26ef7961a7}</Project>
+      <Name>Microsoft.R.Host</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Protocol\Impl\Microsoft.R.Host.Protocol.csproj">
+      <Project>{c46e5f53-4caf-4c65-b173-ca8140fb41e0}</Project>
+      <Name>Microsoft.R.Host.Protocol</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

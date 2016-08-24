@@ -110,15 +110,15 @@ namespace Microsoft.R.Components.PackageManager {
         Task<string[]> GetLoadedPackagesAsync();
 
         /// <summary>
-        /// Paths of library folders, as returned .libPaths().
+        /// Path of selected library folder, as returned .libPaths().
         /// </summary>
-        /// <returns>Array of paths, in R format (ie. c:/libs/lib1).</returns>
+        /// <returns>Path in R format (ie. c:/libs/lib1).</returns>
         /// <exception cref="RPackageManagerException">
         /// The library list couldn't be retrieved from the session.
         /// </exception>
         /// <exception cref="OperationCanceledException">
         /// </exception>
-        Task<string[]> GetLibraryPathsAsync();
+        Task<string> GetLibraryPathAsync();
 
         /// <summary>
         /// Check if the dll for the specified package is locked by the REPL

@@ -19,9 +19,13 @@ namespace Microsoft.R.Wpf {
         public static IValueConverter NullIsTrue { get; } = LambdaConverter.Create<object>(x => x == null);
         public static IValueConverter NullIsFalse { get; } = LambdaConverter.Create<object>(x => x != null);
         public static IValueConverter TrueIsCollapsed { get; } = LambdaConverter.Create<bool>(x => x ? Visibility.Collapsed : Visibility.Visible);
+        public static IValueConverter TrueIsNotCollapsed { get; } = LambdaConverter.Create<bool>(x => x ? Visibility.Visible : Visibility.Collapsed);
         public static IValueConverter FalseIsCollapsed { get; } = LambdaConverter.Create<bool>(x => !x ? Visibility.Collapsed : Visibility.Visible);
+        public static IValueConverter FalseIsNotCollapsed { get; } = LambdaConverter.Create<bool>(x => !x ? Visibility.Visible : Visibility.Collapsed);
         public static IValueConverter TrueIsHidden { get; } = LambdaConverter.Create<bool>(x => x ? Visibility.Hidden : Visibility.Visible);
+        public static IValueConverter TrueIsNotHidden { get; } = LambdaConverter.Create<bool>(x => x ? Visibility.Visible : Visibility.Hidden);
         public static IValueConverter FalseIsHidden { get; } = LambdaConverter.Create<bool>(x => !x ? Visibility.Hidden : Visibility.Visible);
+        public static IValueConverter FalseIsNotHidden { get; } = LambdaConverter.Create<bool>(x => !x ? Visibility.Visible : Visibility.Hidden);
         public static IValueConverter Not { get; } = LambdaConverter.Create<bool>(x => !x);
         public static IValueConverter NullIsCollapsed { get; } = LambdaConverter.Create<object>(x => x == null ? Visibility.Collapsed : Visibility.Visible);
         public static IValueConverter NullIsVisible { get; } = LambdaConverter.Create<object>(x => x != null ? Visibility.Collapsed : Visibility.Visible);
@@ -29,9 +33,14 @@ namespace Microsoft.R.Wpf {
         public static IValueConverter TrueIsCrossCursor { get; } = LambdaConverter.Create<bool>(x => x ? Cursors.Cross : Cursors.Arrow);
 
         public static IMultiValueConverter Any { get; } = LambdaConverter.CreateMulti<bool>(x => x.Any());
-        public static IMultiValueConverter AnyIsNotHidden { get; } = LambdaConverter.CreateMulti<bool>(args => args.Any(x => x) ? Visibility.Visible : Visibility.Hidden);
-        public static IMultiValueConverter AnyIsNotCollapsed { get; } = LambdaConverter.CreateMulti<bool>(args => args.Any(x => x) ? Visibility.Visible : Visibility.Collapsed);
+        public static IMultiValueConverter AnyIsHidden { get; } = LambdaConverter.CreateMulti<bool>(args => args.Any() ? Visibility.Hidden : Visibility.Visible);
+        public static IMultiValueConverter AnyIsNotHidden { get; } = LambdaConverter.CreateMulti<bool>(args => args.Any() ? Visibility.Visible : Visibility.Hidden);
+        public static IMultiValueConverter AnyIsCollapsed { get; } = LambdaConverter.CreateMulti<bool>(args => args.Any() ? Visibility.Collapsed : Visibility.Visible);
+        public static IMultiValueConverter AnyIsNotCollapsed { get; } = LambdaConverter.CreateMulti<bool>(args => args.Any() ? Visibility.Visible : Visibility.Collapsed);
+        public static IMultiValueConverter All { get; } = LambdaConverter.CreateMulti<bool>(args => args.All(x => x));
+        public static IMultiValueConverter AllIsHidden { get; } = LambdaConverter.CreateMulti<bool>(args => args.All(x => x) ? Visibility.Hidden : Visibility.Visible);
         public static IMultiValueConverter AllIsNotHidden { get; } = LambdaConverter.CreateMulti<bool>(args => args.All(x => x) ? Visibility.Visible : Visibility.Hidden);
+        public static IMultiValueConverter AllIsCollapsed { get; } = LambdaConverter.CreateMulti<bool>(args => args.All(x => x) ? Visibility.Collapsed : Visibility.Visible);
         public static IMultiValueConverter AllIsNotCollapsed { get; } = LambdaConverter.CreateMulti<bool>(args => args.All(x => x) ? Visibility.Visible : Visibility.Collapsed);
         public static IMultiValueConverter Max { get; } = LambdaConverter.CreateMulti<double>(x => x.Max());
         public static IMultiValueConverter Min { get; } = LambdaConverter.CreateMulti<double>(x => x.Min());

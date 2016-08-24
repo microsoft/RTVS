@@ -230,3 +230,13 @@ package_update <- function(package_name, lib_path) {
     }
     lock_state
 }
+
+# Helper to download a file from remote host
+fetch_file <- function(file_path) {
+    invisible(call_embedded('fetch_file', path.expand(file_path)));
+}
+
+save_project <- function(blob_id, project_name, dest_dir) {
+    temp_dir <- paste0(tempdir(), '/RTVSProjects');
+    invisible(call_embedded('save_to_project_folder', blob_id, project_name, path.expand(dest_dir), temp_dir));
+}

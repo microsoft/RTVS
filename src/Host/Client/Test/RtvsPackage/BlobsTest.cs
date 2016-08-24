@@ -20,13 +20,16 @@ namespace Microsoft.R.Host.Client.Test.RtvsPackage {
     [ExcludeFromCodeCoverage]
     public class BlobsTest : IAsyncLifetime {
         private readonly MethodInfo _testMethod;
+        private readonly IRHostBrokerConnector _brokerConnector;
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _session;
 
         public BlobsTest(TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo;
+            _brokerConnector = new RHostBrokerConnector();
+            _brokerConnector.SwitchToLocalBroker(nameof(BlobsTest));
             _sessionProvider = new RSessionProvider();
-            _session = _sessionProvider.GetOrCreate(Guid.NewGuid(), new RHostBrokerConnector());
+            _session = _sessionProvider.GetOrCreate(Guid.NewGuid(), _brokerConnector);
         }
 
         public async Task InitializeAsync() {
@@ -38,6 +41,7 @@ namespace Microsoft.R.Host.Client.Test.RtvsPackage {
         public async Task DisposeAsync() {
             await _session.StopHostAsync();
             _sessionProvider.Dispose();
+            _brokerConnector.Dispose();
         }
 
         [CompositeTest]

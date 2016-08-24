@@ -1,4 +1,4 @@
-using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -10,7 +10,6 @@ using Microsoft.R.Components.PackageManager.ViewModel;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Test.Fakes.InteractiveWindow;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Host;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
@@ -18,6 +17,8 @@ using Xunit;
 using static Microsoft.UnitTests.Core.Threading.UIThreadTools;
 
 namespace Microsoft.R.Components.Test.PackageManager {
+    [ExcludeFromCodeCoverage]
+    [Category.PackageManager]
     public class RPackageManagerViewModelTest : IAsyncLifetime {
         private readonly TestFilesFixture _testFiles;
         private readonly IExportProvider _exportProvider;
@@ -28,18 +29,21 @@ namespace Microsoft.R.Components.Test.PackageManager {
 
         public RPackageManagerViewModelTest(RComponentsMefCatalogFixture catalog, TestMethodFixture testMethod, TestFilesFixture testFiles) {
             _exportProvider = catalog.CreateExportProvider();
-            _workflow = _exportProvider.GetExportedValue<TestRInteractiveWorkflowProvider>().GetOrCreate();
+            var workflowProvider = _exportProvider.GetExportedValue<TestRInteractiveWorkflowProvider>();
+            workflowProvider.BrokerName = nameof(RPackageManagerViewModelTest);
+            _workflow = workflowProvider.GetOrCreate();
             _testMethod = testMethod.MethodInfo;
             _testFiles = testFiles;
         }
 
         public async Task InitializeAsync() {
             var settings = _exportProvider.GetExportedValue<IRSettings>();
-            _workflow.BrokerConnector.SwitchToLocalBroker(settings.RBasePath);
+            _workflow.BrokerConnector.SwitchToLocalBroker(settings.LastActiveConnection.Name, settings.LastActiveConnection.Path);
+
             await _workflow.RSession.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name,
-                RHostCommandLineArguments = settings.RCommandLineArguments,
                 CranMirrorName = settings.CranMirror,
+                RHostCommandLineArguments = settings.LastActiveConnection.RCommandLineArguments,
                 CodePage = settings.RCodePage,
             }, null, 50000);
 
@@ -126,6 +130,22 @@ namespace Microsoft.R.Components.Test.PackageManager {
             _packageManagerViewModel.SelectedPackage.Should().NotBeNull();
             _packageManagerViewModel.SelectedPackage.IsInstalled.Should().BeTrue();
             _packageManagerViewModel.SelectedPackage.IsLoaded.Should().BeTrue();
+        }
+
+        [Test(ThreadType.UI)]
+        public async Task SwitchFromInstalledToAvailableWhileLoadingInstalled() {
+            // We need real repo for this test
+            await TestRepositories.SetCranRepoAsync(_workflow.RSession);
+
+            _packageManagerViewModel.SwitchToLoadedPackagesAsync().DoNotWait();
+            var t1 = _packageManagerViewModel.SwitchToInstalledPackagesAsync();
+            var t2 = _packageManagerViewModel.SwitchToAvailablePackagesAsync();
+
+            await t1;
+            _packageManagerViewModel.IsLoading.Should().BeTrue();
+
+            await t2;
+            _packageManagerViewModel.IsLoading.Should().BeFalse();
         }
     }
 }

@@ -18,6 +18,7 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
         public int Id { get; set; }
         public int? ProcessId { get; set; }
         public bool IsHostRunning { get; set; }
+        public bool IsRemote { get; set; }
 
         public Task HostStarted => IsHostRunning ? Task.FromResult(0) : Task.FromCanceled(new CancellationToken(true));
 
@@ -109,5 +110,7 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
         public event EventHandler<EventArgs> Disposed;
         public event EventHandler<EventArgs> Mutated;
         public event EventHandler<ROutputEventArgs> Output;
+        public event EventHandler<EventArgs> PackagesInstalled;
+        public event EventHandler<EventArgs> PackagesRemoved;
     }
 }

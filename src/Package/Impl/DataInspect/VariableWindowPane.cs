@@ -7,6 +7,7 @@ using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.Commands;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Windows;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -16,7 +17,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     internal sealed class VariableWindowPane : RToolWindowPane {
         public VariableWindowPane() {
             Caption = Resources.VariableWindowCaption;
-            Content = new VariableView(RToolsSettings.Current);
+            Content = new VariableView(RToolsSettings.Current, VsAppShell.Current);
 
             // this value matches with icmdShowVariableExplorerWindow's Icon in VSCT file
             BitmapImageMoniker = KnownMonikers.VariableProperty;

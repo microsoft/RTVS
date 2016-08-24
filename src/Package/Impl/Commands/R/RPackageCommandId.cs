@@ -91,6 +91,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public const int icmdShowHelpWindow = 906;
         public const int icmdShowEditorWindow = 907;
         public const int icmdShowSolutionExplorer = 908;
+        public const int icmdShowConnectionsWindow = 909;
 
         // Publishing
         //public const int icmdPublishDialog = 1001;
@@ -139,6 +140,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public const int icmdOpenCmdPromptHere = 1506;
         public const int icmdOpenAdminCmdPromptHere = 1507;
         public const int icmdSourceSelectedFilesWithEcho = 1508;
+        public const int icmdSetAsStartUpRScript = 1509;
 
         // Shiny
         public const int icmdRunShinyApp = 1601;

@@ -2,8 +2,10 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Runtime;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.R.Host.Protocol;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.R.Host.Client {
@@ -16,6 +18,7 @@ namespace Microsoft.R.Host.Client {
             public static async Task<CreateBlobRequest> SendAsync(RHost host, byte[] blob, CancellationToken cancellationToken) {
                 var message = host.CreateRequestMessage("?CreateBlob", new JArray(), blob);
                 var request = new CreateBlobRequest(host, message, cancellationToken);
+
                 await host.SendAsync(message, cancellationToken);
                 return request;
             }

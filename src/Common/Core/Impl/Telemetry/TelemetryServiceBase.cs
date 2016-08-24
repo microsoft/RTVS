@@ -32,13 +32,13 @@ namespace Microsoft.Common.Core.Telemetry {
         /// </summary>
         public bool IsEnabled {
             get {
-                return this.TelemetryRecorder.IsEnabled;
+                return this.TelemetryRecorder?.IsEnabled == true;
             }
         }
 
         public bool CanCollectPrivateInformation {
             get {
-                return (this.TelemetryRecorder.IsEnabled && this.TelemetryRecorder.CanCollectPrivateInformation);
+                return (this.TelemetryRecorder?.IsEnabled == true && this.TelemetryRecorder?.CanCollectPrivateInformation == true);
             }
         }
 

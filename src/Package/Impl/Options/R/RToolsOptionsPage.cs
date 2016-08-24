@@ -16,6 +16,7 @@ using Microsoft.VisualStudio.R.Package.Options.R.Tools;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Telemetry;
 using Microsoft.VisualStudio.Shell;
+using Newtonsoft.Json;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R {
     public class RToolsOptionsPage : DialogPage {
@@ -25,6 +26,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         public RToolsOptionsPage() {
             this.SettingsRegistryPath = @"UserSettings\R_Tools";
         }
+
+        public bool IsLoadingFromStorage { get; private set; }
 
         [LocCategory("Settings_GeneralCategory")]
         [CustomLocDisplayName("Settings_CranMirror")]
@@ -77,35 +80,10 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [LocCategory("Settings_HistoryCategory")]
         [CustomLocDisplayName("Settings_MultilineHistorySelection")]
         [LocDescription("Settings_MultilineHistorySelection_Description")]
-        [DefaultValue(false)]
+        [DefaultValue(true)]
         public bool MultilineHistorySelection {
             get { return RToolsSettings.Current.MultilineHistorySelection; }
             set { RToolsSettings.Current.MultilineHistorySelection = value; }
-        }
-
-        [LocCategory("Settings_REngineCategory")]
-        [CustomLocDisplayName("Settings_RCommandLineArguments")]
-        [LocDescription("Settings_RCommandLineArguments_Description")]
-        public string RCommandLineArguments {
-            get { return RToolsSettings.Current.RCommandLineArguments; }
-            set { RToolsSettings.Current.RCommandLineArguments = value; }
-        }
-
-        [LocCategory("Settings_REngineCategory")]
-        [CustomLocDisplayName("Settings_RBasePath")]
-        [LocDescription("Settings_RBasePath_Description")]
-        [Editor(typeof(ChooseRFolderUIEditor), typeof(UITypeEditor))]
-        public string RVersion {
-            get { return RToolsSettings.Current.RBasePath; }
-            set {
-                value = ValidateRBasePath(value);
-                if (value != null) {
-                    if (RToolsSettings.Current.RBasePath != value && !_allowLoadingFromStorage) {
-                        VsAppShell.Current.ShowMessage(Resources.RPathChanged_RestartRToApplyChanges, MessageButtons.OK);
-                    }
-                    RToolsSettings.Current.RBasePath = value;
-                }
-            }
         }
 
         [LocCategory("Settings_REngineCategory")]
@@ -226,6 +204,20 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set { RToolsSettings.Current.ShowPackageManagerDisclaimer = value; }
         }
 
+        [Browsable(false)]
+        [DefaultValue(null)]
+        public string Connections {
+            get { return JsonConvert.SerializeObject(RToolsSettings.Current.Connections); }
+            set { RToolsSettings.Current.Connections = value != null ? JsonConvert.DeserializeObject<ConnectionInfo[]>(value) : new ConnectionInfo[0]; }
+        }
+
+        [Browsable(false)]
+        [DefaultValue(null)]
+        public string LastActiveConnection {
+            get { return JsonConvert.SerializeObject(RToolsSettings.Current.LastActiveConnection); }
+            set { RToolsSettings.Current.LastActiveConnection = value != null ? JsonConvert.DeserializeObject<ConnectionInfo>(value) : null; }
+        }
+
         /// <summary>
         /// REPL working directory: not exposed in Tools | Options dialog,
         /// only saved along with other settings.
@@ -264,7 +256,9 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             // Otherwise dialog will load values from registry instead of using
             // ones currently set in memory.
             if (_allowLoadingFromStorage) {
+                IsLoadingFromStorage = true;
                 base.LoadSettingsFromStorage();
+                IsLoadingFromStorage = false;
             }
         }
 
@@ -290,6 +284,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             _applied = false;
             base.OnClosed(e);
         }
+
         protected override void OnActivate(CancelEventArgs e) {
             // Save in-memory settings to storage. In case dialog
             // is canceled with some settings modified we will be

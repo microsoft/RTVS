@@ -7,6 +7,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Extensions;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Options.R;
 using Microsoft.VisualStudio.R.Packages.R;
@@ -34,10 +35,8 @@ namespace Microsoft.VisualStudio.R.Package.RClient {
 
             string rClientPath = CheckMicrosoftRClientInstall(coreShell);
             if (rClientPath != null) {
-                RToolsSettings.Current.RBasePath = rClientPath;
-                using (var p = RPackage.Current.GetDialogPage(typeof(RToolsOptionsPage)) as RToolsOptionsPage) {
-                    p.SaveSettings();
-                }
+                var connections = coreShell.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate().Connections;
+                connections.GetOrAddConnection("Microsoft R Client", rClientPath, string.Empty);
             }
         }
 

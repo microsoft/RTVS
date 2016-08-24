@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Design;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
@@ -14,6 +15,7 @@ using Microsoft.Common.Wpf.Threading;
 using Microsoft.UnitTests.Core.Threading;
 
 namespace Microsoft.R.Components.Test.Fakes.Shell {
+    [ExcludeFromCodeCoverage]
     public class TestCoreShell : ICoreShell, IMainThread {
         private readonly CompositionContainer _container;
 

@@ -21,6 +21,7 @@ namespace Microsoft.R.Host.Client.Test.Stubs {
         public IList<Tuple<string, string>> ViewObjectCalls { get; } = new List<Tuple<string, string>>();
         public IList<int> ViewLibraryCalls { get; } = new List<int>();
         public IList<Tuple<string, string, bool>> ShowFileCalls { get; } = new List<Tuple<string, string, bool>>();
+        public IList<Tuple<string, byte[]>> SaveFileCalls { get; } = new List<Tuple<string, byte[]>>();
 
         public Func<string, MessageButtons, Task<MessageButtons>> ShowMessageCallsHandler { get; set; } = (m, b) => Task.FromResult(MessageButtons.OK);
         public Func<string, int, CancellationToken, Task<string>> ReadUserInputHandler { get; set; } = (m, l, ct) => Task.FromResult("\n");
@@ -32,6 +33,7 @@ namespace Microsoft.R.Host.Client.Test.Stubs {
         public Func<string, string, Task> ViewObjectHandler { get; set; } = (x, t) => Task.CompletedTask;
         public Action ViewLibraryHandler { get; set; } = () => { };
         public Func<string, string, bool, Task> ShowFileHandler { get; set; } = (f, t, d) => Task.CompletedTask;
+        public Func<string, byte[], Task<string>> SaveFileHandler { get; set; } = (f, d) => Task.FromResult(string.Empty);
 
         public Task ShowErrorMessage(string message) {
             ShowErrorMessageCalls.Add(message);
@@ -93,6 +95,12 @@ namespace Microsoft.R.Host.Client.Test.Stubs {
             ShowFileCalls.Add(new Tuple<string, string, bool>(fileName, tabName, deleteFile));
             ShowFileHandler?.Invoke(fileName, tabName, deleteFile);
             return Task.CompletedTask;
+        }
+
+        public Task<string> SaveFileAsync(string fileName, byte[] data) {
+            SaveFileCalls.Add(new Tuple<string, byte[]>(fileName, data));
+            SaveFileHandler?.Invoke(fileName, data);
+            return Task.FromResult(string.Empty);
         }
     }
 }

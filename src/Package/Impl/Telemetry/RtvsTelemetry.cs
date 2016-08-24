@@ -69,41 +69,43 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
                     Assembly thisAssembly = Assembly.GetExecutingAssembly();
                     TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RtvsVersion, thisAssembly.GetName().Version.ToString());
 
-                    string rInstallPath = new RInstallation().GetRInstallPath(RToolsSettings.Current.RBasePath);
-                    TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RInstallPath, rInstallPath);
+                    //TODO: Fix telemetry. There may be no local install path, and remote R brokers may be offline.
 
-                    string rClientPath = MicrosoftRClient.GetRClientPath();
-                    if (rClientPath != null) {
-                        TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RClientFound);
-                        if (rInstallPath != null && rInstallPath.EqualsIgnoreCase(rClientPath)) {
-                            TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RClientActive);
-                        }
-                    }
+                    //string rInstallPath = new RInstallation().GetRInstallPath(RToolsSettings.Current.RBasePath);
+                    //TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RInstallPath, rInstallPath);
 
-                    var rEngines = GetRSubfolders("R");
-                    foreach (var s in rEngines) {
-                        TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.REngine, s);
-                    }
+                    //string rClientPath = MicrosoftRClient.GetRClientPath();
+                    //if (rClientPath != null) {
+                    //    TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RClientFound);
+                    //    if (rInstallPath != null && rInstallPath.EqualsIgnoreCase(rClientPath)) {
+                    //        TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RClientActive);
+                    //    }
+                    //}
 
-                    var rroEngines = GetRSubfolders("RRO");
-                    foreach (var s in rroEngines) {
-                        TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RROEngine, s);
-                    }
+                    //var rEngines = GetRSubfolders("R");
+                    //foreach (var s in rEngines) {
+                    //    TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.REngine, s);
+                    //}
 
-                    var mroEngines = GetRSubfolders("MRO");
-                    foreach (var s in mroEngines) {
-                        TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.MROEngine, s);
-                    }
+                    //var rroEngines = GetRSubfolders("RRO");
+                    //foreach (var s in rroEngines) {
+                    //    TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RROEngine, s);
+                    //}
 
-                    var hashes = RPackageData.GetInstalledPackageHashes(RPackageType.Base);
-                    foreach (var s in hashes) {
-                        TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RBasePackages, s);
-                    }
+                    //var mroEngines = GetRSubfolders("MRO");
+                    //foreach (var s in mroEngines) {
+                    //    TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.MROEngine, s);
+                    //}
 
-                    hashes = RPackageData.GetInstalledPackageHashes(RPackageType.User);
-                    foreach (var s in hashes) {
-                        TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RUserPackages, s);
-                    }
+                    //var hashes = RPackageData.GetInstalledPackageHashes(RPackageType.Base);
+                    //foreach (var s in hashes) {
+                    //    TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RBasePackages, s);
+                    //}
+
+                    //hashes = RPackageData.GetInstalledPackageHashes(RPackageType.User);
+                    //foreach (var s in hashes) {
+                    //    TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RUserPackages, s);
+                    //}
                 } catch (Exception ex) {
                     Trace.Fail("Telemetry exception: " + ex.Message);
                 }
@@ -119,7 +121,6 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
                                 Locale = RToolsSettings.Current.RCodePage,
                                 LoadRData = RToolsSettings.Current.LoadRDataOnProjectLoad,
                                 SaveRData = RToolsSettings.Current.SaveRDataOnProjectUnload,
-                                RCommandLineArguments = RToolsSettings.Current.RCommandLineArguments,
                                 MultilineHistorySelection = RToolsSettings.Current.MultilineHistorySelection,
                                 AlwaysSaveHistory = RToolsSettings.Current.AlwaysSaveHistory,
                                 AutoFormat = REditorSettings.AutoFormat,

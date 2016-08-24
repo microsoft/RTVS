@@ -16,12 +16,15 @@ namespace Microsoft.R.Host.Client {
         event EventHandler<EventArgs> Disconnected;
         event EventHandler<EventArgs> Disposed;
         event EventHandler<EventArgs> DirectoryChanged;
+        event EventHandler<EventArgs> PackagesInstalled;
+        event EventHandler<EventArgs> PackagesRemoved;
 
         int Id { get; }
         int? ProcessId { get; }
         string Prompt { get; }
         bool IsHostRunning { get; }
         Task HostStarted { get; }
+        bool IsRemote { get; }
 
         Task<IRSessionInteraction> BeginInteractionAsync(bool isVisible = true, CancellationToken cancellationToken = default(CancellationToken));
         Task<IRSessionEvaluation> BeginEvaluationAsync(CancellationToken cancellationToken = default(CancellationToken));

@@ -15,8 +15,6 @@ using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Tasks;
 using Microsoft.R.Host.Client.Host;
-using Microsoft.R.Host.Client.Install;
-using Microsoft.R.Interpreters;
 using static System.FormattableString;
 using Task = System.Threading.Tasks.Task;
 
@@ -25,7 +23,7 @@ namespace Microsoft.R.Host.Client.Session {
         private readonly static string DefaultPrompt = "> ";
         private readonly static Task<IRSessionEvaluation> CanceledBeginEvaluationTask;
         private readonly static Task<IRSessionInteraction> CanceledBeginInteractionTask;
-        
+
         private readonly BufferBlock<RSessionRequestSource> _pendingRequestSources = new BufferBlock<RSessionRequestSource>();
         private readonly BufferBlock<RSessionEvaluationSource> _pendingEvaluationSources = new BufferBlock<RSessionEvaluationSource>();
 
@@ -37,6 +35,8 @@ namespace Microsoft.R.Host.Client.Session {
         public event EventHandler<EventArgs> Disconnected;
         public event EventHandler<EventArgs> Disposed;
         public event EventHandler<EventArgs> DirectoryChanged;
+        public event EventHandler<EventArgs> PackagesInstalled;
+        public event EventHandler<EventArgs> PackagesRemoved;
 
         /// <summary>
         /// ReadConsole requires a task even if there are no pending requests
@@ -61,6 +61,7 @@ namespace Microsoft.R.Host.Client.Session {
         public int MaxLength { get; private set; } = 0x1000;
         public bool IsHostRunning => _isHostRunning;
         public Task HostStarted => _initializationTcs?.Task ?? Task.FromCanceled(new CancellationToken(true));
+        public bool IsRemote { get; private set; }
 
         public int? ProcessId => _host?.ProcessId;
 
@@ -90,6 +91,8 @@ namespace Microsoft.R.Host.Client.Session {
             });
 
             _afterHostStartedTask = TaskUtilities.CreateCanceled(new RHostDisconnectedException());
+
+            IsRemote = brokerConnector.IsRemoteConnection();
         }
 
         private void OnMutated() {
@@ -111,6 +114,8 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         public Task<IRSessionInteraction> BeginInteractionAsync(bool isVisible = true, CancellationToken cancellationToken = default(CancellationToken)) {
+            _disposeToken.ThrowIfDisposed();
+
             if (!_isHostRunning) {
                 return CanceledBeginInteractionTask;
             }
@@ -122,6 +127,8 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         public Task<IRSessionEvaluation> BeginEvaluationAsync(CancellationToken cancellationToken = default(CancellationToken)) {
+            _disposeToken.ThrowIfDisposed();
+
             if (!_isHostRunning) {
                 return CanceledBeginEvaluationTask;
             }
@@ -151,52 +158,36 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
 
-        public async Task<ulong> CreateBlobAsync(byte[] data, CancellationToken ct = default(CancellationToken)) {
-            if (!IsHostRunning) {
-                throw new RHostDisconnectedException();
-            }
+        public Task<ulong> CreateBlobAsync(byte[] data, CancellationToken ct = default(CancellationToken)) =>
+            DoBlobServiceAsync(_host?.CreateBlobAsync(data, ct));
+        
 
-            await _afterHostStartedTask;
-
-            try {
-                return await _host.CreateBlobAsync(data, ct);
-            } catch (MessageTransportException) when (!IsHostRunning) {
-                throw new RHostDisconnectedException();
-            }
-        }
-
-        public async Task<byte[]> GetBlobAsync(ulong blobId, CancellationToken ct = default(CancellationToken)) {
-            if (!IsHostRunning) {
-                throw new RHostDisconnectedException();
-            }
-
-            await _afterHostStartedTask;
-
-            try {
-                return await _host.GetBlobAsync(blobId, ct);
-            } catch (MessageTransportException) when (!IsHostRunning) {
-                throw new RHostDisconnectedException();
-            }
-        }
-
-        public async Task DestroyBlobsAsync(IEnumerable<ulong> blobIds, CancellationToken ct = default(CancellationToken)) {
-            if (!IsHostRunning) {
-                throw new RHostDisconnectedException();
-            }
-
-            // Get a snapshot before yielding in case this is a lazy enumerable.
-            blobIds = blobIds.ToArray(); 
-
-            await _afterHostStartedTask;
-
-            try {
+        public Task<byte[]> GetBlobAsync(ulong blobId, CancellationToken ct = default(CancellationToken)) =>
+            DoBlobServiceAsync(_host?.GetBlobAsync(blobId, ct));
+        
+        public Task DestroyBlobsAsync(IEnumerable<ulong> blobIds, CancellationToken ct = default(CancellationToken)) => 
+            DoBlobServiceAsync(new Lazy<Task<long>>(async () => {
                 await _host.DestroyBlobsAsync(blobIds, ct);
+                return 0;
+            }).Value);
+        
+        private async Task<T> DoBlobServiceAsync<T>(Task<T> work) {
+            if (!IsHostRunning) {
+                throw new RHostDisconnectedException();
+            }
+
+            await _afterHostStartedTask;
+
+            try {
+                return await work;
             } catch (MessageTransportException) when (!IsHostRunning) {
                 throw new RHostDisconnectedException();
             }
         }
 
         public async Task CancelAllAsync() {
+            _disposeToken.ThrowIfDisposed();
+
             var cancelTask = _host.CancelAllAsync();
 
             var currentRequest = Interlocked.Exchange(ref _currentRequestSource, null);
@@ -208,6 +199,8 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         public async Task EnsureHostStartedAsync(RHostStartupInfo startupInfo, IRSessionCallback callback, int timeout = 3000) {
+            _disposeToken.ThrowIfDisposed();
+
             var existingInitializationTcs = Interlocked.CompareExchange(ref _initializationTcs, new TaskCompletionSourceEx<object>(), null);
             if (existingInitializationTcs == null) {
                 await StartHostAsyncBackground(startupInfo, callback, timeout);
@@ -217,6 +210,8 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         public async Task StartHostAsync(RHostStartupInfo startupInfo, IRSessionCallback callback, int timeout = 3000) {
+            _disposeToken.ThrowIfDisposed();
+
             if (Interlocked.CompareExchange(ref _initializationTcs, new TaskCompletionSourceEx<object>(), null) != null) {
                 throw new InvalidOperationException("Another instance of RHost is running for this RSession. Stop it before starting new one.");
             }
@@ -239,6 +234,8 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         public async Task RestartHostAsync() {
+            _disposeToken.ThrowIfDisposed();
+
             await StopHostAsync();
             if (_callback != null || _startupInfo != null) {
                 await StartHostAsync(_startupInfo, _callback);
@@ -246,6 +243,8 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         public async Task StopHostAsync() {
+            _disposeToken.ThrowIfDisposed();
+
             if (_initializationTcs == null) {
                 return;
             }
@@ -295,7 +294,7 @@ namespace Microsoft.R.Host.Client.Session {
 
         private async Task CreateAndRunHost(RHostStartupInfo startupInfo, int timeout) {
             try {
-                _host = await BrokerConnector.Connect(startupInfo.Name, this, startupInfo.RHostCommandLineArguments, timeout);
+                _host = await BrokerConnector.ConnectAsync(startupInfo.Name, this, startupInfo.RHostCommandLineArguments, timeout);
                 await _host.Run();
             } catch (OperationCanceledException oce) {
                 _initializationTcs.TrySetCanceled(oce);
@@ -318,7 +317,12 @@ namespace Microsoft.R.Host.Client.Session {
             using (var evaluation = await evaluationSource.Task) {
                 // Load RTVS R package before doing anything in R since the calls
                 // below calls may depend on functions exposed from the RTVS package
-                await LoadRtvsPackage(evaluation);
+                var libPath = BrokerConnector.IsRemote 
+                    ? "."
+                    : Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetAssemblyPath());
+
+                await LoadRtvsPackage(evaluation, libPath);
+
                 if (startupInfo.WorkingDirectory != null) {
                     await evaluation.SetWorkingDirectoryAsync(startupInfo.WorkingDirectory);
                 } else {
@@ -341,8 +345,7 @@ namespace Microsoft.R.Host.Client.Session {
             }
         }
 
-        private static async Task LoadRtvsPackage(IRSessionEvaluation eval) {
-            var libPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetAssemblyPath());
+        private static async Task LoadRtvsPackage(IRSessionEvaluation eval, string libPath) {
             await eval.ExecuteAsync(Invariant($"base::loadNamespace('rtvs', lib.loc = {libPath.ToRStringLiteral()})"));
         }
 
@@ -351,6 +354,7 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         Task IRCallbacks.Connected(string rVersion) {
+            IsRemote = BrokerConnector.IsRemoteConnection();
             Prompt = DefaultPrompt;
             _isHostRunning = true;
             _initializationTcs.SetResult(null);
@@ -598,6 +602,19 @@ namespace Microsoft.R.Host.Client.Session {
         void IRCallbacks.ViewObject(string obj, string title) {
             var callback = _callback;
             callback?.ViewObject(obj, title);
+        }
+
+        void IRCallbacks.PackagesInstalled() {
+            PackagesInstalled?.Invoke(this, EventArgs.Empty);
+        }
+
+        void IRCallbacks.PackagesRemoved() {
+            PackagesRemoved?.Invoke(this, EventArgs.Empty);
+        }
+
+        Task<string> IRCallbacks.SaveFileAsync(string filename, byte[] data) {
+            var callback = _callback;
+            return callback != null ? callback.SaveFileAsync(filename, data) : Task.FromResult(string.Empty);
         }
     }
 }

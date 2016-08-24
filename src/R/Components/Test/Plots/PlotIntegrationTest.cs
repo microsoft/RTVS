@@ -40,6 +40,7 @@ namespace Microsoft.R.Components.Test.Plots {
         public PlotIntegrationTest(RComponentsMefCatalogFixture catalog, TestMethodFixture testMethod, TestFilesFixture testFiles) {
             _exportProvider = catalog.CreateExportProvider();
             _workflowProvider = _exportProvider.GetExportedValue<TestRInteractiveWorkflowProvider>();
+            _workflowProvider.BrokerName = nameof(PlotIntegrationTest);
             _plotVisualComponentContainerFactory = _exportProvider.GetExportedValue<TestRPlotManagerVisualComponentContainerFactory>();
             _workflow = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
             _componentContainerFactory = _exportProvider.GetExportedValue<IInteractiveWindowComponentContainerFactory>();

@@ -8,15 +8,26 @@ using Microsoft.R.Host.Client.Host;
 
 namespace Microsoft.R.Host.Client.Test.Mocks {
     public sealed class RHostBrokerConnectorMock : IRHostBrokerConnector {
-        public Task<RHost> Connect(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken()) {
+        public void Dispose() {
+        }
+
+        public Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken()) {
             throw new System.NotImplementedException();
         }
 
+        public bool IsRemote { get; private set; }
         public Uri BrokerUri { get; private set; }
         public event EventHandler BrokerChanged;
 
-        public void SwitchToLocalBroker(string rBasePath, string rHostDirectory = null) {
-            BrokerUri = new Uri(rBasePath);
+        public void SwitchToLocalBroker(string name, string rBasePath = null, string rHostDirectory = null) {
+            BrokerUri = rBasePath != null ? new Uri(rBasePath) : new Uri(@"C:\");
+            IsRemote = false;
+            BrokerChanged?.Invoke(this, new EventArgs());
+        }
+
+        public void SwitchToRemoteBroker(Uri uri) {
+            BrokerUri = uri;
+            IsRemote = true;
             BrokerChanged?.Invoke(this, new EventArgs());
         }
     }

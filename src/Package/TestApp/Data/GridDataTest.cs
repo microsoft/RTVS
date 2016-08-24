@@ -31,13 +31,16 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         }
 
         private readonly MethodInfo _testMethod;
+        private readonly IRHostBrokerConnector _brokerConnector;
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _session;
 
         public GridDataTest(TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo;
+            _brokerConnector = new RHostBrokerConnector();
+            _brokerConnector.SwitchToLocalBroker(nameof(GridDataTest));
             _sessionProvider = new RSessionProvider();
-            _session = _sessionProvider.GetOrCreate(Guid.NewGuid(), new RHostBrokerConnector());
+            _session = _sessionProvider.GetOrCreate(Guid.NewGuid(), _brokerConnector);
         }
 
         public async Task InitializeAsync() {
@@ -49,6 +52,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         public async Task DisposeAsync() {
             await _session.StopHostAsync();
             _sessionProvider.Dispose();
+            _brokerConnector.Dispose();
         }
 
         private static IEnumerable<T> ToEnumerable<T>(IRange<T> range) {
@@ -178,6 +182,14 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
             { "50", "1.4",          "0.2",          "setosa" },
             { "51", "4.7",          "1.4",          "versicolor" },
             { "52", "4.5",          "1.5",          "versicolor" },
+        });
+
+        [Test]
+        [Category.R.DataGrid]
+        public Task DataFrameNAGrid() => Test("df.test <- data.frame(c(1, as.integer(NA)), c(2.0, as.double(NA)), c(as.Date('2011-12-31'), as.Date(NA)))", 1, 1, new[,] {
+            { null, "c.1..as.integer.NA..", "c.2..as.double.NA..",  "c.as.Date..2011.12.31....as.Date.NA.." },
+            { "1",  "1",                    "2",                    "2011-12-31" },
+            { "2",  "NA",                   "NA",                   "NA" },
         });
 
         [Test]

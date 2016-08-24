@@ -6,15 +6,26 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.DataInspect;
 using Microsoft.VisualStudio.R.Package.DataInspect.DataSource;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Xunit;
 
 namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]   // required for tests using R Host 
-    public class EvaluationWrapperTest {
+    public class EvaluationWrapperTest : IAsyncLifetime {
+
+        public Task InitializeAsync() {
+            var connections = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate().Connections;
+            return connections.ConnectAsync(connections.RecentConnections[0]);
+        }
+
+        public Task DisposeAsync() => Task.CompletedTask;
+
+
         // TODO: RStudio difference
         //    value.integer.1   RS 1L                    RTVS just 1
         //    value.numeric.big RS 98765432109876543210  RTVS 9.88e+19

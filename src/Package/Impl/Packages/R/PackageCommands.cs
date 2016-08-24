@@ -55,7 +55,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new GoToEditorOptionsCommand(),
                 new ImportRSettingsCommand(),
                 new InstallRClientCommand(appShell),
-                new SwitchToRClientCommand(appShell),
+                new SwitchToRClientCommand(interactiveWorkflow.Connections, appShell),
                 new SurveyNewsCommand(),
 
                 new ReportIssueCommand(),
@@ -112,6 +112,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
                 new ShowToolWindowCommand<HelpWindowPane>(RPackageCommandId.icmdShowHelpWindow),
                 new ShowToolWindowCommand<HistoryWindowPane>(RPackageCommandId.icmdShowHistoryWindow),
+                new ShowToolWindowCommand<ConnectionManagerWindowPane>(RPackageCommandId.icmdShowConnectionsWindow),
                 new ShowToolWindowCommand<PackageManagerWindowPane>(RPackageCommandId.icmdShowPackagesWindow),
                 new ShowToolWindowCommand<PlotHistoryWindowPane>(RPackageCommandId.icmdPlotHistoryWindow),
                 new ShowToolWindowCommand<PlotDeviceWindowPane>(RPackageCommandId.icmdShowPlotWindow),

@@ -5,6 +5,6 @@ using Microsoft.R.Components.View;
 
 namespace Microsoft.R.Components.ConnectionManager {
     public interface IConnectionManagerVisualComponentContainerFactory {
-        IVisualComponentContainer<IConnectionManagerVisualComponent> GetOrCreate(int instance = 0);
+        IVisualComponentContainer<IConnectionManagerVisualComponent> GetOrCreate(IConnectionManager connectionManager, int instance = 0);
     }
 }

@@ -45,11 +45,10 @@ namespace Microsoft.R.Editor.Navigation.Peek {
 
             // If task is still running, wait a bit, but not too long.
             LookupTask.Wait(2000);
-
-            if (LookupTask.IsCompleted) {
-                resultCollection.Add(LookupTask.Result);
-            } else if (_exception != null) {
+            if (_exception != null) {
                 callback.ReportFailure(_exception);
+            } else if (LookupTask.IsCompleted && LookupTask.Result != null) {
+                resultCollection.Add(LookupTask.Result);
             }
         }
 
@@ -67,19 +66,19 @@ namespace Microsoft.R.Editor.Navigation.Peek {
                         title: functionName, titleTooltip: functionName)) {
 
                         _result = _peekItem.PeekResultFactory.Create(displayInfo, tempFile, new Span(0, 0), 0, isReadOnly: true);
-                        
+
                         // Editor opens external items as plain text. When file opens, change content type to R.
                         IdleTimeAction.Create(() => {
                             if (_result.Span.IsDocumentOpen) {
                                 var rs = _shell.ExportProvider.GetExportedValue<IContentTypeRegistryService>();
                                 var ct = rs.GetContentType(RContentTypeDefinition.ContentType);
                                 _result.Span.Document.TextBuffer.ChangeContentType(ct, this.GetType());
-                                try { File.Delete(tempFile); } catch(IOException) { } catch(UnauthorizedAccessException) { }
+                                try { File.Delete(tempFile); } catch (IOException) { } catch (UnauthorizedAccessException) { }
                             }
                         }, 50, GetType(), _shell);
 
                         return _result;
-                     }
+                    }
                 }
             } catch (Exception ex) {
                 _exception = ex;

@@ -80,15 +80,25 @@
     <Compile Include="ConnectionManager\IConnectionManagerVisualComponentContainerFactory.cs" />
     <Compile Include="ConnectionManager\Commands\SwitchToConnectionCommand.cs" />
     <Compile Include="ConnectionManager\Implementation\ConnectionManager.cs" />
-    <Compile Include="ConnectionManager\Implementation\LocalConnection.cs" />
-    <Compile Include="ConnectionManager\Implementation\RPackageManagerProvider.cs" />
+    <Compile Include="ConnectionManager\Implementation\Connection.cs" />
+    <Compile Include="ConnectionManager\Implementation\ConnectionManagerProvider.cs" />
+    <Compile Include="ConnectionManager\Implementation\ConnectionManagerVisualComponent.cs" />
+    <Compile Include="ConnectionManager\Implementation\ViewModel\ConnectionManagerViewModel.cs" />
     <Compile Include="ConnectionManager\Implementation\ViewModel\ConnectionStatusBarViewModel.cs" />
+    <Compile Include="ConnectionManager\Implementation\ViewModel\ConnectionViewModel.cs" />
+    <Compile Include="ConnectionManager\Implementation\View\ConnectionManagerControl.xaml.cs">
+      <DependentUpon>ConnectionManagerControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ConnectionManager\Implementation\View\ConnectionStatusBar.xaml.cs">
       <DependentUpon>ConnectionStatusBar.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ConnectionManager\Implementation\View\DesignTime\DesignTimeConnectionManagerViewModel.cs" />
     <Compile Include="ConnectionManager\Implementation\View\DesignTime\DesignTimeConnectionStatusBarViewModel.cs" />
     <Compile Include="ConnectionManager\ConnectionManagerCommandIds.cs" />
+    <Compile Include="ConnectionManager\Implementation\View\DesignTime\DesignTimeConnectionViewModel.cs" />
+    <Compile Include="ConnectionManager\ViewModel\IConnectionManagerViewModel.cs" />
     <Compile Include="ConnectionManager\ViewModel\IConnectionStatusBarViewModel.cs" />
+    <Compile Include="ConnectionManager\ViewModel\IConnectionViewModel.cs" />
     <Compile Include="ContentTypes\RContentTypeDefinition.cs" />
     <Compile Include="Controller\CommandResult.cs" />
     <Compile Include="Controller\CommandStatus.cs" />
@@ -244,6 +254,7 @@
     <Compile Include="Search\SearchControlSettings.cs" />
     <Compile Include="Services\ServiceManagerBase.cs" />
     <Compile Include="Services\ServiceManagerEventArgs.cs" />
+    <Compile Include="Settings\ConnectionInfo.cs" />
     <Compile Include="Settings\HelpBrowserType.cs" />
     <Compile Include="Settings\IRSettings.cs" />
     <Compile Include="Settings\Mirrors\CranMirrorEntry.cs" />
@@ -300,6 +311,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="ConnectionManager\Implementation\View\ConnectionManagerControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ConnectionManager\Implementation\View\ConnectionStatusBar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -22,7 +22,7 @@ using Xunit;
 namespace Microsoft.R.Host.Client.Test {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
-    public class XamlGraphicsDeviceTest {
+    public class XamlGraphicsDeviceTest : IDisposable {
         private const string Ns = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
         private const string GridPrefixCode = "rtvs:::graphics.xaml(\"{0}\", {1}, {2});library(grid);grid.newpage();\n";
         private const string GridSuffixCode = "dev.off()\n";
@@ -31,9 +31,16 @@ namespace Microsoft.R.Host.Client.Test {
         private const int DefaultHeight = 360;
 
         private readonly MethodInfo _testMethod;
+        private readonly IRHostBrokerConnector _brokerConnector;
 
         public XamlGraphicsDeviceTest(TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo;
+            _brokerConnector = new RHostBrokerConnector();
+            _brokerConnector.SwitchToLocalBroker(nameof(XamlGraphicsDeviceTest));
+        }
+
+        public void Dispose() {
+            _brokerConnector.Dispose();
         }
 
         private double X(double percentX) {
@@ -238,7 +245,7 @@ namespace Microsoft.R.Host.Client.Test {
 
         private async Task<XDocument> RunGraphicsTest(string code, string outputFilePath) {
             using (var sessionProvider = new RSessionProvider()) {
-                var session = sessionProvider.GetOrCreate(Guid.NewGuid(), new RHostBrokerConnector());
+                var session = sessionProvider.GetOrCreate(Guid.NewGuid(), _brokerConnector);
                 await session.StartHostAsync(new RHostStartupInfo {
                     Name = _testMethod.Name
                 }, new RHostClientTestApp(), 50000);

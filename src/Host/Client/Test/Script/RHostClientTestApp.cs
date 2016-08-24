@@ -58,6 +58,10 @@ namespace Microsoft.R.Host.Client.Test.Script {
             throw new NotImplementedException();
         }
 
+        public Task<string> SaveFileAsync(string fileName, byte[] data) {
+            return Task.FromResult(string.Empty);
+        }
+
         public Task<PlotDeviceProperties> PlotDeviceCreate(Guid deviceId, CancellationToken ct) {
             if (PlotDeviceCreateHandler != null) {
                 return Task.FromResult(PlotDeviceCreateHandler(deviceId));

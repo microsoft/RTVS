@@ -22,19 +22,11 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View.DesignTime {
         public string FirstError => null;
         public bool HasMultipleErrors => false;
 
-
         public Task SwitchToAvailablePackagesAsync() => Task.CompletedTask;
         public Task SwitchToInstalledPackagesAsync() => Task.CompletedTask;
         public Task SwitchToLoadedPackagesAsync() => Task.CompletedTask;
-
-        public void ReloadItems() {
-            
-        }
-
-        public void SelectPackage(IRPackageViewModel package) {
-            
-        }
-
+        public Task ReloadItemsAsync() => Task.CompletedTask;
+        public void SelectPackage(IRPackageViewModel package) { }
         public Task InstallAsync(IRPackageViewModel package) => Task.CompletedTask;
         public Task UpdateAsync(IRPackageViewModel package) => Task.CompletedTask;
         public Task UninstallAsync(IRPackageViewModel package) => Task.CompletedTask;

@@ -79,6 +79,114 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add.
+        /// </summary>
+        public static string ConnectionManager_Add {
+            get {
+                return ResourceManager.GetString("ConnectionManager_Add", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string ConnectionManager_Cancel {
+            get {
+                return ResourceManager.GetString("ConnectionManager_Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selected connection has unsaved changes. Do you want to save them?.
+        /// </summary>
+        public static string ConnectionManager_ChangedSelection_HasChanges {
+            get {
+                return ResourceManager.GetString("ConnectionManager_ChangedSelection_HasChanges", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connect.
+        /// </summary>
+        public static string ConnectionManager_Connect {
+            get {
+                return ResourceManager.GetString("ConnectionManager_Connect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connect to &apos;{0}&apos;..
+        /// </summary>
+        public static string ConnectionManager_ConnectTooltip {
+            get {
+                return ResourceManager.GetString("ConnectionManager_ConnectTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete.
+        /// </summary>
+        public static string ConnectionManager_Delete {
+            get {
+                return ResourceManager.GetString("ConnectionManager_Delete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name:.
+        /// </summary>
+        public static string ConnectionManager_Name {
+            get {
+                return ResourceManager.GetString("ConnectionManager_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Path:.
+        /// </summary>
+        public static string ConnectionManager_Path {
+            get {
+                return ResourceManager.GetString("ConnectionManager_Path", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R Command Line Arguments:.
+        /// </summary>
+        public static string ConnectionManager_RCommandLineArguments {
+            get {
+                return ResourceManager.GetString("ConnectionManager_RCommandLineArguments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save.
+        /// </summary>
+        public static string ConnectionManager_Save {
+            get {
+                return ResourceManager.GetString("ConnectionManager_Save", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Can&apos;t save changes. Connection should have name specified..
+        /// </summary>
+        public static string ConnectionManager_ShouldHaveName {
+            get {
+                return ResourceManager.GetString("ConnectionManager_ShouldHaveName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Can&apos;t save changes. Connection should have path specified..
+        /// </summary>
+        public static string ConnectionManager_ShouldHavePath {
+            get {
+                return ResourceManager.GetString("ConnectionManager_ShouldHavePath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Dismiss.
         /// </summary>
         public static string Dismiss {
