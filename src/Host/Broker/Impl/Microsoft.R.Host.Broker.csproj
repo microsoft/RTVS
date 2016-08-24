@@ -88,6 +88,17 @@
     <Compile Include="Pipes\ProcessHelpers.cs" />
     <Compile Include="Pipes\WebSocketPipeAction.cs" />
     <Compile Include="Security\Claims.cs" />
+    <Compile Include="Security\HttpBasicAuth\BaseBasicContext.cs" />
+    <Compile Include="Security\HttpBasicAuth\BasicAppBuilderExtensions.cs" />
+    <Compile Include="Security\HttpBasicAuth\BasicCredential.cs" />
+    <Compile Include="Security\HttpBasicAuth\BasicDefaults.cs" />
+    <Compile Include="Security\HttpBasicAuth\BasicEvents.cs" />
+    <Compile Include="Security\HttpBasicAuth\BasicExceptionContext.cs" />
+    <Compile Include="Security\HttpBasicAuth\BasicHandler.cs" />
+    <Compile Include="Security\HttpBasicAuth\BasicMiddleware.cs" />
+    <Compile Include="Security\HttpBasicAuth\BasicOptions.cs" />
+    <Compile Include="Security\HttpBasicAuth\BasicSignInContext.cs" />
+    <Compile Include="Security\HttpBasicAuth\IBasicEvents.cs" />
     <Compile Include="Security\SecurityManager.cs" />
     <Compile Include="Security\Policies.cs" />
     <Compile Include="Startup\StartupOptions.cs" />

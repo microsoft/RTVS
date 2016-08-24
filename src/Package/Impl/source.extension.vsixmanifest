@@ -118,7 +118,6 @@
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="System.Xml.XmlDocument.dll" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="System.Xml.XPath.dll" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="System.Xml.XPath.XDocument.dll" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Odachi.AspNetCore.Authentication.Basic.dll" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="libuv.dll" />
 
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Host.exe" />
