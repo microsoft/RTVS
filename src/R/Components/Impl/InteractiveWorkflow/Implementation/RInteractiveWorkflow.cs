@@ -105,7 +105,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 // i.e. user worked in the REPL and not in the editor. Pull 
                 // the focus back here. 
                 _replLostFocus = false;
-                ActiveWindow.Container.Show(true);
+                ActiveWindow.Container.Show(focus: true, immediate: false);
 
                 // Reset the flag, so that further focus changes are not affected until the next debugger break occurs.
                 _debuggerJustEnteredBreakMode = false;

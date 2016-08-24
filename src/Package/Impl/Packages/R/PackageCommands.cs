@@ -7,6 +7,7 @@ using System.ComponentModel.Design;
 using Microsoft.R.Components.ConnectionManager.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Commands;
+using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Sql;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Browsers;
@@ -112,7 +113,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new ShowToolWindowCommand<HelpWindowPane>(RPackageCommandId.icmdShowHelpWindow),
                 new ShowToolWindowCommand<HistoryWindowPane>(RPackageCommandId.icmdShowHistoryWindow),
                 new ShowToolWindowCommand<PackageManagerWindowPane>(RPackageCommandId.icmdShowPackagesWindow),
-                new ShowToolWindowCommand<PlotManagerWindowPane>(RPackageCommandId.icmdShowPlotWindow),
+                new ShowToolWindowCommand<PlotHistoryWindowPane>(RPackageCommandId.icmdPlotHistoryWindow),
+                new ShowToolWindowCommand<PlotDeviceWindowPane>(RPackageCommandId.icmdShowPlotWindow),
 
                 new ShowHelpOnCurrentCommand(interactiveWorkflow, textViewTracker, replTracker),
                 new SearchWebForCurrentCommand(interactiveWorkflow, textViewTracker, replTracker, wbs),
@@ -120,15 +122,10 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new GotoSolutionExplorerCommand(),
 
                 // Plot commands
-                CreateRCmdSetCommand(RPackageCommandId.icmdExportPlotAsImage, interactiveWorkflow.Plots.Commands.ExportAsImage),
-                CreateRCmdSetCommand(RPackageCommandId.icmdExportPlotAsPdf, interactiveWorkflow.Plots.Commands.ExportAsPdf),
-                CreateRCmdSetCommand(RPackageCommandId.icmdCopyPlotAsBitmap, interactiveWorkflow.Plots.Commands.CopyAsBitmap),
-                CreateRCmdSetCommand(RPackageCommandId.icmdCopyPlotAsMetafile, interactiveWorkflow.Plots.Commands.CopyAsMetafile),
-                CreateRCmdSetCommand(RPackageCommandId.icmdNextPlot, interactiveWorkflow.Plots.Commands.Next),
-                CreateRCmdSetCommand(RPackageCommandId.icmdPrevPlot, interactiveWorkflow.Plots.Commands.Previous),
-                CreateRCmdSetCommand(RPackageCommandId.icmdClearPlots, interactiveWorkflow.Plots.Commands.RemoveAll),
-                CreateRCmdSetCommand(RPackageCommandId.icmdRemovePlot, interactiveWorkflow.Plots.Commands.RemoveCurrent),
-                CreateRCmdSetCommand(RPackageCommandId.icmdEndLocator, interactiveWorkflow.Plots.Commands.EndLocator),
+                CreateRCmdSetCommand(RPackageCommandId.icmdNewPlotWindow, PlotDeviceCommandFactory.NewPlotDevice(interactiveWorkflow)),
+                CreateRCmdSetCommand(RPackageCommandId.icmdPlotHistoryZoomIn, PlotHistoryCommandFactory.ZoomIn(interactiveWorkflow)),
+                CreateRCmdSetCommand(RPackageCommandId.icmdPlotHistoryZoomOut, PlotHistoryCommandFactory.ZoomOut(interactiveWorkflow)),
+                CreateRCmdSetCommand(RPackageCommandId.icmdPlotHistoryAutoHide, PlotHistoryCommandFactory.AutoHide(interactiveWorkflow)),
 
                 // Connection manager commands
                 CreateRCmdSetCommand(RPackageCommandId.icmdReconnect, new ReconnectCommand(interactiveWorkflow)),

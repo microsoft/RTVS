@@ -1,0 +1,50 @@
+﻿<UserControl x:Class="Microsoft.R.Components.Plots.Implementation.View.RPlotDeviceControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Microsoft.R.Components.Plots.Implementation.View"
+             xmlns:rwpf="clr-namespace:Microsoft.R.Wpf;assembly=Microsoft.R.Wpf"
+             mc:Ignorable="d"
+             d:DesignHeight="300" d:DesignWidth="300"
+             SizeChanged="UserControl_SizeChanged"
+             MouseRightButtonUp="UserControl_MouseRightButtonUp"
+             Background="{DynamicResource {x:Static rwpf:Brushes.WindowKey}}"
+             Foreground="{DynamicResource {x:Static rwpf:Brushes.WindowTextKey}}">
+    <!-- Background on grid is set in order to make hit testing work for drag and drop -->
+    <Grid AllowDrop="True"
+          Drop="UserControl_Drop"
+          DragEnter="UserControl_DragEnter"
+          DragOver="UserControl_DragOver"
+          Background="Transparent">
+        <TextBlock Visibility="{Binding Path=ShowWatermark, Converter={x:Static rwpf:Converters.FalseIsHidden}}"
+                   Background="{DynamicResource {x:Static rwpf:Brushes.WindowKey}}"
+                   Foreground="{DynamicResource {x:Static rwpf:Brushes.WindowTextKey}}"
+                   TextAlignment="Center"
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Center"
+                   TextWrapping="Wrap">Run plotting command in R Interactive Window</TextBlock>
+        <TextBlock Visibility="{Binding Path=ShowError, Converter={x:Static rwpf:Converters.FalseIsHidden}}"
+                   Background="{DynamicResource {x:Static rwpf:Brushes.WindowKey}}"
+                   Foreground="{DynamicResource {x:Static rwpf:Brushes.WindowTextKey}}"
+                   TextAlignment="Center"
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Center"
+                   TextWrapping="Wrap">Error rendering plot</TextBlock>
+        <Image Cursor="{Binding Path=LocatorMode, Converter={x:Static rwpf:Converters.TrueIsCrossCursor}}"
+               Source="{Binding Path=PlotImage}"
+               Visibility="{Binding Path=PlotImage, Converter={x:Static rwpf:Converters.NullIsCollapsed}}"
+               MouseMove="Image_MouseMove"
+               PreviewMouseDown="Image_PreviewMouseDown"
+               MouseLeftButtonUp="Image_MouseLeftButtonUp">
+            <Image.ToolTip>
+                <TextBlock>
+                    <Run Text="{Binding Path=PlotImage.PixelWidth, Mode=OneWay}"/>
+                    <Run Text=" x "/>
+                    <Run Text="{Binding Path=PlotImage.PixelHeight, Mode=OneWay}"/>
+                    <Run Text=" px"/>
+                </TextBlock>
+            </Image.ToolTip>
+        </Image>
+    </Grid>
+</UserControl>

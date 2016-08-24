@@ -4,63 +4,85 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Components.Plots.ViewModel;
 using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Components.Plots {
     public interface IRPlotManager : IDisposable {
-        IRPlotManagerVisualComponent VisualComponent { get; }
+        IRInteractiveWorkflow InteractiveWorkflow { get; }
 
-        IRPlotManagerVisualComponent GetOrCreateVisualComponent(IRPlotManagerVisualComponentContainerFactory visualComponentContainerFactory, int instanceId = 0);
+        IRPlotDeviceVisualComponent GetOrCreateVisualComponent(IRPlotDeviceVisualComponentContainerFactory visualComponentContainerFactory, int instanceId);
+        IRPlotHistoryVisualComponent GetOrCreateVisualComponent(IRPlotHistoryVisualComponentContainerFactory visualComponentContainerFactory, int instanceId);
 
         /// <summary>
-        /// A plot message was received, and the state of the plot manager
-        /// and visual component has been updated.
+        /// Visual component for the global plot history, or <c>null</c> if it
+        /// hasn't been created yet.
         /// </summary>
-        /// <remarks>
-        /// This is intended to be used by tests, which need to wait on this
-        /// event before validating results.
-        /// </remarks>
-        event EventHandler PlotChanged;
+        IRPlotHistoryVisualComponent HistoryVisualComponent { get; }
 
         /// <summary>
-        /// Locator mode has started or ended, and the state of the plot
-        /// manager and visual component has been updated.
+        /// Global history of all plots in all ide devices.
         /// </summary>
-        /// <remarks>
-        /// This is intended to be used by tests, which need to wait on this
-        /// event before validating results.
-        /// </remarks>
-        event EventHandler LocatorModeChanged;
+        IRPlotHistoryViewModel History { get; }
 
         /// <summary>
-        /// The index of the active plot in the session, -1 if there are no plots.
+        /// The active device. This is updated on every session mutated event
+        /// so it's accurate even if the user changes the active device using
+        /// dev.set(). Wait for the <seealso cref="ActiveDeviceChanged"/> event
+        /// if you need to check this value after running code in the session.
         /// </summary>
-        int ActivePlotIndex { get; }
+        Guid ActiveDeviceId { get; }
+
+        event EventHandler DeviceCreateMessageReceived;
+        event EventHandler DeviceDestroyMessageReceived;
+        event EventHandler PlotMessageReceived;
+        event EventHandler LocatorMessageReceived;
 
         /// <summary>
-        /// The number of plots in the session.
+        /// The active device has changed. This is checked for on every session 
+        /// mutated event and only fired when different from the previous value.
         /// </summary>
-        int PlotCount { get; }
+        event EventHandler ActiveDeviceChanged;
 
         /// <summary>
-        /// Plot commands that associated with this plot manager and its
-        /// interactive workflow.
-        /// </summary>
-        IRPlotCommands Commands { get; }
-
-        /// <summary>
-        /// Process an incoming plot message.
+        /// Process an incoming plot message from the host.
         /// </summary>
         /// <param name="plot"></param>
-        /// <returns></returns>
         Task LoadPlotAsync(PlotMessage plot);
 
         /// <summary>
-        /// Process an incoming locator message.
+        /// Process an incoming locator message from the host.
         /// </summary>
+        /// <param name="deviceId">Id of device whose locator function was called.</param>
         /// <param name="ct"></param>
-        /// <returns></returns>
-        Task<LocatorResult> StartLocatorModeAsync(CancellationToken ct);
+        Task<LocatorResult> StartLocatorModeAsync(Guid deviceId, CancellationToken ct);
+
+        /// <summary>
+        /// Process an incoming device creation message from the host.
+        /// This assigns the new device to an available visual component (creating one if necessary).
+        /// </summary>
+        /// <param name="deviceId">Id of device that is being created.</param>
+        /// <returns>
+        /// Properties of the visual component assigned to the device. The host
+        /// uses this to set the device size and resolution.
+        /// </returns>
+        Task<PlotDeviceProperties> DeviceCreatedAsync(Guid deviceId);
+
+        /// <summary>
+        /// Process an incoming device destroy message from the host.
+        /// This unassigns the device from its visual component, which will be
+        /// recycled for the next device that is created.
+        /// </summary>
+        /// <param name="deviceId">Id of device that is being destroyed.</param>
+        Task DeviceDestroyedAsync(Guid deviceId);
+
+        /// <summary>
+        /// Show the visual component for the specified device.
+        /// Does nothing if a visual component for the device was not found.
+        /// </summary>
+        /// <param name="deviceId">Device to show.</param>
+        Task ShowDeviceAsync(Guid deviceId);
 
         /// <summary>
         /// Execute code in the session to remove all plots.
@@ -76,7 +98,7 @@ namespace Microsoft.R.Components.Plots {
         /// <exception cref="OperationCanceledException">
         /// The session was reset, etc. this can be silenced.
         /// </exception>
-        Task RemoveAllPlotsAsync();
+        Task RemoveAllPlotsAsync(Guid deviceId);
 
         /// <summary>
         /// Execute code in the session to remove the current plot.
@@ -92,7 +114,21 @@ namespace Microsoft.R.Components.Plots {
         /// <exception cref="OperationCanceledException">
         /// The session was reset, etc. this can be silenced.
         /// </exception>
-        Task RemoveCurrentPlotAsync();
+        Task RemovePlotAsync(Guid deviceId, Guid plotId);
+
+        /// <summary>
+        /// Execute code in the session to activate a graphics device
+        /// and render the specified plot.
+        /// </summary>
+        /// <param name="deviceId">Device to activate.</param>
+        /// <param name="plotId"></param>
+        /// <exception cref="RPlotManagerException">
+        /// An error occurred with the session and the user should be notified.
+        /// </exception>
+        /// <exception cref="OperationCanceledException">
+        /// The session was reset, etc. this can be silenced.
+        /// </exception>
+        Task ActivatePlotAsync(Guid deviceId, Guid plotId);
 
         /// <summary>
         /// Execute code in the session to change the active plot to the next
@@ -109,7 +145,7 @@ namespace Microsoft.R.Components.Plots {
         /// <exception cref="OperationCanceledException">
         /// The session was reset, etc. this can be silenced.
         /// </exception>
-        Task NextPlotAsync();
+        Task NextPlotAsync(Guid deviceId);
 
         /// <summary>
         /// Execute code in the session to change the active plot to the previous
@@ -126,7 +162,7 @@ namespace Microsoft.R.Components.Plots {
         /// <exception cref="OperationCanceledException">
         /// The session was reset, etc. this can be silenced.
         /// </exception>
-        Task PreviousPlotAsync();
+        Task PreviousPlotAsync(Guid deviceId);
 
         /// <summary>
         /// Execute code in the session to set the size and resolution of the
@@ -135,21 +171,13 @@ namespace Microsoft.R.Components.Plots {
         /// <param name="pixelWidth">Width in pixels.</param>
         /// <param name="pixelHeight">Height in pixels.</param>
         /// <param name="resolution">Resolution in dpi, ex: 96.</param>
-        /// <remarks>
-        /// The session will use these new values for all future plot rendering.
-        /// If there is an active plot, it will be re-rendered and the session
-        /// will send a new plot message.
-        /// This is safe to call even if the session isn't running yet. When a
-        /// session is connected, the resize will be sent to the session.
-        /// Export operations use these values as well.
-        /// </remarks>
         /// <exception cref="RPlotManagerException">
         /// An error occurred with the session and the user should be notified.
         /// </exception>
         /// <exception cref="OperationCanceledException">
         /// The session was reset, etc. this can be silenced.
         /// </exception>
-        Task ResizeAsync(int pixelWidth, int pixelHeight, int resolution);
+        Task ResizeAsync(Guid deviceId, int pixelWidth, int pixelHeight, int resolution);
 
         /// <summary>
         /// Execute code in the session to export the active plot as a bitmap.
@@ -162,7 +190,7 @@ namespace Microsoft.R.Components.Plots {
         /// <exception cref="OperationCanceledException">
         /// The session was reset, etc. this can be silenced.
         /// </exception>
-        Task ExportToBitmapAsync(string deviceName, string outputFilePath);
+        Task ExportToBitmapAsync(Guid deviceId, Guid plotId, string deviceName, string outputFilePath, int pixelWidth, int pixelHeight, int resolution);
 
         /// <summary>
         /// Execute code in the session to export the active plot as a metafile.
@@ -174,7 +202,7 @@ namespace Microsoft.R.Components.Plots {
         /// <exception cref="OperationCanceledException">
         /// The session was reset, etc. this can be silenced.
         /// </exception>
-        Task ExportToMetafileAsync(string outputFilePath);
+        Task ExportToMetafileAsync(Guid deviceId, Guid plotId, string outputFilePath, double inchWidth, double inchHeight, int resolution);
 
         /// <summary>
         /// Execute code in the session to export the active plot as a PDF.
@@ -186,23 +214,50 @@ namespace Microsoft.R.Components.Plots {
         /// <exception cref="OperationCanceledException">
         /// The session was reset, etc. this can be silenced.
         /// </exception>
-        Task ExportToPdfAsync(string outputFilePath);
+        Task ExportToPdfAsync(Guid deviceId, Guid plotId, string outputFilePath, double inchWidth, double inchHeight);
 
         /// <summary>
-        /// End the locator mode with a locator result that indicate the user
-        /// wants to end the locator session.
+        /// Execute code in the session to change the active graphics device.
         /// </summary>
-        void EndLocatorMode();
+        /// <param name="deviceId">Device to make active.</param>
+        /// <exception cref="RPlotManagerException">
+        /// An error occurred with the session and the user should be notified.
+        /// </exception>
+        /// <exception cref="OperationCanceledException">
+        /// The session was reset, etc. this can be silenced.
+        /// </exception>
+        Task ActivateDeviceAsync(Guid deviceId);
 
         /// <summary>
-        /// End the locator mode with the specified result.
+        /// Execute code in the session to create a new graphics device and
+        /// associate it with the a visual component instance (if specified).
         /// </summary>
-        /// <param name="result"></param>
-        void EndLocatorMode(LocatorResult result);
+        /// <param name="existingInstanceId">
+        /// Visual component instance to use, or -1 to use any available or
+        /// create a new one.
+        /// </param>
+        Task NewDeviceAsync(int existingInstanceId);
 
         /// <summary>
-        /// Indicate whether locator mode is active or not.
+        /// Execute code in the session to copy a plot from one device to another.
         /// </summary>
-        bool IsInLocatorMode { get; }
+        /// <param name="sourceDeviceId">Device to copy from.</param>
+        /// <param name="sourcePlotId">Plot to copy.</param>
+        /// <param name="targetDeviceId">Device to copy to.</param>
+        Task CopyPlotAsync(Guid sourceDeviceId, Guid sourcePlotId, Guid targetDeviceId);
+
+        /// <summary>
+        /// Add a visual component to the pool of available components.
+        /// </summary>
+        /// <param name="visualComponent">Available visual component.</param>
+        void RegisterVisualComponent(IRPlotDeviceVisualComponent visualComponent);
+
+        /// <summary>
+        /// Get the view model for the specified device.
+        /// Used by tests to validate the state of a device.
+        /// </summary>
+        /// <param name="deviceId">Device view model to retrieve.</param>
+        /// <returns>Device view model.</returns>
+        IRPlotDeviceViewModel GetDeviceViewModel(Guid deviceId);
     }
 }

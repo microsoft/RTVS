@@ -35,6 +35,8 @@ namespace Microsoft.R.Host.Client.Test {
         public List<string> PlotFilePaths { get; } = new List<string>();
         public List<PlotMessage> OriginalPlotMessages { get; } = new List<PlotMessage>();
 
+        private PlotDeviceProperties DefaultDeviceProperties = new PlotDeviceProperties(DefaultWidth, DefaultHeight, 96);
+
         public IdeGraphicsDeviceTest(GraphicsDeviceTestFilesFixture files, TestMethodFixture testMethod) {
             _files = files;
             _testMethod = testMethod.MethodInfo;
@@ -147,8 +149,9 @@ plot(cars)
         [Test]
         [Category.Plots]
         public async Task SetInitialSize() {
+            DefaultDeviceProperties = new PlotDeviceProperties(600, 600, 96);
+
             var code = @"
-rtvs:::graphics.ide.resize(600, 600, 96)
 plot(0:10)
 ";
             var inputs = Batch(code);
@@ -165,7 +168,7 @@ plot(0:10)
         public async Task ResizeNonInteractive() {
             var code = @"
 plot(0:10)
-rtvs:::graphics.ide.resize(600, 600, 96)
+rtvs:::graphics.ide.resize(rtvs:::graphics.ide.getactivedeviceid(), 600, 600, 96)
 ";
             var inputs = Batch(code);
             var actualPlotFilePaths = await GraphicsTestAsync(inputs);
@@ -181,7 +184,7 @@ rtvs:::graphics.ide.resize(600, 600, 96)
         public async Task ResizeInteractive() {
             var code = @"
 plot(0:10)
-rtvs:::graphics.ide.resize(600, 600, 96)
+rtvs:::graphics.ide.resize(rtvs:::graphics.ide.getactivedeviceid(), 600, 600, 96)
 ";
             var inputs = Interactive(code);
             var actualPlotFilePaths = (await GraphicsTestAsync(inputs)).ToArray();
@@ -201,7 +204,7 @@ rtvs:::graphics.ide.resize(600, 600, 96)
             //https://github.com/Microsoft/RTVS/issues/1568
             var code = @"
 plot(0:10)
-rtvs:::graphics.ide.resize(600, 600, 96)
+rtvs:::graphics.ide.resize(rtvs:::graphics.ide.getactivedeviceid(), 600, 600, 96)
 ";
             var tmpFilesBefore = Directory.GetFiles(Path.GetTempPath(), "rhost-ide-plot-*.png");
             var inputs = Interactive(code);
@@ -260,7 +263,7 @@ plot(0:10)
             var code = string.Format(@"
 plot(0:10)
 plot(10:20)
-rtvs:::graphics.ide.previousplot()
+rtvs:::graphics.ide.previousplot(rtvs:::graphics.ide.getactivedeviceid())
 "
             );
 
@@ -314,7 +317,7 @@ plot(0:1)
 plot(1:2)
 plot(2:3)
 plot(3:4)
-rtvs:::graphics.ide.resize(600, 600, 96)
+rtvs:::graphics.ide.resize(rtvs:::graphics.ide.getactivedeviceid(), 600, 600, 96)
 ";
             var inputs = Interactive(code);
             var actualPlotPaths = (await GraphicsTestAsync(inputs)).ToArray();
@@ -341,7 +344,7 @@ plot(1:2)
 plot(2:3)
 plot(3:4)
 ",
-"rtvs:::graphics.ide.resize(600, 600, 96)",
+"rtvs:::graphics.ide.resize(rtvs:::graphics.ide.getactivedeviceid(), 600, 600, 96)",
             };
             var actualPlotPaths = (await GraphicsTestAsync(inputs)).ToArray();
             var expectedPlotPaths = new string[] { expected1Path, expected2Path };
@@ -354,7 +357,7 @@ plot(3:4)
             var code = @"
 plot(0:10)
 plot(5:15)
-rtvs:::graphics.ide.previousplot()
+rtvs:::graphics.ide.previousplot(rtvs:::graphics.ide.getactivedeviceid())
 ";
 
             var inputs = Interactive(code);
@@ -368,14 +371,13 @@ rtvs:::graphics.ide.previousplot()
             OriginalPlotMessages.Last().PlotCount.Should().Be(2);
         }
 
-
         [Test]
         [Category.Plots]
         public async Task ClearPlots() {
             var code = @"
 plot(0:10)
 plot(0:15)
-rtvs:::graphics.ide.clearplots()
+rtvs:::graphics.ide.clearplots(rtvs:::graphics.ide.getactivedeviceid())
 ";
 
             var inputs = Interactive(code);
@@ -393,9 +395,10 @@ rtvs:::graphics.ide.clearplots()
 plot(0:10)
 plot(0:20)
 plot(0:30)
-rtvs:::graphics.ide.previousplot()
-rtvs:::graphics.ide.previousplot()
-rtvs:::graphics.ide.removeplot()
+device_id <- rtvs:::graphics.ide.getactivedeviceid()
+rtvs:::graphics.ide.previousplot(device_id)
+rtvs:::graphics.ide.previousplot(device_id)
+rtvs:::graphics.ide.removeplot(device_id, rtvs:::graphics.ide.getactiveplotid(device_id))
 ";
 
             var inputs = Interactive(code);
@@ -413,7 +416,8 @@ rtvs:::graphics.ide.removeplot()
 plot(0:10)
 plot(0:20)
 plot(0:30)
-rtvs:::graphics.ide.removeplot()
+device_id <- rtvs:::graphics.ide.getactivedeviceid()
+rtvs:::graphics.ide.removeplot(device_id, rtvs:::graphics.ide.getactiveplotid(device_id))
 ";
 
             var inputs = Interactive(code);
@@ -431,8 +435,9 @@ rtvs:::graphics.ide.removeplot()
 plot(0:10)
 plot(0:20)
 plot(0:30)
-rtvs:::graphics.ide.previousplot()
-rtvs:::graphics.ide.removeplot()
+device_id <- rtvs:::graphics.ide.getactivedeviceid()
+rtvs:::graphics.ide.previousplot(device_id)
+rtvs:::graphics.ide.removeplot(device_id, rtvs:::graphics.ide.getactiveplotid(device_id))
 ";
 
             var inputs = Interactive(code);
@@ -448,7 +453,8 @@ rtvs:::graphics.ide.removeplot()
         public async Task RemovePlotSingle() {
             var code = @"
 plot(0:10)
-rtvs:::graphics.ide.removeplot()
+device_id <- rtvs:::graphics.ide.getactivedeviceid()
+rtvs:::graphics.ide.removeplot(device_id, rtvs:::graphics.ide.getactiveplotid(device_id))
 ";
 
             var inputs = Interactive(code);
@@ -470,8 +476,9 @@ rtvs:::graphics.ide.removeplot()
             var code = @"
 plot(0:10)
 plot(5:15)
-rtvs:::graphics.ide.resize(600, 600, 96)
-rtvs:::graphics.ide.previousplot()
+device_id <- rtvs:::graphics.ide.getactivedeviceid()
+rtvs:::graphics.ide.resize(device_id, 600, 600, 96)
+rtvs:::graphics.ide.previousplot(device_id)
 ";
 
             var inputs = Interactive(code);
@@ -548,7 +555,7 @@ dev.off()
         }
 
         private async Task<IEnumerable<string>> GraphicsTestAsync(string[] inputs, Func<LocatorResult> locatorHandler = null) {
-            await ExecuteInSession(inputs, new RHostClientTestApp { PlotHandler = OnPlot, LocatorHandler = locatorHandler });
+            await ExecuteInSession(inputs, new RHostClientTestApp { PlotHandler = OnPlot, LocatorHandler = locatorHandler, PlotDeviceCreateHandler = OnDeviceCreate, PlotDeviceDestroyHandler = OnDeviceDestroy });
 
             // Ensure that all plot files created by the graphics device have been deleted
             foreach (var plot in OriginalPlotMessages) {
@@ -576,13 +583,16 @@ dev.off()
         }
 
         private async Task ExportToImageAsync(IRSession session, string format, string filePath, int widthInPixels,int heightInPixels, int resolution) {
-            string script = String.Format("rtvs:::export_to_image({0}, {1}, {2}, {3})",format, widthInPixels, heightInPixels, resolution);
+            string script = String.Format(@"
+device_id <- rtvs:::graphics.ide.getactivedeviceid()
+rtvs:::export_to_image(device_id, rtvs:::graphics.ide.getactiveplotid(device_id), {0}, {1}, {2}, {3})
+", format, widthInPixels, heightInPixels, resolution);
             var data = await session.EvaluateAsync<byte[]>(script, REvaluationKind.Normal);
             File.WriteAllBytes(filePath, data);
         }
 
         private async Task<IEnumerable<string>> ExportToImageAsync(string[] inputs, string[] format, string[] paths, int widthInPixels, int heightInPixels, int resolution) {
-            var app = new RHostClientTestApp { PlotHandler = OnPlot };
+            var app = new RHostClientTestApp { PlotHandler = OnPlot, PlotDeviceCreateHandler = OnDeviceCreate, PlotDeviceDestroyHandler = OnDeviceDestroy };
             using (var sessionProvider = new RSessionProvider()) {
                 var session = sessionProvider.GetOrCreate(Guid.NewGuid(), new RHostBrokerConnector());
                 await session.StartHostAsync(new RHostStartupInfo {
@@ -610,7 +620,7 @@ dev.off()
         }
 
         private async Task<IEnumerable<string>> ExportToPdfAsync(string[] inputs, string filePath, int width, int height) {
-            var app = new RHostClientTestApp { PlotHandler = OnPlot };
+            var app = new RHostClientTestApp { PlotHandler = OnPlot, PlotDeviceCreateHandler = OnDeviceCreate, PlotDeviceDestroyHandler = OnDeviceDestroy };
             using (var sessionProvider = new RSessionProvider()) {
                 var session = sessionProvider.GetOrCreate(Guid.NewGuid(), new RHostBrokerConnector());
                 await session.StartHostAsync(new RHostStartupInfo {
@@ -623,7 +633,10 @@ dev.off()
                     }
                 }
 
-                string script = String.Format("rtvs:::export_to_pdf({0}, {1})", width, height);
+                string script = String.Format(@"
+device_id <- rtvs:::graphics.ide.getactivedeviceid()
+rtvs:::export_to_pdf(device_id, rtvs:::graphics.ide.getactiveplotid(device_id), {0}, {1})
+", width, height);
                 var data = await session.EvaluateAsync<byte[]>(script, REvaluationKind.Normal);
                 File.WriteAllBytes(filePath, data);
 
@@ -642,11 +655,18 @@ dev.off()
         }
 
         private static string[] Interactive(string code) {
-            return code.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            return code.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
         }
 
         private static string[] Batch(string code) {
             return new[] { code };
+        }
+
+        private PlotDeviceProperties OnDeviceCreate(Guid deviceId) {
+            return DefaultDeviceProperties;
+        }
+
+        private void OnDeviceDestroy(Guid deviceId) {
         }
 
         private void OnPlot(PlotMessage plot) {

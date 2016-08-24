@@ -9,6 +9,8 @@ using Microsoft.Common.Core.Shell;
 namespace Microsoft.R.Host.Client.Test.Script {
     public class RHostClientTestApp : IRSessionCallback {
         public Func<LocatorResult> LocatorHandler { get; set; }
+        public Func<Guid, PlotDeviceProperties> PlotDeviceCreateHandler { get; set; }
+        public Action<Guid> PlotDeviceDestroyHandler { get; set; }
         public Action<PlotMessage> PlotHandler { get; set; }
 
         public virtual string CranUrlFromName(string name) {
@@ -49,9 +51,24 @@ namespace Microsoft.R.Host.Client.Test.Script {
             return Task.CompletedTask;
         }
 
-        public Task<LocatorResult> Locator(CancellationToken ct) {
+        public Task<LocatorResult> Locator(Guid deviceId, CancellationToken ct) {
             if (LocatorHandler != null) {
                 return Task.FromResult(LocatorHandler());
+            }
+            throw new NotImplementedException();
+        }
+
+        public Task<PlotDeviceProperties> PlotDeviceCreate(Guid deviceId, CancellationToken ct) {
+            if (PlotDeviceCreateHandler != null) {
+                return Task.FromResult(PlotDeviceCreateHandler(deviceId));
+            }
+            throw new NotImplementedException();
+        }
+
+        public Task PlotDeviceDestroy(Guid deviceId, CancellationToken ct) {
+            if (PlotDeviceDestroyHandler != null) {
+                PlotDeviceDestroyHandler(deviceId);
+                return Task.CompletedTask;
             }
             throw new NotImplementedException();
         }

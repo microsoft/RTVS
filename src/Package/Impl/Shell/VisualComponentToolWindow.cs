@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.ComponentModel.Design;
 using System.Windows;
 using Microsoft.R.Components.View;
@@ -36,8 +37,12 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             _adapter = new VisualComponentToolWindowAdapter<T>(this);
         }
 
-        public void Show(bool focus) {
-            _adapter?.Show(focus);
+        public void Hide() {
+            _adapter?.Hide();
+        }
+
+        public void Show(bool focus, bool immediate) {
+            _adapter?.Show(focus, immediate);
         }
 
         public void ShowContextMenu(CommandID commandId, Point position) {

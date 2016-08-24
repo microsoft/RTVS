@@ -318,6 +318,9 @@
   <data name="Plots_RemoveCurrentPlotWarning" xml:space="preserve">
     <value>Are you sure you want to remove the current plot?</value>
   </data>
+  <data name="Plots_RemoveSelectedPlotWarning" xml:space="preserve">
+    <value>Are you sure you want to remove the selected plot?</value>
+  </data>
   <data name="Plots_CopyToClipboardError" xml:space="preserve">
     <value>Error copying plot to the clipboard.\n{0}</value>
   </data>
@@ -336,11 +339,17 @@
   <data name="Plots_ExportAsPdfDialogTitle" xml:space="preserve">
     <value>Export Plot As PDF</value>
   </data>
-  <data name="Plots_WindowCaption" xml:space="preserve">
+  <data name="Plots_WindowCaptionNoDevice" xml:space="preserve">
     <value>R Plot</value>
   </data>
+  <data name="Plots_WindowCaptionDevice" xml:space="preserve">
+    <value>R Plot - {0}</value>
+  </data>
+  <data name="Plots_WindowCaptionDeviceActive" xml:space="preserve">
+    <value>R Plot - {0} - Active</value>
+  </data>
   <data name="Plots_WindowCaptionLocatorActive" xml:space="preserve">
-    <value>R Plot - Locator is Active</value>
+    <value>R Plot - {0} - Locator is Active</value>
   </data>
   <data name="Plots_StatusLocatorActive" xml:space="preserve">
     <value>Locator is active. Click in the plot window to select points then choose End Locator.</value>
@@ -350,6 +359,12 @@
   </data>
   <data name="Plots_TransportError" xml:space="preserve">
     <value>Connection to R host process failed.</value>
+  </data>
+  <data name="Plots_CannotCopyAcrossSession" xml:space="preserve">
+    <value>Plots cannot be copied across R sessions.</value>
+  </data>
+  <data name="Plots_DeviceName" xml:space="preserve">
+    <value>Device {0}</value>
   </data>
   <data name="Error_InstallTimeout_Format" xml:space="preserve">
     <value>Timeout installing package {0}</value>

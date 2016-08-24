@@ -54,6 +54,7 @@
     <Compile Include="DataInspection\REvaluationResultProperties.cs" />
     <Compile Include="DataInspection\RPromiseInfo.cs" />
     <Compile Include="DataInspection\RSessionExtensions.cs" />
+    <Compile Include="Definitions\PlotDeviceProperties.cs" />
     <Compile Include="Host\RHost.GetBlobRequest.cs" />
     <Compile Include="Host\RHost.CreateBlobRequest.cs" />
     <Compile Include="Host\RHost.Request.cs" />

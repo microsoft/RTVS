@@ -46,7 +46,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
             }
 
             _interactiveWorkflow.Shell.SaveFileIfDirty(filePath);
-            activeWindow.Container.Show(false);
+            activeWindow.Container.Show(focus: false, immediate: false);
             await _interactiveWorkflow.Operations.SourceFileAsync(filePath, _echo, textView.TextBuffer.GetEncoding());
             return CommandResult.Executed;
         }

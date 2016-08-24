@@ -48,6 +48,9 @@ namespace Microsoft.R.Components.Test.Fakes.Shell {
 
         public MessageButtons ShowMessage(string message, MessageButtons buttons) {
             LastShownMessage = message;
+            if (buttons == MessageButtons.YesNo || buttons == MessageButtons.YesNoCancel) {
+                return MessageButtons.Yes;
+            }
             return MessageButtons.OK;
         }
 

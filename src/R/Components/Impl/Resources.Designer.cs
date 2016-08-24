@@ -655,11 +655,29 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Plots cannot be copied across R sessions..
+        /// </summary>
+        public static string Plots_CannotCopyAcrossSession {
+            get {
+                return ResourceManager.GetString("Plots_CannotCopyAcrossSession", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error copying plot to the clipboard.\n{0}.
         /// </summary>
         public static string Plots_CopyToClipboardError {
             get {
                 return ResourceManager.GetString("Plots_CopyToClipboardError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Device {0}.
+        /// </summary>
+        public static string Plots_DeviceName {
+            get {
+                return ResourceManager.GetString("Plots_DeviceName", resourceCulture);
             }
         }
         
@@ -736,6 +754,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to remove the selected plot?.
+        /// </summary>
+        public static string Plots_RemoveSelectedPlotWarning {
+            get {
+                return ResourceManager.GetString("Plots_RemoveSelectedPlotWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Locator is active. Click in the plot window to select points then choose End Locator..
         /// </summary>
         public static string Plots_StatusLocatorActive {
@@ -754,20 +781,38 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R Plot.
+        ///   Looks up a localized string similar to R Plot - {0}.
         /// </summary>
-        public static string Plots_WindowCaption {
+        public static string Plots_WindowCaptionDevice {
             get {
-                return ResourceManager.GetString("Plots_WindowCaption", resourceCulture);
+                return ResourceManager.GetString("Plots_WindowCaptionDevice", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R Plot - Locator is Active.
+        ///   Looks up a localized string similar to R Plot - {0} - Active.
+        /// </summary>
+        public static string Plots_WindowCaptionDeviceActive {
+            get {
+                return ResourceManager.GetString("Plots_WindowCaptionDeviceActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R Plot - {0} - Locator is Active.
         /// </summary>
         public static string Plots_WindowCaptionLocatorActive {
             get {
                 return ResourceManager.GetString("Plots_WindowCaptionLocatorActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R Plot.
+        /// </summary>
+        public static string Plots_WindowCaptionNoDevice {
+            get {
+                return ResourceManager.GetString("Plots_WindowCaptionNoDevice", resourceCulture);
             }
         }
         
