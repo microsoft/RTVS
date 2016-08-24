@@ -13,6 +13,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private readonly ICoreShell _shell;
         private readonly DisposableBag _disposableBag;
 
+        private bool _isRemote;
         private bool _isConnected;
         private string _selectedConnection;
         
@@ -36,6 +37,11 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             set { SetProperty(ref _isConnected, value); }
         }
 
+        public bool IsRemote {
+            get { return _isRemote; }
+            set { SetProperty(ref _isRemote, value); }
+        }
+
         public string SelectedConnection {
             get { return _selectedConnection; }
             set { SetProperty(ref _selectedConnection, value); }
@@ -48,6 +54,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private void ConnectionStateChanged(object sender, ConnectionEventArgs e) {
             _shell.DispatchOnUIThread(() => {
                 IsConnected = e.State;
+                IsRemote = e.Connection?.IsRemote ?? false;
                 SelectedConnection = e.Connection?.Name;
             });
         }

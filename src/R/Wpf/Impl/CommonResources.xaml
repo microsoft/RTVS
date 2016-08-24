@@ -291,28 +291,6 @@
         </DrawingBrush.Drawing>
     </DrawingBrush>
 
-    <DrawingBrush x:Key="IconRConnected">
-        <DrawingBrush.Drawing>
-            <DrawingGroup>
-                <DrawingGroup.Children>
-                    <GeometryDrawing Brush="{DynamicResource {x:Static wpf:Brushes.StatusBarDefaultTextBrushKey}}" Geometry="F1M45,13a54,54 0,0 1,-54 54,54 54,0 0,1 -54,-54 54,54 0,0 1,54 -54,54 54,0 0,1 54,54" />
-                    <GeometryDrawing Brush="#FF329932" Geometry="F1M0,0q0,-2.1875 -0.898437,-3.75 -0.898438,-1.5625 -3.085938,-2.46094 -1.523437,-0.625 -3.554687,-0.74218 -2.03125,-0.15625 -4.726563,-0.15625l-5.429687,0 0,15.66406 4.609375,0q3.59375,0 6.015625,-0.35156 2.421875,-0.35157 4.0625,-1.60157 1.5625,-1.21093 2.265625,-2.65625 0.742187,-1.48437 0.742187,-3.94531zm23.398438,40.35158 -18.320313,0 -15.859375,-21.3281 -6.914062,0 0,21.3281 -14.921875,0 0,-58.16408 25.15625,0q5.15625,0 8.867187,0.58594 3.710938,0.58594 6.953125,2.53906 3.28125,1.95313 5.195313,5.07813 1.953125,3.08593 1.953125,7.77343 0,6.44532 -3.007813,10.50782 -2.96875,4.0625 -8.515625,6.7578l19.414063,24.9219" />
-                </DrawingGroup.Children>
-            </DrawingGroup>
-        </DrawingBrush.Drawing>
-    </DrawingBrush>
-    
-    <DrawingBrush x:Key="IconRDisconnected">
-        <DrawingBrush.Drawing>
-            <DrawingGroup>
-                <DrawingGroup.Children>
-                    <GeometryDrawing Brush="#FFFF0000" Geometry="F1M45,13a54,54 0,0 1,-54 54,54 54,0 0,1 -54,-54 54,54 0,0 1,54 -54,54 54,0 0,1 54,54" />
-                    <GeometryDrawing Brush="{DynamicResource {x:Static wpf:Brushes.StatusBarDefaultTextBrushKey}}" Geometry="F1M0,0q0,-2.1875 -0.898437,-3.75 -0.898438,-1.5625 -3.085938,-2.46094 -1.523437,-0.625 -3.554687,-0.74218 -2.03125,-0.15625 -4.726563,-0.15625l-5.429687,0 0,15.66406 4.609375,0q3.59375,0 6.015625,-0.35156 2.421875,-0.35157 4.0625,-1.60157 1.5625,-1.21093 2.265625,-2.65625 0.742187,-1.48437 0.742187,-3.94531zm23.398438,40.35158 -18.320313,0 -15.859375,-21.3281 -6.914062,0 0,21.3281 -14.921875,0 0,-58.16408 25.15625,0q5.15625,0 8.867187,0.58594 3.710938,0.58594 6.953125,2.53906 3.28125,1.95313 5.195313,5.07813 1.953125,3.08593 1.953125,7.77343 0,6.44532 -3.007813,10.50782 -2.96875,4.0625 -8.515625,6.7578l19.414063,24.9219" />
-                </DrawingGroup.Children>
-            </DrawingGroup>
-        </DrawingBrush.Drawing>
-    </DrawingBrush>
-
     <PathGeometry FillRule="NonZero" x:Key="GeometryCircle18" Figures="m 17 8 a 9 9 0 0 1 -9 9 9 9 0 0 1 -9 -9 9 9 0 0 1 9 -9 9 9 0 0 1 9 9 z"/>
     <PathGeometry FillRule="NonZero" x:Key="GeometryLocal" Figures="M 2 3 L 2 12 L 7 12 L 7 13 L 4 13 L 4 14 L 12 14 L 12 13 L 9 13 L 9 12 L 14 12 L 14 3 L 2 3 z"/>
     <PathGeometry FillRule="NonZero" x:Key="GeometryCloud" Figures="M 6 3 A 3 3 0 0 0 3 6 A 3 3 0 0 0 3.2109375 7.1054688 A 3 3 0 0 0 1 10 A 3 3 0 0 0 4 13 L 12 13 A 3 3 0 0 0 15 10 A 3 3 0 0 0 12.787109 7.1054688 A 3 3 0 0 0 13 6 A 3 3 0 0 0 10 3 A 3 3 0 0 0 9.0019531 3.1757812 A 3 3 0 0 0 8 3 A 3 3 0 0 0 6.9980469 3.1738281 A 3 3 0 0 0 6 3 z"/>
@@ -354,8 +332,6 @@
         </DrawingBrush.Drawing>
     </DrawingBrush>
 
-    <!--<PathGeometry FillRule="NonZero" x:Key="GeometryRCloud" Figures="M 13 2 A 11 11 0 0 0 2 13 A 11 11 0 0 0 3.3613281 18.296875 C 1.4095641 18.977953 0 20.815976 0 23 C 0 25.761424 2.238576 28 5 28 L 6.4003906 28 L 6.4003906 6 L 13.640625 6 C 14.673739 6 15.626641 6.1217177 16.496094 6.3671875 C 17.365545 6.6126571 18.121208 6.9871139 18.765625 7.4882812 C 19.410042 7.9792209 19.911522 8.5990647 20.269531 9.3457031 C 20.637771 10.082111 20.822266 10.94344 20.822266 11.935547 C 20.822266 12.712868 20.704013 13.429398 20.46875 14.083984 C 20.243716 14.728342 19.917893 15.306964 19.488281 15.818359 C 19.068898 16.319528 18.556626 16.749446 17.953125 17.107422 C 17.359852 17.465399 16.692017 17.743171 15.945312 17.9375 L 15.945312 17.996094 C 16.344236 18.221108 16.689692 18.471892 16.986328 18.748047 C 17.282965 19.013972 17.566082 19.291744 17.832031 19.578125 C 18.097981 19.864506 18.35756 20.192342 18.613281 20.560547 C 18.879232 20.918523 19.171187 21.335695 19.488281 21.816406 L 23.400391 28 L 24 28 L 28 28 C 30.209139 28 32 26.209139 32 24 C 32 21.790861 30.209139 20 28 20 L 27.458984 20 A 4 4 0 0 0 28 18 A 4 4 0 0 0 24 14 A 4 4 0 0 0 23.945312 14.001953 A 11 11 0 0 0 24 13 A 11 11 0 0 0 13 2 z M 10.035156 8.9609375 L 10.035156 16.111328 L 13.074219 16.111328 C 13.636805 16.111328 14.15252 16.021531 14.623047 15.847656 C 15.103802 15.67378 15.519407 15.422996 15.867188 15.095703 C 16.21497 14.76841 16.485339 14.370875 16.679688 13.900391 C 16.874033 13.429907 16.970703 12.903303 16.970703 12.320312 C 16.970704 11.266837 16.639484 10.442828 15.974609 9.8496094 C 15.309734 9.2563904 14.351434 8.9609375 13.103516 8.9609375 L 10.035156 8.9609375 z M 10.035156 19.070312 L 10.035156 28 L 19.134766 28 L 15.623047 22.109375 C 15.305953 21.567296 14.992411 21.104996 14.685547 20.726562 C 14.388909 20.337903 14.080766 20.02086 13.763672 19.775391 C 13.456806 19.529921 13.120194 19.352741 12.751953 19.240234 C 12.383715 19.127722 11.970063 19.070312 11.509766 19.070312 L 10.035156 19.070312 z"/>-->
-
     <DrawingBrush x:Key="IconRCloudInactive">
         <DrawingBrush.Drawing>
             <DrawingGroup>
@@ -387,6 +363,54 @@
                     <GeometryDrawing Brush="#FF329932" Geometry="{StaticResource GeometryCircle18}" />
                     <GeometryDrawing Brush="#FFF6F6F6" Geometry="{StaticResource GeometryCloud}" />
                     <GeometryDrawing Brush="#FF329932" Geometry="{StaticResource GeometryR}" />
+                </DrawingGroup.Children>
+            </DrawingGroup>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+
+    <DrawingBrush x:Key="IconRLocalConnectedStatusBar">
+        <DrawingBrush.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Children>
+                    <GeometryDrawing Brush="#FF329932" Geometry="{StaticResource GeometryCircle18}" />
+                    <GeometryDrawing Brush="#FF000000" Geometry="{StaticResource GeometryLocal}" />
+                    <GeometryDrawing Brush="#FFF6F6F6" Geometry="{StaticResource GeometryR}" />
+                </DrawingGroup.Children>
+            </DrawingGroup>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+
+    <DrawingBrush x:Key="IconRLocalDisconnectedStatusBar">
+        <DrawingBrush.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Children>
+                    <GeometryDrawing Brush="#FFB40000" Geometry="{StaticResource GeometryCircle18}" />
+                    <GeometryDrawing Brush="#FF000000" Geometry="{StaticResource GeometryLocal}" />
+                    <GeometryDrawing Brush="#FFF6F6F6" Geometry="{StaticResource GeometryR}" />
+                </DrawingGroup.Children>
+            </DrawingGroup>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+
+    <DrawingBrush x:Key="IconRCloudConnectedStatusBar">
+        <DrawingBrush.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Children>
+                    <GeometryDrawing Brush="#FF329932" Geometry="{StaticResource GeometryCircle18}" />
+                    <GeometryDrawing Brush="#FF000000" Geometry="{StaticResource GeometryCloud}" />
+                    <GeometryDrawing Brush="#FFF6F6F6" Geometry="{StaticResource GeometryR}" />
+                </DrawingGroup.Children>
+            </DrawingGroup>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+
+    <DrawingBrush x:Key="IconRCloudDisconnectedStatusBar">
+        <DrawingBrush.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Children>
+                    <GeometryDrawing Brush="#FFB40000" Geometry="{StaticResource GeometryCircle18}" />
+                    <GeometryDrawing Brush="#FF000000" Geometry="{StaticResource GeometryCloud}" />
+                    <GeometryDrawing Brush="#FFF6F6F6" Geometry="{StaticResource GeometryR}" />
                 </DrawingGroup.Children>
             </DrawingGroup>
         </DrawingBrush.Drawing>

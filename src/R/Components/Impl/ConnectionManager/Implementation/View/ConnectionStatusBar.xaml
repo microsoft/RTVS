@@ -17,7 +17,7 @@
             </ResourceDictionary.MergedDictionaries>
             <Style TargetType="{x:Type StackPanel}">
                 <Setter Property="Background" Value="Transparent" />
-                <Setter Property="Height" Value="16" />
+                <Setter Property="Height" Value="18" />
                 <Setter Property="IsHitTestVisible" Value="True" />
                 <Setter Property="Margin" Value="11,0,0,0" />
                 <Setter Property="Orientation" Value="Horizontal" />
@@ -35,10 +35,18 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <StackPanel>
-        <Rectangle Fill="{StaticResource IconRConnected}" Width="14" Margin="-7,1,7,1"
-                   Visibility="{Binding Path=IsConnected, Converter={x:Static wpf:Converters.FalseIsCollapsed}}"/>
-        <Rectangle Fill="{StaticResource IconRDisconnected}" Width="14" Margin="4,1,7,1"
-                   Visibility="{Binding Path=IsConnected, Converter={x:Static wpf:Converters.TrueIsCollapsed}}" />
+        <Grid Margin="0,0,7,0" Visibility="{Binding Path=IsRemote, Converter={x:Static wpf:Converters.FalseIsNotCollapsed}}">
+            <Rectangle Fill="{StaticResource IconRLocalConnectedStatusBar}" Width="18"
+                       Visibility="{Binding Path=IsConnected, Converter={x:Static wpf:Converters.TrueIsNotCollapsed}}"/>
+            <Rectangle Fill="{StaticResource IconRLocalDisconnectedStatusBar}" Width="18"
+                       Visibility="{Binding Path=IsConnected, Converter={x:Static wpf:Converters.FalseIsNotCollapsed}}" />
+        </Grid>
+        <Grid Margin="0,0,7,0" Visibility="{Binding Path=IsRemote, Converter={x:Static wpf:Converters.TrueIsNotCollapsed}}">
+            <Rectangle Fill="{StaticResource IconRCloudConnectedStatusBar}" Width="18"
+                       Visibility="{Binding Path=IsConnected, Converter={x:Static wpf:Converters.TrueIsNotCollapsed}}"/>
+            <Rectangle Fill="{StaticResource IconRCloudDisconnectedStatusBar}" Width="18"
+                       Visibility="{Binding Path=IsConnected, Converter={x:Static wpf:Converters.FalseIsNotCollapsed}}" />
+        </Grid>
         <TextBlock Text="{Binding Path=SelectedConnection}" Margin="0,0,7,0" MaxWidth="300"
                    Foreground="{DynamicResource {x:Static wpf:Brushes.StatusBarDefaultTextBrushKey}}"
                    FontSize="{DynamicResource {x:Static wpf:FontKeys.EnvironmentFontSizeKey}}"
