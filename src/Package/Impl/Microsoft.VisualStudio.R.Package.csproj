@@ -1486,7 +1486,6 @@
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.DotNet.InternalAbstractions.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.CodeAnalysis.CSharp.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.CodeAnalysis.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Odachi.AspNetCore.Authentication.Basic.dll" />
       <VSIXSourceItem Include="$(OutputPath)\libuv.dll" />
       <VSIXSourceItem Include="$(OutputPath)\zip.dll" />
       <VSIXSourceItem Include="$(OutputPath)\ItemTemplates\**\*.*">
