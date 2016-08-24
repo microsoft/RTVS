@@ -126,7 +126,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 await Task.WhenAll(sessions.Select(s => s.StopHostAsync()));
             }
 
-            if (ActiveConnection != null && ActiveConnection.Id != _brokerConnector.BrokerUri) {
+            if (ActiveConnection != null && ActiveConnection.Id != connection.Id) {
                 SwitchBroker(connection);
             }
 
