@@ -11,17 +11,26 @@ using Microsoft.R.Support.Settings.Definitions;
 
 namespace Microsoft.R.Support.Test.Utility {
     [ExcludeFromCodeCoverage]
+    [Export(typeof(IRSettings))]
     [Export(typeof(IRToolsSettings))]
     public sealed class TestRToolsSettings : IRToolsSettings {
-        public string CranMirror {
-            get { return string.Empty; }
+        private static readonly ConnectionInfo[] _connections = {new ConnectionInfo {
+            Name = "Test",
+            Path = new Uri(new RInstallation().GetRInstallPath()).LocalPath
+        }};
+
+        public ConnectionInfo[] Connections {
+            get { return _connections; }
             set { }
         }
 
-        public string RBasePath {
-            get {
-                return new RInstallation().GetRInstallPath();
-            }
+        public ConnectionInfo LastActiveConnection {
+            get { return _connections[0]; }
+            set { }
+        }
+
+        public string CranMirror {
+            get { return string.Empty; }
             set { }
         }
 
@@ -63,9 +72,7 @@ namespace Microsoft.R.Support.Test.Utility {
         public bool ShowPackageManagerDisclaimer { get; set; } = true;
 
         public string[] WorkingDirectoryList { get; set; } = new string[0];
-
-        public string RCommandLineArguments { get; set; }
-
+        
         public HelpBrowserType HelpBrowserType {
             get { return HelpBrowserType.Automatic; }
             set { }
@@ -119,10 +126,5 @@ namespace Microsoft.R.Support.Test.Utility {
         }
 
         public bool EvaluateActiveBindings { get; set; } = false;
-
-        public Uri BrokerUri {
-            get { return null; } 
-            set { }
-        }
     }
 }

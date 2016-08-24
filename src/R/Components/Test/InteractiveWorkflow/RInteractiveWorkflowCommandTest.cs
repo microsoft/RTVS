@@ -6,21 +6,18 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Commands;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Test.Fakes.Trackers;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Test;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 using Microsoft.VisualStudio.Editor.Mocks;
-using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using NSubstitute;
@@ -43,15 +40,15 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
 
         public async Task InitializeAsync() {
             var settings = _exportProvider.GetExportedValue<IRSettings>();
-            _workflow.BrokerConnector.SwitchToLocalBroker(settings.RBasePath);
+            _workflow.BrokerConnector.SwitchToLocalBroker(settings.LastActiveConnection.Name, settings.LastActiveConnection.Path);
+
             await _workflow.RSession.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name,
-                RHostCommandLineArguments = settings.RCommandLineArguments,
+                RHostCommandLineArguments = settings.LastActiveConnection.RCommandLineArguments,
                 CranMirrorName = settings.CranMirror,
                 CodePage = settings.RCodePage
             }, null, 50000);
         }
-
 
         public Task DisposeAsync() {
             _exportProvider.Dispose();

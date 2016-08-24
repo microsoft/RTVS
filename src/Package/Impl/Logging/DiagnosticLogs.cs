@@ -12,9 +12,9 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
 using Microsoft.Common.Core;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Interpreters;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Install;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
@@ -31,17 +31,13 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
         public const string RtvsSystemEventsFile = "RTVSSystemEvents.log";
         public const string RtvsLogZipFile = "RTVSLogs.zip";
 
-        public static IEnumerable<string> RtvsLogFilePatterns {
-            get {
-                return new string[] {
-                    RHostLogPattern,
-                    ProjectSystemLogPattern,
-                    RtvsGeneralDataFile,
-                    RtvsSystemEventsFile,
-                    RtvsLogZipFile
-                };
-            }
-        }
+        public static IEnumerable<string> RtvsLogFilePatterns => new [] {
+            RHostLogPattern,
+            ProjectSystemLogPattern,
+            RtvsGeneralDataFile,
+            RtvsSystemEventsFile,
+            RtvsLogZipFile
+        };
 
         private static LongAction[] _actions = {
             new LongAction() { Name = Resources.CollectingRTVSLogs, Action = CollectRTVSLogs },
@@ -109,7 +105,7 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
             ZipFiles(_logFiles);
         }
 
-        private static string ZipFiles(IEnumerable<string> files) {
+        private static void ZipFiles(IEnumerable<string> files) {
             string zipPath = Path.Combine(Path.GetTempPath(), RtvsLogZipFile);
 
             using (FileStream zipStream = File.Create(zipPath)) {
@@ -129,14 +125,13 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
             }
 
             _logFiles.Clear();
-            return zipPath;
         }
 
         private static IEnumerable<string> GetRecentLogFiles(string pattern) {
             string tempPath = Path.GetTempPath();
 
             var logs = Directory.EnumerateFiles(tempPath, pattern);
-            return logs.Where((file) => {
+            return logs.Where(file => {
                 DateTime writeTime = File.GetLastWriteTimeUtc(file);
                 TimeSpan difference = DateTime.Now.ToUniversalTime() - writeTime;
                 if (difference.TotalDays < DaysToRetain) {
@@ -170,7 +165,7 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
                         sw.WriteLine();
                     }
 
-                } catch (System.Exception ex) {
+                } catch (Exception ex) {
                     sw.WriteLine("  Failed to access event log.");
                     sw.WriteLine(ex.ToString());
                     sw.WriteLine();
@@ -188,7 +183,7 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
         public static void WriteGeneralData(TextWriter writer, bool detailed) {
             try {
                 writer.WriteLine("OS Information");
-                writer.WriteLine("    Version:       " + Environment.OSVersion.ToString());
+                writer.WriteLine("    Version:       " + Environment.OSVersion);
                 if (detailed) {
                     writer.WriteLine("    CPU Count:     " + Environment.ProcessorCount);
                     writer.WriteLine("    64 bit:        " + Environment.Is64BitOperatingSystem);
@@ -206,6 +201,7 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
                 writer.WriteLine();
 
                 var ri = new RInstallation();
+                var workflow = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
                 if (detailed) {
                     IEnumerable<string> rEngines = ri.GetInstalledEngineVersionsFromRegistry();
                     writer.WriteLine("Installed R Engines (from registry):");
@@ -218,12 +214,21 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
                     writer.WriteLine("Latest R Engine (from registry):");
                     writer.WriteLine("    " + latestEngine);
                     writer.WriteLine();
-                }
 
-                string rInstallPath = ri.GetRInstallPath(RToolsSettings.Current.RBasePath);
-                writer.WriteLine("R Install path:");
-                writer.WriteLine("    " + rInstallPath);
-                writer.WriteLine();
+                    var connections = workflow.Connections.RecentConnections;
+                    writer.WriteLine("Installed R Engines (from registry):");
+                    foreach (var connection in connections) {
+                        writer.WriteLine($"    {connection.Name}: {connection.Id}");
+                    }
+                    writer.WriteLine();
+                }
+                
+                var activeConnection = workflow.Connections.ActiveConnection;
+                if (activeConnection != null) {
+                    writer.WriteLine("Active R URI:");
+                    writer.WriteLine($"    {activeConnection.Name}: {activeConnection.Id}");
+                    writer.WriteLine();
+                }
 
                 if (detailed) {
                     writer.WriteLine("Assemblies loaded by Visual Studio:");
@@ -237,7 +242,7 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
                         ));
                     }
                 }
-            } catch (System.Exception ex) {
+            } catch (Exception ex) {
                 writer.WriteLine("  Failed to access system data.");
                 writer.WriteLine(ex.ToString());
                 writer.WriteLine();

@@ -10,7 +10,12 @@ using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Host.Client.Test.Session {
     public class RSessionProviderTest : IDisposable {
-        private readonly IRHostBrokerConnector _brokerConnector = new RHostBrokerConnector(name: nameof(RSessionProviderTest));
+        private readonly IRHostBrokerConnector _brokerConnector;
+
+        public RSessionProviderTest() {
+            _brokerConnector = new RHostBrokerConnector();
+            _brokerConnector.SwitchToLocalBroker(nameof(RSessionProviderTest));
+        }
 
         public void Dispose() {
             _brokerConnector.Dispose();

@@ -16,6 +16,7 @@ using Microsoft.Languages.Editor.Test.Shell;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Controller;
+using Microsoft.R.Components.Settings;
 using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Test.Utility;
 using Microsoft.UnitTests.Core.Threading;
@@ -58,6 +59,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
                         RToolsSettings.Current = new TestRToolsSettings();
 
                         var batch = new CompositionBatch()
+                            .AddValue<IRSettings>(RToolsSettings.Current)
                             .AddValue(RToolsSettings.Current)
                             .AddValue<ICoreShell>(_instance)
                             .AddValue<IEditorShell>(_instance)

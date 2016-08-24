@@ -14,6 +14,7 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Threading;
 using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Host;
 using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 
@@ -73,6 +74,8 @@ namespace Microsoft.R.Support.Help.Packages {
                     await _functionIndex.BuildIndexAsync(this);
                     Debug.WriteLine("R function index total: {0} ms", (DateTime.Now - startTotalTime).TotalMilliseconds);
                 }
+            } catch (RHostDisconnectedException ex) { 
+                Debug.WriteLine(ex.Message);
             } finally {
                 _buildIndexLock.Release();
             }

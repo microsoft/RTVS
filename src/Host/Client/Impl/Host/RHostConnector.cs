@@ -36,6 +36,10 @@ namespace Microsoft.R.Host.Client.Host {
 
         protected HttpClient HttpClient { get; private set; }
 
+        public abstract Uri BrokerUri { get; }
+
+        public bool IsRemote => !BrokerUri.IsFile;
+
         protected RHostConnector(string interpreterId) {
             _interpreterId = interpreterId;
             _log = new LinesLog(FileLogWriter.InTempFolder("Microsoft.R.Host.BrokerConnector"));

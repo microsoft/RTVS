@@ -13,11 +13,14 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Wpf.Extensions;
 using Microsoft.R.Components.Controller;
+using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.StackTracing;
 using Microsoft.R.Support.Settings.Definitions;
@@ -34,29 +37,30 @@ using static Microsoft.R.DataInspection.REvaluationResultProperties;
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public partial class VariableView : UserControl, ICommandTarget, IDisposable {
         private readonly IRToolsSettings _settings;
+        private readonly ICoreShell _shell;
         private readonly IRSession _session;
         private readonly IREnvironmentProvider _environmentProvider;
         private readonly IObjectDetailsViewerAggregator _aggregator;
 
         private bool _keyDownSeen;
         private ObservableTreeNode _rootNode;
-        private static List<REnvironment> _defaultEnvironments = new List<REnvironment>() { new REnvironment(Package.Resources.VariableExplorer_EnvironmentName) };
 
-        public VariableView() : this(null) { }
+        public VariableView() : this(null, VsAppShell.Current) { }
 
-        public VariableView(IRToolsSettings settings) {
+        public VariableView(IRToolsSettings settings, ICoreShell shell) {
             _settings = settings;
+            _shell = shell;
 
             InitializeComponent();
 
-            _aggregator = VsAppShell.Current.ExportProvider.GetExportedValue<IObjectDetailsViewerAggregator>();
+            _aggregator = _shell.ExportProvider.GetExportedValue<IObjectDetailsViewerAggregator>();
 
             SetRootNode(VariableViewModel.Ellipsis);
 
             SortDirection = ListSortDirection.Ascending;
             RootTreeGrid.Sorting += RootTreeGrid_Sorting;
 
-            var workflow = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
+            var workflow = _shell.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
             _session = workflow.RSession;
 
             _environmentProvider = new REnvironmentProvider(_session);
@@ -87,38 +91,39 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private void EnvironmentComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            if ((EnvironmentComboBox.ItemsSource != _defaultEnvironments) && (e.AddedItems.Count > 0)) {
-                var env = e.AddedItems[0] as REnvironment;
-                if (env != null) {
-                    if (env.Kind == REnvironmentKind.Error) {
-                        SetRootNode(VariableViewModel.Error(env.Name));
-                    } else {
-                        SetRootModelAsync(env).DoNotWait();
-                    }
-                }
-
-                // Some of the Variable Explorer tool bar buttons are depend on the R Environment (e.g., Delete all Variables button).
-                // This will give those UI elements a chance to update state.
-                IVsUIShell uiShell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-                uiShell.UpdateCommandUI(0);
+            var env = e.AddedItems.OfType<REnvironment>().FirstOrDefault();
+            if (env != null) {
+                SetRootModelAsync(env).DoNotWait();
             }
         }
 
         private async Task SetRootModelAsync(REnvironment env) {
-            await TaskUtilities.SwitchToBackgroundThread();
-            const REvaluationResultProperties properties = ClassesProperty | ExpressionProperty | TypeNameProperty | DimProperty | LengthProperty;
+            _shell.AssertIsOnMainThread();
 
-            IRValueInfo result;
-            try {
-                result = await _session.EvaluateAndDescribeAsync(env.EnvironmentExpression, properties, null);
-            } catch (RException ex) {
-                VsAppShell.Current.DispatchOnUIThread(() => SetRootNode(VariableViewModel.Error(ex.Message)));
-                return;
+            if (env.Kind != REnvironmentKind.Error) {
+                try {
+                    var result = await EvaluateAndDescribeAsync(env);
+                    var wrapper = new VariableViewModel(result, _aggregator);
+                    _rootNode.Model = new VariableNode(_settings, wrapper);
+                } catch (RException ex) {
+                    SetRootNode(VariableViewModel.Error(ex.Message));
+                } catch (RHostDisconnectedException ex) {
+                    SetRootNode(VariableViewModel.Error(ex.Message));
+                }
+            } else {
+                SetRootNode(VariableViewModel.Error(env.Name));
             }
 
-            var wrapper = new VariableViewModel(result, _aggregator);
-            var rootNodeModel = new VariableNode(_settings, wrapper);
-            VsAppShell.Current.DispatchOnUIThread(() => _rootNode.Model = rootNodeModel);
+            // Some of the Variable Explorer tool bar buttons are depend on the R Environment (e.g., Delete all Variables button).
+            // This will give those UI elements a chance to update state.
+            _shell.UpdateCommandStatus();
+        }
+
+        private async Task<IRValueInfo> EvaluateAndDescribeAsync(REnvironment env) {
+            await TaskUtilities.SwitchToBackgroundThread();
+
+            const REvaluationResultProperties properties = ClassesProperty | ExpressionProperty | TypeNameProperty | DimProperty | LengthProperty;
+            return await _session.EvaluateAndDescribeAsync(env.EnvironmentExpression, properties, null);
         }
 
         private void SetRootNode(VariableViewModel evaluation) {
@@ -144,8 +149,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             if (row != null) {
                 SelectRow(row);
                 var pt = PointToScreen(e.GetPosition(this));
-                VsAppShell.Current.ShowContextMenu(
-                    new CommandID(RGuidList.RCmdSetGuid, (int)RContextMenuId.VariableExplorer), (int)pt.X, (int)pt.Y, this);
+                _shell.ShowContextMenu(new CommandID(RGuidList.RCmdSetGuid, (int)RContextMenuId.VariableExplorer), (int)pt.X, (int)pt.Y, this);
                 e.Handled = true;
             }
         }
@@ -173,7 +177,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                         var focus = Keyboard.FocusedElement as FrameworkElement;
                         if (focus != null) {
                             var pt = focus.PointToScreen(new Point(1, 1));
-                            VsAppShell.Current.ShowContextMenu(
+                            _shell.ShowContextMenu(
                                 new CommandID(RGuidList.RCmdSetGuid, (int)RContextMenuId.VariableExplorer), (int)pt.X, (int)pt.Y, this);
                         }
                     }

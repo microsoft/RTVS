@@ -37,8 +37,9 @@ namespace Microsoft.R.DataInspection.Test {
 
         public ValuesTest(TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo;
-            _brokerConnector = new RHostBrokerConnector(name: nameof(ValuesTest));
+            _brokerConnector = new RHostBrokerConnector();
             _sessionProvider = new RSessionProvider();
+            _brokerConnector.SwitchToLocalBroker(nameof(ValuesTest));
             _session = _sessionProvider.GetOrCreate(Guid.NewGuid(), _brokerConnector);
         }
 

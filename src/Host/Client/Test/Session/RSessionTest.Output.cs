@@ -17,11 +17,13 @@ namespace Microsoft.R.Host.Client.Test.Session {
     public partial class RSessionTest {
         public class Output : IAsyncLifetime {
             private readonly MethodInfo _testMethod;
-            private readonly IRHostBrokerConnector _brokerConnector = new RHostBrokerConnector(name: nameof(Output));
+            private readonly IRHostBrokerConnector _brokerConnector;
             private readonly RSession _session;
 
             public Output(TestMethodFixture testMethod) {
                 _testMethod = testMethod.MethodInfo;
+                _brokerConnector = new RHostBrokerConnector();
+                _brokerConnector.SwitchToLocalBroker(nameof(RSessionTest) + nameof(Output));
                 _session = new RSession(0, _brokerConnector, () => { });
             }
 

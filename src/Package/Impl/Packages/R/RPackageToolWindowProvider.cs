@@ -4,13 +4,13 @@
 using System;
 using System.ComponentModel.Composition;
 using System.Threading.Tasks;
+using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.Help;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.View;
-using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Help;
 using Microsoft.VisualStudio.R.Package.History;
 using Microsoft.VisualStudio.R.Package.ToolWindows;
@@ -26,6 +26,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         [Import]
         private Lazy<IRHistoryVisualComponentContainerFactory> HistoryComponentContainerFactory { get; set; }
         [Import]
+        private Lazy<IConnectionManagerVisualComponentContainerFactory> ConnectionManagerComponentContainerFactory { get; set; }
+        [Import]
         private Lazy<IRPackageManagerVisualComponentContainerFactory> PackageManagerComponentContainerFactory { get; set; }
         [Import]
         private Lazy<IHelpVisualComponentContainerFactory> HelpVisualComponentContainerFactory { get; set; }
@@ -40,6 +42,11 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             if (toolWindowType == HistoryWindowPane.WindowGuid) {
                 CreateHistoryToolWindow(id);
+                return true;
+            }
+
+            if (toolWindowType == ConnectionManagerWindowPane.WindowGuid) {
+                CreateConnectionManagerToolWindow(id);
                 return true;
             }
 
@@ -74,6 +81,10 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 return CreateHistoryToolWindow(id).Container;
             }
 
+            if (toolWindowType == ConnectionManagerWindowPane.WindowGuid) {
+                return CreateConnectionManagerToolWindow(id).Container;
+            }
+
             if (toolWindowType == PackageManagerWindowPane.WindowGuid) {
                 return CreatePackageManagerToolWindow(id).Container;
             }
@@ -97,6 +108,11 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         private IRHistoryWindowVisualComponent CreateHistoryToolWindow(int id) {
             var workflow = WorkflowProvider.Value.GetOrCreate();
             return workflow.History.GetOrCreateVisualComponent(HistoryComponentContainerFactory.Value, id);
+        }
+
+        private IConnectionManagerVisualComponent CreateConnectionManagerToolWindow(int id) {
+            var workflow = WorkflowProvider.Value.GetOrCreate();
+            return workflow.Connections.GetOrCreateVisualComponent(ConnectionManagerComponentContainerFactory.Value, id);
         }
 
         private IRPackageManagerVisualComponent CreatePackageManagerToolWindow(int id) {

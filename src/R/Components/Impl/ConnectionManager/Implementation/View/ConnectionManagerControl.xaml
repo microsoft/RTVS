@@ -1,0 +1,194 @@
+﻿<UserControl x:Class="Microsoft.R.Components.ConnectionManager.Implementation.View.ConnectionManagerControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:rwpf="clr-namespace:Microsoft.R.Wpf;assembly=Microsoft.R.Wpf"
+             xmlns:components="clr-namespace:Microsoft.R.Components"
+             xmlns:designTime="clr-namespace:Microsoft.R.Components.ConnectionManager.Implementation.View.DesignTime"
+             xmlns:viewModel="clr-namespace:Microsoft.R.Components.ConnectionManager.ViewModel"
+             mc:Ignorable="d" x:Name="Self"
+             d:DataContext="{d:DesignInstance Type=designTime:DesignTimeConnectionManagerViewModel, IsDesignTimeCreatable=True}"
+             d:DesignHeight="600" d:DesignWidth="400">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <rwpf:CommonResources />
+            </ResourceDictionary.MergedDictionaries>
+
+            <DataTemplate DataType="{x:Type viewModel:IConnectionViewModel}">
+                <Border BorderThickness="0,0,0,0" BorderBrush="{DynamicResource {x:Static rwpf:Brushes.ActiveBorderKey}}" Background="Transparent" x:Name="Container">
+                    <Grid Margin="8,4,7,4" MinHeight="32">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="22" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Connect button -->
+                        <Button x:Name="ButtonConnect" Grid.Column="0" Style="{StaticResource ToolWindowButtonStyle}" Click="ButtonConnect_Click" VerticalAlignment="Center"
+                                Visibility="{Binding Path=IsConnected, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}">
+                            <Button.ToolTip>
+                                <TextBlock Text="{Binding Path=Name, StringFormat={x:Static components:Resources.ConnectionManager_ConnectTooltip}}" />
+                            </Button.ToolTip>
+                            <Grid>
+                                <Grid Width="18" Height="18" Visibility="{Binding Path=IsActive, Converter={x:Static rwpf:Converters.FalseIsNotCollapsed}}">
+                                    <Rectangle Fill="{StaticResource IconRLocalInactive}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}" />
+                                    <Rectangle Fill="{StaticResource IconRCloudInactive}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"/>
+                                </Grid>
+                                <Grid Width="18" Height="18" Visibility="{Binding Path=IsActive, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}">
+                                    <Rectangle Fill="{StaticResource IconRLocalDisconnected}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}" />
+                                    <Rectangle Fill="{StaticResource IconRCloudDisconnected}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"/>
+                                </Grid>
+                            </Grid>
+                        </Button>
+
+                        <!-- Connected icon -->
+                        <Grid  Grid.Column="0" Width="18" Height="18" Visibility="{Binding Path=IsConnected, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}">
+                            <Rectangle Fill="{StaticResource IconRLocalConnected}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}" />
+                            <Rectangle Fill="{StaticResource IconRCloudConnected}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"/>
+                        </Grid>
+                        
+                        <!-- Name & path -->
+                        <StackPanel Grid.Column="1" Margin="0,-1,0,1">
+                            <TextBlock FontWeight="Bold" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" VerticalAlignment="Center" Text="{Binding Path=Name, Mode=OneWay}"
+                                       FontSize="{Binding ElementName=Self, Path=FontSize, Converter={x:Static rwpf:Converters.Scale122}}" Margin="4,0,0,0" />
+                            <TextBlock Text="{Binding Path=Path, Mode=OneWay}" Margin="4,0,0,0" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </DataTemplate>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <ScrollViewer x:Name="Root" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
+        <DockPanel x:Name="RootContent" LastChildFill="True" MinWidth="362">
+            <DockPanel.MaxWidth>
+                <MultiBinding Converter="{x:Static rwpf:Converters.Max}">
+                    <Binding ElementName="Root" Path="ActualWidth" />
+                    <Binding ElementName="RootContent" Path="MinWidth" />
+                </MultiBinding>
+            </DockPanel.MaxWidth>
+            <Grid DockPanel.Dock="Top">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="14" />
+                    <RowDefinition Height="auto" />
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="1" Margin="24,0,12,17">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="6" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="6" />
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button Grid.Column="2" MinWidth="80" MinHeight="24" HorizontalAlignment="Left" Click="ButtonAdd_Click"
+                            Content="{x:Static components:Resources.ConnectionManager_Add}" />
+
+                    <Button Grid.Column="4" MinWidth="80" MinHeight="24" HorizontalAlignment="Left" Click="ButtonDelete_Click"
+                            Content="{x:Static components:Resources.ConnectionManager_Delete}" />
+                </Grid>
+            </Grid>
+
+            <Border DockPanel.Dock="Top" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" VerticalAlignment="Stretch">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="60*" MinHeight="300" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="40*" MinHeight="200" />
+                    </Grid.RowDefinitions>
+                    <!-- left side -->
+                    <Grid Grid.Row="0">
+                        <ListBox x:Name="List" Background="{DynamicResource {x:Static rwpf:Brushes.ListPaneBackgroundKey}}" Foreground="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}"
+                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Visible" 
+                                 VirtualizingPanel.IsVirtualizing="true" VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.CacheLength="1,2" VirtualizingPanel.CacheLengthUnit="Page"
+                                 SelectionChanged="List_SelectionChanged" HorizontalContentAlignment="Stretch" BorderThickness="0,0,0,0" 
+                                 ItemContainerStyle="{StaticResource FillingListBoxItemStyle}" ItemTemplateSelector="{StaticResource TypeDataTemplateSelector}"
+                                 ItemsSource="{Binding Path=Items}" SelectedItem="{Binding Path=SelectedConnection, Mode=OneWay}">
+                            <!-- set the template to disable the background change when the IsEnabled is false. -->
+                            <ListBox.Template>
+                                <ControlTemplate TargetType="{x:Type ListBox}">
+                                    <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="1" SnapsToDevicePixels="true">
+                                        <ScrollViewer Focusable="false" Padding="{TemplateBinding Padding}">
+                                            <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                                        </ScrollViewer>
+                                    </Border>
+                                </ControlTemplate>
+                            </ListBox.Template>
+                        </ListBox>
+                    </Grid>
+
+                    <GridSplitter Grid.Row="1" Width="4" HorizontalAlignment="Center" VerticalAlignment="Stretch" BorderThickness="1,0"
+                                  Background="{DynamicResource {x:Static rwpf:Brushes.SplitterBackgroundKey}}" BorderBrush="{DynamicResource {x:Static rwpf:Brushes.ActiveBorderKey}}" />
+
+                    <!-- right side -->
+                    <Grid Grid.Row="2" Margin="24,8,7,8" DataContext="{Binding Path=SelectedConnection}" Visibility="{Binding Converter={x:Static rwpf:Converters.NullIsCollapsed}}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="8" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="8" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="8" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="8" />
+                            <RowDefinition Height="auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="6" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        
+                        <!-- row 0 -->
+                        <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="Bold" 
+                                   Text="{x:Static components:Resources.ConnectionManager_Name}" />
+
+                        <TextBox Grid.Row="0" Grid.Column="2" VerticalAlignment="Top" VerticalContentAlignment="Center"
+                                 Text="{Binding Path=Name, Mode=TwoWay}"/>
+                        
+                        <!-- row 2 -->
+                        <TextBlock Grid.Row="2" Grid.Column="0" FontWeight="Bold" 
+                                   Text="{x:Static components:Resources.ConnectionManager_Path}" />
+
+                        <TextBox Grid.Row="2" Grid.Column="2" VerticalAlignment="Top" VerticalContentAlignment="Center"
+                                 Text="{Binding Path=Path, Mode=TwoWay}"/>
+                        
+                        <!-- row 4 -->
+                        <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" FontWeight="Bold" 
+                                   Text="{x:Static components:Resources.ConnectionManager_RCommandLineArguments}" />
+
+                        <TextBox Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Top" VerticalContentAlignment="Center"
+                                 Text="{Binding Path=RCommandLineArguments, Mode=TwoWay}"/>
+                        
+                        <!-- row 6 -->
+                        <Grid Grid.Row="8" ColumnSpan="3">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="6" />
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="6" />
+                                <ColumnDefinition Width="auto" />
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Row="8" Grid.Column="1" MinWidth="80" MinHeight="24" HorizontalAlignment="Left" Click="ButtonCancel_Click"
+                                    Content="{x:Static components:Resources.ConnectionManager_Cancel}" IsEnabled="{Binding Path=HasChanges}" />
+                            <Button Grid.Row="8" Grid.Column="3" MinWidth="80" MinHeight="24" HorizontalAlignment="Left" Click="ButtonSave_Click"
+                                    Content="{x:Static components:Resources.ConnectionManager_Save}" IsEnabled="{Binding Path=HasChanges}" />
+                            <Button Grid.Row="8" Grid.Column="5" MinWidth="80" MinHeight="24" HorizontalAlignment="Left" Click="ButtonConnect_Click"
+                                    Content="{x:Static components:Resources.ConnectionManager_Connect}">
+                                <Button.IsEnabled>
+                                    <MultiBinding Converter="{x:Static rwpf:Converters.All}">
+                                        <Binding Path="CanConnect" />
+                                        <Binding Path="IsConnected" Converter="{x:Static rwpf:Converters.Not}" />
+                                    </MultiBinding>
+                                </Button.IsEnabled>
+                            </Button>
+                        </Grid>
+
+                    </Grid>
+                </Grid>
+            </Border>
+        </DockPanel>
+    </ScrollViewer>
+</UserControl>

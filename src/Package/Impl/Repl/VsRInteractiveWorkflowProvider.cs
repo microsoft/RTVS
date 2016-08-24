@@ -65,13 +65,14 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
         private IRInteractiveWorkflow CreateRInteractiveWorkflow() {
             var settings = RToolsSettings.Current;
-            var brokerConnector = new RHostBrokerConnector(settings.BrokerUri, name: "RTVS");
-            var workflow = new RInteractiveWorkflow(_sessionProvider, _connectionsProvider, _historyProvider, _packagesProvider, _plotsProvider, _activeTextViewTracker, _debuggerModeTracker, brokerConnector, _shell, settings, DisposeInstance);
+            var brokerConnector = new RHostBrokerConnector();
+            var workflow = new RInteractiveWorkflow(_sessionProvider, _connectionsProvider, _historyProvider, _packagesProvider, _plotsProvider, _activeTextViewTracker, _debuggerModeTracker, brokerConnector, _shell, settings, () => DisposeInstance(brokerConnector));
             _disposableBag.Add(workflow);
             return workflow;
         }
 
-        private void DisposeInstance() {
+        private void DisposeInstance(IRHostBrokerConnector brokerConnector) {
+            brokerConnector.Dispose();
             _instanceLazy = null;
         }
     }

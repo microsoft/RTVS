@@ -15,7 +15,6 @@ using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Test.Fakes.InteractiveWindow;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
@@ -37,7 +36,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
         public PackageManagerIntegrationTest(RComponentsMefCatalogFixture catalog, TestMethodFixture testMethod, TestFilesFixture testFiles) {
             _exportProvider = catalog.CreateExportProvider();
             _workflowProvider = _exportProvider.GetExportedValue<TestRInteractiveWorkflowProvider>();
-            _workflowProvider.BrokerConnectorName = nameof(PackageManagerIntegrationTest);
+            _workflowProvider.BrokerName = nameof(PackageManagerIntegrationTest);
             _testMethod = testMethod.MethodInfo;
             _repoPath = TestRepositories.GetRepoPath(testFiles);
             _libPath = Path.Combine(testFiles.LibraryDestinationPath, _testMethod.Name);
@@ -223,8 +222,8 @@ namespace Microsoft.R.Components.Test.PackageManager {
             await TestRepositories.SetLocalRepoAsync(_workflow.RSession, _repoPath);
             await TestLibraries.SetLocalLibsAsync(_workflow.RSession, _libPath);
 
-            var result = await _workflow.Packages.GetLibraryPathsAsync();
-            result[0].Should().Be(_libPath.ToRPath());
+            var result = await _workflow.Packages.GetLibraryPathAsync();
+            result.Should().Be(_libPath.ToRPath());
         }
 
         [Test]
@@ -275,10 +274,9 @@ namespace Microsoft.R.Components.Test.PackageManager {
         private async Task<IRInteractiveWorkflow> CreateWorkflowAsync() {
             var workflow = _workflowProvider.GetOrCreate();
             var settings = _exportProvider.GetExportedValue<IRSettings>();
-            workflow.BrokerConnector.SwitchToLocalBroker(settings.RBasePath);
+            workflow.BrokerConnector.SwitchToLocalBroker(nameof(PackageManagerIntegrationTest));
             await workflow.RSession.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name,
-                RHostCommandLineArguments = settings.RCommandLineArguments,
                 CranMirrorName = settings.CranMirror,
                 CodePage = settings.RCodePage
             }, new RHostClientTestApp(), 50000);

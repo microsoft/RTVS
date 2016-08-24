@@ -5,6 +5,7 @@ using System;
 using System.Text;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using static System.FormattableString;
@@ -90,7 +91,9 @@ namespace Microsoft.R.Host.Protocol {
             if (RequestId > 0 && RequestId < ulong.MaxValue) {
                 result += $":#{RequestId}#";
             }
-            result += $" {Name} {Json} {BitConverter.ToString(Blob)}";
+
+            var blobString = BitConverter.ToString(Blob);
+            result += $" {Name} {Json} {blobString}";
             return result;
         }
 

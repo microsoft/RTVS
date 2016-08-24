@@ -35,7 +35,8 @@ namespace Microsoft.R.Host.Client.Test {
 
         public XamlGraphicsDeviceTest(TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo;
-            _brokerConnector = new RHostBrokerConnector(name: nameof(XamlGraphicsDeviceTest));
+            _brokerConnector = new RHostBrokerConnector();
+            _brokerConnector.SwitchToLocalBroker(nameof(XamlGraphicsDeviceTest));
         }
 
         public void Dispose() {

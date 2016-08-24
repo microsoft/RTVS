@@ -34,25 +34,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         private string _workingDirectory;
         private int _codePage;
         private bool _showPackageManagerDisclaimer = true;
-        private string _rBasePath;
-
-        /// <summary>
-        /// Path to 64-bit R installation such as 
-        /// 'C:\Program Files\R\R-3.2.2' without bin\x64
-        /// </summary>
-        public string RBasePath {
-            get { return _rBasePath; }
-            set {
-                if (_rBasePath.EqualsIgnoreCase(value)) {
-                    return;
-                }
-                _rBasePath = value;
-                var workflow = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
-                workflow.Connections.AddOrUpdateLocalConnection(_rBasePath, _rBasePath);
-            }
-        }
-
-        public Uri BrokerUri { get; set; }
+        private ConnectionInfo[] _connections = new ConnectionInfo[0];
+        private ConnectionInfo _lastActiveConnection;
 
         public YesNoAsk LoadRDataOnProjectLoad { get; set; } = YesNoAsk.No;
 
@@ -89,6 +72,24 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             }
         }
 
+        public ConnectionInfo[] Connections {
+            get { return _connections; }
+            set {
+                using (SaveSettings()) {
+                    _connections = value;
+                }
+            }
+        }
+
+        public ConnectionInfo LastActiveConnection {
+            get { return _lastActiveConnection; }
+            set {
+                using (SaveSettings()) {
+                    _lastActiveConnection = value;
+                }
+            }
+        }
+
         public string WorkingDirectory {
             get { return _workingDirectory; }
             set {
@@ -111,7 +112,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         }
 
         public string[] WorkingDirectoryList { get; set; } = new string[0];
-        public string RCommandLineArguments { get; set; }
         public HelpBrowserType HelpBrowserType { get; set; }
         public bool ShowDotPrefixedVariables { get; set; }
         public SurveyNewsPolicy SurveyNewsCheck { get; set; } = SurveyNewsPolicy.CheckOnceWeek;
@@ -125,9 +125,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         public BrowserType MarkdownBrowserType { get; set; } = BrowserType.External;
 
         public RToolsSettingsImplementation() {
-            // Default settings. Will be overwritten with actual
-            // settings (if any) when settings are loaded from storage
-            _rBasePath = new RInstallation().GetRInstallPath();
             _workingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         }
 
@@ -174,9 +171,11 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             }
         }
 
-        private IDisposable SaveSettings() {
-            var page = RPackage.Current.GetDialogPage(typeof(RToolsOptionsPage)) as RToolsOptionsPage;
-            return Disposable.Create(() => page?.SaveSettings());
+        private static IDisposable SaveSettings() {
+            var page = (RToolsOptionsPage)RPackage.Current.GetDialogPage(typeof(RToolsOptionsPage));
+            return page != null && !page.IsLoadingFromStorage
+                ? Disposable.Create(() => page.SaveSettings())
+                : Disposable.Empty;
         }
     }
 }

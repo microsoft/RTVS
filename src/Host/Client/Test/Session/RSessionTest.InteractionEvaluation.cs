@@ -24,12 +24,14 @@ namespace Microsoft.R.Host.Client.Test.Session {
         public class InteractionEvaluation : IAsyncLifetime {
             private readonly TaskObserverMethodFixture _taskObserver;
             private readonly MethodInfo _testMethod;
-            private readonly IRHostBrokerConnector _brokerConnector = new RHostBrokerConnector(name: nameof(InteractionEvaluation));
+            private readonly IRHostBrokerConnector _brokerConnector;
             private readonly RSession _session;
 
             public InteractionEvaluation(TestMethodFixture testMethod, TaskObserverMethodFixture taskObserver) {
                 _taskObserver = taskObserver;
                 _testMethod = testMethod.MethodInfo;
+                _brokerConnector = new RHostBrokerConnector();
+                _brokerConnector.SwitchToLocalBroker(nameof(RSessionTest) + nameof(InteractionEvaluation));
                 _session = new RSession(0, _brokerConnector, () => { });
             }
 

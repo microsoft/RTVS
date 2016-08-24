@@ -30,6 +30,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         private readonly BinaryAsyncLock _availableLock;
         private readonly BinaryAsyncLock _installedAndLoadedLock;
         private readonly BatchObservableCollection<object> _items;
+        private readonly Queue<string> _errorMessages;
 
         private volatile IList<IRPackageViewModel> _availablePackages;
         private volatile IList<IRPackageViewModel> _installedPackages;
@@ -41,7 +42,6 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         private string _firstError;
         private bool _hasMultipleErrors;
         private IRPackageViewModel _selectedPackage;
-        private Queue<string> _errorMessages;
 
         public RPackageManagerViewModel(IRPackageManager packageManager, IRSession session, IRSettings settings, ICoreShell coreShell) {
             _packageManager = packageManager;
@@ -149,7 +149,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             var startingTab = _selectedTab;
 
             try {
-                var libPath = await GetLibPath();
+                var libPath = await _packageManager.GetLibraryPathAsync();
                 await _packageManager.InstallPackageAsync(package.Name, libPath);
             } catch (RHostDisconnectedException) {
                 AddErrorMessage(string.Format(CultureInfo.CurrentCulture, Resources.PackageManager_CantInstallPackageNoRSession, package.Name));
@@ -366,13 +366,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                     break;
             }
         }
-
-        private async Task<string> GetLibPath() {
-            var rBasePath = _settings.RBasePath.ToRPath();
-            var libPaths = await _packageManager.GetLibraryPathsAsync();
-            return libPaths.Select(p => p.ToRPath()).FirstOrDefault(s => !s.StartsWithIgnoreCase(rBasePath));
-        }
-
+        
         public async Task SwitchToAvailablePackagesAsync() {
             if (await SetTabAsync(SelectedTab.AvailablePackages)) {
                 if (!_availableLock.IsCompleted) {
@@ -658,7 +652,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         private void RSessionMutated(object sender, EventArgs e) {
             ReloadLoadedPackagesAsync()
                 .ContinueWith(t => _coreShell.DispatchOnUIThread(async () => {
-                    await ReplaceItemsAsync(_loadedPackages);
+                    await ReplaceItemsAsync(SelectedTab.LoadedPackages);
                 }))
                 .DoNotWait();
         }
@@ -666,9 +660,11 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         private void OnPackagesInstalled(object sender, EventArgs e) {
             ReloadItemsAsync().DoNotWait();
         }
+
         private void OnPackagesRemoved(object sender, EventArgs e) {
             ReloadItemsAsync().DoNotWait();
         }
+
         public void Dispose() {
             _session.Mutated -= RSessionMutated;
             _session.PackagesInstalled -= OnPackagesInstalled;

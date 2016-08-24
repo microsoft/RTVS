@@ -27,7 +27,8 @@ namespace Microsoft.R.ExecutionTracing.Test {
 
         public DebugReplTest(TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo;
-            _brokerConnector = new RHostBrokerConnector(name: nameof(DebugReplTest));
+            _brokerConnector = new RHostBrokerConnector();
+            _brokerConnector.SwitchToLocalBroker(nameof(DebugReplTest));
             _sessionProvider = new RSessionProvider();
             _session = _sessionProvider.GetOrCreate(Guid.NewGuid(), _brokerConnector);
         }

@@ -21,12 +21,5 @@ namespace Microsoft.R.Host.Client {
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<IRSessionEvaluation> BeginEvaluationAsync(IRHostBrokerConnector hostFactory, RHostStartupInfo startupInfo, CancellationToken cancellationToken = default(CancellationToken));
-
-        /// <summary>
-        /// Restart active sessions associated with <paramref name="brokerConnector"/>
-        /// </summary>
-        /// <param name="brokerConnector"></param>
-        /// <returns>Task that succeeds when all affected sessions are restarted</returns>
-        Task RestartSessions(IRHostBrokerConnector brokerConnector);
     }
 }

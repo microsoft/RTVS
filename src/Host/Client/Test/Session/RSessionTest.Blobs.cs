@@ -3,6 +3,7 @@
 
 using System;
 using System.Reflection;
+using System.Runtime;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.R.Host.Client.Host;
@@ -27,7 +28,8 @@ namespace Microsoft.R.Host.Client.Test.Session {
             public Blobs(TestMethodFixture testMethod, TaskObserverMethodFixture taskObserver) {
                 _taskObserver = taskObserver;
                 _testMethod = testMethod.MethodInfo;
-                _brokerConnector = new RHostBrokerConnector(name: nameof(Blobs));
+                _brokerConnector = new RHostBrokerConnector();
+                _brokerConnector.SwitchToLocalBroker(nameof(RSessionTest) + nameof(Blobs));
                 _session = new RSession(0, _brokerConnector, () => { });
             }
 
@@ -45,7 +47,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
                 _brokerConnector.Dispose();
             }
 
-            [Test(DisplayName = "CreateBlob_DisconnectedFromTheStart")]
+            [Test]
             public async Task CreateBlob_DisconnectedFromTheStart() {
                 using (var session = new RSession(0, _brokerConnector, () => { })) {
                     var data = new byte[] { 1, 2, 3, 4, 5 };
@@ -54,9 +56,10 @@ namespace Microsoft.R.Host.Client.Test.Session {
                 }
             }
 
-            [Test(DisplayName = "CreateBlob_DisconnectedDuringCreate")]
+            [Test]
             public async Task CreateBlob_DisconnectedDuringCreate() {
-                var data = new byte[100 * 1024 * 1024]; // try to send a massive blob
+                var data = new byte[25 * 1024 * 1024]; // try to send a massive blob
+
                 ManualResetEvent testStarted = new ManualResetEvent(false);
                 Func<Task> f = () => {
                     testStarted.Set();
@@ -68,7 +71,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
                 await assertion;
             }
 
-            [Test(DisplayName = "CreateBlob_CanceledDuringCreate")]
+            [Test]
             public async Task CreateBlob_CanceledDuringCreate() {
                 var cts = new CancellationTokenSource();
                 var data = new byte[1024 * 1024];
@@ -82,7 +85,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
                 await assertion;
             }
 
-            [Test(DisplayName = "GetBlob_DisconnectedFromTheStart")]
+            [Test]
             public async Task GetBlob_DisconnectedFromTheStart() {
                 using (var session = new RSession(0, _brokerConnector, () => { })) {
                     Func<Task> f = () => session.GetBlobAsync(1);
@@ -90,7 +93,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
                 }
             }
 
-            [Test(DisplayName = "GetBlob_DisconnectedDuringGet")]
+            [Test]
             public async Task GetBlob_DisconnectedDuringGet() {
                 var data = new byte[10 * 1024 * 1024];
                 var blobId = await _session.CreateBlobAsync(data);
@@ -103,7 +106,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
                 await f.ShouldThrowAsync<RHostDisconnectedException>();
             }
 
-            [Test(DisplayName = "GetBlob_CanceledDuringGet")]
+            [Test]
             public async Task GetBlob_CanceledDuringGet() {
                 var cts = new CancellationTokenSource();
                 var data = new byte[1024 * 1024];
@@ -119,7 +122,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
                 await assertion;
             }
 
-            [Test(DisplayName = "DestroyBlob_DisconnectedFromTheStart")]
+            [Test]
             public async Task DestroyBlob_DisconnectedFromTheStart() {
                 using (var session = new RSession(0, _brokerConnector, () => { })) {
                     var blobids = new ulong[] { 1, 2, 3, 4, 5 };
@@ -128,23 +131,19 @@ namespace Microsoft.R.Host.Client.Test.Session {
                 }
             }
 
-            [Test(DisplayName = "DestroyBlob_DisconnectedDuringDestroy")]
+            [Test]
             public async Task DestroyBlob_DisconnectedDuringDestroy() {
                 var blobIds = new ulong[1024 * 1024];
                 ManualResetEvent testStarted = new ManualResetEvent(false);
 
-                Func<Task> f = async () => {
-                    testStarted.Set();
-                    await _session.DestroyBlobsAsync(blobIds);
-                };
+                Func<Task> f = () => _session.DestroyBlobsAsync(blobIds);
 
                 var assertion = f.ShouldThrowAsync<RHostDisconnectedException>();
-                testStarted.WaitOne(100);
                 await _session.StopHostAsync();
                 await assertion;
             }
 
-            [Test(DisplayName = "DestroyBlob_CanceledDuringDestroy")]
+            [Test]
             public async Task DestroyBlob_CanceledDuringDestroy() {
                 var cts = new CancellationTokenSource();
                 Func<Task> f = async () => {

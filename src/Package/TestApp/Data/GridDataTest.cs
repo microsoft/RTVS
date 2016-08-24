@@ -37,7 +37,8 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
 
         public GridDataTest(TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo;
-            _brokerConnector = new RHostBrokerConnector(name: nameof(GridDataTest));
+            _brokerConnector = new RHostBrokerConnector();
+            _brokerConnector.SwitchToLocalBroker(nameof(GridDataTest));
             _sessionProvider = new RSessionProvider();
             _session = _sessionProvider.GetOrCreate(Guid.NewGuid(), _brokerConnector);
         }

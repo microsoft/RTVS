@@ -20,7 +20,7 @@ namespace Microsoft.R.Components.ConnectionManager.Commands {
         public async Task<CommandResult> InvokeAsync() {
             var connection = _connectionsManager.ActiveConnection;
             if (connection != null) {
-                await connection.ConnectAsync();
+                await _connectionsManager.ConnectAsync(connection);
             }
             return CommandResult.Executed;
         }

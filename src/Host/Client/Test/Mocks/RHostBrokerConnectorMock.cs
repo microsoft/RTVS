@@ -15,11 +15,19 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
             throw new System.NotImplementedException();
         }
 
+        public bool IsRemote { get; private set; }
         public Uri BrokerUri { get; private set; }
         public event EventHandler BrokerChanged;
 
-        public void SwitchToLocalBroker(string rBasePath, string rHostDirectory = null) {
-            BrokerUri = new Uri(rBasePath);
+        public void SwitchToLocalBroker(string name, string rBasePath = null, string rHostDirectory = null) {
+            BrokerUri = rBasePath != null ? new Uri(rBasePath) : new Uri(@"C:\");
+            IsRemote = false;
+            BrokerChanged?.Invoke(this, new EventArgs());
+        }
+
+        public void SwitchToRemoteBroker(Uri uri) {
+            BrokerUri = uri;
+            IsRemote = true;
             BrokerChanged?.Invoke(this, new EventArgs());
         }
     }

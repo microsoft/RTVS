@@ -6,7 +6,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using FluentAssertions;
 using Microsoft.Common.Core.IO;
-using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Test.Registry;
 using Microsoft.R.Interpreters;
 using Microsoft.UnitTests.Core.FluentAssertions;
@@ -65,7 +64,7 @@ namespace Microsoft.R.Core.Test.Install {
             fvi.FileMinorPart.Returns(23);
             fs.GetVersionInfo(dir64 + "R.dll").Returns(fvi);
 
-            var ri = new RInstallation(tr, fs, new ProcessServices());
+            var ri = new RInstallation(tr, fs);
             var svl = new SupportedRVersionRange(3, 2, 3, 2);
             RInstallData data = ri.GetInstallationData(null, svl);
 
@@ -99,7 +98,7 @@ namespace Microsoft.R.Core.Test.Install {
         public void Test04() {
             var tr = new RegistryMock(SimulateRegistry04());
             var svl = new SupportedRVersionRange(3, 2, 3, 9);
-            var ri = new RInstallation(tr, null, null);
+            var ri = new RInstallation(tr, null);
 
             ri.GetCompatibleEnginePathFromRegistry(svl).Should().BeNullOrEmpty();
 
@@ -110,7 +109,7 @@ namespace Microsoft.R.Core.Test.Install {
             fsi.FullName.Returns(dir);
             fs.GetDirectoryInfo(@"C:\Program Files\RRO").EnumerateFileSystemInfos().Returns(new IFileSystemInfo[] { fsi });
             
-            ri = new RInstallation(tr, fs, null);
+            ri = new RInstallation(tr, fs);
             RInstallData data = ri.GetInstallationData(null, svl);
             data.Status.Should().Be(RInstallStatus.PathNotSpecified);
 
@@ -133,7 +132,7 @@ namespace Microsoft.R.Core.Test.Install {
             fvi.FileMinorPart.Returns(13);
             fs.GetVersionInfo(dir + "R.dll").Returns(fvi);
 
-            var ri = new RInstallation(tr, fs, null);
+            var ri = new RInstallation(tr, fs);
             var svl = new SupportedRVersionRange(3, 2, 3, 2);
             RInstallData data = ri.GetInstallationData(dir, svl);
             data.Status.Should().Be(RInstallStatus.UnsupportedVersion);

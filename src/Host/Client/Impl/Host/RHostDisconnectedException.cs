@@ -6,8 +6,10 @@ using System.Runtime.Serialization;
 using System.Threading;
 
 namespace Microsoft.R.Host.Client.Host {
+    [Serializable]
+    [System.Runtime.InteropServices.ComVisible(true)]
     public class RHostDisconnectedException : OperationCanceledException {
-        public RHostDisconnectedException() {}
+        public RHostDisconnectedException() : this("RHost disconnected") { }
 
         public RHostDisconnectedException(string message) : base(message) {}
 

@@ -1,8 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.Linq;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
+using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Interpreters;
 using Microsoft.R.Host.Client.Install;
 using Microsoft.R.Support.Settings;
@@ -12,10 +14,12 @@ using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Commands {
     internal sealed class SwitchToRClientCommand : PackageCommand {
+        private readonly IConnectionManager _connectionManager;
         private readonly ICoreShell _shell;
 
-        public SwitchToRClientCommand(ICoreShell shell) :
+        public SwitchToRClientCommand(IConnectionManager connectionManager, ICoreShell shell) :
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSwitchToRClient) {
+            _connectionManager = connectionManager;
             _shell = shell;
         }
 
@@ -33,17 +37,14 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
                 }
             }
 
-            var currentRPath = RToolsSettings.Current.RBasePath;
-            if(!string.IsNullOrEmpty(currentRPath) && currentRPath.EqualsIgnoreCase(rClientPath)) {
+            var connection = _connectionManager.ActiveConnection;
+            if(!connection.IsRemote && !string.IsNullOrEmpty(connection.Path) && connection.Path.EqualsIgnoreCase(rClientPath)) {
                 _shell.ShowMessage(Resources.Message_RClientIsAlreadySet, MessageButtons.OK);
                 return;
             }
 
-            using (var page = RPackage.Current.GetDialogPage(typeof(RToolsOptionsPage)) as RToolsOptionsPage) {
-                RToolsSettings.Current.RBasePath = rClientPath;
-                page.SaveSettings();
-            }
-            _shell.ShowMessage(Resources.RPathChanged_RestartRToApplyChanges, MessageButtons.OK);
+            connection = _connectionManager.GetOrAddConnection("Microsoft R Client", rClientPath, string.Empty);
+            _connectionManager.ConnectAsync(connection).DoNotWait();
         }
     }
 }

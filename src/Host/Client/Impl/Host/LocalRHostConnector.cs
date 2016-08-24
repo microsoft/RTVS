@@ -15,20 +15,10 @@ using Newtonsoft.Json;
 
 namespace Microsoft.R.Host.Client.Host {
     internal sealed class LocalRHostConnector : RHostConnector {
-        private const int DefaultPort = 5118;
         private const string RHostBrokerExe = "Microsoft.R.Host.Broker.exe";
-        private const string RBinPathX64 = @"bin\x64";
         private const string InterpreterId = "local";
 
         private static readonly bool ShowConsole = string.IsNullOrEmpty(Environment.GetEnvironmentVariable("RTVS_HOST_CONSOLE"));
-        private static readonly TimeSpan HeartbeatTimeout =
-#if DEBUG
-            // In debug mode, increase the timeout significantly, so that when the host is paused in debugger,
-            // the client won't immediately timeout and disconnect.
-            TimeSpan.FromMinutes(10);
-#else
-            TimeSpan.FromSeconds(5);
-#endif
         private static readonly NetworkCredential _credentials = new NetworkCredential("RTVS", Guid.NewGuid().ToString());
 
         private readonly string _name;
@@ -38,16 +28,19 @@ namespace Microsoft.R.Host.Client.Host {
 
         private Process _brokerProcess;
 
+        public override Uri BrokerUri { get; }
+
         public LocalRHostConnector(string name, string rHome, string rhostDirectory = null)
             : base(InterpreterId) {
 
             _name = name;
             _rhostDirectory = rhostDirectory ?? Path.GetDirectoryName(typeof(RHost).Assembly.GetAssemblyPath());
             _rHome = rHome;
+
+            BrokerUri = new Uri(rHome);
         }
 
-        protected override void UpdateCredentials() {
-        }
+        protected override void UpdateCredentials() {}
 
         protected override async Task ConnectToBrokerAsync() {
             DisposableBag.ThrowIfDisposed();

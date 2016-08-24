@@ -1030,15 +1030,6 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Path to local R installation has been changed. You must connect to the new R path to take effect..
-        /// </summary>
-        public static string RPathChanged_RestartRToApplyChanges {
-            get {
-                return ResourceManager.GetString("RPathChanged_RestartRToApplyChanges", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         public static System.Drawing.Bitmap RProjectNode {
