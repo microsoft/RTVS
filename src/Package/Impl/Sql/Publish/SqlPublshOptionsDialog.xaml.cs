@@ -4,8 +4,10 @@
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using EnvDTE;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
+using Microsoft.R.Components.Extensions;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
@@ -59,6 +61,10 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         private void SaveSettingsAndClose() {
             _model.Settings.Save(_appShell.SettingsStorage);
 
+            // Make sure all files are saved and up to date on disk.
+            var dte = _appShell.GetGlobalService<DTE>(typeof(DTE));
+            dte.ExecuteCommand("File.SaveAll");
+
             var uiShell = _appShell.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
             var guid = RGuidList.RCmdSetGuid;
             var o = new object();
@@ -72,7 +78,10 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
 
         private void TargetTypeList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             _model.SelectTargetTypeAsync(TargetTypeList.SelectedIndex).ContinueWith(t => {
-                _appShell.DispatchOnUIThread(() => TargetList.SelectedIndex = _model.SelectedTargetIndex);
+                _appShell.DispatchOnUIThread(() => {
+                    TargetList.SelectedIndex = _model.SelectedTargetIndex;
+                    _model.SelectTarget(TargetList.SelectedIndex);
+                });
             }).DoNotWait();
         }
 
