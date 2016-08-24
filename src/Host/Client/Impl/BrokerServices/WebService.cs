@@ -48,6 +48,14 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             return JsonConvert.DeserializeObject<TResponse>(responseBody);
         }
 
+        public async Task<TResponse> HttpPostAsync<TRequest, TResponse>(Uri uri, TRequest request) {
+            var requestBody = JsonConvert.SerializeObject(request);
+            var content = new StringContent(requestBody, Encoding.UTF8, "application/json");
+            var response = (await HttpClient.PostAsync(uri, content)).EnsureSuccessStatusCode();
+            var responseBody = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<TResponse>(responseBody);
+        }
+
         public Task<TResponse> HttpPutAsync<TRequest, TResponse>(UriTemplate uriTemplate, TRequest request, params object[] args) =>
             HttpPutAsync<TRequest, TResponse>(MakeUri(uriTemplate, args), request);
 

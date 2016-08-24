@@ -11,4 +11,9 @@ namespace Microsoft.R.Host.Client.BrokerServices {
 
         Task<SessionInfo> PutAsync(string id, SessionCreateRequest request);
     }
+
+    public interface IRemoteUriWebService {
+        Task<RemoteUriResponse> PostAsync(RemoteUriRequest request);
+    }
+
 }

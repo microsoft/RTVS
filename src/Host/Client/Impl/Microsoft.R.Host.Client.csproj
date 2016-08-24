@@ -38,12 +38,14 @@
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="BrokerServices\ISessionsWebService.cs" />
+    <Compile Include="BrokerServices\WebServer.cs" />
     <Compile Include="BrokerServices\WebService.cs" />
     <Compile Include="BrokerServices\SessionsWebService.cs" />
     <Compile Include="DataInspection\IRActiveBindingInfo.cs" />

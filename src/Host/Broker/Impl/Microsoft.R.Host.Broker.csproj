@@ -87,6 +87,7 @@
     <Compile Include="Pipes\IOwnedMessagePipeEnd.cs" />
     <Compile Include="Pipes\ProcessHelpers.cs" />
     <Compile Include="Pipes\WebSocketPipeAction.cs" />
+    <Compile Include="RemoteUri\RemoteUriController.cs" />
     <Compile Include="Security\Claims.cs" />
     <Compile Include="Security\HttpBasicAuth\BaseBasicContext.cs" />
     <Compile Include="Security\HttpBasicAuth\BasicAppBuilderExtensions.cs" />

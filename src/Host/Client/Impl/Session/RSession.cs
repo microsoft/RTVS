@@ -17,6 +17,8 @@ using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.Host;
 using static System.FormattableString;
 using Task = System.Threading.Tasks.Task;
+using Microsoft.R.Host.Client.BrokerServices;
+using System.Net.Http;
 
 namespace Microsoft.R.Host.Client.Session {
     internal sealed class RSession : IRSession, IRCallbacks {
@@ -667,7 +669,7 @@ namespace Microsoft.R.Host.Client.Session {
         /// <param name="url"></param>
         /// <returns></returns>
         Task IRCallbacks.WebBrowser(string url) {
-            var callback = _callback;
+           var callback = _callback;
             return callback != null ? callback.ShowHelp(url) : Task.CompletedTask;
         }
 
@@ -701,6 +703,14 @@ namespace Microsoft.R.Host.Client.Session {
         Task<string> IRCallbacks.SaveFileAsync(string filename, byte[] data) {
             var callback = _callback;
             return callback != null ? callback.SaveFileAsync(filename, data) : Task.FromResult(string.Empty);
+        }
+
+        private async Task<string> HandleRemoteUrl(string url) {
+            if(IsRemote) {
+                return WebServer.CreateWebServer(url, new HttpClient(), CancellationToken.None);
+            } else {
+                return url;
+            }
         }
     }
 }
