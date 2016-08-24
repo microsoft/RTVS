@@ -199,6 +199,7 @@
     <Compile Include="History\HistoryWindowPane.cs" />
     <Compile Include="Options\Attributes\SurveyNewsPolicyTypeConverter.cs" />
     <Compile Include="Options\R\Tools\SurveyNewsCommand.cs" />
+    <Compile Include="ProjectSystem\Commands\CopyRemoteItemPathCommand.cs" />
     <Compile Include="ProjectSystem\Commands\SetAsStartUpRScriptCommand.cs" />
     <Compile Include="ToolWindows\ConnectionManagerWindowPane.cs" />
     <Compile Include="ToolWindows\VsConnectionManagerVisualComponentContainerFactory.cs" />
