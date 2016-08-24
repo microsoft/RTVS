@@ -17,7 +17,8 @@ namespace Microsoft.R.Components.Test.StubFactories {
             };
 
             return new RSettingsStub {
-                Connections = new [] { connection }
+                Connections = new [] { connection },
+                LastActiveConnection = connection
             };
         }
     }

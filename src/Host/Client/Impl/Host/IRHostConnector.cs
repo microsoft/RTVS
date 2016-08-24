@@ -9,6 +9,6 @@ namespace Microsoft.R.Host.Client.Host {
     public interface IRHostConnector : IDisposable {
         bool IsRemote { get; }
         Uri BrokerUri { get; }
-        Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, int timeout = 3000, CancellationToken cancellationToken = default(CancellationToken));
+        Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

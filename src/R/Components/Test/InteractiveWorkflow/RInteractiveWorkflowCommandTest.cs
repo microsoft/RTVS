@@ -40,15 +40,15 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
 
         public async Task InitializeAsync() {
             var settings = _exportProvider.GetExportedValue<IRSettings>();
-            _workflow.BrokerConnector.SwitchToLocalBroker(settings.Connections[0].Name, settings.Connections[0].Path, settings.Connections[0].RCommandLineArguments);
+            _workflow.BrokerConnector.SwitchToLocalBroker(settings.LastActiveConnection.Name, settings.LastActiveConnection.Path);
 
             await _workflow.RSession.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name,
+                RHostCommandLineArguments = settings.LastActiveConnection.RCommandLineArguments,
                 CranMirrorName = settings.CranMirror,
                 CodePage = settings.RCodePage
             }, null, 50000);
         }
-
 
         public Task DisposeAsync() {
             _exportProvider.Dispose();

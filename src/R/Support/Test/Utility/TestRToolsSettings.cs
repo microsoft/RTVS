@@ -24,6 +24,11 @@ namespace Microsoft.R.Support.Test.Utility {
             set { }
         }
 
+        public ConnectionInfo LastActiveConnection {
+            get { return _connections[0]; }
+            set { }
+        }
+
         public string CranMirror {
             get { return string.Empty; }
             set { }

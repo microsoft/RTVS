@@ -5,17 +5,18 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Threading.Tasks;
-using Microsoft.R.Components.Search;
 
 namespace Microsoft.R.Components.ConnectionManager.ViewModel {
-    public interface IConnectionManagerViewModel : ISearchHandler, INotifyPropertyChanged, IDisposable {
-        ReadOnlyObservableCollection<object> Items { get; }
+    public interface IConnectionManagerViewModel : INotifyPropertyChanged, IDisposable {
+        ReadOnlyObservableCollection<IConnectionViewModel> Items { get; }
         IConnectionViewModel SelectedConnection { get; }
+        bool IsConnected { get; }
 
         void SelectConnection(IConnectionViewModel connection);
         void AddNew();
         void CancelSelected();
         void SaveSelected();
+        void DeleteSelected();
 
         Task ConnectAsync(IConnectionViewModel connection);
     }

@@ -20,24 +20,30 @@
                 <Border BorderThickness="0,0,0,0" BorderBrush="{DynamicResource {x:Static rwpf:Brushes.ActiveBorderKey}}" Background="Transparent" x:Name="Container">
                     <Grid Margin="8,4,7,4" MinHeight="32">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="20" />
+                            <ColumnDefinition Width="22" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
                         <!-- Connect button -->
-                        <Button x:Name="ButtonConnect" Grid.Column="0" Style="{StaticResource ToolWindowButtonStyle}" Click="ButtonConnect_Click"
-                                Visibility="{Binding Path=IsConnected, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}" VerticalAlignment="Center">
+                        <Button x:Name="ButtonConnect" Grid.Column="0" Style="{StaticResource ToolWindowButtonStyle}" Click="ButtonConnect_Click" VerticalAlignment="Center"
+                                Visibility="{Binding Path=IsConnected, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}">
                             <Button.ToolTip>
                                 <TextBlock Text="{Binding Path=Name, StringFormat={x:Static components:Resources.ConnectionManager_ConnectTooltip}}" />
                             </Button.ToolTip>
-                            <Grid Width="16" Height="16">
-                                <Rectangle Fill="{StaticResource IconRLocalInactive}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}" />
-                                <Rectangle Fill="{StaticResource IconRCloudInactive}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"/>
+                            <Grid>
+                                <Grid Width="18" Height="18" Visibility="{Binding Path=IsActive, Converter={x:Static rwpf:Converters.FalseIsNotCollapsed}}">
+                                    <Rectangle Fill="{StaticResource IconRLocalInactive}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}" />
+                                    <Rectangle Fill="{StaticResource IconRCloudInactive}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"/>
+                                </Grid>
+                                <Grid Width="18" Height="18" Visibility="{Binding Path=IsActive, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}">
+                                    <Rectangle Fill="{StaticResource IconRLocalDisconnected}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}" />
+                                    <Rectangle Fill="{StaticResource IconRCloudDisconnected}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"/>
+                                </Grid>
                             </Grid>
                         </Button>
 
                         <!-- Connected icon -->
-                        <Grid Width="16" Height="16" Visibility="{Binding Path=IsConnected, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}">
+                        <Grid  Grid.Column="0" Width="18" Height="18" Visibility="{Binding Path=IsConnected, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}">
                             <Rectangle Fill="{StaticResource IconRLocalConnected}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}" />
                             <Rectangle Fill="{StaticResource IconRCloudConnected}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"/>
                         </Grid>
@@ -73,19 +79,19 @@
                         <ColumnDefinition Width="6" />
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="6" />
-                        <ColumnDefinition Width="auto" MinWidth="100"/>
+                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <Button Grid.Column="2" MinWidth="80" MinHeight="24" HorizontalAlignment="Left" DataContext="{Binding Path=SelectedConnection}" Click="ButtonAdd_Click"
+                    <Button Grid.Column="2" MinWidth="80" MinHeight="24" HorizontalAlignment="Left" Click="ButtonAdd_Click"
                             Content="{x:Static components:Resources.ConnectionManager_Add}" />
-                    
-                    <!-- container of the search control -->
-                    <Border Grid.Column="4" x:Name="SearchControlHost" VerticalAlignment="Center" IsEnabled="False" HorizontalAlignment="Stretch" MinHeight="22" MinWidth="100" />
+
+                    <Button Grid.Column="4" MinWidth="80" MinHeight="24" HorizontalAlignment="Left" Click="ButtonDelete_Click"
+                            Content="{x:Static components:Resources.ConnectionManager_Delete}" />
                 </Grid>
             </Grid>
 
             <Border DockPanel.Dock="Top" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" VerticalAlignment="Stretch">
-                <Grid Margin="0,-0.333,0,0">
+                <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="60*" MinHeight="300" />
                         <RowDefinition Height="auto" />

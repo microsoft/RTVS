@@ -35,6 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         private int _codePage;
         private bool _showPackageManagerDisclaimer = true;
         private ConnectionInfo[] _connections = new ConnectionInfo[0];
+        private ConnectionInfo _lastActiveConnection;
 
         public YesNoAsk LoadRDataOnProjectLoad { get; set; } = YesNoAsk.No;
 
@@ -74,9 +75,17 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         public ConnectionInfo[] Connections {
             get { return _connections; }
             set {
-                using (var p = RPackage.Current.GetDialogPage(typeof(RToolsOptionsPage)) as RToolsOptionsPage) {
+                using (SaveSettings()) {
                     _connections = value;
-                    p.SaveSettings();
+                }
+            }
+        }
+
+        public ConnectionInfo LastActiveConnection {
+            get { return _lastActiveConnection; }
+            set {
+                using (SaveSettings()) {
+                    _lastActiveConnection = value;
                 }
             }
         }
@@ -162,9 +171,11 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             }
         }
 
-        private IDisposable SaveSettings() {
-            var page = RPackage.Current.GetDialogPage(typeof(RToolsOptionsPage)) as RToolsOptionsPage;
-            return Disposable.Create(() => page?.SaveSettings());
+        private static IDisposable SaveSettings() {
+            var page = (RToolsOptionsPage)RPackage.Current.GetDialogPage(typeof(RToolsOptionsPage));
+            return page != null && !page.IsLoadingFromStorage
+                ? Disposable.Create(() => page.SaveSettings())
+                : Disposable.Empty;
         }
     }
 }

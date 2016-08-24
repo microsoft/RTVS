@@ -12,6 +12,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private string _name;
         private string _path;
         private string _rCommandLineArguments;
+        private bool _isActive;
         private bool _isConnected;
         private bool _isRemote;
         private bool _hasChanges;
@@ -51,14 +52,14 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             }
         }
 
-        public bool IsConnected {
-            get { return _isConnected; }
-            set { SetProperty(ref _isConnected, value); }
+        public bool IsActive {
+            get { return _isActive; }
+            set { SetProperty(ref _isActive, value); }
         }
 
         public bool IsRemote {
             get { return _isRemote; }
-            set { SetProperty(ref _isRemote, value); }
+            private set { SetProperty(ref _isRemote, value); }
         }
         
         public bool CanConnect {
@@ -70,11 +71,17 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             get { return _hasChanges; }
             private set { SetProperty(ref _hasChanges, value); }
         }
+        
+        public bool IsConnected {
+            get { return _isConnected; }
+            set { SetProperty(ref _isConnected, value); }
+        }
 
         public void Reset() {
             Name = _connection?.Name;
             Path = _connection?.Path;
             RCommandLineArguments = _connection?.RCommandLineArguments;
+            IsRemote = _connection?.IsRemote ?? false;
         }
 
         private void UpdateCalculated() {
@@ -82,8 +89,10 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                 || !Path.EqualsIgnoreCase(_connection?.Path)
                 || !RCommandLineArguments.EqualsIgnoreCase(_connection?.RCommandLineArguments);
 
-            Uri uri;
-            CanConnect = string.IsNullOrEmpty(Name) || Uri.TryCreate(Name, UriKind.Absolute, out uri);
+            Uri uri = null;
+            CanConnect = !string.IsNullOrEmpty(Name) && Uri.TryCreate(Path, UriKind.Absolute, out uri);
+
+            IsRemote = !(uri?.IsFile ?? true);
         }
     }
 }

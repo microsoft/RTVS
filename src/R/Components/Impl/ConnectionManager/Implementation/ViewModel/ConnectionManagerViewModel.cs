@@ -1,12 +1,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Common.Core;
+using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Wpf;
 using Microsoft.Common.Wpf.Collections;
@@ -16,40 +14,49 @@ using Microsoft.R.Components.Extensions;
 namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
     internal sealed class ConnectionManagerViewModel : BindableBase, IConnectionManagerViewModel {
         private readonly IConnectionManager _connectionManager;
-        private readonly ICoreShell _coreShell;
-        private readonly BatchObservableCollection<object> _items;
+        private readonly ICoreShell _shell;
+        private readonly BatchObservableCollection<IConnectionViewModel> _items;
+        private readonly DisposableBag _disposableBag;
         private IConnectionViewModel _selectedConnection;
+        private bool _isConnected;
 
-        public ConnectionManagerViewModel(IConnectionManager connectionManager, ICoreShell coreShell) {
+        public ConnectionManagerViewModel(IConnectionManager connectionManager, ICoreShell shell) {
             _connectionManager = connectionManager;
-            _coreShell = coreShell;
-            _items = new BatchObservableCollection<object>();
-            Items = new ReadOnlyObservableCollection<object>(_items);
+            _shell = shell;
+            _disposableBag = DisposableBag.Create<ConnectionManagerViewModel>()
+                .Add(() => connectionManager.ConnectionStateChanged -= ConnectionStateChanged);
 
+            _items = new BatchObservableCollection<IConnectionViewModel>();
+            Items = new ReadOnlyObservableCollection<IConnectionViewModel>(_items);
+            connectionManager.ConnectionStateChanged += ConnectionStateChanged;
+            IsConnected = connectionManager.IsConnected;
             UpdateConnections();
         }
 
-        public Task<int> Search(string searchString, CancellationToken cancellationToken) {
-            throw new System.NotImplementedException();
+        public void Dispose() {
+            _disposableBag.TryMarkDisposed();
         }
 
-        public void Dispose() {}
-
-        public ReadOnlyObservableCollection<object> Items { get; }
+        public ReadOnlyObservableCollection<IConnectionViewModel> Items { get; }
 
         public IConnectionViewModel SelectedConnection {
             get { return _selectedConnection; }
             private set { SetProperty(ref _selectedConnection, value); }
         }
 
+        public bool IsConnected {
+            get { return _isConnected; }
+            private set { SetProperty(ref _isConnected, value); }
+        }
+
         public void SelectConnection(IConnectionViewModel connection) {
-            _coreShell.AssertIsOnMainThread();
+            _shell.AssertIsOnMainThread();
             if (connection == _selectedConnection) {
                 return;
             }
 
             if (SelectedConnection != null && SelectedConnection.HasChanges) {
-                var dialogResult = _coreShell.ShowMessage(Resources.ConnectionManager_ChangedSelection_HasChanges, MessageButtons.YesNoCancel);
+                var dialogResult = _shell.ShowMessage(Resources.ConnectionManager_ChangedSelection_HasChanges, MessageButtons.YesNoCancel);
                 switch (dialogResult) {
                     case MessageButtons.Yes:
                         SaveSelected();
@@ -70,19 +77,19 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         }
 
         public void CancelSelected() {
-            _coreShell.AssertIsOnMainThread();
+            _shell.AssertIsOnMainThread();
             SelectedConnection?.Reset();
         }
 
         public void SaveSelected() {
-            _coreShell.AssertIsOnMainThread();
+            _shell.AssertIsOnMainThread();
             if (string.IsNullOrEmpty(SelectedConnection.Name)) {
-                _coreShell.ShowMessage(Resources.ConnectionManager_ShouldHaveName, MessageButtons.OK);
+                _shell.ShowMessage(Resources.ConnectionManager_ShouldHaveName, MessageButtons.OK);
                 return;
             }
 
             if (string.IsNullOrEmpty(SelectedConnection.Path)) {
-                _coreShell.ShowMessage(Resources.ConnectionManager_ShouldHavePath, MessageButtons.OK);
+                _shell.ShowMessage(Resources.ConnectionManager_ShouldHavePath, MessageButtons.OK);
                 return;
             }
 
@@ -98,16 +105,39 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             UpdateConnections();
         }
 
+        public void DeleteSelected() {
+            _connectionManager.TryRemove(SelectedConnection.Id);
+            UpdateConnections();
+        }
+
         public async Task ConnectAsync(IConnectionViewModel connection) {
-            _coreShell.AssertIsOnMainThread();
+            _shell.AssertIsOnMainThread();
             await _connectionManager.ConnectAsync(SelectedConnection.Name, SelectedConnection.Path, SelectedConnection.RCommandLineArguments);
+            UpdateConnections();
         }
 
         private void UpdateConnections() {
-            _items.ReplaceWith(_connectionManager.RecentConnections.Select(c => new ConnectionViewModel(c)));
-            if (Items.Count > 0) {
-                SelectedConnection = (IConnectionViewModel)Items[0];
+            var selectedId = SelectedConnection?.Id;
+            _items.ReplaceWith(_connectionManager.RecentConnections.Select(c => new ConnectionViewModel(c) {
+                IsActive = c == _connectionManager.ActiveConnection,
+                IsConnected = c == _connectionManager.ActiveConnection && IsConnected
+            }).OrderBy(c => c.Name));
+
+            var selectedConnection = Items.FirstOrDefault(i => i.Id == selectedId);
+            if (selectedConnection != null) {
+                SelectedConnection = selectedConnection;
+            } else if (Items.Count > 0) {
+                SelectedConnection = Items[0];
             }
+        }
+
+        private void ConnectionStateChanged(object sender, ConnectionEventArgs e) {
+            _shell.DispatchOnUIThread(() => {
+                IsConnected = e.State;
+                foreach (var item in _items) {
+                    item.IsConnected = e.State && item.IsActive;
+                }
+            });
         }
     }
 }

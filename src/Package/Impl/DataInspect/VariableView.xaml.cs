@@ -45,6 +45,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private bool _keyDownSeen;
         private ObservableTreeNode _rootNode;
 
+        public VariableView() : this(null, VsAppShell.Current) { }
+
         public VariableView(IRToolsSettings settings, ICoreShell shell) {
             _settings = settings;
             _shell = shell;

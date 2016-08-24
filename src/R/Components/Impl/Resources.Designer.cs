@@ -124,6 +124,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Delete.
+        /// </summary>
+        public static string ConnectionManager_Delete {
+            get {
+                return ResourceManager.GetString("ConnectionManager_Delete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Name:.
         /// </summary>
         public static string ConnectionManager_Name {

@@ -64,7 +64,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             _connections = new ConcurrentDictionary<Uri, IConnection>(connections);
 
             UpdateRecentConnections();
-            SwitchBrokerToMostRecent();
+            SwitchBrokerToLastConnection();
         }
 
         private Dictionary<Uri, IConnection> GetConnectionsFromSettings() => _settings.Connections
@@ -116,37 +116,48 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         public async Task ConnectAsync(string name, string path, string rCommandLineArguments) {
-            var newConnection = CreateConnection(name, path, rCommandLineArguments);
-            IConnection connection;
-            if (_connections.TryGetValue(newConnection.Id, out connection)) {
-                await ConnectAsync(connection);
-            } else {
-                await ConnectAsync(newConnection);
-            }
+            var connection = GetOrCreateConnection(name, path, rCommandLineArguments);
+            await ConnectAsync(connection);
         }
 
         public async Task ConnectAsync(IConnection connection) {
-            var sessionsToRestart = _sessionProvider.GetSessions()
-                .Where(s => s.IsHostRunning)
-                .ToList();
-            SwitchBroker(connection);
-            if (sessionsToRestart.Count > 0) {
-                var sessionRestartTasks = sessionsToRestart.Select(s => s.RestartHostAsync());
-                await Task.WhenAll(sessionRestartTasks);
+            var sessions = _sessionProvider.GetSessions().ToList();
+            if (sessions.Any()) {
+                await Task.WhenAll(sessions.Select(s => s.StopHostAsync()));
             }
-        }
-        
-        private void SwitchBroker(IConnection connection) {
-            ActiveConnection = connection;
-            if (connection.IsRemote) {
-                _brokerConnector.SwitchToRemoteBroker(connection.Id, connection.RCommandLineArguments);
-            } else {
-                _brokerConnector.SwitchToLocalBroker(connection.Name, connection.Path, connection.RCommandLineArguments);
+
+            if (ActiveConnection != null && ActiveConnection.Id != _brokerConnector.BrokerUri) {
+                SwitchBroker(connection);
+            }
+
+            if (sessions.Any()) {
+                await Task.WhenAll(sessions.Select(s => s.RestartHostAsync()));
             }
         }
 
-        private IConnection CreateConnection(string name, string uri, string rCommandLineArguments) => 
-            new Connection(name, uri, rCommandLineArguments, DateTime.Now);
+        public void SwitchBroker(string name, string path, string rCommandLineArguments) {
+            var connection = GetOrCreateConnection(name, path, rCommandLineArguments);
+            SwitchBroker(connection);
+        }
+
+        private void SwitchBroker(IConnection connection) {
+            ActiveConnection = connection;
+            SaveActiveConnectionToSettings();
+            if (connection.IsRemote) {
+                _brokerConnector.SwitchToRemoteBroker(connection.Id);
+            } else {
+                _brokerConnector.SwitchToLocalBroker(connection.Name, connection.Path);
+            }
+        }
+
+        private IConnection CreateConnection(string name, string path, string rCommandLineArguments) => 
+            new Connection(name, path, rCommandLineArguments, DateTime.Now);
+
+        private IConnection GetOrCreateConnection(string name, string path, string rCommandLineArguments) {
+            var newConnection = CreateConnection(name, path, rCommandLineArguments);
+            IConnection connection;
+            return _connections.TryGetValue(newConnection.Id, out connection) ? connection : newConnection;
+        }
 
         private IConnection UpdateConnectionFactory(IConnection oldConnection, IConnection newConnection) {
             if (oldConnection != null && newConnection.Equals(oldConnection)) {
@@ -163,15 +174,22 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             RecentConnectionsChanged?.Invoke(this, new EventArgs());
         }
 
-        private void SwitchBrokerToMostRecent() {
+        private void SwitchBrokerToLastConnection() {
+            var connectionInfo = _settings.LastActiveConnection;
+            if (!string.IsNullOrEmpty(connectionInfo?.Path)) {
+                SwitchBroker(connectionInfo.Name, connectionInfo.Path, connectionInfo.RCommandLineArguments);
+                return;
+            }
+
             var connection = RecentConnections.FirstOrDefault();
-            if (connection != null) {
+            if (connectionInfo != null) {
                 SwitchBroker(connection);
-            } else {
-                var localRPath = new RInstallation().GetRInstallPath();
-                if (localRPath != null) {
-                    SwitchBroker(CreateConnection("Local", localRPath, string.Empty));
-                }
+                return;
+            }
+
+            var localRPath = new RInstallation().GetRInstallPath();
+            if (localRPath != null) {
+                SwitchBroker(CreateConnection("Local", localRPath, string.Empty));
             }
         }
 
@@ -195,6 +213,17 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             }
 
             ActiveConnection = RecentConnections.FirstOrDefault(c => c.Id == _brokerConnector.BrokerUri);
+            SaveActiveConnectionToSettings();
+        }
+
+        private void SaveActiveConnectionToSettings() {
+            _settings.LastActiveConnection = ActiveConnection == null
+                ? null
+                : new ConnectionInfo {
+                    Name = ActiveConnection.Name,
+                    Path = ActiveConnection.Path,
+                    RCommandLineArguments = ActiveConnection.RCommandLineArguments
+                };
         }
     }
 }

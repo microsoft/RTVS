@@ -16,6 +16,12 @@ namespace Microsoft.R.Components.Settings {
         ConnectionInfo[] Connections { get; set; }
         
         /// <summary>
+        /// Latest active connection
+        /// May not be in list of  <see cref="Connections"/>
+        /// </summary>
+        ConnectionInfo LastActiveConnection { get; set; }
+        
+        /// <summary>
         /// Selected CRAN mirror
         /// </summary>
         string CranMirror { get; set; }

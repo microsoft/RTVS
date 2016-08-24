@@ -38,7 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             
         }
 
-        public Task InitializeAsync() => _workflow.Connections.ConnectAsync(_workflow.Connections.RecentConnections[0]);
+        public Task InitializeAsync() => _workflow.Connections.ConnectAsync(_workflow.Connections.ActiveConnection);
 
         public Task DisposeAsync() => Task.CompletedTask;
 

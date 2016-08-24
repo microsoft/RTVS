@@ -23,7 +23,7 @@ namespace Microsoft.R.Host.Client.Host {
             _hostConnector.Dispose();
         }
 
-        public void SwitchToLocalBroker(string name, string rBasePath = null, string rCommandLineArguments = null, string rHostDirectory = null) {
+        public void SwitchToLocalBroker(string name, string rBasePath = null, string rHostDirectory = null) {
             var installPath = new RInstallation().GetRInstallPath(rBasePath, new SupportedRVersionRange());
             var newConnector = new LocalRHostConnector(name, installPath, rHostDirectory);
             var oldConnector = Interlocked.Exchange(ref _hostConnector, newConnector);
@@ -33,14 +33,14 @@ namespace Microsoft.R.Host.Client.Host {
             BrokerChanged?.Invoke(this, new EventArgs());
         }
 
-        public void SwitchToRemoteBroker(Uri uri, string rCommandLineArguments = null) {
+        public void SwitchToRemoteBroker(Uri uri) {
             var oldConnector = Interlocked.Exchange(ref _hostConnector, new RemoteRHostConnector(uri));
             oldConnector.Dispose();
 
             BrokerChanged?.Invoke(this, new EventArgs());
         }
 
-        public Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken())
-            => _hostConnector.ConnectAsync(name, callbacks, timeout, cancellationToken);
+        public Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken())
+            => _hostConnector.ConnectAsync(name, callbacks, rCommandLineArguments, timeout, cancellationToken);
     }
 }

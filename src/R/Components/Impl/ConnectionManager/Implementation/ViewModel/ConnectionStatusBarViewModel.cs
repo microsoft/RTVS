@@ -19,7 +19,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         public ConnectionStatusBarViewModel(IConnectionManager connectionManager, ICoreShell shell) {
             _connectionManager = connectionManager;
             _shell = shell;
-            _disposableBag = DisposableBag.Create<ConnectionManager>()
+            _disposableBag = DisposableBag.Create<ConnectionStatusBarViewModel>()
                 .Add(() => connectionManager.ConnectionStateChanged -= ConnectionStateChanged);
 
             connectionManager.ConnectionStateChanged += ConnectionStateChanged;

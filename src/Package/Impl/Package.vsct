@@ -995,7 +995,7 @@
 
       <Button guid="guidRToolsCmdSet" id="icmdShowPackagesWindow" priority="0x0600" type="Button">
         <Parent guid="guidRToolsCmdSet" id="windowsSubMenuGroup"/>
-        <Icon guid="ImageCatalogGuid" id="Package"/>
+        <Icon guid="ImageCatalogGuid" id="PackageProperty"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
           <ButtonText>Packages</ButtonText>
@@ -1006,7 +1006,7 @@
 
       <Button guid="guidRToolsCmdSet" id="icmdShowConnectionsWindow" priority="0x0600" type="Button">
         <Parent guid="guidRToolsCmdSet" id="windowsSubMenuGroup"/>
-        <Icon guid="ImageCatalogGuid" id="Package"/>
+        <Icon guid="ImageCatalogGuid" id="WMIConnection"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
           <ButtonText>Connections</ButtonText>

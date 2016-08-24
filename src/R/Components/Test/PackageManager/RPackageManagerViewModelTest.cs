@@ -38,11 +38,12 @@ namespace Microsoft.R.Components.Test.PackageManager {
 
         public async Task InitializeAsync() {
             var settings = _exportProvider.GetExportedValue<IRSettings>();
-            _workflow.BrokerConnector.SwitchToLocalBroker(settings.Connections[0].Name, settings.Connections[0].Path, settings.Connections[0].RCommandLineArguments);
+            _workflow.BrokerConnector.SwitchToLocalBroker(settings.LastActiveConnection.Name, settings.LastActiveConnection.Path);
 
             await _workflow.RSession.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name,
                 CranMirrorName = settings.CranMirror,
+                RHostCommandLineArguments = settings.LastActiveConnection.RCommandLineArguments,
                 CodePage = settings.RCodePage,
             }, null, 50000);
 

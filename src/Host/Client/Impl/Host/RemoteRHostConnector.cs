@@ -17,8 +17,8 @@ namespace Microsoft.R.Host.Client.Host {
 
         public override Uri BrokerUri { get; }
 
-        public RemoteRHostConnector(Uri brokerUri, string rCommandLineArguments = null)
-            : base(brokerUri.Fragment, rCommandLineArguments) {
+        public RemoteRHostConnector(Uri brokerUri)
+            : base(brokerUri.Fragment) {
 
             _credentials = new NetworkCredential();
             _authority = new UriBuilder { Scheme = brokerUri.Scheme, Host = brokerUri.Host, Port = brokerUri.Port }.ToString();

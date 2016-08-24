@@ -43,7 +43,10 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
             Model?.AddNew();
         }
 
-        private static IConnectionViewModel GetConnection(RoutedEventArgs e) => ((IConnectionViewModel)((FrameworkElement)e.Source).DataContext);
+        private void ButtonDelete_Click(object sender, RoutedEventArgs e) {
+            Model?.DeleteSelected();
+        }
 
+        private static IConnectionViewModel GetConnection(RoutedEventArgs e) => ((FrameworkElement)e.Source).DataContext as IConnectionViewModel;
     }
 }

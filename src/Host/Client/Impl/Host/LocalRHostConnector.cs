@@ -30,8 +30,8 @@ namespace Microsoft.R.Host.Client.Host {
 
         public override Uri BrokerUri { get; }
 
-        public LocalRHostConnector(string name, string rHome, string rCommandLineArguments = null, string rhostDirectory = null)
-            : base(InterpreterId, rCommandLineArguments) {
+        public LocalRHostConnector(string name, string rHome, string rhostDirectory = null)
+            : base(InterpreterId) {
 
             _name = name;
             _rhostDirectory = rhostDirectory ?? Path.GetDirectoryName(typeof(RHost).Assembly.GetAssemblyPath());

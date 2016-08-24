@@ -27,6 +27,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             this.SettingsRegistryPath = @"UserSettings\R_Tools";
         }
 
+        public bool IsLoadingFromStorage { get; private set; }
+
         [LocCategory("Settings_GeneralCategory")]
         [CustomLocDisplayName("Settings_CranMirror")]
         [LocDescription("Settings_CranMirror_Description")]
@@ -209,6 +211,13 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set { RToolsSettings.Current.Connections = value != null ? JsonConvert.DeserializeObject<ConnectionInfo[]>(value) : new ConnectionInfo[0]; }
         }
 
+        [Browsable(false)]
+        [DefaultValue(null)]
+        public string LastActiveConnection {
+            get { return JsonConvert.SerializeObject(RToolsSettings.Current.LastActiveConnection); }
+            set { RToolsSettings.Current.LastActiveConnection = value != null ? JsonConvert.DeserializeObject<ConnectionInfo>(value) : null; }
+        }
+
         /// <summary>
         /// REPL working directory: not exposed in Tools | Options dialog,
         /// only saved along with other settings.
@@ -247,7 +256,9 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             // Otherwise dialog will load values from registry instead of using
             // ones currently set in memory.
             if (_allowLoadingFromStorage) {
+                IsLoadingFromStorage = true;
                 base.LoadSettingsFromStorage();
+                IsLoadingFromStorage = false;
             }
         }
 

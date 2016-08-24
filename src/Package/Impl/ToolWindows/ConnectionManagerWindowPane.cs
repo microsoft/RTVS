@@ -6,7 +6,6 @@ using System.Runtime.InteropServices;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.ConnectionManager.Implementation;
-using Microsoft.R.Components.Search;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -17,22 +16,20 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
     [Guid(WindowGuidString)]
     internal class ConnectionManagerWindowPane : VisualComponentToolWindow<IConnectionManagerVisualComponent>, IOleCommandTarget {
         private readonly IConnectionManager _connectionManager;
-        private readonly ISearchControlProvider _searchControlProvider;
         private readonly ICoreShell _coreShell;
         public const string WindowGuidString = "75753398-BE0E-442E-900C-E775EAC1FAC2";
         public static Guid WindowGuid { get; } = new Guid(WindowGuidString);
 
         private IOleCommandTarget _commandTarget;
 
-        public ConnectionManagerWindowPane(IConnectionManager connectionManager, ISearchControlProvider searchControlProvider, ICoreShell coreShell) {
+        public ConnectionManagerWindowPane(IConnectionManager connectionManager, ICoreShell coreShell) {
             _connectionManager = connectionManager;
-            _searchControlProvider = searchControlProvider;
             _coreShell = coreShell;
             Caption = Resources.PackageManagerWindowCaption;
         }
 
         protected override void OnCreate() {
-            Component = new ConnectionManagerVisualComponent(_connectionManager, this, _searchControlProvider, _coreShell);
+            Component = new ConnectionManagerVisualComponent(_connectionManager, this, _coreShell);
             base.OnCreate();
         }
 

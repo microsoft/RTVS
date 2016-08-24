@@ -13,7 +13,7 @@ namespace Microsoft.R.Host.Client.Host {
         public Uri BrokerUri { get; } = new Uri("http://localhost");
         public bool IsRemote { get; } = true;
 
-        public Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken()) => Result;
+        public Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken()) => Result;
 
         public void Dispose() { }
     }
