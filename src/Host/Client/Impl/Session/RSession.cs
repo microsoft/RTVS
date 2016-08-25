@@ -669,8 +669,9 @@ namespace Microsoft.R.Host.Client.Session {
         /// <param name="url"></param>
         /// <returns></returns>
         Task IRCallbacks.WebBrowser(string url) {
-           var callback = _callback;
-            return callback != null ? callback.ShowHelp(url) : Task.CompletedTask;
+            var newUrl = BrokerConnector.HandleUrl(url, CancellationToken.None);
+            var callback = _callback;
+            return callback != null ? callback.ShowHelp(newUrl) : Task.CompletedTask;
         }
 
         Task IRCallbacks.ViewLibrary() {
@@ -703,14 +704,6 @@ namespace Microsoft.R.Host.Client.Session {
         Task<string> IRCallbacks.SaveFileAsync(string filename, byte[] data) {
             var callback = _callback;
             return callback != null ? callback.SaveFileAsync(filename, data) : Task.FromResult(string.Empty);
-        }
-
-        private async Task<string> HandleRemoteUrl(string url) {
-            if(IsRemote) {
-                return WebServer.CreateWebServer(url, new HttpClient(), CancellationToken.None);
-            } else {
-                return url;
-            }
         }
     }
 }

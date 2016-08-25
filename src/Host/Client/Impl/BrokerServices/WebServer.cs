@@ -13,9 +13,9 @@ using System.Web.Http;
 using Newtonsoft.Json;
 using System.IO;
 using Newtonsoft.Json.Linq;
-using Microsoft.R.Host.BrokerServices;
 using Microsoft.R.Host.Protocol;
-using Microsoft.R.Host.Broker.Protocol;
+using Microsoft.Common.Core;
+using System.Net.Sockets;
 
 namespace Microsoft.R.Host.Client.BrokerServices {
 
@@ -41,15 +41,24 @@ namespace Microsoft.R.Host.Client.BrokerServices {
         private readonly RemoteUriWebService _service;
         private IRemoteUriWebService RemoteUriService => _service;
 
-        private WebServer(string newHostIp, int newPort, string remoteHostIp, int remotePort, HttpClient httpClient) {
-            _newHost = newHostIp;
-            _newPort = newPort;
-
+        private WebServer(string remoteHostIp, int remotePort, HttpClient httpClient) {
+            _newHost = IPAddress.Loopback.ToString();
             _host = remoteHostIp;
             _port = remotePort;
+            _service = new RemoteUriWebService(httpClient);
+            Random r = new Random();
+            while(true) {
+                _listener = new HttpListener();
+                _newPort = r.Next(49152, 65535);
+                _listener.Prefixes.Add($"http://{_newHost}:{_newPort}/");
 
-            _listener = new HttpListener();
-            _listener.Prefixes.Add($"http://*:{_newPort}/");
+                try {
+                    _listener.Start();
+                } catch (HttpListenerException ex) {
+                    continue;
+                }
+                break;
+            }
         }
 
         private void Stop() {
@@ -59,7 +68,6 @@ namespace Microsoft.R.Host.Client.BrokerServices {
         }
 
         private async Task DoWorkAsync(CancellationToken ct) {
-            _listener.Start();
             while (_listener.IsListening) {
                 if (ct.IsCancellationRequested) {
                     _listener.Stop();
@@ -80,11 +88,13 @@ namespace Microsoft.R.Host.Client.BrokerServices {
         public static string CreateWebServer(string remoteUrl, HttpClient httpClient, CancellationToken ct) {
             Uri remoteUri = new Uri(remoteUrl);
             UriBuilder localUri = new UriBuilder(remoteUri);
-            localUri.Host = IPAddress.Loopback.ToString();
-            localUri.Port = GetAvaialblePort();
-
-            var server = new WebServer(IPAddress.Loopback.ToString(), localUri.Port, remoteUri.Host, remoteUri.Port, httpClient);
+            var server = new WebServer(remoteUri.Host, remoteUri.Port, httpClient);
             _servers.Add(server);
+
+            server.DoWorkAsync(ct).DoNotWait();
+
+            localUri.Host = server.Host;
+            localUri.Port = server.Port;
             return localUri.Uri.ToString();
         }
 

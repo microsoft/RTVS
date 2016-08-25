@@ -11,5 +11,6 @@ namespace Microsoft.R.Host.Client.Host {
         bool IsRemote { get; }
         Uri Uri { get; }
         Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = default(CancellationToken));
+        string HandleUrl(string url, CancellationToken ct);
     }
 }
