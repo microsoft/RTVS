@@ -52,13 +52,11 @@ namespace Microsoft.R.Components.Plots.Implementation {
             _dispose = dispose;
             History = new RPlotHistoryViewModel(this);
             ActiveDeviceId = Guid.Empty;
-            interactiveWorkflow.RSession.Connected += RSession_Connected;
             interactiveWorkflow.RSession.Disconnected += RSession_Disconnected;
             interactiveWorkflow.RSession.Mutated += RSession_Mutated;
         }
 
         public void Dispose() {
-            _interactiveWorkflow.RSession.Connected -= RSession_Connected;
             _interactiveWorkflow.RSession.Disconnected -= RSession_Disconnected;
             _interactiveWorkflow.RSession.Mutated -= RSession_Mutated;
 
@@ -399,17 +397,8 @@ namespace Microsoft.R.Components.Plots.Implementation {
             }
         }
 
-        private void RSession_Connected(object sender, EventArgs e) {
-            RSessionConnectedAsync().DoNotWait();
-        }
-
-        private async Task RSessionConnectedAsync() {
-            // TOOD: anything needs to be done here?
-            await Task.CompletedTask;
-        }
-
-        private async void RSession_Disconnected(object sender, EventArgs e) {
-            await RSessionDisconnectedAsync();
+        private void RSession_Disconnected(object sender, EventArgs e) {
+            RSessionDisconnectedAsync().DoNotWait();
         }
 
         private async Task RSessionDisconnectedAsync() {
