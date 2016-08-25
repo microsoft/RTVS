@@ -46,7 +46,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration {
                 string projectFolder = Path.GetDirectoryName(unconfiguredProject.FullPath);
                 if (!_settings.TryGetValue(projectFolder, out access)) {
                     var settings = await OpenCollectionAsync(projectFolder, propertes);
-                    var th = unconfiguredProject.Services.ExportProvider.GetExportedValue<IThreadHandling>();
+                    var th = unconfiguredProject.Services?.ExportProvider?.GetExportedValue<IThreadHandling>();
                     access = new SettingsAccess(this, th, projectFolder, propertes, settings);
                     _settings[projectFolder] = access;
                 }
@@ -86,7 +86,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration {
                     access.Settings.Save(settingsFile);
                 }
 
-                threadHandling.ExecuteSynchronously(async () => {
+                threadHandling?.ExecuteSynchronously(async () => {
                     var currentSettingsFile = await propertes.GetSettingsFileAsync();
                     if (string.IsNullOrEmpty(currentSettingsFile)) {
                         settingsFile = settingsFile.MakeRRelativePath(projectPath);
