@@ -10,10 +10,8 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.R.Interpreters;
-using Microsoft.R.Host.Client.Extensions;
+using Microsoft.Common.Core;
 using Microsoft.R.Host.Client.Host;
-using Microsoft.R.Host.Client.Install;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.XUnit;
@@ -663,7 +661,7 @@ rtvs:::export_to_pdf(device_id, rtvs:::graphics.ide.getactiveplotid(device_id), 
         }
 
         private static string[] Interactive(string code) {
-            return code.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+            return code.Split(CharExtensions.LineBreakChars, StringSplitOptions.RemoveEmptyEntries);
         }
 
         private static string[] Batch(string code) {
