@@ -26,7 +26,7 @@ namespace Microsoft.R.Host.Client.Test.Stubs {
         public Func<string, MessageButtons, Task<MessageButtons>> ShowMessageCallsHandler { get; set; } = (m, b) => Task.FromResult(MessageButtons.OK);
         public Func<string, int, CancellationToken, Task<string>> ReadUserInputHandler { get; set; } = (m, l, ct) => Task.FromResult("\n");
         public Func<Guid, CancellationToken, Task<LocatorResult>> LocatorHandler { get; set; } = (deviceId, ct) => Task.FromResult(LocatorResult.CreateNotClicked());
-        public Func<Guid, CancellationToken, Task<PlotDeviceProperties>> PlotDeviceCreateHandler { get; set; } = (deviceId, ct) => Task.FromResult(PlotDeviceProperties.CreateDefault());
+        public Func<Guid, CancellationToken, Task<PlotDeviceProperties>> PlotDeviceCreateHandler { get; set; } = (deviceId, ct) => Task.FromResult(PlotDeviceProperties.Default);
         public Func<Guid, CancellationToken, Task> PlotDeviceDestroyHandler { get; set; } = (deviceId, ct) => Task.CompletedTask;
 
         public Func<string, string> CranUrlFromNameHandler { get; set; } = s => "https://cran.rstudio.com";
@@ -62,7 +62,7 @@ namespace Microsoft.R.Host.Client.Test.Stubs {
 
         public Task<PlotDeviceProperties> PlotDeviceCreate(Guid deviceId, CancellationToken ct) {
             PlotDeviceCreateCalls.Add(new Tuple<Guid, CancellationToken>(deviceId, ct));
-            return PlotDeviceCreateHandler != null ? PlotDeviceCreateHandler(deviceId, ct) : Task.FromResult(PlotDeviceProperties.CreateDefault());
+            return PlotDeviceCreateHandler != null ? PlotDeviceCreateHandler(deviceId, ct) : Task.FromResult(PlotDeviceProperties.Default);
         }
 
         public Task PlotDeviceDestroy(Guid deviceId, CancellationToken ct) {

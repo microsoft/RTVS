@@ -138,7 +138,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
             }
 
             Debug.Assert(false, "Failed to create a plot visual component.");
-            return PlotDeviceProperties.CreateDefault();
+            return PlotDeviceProperties.Default;
         }
 
         public async Task<LocatorResult> StartLocatorModeAsync(Guid deviceId, CancellationToken ct) {

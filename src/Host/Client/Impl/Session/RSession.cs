@@ -567,7 +567,7 @@ namespace Microsoft.R.Host.Client.Session {
 
         Task<PlotDeviceProperties> IRCallbacks.PlotDeviceCreate(Guid deviceId, CancellationToken ct) {
             var callback = _callback;
-            return callback != null ? callback.PlotDeviceCreate(deviceId, ct) : Task.FromResult(PlotDeviceProperties.CreateDefault());
+            return callback != null ? callback.PlotDeviceCreate(deviceId, ct) : Task.FromResult(PlotDeviceProperties.Default);
         }
 
         Task IRCallbacks.PlotDeviceDestroy(Guid deviceId, CancellationToken ct) {

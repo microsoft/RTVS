@@ -167,7 +167,7 @@ namespace Microsoft.R.Host.Client {
 
         public async Task<PlotDeviceProperties> PlotDeviceCreate(Guid deviceId, CancellationToken ct) {
             await Console.Error.WriteLineAsync($"PlotDeviceCreate called for {deviceId}.");
-            return PlotDeviceProperties.CreateDefault();
+            return PlotDeviceProperties.Default;
         }
 
         public async Task PlotDeviceDestroy(Guid deviceId, CancellationToken ct) {

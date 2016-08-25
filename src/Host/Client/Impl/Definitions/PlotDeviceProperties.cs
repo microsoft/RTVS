@@ -13,8 +13,6 @@ namespace Microsoft.R.Host.Client {
             Resolution = resolution;
         }
 
-        public static PlotDeviceProperties CreateDefault() {
-            return new PlotDeviceProperties(360, 360, 96);
-        }
+        public static PlotDeviceProperties Default { get; } = new PlotDeviceProperties(360, 360, 96);
     }
 }
