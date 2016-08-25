@@ -106,8 +106,10 @@ namespace Microsoft.R.Support.Help.Packages {
         }
 
         public void WriteToDisk() {
-            foreach (var pi in _packages.Values) {
-                pi.WriteToDisk();
+            if (_buildIndexLock.IsCompleted) {
+                foreach (var pi in _packages.Values) {
+                    pi.WriteToDisk();
+                }
             }
         }
         #endregion
