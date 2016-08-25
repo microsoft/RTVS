@@ -27,16 +27,20 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         private SqlPublishOptionsDialogViewModel _model;
 
         public static async Task<SqlPublshOptionsDialog> CreateAsync(
-            IApplicationShell appShell, IProjectSystemServices pss, 
-            IProjectConfigurationSettingsProvider pcsp) {
-            var dialog = new SqlPublshOptionsDialog(appShell, pss, pcsp);
-            await dialog.InitializeAsync();
+            IApplicationShell appShell, IProjectSystemServices pss, IFileSystem fs, IProjectConfigurationSettingsProvider pcsp) {
+            var dialog = new SqlPublshOptionsDialog(appShell, pss, fs, pcsp);
+            await dialog.InitializeModelAsync();
             return dialog;
         }
 
-        private SqlPublshOptionsDialog(IApplicationShell appShell, IProjectSystemServices pss, IProjectConfigurationSettingsProvider pcsp) :
-            this(appShell, pss, new FileSystem(), pcsp) {
-            InitializeComponent();
+        public static async Task<SqlPublshOptionsDialog> CreateAsync(
+            IApplicationShell appShell, IProjectSystemServices pss, IProjectConfigurationSettingsProvider pcsp) {
+            var dialog = await CreateAsync(appShell, pss, new FileSystem(), pcsp);
+
+            await appShell.SwitchToMainThreadAsync();
+            dialog.InitializeComponent();
+            dialog.InitializeUI();
+            return dialog;
         }
 
         private SqlPublshOptionsDialog(IApplicationShell appShell, IProjectSystemServices pss, IFileSystem fs, IProjectConfigurationSettingsProvider pcsp) {
@@ -47,11 +51,13 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             Title = Package.Resources.SqlPublishDialog_Title;
         }
 
-        private async Task InitializeAsync() {
+        private async Task InitializeModelAsync() {
             var settings = new SqlSProcPublishSettings(_appShell.SettingsStorage);
             _model = await SqlPublishOptionsDialogViewModel.CreateAsync(settings, _appShell, _pss, _pcsp);
-
             DataContext = _model;
+        }
+
+        private void InitializeUI() {
             TargetTypeList.SelectedIndex = _model.SelectedTargetTypeIndex;
             TargetList.SelectedIndex = _model.SelectedTargetIndex;
             CodePlacementList.SelectedIndex = _model.SelectedQuoteTypeIndex;

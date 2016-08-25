@@ -27,6 +27,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             this.SettingsRegistryPath = @"UserSettings\R_Tools";
         }
 
+        [Browsable(false)]
         public bool IsLoadingFromStorage { get; private set; }
 
         [LocCategory("Settings_GeneralCategory")]
