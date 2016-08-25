@@ -372,8 +372,8 @@ namespace Microsoft.R.Components.Plots.Implementation {
             History.Clear();
         }
 
-        private async void RSession_Mutated(object sender, EventArgs e) {
-            await RSessionMutatedAsync();
+        private void RSession_Mutated(object sender, EventArgs e) {
+            RSessionMutatedAsync().DoNotWait();
         }
 
         private async Task RSessionMutatedAsync() {
