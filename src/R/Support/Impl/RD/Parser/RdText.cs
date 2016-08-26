@@ -48,11 +48,9 @@ namespace Microsoft.R.Support.RD.Parser {
             for (int i = 0; i < rawRdText.Length; i++) {
                 char ch = rawRdText[i];
 
-                if (ch == '\n' || ch == '\r' || ch == '\t' || char.IsWhiteSpace(ch)) {
+                if (char.IsWhiteSpace(ch)) {
                     ch = ' ';
-                }
-
-                if (ch == '\\') {
+                } else if (ch == '\\') {
                     continue; // skip escapes
                 }
 
@@ -61,7 +59,7 @@ namespace Microsoft.R.Support.RD.Parser {
                 }
             }
 
-            return sb.ToString().TrimEnd();
+            return new PlainTextExtractor().GetTextFromHtml(sb.ToString().TrimEnd());
         }
     }
 }
