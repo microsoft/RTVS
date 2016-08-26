@@ -27,11 +27,11 @@ namespace Microsoft.R.Host.Client.BrokerServices {
         private readonly int _newPort;
         public int Port => _newPort;
 
-        private readonly string _host;
-        public string RemoteHost => _host;
+        private readonly string _remoteHost;
+        public string RemoteHost => _remoteHost;
 
-        private readonly int _port;
-        public int RemotePort => _port;
+        private readonly int _remotePort;
+        public int RemotePort => _remotePort;
 
         private HttpListener _listener;
 
@@ -43,13 +43,19 @@ namespace Microsoft.R.Host.Client.BrokerServices {
 
         private WebServer(string remoteHostIp, int remotePort, HttpClient httpClient) {
             _newHost = IPAddress.Loopback.ToString();
-            _host = remoteHostIp;
-            _port = remotePort;
+            _remoteHost = remoteHostIp;
+            _remotePort = remotePort;
             _service = new RemoteUriWebService(httpClient);
             Random r = new Random();
+
+            // if remote port is between 10000 and 32000, select a port in the same range.
+            // R Help uses ports in that range.
+            int localPortMin = (_remotePort >= 10000 && _remotePort <= 32000)? 10000: 49152;
+            int localPortMax = (_remotePort >= 10000 && _remotePort <= 32000) ? 32000 : 65535;
+
             while(true) {
                 _listener = new HttpListener();
-                _newPort = r.Next(49152, 65535);
+                _newPort = r.Next(localPortMin, localPortMax);
                 _listener.Prefixes.Add($"http://{_newHost}:{_newPort}/");
 
                 try {
@@ -77,25 +83,40 @@ namespace Microsoft.R.Host.Client.BrokerServices {
                 HttpListenerContext context = await _listener.GetContextAsync();
                 var response = await _service.PostAsync(RemoteUriRequest.Create(context.Request, RemoteHost, RemotePort));
 
+                string localHostPort = $"{_newHost}:{_newPort}";
+                string remoteHostPort = $"{_remoteHost}:{_remotePort}";
                 var webHeaders = new WebHeaderCollection();
-                webHeaders.Add(response.Headers);
+                foreach(var pair in response.Headers) {
+                    string value = pair.Value;
+                    value = value.Replace(remoteHostPort, localHostPort);
+
+                    webHeaders.Add($"{pair.Key}:{value}");
+                }
+               
                 context.Response.Headers = webHeaders;
-                StreamWriter writer = new StreamWriter(context.Response.OutputStream);
-                await writer.WriteAsync(response.Content);
+                using (StreamWriter writer = new StreamWriter(context.Response.OutputStream)) {
+                    await writer.WriteAsync(response.Content);
+                }
             }
         }
         
         public static string CreateWebServer(string remoteUrl, HttpClient httpClient, CancellationToken ct) {
             Uri remoteUri = new Uri(remoteUrl);
             UriBuilder localUri = new UriBuilder(remoteUri);
-            var server = new WebServer(remoteUri.Host, remoteUri.Port, httpClient);
-            _servers.Add(server);
 
-            server.DoWorkAsync(ct).DoNotWait();
+            //if(remoteUri.IsLoopback && remoteUri.Port >= 10000 && remoteUri.Port <= 32000 && !string.IsNullOrEmpty(remoteUri.Query)) 
+            {
+                var server = new WebServer(remoteUri.Host, remoteUri.Port, httpClient);
+                _servers.Add(server);
 
-            localUri.Host = server.Host;
-            localUri.Port = server.Port;
-            return localUri.Uri.ToString();
+                server.DoWorkAsync(ct).DoNotWait();
+
+                localUri.Host = server.Host;
+                localUri.Port = server.Port;
+                return localUri.Uri.ToString();
+            }
+
+            //return remoteUrl;
         }
 
         private static int GetAvaialblePort() {

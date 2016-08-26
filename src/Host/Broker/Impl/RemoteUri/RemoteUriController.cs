@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Collections.Specialized;
+using System.IO;
 
 namespace Microsoft.R.Host.Broker.RemoteUri {
 
@@ -22,18 +23,24 @@ namespace Microsoft.R.Host.Broker.RemoteUri {
         [HttpPost]
         public async Task<RemoteUriResponse> PostAsync([FromBody] RemoteUriRequest request) {
             HttpClient client = new HttpClient();
-            string uri = JsonConvert.DeserializeObject<string>(request.Uri);
+            Uri uri = new Uri(request.Uri);
 
-            HttpRequestMessage req = new HttpRequestMessage(new HttpMethod(request.Method), uri);
-            foreach(var key in request.Headers.AllKeys) {
+            HttpMethod method = new HttpMethod(request.Method);
+            HttpRequestMessage req = new HttpRequestMessage(method, uri);
+
+            foreach (var key in request.Headers.Keys) {
                 var val = request.Headers[key];
                 req.Headers.Add(key, val);
             }
 
-            req.Content = new StringContent(JsonConvert.DeserializeObject<string>(request.Content));
-            var response = await client.SendAsync(req);
+            if(method == HttpMethod.Post) {
+                req.Content = new StringContent(request.Content);
+            }
+            
+            var httpResponse = await client.SendAsync(req);
+            var response = await RemoteUriResponse.CreateAsync(httpResponse);
 
-            return RemoteUriResponse.Create(response);
+            return response;
         }
     }
 }
