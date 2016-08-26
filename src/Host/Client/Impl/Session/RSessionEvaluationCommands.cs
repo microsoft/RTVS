@@ -111,7 +111,7 @@ grDevices::deviceIsInteractive('ide')
 
         public static async Task<Guid> GetActivePlotDeviceAsync(this IRExpressionEvaluator evaluation) {
             var id = await evaluation.EvaluateAsync<string>("rtvs:::graphics.ide.getactivedeviceid()", REvaluationKind.Normal);
-            return id.SafeParseGuid();
+            return id != null ? Guid.Parse(id) : Guid.Empty;
         }
 
         public static Task InstallPackageAsync(this IRSessionInteraction interaction, string name) {

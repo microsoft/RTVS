@@ -429,8 +429,8 @@ namespace Microsoft.R.Host.Client {
                             case "!Plot":
                                 await _callbacks.Plot(
                                     new PlotMessage(
-                                        message.GetString(0, "device_id").SafeParseGuid(),
-                                        message.GetString(1, "plot_id").SafeParseGuid(),
+                                        Guid.Parse(message.GetString(0, "device_id")),
+                                        Guid.Parse(message.GetString(1, "plot_id")),
                                         message.GetString(2, "file_path"),
                                         message.GetInt32(3, "device_num"),
                                         message.GetInt32(4, "active_plot_index"),
@@ -440,19 +440,19 @@ namespace Microsoft.R.Host.Client {
                                 break;
 
                             case "?Locator":
-                                var locatorResult = await _callbacks.Locator(message.GetString(0, "device_id").SafeParseGuid(), ct);
+                                var locatorResult = await _callbacks.Locator(Guid.Parse(message.GetString(0, "device_id")), ct);
                                 ct.ThrowIfCancellationRequested();
                                 await RespondAsync(message, ct, locatorResult.Clicked, locatorResult.X, locatorResult.Y);
                                 break;
 
                             case "?PlotDeviceCreate":
-                                var plotDeviceResult = await _callbacks.PlotDeviceCreate(message.GetString(0, "device_id").SafeParseGuid(), ct);
+                                var plotDeviceResult = await _callbacks.PlotDeviceCreate(Guid.Parse(message.GetString(0, "device_id")), ct);
                                 ct.ThrowIfCancellationRequested();
                                 await RespondAsync(message, ct, plotDeviceResult.Width, plotDeviceResult.Height, plotDeviceResult.Resolution);
                                 break;
 
                             case "!PlotDeviceDestroy":
-                                await _callbacks.PlotDeviceDestroy(message.GetString(0, "device_id").SafeParseGuid(), ct);
+                                await _callbacks.PlotDeviceDestroy(Guid.Parse(message.GetString(0, "device_id")), ct);
                                 break;
 
                             case "!WebBrowser":
