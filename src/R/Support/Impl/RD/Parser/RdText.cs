@@ -30,12 +30,6 @@ namespace Microsoft.R.Support.RD.Parser {
                 string s = context.TextProvider.GetText(range);
 
                 s = CleanRawRdText(s);
-                if (!string.IsNullOrWhiteSpace(s) &&
-                    (sb.Length > 0 && !char.IsWhiteSpace(sb[sb.Length - 1]) &&
-                    char.IsLetterOrDigit(s[0]))) {
-                    sb.Append(' ');
-                }
-
                 sb.Append(s);
             }
 
@@ -54,12 +48,12 @@ namespace Microsoft.R.Support.RD.Parser {
                     continue; // skip escapes
                 }
 
-                if (ch != ' ' || (sb.Length > 0 && sb[sb.Length - 1] != ' ')) {
+                if (ch != ' ' || (sb.Length > 0 && sb[sb.Length - 1] != ' ') || sb.Length == 0) {
                     sb.Append(ch);
                 }
             }
 
-            return new PlainTextExtractor().GetTextFromHtml(sb.ToString().TrimEnd());
+            return sb.ToString();
         }
     }
 }

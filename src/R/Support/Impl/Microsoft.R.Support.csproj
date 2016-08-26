@@ -106,7 +106,6 @@
     <Compile Include="RD\BraceMatch\RdBraceHighlightProvider.cs" />
     <Compile Include="RD\BraceMatch\RdBraceMatcher.cs" />
     <Compile Include="RD\BraceMatch\RdBraceMatcherProvider.cs" />
-    <Compile Include="RD\Parser\PlainTextExtractor.cs" />
     <Compile Include="RD\Parser\RdFunctionSignature.cs" />
     <Compile Include="RD\Parser\RdArgumentDescription.cs" />
     <Compile Include="RD\Parser\RdParseContext.cs" />

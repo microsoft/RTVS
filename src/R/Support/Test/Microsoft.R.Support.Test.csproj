@@ -99,7 +99,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssertionExtensions.cs" />
-    <Compile Include="Functions\PlainTextExtractorTest.cs" />
     <Compile Include="Html\AttributeParseTest.cs" />
     <Compile Include="Html\CharStreamTest.cs" />
     <Compile Include="Html\CommentParseTest.cs" />
