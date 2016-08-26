@@ -40,11 +40,11 @@ namespace Microsoft.R.Components.Plots.Implementation {
 
         public IRPlotHistoryVisualComponent HistoryVisualComponent { get; private set; }
 
-        public event EventHandler DeviceCreateMessageReceived;
-        public event EventHandler DeviceDestroyMessageReceived;
-        public event EventHandler PlotMessageReceived;
-        public event EventHandler LocatorMessageReceived;
-        public event EventHandler ActiveDeviceChanged;
+        public event EventHandler<EventArgs> DeviceCreateMessageReceived;
+        public event EventHandler<EventArgs> DeviceDestroyMessageReceived;
+        public event EventHandler<EventArgs> PlotMessageReceived;
+        public event EventHandler<EventArgs> ActiveDeviceChanged;
+        public event EventHandler<EventArgs> LocatorModeChanged;
 
 
         public RPlotManager(IRSettings settings, IRInteractiveWorkflow interactiveWorkflow, Action dispose) {
@@ -62,6 +62,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
 
             var visualComponents = _visualComponents.Values.ToArray();
             foreach (var visualComponent in visualComponents) {
+                visualComponent.ViewModel.LocatorModeChanged -= ViewModel_LocatorModeChanged;
                 visualComponent.Dispose();
             }
             _dispose();
@@ -74,8 +75,13 @@ namespace Microsoft.R.Components.Plots.Implementation {
             }
 
             component = visualComponentContainerFactory.GetOrCreate(this, _interactiveWorkflow.RSession, instanceId).Component;
+            component.ViewModel.LocatorModeChanged += ViewModel_LocatorModeChanged;
             _visualComponents[instanceId] = component;
             return component;
+        }
+
+        private void ViewModel_LocatorModeChanged(object sender, EventArgs e) {
+            LocatorModeChanged?.Invoke(this, e);
         }
 
         public IRPlotHistoryVisualComponent GetOrCreateVisualComponent(IRPlotHistoryVisualComponentContainerFactory visualComponentContainerFactory, int instanceId) {
@@ -107,15 +113,16 @@ namespace Microsoft.R.Components.Plots.Implementation {
         }
 
         public async Task LoadPlotAsync(PlotMessage plot) {
+            InteractiveWorkflow.Shell.AssertIsOnMainThread();
+
             var visualComponent = await GetVisualComponentForDevice(plot.DeviceId);
             if (visualComponent != null) {
                 visualComponent.Container.Show(focus: false, immediate: false);
                 await ProcessPlotMessage(visualComponent.ViewModel, plot);
+                visualComponent.Container.UpdateCommandStatus(false);
             }
 
             PlotMessageReceived?.Invoke(this, EventArgs.Empty);
-
-            _interactiveWorkflow.ActiveWindow?.Container.UpdateCommandStatus(false);
         }
 
         public async Task ShowDeviceAsync(Guid deviceId) {
@@ -144,8 +151,6 @@ namespace Microsoft.R.Components.Plots.Implementation {
             if (visualComponent != null) {
                 visualComponent.Container.Show(focus: false, immediate: true);
             }
-
-            LocatorMessageReceived?.Invoke(this, EventArgs.Empty);
 
             return await visualComponent.ViewModel.StartLocatorModeAsync(ct);
         }
@@ -346,6 +351,8 @@ namespace Microsoft.R.Components.Plots.Implementation {
         }
 
         private async Task ProcessPlotMessage(IRPlotDeviceViewModel viewModel, PlotMessage plot) {
+            InteractiveWorkflow.Shell.AssertIsOnMainThread();
+
             if (plot.IsClearAll) {
                 await viewModel.PlotMessageClearAllAsync(plot.DeviceId, plot.DeviceNum);
                 History.RemoveAll(plot.DeviceId);

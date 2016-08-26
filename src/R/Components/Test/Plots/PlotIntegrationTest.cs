@@ -11,7 +11,6 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using FluentAssertions;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Tasks;
 using Microsoft.Common.Wpf.Imaging;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Plots;
@@ -126,9 +125,10 @@ namespace Microsoft.R.Components.Test.Plots {
                 });
 
                 var viewModel = await GetActiveViewModelAsync();
-                await WaitForPlotAsync(async delegate {
-                    await PlotDeviceCommandFactory.PreviousPlot(_workflow, viewModel).InvokeAsync();
-                });
+
+                var plotReceivedTask = EventTaskSources.IRPlotManager.PlotMessageReceived.Create(_workflow.Plots);
+                await PlotDeviceCommandFactory.PreviousPlot(_workflow, viewModel).InvokeAsync();
+                await plotReceivedTask;
 
                 viewModel.PlotImage.Should().HaveSamePixels(plot10to20);
 
@@ -150,9 +150,9 @@ namespace Microsoft.R.Components.Test.Plots {
                 });
 
                 var viewModel = await GetActiveViewModelAsync();
-                await WaitForPlotAsync(async delegate {
-                    await PlotDeviceCommandFactory.PreviousPlot(_workflow, viewModel).InvokeAsync();
-                });
+                var plotReceivedTask = EventTaskSources.IRPlotManager.PlotMessageReceived.Create(_workflow.Plots);
+                await PlotDeviceCommandFactory.PreviousPlot(_workflow, viewModel).InvokeAsync();
+                await plotReceivedTask;
 
                 viewModel.PlotImage.Should().HaveSamePixels(plot1to10);
 
@@ -243,9 +243,9 @@ namespace Microsoft.R.Components.Test.Plots {
 
                 var pasteCmd = PlotDeviceCommandFactory.Paste(_workflow, viewModel2);
                 pasteCmd.Should().BeEnabled();
-                await WaitForPlotAsync(async delegate {
-                    await pasteCmd.InvokeAsync();
-                });
+                var plotReceivedTask = EventTaskSources.IRPlotManager.PlotMessageReceived.Create(_workflow.Plots);
+                await pasteCmd.InvokeAsync();
+                await plotReceivedTask;
 
                 CoreShell.LastShownErrorMessage.Should().BeNullOrEmpty();
 
@@ -288,9 +288,9 @@ namespace Microsoft.R.Components.Test.Plots {
 
                 var pasteCmd = PlotDeviceCommandFactory.Paste(_workflow, viewModel2);
                 pasteCmd.Should().BeEnabled();
-                await WaitForPlotAsync(async delegate {
-                    await pasteCmd.InvokeAsync();
-                });
+                var plotReceivedTask = EventTaskSources.IRPlotManager.PlotMessageReceived.Create(_workflow.Plots);
+                await pasteCmd.InvokeAsync();
+                await plotReceivedTask;
 
                 CoreShell.LastShownErrorMessage.Should().BeNullOrEmpty();
 
@@ -327,9 +327,9 @@ namespace Microsoft.R.Components.Test.Plots {
 
                 var removeAllCmd = PlotDeviceCommandFactory.RemoveAllPlots(_workflow, viewModel1);
                 removeAllCmd.Should().BeEnabled();
-                await WaitForPlotAsync(async delegate {
-                    await removeAllCmd.InvokeAsync();
-                });
+                var plotReceivedTask = EventTaskSources.IRPlotManager.PlotMessageReceived.Create(_workflow.Plots);
+                await removeAllCmd.InvokeAsync();
+                await plotReceivedTask;
 
                 CoreShell.LastShownErrorMessage.Should().BeNullOrEmpty();
 
@@ -369,9 +369,9 @@ namespace Microsoft.R.Components.Test.Plots {
 
                 var removeAllCmd = PlotDeviceCommandFactory.RemoveCurrentPlot(_workflow, viewModel1);
                 removeAllCmd.Should().BeEnabled();
-                await WaitForPlotAsync(async delegate {
-                    await removeAllCmd.InvokeAsync();
-                });
+                var plotReceivedTask = EventTaskSources.IRPlotManager.PlotMessageReceived.Create(_workflow.Plots);
+                await removeAllCmd.InvokeAsync();
+                await plotReceivedTask;
 
                 CoreShell.LastShownErrorMessage.Should().BeNullOrEmpty();
 
@@ -392,16 +392,16 @@ namespace Microsoft.R.Components.Test.Plots {
 
                 _workflow.Plots.ActiveDeviceId.Should().BeEmpty();
 
-                await WaitForDeviceChangedAsync(async delegate {
-                    await newCmd.InvokeAsync();
-                });
+                var deviceChangedTask = EventTaskSources.IRPlotManager.ActiveDeviceChanged.Create(_workflow.Plots);
+                await newCmd.InvokeAsync();
+                await deviceChangedTask;
 
                 _workflow.Plots.ActiveDeviceId.Should().NotBeEmpty();
 
                 var eval = _workflow.ActiveWindow.InteractiveWindow.Evaluator;
-                await WaitForDeviceChangedAsync(async delegate {
-                    await eval.ExecuteCodeAsync("dev.off()".EnsureLineBreak());
-                });
+                deviceChangedTask = EventTaskSources.IRPlotManager.ActiveDeviceChanged.Create(_workflow.Plots);
+                await eval.ExecuteCodeAsync("dev.off()".EnsureLineBreak());
+                await deviceChangedTask;
 
                 _workflow.Plots.ActiveDeviceId.Should().BeEmpty();
             }
@@ -427,17 +427,17 @@ namespace Microsoft.R.Components.Test.Plots {
                 activateDevice2Cmd.Should().BeEnabled();
                 _workflow.Plots.ActiveDeviceId.Should().Be(viewModel2.DeviceId);
 
-                await WaitForDeviceChangedAsync(async delegate {
-                    await activateDevice1Cmd.InvokeAsync();
-                });
+                var deviceChangedTask = EventTaskSources.IRPlotManager.ActiveDeviceChanged.Create(_workflow.Plots);
+                await activateDevice1Cmd.InvokeAsync();
+                await deviceChangedTask;
 
                 _workflow.Plots.ActiveDeviceId.Should().Be(viewModel1.DeviceId);
                 activateDevice1Cmd.Should().BeChecked();
                 activateDevice2Cmd.Should().BeUnchecked();
 
-                await WaitForDeviceChangedAsync(async delegate {
-                    await activateDevice2Cmd.InvokeAsync();
-                });
+                deviceChangedTask = EventTaskSources.IRPlotManager.ActiveDeviceChanged.Create(_workflow.Plots);
+                await activateDevice2Cmd.InvokeAsync();
+                await deviceChangedTask;
 
                 _workflow.Plots.ActiveDeviceId.Should().Be(viewModel2.DeviceId);
                 activateDevice1Cmd.Should().BeUnchecked();
@@ -645,18 +645,18 @@ namespace Microsoft.R.Components.Test.Plots {
 
                 for (int i = 0; i < scripts.Length - 1; i++) {
                     prevCmd.Should().BeEnabled();
-                    await WaitForPlotAsync(async delegate {
-                        await prevCmd.InvokeAsync();
-                    });
+                    var plotReceivedTask = EventTaskSources.IRPlotManager.PlotMessageReceived.Create(_workflow.Plots);
+                    await prevCmd.InvokeAsync();
+                    await plotReceivedTask;
                 }
 
                 prevCmd.Should().BeDisabled();
 
                 for (int i = 0; i < scripts.Length - 1; i++) {
                     nextCmd.Should().BeEnabled();
-                    await WaitForPlotAsync(async delegate {
-                        await nextCmd.InvokeAsync();
-                    });
+                    var plotReceivedTask = EventTaskSources.IRPlotManager.PlotMessageReceived.Create(_workflow.Plots);
+                    await nextCmd.InvokeAsync();
+                    await plotReceivedTask;
                 }
 
                 nextCmd.Should().BeDisabled();
@@ -690,18 +690,18 @@ namespace Microsoft.R.Components.Test.Plots {
                 // Navigating to a plot in the history that cannot be rendered
                 // will send a plot with zero-file size, which translate into an error message.
                 prevCmd.Should().BeEnabled();
-                await WaitForPlotAsync(async delegate {
-                    await prevCmd.InvokeAsync();
-                });
+                var plotReceivedTask = EventTaskSources.IRPlotManager.PlotMessageReceived.Create(_workflow.Plots);
+                await prevCmd.InvokeAsync();
+                await plotReceivedTask;
 
                 viewModel.PlotImage.Should().BeNull();
                 viewModel.ShowError.Should().BeTrue();
                 viewModel.ShowWatermark.Should().BeFalse();
 
                 prevCmd.Should().BeEnabled();
-                await WaitForPlotAsync(async delegate {
-                    await prevCmd.InvokeAsync();
-                });
+                plotReceivedTask = EventTaskSources.IRPlotManager.PlotMessageReceived.Create(_workflow.Plots);
+                await prevCmd.InvokeAsync();
+                await plotReceivedTask;
 
                 viewModel.PlotImage.Should().NotBeNull();
                 viewModel.ShowError.Should().BeFalse();
@@ -728,11 +728,11 @@ namespace Microsoft.R.Components.Test.Plots {
                 var cmd = PlotDeviceCommandFactory.EndLocator(_workflow, viewModel);
                 cmd.Should().BeInvisibleAndDisabled();
 
-                await WaitForLocatorModeChangedAsync(viewModel, delegate {
-                    ExecuteAndDoNotWaitForPlotsAsync(new string[] {
-                        "res <- locator()",
-                    }).DoNotWait();
-                });
+                var firstLocatorModeTask = EventTaskSources.IRPlotManager.LocatorModeChanged.Create(_workflow.Plots);
+                ExecuteAndDoNotWaitForPlotsAsync(new string[] {
+                    "res <- locator()",
+                }).DoNotWait();
+                await firstLocatorModeTask;
 
                 var points = new Point[] {
                     new Point(10, 10),
@@ -753,22 +753,23 @@ namespace Microsoft.R.Components.Test.Plots {
 
                     // Send a result with a click point, which will causes
                     // locator mode to end and immediately start again
-                    await WaitForLocatorModeChangedAsync(viewModel, delegate {
-                        viewModel.ClickPlot((int)point.X, (int)point.Y);
-                    });
+                    var locatorModeTask = EventTaskSources.IRPlotManager.LocatorModeChanged.Create(_workflow.Plots);
+                    viewModel.ClickPlot((int)point.X, (int)point.Y);
+                    await locatorModeTask;
 
                     viewModel.LocatorMode.Should().BeFalse();
                     cmd.Should().BeInvisibleAndDisabled();
 
-                    await WaitForLocatorModeChangedAsync(viewModel, () => { });
+                    locatorModeTask = EventTaskSources.IRPlotManager.LocatorModeChanged.Create(_workflow.Plots);
+                    await locatorModeTask;
                 }
 
                 // Send a result with a not clicked result, which causes
                 // locator mode to end, and the high-level locator() function
                 // call will return.
-                await WaitForLocatorModeChangedAsync(viewModel, async delegate {
-                    await cmd.InvokeAsync();
-                });
+                var lastLocatorModeTask = EventTaskSources.IRPlotManager.LocatorModeChanged.Create(_workflow.Plots);
+                await cmd.InvokeAsync();
+                await lastLocatorModeTask;
 
                 viewModel.LocatorMode.Should().BeFalse();
                 cmd.Should().BeInvisibleAndDisabled();
@@ -800,18 +801,18 @@ namespace Microsoft.R.Components.Test.Plots {
                 var cmd = PlotDeviceCommandFactory.EndLocator(_workflow, viewModel);
                 cmd.Should().BeInvisibleAndDisabled();
 
-                await WaitForLocatorModeChangedAsync(viewModel, delegate {
-                    ExecuteAndDoNotWaitForPlotsAsync(new string[] {
-                        "res <- locator()",
-                    }).DoNotWait();
-                });
+                var locatorModeTask = EventTaskSources.IRPlotManager.LocatorModeChanged.Create(_workflow.Plots);
+                ExecuteAndDoNotWaitForPlotsAsync(new string[] {
+                    "res <- locator()",
+                }).DoNotWait();
+                await locatorModeTask;
 
                 viewModel.LocatorMode.Should().BeTrue();
                 cmd.Should().BeEnabled();
 
-                await WaitForLocatorModeChangedAsync(viewModel, async delegate {
-                    await cmd.InvokeAsync();
-                });
+                locatorModeTask = EventTaskSources.IRPlotManager.LocatorModeChanged.Create(_workflow.Plots);
+                await cmd.InvokeAsync();
+                await locatorModeTask;
 
                 viewModel.LocatorMode.Should().BeFalse();
                 cmd.Should().BeInvisibleAndDisabled();
@@ -849,9 +850,9 @@ namespace Microsoft.R.Components.Test.Plots {
                 foreach (var plot in _workflow.Plots.History.Entries) {
                     _workflow.Plots.History.SelectedPlot = plot;
                     activateCmd.Should().BeEnabled();
-                    await WaitForPlotAsync(async delegate {
-                        await activateCmd.InvokeAsync();
-                    });
+                    var plotReceivedTask = EventTaskSources.IRPlotManager.PlotMessageReceived.Create(_workflow.Plots);
+                    await activateCmd.InvokeAsync();
+                    await plotReceivedTask;
                     viewModel.ActivePlotId.Should().Be(plot.PlotId);
                 }
 
@@ -891,9 +892,9 @@ namespace Microsoft.R.Components.Test.Plots {
 
                 var pasteCmd = PlotDeviceCommandFactory.Paste(_workflow, viewModel2);
                 pasteCmd.Should().BeEnabled();
-                await WaitForPlotAsync(async delegate {
-                    await pasteCmd.InvokeAsync();
-                });
+                var plotReceivedTask = EventTaskSources.IRPlotManager.PlotMessageReceived.Create(_workflow.Plots);
+                await pasteCmd.InvokeAsync();
+                await plotReceivedTask;
 
                 CoreShell.LastShownErrorMessage.Should().BeNullOrEmpty();
 
@@ -931,9 +932,9 @@ namespace Microsoft.R.Components.Test.Plots {
 
                 _workflow.Plots.History.SelectedPlot = _workflow.Plots.History.Entries.Single(e => e.PlotId == plot1);
                 removeCmd.Should().BeEnabled();
-                await WaitForPlotAsync(async delegate {
-                    await removeCmd.InvokeAsync();
-                });
+                var plotReceivedTask = EventTaskSources.IRPlotManager.PlotMessageReceived.Create(_workflow.Plots);
+                await removeCmd.InvokeAsync();
+                await plotReceivedTask;
 
                 viewModel1.PlotImage.Should().BeNull();
                 _workflow.Plots.History.Entries.Should().HaveCount(1);
@@ -941,9 +942,9 @@ namespace Microsoft.R.Components.Test.Plots {
 
                 _workflow.Plots.History.SelectedPlot = _workflow.Plots.History.Entries.Single(e => e.PlotId == plot2);
                 removeCmd.Should().BeEnabled();
-                await WaitForPlotAsync(async delegate {
-                    await removeCmd.InvokeAsync();
-                });
+                plotReceivedTask = EventTaskSources.IRPlotManager.PlotMessageReceived.Create(_workflow.Plots);
+                await removeCmd.InvokeAsync();
+                await plotReceivedTask;
 
                 viewModel2.PlotImage.Should().BeNull();
                 _workflow.Plots.History.Entries.Should().BeEmpty();
@@ -1018,35 +1019,28 @@ namespace Microsoft.R.Components.Test.Plots {
         }
 
         private async Task InitializeGraphicsDevice() {
-            await ExecuteAndWaitForDeviceCreatedAsync(new string[] {
-                "dev.new()",
-            });
+            var deviceCreatedTask = EventTaskSources.IRPlotManager.DeviceCreateMessageReceived.Create(_workflow.Plots);
+            var deviceChangedTask = EventTaskSources.IRPlotManager.ActiveDeviceChanged.Create(_workflow.Plots);
+
+            var eval = _workflow.ActiveWindow.InteractiveWindow.Evaluator;
+            var result = await eval.ExecuteCodeAsync("dev.new()\n");
+            result.IsSuccessful.Should().BeTrue();
+
+            await deviceCreatedTask;
+            await deviceChangedTask;
         }
 
         private async Task ExecuteAndWaitForPlotsAsync(string[] scripts) {
             var eval = _workflow.ActiveWindow.InteractiveWindow.Evaluator;
 
             foreach (string script in scripts) {
-                await WaitForPlotAsync(async delegate {
-                    var result = await eval.ExecuteCodeAsync(script.EnsureLineBreak());
-                    result.IsSuccessful.Should().BeTrue();
-                });
+                var plotReceivedTask = EventTaskSources.IRPlotManager.PlotMessageReceived.Create(_workflow.Plots);
+
+                var result = await eval.ExecuteCodeAsync(script.EnsureLineBreak());
+                result.IsSuccessful.Should().BeTrue();
+
+                await plotReceivedTask;
             }
-        }
-
-        private async Task ExecuteAndWaitForDeviceCreatedAsync(string[] scripts) {
-            var eval = _workflow.ActiveWindow.InteractiveWindow.Evaluator;
-
-            foreach (string script in scripts) {
-                await WaitForDeviceCreatedAsync(async delegate {
-                    var result = await eval.ExecuteCodeAsync(script.EnsureLineBreak());
-                    result.IsSuccessful.Should().BeTrue();
-                });
-            }
-        }
-
-        private Task<IRPlotDeviceViewModel> GetActiveViewModelAsync() {
-            return Task.FromResult(_workflow.Plots.GetDeviceViewModel(_workflow.Plots.ActiveDeviceId));
         }
 
         private async Task ExecuteAndDoNotWaitForPlotsAsync(string[] scripts) {
@@ -1057,56 +1051,8 @@ namespace Microsoft.R.Components.Test.Plots {
             }
         }
 
-        private async Task WaitForDeviceCreatedAsync(Func<Task> action) {
-            var eas1 = new EventTaskSource<IRPlotManager>((o, h) => o.DeviceCreateMessageReceived += h, (o, h) => o.DeviceCreateMessageReceived -= h);
-            var eas2 = new EventTaskSource<IRPlotManager>((o, h) => o.ActiveDeviceChanged += h, (o, h) => o.ActiveDeviceChanged -= h);
-            var task1 = eas1.Create(_workflow.Plots);
-            var task2 = eas2.Create(_workflow.Plots);
-            await action();
-            await task1;
-            await task2;
-        }
-
-        private async Task WaitForDeviceChangedAsync(Func<Task> action) {
-            var eas = new EventTaskSource<IRPlotManager>((o, h) => o.ActiveDeviceChanged += h, (o, h) => o.ActiveDeviceChanged -= h);
-            var task = eas.Create(_workflow.Plots);
-            await action();
-            await task;
-        }
-
-        private async Task WaitForPlotAsync(IRPlotDeviceViewModel vm, Func<Task> action) {
-            var eas = new EventTaskSource<IRPlotDeviceViewModel>((o, h) => o.PlotChanged += h, (o, h) => o.PlotChanged -= h);
-            var task = eas.Create(vm);
-            await action();
-            await task;
-        }
-
-        private async Task WaitForPlotAsync(Func<Task> action) {
-            var eas = new EventTaskSource<IRPlotManager>((o, h) => o.PlotMessageReceived += h, (o, h) => o.PlotMessageReceived -= h);
-            var task = eas.Create(_workflow.Plots);
-            await action();
-            await task;
-        }
-
-        private async Task WaitForMutated(Func<Task> action) {
-            var eas = new EventTaskSource<IRSession, EventArgs>((o, h) => o.Mutated += h, (o, h) => o.Mutated -= h);
-            var task = eas.Create(_workflow.RSession);
-            await action();
-            await task;
-        }
-
-        private async Task WaitForLocatorModeChangedAsync(IRPlotDeviceViewModel vm, Action action) {
-            var eas = new EventTaskSource<IRPlotDeviceViewModel>((o, h) => o.LocatorModeChanged += h, (o, h) => o.LocatorModeChanged -= h);
-            var task = eas.Create(vm);
-            action();
-            await task;
-        }
-
-        private async Task WaitForLocatorModeChangedAsync(IRPlotDeviceViewModel vm, Func<Task> action) {
-            var eas = new EventTaskSource<IRPlotDeviceViewModel>((o, h) => o.LocatorModeChanged += h, (o, h) => o.LocatorModeChanged -= h);
-            var task = eas.Create(vm);
-            await action();
-            await task;
+        private Task<IRPlotDeviceViewModel> GetActiveViewModelAsync() {
+            return Task.FromResult(_workflow.Plots.GetDeviceViewModel(_workflow.Plots.ActiveDeviceId));
         }
 
         private async Task<BitmapImage> GetExpectedImageAsync(string imageType, int width, int height, int res, string name, string code) {

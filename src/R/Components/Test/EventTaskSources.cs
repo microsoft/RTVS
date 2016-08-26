@@ -18,5 +18,27 @@ namespace Microsoft.R.Components.Test {
                     (o, e) => o.AfterRequest += e,
                     (o, e) => o.AfterRequest -= e);
         }
+
+        public static class IRPlotManager {
+            public static readonly EventTaskSource<Components.Plots.IRPlotManager, EventArgs> PlotMessageReceived =
+                new EventTaskSource<Components.Plots.IRPlotManager, EventArgs>(
+                    (o, e) => o.PlotMessageReceived += e,
+                    (o, e) => o.PlotMessageReceived -= e);
+
+            public static readonly EventTaskSource<Components.Plots.IRPlotManager, EventArgs> ActiveDeviceChanged =
+                new EventTaskSource<Components.Plots.IRPlotManager, EventArgs>(
+                    (o, e) => o.ActiveDeviceChanged += e,
+                    (o, e) => o.ActiveDeviceChanged -= e);
+
+            public static readonly EventTaskSource<Components.Plots.IRPlotManager, EventArgs> LocatorModeChanged =
+                new EventTaskSource<Components.Plots.IRPlotManager, EventArgs>(
+                    (o, e) => o.LocatorModeChanged += e,
+                    (o, e) => o.LocatorModeChanged -= e);
+
+            public static readonly EventTaskSource<Components.Plots.IRPlotManager, EventArgs> DeviceCreateMessageReceived =
+                new EventTaskSource<Components.Plots.IRPlotManager, EventArgs>(
+                    (o, e) => o.DeviceCreateMessageReceived += e,
+                    (o, e) => o.DeviceCreateMessageReceived -= e);
+        }
     }
 }

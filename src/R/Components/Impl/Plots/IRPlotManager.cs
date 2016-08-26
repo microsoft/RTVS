@@ -34,16 +34,17 @@ namespace Microsoft.R.Components.Plots {
         /// </summary>
         Guid ActiveDeviceId { get; }
 
-        event EventHandler DeviceCreateMessageReceived;
-        event EventHandler DeviceDestroyMessageReceived;
-        event EventHandler PlotMessageReceived;
-        event EventHandler LocatorMessageReceived;
+        event EventHandler<EventArgs> DeviceCreateMessageReceived;
+        event EventHandler<EventArgs> DeviceDestroyMessageReceived;
+        event EventHandler<EventArgs> PlotMessageReceived;
+
+        event EventHandler<EventArgs> LocatorModeChanged;
 
         /// <summary>
         /// The active device has changed. This is checked for on every session 
         /// mutated event and only fired when different from the previous value.
         /// </summary>
-        event EventHandler ActiveDeviceChanged;
+        event EventHandler<EventArgs> ActiveDeviceChanged;
 
         /// <summary>
         /// Process an incoming plot message from the host.

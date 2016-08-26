@@ -502,7 +502,7 @@ plot(0:10)
 res <- locator()
 write.csv(res, {0})
 ",
-                QuotedRPath(outputFilePath));
+                outputFilePath.ToRPath().ToRStringLiteral());
 
             var locatorProvider = new TestLocatorResultProvider(new Point[] {
                 new Point(10, 10),
@@ -580,7 +580,7 @@ dev.off()
 
                 foreach (var input in inputs) {
                     using (var interaction = await session.BeginInteractionAsync()) {
-                        await interaction.RespondAsync(input + "\n");
+                        await interaction.RespondAsync(input.EnsureLineBreak());
                     }
                 }
 
@@ -607,7 +607,7 @@ rtvs:::export_to_image(device_id, rtvs:::graphics.ide.getactiveplotid(device_id)
 
                 foreach (var input in inputs) {
                     using (var interaction = await session.BeginInteractionAsync()) {
-                        await interaction.RespondAsync(input + "\n");
+                        await interaction.RespondAsync(input.EnsureLineBreak());
                     }
                 }
 
@@ -635,7 +635,7 @@ rtvs:::export_to_image(device_id, rtvs:::graphics.ide.getactiveplotid(device_id)
 
                 foreach (var input in inputs) {
                     using (var interaction = await session.BeginInteractionAsync()) {
-                        await interaction.RespondAsync(input + "\n");
+                        await interaction.RespondAsync(input.EnsureLineBreak());
                     }
                 }
 
@@ -654,10 +654,6 @@ rtvs:::export_to_pdf(device_id, rtvs:::graphics.ide.getactiveplotid(device_id), 
             }
 
             return PlotFilePaths.AsReadOnly();
-        }
-
-        private static string QuotedRPath(string path) {
-            return '"' + path.Replace("\\", "/") + '"';
         }
 
         private static string[] Interactive(string code) {

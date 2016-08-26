@@ -62,7 +62,12 @@ namespace Microsoft.R.Components.Plots.Implementation.View {
             var source = PlotClipboardData.Parse((string)e.Data.GetData(PlotClipboardData.Format));
             if (source != null) {
                 bool isMove = (e.KeyStates & DragDropKeyStates.ShiftKey) != 0;
-                Model?.CopyPlotFromAsync(source.DeviceId, source.PlotId, isMove).DoNotWait();
+                try {
+                    Model?.CopyPlotFromAsync(source.DeviceId, source.PlotId, isMove).DoNotWait();
+                } catch (RPlotManagerException ex) {
+                    MessageBox.Show(ex.Message, string.Empty, MessageBoxButton.OK, MessageBoxImage.Error);
+                } catch (OperationCanceledException) {
+                }
                 e.Handled = true;
             }
         }
