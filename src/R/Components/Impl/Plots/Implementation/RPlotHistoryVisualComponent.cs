@@ -3,6 +3,7 @@
 
 using System.Windows;
 using System.Windows.Input;
+using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.Plots.Implementation.View;
@@ -12,6 +13,7 @@ using Microsoft.R.Components.View;
 
 namespace Microsoft.R.Components.Plots.Implementation {
     public class RPlotHistoryVisualComponent : IRPlotHistoryVisualComponent {
+        private readonly DisposableBag _disposableBag;
         private ICoreShell Shell { get; }
         private IRPlotManager PlotManager { get; }
         public IRPlotHistoryViewModel ViewModel { get; }
@@ -26,13 +28,17 @@ namespace Microsoft.R.Components.Plots.Implementation {
             var control = new RPlotHistoryControl {
                 DataContext = ViewModel
             };
-            control.ContextMenuRequested += Control_ContextMenuRequested;
 
             Control = control;
+
+            _disposableBag = DisposableBag.Create<RPlotDeviceVisualComponent>()
+                .Add(() => control.ContextMenuRequested -= Control_ContextMenuRequested);
+
+            control.ContextMenuRequested += Control_ContextMenuRequested;
         }
 
         public void Dispose() {
-            ((RPlotHistoryControl)Control).ContextMenuRequested -= Control_ContextMenuRequested;
+            _disposableBag.TryMarkDisposed();
         }
 
         public ICommandTarget Controller { get; }

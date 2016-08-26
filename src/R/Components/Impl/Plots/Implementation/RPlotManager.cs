@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Disposables;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Plots.Implementation.ViewModel;
@@ -22,7 +23,7 @@ using Microsoft.R.Host.Client.Session;
 namespace Microsoft.R.Components.Plots.Implementation {
     internal class RPlotManager : IRPlotManager {
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
-        private readonly Action _dispose;
+        private readonly DisposableBag _disposableBag;
 
         private Dictionary<int, IRPlotDeviceVisualComponent> _visualComponents = new Dictionary<int, IRPlotDeviceVisualComponent>();
         private Dictionary<Guid, IRPlotDeviceVisualComponent> _assignedVisualComponents = new Dictionary<Guid, IRPlotDeviceVisualComponent>();
@@ -49,23 +50,25 @@ namespace Microsoft.R.Components.Plots.Implementation {
 
         public RPlotManager(IRSettings settings, IRInteractiveWorkflow interactiveWorkflow, Action dispose) {
             _interactiveWorkflow = interactiveWorkflow;
-            _dispose = dispose;
             History = new RPlotHistoryViewModel(this);
             ActiveDeviceId = Guid.Empty;
+
+            _disposableBag = DisposableBag.Create<RPlotManager>(dispose)
+                .Add(() => interactiveWorkflow.RSession.Disconnected += RSession_Disconnected)
+                .Add(() => interactiveWorkflow.RSession.Mutated -= RSession_Mutated);
+
             interactiveWorkflow.RSession.Disconnected += RSession_Disconnected;
             interactiveWorkflow.RSession.Mutated += RSession_Mutated;
         }
 
         public void Dispose() {
-            _interactiveWorkflow.RSession.Disconnected -= RSession_Disconnected;
-            _interactiveWorkflow.RSession.Mutated -= RSession_Mutated;
+            _disposableBag.TryMarkDisposed();
 
             var visualComponents = _visualComponents.Values.ToArray();
             foreach (var visualComponent in visualComponents) {
                 visualComponent.ViewModel.LocatorModeChanged -= ViewModel_LocatorModeChanged;
                 visualComponent.Dispose();
             }
-            _dispose();
         }
 
         public IRPlotDeviceVisualComponent GetOrCreateVisualComponent(IRPlotDeviceVisualComponentContainerFactory visualComponentContainerFactory, int instanceId) {

@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.Plots.Implementation.View;
@@ -16,6 +17,7 @@ using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Components.Plots.Implementation {
     public class RPlotDeviceVisualComponent : IRPlotDeviceVisualComponent {
+        private readonly DisposableBag _disposableBag;
         private ICoreShell Shell { get; }
         private IRPlotManager PlotManager { get; }
 
@@ -29,10 +31,17 @@ namespace Microsoft.R.Components.Plots.Implementation {
             var control = new RPlotDeviceControl {
                 DataContext = ViewModel,
             };
-            control.ContextMenuRequested += Control_ContextMenuRequested;
 
             Control = control;
 
+            _disposableBag = DisposableBag.Create<RPlotDeviceVisualComponent>()
+                .Add(() => control.ContextMenuRequested -= Control_ContextMenuRequested)
+                .Add(() => ViewModel.DeviceNameChanged -= ViewModel_DeviceNameChanged)
+                .Add(() => ViewModel.LocatorModeChanged -= ViewModel_LocatorModeChanged)
+                .Add(() => ViewModel.PlotChanged += ViewModel_PlotChanged)
+                .Add(() => PlotManager.ActiveDeviceChanged += PlotManager_ActiveDeviceChanged);
+
+            control.ContextMenuRequested += Control_ContextMenuRequested;
             ViewModel.DeviceNameChanged += ViewModel_DeviceNameChanged;
             ViewModel.LocatorModeChanged += ViewModel_LocatorModeChanged;
             ViewModel.PlotChanged += ViewModel_PlotChanged;
@@ -53,11 +62,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
         public IVisualComponentContainer<IVisualComponent> Container { get; }
 
         public void Dispose() {
-            ViewModel.DeviceNameChanged -= ViewModel_DeviceNameChanged;
-            ViewModel.LocatorModeChanged -= ViewModel_LocatorModeChanged;
-            ViewModel.PlotChanged -= ViewModel_PlotChanged;
-            ((RPlotDeviceControl)Control).ContextMenuRequested -= Control_ContextMenuRequested;
-            PlotManager.ActiveDeviceChanged -= PlotManager_ActiveDeviceChanged;
+            _disposableBag.TryMarkDisposed();
         }
 
         public PlotDeviceProperties GetDeviceProperties() {
