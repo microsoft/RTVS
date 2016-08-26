@@ -46,8 +46,8 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
 
         protected override void OnCreate() {
             var controller = new AsyncCommandController();
-            controller.AddCommand(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Copy, PlotHistoryCommandFactory.Copy(_plotManager.InteractiveWorkflow, false));
-            controller.AddCommand(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Cut, PlotHistoryCommandFactory.Copy(_plotManager.InteractiveWorkflow, true));
+            controller.AddCommand(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Copy, PlotHistoryCommandFactory.CutCopy(_plotManager.InteractiveWorkflow, false));
+            controller.AddCommand(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Cut, PlotHistoryCommandFactory.CutCopy(_plotManager.InteractiveWorkflow, true));
             controller.AddCommand(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Delete, PlotHistoryCommandFactory.Remove(_plotManager.InteractiveWorkflow));
             controller.AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdPlotHistoryActivatePlot, PlotHistoryCommandFactory.ActivatePlot(_plotManager.InteractiveWorkflow));
             Component = new RPlotHistoryVisualComponent(_plotManager, controller, _plotManager.History, this, _settings, _coreShell);

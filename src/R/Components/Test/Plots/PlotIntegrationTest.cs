@@ -235,7 +235,7 @@ namespace Microsoft.R.Components.Test.Plots {
                 var device2 = viewModel2.DeviceId;
                 var plot2 = viewModel2.ActivePlotId;
 
-                var copyCmd = PlotDeviceCommandFactory.Copy(_workflow, viewModel1, cut: false);
+                var copyCmd = PlotDeviceCommandFactory.CutCopy(_workflow, viewModel1, cut: false);
                 copyCmd.Should().BeEnabled();
                 await copyCmd.InvokeAsync();
 
@@ -280,7 +280,7 @@ namespace Microsoft.R.Components.Test.Plots {
                 var device2 = viewModel2.DeviceId;
                 var plot2 = viewModel2.ActivePlotId;
 
-                var copyCmd = PlotDeviceCommandFactory.Copy(_workflow, viewModel1, cut: true);
+                var copyCmd = PlotDeviceCommandFactory.CutCopy(_workflow, viewModel1, cut: true);
                 copyCmd.Should().BeEnabled();
                 await copyCmd.InvokeAsync();
 
@@ -884,7 +884,7 @@ namespace Microsoft.R.Components.Test.Plots {
                 var plot2 = viewModel2.ActivePlotId;
 
                 _workflow.Plots.History.SelectedPlot = _workflow.Plots.History.Entries.Single(e => e.PlotId == plot1);
-                var copyCmd = PlotHistoryCommandFactory.Copy(_workflow, cut: false);
+                var copyCmd = PlotHistoryCommandFactory.CutCopy(_workflow, cut: false);
                 copyCmd.Should().BeEnabled();
                 await copyCmd.InvokeAsync();
 
@@ -1074,8 +1074,8 @@ dev.off()
             if (anyPlot) {
                 PlotDeviceCommandFactory.RemoveAllPlots(_workflow, viewModel).Should().BeEnabled();
                 PlotDeviceCommandFactory.RemoveCurrentPlot(_workflow, viewModel).Should().BeEnabled();
-                PlotDeviceCommandFactory.Copy(_workflow, viewModel, cut: false).Should().BeEnabled();
-                PlotDeviceCommandFactory.Copy(_workflow, viewModel, cut: true).Should().BeEnabled();
+                PlotDeviceCommandFactory.CutCopy(_workflow, viewModel, cut: false).Should().BeEnabled();
+                PlotDeviceCommandFactory.CutCopy(_workflow, viewModel, cut: true).Should().BeEnabled();
                 PlotDeviceCommandFactory.CopyAsBitmap(_workflow, viewModel).Should().BeEnabled();
                 PlotDeviceCommandFactory.CopyAsMetafile(_workflow, viewModel).Should().BeEnabled();
                 PlotDeviceCommandFactory.ExportAsImage(_workflow, viewModel).Should().BeEnabled();
@@ -1083,8 +1083,8 @@ dev.off()
             } else {
                 PlotDeviceCommandFactory.RemoveAllPlots(_workflow, viewModel).Should().BeDisabled();
                 PlotDeviceCommandFactory.RemoveCurrentPlot(_workflow, viewModel).Should().BeDisabled();
-                PlotDeviceCommandFactory.Copy(_workflow, viewModel, cut: false).Should().BeDisabled();
-                PlotDeviceCommandFactory.Copy(_workflow, viewModel, cut: true).Should().BeDisabled();
+                PlotDeviceCommandFactory.CutCopy(_workflow, viewModel, cut: false).Should().BeDisabled();
+                PlotDeviceCommandFactory.CutCopy(_workflow, viewModel, cut: true).Should().BeDisabled();
                 PlotDeviceCommandFactory.CopyAsBitmap(_workflow, viewModel).Should().BeDisabled();
                 PlotDeviceCommandFactory.CopyAsMetafile(_workflow, viewModel).Should().BeDisabled();
                 PlotDeviceCommandFactory.ExportAsImage(_workflow, viewModel).Should().BeDisabled();

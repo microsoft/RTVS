@@ -56,8 +56,8 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
             controller.AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdPrevPlot, PlotDeviceCommandFactory.PreviousPlot(_plotManager.InteractiveWorkflow, viewModel));
             controller.AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdExportPlotAsImage, PlotDeviceCommandFactory.ExportAsImage(_plotManager.InteractiveWorkflow, viewModel));
             controller.AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdExportPlotAsPdf, PlotDeviceCommandFactory.ExportAsPdf(_plotManager.InteractiveWorkflow, viewModel));
-            controller.AddCommand(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Copy, PlotDeviceCommandFactory.Copy(_plotManager.InteractiveWorkflow, viewModel, false));
-            controller.AddCommand(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Cut, PlotDeviceCommandFactory.Copy(_plotManager.InteractiveWorkflow, viewModel, true));
+            controller.AddCommand(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Copy, PlotDeviceCommandFactory.CutCopy(_plotManager.InteractiveWorkflow, viewModel, false));
+            controller.AddCommand(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Cut, PlotDeviceCommandFactory.CutCopy(_plotManager.InteractiveWorkflow, viewModel, true));
             controller.AddCommand(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Paste, PlotDeviceCommandFactory.Paste(_plotManager.InteractiveWorkflow, viewModel));
             controller.AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdCopyPlotAsBitmap, PlotDeviceCommandFactory.CopyAsBitmap(_plotManager.InteractiveWorkflow, viewModel));
             controller.AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdCopyPlotAsMetafile, PlotDeviceCommandFactory.CopyAsMetafile(_plotManager.InteractiveWorkflow, viewModel));

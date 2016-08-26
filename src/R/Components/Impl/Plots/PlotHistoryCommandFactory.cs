@@ -19,7 +19,7 @@ namespace Microsoft.R.Components.Plots {
             return new PlotHistoryAutoHideCommand(interactiveWorkflow);
         }
 
-        public static IAsyncCommand Copy(IRInteractiveWorkflow interactiveWorkflow, bool cut) {
+        public static IAsyncCommand CutCopy(IRInteractiveWorkflow interactiveWorkflow, bool cut) {
             return new PlotHistoryCutCopyCommand(interactiveWorkflow, cut);
         }
 

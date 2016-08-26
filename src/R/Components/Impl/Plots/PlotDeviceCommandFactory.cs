@@ -24,7 +24,7 @@ namespace Microsoft.R.Components.Plots {
             return new PlotDeviceExportAsPdfCommand(interactiveWorkflow, viewModel);
         }
 
-        public static IAsyncCommand Copy(IRInteractiveWorkflow interactiveWorkflow, IRPlotDeviceViewModel viewModel, bool cut) {
+        public static IAsyncCommand CutCopy(IRInteractiveWorkflow interactiveWorkflow, IRPlotDeviceViewModel viewModel, bool cut) {
             return new PlotDeviceCutCopyCommand(interactiveWorkflow, viewModel, cut);
         }
 
