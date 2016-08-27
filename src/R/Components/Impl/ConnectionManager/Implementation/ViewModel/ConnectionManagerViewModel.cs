@@ -105,18 +105,19 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             UpdateConnections();
         }
 
-        public void DeleteSelected() {
-            _connectionManager.TryRemove(SelectedConnection.Id);
+        public bool TryDelete(IConnectionViewModel connection) {
+            var result = _connectionManager.TryRemove(SelectedConnection.Id);
             UpdateConnections();
+            return result;
         }
 
         public async Task ConnectAsync(IConnectionViewModel connection) {
             _shell.AssertIsOnMainThread();
-            await _connectionManager.ConnectAsync(SelectedConnection.Name, SelectedConnection.Path, SelectedConnection.RCommandLineArguments);
+            await _connectionManager.ConnectAsync(connection.Name, connection.Path, connection.RCommandLineArguments);
             UpdateConnections();
         }
 
-        private void UpdateConnections() {
+        private void UpdateConnections() { 
             var selectedId = SelectedConnection?.Id;
             _items.ReplaceWith(_connectionManager.RecentConnections.Select(c => new ConnectionViewModel(c) {
                 IsActive = c == _connectionManager.ActiveConnection,

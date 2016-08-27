@@ -124,11 +124,11 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Delete.
+        ///   Looks up a localized string similar to Delete the connection.
         /// </summary>
-        public static string ConnectionManager_Delete {
+        public static string ConnectionManager_DeleteTooltip {
             get {
-                return ResourceManager.GetString("ConnectionManager_Delete", resourceCulture);
+                return ResourceManager.GetString("ConnectionManager_DeleteTooltip", resourceCulture);
             }
         }
         

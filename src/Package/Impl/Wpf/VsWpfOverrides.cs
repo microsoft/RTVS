@@ -5,19 +5,28 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 using Microsoft.Common.Core;
 using Microsoft.R.Wpf;
+using Microsoft.VisualStudio.Imaging;
+using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.PlatformUI;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
+using Brushes = Microsoft.R.Wpf.Brushes;
 
 namespace Microsoft.VisualStudio.R.Package.Wpf {
     public static class VsWpfOverrides {
         private static readonly Lazy<Assembly> ExtensionsExplorerUIAssemblyLazy = Lazy.Create(() => AppDomain.CurrentDomain.Load("Microsoft.VisualStudio.ExtensionsExplorer.UI"));
 
-        public static void Apply() {
+        public static void Apply(IApplicationShell current) {
             OverrideBrushes();
             OverrideFontKeys();
+            OverrideImageSources(current);
             OverrideStyleKeys();
         }
 
@@ -42,6 +51,7 @@ namespace Microsoft.VisualStudio.R.Package.Wpf {
             Brushes.ToolWindowButtonDownKey = VsBrushes.ToolWindowButtonDownKey;
             Brushes.ToolWindowButtonHoverActiveBorderKey = VsBrushes.ToolWindowButtonHoverActiveBorderKey;
             Brushes.ToolWindowButtonHoverActiveKey = VsBrushes.ToolWindowButtonHoverActiveKey;
+            Brushes.ToolWindowTextKey = VsBrushes.ToolWindowTextKey;
             Brushes.UITextKey = VsBrushes.BrandedUITextKey;
             Brushes.WindowTextKey = VsBrushes.WindowTextKey;
             Brushes.WindowKey = VsBrushes.WindowKey;
@@ -88,6 +98,9 @@ namespace Microsoft.VisualStudio.R.Package.Wpf {
             Brushes.StatusBarNoSolutionTextColorKey = EnvironmentColors.StatusBarNoSolutionTextColorKey;
             Brushes.StatusBarTextBrushKey = EnvironmentColors.StatusBarTextBrushKey;
             Brushes.StatusBarTextColorKey = EnvironmentColors.StatusBarTextColorKey;
+
+            Brushes.SelectedItemActiveBrushKey = TreeViewColors.SelectedItemActiveBrushKey;
+            Brushes.SelectedItemActiveBrushKey = TreeViewColors.SelectedItemActiveColorKey;
         }
 
         private static void OverrideFontKeys() {
@@ -99,10 +112,11 @@ namespace Microsoft.VisualStudio.R.Package.Wpf {
             FontKeys.EnvironmentBoldFontWeightKey = VsFonts.EnvironmentBoldFontWeightKey;
         }
 
-        private static object TryGetThemeKey(this IDictionary<string, ThemeResourceKey> dict, string name) {
-            ThemeResourceKey k;
-            dict.TryGetValue(name, out k);
-            return k;
+        private static void OverrideImageSources(IApplicationShell shell) {
+            IVsImageService2 imageService = shell.GetGlobalService<IVsImageService2>(typeof(SVsImageService));
+            ImageSources.Add = GetImage(imageService, KnownMonikers.Add);
+            ImageSources.Edit = GetImage(imageService, KnownMonikers.Edit);
+            ImageSources.Property = GetImage(imageService, KnownMonikers.Property);
         }
 
         private static void OverrideStyleKeys() {
@@ -121,6 +135,28 @@ namespace Microsoft.VisualStudio.R.Package.Wpf {
             return colorResources.GetProperties(BindingFlags.Public | BindingFlags.Static)
                 .Where(p => p.PropertyType == typeof(ThemeResourceKey))
                 .ToDictionary(p => p.Name, p => (ThemeResourceKey)p.GetValue(null));
+        }
+
+        private static ImageSource GetImage(IVsImageService2 imageService, ImageMoniker imageMoniker) {
+            var imageAttributes = new ImageAttributes {
+                ImageType = (uint)_UIImageType.IT_Bitmap,
+                Flags = (uint) _ImageAttributesFlags.IAF_RequiredFlags,
+                Format = (uint) _UIDataFormat.DF_WPF,
+                LogicalHeight = 16,
+                LogicalWidth = 16,
+                StructSize = Marshal.SizeOf(typeof (ImageAttributes))
+            };
+
+            IVsUIObject uiObject = imageService.GetImage(imageMoniker, imageAttributes);
+
+            object data;
+            if (uiObject.get_Data(out data) != VSConstants.S_OK) {
+                return null;
+            }
+
+            var imageSource = data as ImageSource;
+            imageSource?.Freeze();
+            return imageSource;
         }
     }
 }

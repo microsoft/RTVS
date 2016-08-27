@@ -28,7 +28,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View.DesignTim
         public void AddNew() {}
         public void CancelSelected() { }
         public void SaveSelected() { }
-        public void DeleteSelected() { }
+        public bool TryDelete(IConnectionViewModel connection) => false;
         public Task ConnectAsync(IConnectionViewModel connection) => Task.CompletedTask;
 
         public void Dispose() {}

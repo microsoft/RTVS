@@ -107,7 +107,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 return;
             }
 
-            VsWpfOverrides.Apply();
+            VsWpfOverrides.Apply(VsAppShell.Current);
             CranMirrorList.Download();
 
             RtvsTelemetry.Initialize();

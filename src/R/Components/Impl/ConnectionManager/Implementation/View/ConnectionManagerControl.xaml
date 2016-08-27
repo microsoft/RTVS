@@ -18,177 +18,297 @@
 
             <DataTemplate DataType="{x:Type viewModel:IConnectionViewModel}">
                 <Border BorderThickness="0,0,0,0" BorderBrush="{DynamicResource {x:Static rwpf:Brushes.ActiveBorderKey}}" Background="Transparent" x:Name="Container">
-                    <Grid Margin="8,4,7,4" MinHeight="32">
+                    <Grid MinHeight="20">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="22" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
                         <!-- Connect button -->
-                        <Button x:Name="ButtonConnect" Grid.Column="0" Style="{StaticResource ToolWindowButtonStyle}" Click="ButtonConnect_Click" VerticalAlignment="Center"
+                        <Button x:Name="ButtonConnect" Grid.Column="0" Style="{StaticResource ToolWindowButtonStyle}" Click="ButtonConnect_Click" 
+                                VerticalAlignment="Center" Margin="14,1,6,1" Padding="0" BorderThickness="0"
                                 Visibility="{Binding Path=IsConnected, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}">
                             <Button.ToolTip>
                                 <TextBlock Text="{Binding Path=Name, StringFormat={x:Static components:Resources.ConnectionManager_ConnectTooltip}}" />
                             </Button.ToolTip>
                             <Grid>
-                                <Grid Width="18" Height="18" Visibility="{Binding Path=IsActive, Converter={x:Static rwpf:Converters.FalseIsNotCollapsed}}">
-                                    <Rectangle Fill="{StaticResource IconRLocalInactive}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}" />
-                                    <Rectangle Fill="{StaticResource IconRCloudInactive}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"/>
+                                <Grid Visibility="{Binding Path=IsActive, Converter={x:Static rwpf:Converters.FalseIsNotCollapsed}}">
+                                    <Rectangle Width="18" Height="18" SnapsToDevicePixels="True" Fill="{StaticResource IconRLocalInactive}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}" />
+                                    <Rectangle Width="18" Height="18" SnapsToDevicePixels="True" Fill="{StaticResource IconRCloudInactive}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"/>
                                 </Grid>
-                                <Grid Width="18" Height="18" Visibility="{Binding Path=IsActive, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}">
-                                    <Rectangle Fill="{StaticResource IconRLocalDisconnected}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}" />
-                                    <Rectangle Fill="{StaticResource IconRCloudDisconnected}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"/>
+                                <Grid Visibility="{Binding Path=IsActive, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}">
+                                    <Rectangle Width="18" Height="18" SnapsToDevicePixels="True" Fill="{StaticResource IconRLocalDisconnected}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}" />
+                                    <Rectangle Width="18" Height="18" SnapsToDevicePixels="True" Fill="{StaticResource IconRCloudDisconnected}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"/>
                                 </Grid>
                             </Grid>
                         </Button>
 
                         <!-- Connected icon -->
-                        <Grid  Grid.Column="0" Width="18" Height="18" Visibility="{Binding Path=IsConnected, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}">
-                            <Rectangle Fill="{StaticResource IconRLocalConnected}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}" />
-                            <Rectangle Fill="{StaticResource IconRCloudConnected}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"/>
+                        <Grid Grid.Column="0" Visibility="{Binding Path=IsConnected, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}" VerticalAlignment="Center" Margin="14,1,6,1">
+                            <Rectangle Width="18" Height="18" SnapsToDevicePixels="True" Fill="{StaticResource IconRLocalConnected}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}" />
+                            <Rectangle Width="18" Height="18" SnapsToDevicePixels="True" Fill="{StaticResource IconRCloudConnected}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"/>
                         </Grid>
-                        
+
                         <!-- Name & path -->
-                        <StackPanel Grid.Column="1" Margin="0,-1,0,1">
-                            <TextBlock FontWeight="Bold" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" VerticalAlignment="Center" Text="{Binding Path=Name, Mode=OneWay}"
-                                       FontSize="{Binding ElementName=Self, Path=FontSize, Converter={x:Static rwpf:Converters.Scale122}}" Margin="4,0,0,0" />
-                            <TextBlock Text="{Binding Path=Path, Mode=OneWay}" Margin="4,0,0,0" />
-                        </StackPanel>
+                        <TextBlock Grid.Column="1" Margin="0,0,6,3" Text="{Binding Path=Name}"/>
+                        <Separator Grid.Column="2" Margin="0,0,6,3" Style="{StaticResource VerticalSeparator}"/>
+                        <TextBlock Grid.Column="3" Margin="0,0,3,3" Text="{Binding Path=Path, Mode=OneWay}"
+                                   TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+
+                        <!-- edit button -->
+                        <Button x:Name="ButtonEdit" Grid.Column="4" Style="{StaticResource ToolWindowButtonStyle}" Click="ButtonEdit_Click"
+                                ToolTip="{x:Static components:Resources.ConnectionManager_DeleteTooltip}"
+                                Visibility="Collapsed">
+                            <Image Source="{x:Static rwpf:ImageSources.Edit}" />
+                        </Button>
+
+                        <!-- delete button -->
+                        <Button x:Name="ButtonDelete" Grid.Column="5" Style="{StaticResource ToolWindowButtonStyle}" Click="ButtonDelete_Click"
+                                ToolTip="{x:Static components:Resources.ConnectionManager_DeleteTooltip}" Visibility="Collapsed">
+                            <Rectangle Fill="{StaticResource IconUninstall}" Width="16" Height="16" />
+                        </Button>
                     </Grid>
                 </Border>
+                <DataTemplate.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Visibility" TargetName="ButtonEdit" Value="Visible" />
+                        <Setter Property="Visibility" TargetName="ButtonDelete" Value="Visible" />
+                    </Trigger>
+                </DataTemplate.Triggers>
             </DataTemplate>
+
+            <Style x:Key="ConnectionsListBox" TargetType="{x:Type ListBox}">
+                <Setter Property="Background" Value="{x:Static Brushes.Transparent}" />
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}" />
+                <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+                <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Visible" />
+                <Setter Property="VirtualizingPanel.IsVirtualizing" Value="true" />
+                <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling" />
+                <Setter Property="VirtualizingPanel.CacheLength" Value="1,2" />
+                <Setter Property="VirtualizingPanel.CacheLengthUnit" Value="Page"/>
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                <Setter Property="BorderThickness" Value="0,0,0,0" />
+                <Setter Property="ItemContainerStyle" Value="{StaticResource FillingListBoxItemStyle}" />
+                <Setter Property="ItemTemplateSelector" Value="{StaticResource TypeDataTemplateSelector}"/>
+                <Setter Property="ItemsSource" Value="{Binding Path=Items}" />
+                <Setter Property="SelectedItem" Value="{Binding Path=SelectedConnection, Mode=OneWay}"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ListBox}">
+                            <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="1" SnapsToDevicePixels="true">
+                                <ScrollViewer Focusable="false" Padding="{TemplateBinding Padding}">
+                                    <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                                </ScrollViewer>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
         </ResourceDictionary>
     </UserControl.Resources>
-    <ScrollViewer x:Name="Root" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
-        <DockPanel x:Name="RootContent" LastChildFill="True" MinWidth="362">
+    <ScrollViewer x:Name="Root" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+        <DockPanel x:Name="RootContent" LastChildFill="True" MinWidth="250">
             <DockPanel.MaxWidth>
                 <MultiBinding Converter="{x:Static rwpf:Converters.Max}">
                     <Binding ElementName="Root" Path="ActualWidth" />
                     <Binding ElementName="RootContent" Path="MinWidth" />
                 </MultiBinding>
             </DockPanel.MaxWidth>
+
+            <!-- Implicit local connections -->
+
+            <!-- Explicit connections -->
             <Grid DockPanel.Dock="Top">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="16" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="14" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
                 </Grid.RowDefinitions>
+                <!-- Header -->
+                <ToggleButton Grid.Column="0" Grid.Row="0" Style="{StaticResource ExpandCollapseToggleStyle}" ToolTip="Expand/Collapse section"
+                              IsChecked="True"/>
 
-                <Grid Grid.Row="1" Margin="24,0,12,17">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="6" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="6" />
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="1" Margin="1,0,0,0" VerticalAlignment="Center"
+                           TextTrimming="CharacterEllipsis" Text="Connections" FontWeight="SemiBold" />
 
-                    <Button Grid.Column="2" MinWidth="80" MinHeight="24" HorizontalAlignment="Left" Click="ButtonAdd_Click"
-                            Content="{x:Static components:Resources.ConnectionManager_Add}" />
+                <!-- Clone options panel -->
+                <Border x:Uid="cloneOptionsBorder" Grid.Row="1" Margin="6,0,6,6" Style="{StaticResource EmbeddedDialog}">
+                    <Border.Visibility>
+                        <MultiBinding Converter="{StaticResource AnyTrueToVisibleConverter}">
+                            <MultiBinding.Bindings>
+                                <Binding Path="ShowCloneOptions"/>
+                                <Binding Path="JobProgressVm.IsProgressPaneDisplayed"/>
+                            </MultiBinding.Bindings>
+                        </MultiBinding>
+                    </Border.Visibility>
 
-                    <Button Grid.Column="4" MinWidth="80" MinHeight="24" HorizontalAlignment="Left" Click="ButtonDelete_Click"
-                            Content="{x:Static components:Resources.ConnectionManager_Delete}" />
-                </Grid>
-            </Grid>
-
-            <Border DockPanel.Dock="Top" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" VerticalAlignment="Stretch">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="60*" MinHeight="300" />
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="40*" MinHeight="200" />
-                    </Grid.RowDefinitions>
-                    <!-- left side -->
-                    <Grid Grid.Row="0">
-                        <ListBox x:Name="List" Background="{DynamicResource {x:Static rwpf:Brushes.ListPaneBackgroundKey}}" Foreground="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}"
-                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Visible" 
-                                 VirtualizingPanel.IsVirtualizing="true" VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.CacheLength="1,2" VirtualizingPanel.CacheLengthUnit="Page"
-                                 SelectionChanged="List_SelectionChanged" HorizontalContentAlignment="Stretch" BorderThickness="0,0,0,0" 
-                                 ItemContainerStyle="{StaticResource FillingListBoxItemStyle}" ItemTemplateSelector="{StaticResource TypeDataTemplateSelector}"
-                                 ItemsSource="{Binding Path=Items}" SelectedItem="{Binding Path=SelectedConnection, Mode=OneWay}">
-                            <!-- set the template to disable the background change when the IsEnabled is false. -->
-                            <ListBox.Template>
-                                <ControlTemplate TargetType="{x:Type ListBox}">
-                                    <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="1" SnapsToDevicePixels="true">
-                                        <ScrollViewer Focusable="false" Padding="{TemplateBinding Padding}">
-                                            <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
-                                        </ScrollViewer>
-                                    </Border>
-                                </ControlTemplate>
-                            </ListBox.Template>
-                        </ListBox>
-                    </Grid>
-
-                    <GridSplitter Grid.Row="1" Width="4" HorizontalAlignment="Center" VerticalAlignment="Stretch" BorderThickness="1,0"
-                                  Background="{DynamicResource {x:Static rwpf:Brushes.SplitterBackgroundKey}}" BorderBrush="{DynamicResource {x:Static rwpf:Brushes.ActiveBorderKey}}" />
-
-                    <!-- right side -->
-                    <Grid Grid.Row="2" Margin="24,8,7,8" DataContext="{Binding Path=SelectedConnection}" Visibility="{Binding Converter={x:Static rwpf:Converters.NullIsCollapsed}}">
+                    <Grid x:Uid="cloneOptionsGrid">
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="auto" />
-                            <RowDefinition Height="8" />
-                            <RowDefinition Height="auto" />
-                            <RowDefinition Height="8" />
-                            <RowDefinition Height="auto" />
-                            <RowDefinition Height="8" />
-                            <RowDefinition Height="auto" />
-                            <RowDefinition Height="8" />
-                            <RowDefinition Height="auto" />
+                            <RowDefinition x:Uid="cloneRemoteRow" Height="Auto"/>
+                            <RowDefinition x:Uid="clonePathRow" Height="Auto"/>
+                            <RowDefinition x:Uid="cloneRecursiveRow" Height="Auto"/>
+                            <RowDefinition x:Uid="cloneActionsRow" Height="Auto"/>
+                            <RowDefinition x:Uid="cloneProgressRow" Height="Auto"/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto" />
-                            <ColumnDefinition Width="6" />
-                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition x:Uid="cloneFirstCol" Width="*"/>
+                            <ColumnDefinition x:Uid="cloneSecondCol" Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        
-                        <!-- row 0 -->
-                        <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="Bold" 
+
+                        <tfcwpf:LabeledTextBox x:Uid="cloneRemoteUrlTextBox" x:Name="cloneRemoteUrlTextBox"
+                                       Grid.Row="0" Grid.Column="0" Margin="0,0,0,6"
+                                       Text="{Binding Path=CloneRemoteUrlText, Mode=TwoWay}"
+                                       HintText="Enter the URL of a Git repo to clone &lt;Required&gt;"
+                                       NameAndAutomationId="Clone Remote"
+                                       Localization.Attributes="HintText (Modifiable Readable Text) NameAndAutomationId (Modifiable Readable Text)"
+                                       IsRequired="true"
+                                       AcceptsReturn="false"
+                                       Visibility="{Binding Path=JobProgressVm.IsProgressPaneDisplayed, Converter={StaticResource TrueToVisibleConverter}, ConverterParameter=Invert}">
+                            <tfcwpf:LabeledTextBox.InputBindings>
+                                <KeyBinding Key="Enter" Command="{Binding Path=CloneRepositoryCommand}"/>
+                            </tfcwpf:LabeledTextBox.InputBindings>
+                        </tfcwpf:LabeledTextBox>
+
+                        <tfcwpf:LabeledTextBox x:Uid="clonePathTextBox" x:Name="clonePathTextBox"
+                                       Grid.Row="1" Grid.Column="0" Margin="0,0,0,6"
+                                       Text="{Binding Path=CloneRepoPathText, Mode=TwoWay}"
+                                       HintText="Enter a path for the cloned Git repo &lt;Required&gt;"
+                                       NameAndAutomationId="Clone Path"
+                                       Localization.Attributes="HintText (Modifiable Readable Text) NameAndAutomationId (Modifiable Readable Text)"
+                                       IsRequired="true"
+                                       AcceptsReturn="false"
+                                       Visibility="{Binding Path=JobProgressVm.IsProgressPaneDisplayed, Converter={StaticResource TrueToVisibleConverter}, ConverterParameter=Invert}">
+                            <tfcwpf:LabeledTextBox.InputBindings>
+                                <KeyBinding Key="Enter" Command="{Binding Path=CloneRepositoryCommand}"/>
+                            </tfcwpf:LabeledTextBox.InputBindings>
+                        </tfcwpf:LabeledTextBox>
+
+                        <Button x:Uid="cloneBrowseButton" Grid.Row="1" Grid.Column="1"
+                        Margin="3,0,0,6" Padding="2,0,2,0" MinWidth="0" MinHeight="0" VerticalAlignment="Stretch"
+                        AutomationProperties.Name="Browse for Folder"
+                        Content="..." Localization.Attributes="Content (Unmodifiable Readable Text) Content (Modifiable Readable Text)"
+                        Command="{Binding Path=BrowseForFolderCommand, RelativeSource={RelativeSource AncestorType={x:Type local:RepositoryListSectionView}}}"
+                        Visibility="{Binding Path=JobProgressVm.IsProgressPaneDisplayed, Converter={StaticResource TrueToVisibleConverter}, ConverterParameter=Invert}"/>
+
+                        <CheckBox x:Uid="cloneRecurseCheckBox" x:Name="cloneRecurseCheckBox" Grid.Row="2" Grid.Column="0" Margin="0,0,0,6"
+                          Content="Recursively Clone Submodules" Localization.Attributes="Text (Modifiable Readable Text)"
+                          IsChecked="{Binding Path=CloneRecurseSubmodules, Mode=TwoWay}"
+                          Visibility="{Binding Path=JobProgressVm.IsProgressPaneDisplayed, Converter={StaticResource TrueToVisibleConverter}, ConverterParameter=Invert}">
+                            <AutomationProperties.Name>Recursive</AutomationProperties.Name>
+                        </CheckBox>
+
+                        <!-- Clone Actions -->
+                        <WrapPanel x:Uid="cloneActionsPanel" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,0,0"
+                           Visibility="{Binding Path=JobProgressVm.IsProgressPaneDisplayed, Converter={StaticResource TrueToVisibleConverter}, ConverterParameter=Invert}">
+                            <Button x:Uid="cloneButton"
+                            x:Name="cloneButton"
+                            Margin="0"
+                            Padding="6,2,6,2"
+                            MinWidth="75"
+                            MinHeight="23"
+                            VerticalAlignment="Center"
+                            Command="{Binding Path=CloneRepositoryCommand}">_Clone</Button>
+
+                            <tfcte:TextLink x:Uid="cancelCloneLink" VerticalAlignment="Center" Margin="6,0,0,0"
+                                    Text="Cancel" Localization.Attributes="Text (Modifiable Readable Text)"
+                                    Command="{Binding Path=CancelCloneOptionsCommand}"/>
+                        </WrapPanel>
+
+                        <!-- Clone Progress -->
+                        <gitCommonControls:LabeledProgress x:Uid="cloneProgress"
+                                                   Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,0,0"
+                                                   Visibility="{Binding Path=JobProgressVm.IsProgressPaneDisplayed, Converter={StaticResource TrueToVisibleConverter}}"
+                                                   MaxProgressValue="{Binding Path=JobProgressVm.ProgressTotal}"
+                                                   ProgressValue="{Binding Path=JobProgressVm.ProgressCurrent}"
+                                                   BottomLabel="{Binding Path=JobProgressVm.Message}"
+                                                   CancelCommand="{Binding Path=JobProgressVm.CancelCurrentOperationCommand}"
+                                                   IndeterminateProgress="{Binding Path=JobProgressVm.IsProgressIndeterminate}"
+												   IsCancelable="{Binding Path=JobProgressVm.IsCancellationSupported}"
+                                                   TopLabel="{Binding Path=JobProgressVm.Label}" />
+                    </Grid>
+                </Border>
+
+                <!-- List -->
+                <Grid Grid.Row="2" Grid.Column="1">
+                    <ListBox x:Name="List" Style="{StaticResource ConnectionsListBox}" SelectionChanged="List_SelectionChanged" />
+                </Grid>
+
+                <!-- right side -->
+                <Grid Grid.Row="2" Margin="24,8,7,8" DataContext="{Binding Path=SelectedConnection}" 
+                      Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="8" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="8" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="8" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="8" />
+                        <RowDefinition Height="auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="6" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- row 0 -->
+                    <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="Bold" 
                                    Text="{x:Static components:Resources.ConnectionManager_Name}" />
 
-                        <TextBox Grid.Row="0" Grid.Column="2" VerticalAlignment="Top" VerticalContentAlignment="Center"
-                                 Text="{Binding Path=Name, Mode=TwoWay}"/>
-                        
-                        <!-- row 2 -->
-                        <TextBlock Grid.Row="2" Grid.Column="0" FontWeight="Bold" 
+                    <TextBox Grid.Row="0" Grid.Column="2" VerticalAlignment="Top" VerticalContentAlignment="Center"
+                                 Text="{Binding Path=Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <!-- row 2 -->
+                    <TextBlock Grid.Row="2" Grid.Column="0" FontWeight="Bold" 
                                    Text="{x:Static components:Resources.ConnectionManager_Path}" />
 
-                        <TextBox Grid.Row="2" Grid.Column="2" VerticalAlignment="Top" VerticalContentAlignment="Center"
-                                 Text="{Binding Path=Path, Mode=TwoWay}"/>
-                        
-                        <!-- row 4 -->
-                        <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" FontWeight="Bold" 
+                    <TextBox Grid.Row="2" Grid.Column="2" VerticalAlignment="Top" VerticalContentAlignment="Center"
+                                 Text="{Binding Path=Path, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <!-- row 4 -->
+                    <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" FontWeight="Bold" 
                                    Text="{x:Static components:Resources.ConnectionManager_RCommandLineArguments}" />
 
-                        <TextBox Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Top" VerticalContentAlignment="Center"
-                                 Text="{Binding Path=RCommandLineArguments, Mode=TwoWay}"/>
-                        
-                        <!-- row 6 -->
-                        <Grid Grid.Row="8" ColumnSpan="3">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="auto" />
-                                <ColumnDefinition Width="6" />
-                                <ColumnDefinition Width="auto" />
-                                <ColumnDefinition Width="6" />
-                                <ColumnDefinition Width="auto" />
-                            </Grid.ColumnDefinitions>
-                            <Button Grid.Row="8" Grid.Column="1" MinWidth="80" MinHeight="24" HorizontalAlignment="Left" Click="ButtonCancel_Click"
-                                    Content="{x:Static components:Resources.ConnectionManager_Cancel}" IsEnabled="{Binding Path=HasChanges}" />
-                            <Button Grid.Row="8" Grid.Column="3" MinWidth="80" MinHeight="24" HorizontalAlignment="Left" Click="ButtonSave_Click"
-                                    Content="{x:Static components:Resources.ConnectionManager_Save}" IsEnabled="{Binding Path=HasChanges}" />
-                            <Button Grid.Row="8" Grid.Column="5" MinWidth="80" MinHeight="24" HorizontalAlignment="Left" Click="ButtonConnect_Click"
-                                    Content="{x:Static components:Resources.ConnectionManager_Connect}">
-                                <Button.IsEnabled>
-                                    <MultiBinding Converter="{x:Static rwpf:Converters.All}">
-                                        <Binding Path="CanConnect" />
-                                        <Binding Path="IsConnected" Converter="{x:Static rwpf:Converters.Not}" />
-                                    </MultiBinding>
-                                </Button.IsEnabled>
-                            </Button>
-                        </Grid>
+                    <TextBox Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Top" VerticalContentAlignment="Center"
+                                 Text="{Binding Path=RCommandLineArguments, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
+                    <!-- row 6 -->
+                    <Grid Grid.Row="8" ColumnSpan="3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="6" />
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="6" />
+                            <ColumnDefinition Width="auto" />
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Row="8" Grid.Column="1" MinWidth="80" MinHeight="24" HorizontalAlignment="Left" Click="ButtonCancel_Click"
+                                    Content="{x:Static components:Resources.ConnectionManager_Cancel}" IsEnabled="{Binding Path=HasChanges}" />
+                        <Button Grid.Row="8" Grid.Column="3" MinWidth="80" MinHeight="24" HorizontalAlignment="Left" Click="ButtonSave_Click"
+                                    Content="{x:Static components:Resources.ConnectionManager_Save}" IsEnabled="{Binding Path=HasChanges}" />
+                        <Button Grid.Row="8" Grid.Column="5" MinWidth="80" MinHeight="24" HorizontalAlignment="Left" Click="ButtonConnect_Click"
+                                    Content="{x:Static components:Resources.ConnectionManager_Connect}">
+                            <Button.IsEnabled>
+                                <MultiBinding Converter="{x:Static rwpf:Converters.All}">
+                                    <Binding Path="CanConnect" />
+                                    <Binding Path="IsConnected" Converter="{x:Static rwpf:Converters.Not}" />
+                                </MultiBinding>
+                            </Button.IsEnabled>
+                        </Button>
                     </Grid>
+
                 </Grid>
-            </Border>
+            </Grid>
         </DockPanel>
     </ScrollViewer>
 </UserControl>

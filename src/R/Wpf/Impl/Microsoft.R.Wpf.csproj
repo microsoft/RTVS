@@ -43,6 +43,7 @@
       <DependentUpon>CommonResources.xaml</DependentUpon>
     </Compile>
     <Compile Include="FontKeys.cs" />
+    <Compile Include="ImageSources.cs" />
     <Compile Include="StyleKeys.cs" />
     <Compile Include="ValueConverters\EnumDescriptionValueConverter.cs" />
     <Compile Include="ValueConverters\IconUrlToImageCacheConverter.cs" />

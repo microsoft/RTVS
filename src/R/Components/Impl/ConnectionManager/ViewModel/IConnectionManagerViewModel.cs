@@ -16,7 +16,7 @@ namespace Microsoft.R.Components.ConnectionManager.ViewModel {
         void AddNew();
         void CancelSelected();
         void SaveSelected();
-        void DeleteSelected();
+        bool TryDelete(IConnectionViewModel connection);
 
         Task ConnectAsync(IConnectionViewModel connection);
     }
