@@ -84,11 +84,21 @@ namespace Microsoft.R.Host.Broker.Sessions {
 
             var shortHome = new StringBuilder(NativeMethods.MAX_PATH);
             NativeMethods.GetShortPathName(Interpreter.Info.Path, shortHome, shortHome.Capacity);
+            psi.EnvironmentVariables["R_TempDir"] = @"C:\Users\Public\Documents\";
             psi.EnvironmentVariables["R_HOME"] = shortHome.ToString();
             psi.EnvironmentVariables["PATH"] = Interpreter.Info.BinPath + ";" + Environment.GetEnvironmentVariable("PATH");
 
             if (password != null) {
-                psi.UserName = User.Name;
+                psi.WorkingDirectory = Path.GetDirectoryName(rhostExePath);
+                string[] split = User.Name.Split('\\', '/');
+                if (split.Length == 2) {
+                    psi.Domain = split[0];
+                    psi.UserName = split[1];
+                } else {
+                    psi.Domain = null;
+                    psi.UserName = User.Name;
+                }
+                
                 psi.Password = password;
             }
 
