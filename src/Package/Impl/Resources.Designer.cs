@@ -1416,6 +1416,33 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to HTML pages browser.
+        /// </summary>
+        public static string Settings_HtmlBrowserType {
+            get {
+                return ResourceManager.GetString("Settings_HtmlBrowserType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Defines if HTML pages should be opened in internal Visual Studio browser or in the external Web browser..
+        /// </summary>
+        public static string Settings_HtmlBrowserType_Description {
+            get {
+                return ResourceManager.GetString("Settings_HtmlBrowserType_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to HTML.
+        /// </summary>
+        public static string Settings_HtmlCategory {
+            get {
+                return ResourceManager.GetString("Settings_HtmlCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to IntelliSense.
         /// </summary>
         public static string Settings_IntellisenseCategory {
@@ -1619,33 +1646,6 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Settings_SaveRDataOnProjectUnload_Description {
             get {
                 return ResourceManager.GetString("Settings_SaveRDataOnProjectUnload_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Shiny pages browser.
-        /// </summary>
-        public static string Settings_ShinyBrowserType {
-            get {
-                return ResourceManager.GetString("Settings_ShinyBrowserType", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Defines if Shiny pages should be opened in internal Visual Studio browser or in the external Web browser..
-        /// </summary>
-        public static string Settings_ShinyBrowserType_Description {
-            get {
-                return ResourceManager.GetString("Settings_ShinyBrowserType_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Shiny.
-        /// </summary>
-        public static string Settings_ShinyCategory {
-            get {
-                return ResourceManager.GetString("Settings_ShinyCategory", resourceCulture);
             }
         }
         
