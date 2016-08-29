@@ -201,6 +201,7 @@
     <Compile Include="Options\R\Tools\SurveyNewsCommand.cs" />
     <Compile Include="ProjectSystem\Commands\CopyRemoteItemPathCommand.cs" />
     <Compile Include="ProjectSystem\Commands\SetAsStartUpRScriptCommand.cs" />
+    <Compile Include="ProjectSystem\Definitions\IRProjectPropertiesExtensions.cs" />
     <Compile Include="ToolWindows\ConnectionManagerWindowPane.cs" />
     <Compile Include="ToolWindows\VsConnectionManagerVisualComponentContainerFactory.cs" />
     <Compile Include="ToolWindows\VsRPackageManagerVisualComponent.cs" />
