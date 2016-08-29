@@ -66,7 +66,7 @@ namespace Microsoft.R.Editor.Completion {
             // Match at least something
             int i = 0;
             for (i = 0; i < Math.Min(typedText.Length, compText.Length); i++) {
-                if (typedText[i] != compText[i]) {
+                if (char.ToLowerInvariant(typedText[i]) != char.ToLowerInvariant(compText[i])) {
                     return i;
                 }
             }
