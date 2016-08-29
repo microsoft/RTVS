@@ -3,14 +3,19 @@
 
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Completion;
 using Microsoft.R.Editor.Test.Utility;
+using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Test.Script;
+using Microsoft.R.Support.Help;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -36,7 +41,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         [Test]
         public void BaseFunctions02() {
             var completionSets = new List<CompletionSet>();
-            GetCompletions("f", 1, completionSets, new TextRange(0, 1));
+            GetCompletions("FAC", 3, completionSets, new TextRange(0, 3));
 
             completionSets.Should().ContainSingle();
             completionSets[0].Filter();
@@ -59,7 +64,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         [Test]
         public void Packages01() {
             var completionSets = new List<CompletionSet>();
-            GetCompletions("library(", 8, completionSets);
+            GetCompletions("lIbrAry(", 8, completionSets);
 
             completionSets.Should().ContainSingle();
 
@@ -145,18 +150,6 @@ namespace Microsoft.R.Editor.Test.Completions {
                 completionSets.Should().NotBeEmpty();
                 completionSets[0].Completions.Should().NotBeEmpty();
             }
-        }
-
-        [Test]
-        public void CaseSentivity() {
-            var completionSets = new List<CompletionSet>();
-            GetCompletions("x <- T", 6, completionSets);
-
-            completionSets.Should().ContainSingle();
-            completionSets[0].Filter();
-
-            completionSets[0].Completions.Should().NotBeEmpty()
-                .And.OnlyContain(c => c.DisplayText[0] == 'T');
         }
 
         [Test]
@@ -351,6 +344,35 @@ aaa(a
 
             completionSets[0].Completions.Should().NotBeEmpty()
                 .And.Contain(c => c.DisplayText == "a =");
+        }
+
+        [Test]
+        public async Task InstallPackageTest01() {
+            using (var script = new RHostScript(_exportProvider)) {
+                try {
+                    await script.Session.ExecuteAsync("remove.packages('abc')", REvaluationKind.Mutating);
+                } catch(RException) { }
+
+                await _packageIndex.BuildIndexAsync();
+
+                var completionSets = new List<CompletionSet>();
+                GetCompletions("abc::", 5, completionSets);
+
+                completionSets.Should().ContainSingle();
+                completionSets[0].Completions.Should().BeEmpty();
+
+                try {
+                    await script.Session.ExecuteAsync("install.packages('abc')", REvaluationKind.Mutating);
+                } catch (RException) { }
+
+                await _packageIndex.BuildIndexAsync();
+
+                completionSets.Clear();
+                GetCompletions("abc::", 5, completionSets);
+
+                completionSets.Should().ContainSingle();
+                completionSets[0].Completions.Should().NotBeEmpty();
+            }
         }
 
         private void GetCompletions(string content, int lineNumber, int column, IList<CompletionSet> completionSets, ITextRange selectedRange = null) {
