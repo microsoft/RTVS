@@ -439,8 +439,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="RPackages\Commands\CheckForPackageUpdatesCommand.cs" />
-    <Compile Include="RPackages\Commands\InstallPackagesCommand.cs" />
     <Compile Include="Options\R\Tools\CranMirrorTypeConverter.cs" />
     <Compile Include="RtvsProductInfo.cs" />
     <Compile Include="Search\VsSearchControl.cs" />
