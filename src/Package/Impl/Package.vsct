@@ -1004,7 +1004,7 @@
         </Strings>
       </Button>
 
-      <Button guid="guidRToolsCmdSet" id="icmdShowConnectionsWindow" priority="0x0600" type="Button">
+      <Button guid="guidRToolsCmdSet" id="icmdShowConnectionsWindow" priority="0x0800" type="Button">
         <Parent guid="guidRToolsCmdSet" id="windowsSubMenuGroup"/>
         <Icon guid="ImageCatalogGuid" id="WMIConnection"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
@@ -2107,15 +2107,15 @@
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowPackagesWindow" editor="InteractiveWindow" key1="7" mod1="CONTROL"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowPackagesWindow" editor="SolutionExplorer" key1="7" mod1="CONTROL"/>
 
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowConnectionsWindow" editor="guidRToolsCmdSet" key1="8" mod1="CONTROL"/>
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowConnectionsWindow" editor="REditor" key1="8" mod1="CONTROL"/>
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowConnectionsWindow" editor="InteractiveWindow" key1="8" mod1="CONTROL"/>
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowConnectionsWindow" editor="SolutionExplorer" key1="8" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="guidRToolsCmdSet" key1="8" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="REditor" key1="8" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="InteractiveWindow" key1="8" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="SolutionExplorer" key1="8" mod1="CONTROL"/>
 
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="guidRToolsCmdSet" key1="9" mod1="CONTROL"/>
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="REditor" key1="9" mod1="CONTROL"/>
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="InteractiveWindow" key1="9" mod1="CONTROL"/>
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="SolutionExplorer" key1="9" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowConnectionsWindow" editor="guidRToolsCmdSet" key1="9" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowConnectionsWindow" editor="REditor" key1="9" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowConnectionsWindow" editor="InteractiveWindow" key1="9" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowConnectionsWindow" editor="SolutionExplorer" key1="9" mod1="CONTROL"/>
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceSelectedFiles" editor="SolutionExplorer" key1="G" mod1="CONTROL ALT"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceSelectedFilesWithEcho" editor="SolutionExplorer" key1="E" mod1="CONTROL ALT"/>
