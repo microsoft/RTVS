@@ -16,7 +16,11 @@ namespace Microsoft.VisualStudio.R.Package.Debugger.DataTips {
     [ContentType(RContentTypeDefinition.ContentType)]
     [TextViewRole(PredefinedTextViewRoles.Debuggable)]
     internal sealed class DataTipTextViewConnectionListener : IWpfTextViewConnectionListener {
-        public DataTipTextViewConnectionListener() {
+        private readonly IVsEditorAdaptersFactoryService _adaptersFactoryService;
+
+        [ImportingConstructor]
+        public DataTipTextViewConnectionListener(IVsEditorAdaptersFactoryService adaptersFactoryService) {
+            _adaptersFactoryService = adaptersFactoryService;
         }
 
         public void SubjectBuffersConnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers) {
@@ -24,17 +28,15 @@ namespace Microsoft.VisualStudio.R.Package.Debugger.DataTips {
                 return;
             }
 
-            var adapterService = VsAppShell.Current.ExportProvider.GetExportedValue<IVsEditorAdaptersFactoryService>();
-            var debugger = VsAppShell.Current.GetGlobalService<IVsDebugger>();
-            DataTipTextViewFilter.GetOrCreate(textView, adapterService, debugger);
+            VsAppShell.Current.DispatchOnUIThread(() => {
+                var debugger = VsAppShell.Current.GetGlobalService<IVsDebugger>();
+                DataTipTextViewFilter.GetOrCreate(textView, _adaptersFactoryService, debugger);
+            });
         }
 
         public void SubjectBuffersDisconnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers) {
             if (!textView.TextBuffer.ContentType.IsOfType(RContentTypeDefinition.ContentType)) {
-                var filter = DataTipTextViewFilter.TryGet(textView);
-                if (filter != null) {
-                    filter.Dispose();
-                }
+                DataTipTextViewFilter.TryGet(textView)?.Dispose();
             }
         }
     }

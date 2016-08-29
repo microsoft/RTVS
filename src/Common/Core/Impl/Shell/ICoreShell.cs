@@ -105,5 +105,7 @@ namespace Microsoft.Common.Core.Shell {
         /// Tells if code runs in unit test environment
         /// </summary>
         bool IsUnitTestEnvironment { get; }
+
+        IntPtr ApplicationWindowHandle { get; }
     }
 }

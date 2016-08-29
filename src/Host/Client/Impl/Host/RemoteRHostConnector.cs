@@ -6,10 +6,12 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Shell;
 using static Microsoft.R.Host.Client.NativeMethods;
 
 namespace Microsoft.R.Host.Client.Host {
     internal sealed class RemoteRHostConnector : RHostConnector {
+        private readonly ICoreShell _coreShell;
         private readonly NetworkCredential _credentials;
         private readonly AutoResetEvent _credentialsValidated = new AutoResetEvent(true);
         private readonly string _authority;
@@ -17,8 +19,9 @@ namespace Microsoft.R.Host.Client.Host {
 
         public override Uri BrokerUri { get; }
 
-        public RemoteRHostConnector(Uri brokerUri)
+        public RemoteRHostConnector(Uri brokerUri, ICoreShell coreShell = null)
             : base(brokerUri.Fragment) {
+            _coreShell = coreShell;
 
             _credentials = new NetworkCredential();
             _authority = new UriBuilder { Scheme = brokerUri.Scheme, Host = brokerUri.Host, Port = brokerUri.Port }.ToString();
@@ -48,7 +51,8 @@ namespace Microsoft.R.Host.Client.Host {
                     flags |= CREDUI_FLAGS_ALWAYS_SHOW_UI;
                 }
 
-                int err = CredUIPromptForCredentials(IntPtr.Zero, _authority, IntPtr.Zero, 0, userNameBuilder, userNameBuilder.Capacity, passwordBuilder, passwordBuilder.Capacity, ref save, flags);
+                IntPtr ownerWindow = _coreShell != null ? _coreShell.ApplicationWindowHandle : IntPtr.Zero;
+                int err = CredUIPromptForCredentials(ownerWindow, _authority, IntPtr.Zero, 0, userNameBuilder, userNameBuilder.Capacity, passwordBuilder, passwordBuilder.Capacity, ref save, flags);
                 if (err != 0) {
                     throw new OperationCanceledException("No credentials entered.");
                 }

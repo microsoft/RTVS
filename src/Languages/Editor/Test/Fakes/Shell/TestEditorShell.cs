@@ -74,6 +74,7 @@ namespace Microsoft.Languages.Editor.Test.Fakes.Shell {
         public string OpenFilePath { get; set; }
         public string SaveFilePath { get; set; }
         public ITelemetryService TelemetryService { get; }
+        public IntPtr ApplicationWindowHandle { get; }
 
         #region IMainThread
         public int ThreadId => MainThread.ManagedThreadId;

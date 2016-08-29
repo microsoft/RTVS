@@ -119,6 +119,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
 
         public bool IsUnitTestEnvironment { get; set; } = true;
         public ITelemetryService TelemetryService { get; }
+
+        public IntPtr ApplicationWindowHandle { get; }
         #endregion
     }
 }
