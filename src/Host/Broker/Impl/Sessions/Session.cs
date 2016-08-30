@@ -94,9 +94,13 @@ namespace Microsoft.R.Host.Broker.Sessions {
                     // Username of the form <domain>\<user>
                     psi.Domain = userNameParts[0];
                     psi.UserName = userNameParts[1];
-                } else {
-                    // Username of the form <user>@<domain> or <user> (no domain)
+                } else if(User.Name.Contains("@")) {
+                    // Username of the form <user>@<domain>
                     psi.Domain = null;
+                    psi.UserName = User.Name;
+                } else {
+                    // Username of the form <user> (no domain)
+                    psi.Domain = ".";
                     psi.UserName = User.Name;
                 }
                 
