@@ -106,7 +106,7 @@ namespace Microsoft.R.Host.Client {
 
         /// <summary>
         /// Like <see cref="EvaluateAsync{T}(IRExpressionEvaluator, string, REvaluationKind, CancellationToken)"/>, but suppresses
-        /// the result, such that it is not trasmitted between the host and the client, and is not serialized or deserialized. 
+        /// the result, such that it is not transmitted between the host and the client, and is not serialized or deserialized. 
         /// </summary>
         /// <remarks>
         /// Use in lieu of <see cref="EvaluateAsync{T}(IRExpressionEvaluator, string, REvaluationKind, CancellationToken)"/> for
