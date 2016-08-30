@@ -350,7 +350,7 @@ namespace Microsoft.R.Editor.Completion {
             if (typedCharacter == '=') {
                 bool equalsCompletion = CompletionSession.SelectedCompletionSet
                                                          .SelectionStatus.Completion
-                                                         .InsertionText.TrimEnd().EndsWith("=", StringComparison.Ordinal);
+                                                         .InsertionText.TrimEnd().EndsWithOrdinal("=");
                 if (equalsCompletion) {
                     return true;
                 }

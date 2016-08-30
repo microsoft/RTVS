@@ -29,6 +29,15 @@ namespace Microsoft.R.Editor.Completion {
             get { return _filteredCompletions; }
         }
 
+        /// <summary>
+        /// Performs filtering based on the potential commit character
+        /// such as when user completes partially typed function argument
+        /// with = and we need to pick exactly entry with = and not plain one.
+        /// </summary>
+        /// <param name="commitChar"></param>
+        public void Filter(char commitChar) {
+        }
+
         public override void Filter() {
             UpdateVisibility();
             _filteredCompletions.Filter(x => ((RCompletion)x).IsVisible);
@@ -64,6 +73,15 @@ namespace Microsoft.R.Editor.Completion {
 
         private int Match(string typedText, string compText) {
             // Match at least something
+            if (typedText.EndsWithOrdinal("=") && compText.EndsWithOrdinal("=")) {
+                // Function argument completion: 'partial =' matches 'full='.
+                // For example, 'marG=' matches 'margin = '.
+                var typedPrefix = typedText.Substring(0, typedText.Length - 1).TrimEnd();
+                if (compText.StartsWithIgnoreCase(typedPrefix)) {
+                    return compText.Length;
+                }
+            }
+
             int i = 0;
             for (i = 0; i < Math.Min(typedText.Length, compText.Length); i++) {
                 if (char.ToLowerInvariant(typedText[i]) != char.ToLowerInvariant(compText[i])) {
