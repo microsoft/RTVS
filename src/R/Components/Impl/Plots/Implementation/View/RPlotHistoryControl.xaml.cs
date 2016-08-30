@@ -42,11 +42,9 @@ namespace Microsoft.R.Components.Plots.Implementation.View {
         private void HistoryListView_MouseMove(object sender, MouseEventArgs e) {
             if (_dragSurface.IsMouseMoveStartingDrag(e) && HistoryListView.SelectedItems.Count == 1) {
                 var entry = (IRPlotHistoryEntryViewModel)HistoryListView.SelectedItems[0];
-                var data = new DataObject(
-                    PlotClipboardData.Format,
-                    new PlotClipboardData(entry.Plot.ParentDevice.DeviceId, entry.Plot.PlotId, false).ToString())
-                ;
-                DragDrop.DoDragDrop(HistoryListView, data, DragDropEffects.Copy | DragDropEffects.Move);
+                var data = PlotClipboardData.Serialize(new PlotClipboardData(entry.Plot.ParentDevice.DeviceId, entry.Plot.PlotId, false));
+                var obj = new DataObject(PlotClipboardData.Format, data);
+                DragDrop.DoDragDrop(HistoryListView, obj, DragDropEffects.Copy | DragDropEffects.Move);
             }
         }
 

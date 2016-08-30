@@ -96,11 +96,9 @@ namespace Microsoft.R.Components.Plots.Implementation.View {
 
         private void Image_MouseMove(object sender, MouseEventArgs e) {
             if (_dragSurface.IsMouseMoveStartingDrag(e)) {
-                var data = new DataObject(
-                    PlotClipboardData.Format,
-                    new PlotClipboardData(Model.Device.DeviceId, Model.Device.ActivePlot.PlotId, false).ToString()
-                );
-                DragDrop.DoDragDrop(this, data, DragDropEffects.Copy | DragDropEffects.Move);
+                var data = PlotClipboardData.Serialize(new PlotClipboardData(Model.Device.DeviceId, Model.Device.ActivePlot.PlotId, false));
+                var obj = new DataObject(PlotClipboardData.Format, data);
+                DragDrop.DoDragDrop(this, obj, DragDropEffects.Copy | DragDropEffects.Move);
             }
         }
 

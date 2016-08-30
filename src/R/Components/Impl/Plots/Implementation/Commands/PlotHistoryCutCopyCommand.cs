@@ -31,9 +31,9 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
             var selection = VisualComponent.SelectedPlot;
             if (selection != null) {
                 try {
+                    var data = PlotClipboardData.Serialize(new PlotClipboardData(selection.ParentDevice.DeviceId, selection.PlotId, _cut));
                     Clipboard.Clear();
-                    Clipboard.SetData(PlotClipboardData.Format, 
-                        new PlotClipboardData(selection.ParentDevice.DeviceId, selection.PlotId, _cut).ToString());
+                    Clipboard.SetData(PlotClipboardData.Format, data);
                 } catch (ExternalException ex) {
                     InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);
                 }

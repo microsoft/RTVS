@@ -178,9 +178,9 @@ namespace Microsoft.R.Components.Plots.Implementation {
         }
 
         public void CopyToClipboard(bool cut) {
+            var data = PlotClipboardData.Serialize(new PlotClipboardData(_viewModel.Device.DeviceId, _viewModel.Device.ActivePlot.PlotId, cut));
             Clipboard.Clear();
-            Clipboard.SetData(PlotClipboardData.Format,
-                new PlotClipboardData(_viewModel.Device.DeviceId, _viewModel.Device.ActivePlot.PlotId, cut).ToString());
+            Clipboard.SetData(PlotClipboardData.Format, data);
         }
 
         public void ClickPlot(int x, int y) {
