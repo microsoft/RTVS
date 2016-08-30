@@ -88,7 +88,18 @@ namespace Microsoft.R.Host.Broker.Sessions {
             psi.EnvironmentVariables["PATH"] = Interpreter.Info.BinPath + ";" + Environment.GetEnvironmentVariable("PATH");
 
             if (password != null) {
-                psi.UserName = User.Name;
+                psi.WorkingDirectory = Path.GetDirectoryName(rhostExePath);
+                string[] userNameParts = User.Name.Split('\\', '/');
+                if (userNameParts.Length == 2) {
+                    // Username of the form <domain>\<user>
+                    psi.Domain = userNameParts[0];
+                    psi.UserName = userNameParts[1];
+                } else {
+                    // Username of the form <user>@<domain> or <user> (no domain)
+                    psi.Domain = null;
+                    psi.UserName = User.Name;
+                }
+                
                 psi.Password = password;
             }
 
