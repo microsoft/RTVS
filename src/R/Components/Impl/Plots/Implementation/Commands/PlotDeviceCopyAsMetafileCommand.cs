@@ -8,12 +8,11 @@ using System.Windows;
 using Microsoft.Common.Core;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Components.Plots.ViewModel;
 
 namespace Microsoft.R.Components.Plots.Implementation.Commands {
     internal sealed class PlotDeviceCopyAsMetafileCommand : PlotDeviceCommand, IAsyncCommand {
-        public PlotDeviceCopyAsMetafileCommand(IRInteractiveWorkflow interactiveWorkflow, IRPlotDeviceViewModel viewModel)
-            : base(interactiveWorkflow, viewModel) {
+        public PlotDeviceCopyAsMetafileCommand(IRInteractiveWorkflow interactiveWorkflow, IRPlotDeviceVisualComponent visualComponent)
+            : base(interactiveWorkflow, visualComponent) {
         }
 
         public CommandStatus Status {
@@ -29,7 +28,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
         public async Task<CommandResult> InvokeAsync() {
             string filePath = Path.GetTempFileName();
             try {
-                await ViewModel.ExportToMetafileAsync(filePath);
+                await VisualComponent.ExportToMetafileAsync(filePath);
 
                 InteractiveWorkflow.Shell.DispatchOnUIThread(() => {
                     try {

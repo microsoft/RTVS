@@ -5,18 +5,16 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Components.Plots.ViewModel;
-using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Components.Plots.Implementation.Commands {
     internal sealed class PlotDeviceActivateCommand : PlotDeviceCommand, IAsyncCommand {
-        public PlotDeviceActivateCommand(IRInteractiveWorkflow interactiveWorkflow, IRPlotDeviceViewModel viewModel)
-            : base(interactiveWorkflow, viewModel) {
+        public PlotDeviceActivateCommand(IRInteractiveWorkflow interactiveWorkflow, IRPlotDeviceVisualComponent visualComponent)
+            : base(interactiveWorkflow, visualComponent) {
         }
 
         public CommandStatus Status {
             get {
-                if (ViewModel.IsDeviceActive) {
+                if (VisualComponent.IsDeviceActive) {
                     return CommandStatus.SupportedAndEnabled | CommandStatus.Latched;
                 }
                 return CommandStatus.SupportedAndEnabled;
@@ -25,7 +23,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
 
         public async Task<CommandResult> InvokeAsync() {
             try {
-                await ViewModel.ActivateDeviceAsync();
+                await VisualComponent.ActivateDeviceAsync();
             } catch (RPlotManagerException ex) {
                 InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);
             } catch (OperationCanceledException) {

@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
 
-namespace Microsoft.R.Components.Plots.Implementation.Commands {
-    internal sealed class PlotDeviceNewCommand : InteractiveWorkflowAsyncCommand, IAsyncCommand {
-        public PlotDeviceNewCommand(IRInteractiveWorkflow interactiveWorkflow) :
-            base(interactiveWorkflow) {
+namespace Microsoft.R.Components.Plots.Commands {
+    public sealed class PlotDeviceNewCommand : IAsyncCommand {
+        private IRInteractiveWorkflow InteractiveWorkflow { get; }
+
+        public PlotDeviceNewCommand(IRInteractiveWorkflow interactiveWorkflow) {
+            InteractiveWorkflow = interactiveWorkflow;
         }
 
         public CommandStatus Status {

@@ -6,12 +6,11 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Components.Plots.ViewModel;
 
 namespace Microsoft.R.Components.Plots.Implementation.Commands {
     internal sealed class PlotDeviceExportAsImageCommand : PlotDeviceCommand, IAsyncCommand {
-        public PlotDeviceExportAsImageCommand(IRInteractiveWorkflow interactiveWorkflow, IRPlotDeviceViewModel viewModel)
-            : base(interactiveWorkflow, viewModel) {
+        public PlotDeviceExportAsImageCommand(IRInteractiveWorkflow interactiveWorkflow, IRPlotDeviceVisualComponent visualComponent)
+            : base(interactiveWorkflow, visualComponent) {
         }
 
         public CommandStatus Status {
@@ -30,7 +29,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
                 string device = DeviceFromFileExtension(filePath);
                 if (!string.IsNullOrEmpty(device)) {
                     try {
-                        await ViewModel.ExportToBitmapAsync(device, filePath);
+                        await VisualComponent.ExportToBitmapAsync(device, filePath);
                     } catch (RPlotManagerException ex) {
                         InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);
                     } catch (OperationCanceledException) {

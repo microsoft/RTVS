@@ -8,15 +8,15 @@ using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
 
 namespace Microsoft.R.Components.Plots.Implementation.Commands {
-    internal sealed class PlotHistoryRemoveCommand : InteractiveWorkflowAsyncCommand, IAsyncCommand {
-        public PlotHistoryRemoveCommand(IRInteractiveWorkflow interactiveWorkflow) :
-            base(interactiveWorkflow) {
+    internal sealed class PlotHistoryRemoveCommand : PlotHistoryCommand, IAsyncCommand {
+        public PlotHistoryRemoveCommand(IRInteractiveWorkflow interactiveWorkflow, IRPlotHistoryVisualComponent visualComponent) :
+            base(interactiveWorkflow, visualComponent) {
         }
 
         public CommandStatus Status {
             get {
-                var selection = InteractiveWorkflow.Plots.History.SelectedPlot;
-                if (selection != null) {
+                var selection = VisualComponent.SelectedPlot;
+                if (selection != null && !selection.ParentDevice.LocatorMode) {
                     return CommandStatus.SupportedAndEnabled;
                 }
 
@@ -25,11 +25,11 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
         }
 
         public async Task<CommandResult> InvokeAsync() {
-            var selection = InteractiveWorkflow.Plots.History.SelectedPlot;
+            var selection = VisualComponent.SelectedPlot;
             if (selection != null) {
                 if (InteractiveWorkflow.Shell.ShowMessage(Resources.Plots_RemoveSelectedPlotWarning, MessageButtons.YesNo) == MessageButtons.Yes) {
                     try {
-                        await InteractiveWorkflow.Plots.RemovePlotAsync(selection.DeviceId, selection.PlotId);
+                        await InteractiveWorkflow.Plots.RemovePlotAsync(selection);
                     } catch (RPlotManagerException ex) {
                         InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);
                     } catch (OperationCanceledException) {

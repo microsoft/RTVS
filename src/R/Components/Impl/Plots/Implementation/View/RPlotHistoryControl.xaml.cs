@@ -44,7 +44,7 @@ namespace Microsoft.R.Components.Plots.Implementation.View {
                 var entry = (IRPlotHistoryEntryViewModel)HistoryListView.SelectedItems[0];
                 var data = new DataObject(
                     PlotClipboardData.Format,
-                    new PlotClipboardData(entry.DeviceId, entry.PlotId, entry.SessionProcessId, false).ToString())
+                    new PlotClipboardData(entry.Plot.ParentDevice.DeviceId, entry.Plot.PlotId, false).ToString())
                 ;
                 DragDrop.DoDragDrop(HistoryListView, data, DragDropEffects.Copy | DragDropEffects.Move);
             }

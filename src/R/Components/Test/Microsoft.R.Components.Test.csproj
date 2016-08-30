@@ -73,7 +73,8 @@
     <Compile Include="Fakes\VisualComponentFactories\ContainerFactoryBase.cs" />
     <Compile Include="Fakes\VisualComponentFactories\TestRHistoryVisualComponentContainerFactory.cs" />
     <Compile Include="Fakes\VisualComponentFactories\TestRInteractiveWindowComponentContainerFactory.cs" />
-    <Compile Include="Fakes\VisualComponentFactories\TestRPlotManagerVisualComponentContainerFactory.cs" />
+    <Compile Include="Fakes\VisualComponentFactories\TestRPlotHistoryVisualComponentContainerFactory.cs" />
+    <Compile Include="Fakes\VisualComponentFactories\TestRPlotDeviceVisualComponentContainerFactory.cs" />
     <Compile Include="Fakes\VisualComponentFactories\TestRPackageManagerVisualComponentContainerFactory.cs" />
     <Compile Include="History\RHistoryIntegrationTest.cs" />
     <Compile Include="History\RHistoryTests.cs" />
@@ -87,7 +88,7 @@
     <Compile Include="PackageManager\TestLibraries.cs" />
     <Compile Include="PackageManager\TestPackages.cs" />
     <Compile Include="PackageManager\TestRepositories.cs" />
-    <Compile Include="Plots\PlotIntegrationTest.cs" />
+    <Compile Include="Plots\RPlotIntegrationTest.cs" />
     <Compile Include="RComponentsMefCatalogFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="InteractiveWorkflow\RInteractiveWorkflowCommandTest.cs" />

@@ -6,14 +6,14 @@ using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
 
 namespace Microsoft.R.Components.Plots.Implementation.Commands {
-    internal sealed class PlotHistoryAutoHideCommand : InteractiveWorkflowAsyncCommand, IAsyncCommand {
-        public PlotHistoryAutoHideCommand(IRInteractiveWorkflow interactiveWorkflow) :
-            base(interactiveWorkflow) {
+    internal sealed class PlotHistoryAutoHideCommand : PlotHistoryCommand, IAsyncCommand {
+        public PlotHistoryAutoHideCommand(IRInteractiveWorkflow interactiveWorkflow, IRPlotHistoryVisualComponent visualComponent) :
+            base(interactiveWorkflow, visualComponent) {
         }
 
         public CommandStatus Status {
             get {
-                if (InteractiveWorkflow.Plots.History.AutoHide) {
+                if (VisualComponent.AutoHide) {
                     return CommandStatus.SupportedAndEnabled | CommandStatus.Latched;
                 }
 
@@ -22,7 +22,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
         }
 
         public Task<CommandResult> InvokeAsync() {
-            InteractiveWorkflow.Plots.History.AutoHide = !InteractiveWorkflow.Plots.History.AutoHide;
+            VisualComponent.AutoHide = !VisualComponent.AutoHide;
             return Task.FromResult(CommandResult.Executed);
         }
     }

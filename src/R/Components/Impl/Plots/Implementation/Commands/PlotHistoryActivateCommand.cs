@@ -7,15 +7,15 @@ using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
 
 namespace Microsoft.R.Components.Plots.Implementation.Commands {
-    internal sealed class PlotHistoryActivateCommand : InteractiveWorkflowAsyncCommand, IAsyncCommand {
-        public PlotHistoryActivateCommand(IRInteractiveWorkflow interactiveWorkflow) :
-            base(interactiveWorkflow) {
+    internal sealed class PlotHistoryActivateCommand : PlotHistoryCommand, IAsyncCommand {
+        public PlotHistoryActivateCommand(IRInteractiveWorkflow interactiveWorkflow, IRPlotHistoryVisualComponent visualComponent) :
+            base(interactiveWorkflow, visualComponent) {
         }
 
         public CommandStatus Status {
             get {
-                var selection = InteractiveWorkflow.Plots.History.SelectedPlot;
-                if (selection != null) {
+                var selection = VisualComponent.SelectedPlot;
+                if (selection != null && !selection.ParentDevice.LocatorMode) {
                     return CommandStatus.SupportedAndEnabled;
                 }
 
@@ -24,10 +24,10 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
         }
 
         public async Task<CommandResult> InvokeAsync() {
-            var selection = InteractiveWorkflow.Plots.History.SelectedPlot;
+            var selection = VisualComponent.SelectedPlot;
             if (selection != null) {
                 try {
-                    await selection.ActivatePlotAsync();
+                    await InteractiveWorkflow.Plots.ActivatePlotAsync(selection);
                 } catch (RPlotManagerException ex) {
                     InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);
                 } catch (OperationCanceledException) {

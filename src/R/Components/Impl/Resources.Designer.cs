@@ -763,15 +763,6 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Plots cannot be copied across R sessions..
-        /// </summary>
-        public static string Plots_CannotCopyAcrossSession {
-            get {
-                return ResourceManager.GetString("Plots_CannotCopyAcrossSession", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Error copying plot to the clipboard.\n{0}.
         /// </summary>
         public static string Plots_CopyToClipboardError {

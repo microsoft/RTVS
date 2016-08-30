@@ -13,45 +13,25 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Components.Plots.Implementation.ViewModel;
-using Microsoft.R.Components.Plots.ViewModel;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
 
 namespace Microsoft.R.Components.Plots.Implementation {
     internal class RPlotManager : IRPlotManager {
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
         private readonly DisposableBag _disposableBag;
+        private readonly List<IRPlotDevice> _devices = new List<IRPlotDevice>();
+        private readonly Dictionary<int, IRPlotDeviceVisualComponent> _visualComponents = new Dictionary<int, IRPlotDeviceVisualComponent>();
+        private readonly Dictionary<Guid, IRPlotDeviceVisualComponent> _assignedVisualComponents = new Dictionary<Guid, IRPlotDeviceVisualComponent>();
+        private readonly List<IRPlotDeviceVisualComponent> _unassignedVisualComponents = new List<IRPlotDeviceVisualComponent>();
 
-        private Dictionary<int, IRPlotDeviceVisualComponent> _visualComponents = new Dictionary<int, IRPlotDeviceVisualComponent>();
-        private Dictionary<Guid, IRPlotDeviceVisualComponent> _assignedVisualComponents = new Dictionary<Guid, IRPlotDeviceVisualComponent>();
-        private List<IRPlotDeviceVisualComponent> _unassignedVisualComponents = new List<IRPlotDeviceVisualComponent>();
-
-        public IRPlotHistoryViewModel History { get; }
-
-        public Guid ActiveDeviceId { get; private set; }
-
-        public IRInteractiveWorkflow InteractiveWorkflow {
-            get {
-                return _interactiveWorkflow;
-            }
-        }
-
-        public IRPlotHistoryVisualComponent HistoryVisualComponent { get; private set; }
-
-        public event EventHandler<EventArgs> DeviceCreateMessageReceived;
-        public event EventHandler<EventArgs> DeviceDestroyMessageReceived;
-        public event EventHandler<EventArgs> PlotMessageReceived;
-        public event EventHandler<EventArgs> ActiveDeviceChanged;
-        public event EventHandler<EventArgs> LocatorModeChanged;
-
+        public event EventHandler<RPlotDeviceEventArgs> ActiveDeviceChanged;
+        public event EventHandler<RPlotDeviceEventArgs> DeviceAdded;
+        public event EventHandler<RPlotDeviceEventArgs> DeviceRemoved;
 
         public RPlotManager(IRSettings settings, IRInteractiveWorkflow interactiveWorkflow, Action dispose) {
             _interactiveWorkflow = interactiveWorkflow;
-            History = new RPlotHistoryViewModel(this);
-            ActiveDeviceId = Guid.Empty;
 
             _disposableBag = DisposableBag.Create<RPlotManager>(dispose)
                 .Add(() => interactiveWorkflow.RSession.Disconnected += RSession_Disconnected)
@@ -61,33 +41,42 @@ namespace Microsoft.R.Components.Plots.Implementation {
             interactiveWorkflow.RSession.Mutated += RSession_Mutated;
         }
 
+
+        public IRInteractiveWorkflow InteractiveWorkflow {
+            get {
+                return _interactiveWorkflow;
+            }
+        }
+
+        public IRPlotHistoryVisualComponent HistoryVisualComponent { get; private set; }
+
+        public IRPlotDevice ActiveDevice { get; private set; }
+
         public void Dispose() {
             _disposableBag.TryMarkDisposed();
 
             var visualComponents = _visualComponents.Values.ToArray();
             foreach (var visualComponent in visualComponents) {
-                visualComponent.ViewModel.LocatorModeChanged -= ViewModel_LocatorModeChanged;
                 visualComponent.Dispose();
             }
         }
 
         public IRPlotDeviceVisualComponent GetOrCreateVisualComponent(IRPlotDeviceVisualComponentContainerFactory visualComponentContainerFactory, int instanceId) {
+            InteractiveWorkflow.Shell.AssertIsOnMainThread();
+
             IRPlotDeviceVisualComponent component;
             if (_visualComponents.TryGetValue(instanceId, out component)) {
                 return component;
             }
 
             component = visualComponentContainerFactory.GetOrCreate(this, _interactiveWorkflow.RSession, instanceId).Component;
-            component.ViewModel.LocatorModeChanged += ViewModel_LocatorModeChanged;
             _visualComponents[instanceId] = component;
             return component;
         }
 
-        private void ViewModel_LocatorModeChanged(object sender, EventArgs e) {
-            LocatorModeChanged?.Invoke(this, e);
-        }
-
         public IRPlotHistoryVisualComponent GetOrCreateVisualComponent(IRPlotHistoryVisualComponentContainerFactory visualComponentContainerFactory, int instanceId) {
+            InteractiveWorkflow.Shell.AssertIsOnMainThread();
+
             if (HistoryVisualComponent == null) {
                 HistoryVisualComponent = visualComponentContainerFactory.GetOrCreate(this, instanceId).Component;
             }
@@ -95,159 +84,185 @@ namespace Microsoft.R.Components.Plots.Implementation {
             return HistoryVisualComponent;
         }
 
+        public IRPlotDeviceVisualComponent GetPlotVisualComponent(IRPlotDevice device) {
+            InteractiveWorkflow.Shell.AssertIsOnMainThread();
+
+            IRPlotDeviceVisualComponent visualComponent = null;
+            _assignedVisualComponents.TryGetValue(device.DeviceId, out visualComponent);
+            return visualComponent;
+        }
+
         public void RegisterVisualComponent(IRPlotDeviceVisualComponent visualComponent) {
+            InteractiveWorkflow.Shell.AssertIsOnMainThread();
+
             _unassignedVisualComponents.Add(visualComponent);
         }
 
         public async Task DeviceDestroyedAsync(Guid deviceId) {
+            InteractiveWorkflow.Shell.AssertIsOnMainThread();
+
+            var device = FindDevice(deviceId);
+            Debug.Assert(device != null, "List of devices is out of sync.");
+            if (device == null) {
+                return;
+            }
+
+            _devices.Remove(device);
+
             IRPlotDeviceVisualComponent component;
             if (_assignedVisualComponents.TryGetValue(deviceId, out component)) {
-                // Remove the plots from history before the device view model gets unassigned
-                HistoryVisualComponent?.ViewModel.RemoveAll(deviceId);
-
-                await component.ViewModel.UnassignAsync();
+                await component.UnassignAsync();
                 _assignedVisualComponents.Remove(deviceId);
                 _unassignedVisualComponents.Add(component);
             } else {
                 Debug.Assert(false, "Failed to destroy a plot visual component.");
             }
 
-            DeviceDestroyMessageReceived?.Invoke(this, EventArgs.Empty);
+            DeviceRemoved?.Invoke(this, new RPlotDeviceEventArgs(device));
         }
 
         public async Task LoadPlotAsync(PlotMessage plot) {
             InteractiveWorkflow.Shell.AssertIsOnMainThread();
 
+            var device = FindDevice(plot.DeviceId);
+            device.DeviceNum = plot.DeviceNum;
+
+            if (plot.IsClearAll) {
+                device.Clear();
+            } else if (plot.IsPlot) {
+                try {
+                    var img = plot.ToBitmapImage();
+                    device.AddOrUpdate(plot.PlotId, img);
+                } catch (Exception e) when (!e.IsCriticalException()) {
+                }
+            } else if (plot.IsError) {
+                device.AddOrUpdate(plot.PlotId, null);
+            }
+
             var visualComponent = await GetVisualComponentForDevice(plot.DeviceId);
             if (visualComponent != null) {
                 visualComponent.Container.Show(focus: false, immediate: false);
-                await ProcessPlotMessage(visualComponent.ViewModel, plot);
                 visualComponent.Container.UpdateCommandStatus(false);
-            }
-
-            PlotMessageReceived?.Invoke(this, EventArgs.Empty);
-        }
-
-        public async Task ShowDeviceAsync(Guid deviceId) {
-            var visualComponent = await GetVisualComponentForDevice(deviceId);
-            if (visualComponent != null) {
-                visualComponent.Container.Show(focus: false, immediate: false);
             }
         }
 
         public async Task<PlotDeviceProperties> DeviceCreatedAsync(Guid deviceId) {
+            InteractiveWorkflow.Shell.AssertIsOnMainThread();
+
+            var device = new RPlotDevice(deviceId);
+            _devices.Add(device);
+
+            PlotDeviceProperties props;
+
             var visualComponent = await GetVisualComponentForDevice(deviceId);
             if (visualComponent != null) {
                 visualComponent.Container.Show(focus: false, immediate: true);
-
-                DeviceCreateMessageReceived?.Invoke(this, EventArgs.Empty);
-
-                return visualComponent.GetDeviceProperties();
+                props = visualComponent.GetDeviceProperties();
+            } else {
+                Debug.Assert(false, "Failed to create a plot visual component.");
+                props = PlotDeviceProperties.Default;
             }
 
-            Debug.Assert(false, "Failed to create a plot visual component.");
-            return PlotDeviceProperties.Default;
+            DeviceAdded?.Invoke(this, new RPlotDeviceEventArgs(device));
+
+            return props;
         }
 
         public async Task<LocatorResult> StartLocatorModeAsync(Guid deviceId, CancellationToken ct) {
+            InteractiveWorkflow.Shell.AssertIsOnMainThread();
+
             var visualComponent = await GetVisualComponentForDevice(deviceId);
             if (visualComponent != null) {
                 visualComponent.Container.Show(focus: false, immediate: true);
             }
 
-            return await visualComponent.ViewModel.StartLocatorModeAsync(ct);
+            return await visualComponent.StartLocatorModeAsync(ct);
         }
 
-        public async Task RemoveAllPlotsAsync(Guid deviceId) {
+        public async Task RemoveAllPlotsAsync(IRPlotDevice device) {
             await TaskUtilities.SwitchToBackgroundThread();
             try {
-                await _interactiveWorkflow.RSession.ClearPlotHistoryAsync(deviceId);
-            } catch (RHostDisconnectedException ex) {
-                throw new RPlotManagerException(Resources.Plots_TransportError, ex);
+                await _interactiveWorkflow.RSession.ClearPlotHistoryAsync(device.DeviceId);
+            } catch (RException ex) {
+                throw new RPlotManagerException(string.Format(CultureInfo.InvariantCulture, Resources.Plots_EvalError, ex.Message), ex);
             }
         }
 
-        public async Task RemovePlotAsync(Guid deviceId, Guid plotId) {
+        public async Task RemovePlotAsync(IRPlot plot) {
             await TaskUtilities.SwitchToBackgroundThread();
             try {
-                await _interactiveWorkflow.RSession.RemoveCurrentPlotAsync(deviceId, plotId);
-                await RemoveFromHistoryAsync(plotId);
-            } catch (RHostDisconnectedException ex) {
-                throw new RPlotManagerException(Resources.Plots_TransportError, ex);
+                await _interactiveWorkflow.RSession.RemoveCurrentPlotAsync(plot.ParentDevice.DeviceId, plot.PlotId);
+
+                plot.ParentDevice.Remove(plot);
+            } catch (RException ex) {
+                throw new RPlotManagerException(string.Format(CultureInfo.InvariantCulture, Resources.Plots_EvalError, ex.Message), ex);
             }
         }
 
-        public async Task ActivatePlotAsync(Guid deviceId, Guid plotId) {
-            if (History.AutoHide) {
-                HistoryVisualComponent?.Container.Hide();
+        public async Task ActivatePlotAsync(IRPlot plot) {
+            InteractiveWorkflow.Shell.AssertIsOnMainThread();
+
+            if (HistoryVisualComponent != null) {
+                if (HistoryVisualComponent.AutoHide) {
+                    HistoryVisualComponent.Container.Hide();
+                }
             }
 
             await TaskUtilities.SwitchToBackgroundThread();
             try {
-                await _interactiveWorkflow.RSession.SelectPlotAsync(deviceId, plotId);
-            } catch (RHostDisconnectedException ex) {
-                throw new RPlotManagerException(Resources.Plots_TransportError, ex);
+                await _interactiveWorkflow.RSession.SelectPlotAsync(plot.ParentDevice.DeviceId, plot.PlotId);
+            } catch (RException ex) {
+                throw new RPlotManagerException(string.Format(CultureInfo.InvariantCulture, Resources.Plots_EvalError, ex.Message), ex);
             }
         }
 
-        public async Task NextPlotAsync(Guid deviceId) {
+        public async Task NextPlotAsync(IRPlotDevice device) {
             await TaskUtilities.SwitchToBackgroundThread();
             try {
-                await _interactiveWorkflow.RSession.NextPlotAsync(deviceId);
-            } catch (RHostDisconnectedException ex) {
-                throw new RPlotManagerException(Resources.Plots_TransportError, ex);
+                await _interactiveWorkflow.RSession.NextPlotAsync(device.DeviceId);
+            } catch (RException ex) {
+                throw new RPlotManagerException(string.Format(CultureInfo.InvariantCulture, Resources.Plots_EvalError, ex.Message), ex);
             }
         }
 
-        public async Task PreviousPlotAsync(Guid deviceId) {
+        public async Task PreviousPlotAsync(IRPlotDevice device) {
             await TaskUtilities.SwitchToBackgroundThread();
             try {
-                await _interactiveWorkflow.RSession.PreviousPlotAsync(deviceId);
-            } catch (RHostDisconnectedException ex) {
-                throw new RPlotManagerException(Resources.Plots_TransportError, ex);
+                await _interactiveWorkflow.RSession.PreviousPlotAsync(device.DeviceId);
+            } catch (RException ex) {
+                throw new RPlotManagerException(string.Format(CultureInfo.InvariantCulture, Resources.Plots_EvalError, ex.Message), ex);
             }
         }
 
-        public async Task ResizeAsync(Guid deviceId, int pixelWidth, int pixelHeight, int resolution) {
+        public async Task ResizeAsync(IRPlotDevice device, int pixelWidth, int pixelHeight, int resolution) {
             if (!_interactiveWorkflow.RSession.IsHostRunning) {
                 return;
             }
 
             try {
-                await _interactiveWorkflow.RSession.ResizePlotAsync(deviceId, pixelWidth, pixelHeight, resolution);
-            } catch (RHostDisconnectedException ex) {
-                throw new RPlotManagerException(Resources.Plots_TransportError, ex);
+                await _interactiveWorkflow.RSession.ResizePlotAsync(device.DeviceId, pixelWidth, pixelHeight, resolution);
+            } catch (RException ex) {
+                throw new RPlotManagerException(string.Format(CultureInfo.InvariantCulture, Resources.Plots_EvalError, ex.Message), ex);
             }
         }
 
-        public Task ExportToBitmapAsync(Guid deviceId, Guid plotId, string deviceName, string outputFilePath, int pixelWidth, int pixelHeight, int resolution) =>
-            ExportAsync(deviceId, outputFilePath, _interactiveWorkflow.RSession.ExportPlotToBitmapAsync(deviceId, plotId, deviceName, outputFilePath, pixelWidth, pixelHeight, resolution));
+        public Task ExportToBitmapAsync(IRPlot plot, string deviceName, string outputFilePath, int pixelWidth, int pixelHeight, int resolution) =>
+            ExportAsync(outputFilePath, _interactiveWorkflow.RSession.ExportPlotToBitmapAsync(plot.ParentDevice.DeviceId, plot.PlotId, deviceName, outputFilePath, pixelWidth, pixelHeight, resolution));
 
-        public Task ExportToMetafileAsync(Guid deviceId, Guid plotId, string outputFilePath, double inchWidth, double inchHeight, int resolution) =>
-            ExportAsync(deviceId, outputFilePath, _interactiveWorkflow.RSession.ExportPlotToMetafileAsync(deviceId, plotId, outputFilePath, inchWidth, inchHeight, resolution));
+        public Task ExportToMetafileAsync(IRPlot plot, string outputFilePath, double inchWidth, double inchHeight, int resolution) =>
+            ExportAsync(outputFilePath, _interactiveWorkflow.RSession.ExportPlotToMetafileAsync(plot.ParentDevice.DeviceId, plot.PlotId, outputFilePath, inchWidth, inchHeight, resolution));
 
-        public Task ExportToPdfAsync(Guid deviceId, Guid plotId, string outputFilePath, double inchWidth, double inchHeight) =>
-            ExportAsync(deviceId, outputFilePath, _interactiveWorkflow.RSession.ExportToPdfAsync(deviceId, plotId, outputFilePath, inchWidth, inchHeight));
+        public Task ExportToPdfAsync(IRPlot plot, string outputFilePath, double inchWidth, double inchHeight) =>
+            ExportAsync(outputFilePath, _interactiveWorkflow.RSession.ExportToPdfAsync(plot.ParentDevice.DeviceId, plot.PlotId, outputFilePath, inchWidth, inchHeight));
 
-        public async Task ActivateDeviceAsync(Guid deviceId) {
-            Debug.Assert(deviceId != Guid.Empty);
-            await _interactiveWorkflow.RSession.ActivatePlotDeviceAsync(deviceId);
-        }
-
-        /// <summary>
-        /// Get the view model for the device. For tests only.
-        /// </summary>
-        /// <param name="deviceId"></param>
-        /// <returns></returns>
-        public IRPlotDeviceViewModel GetDeviceViewModel(Guid deviceId) {
-            if (deviceId == Guid.Empty) {
-                throw new ArgumentOutOfRangeException(nameof(deviceId));
-            }
-
-            return _assignedVisualComponents[deviceId].ViewModel;
+        public async Task ActivateDeviceAsync(IRPlotDevice device) {
+            Debug.Assert(device != null);
+            await _interactiveWorkflow.RSession.ActivatePlotDeviceAsync(device.DeviceId);
         }
 
         public async Task NewDeviceAsync(int existingInstanceId) {
+            InteractiveWorkflow.Shell.AssertIsOnMainThread();
+
             if (existingInstanceId >= 0) {
                 // User wants to create a graphics device for an existing unassigned visual component.
                 // Before asking the host to create a graphics device, we adjust the unassigned
@@ -257,39 +272,64 @@ namespace Microsoft.R.Components.Plots.Implementation {
             }
 
             // Force creation of the graphics device
+            await TaskUtilities.SwitchToBackgroundThread();
             try {
                 await _interactiveWorkflow.RSession.NewPlotDeviceAsync();
-            } catch (RHostDisconnectedException ex) {
-                throw new RPlotManagerException(Resources.Plots_TransportError, ex);
             } catch (RException ex) {
                 throw new RPlotManagerException(string.Format(CultureInfo.InvariantCulture, Resources.Plots_EvalError, ex.Message), ex);
             }
         }
 
-        public async Task CopyPlotAsync(Guid sourceDeviceId, Guid sourcePlotId, Guid targetDeviceId) {
+        public async Task CopyOrMovePlotFromAsync(Guid sourceDeviceId, Guid sourcePlotId, IRPlotDevice targetDevice, bool isMove) {
+            Debug.Assert(targetDevice != null);
+
+            InteractiveWorkflow.Shell.AssertIsOnMainThread();
+
+            var sourcePlot = FindPlot(sourceDeviceId, sourcePlotId);
+            if (sourcePlot != null) {
+                await CopyPlotAsync(sourcePlot, targetDevice);
+                if (isMove) {
+                    await RemovePlotAsync(sourcePlot);
+
+                    // Removing that plot may activate the device from the removed plot,
+                    // which would hide this device. So we re-show it.
+                    await ShowDeviceAsync(targetDevice);
+                }
+            }
+        }
+
+        private async Task CopyPlotAsync(IRPlot sourcePlot, IRPlotDevice targetDevice) {
+            await TaskUtilities.SwitchToBackgroundThread();
             try {
-                await InteractiveWorkflow.RSession.CopyPlotAsync(sourceDeviceId, sourcePlotId, targetDeviceId);
-            } catch (RHostDisconnectedException ex) {
-                throw new RPlotManagerException(Resources.Plots_TransportError, ex);
+                await InteractiveWorkflow.RSession.CopyPlotAsync(sourcePlot.ParentDevice.DeviceId, sourcePlot.PlotId, targetDevice.DeviceId);
             } catch (RException ex) {
                 throw new RPlotManagerException(string.Format(CultureInfo.InvariantCulture, Resources.Plots_EvalError, ex.Message), ex);
             }
         }
 
-        private async Task ExportAsync(Guid deviceId, string outputFilePath, Task<byte[]> exportTask) {
+        private async Task ShowDeviceAsync(IRPlotDevice device) {
+            InteractiveWorkflow.Shell.AssertIsOnMainThread();
+
+            var visualComponent = await GetVisualComponentForDevice(device.DeviceId);
+            if (visualComponent != null) {
+                visualComponent.Container.Show(focus: false, immediate: false);
+            }
+        }
+
+        private async Task ExportAsync(string outputFilePath, Task<byte[]> exportTask) {
             try {
                 var result = await exportTask;
                 File.WriteAllBytes(outputFilePath, result);
             } catch (IOException ex) {
                 throw new RPlotManagerException(ex.Message, ex);
-            } catch (RHostDisconnectedException ex) {
-                throw new RPlotManagerException(Resources.Plots_TransportError, ex);
             } catch (RException ex) {
                 throw new RPlotManagerException(string.Format(CultureInfo.InvariantCulture, Resources.Plots_EvalError, ex.Message), ex);
             }
         }
 
         private async Task<IRPlotDeviceVisualComponent> GetVisualComponentForDevice(Guid deviceId) {
+            InteractiveWorkflow.Shell.AssertIsOnMainThread();
+
             IRPlotDeviceVisualComponent component;
 
             // If we've already assigned a plot window, reuse it
@@ -308,7 +348,8 @@ namespace Microsoft.R.Components.Plots.Implementation {
                 component = GetOrCreateVisualComponent(containerFactory, GetUnusedInstanceId(deviceId));
             }
 
-            await component.ViewModel.AssignAsync(deviceId);
+            var device = FindDevice(deviceId);
+            await component.AssignAsync(device);
 
             _assignedVisualComponents[deviceId] = component;
 
@@ -319,7 +360,37 @@ namespace Microsoft.R.Components.Plots.Implementation {
             return component;
         }
 
+        private IRPlotDevice FindDevice(Guid deviceId) {
+            InteractiveWorkflow.Shell.AssertIsOnMainThread();
+
+            return _devices.SingleOrDefault(d => d.DeviceId == deviceId);
+        }
+
+        private IRPlot FindPlot(Guid deviceId, Guid plotId) {
+            InteractiveWorkflow.Shell.AssertIsOnMainThread();
+
+            var device = FindDevice(deviceId);
+            if (device != null) {
+                return device.Find(plotId);
+            }
+
+            return null;
+        }
+
+        private void RemoveAllDevices() {
+            InteractiveWorkflow.Shell.AssertIsOnMainThread();
+
+            IRPlotDevice[] devices = _devices.ToArray();
+            _devices.Clear();
+
+            foreach (var device in devices) {
+                DeviceRemoved?.Invoke(this, new RPlotDeviceEventArgs(device));
+            }
+        }
+
         private int GetUnusedInstanceId(Guid deviceId) {
+            InteractiveWorkflow.Shell.AssertIsOnMainThread();
+
             // Pick the lowest number that isn't known to be used.
             // Note that some plot windows may technically exist but
             // have not been created yet in this instance of VS (it creates
@@ -338,7 +409,9 @@ namespace Microsoft.R.Components.Plots.Implementation {
         }
 
         private void SetNextVisualComponent(int existingInstanceId) {
-            int[] indices = _unassignedVisualComponents.IndexWhere(component => component.ViewModel.InstanceId == existingInstanceId).ToArray();
+            InteractiveWorkflow.Shell.AssertIsOnMainThread();
+
+            int[] indices = _unassignedVisualComponents.IndexWhere(component => component.InstanceId == existingInstanceId).ToArray();
             if (indices.Length == 1) {
                 if (indices[0] > 0) {
                     // Desired visual component isn't the first in the list, so move it there.
@@ -353,58 +426,36 @@ namespace Microsoft.R.Components.Plots.Implementation {
             }
         }
 
-        private async Task ProcessPlotMessage(IRPlotDeviceViewModel viewModel, PlotMessage plot) {
-            InteractiveWorkflow.Shell.AssertIsOnMainThread();
-
-            if (plot.IsClearAll) {
-                await viewModel.PlotMessageClearAllAsync(plot.DeviceId, plot.DeviceNum);
-                History.RemoveAll(plot.DeviceId);
-            } else if (plot.IsPlot) {
-                try {
-                    var img = plot.ToBitmapImage();
-                    await viewModel.PlotMessageLoadPlotAsync(plot.DeviceId, plot.PlotId, img, plot.DeviceNum, plot.ActivePlotIndex, plot.PlotCount);
-                    History.AddOrUpdate(viewModel.DeviceName, viewModel.DeviceId, plot.PlotId, viewModel.SessionProcessId, img);
-                } catch (Exception e) when (!e.IsCriticalException()) {
-                    await viewModel.PlotMessageLoadErrorAsync(plot.DeviceId, plot.PlotId, plot.DeviceNum, plot.ActivePlotIndex, plot.PlotCount);
-                }
-            } else if (plot.IsError) {
-                await viewModel.PlotMessageLoadErrorAsync(plot.DeviceId, plot.PlotId, plot.DeviceNum, plot.ActivePlotIndex, plot.PlotCount);
-            }
-        }
-
-        private async Task RemoveFromHistoryAsync(Guid plotId) {
-            await InteractiveWorkflow.Shell.SwitchToMainThreadAsync();
-            History.Remove(plotId);
-        }
-
-        private async Task ClearHistoryAsync() {
-            await InteractiveWorkflow.Shell.SwitchToMainThreadAsync();
-            History.Clear();
-        }
-
         private void RSession_Mutated(object sender, EventArgs e) {
             RSessionMutatedAsync().DoNotWait();
         }
 
         private async Task RSessionMutatedAsync() {
+            await InteractiveWorkflow.Shell.SwitchToMainThreadAsync();
+
             try {
                 var deviceId = await InteractiveWorkflow.RSession.GetActivePlotDeviceAsync();
-                var deviceChanged = ActiveDeviceId != deviceId;
-                ActiveDeviceId = deviceId;
+                var device = FindDevice(deviceId);
+
+                var deviceChanged = device != ActiveDevice;
+                ActiveDevice = device;
 
                 // Update all the devices in parallel
-                var visualComponents = _visualComponents.Values.ToArray();
-                var tasks = visualComponents.Select(v => v?.ViewModel.RefreshDeviceNameAsync());
+                var tasks = _devices.Select(d => RefreshDeviceNum(d));
                 await Task.WhenAll(tasks);
 
                 _interactiveWorkflow.ActiveWindow?.Container.UpdateCommandStatus(false);
 
                 if (deviceChanged) {
-                    ActiveDeviceChanged?.Invoke(this, EventArgs.Empty);
+                    ActiveDeviceChanged?.Invoke(this, new RPlotDeviceEventArgs(ActiveDevice));
                 }
-
             } catch (RException) {
+            } catch (OperationCanceledException) {
             }
+        }
+
+        private async Task RefreshDeviceNum(IRPlotDevice device) {
+            device.DeviceNum = await InteractiveWorkflow.RSession.GetPlotDeviceNumAsync(device.DeviceId);
         }
 
         private void RSession_Disconnected(object sender, EventArgs e) {
@@ -412,13 +463,15 @@ namespace Microsoft.R.Components.Plots.Implementation {
         }
 
         private async Task RSessionDisconnectedAsync() {
+            await InteractiveWorkflow.Shell.SwitchToMainThreadAsync();
+
+            RemoveAllDevices();
+
             foreach (var visualComponent in _assignedVisualComponents.Values) {
                 await visualComponent.UnassignAsync();
                 _unassignedVisualComponents.Add(visualComponent);
             }
             _assignedVisualComponents.Clear();
-
-            await ClearHistoryAsync();
         }
     }
 }

@@ -9,12 +9,11 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Wpf.Imaging;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Components.Plots.ViewModel;
 
 namespace Microsoft.R.Components.Plots.Implementation.Commands {
     internal sealed class PlotDeviceCopyAsBitmapCommand : PlotDeviceCommand, IAsyncCommand {
-        public PlotDeviceCopyAsBitmapCommand(IRInteractiveWorkflow interactiveWorkflow, IRPlotDeviceViewModel viewModel)
-            : base(interactiveWorkflow, viewModel) {
+        public PlotDeviceCopyAsBitmapCommand(IRInteractiveWorkflow interactiveWorkflow, IRPlotDeviceVisualComponent visualComponent)
+            : base(interactiveWorkflow, visualComponent) {
         }
 
         public CommandStatus Status {
@@ -30,7 +29,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
         public async Task<CommandResult> InvokeAsync() {
             string filePath = Path.GetTempFileName();
             try {
-                await ViewModel.ExportToBitmapAsync("bmp", filePath);
+                await VisualComponent.ExportToBitmapAsync("bmp", filePath);
 
                 InteractiveWorkflow.Shell.DispatchOnUIThread(() => {
                     try {

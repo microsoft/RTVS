@@ -8,18 +8,18 @@ using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
 
 namespace Microsoft.R.Components.Plots.Implementation.Commands {
-    internal sealed class PlotHistoryCutCopyCommand : InteractiveWorkflowAsyncCommand, IAsyncCommand {
+    internal sealed class PlotHistoryCutCopyCommand : PlotHistoryCommand, IAsyncCommand {
         private bool _cut;
 
-        public PlotHistoryCutCopyCommand(IRInteractiveWorkflow interactiveWorkflow, bool cut) :
-            base(interactiveWorkflow) {
+        public PlotHistoryCutCopyCommand(IRInteractiveWorkflow interactiveWorkflow, IRPlotHistoryVisualComponent visualComponent, bool cut) :
+            base(interactiveWorkflow, visualComponent) {
             _cut = cut;
         }
 
         public CommandStatus Status {
             get {
-                var selection = InteractiveWorkflow.Plots.History.SelectedPlot;
-                if (selection != null) {
+                var selection = VisualComponent.SelectedPlot;
+                if (selection != null && !selection.ParentDevice.LocatorMode) {
                     return CommandStatus.SupportedAndEnabled;
                 }
 
@@ -28,12 +28,12 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
         }
 
         public Task<CommandResult> InvokeAsync() {
-            var selection = InteractiveWorkflow.Plots.History.SelectedPlot;
+            var selection = VisualComponent.SelectedPlot;
             if (selection != null) {
                 try {
                     Clipboard.Clear();
                     Clipboard.SetData(PlotClipboardData.Format, 
-                        new PlotClipboardData(selection.DeviceId, selection.PlotId, InteractiveWorkflow.RSession.ProcessId, _cut).ToString());
+                        new PlotClipboardData(selection.ParentDevice.DeviceId, selection.PlotId, _cut).ToString());
                 } catch (ExternalException ex) {
                     InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);
                 }

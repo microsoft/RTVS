@@ -8,15 +8,13 @@ namespace Microsoft.R.Components.Plots.Implementation {
     internal class PlotClipboardData {
         public Guid PlotId { get; }
         public Guid DeviceId { get; }
-        public int? ProcessId { get; }
         public bool Cut { get; }
 
         public const string Format = "RPlotRef";
 
-        public PlotClipboardData(Guid deviceId, Guid plotId, int? processId, bool cut) {
+        public PlotClipboardData(Guid deviceId, Guid plotId, bool cut) {
             DeviceId = deviceId;
             PlotId = plotId;
-            ProcessId = processId;
             Cut = cut;
         }
 
@@ -24,7 +22,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
         // so this is using 'manual' serialization and storing a string type in the clipboard instead.
         public static PlotClipboardData Parse(string text) {
             var parts = text.Split('|');
-            if (parts.Length == 4) {
+            if (parts.Length == 3) {
                 Guid deviceId;
                 if (!Guid.TryParse(parts[0], out deviceId)) {
                     return null;
@@ -35,29 +33,19 @@ namespace Microsoft.R.Components.Plots.Implementation {
                     return null;
                 }
 
-                int? processId = null;
-                if (parts[2].Length > 0) {
-                    int id;
-                    if (!int.TryParse(parts[2], out id)) {
-                        return null;
-                    }
-                    processId = id;
-                }
-
                 bool cut;
-                if (!bool.TryParse(parts[3], out cut)) {
+                if (!bool.TryParse(parts[2], out cut)) {
                     return null;
                 }
 
-                return new PlotClipboardData(deviceId, plotId, processId, cut);
+                return new PlotClipboardData(deviceId, plotId, cut);
             }
 
             return null;
         }
 
         public override string ToString() {
-            var process = ProcessId.HasValue ? ProcessId.Value.ToString() : "";
-            return $"{DeviceId}|{PlotId}|{process}|{Cut}";
+            return $"{DeviceId}|{PlotId}|{Cut}";
         }
     }
 }

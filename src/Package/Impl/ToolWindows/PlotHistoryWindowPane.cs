@@ -46,18 +46,24 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
 
         protected override void OnCreate() {
             var controller = new AsyncCommandController();
-            controller.AddCommand(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Copy, PlotHistoryCommandFactory.CutCopy(_plotManager.InteractiveWorkflow, false));
-            controller.AddCommand(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Cut, PlotHistoryCommandFactory.CutCopy(_plotManager.InteractiveWorkflow, true));
-            controller.AddCommand(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Delete, PlotHistoryCommandFactory.Remove(_plotManager.InteractiveWorkflow));
-            controller.AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdPlotHistoryActivatePlot, PlotHistoryCommandFactory.ActivatePlot(_plotManager.InteractiveWorkflow));
-            Component = new RPlotHistoryVisualComponent(_plotManager, controller, _plotManager.History, this, _settings, _coreShell);
+            var visualComponent = new RPlotHistoryVisualComponent(_plotManager, controller, this, _coreShell);
+            var commands = new RPlotHistoryCommands(_plotManager.InteractiveWorkflow, visualComponent);
+
+            controller.AddCommand(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Copy, commands.Copy);
+            controller.AddCommand(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Cut, commands.Cut);
+            controller.AddCommand(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Delete, commands.Remove);
+            controller.AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdPlotHistoryActivatePlot, commands.ActivatePlot);
+            controller.AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdPlotHistoryZoomIn, commands.ZoomIn);
+            controller.AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdPlotHistoryZoomOut, commands.ZoomOut);
+            controller.AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdPlotHistoryAutoHide, commands.AutoHide);
+            Component = visualComponent;
             _commandTarget = new CommandTargetToOleShim(null, Component.Controller);
             base.OnCreate();
         }
 
         protected override void Dispose(bool disposing) {
             if (disposing && Component != null) {
-                //_commandTarget = null;
+                _commandTarget = null;
                 Component.Dispose();
                 Component = null;
             }

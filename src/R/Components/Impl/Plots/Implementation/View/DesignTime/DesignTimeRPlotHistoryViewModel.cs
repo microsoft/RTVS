@@ -40,22 +40,16 @@ namespace Microsoft.R.Components.Plots.Implementation.View.DesignTime {
             });
         }
 
-        public void AddOrUpdate(string deviceName, Guid deviceId, Guid plotId, int? sessionProcessId, BitmapImage plotImage) {
-        }
-
-        public void Clear() {
-        }
-
-        public void RemoveAll(Guid deviceId) {
-        }
-
         public void DecreaseThumbnailSize() {
         }
 
         public void IncreaseThumbnailSize() {
         }
 
-        public void Remove(Guid plotId) {
+        public void SelectEntry(IRPlot plot) {
+        }
+
+        public void Dispose() {
         }
     }
 #endif

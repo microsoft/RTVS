@@ -24,16 +24,6 @@ namespace Microsoft.R.Components.Plots.ViewModel {
         event EventHandler LocatorModeChanged;
 
         /// <summary>
-        /// <c>true</c> if there is an active plot, with a plot image.
-        /// </summary>
-        /// <remarks>
-        /// This will be <c>false</c> if there is an active plot,
-        /// but there was a rendering error for that plot (like when
-        /// the window is resized too small).
-        /// </remarks>
-        bool HasPlot { get; }
-
-        /// <summary>
         /// Bitmap for the active plot.
         /// </summary>
         BitmapImage PlotImage { get; }
@@ -71,46 +61,18 @@ namespace Microsoft.R.Components.Plots.ViewModel {
         /// </summary>
         int InstanceId { get; }
 
-        /// <summary>
-        /// The index of the active plot in the device, -1 if there are no plots.
-        /// </summary>
-        int ActivePlotIndex { get; }
-
-        /// <summary>
-        /// The number of plots in the device.
-        /// </summary>
-        int PlotCount { get; }
-
-        /// <summary>
-        /// Internal id for the device.
-        /// </summary>
-        Guid DeviceId { get; }
-
-        /// <summary>
-        /// Internal id for the active plot.
-        /// </summary>
-        Guid ActivePlotId { get; }
-
-        /// <summary>
-        /// Process id for the device's session.
-        /// </summary>
-        int? SessionProcessId { get; }
+        IRPlotDevice Device { get; }
 
         /// <summary>
         /// Initialize this view model for the specified device.
         /// </summary>
-        /// <param name="deviceId">Device to set.</param>
-        Task AssignAsync(Guid deviceId);
+        /// <param name="device">Device to set.</param>
+        Task AssignAsync(IRPlotDevice device);
 
         /// <summary>
         /// Cleanup this view model so it can be reused later for a different device.
         /// </summary>
         Task UnassignAsync();
-
-
-        Task PlotMessageClearAllAsync(Guid deviceId, int deviceNum);
-        Task PlotMessageLoadPlotAsync(Guid deviceId, Guid plotId, BitmapImage image, int deviceNum, int activePlotIndex, int plotCount);
-        Task PlotMessageLoadErrorAsync(Guid deviceId, Guid plotId, int deviceNum, int activePlotIndex, int plotCount);
 
         /// <summary>
         /// Resize the plot.
@@ -186,12 +148,6 @@ namespace Microsoft.R.Components.Plots.ViewModel {
         /// Activate this device, creating a device if one isn't assigned to this view model.
         /// </summary>
         Task ActivateDeviceAsync();
-
-        /// <summary>
-        /// Refresh the device name, sending a <seealso cref="DeviceNameChanged"/>
-        /// event as necessary.
-        /// </summary>
-        Task RefreshDeviceNameAsync();
 
         /// <summary>
         /// User initiated locator mode via script, wait for the user to click

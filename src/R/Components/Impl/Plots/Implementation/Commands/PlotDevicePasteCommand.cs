@@ -6,13 +6,11 @@ using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Components.Plots.ViewModel;
-using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Components.Plots.Implementation.Commands {
     internal sealed class PlotDevicePasteCommand : PlotDeviceCommand, IAsyncCommand {
-        public PlotDevicePasteCommand(IRInteractiveWorkflow interactiveWorkflow, IRPlotDeviceViewModel viewModel)
-            : base(interactiveWorkflow, viewModel) {
+        public PlotDevicePasteCommand(IRInteractiveWorkflow interactiveWorkflow, IRPlotDeviceVisualComponent visualComponent)
+            : base(interactiveWorkflow, visualComponent) {
         }
 
         public CommandStatus Status {
@@ -29,21 +27,17 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
             if (Clipboard.ContainsData(PlotClipboardData.Format)) {
                 var source = PlotClipboardData.Parse((string)Clipboard.GetData(PlotClipboardData.Format));
                 if (source != null) {
-                    if (source.ProcessId == InteractiveWorkflow.RSession.ProcessId) {
-                        try {
-                            await ViewModel?.CopyPlotFromAsync(source.DeviceId, source.PlotId, source.Cut);
+                    try {
+                        await VisualComponent.CopyPlotFromAsync(source.DeviceId, source.PlotId, source.Cut);
 
-                            // If it's a move, clear the clipboard as we don't want
-                            // the user to try to paste it again
-                            if (source.Cut) {
-                                Clipboard.Clear();
-                            }
-                        } catch (RPlotManagerException ex) {
-                            InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);
-                        } catch (OperationCanceledException) {
+                        // If it's a move, clear the clipboard as we don't want
+                        // the user to try to paste it again
+                        if (source.Cut) {
+                            Clipboard.Clear();
                         }
-                    } else {
-                        InteractiveWorkflow.Shell.ShowErrorMessage(Resources.Plots_CannotCopyAcrossSession);
+                    } catch (RPlotManagerException ex) {
+                        InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);
+                    } catch (OperationCanceledException) {
                     }
                 }
             }

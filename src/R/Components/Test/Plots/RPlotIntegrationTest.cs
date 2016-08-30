@@ -14,8 +14,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Wpf.Imaging;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Plots;
-using Microsoft.R.Components.Plots.Implementation.ViewModel;
-using Microsoft.R.Components.Plots.ViewModel;
+using Microsoft.R.Components.Plots.Commands;
 using Microsoft.R.Components.Test.Fakes.InteractiveWindow;
 using Microsoft.R.Components.Test.Fakes.Shell;
 using Microsoft.R.Components.Test.Fakes.VisualComponentFactories;
@@ -27,20 +26,22 @@ using Xunit;
 
 namespace Microsoft.R.Components.Test.Plots {
     [ExcludeFromCodeCoverage]
-    public class PlotIntegrationTest : IAsyncLifetime {
+    public class RPlotIntegrationTest : IAsyncLifetime {
         private readonly IExportProvider _exportProvider;
         private readonly TestRInteractiveWorkflowProvider _workflowProvider;
         private readonly IRInteractiveWorkflow _workflow;
         private readonly IInteractiveWindowComponentContainerFactory _componentContainerFactory;
-        private readonly TestRPlotManagerVisualComponentContainerFactory _plotVisualComponentContainerFactory;
+        private readonly TestRPlotDeviceVisualComponentContainerFactory _plotDeviceVisualComponentContainerFactory;
+        private readonly IRPlotHistoryVisualComponentContainerFactory _plotHistoryVisualComponentContainerFactory;
         private readonly MethodInfo _testMethod;
         private readonly TestFilesFixture _testFiles;
 
-        public PlotIntegrationTest(RComponentsMefCatalogFixture catalog, TestMethodFixture testMethod, TestFilesFixture testFiles) {
+        public RPlotIntegrationTest(RComponentsMefCatalogFixture catalog, TestMethodFixture testMethod, TestFilesFixture testFiles) {
             _exportProvider = catalog.CreateExportProvider();
             _workflowProvider = _exportProvider.GetExportedValue<TestRInteractiveWorkflowProvider>();
-            _workflowProvider.BrokerName = nameof(PlotIntegrationTest);
-            _plotVisualComponentContainerFactory = _exportProvider.GetExportedValue<TestRPlotManagerVisualComponentContainerFactory>();
+            _workflowProvider.BrokerName = nameof(RPlotIntegrationTest);
+            _plotDeviceVisualComponentContainerFactory = _exportProvider.GetExportedValue<TestRPlotDeviceVisualComponentContainerFactory>();
+            _plotHistoryVisualComponentContainerFactory = _exportProvider.GetExportedValue<IRPlotHistoryVisualComponentContainerFactory>();
             _workflow = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
             _componentContainerFactory = _exportProvider.GetExportedValue<IInteractiveWindowComponentContainerFactory>();
             _testMethod = testMethod.MethodInfo;
@@ -66,15 +67,15 @@ namespace Microsoft.R.Components.Test.Plots {
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
                 await InitializeGraphicsDevice();
 
-                var viewModel = await GetActiveViewModelAsync();
-                CheckEnabledCommands(viewModel, isFirst: false, isLast: false, anyPlot: false);
+                var plotVC = _workflow.Plots.GetPlotVisualComponent(_workflow.Plots.ActiveDevice);
+                CheckEnabledCommands(plotVC, isFirst: false, isLast: false, anyPlot: false);
             }
         }
 
         [Test(ThreadType.UI)]
         [Category.Plots]
         public async Task SomeCommandsEnabledForSinglePlot() {
-            _plotVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
+            _plotDeviceVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
                 var plot1to10 = await GetExpectedImageAsync("png", 600, 500, 96, "plot1-10", "plot(1:10)");
 
@@ -83,17 +84,17 @@ namespace Microsoft.R.Components.Test.Plots {
                     "plot(1:10)",
                 });
 
-                var viewModel = await GetActiveViewModelAsync();
-                viewModel.PlotImage.Should().HaveSamePixels(plot1to10);
+                var plotVC = _workflow.Plots.GetPlotVisualComponent(_workflow.Plots.ActiveDevice);
+                _workflow.Plots.ActiveDevice.ActivePlot.Image.Should().HaveSamePixels(plot1to10);
 
-                CheckEnabledCommands(viewModel, isFirst: true, isLast: true, anyPlot: true);
+                CheckEnabledCommands(plotVC, isFirst: true, isLast: true, anyPlot: true);
             }
         }
 
         [Test(ThreadType.UI)]
         [Category.Plots]
         public async Task SomeCommandsEnabledForLastPlot() {
-            _plotVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
+            _plotDeviceVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
                 var plot10to20 = await GetExpectedImageAsync("png", 600, 500, 96, "plot10-20", "plot(10:20)");
 
@@ -103,17 +104,17 @@ namespace Microsoft.R.Components.Test.Plots {
                     "plot(10:20)",
                 });
 
-                var viewModel = await GetActiveViewModelAsync();
-                viewModel.PlotImage.Should().HaveSamePixels(plot10to20);
+                var plotVC = _workflow.Plots.GetPlotVisualComponent(_workflow.Plots.ActiveDevice);
+                _workflow.Plots.ActiveDevice.ActivePlot.Image.Should().HaveSamePixels(plot10to20);
 
-                CheckEnabledCommands(viewModel, isFirst: false, isLast: true, anyPlot: true);
+                CheckEnabledCommands(plotVC, isFirst: false, isLast: true, anyPlot: true);
             }
         }
 
         [Test(ThreadType.UI)]
         [Category.Plots]
         public async Task SomeCommandsEnabledForMiddlePlot() {
-            _plotVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
+            _plotDeviceVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
                 var plot10to20 = await GetExpectedImageAsync("png", 600, 500, 96, "plot10-20", "plot(10:20)");
 
@@ -124,22 +125,23 @@ namespace Microsoft.R.Components.Test.Plots {
                     "plot(20:30)",
                 });
 
-                var viewModel = await GetActiveViewModelAsync();
+                var deviceVC = _workflow.Plots.GetPlotVisualComponent(_workflow.Plots.ActiveDevice);
+                var deviceCommands = new RPlotDeviceCommands(_workflow, deviceVC);
 
-                var plotReceivedTask = EventTaskSources.IRPlotManager.PlotMessageReceived.Create(_workflow.Plots);
-                await PlotDeviceCommandFactory.PreviousPlot(_workflow, viewModel).InvokeAsync();
+                var plotReceivedTask = EventTaskSources.IRPlotDevice.PlotAddedOrUpdated.Create(_workflow.Plots.ActiveDevice);
+                await deviceCommands.PreviousPlot.InvokeAsync();
                 await plotReceivedTask;
 
-                viewModel.PlotImage.Should().HaveSamePixels(plot10to20);
+                _workflow.Plots.ActiveDevice.ActivePlot.Image.Should().HaveSamePixels(plot10to20);
 
-                CheckEnabledCommands(viewModel, isFirst: false, isLast: false, anyPlot: true);
+                CheckEnabledCommands(deviceVC, isFirst: false, isLast: false, anyPlot: true);
             }
         }
 
         [Test(ThreadType.UI)]
         [Category.Plots]
         public async Task SomeCommandsEnabledForFirstPlot() {
-            _plotVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
+            _plotDeviceVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
                 var plot1to10 = await GetExpectedImageAsync("png", 600, 500, 96, "plot1-10", "plot(1:10)");
 
@@ -149,21 +151,23 @@ namespace Microsoft.R.Components.Test.Plots {
                     "plot(10:20)",
                 });
 
-                var viewModel = await GetActiveViewModelAsync();
-                var plotReceivedTask = EventTaskSources.IRPlotManager.PlotMessageReceived.Create(_workflow.Plots);
-                await PlotDeviceCommandFactory.PreviousPlot(_workflow, viewModel).InvokeAsync();
+                var deviceVC = _workflow.Plots.GetPlotVisualComponent(_workflow.Plots.ActiveDevice);
+                var deviceCommands = new RPlotDeviceCommands(_workflow, deviceVC);
+
+                var plotReceivedTask = EventTaskSources.IRPlotDevice.PlotAddedOrUpdated.Create(_workflow.Plots.ActiveDevice);
+                await deviceCommands.PreviousPlot.InvokeAsync();
                 await plotReceivedTask;
 
-                viewModel.PlotImage.Should().HaveSamePixels(plot1to10);
+                _workflow.Plots.ActiveDevice.ActivePlot.Image.Should().HaveSamePixels(plot1to10);
 
-                CheckEnabledCommands(viewModel, isFirst: true, isLast: false, anyPlot: true);
+                CheckEnabledCommands(deviceVC, isFirst: true, isLast: false, anyPlot: true);
             }
         }
 
         [Test(ThreadType.UI)]
         [Category.Plots]
         public async Task DeviceCopyAsBitmap() {
-            _plotVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
+            _plotDeviceVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
                 var plot1to10 = await GetExpectedImageAsync("bmp", 600, 500, 96, "plot1-10", "plot(1:10)");
 
@@ -174,10 +178,11 @@ namespace Microsoft.R.Components.Test.Plots {
 
                 Clipboard.Clear();
 
-                var viewModel = await GetActiveViewModelAsync();
-                var cmd = PlotDeviceCommandFactory.CopyAsBitmap(_workflow, viewModel);
-                cmd.Should().BeEnabled();
-                await cmd.InvokeAsync();
+                var deviceVC = _workflow.Plots.GetPlotVisualComponent(_workflow.Plots.ActiveDevice);
+                var deviceCommands = new RPlotDeviceCommands(_workflow, deviceVC);
+
+                deviceCommands.CopyAsBitmap.Should().BeEnabled();
+                await deviceCommands.CopyAsBitmap.InvokeAsync();
 
                 Clipboard.ContainsImage().Should().BeTrue();
                 CoreShell.LastShownErrorMessage.Should().BeNullOrEmpty();
@@ -190,7 +195,7 @@ namespace Microsoft.R.Components.Test.Plots {
         [Test(ThreadType.UI)]
         [Category.Plots]
         public async Task DeviceCopyAsMetafile() {
-            _plotVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
+            _plotDeviceVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
                 await InitializeGraphicsDevice();
                 await ExecuteAndWaitForPlotsAsync(new string[] {
@@ -199,10 +204,11 @@ namespace Microsoft.R.Components.Test.Plots {
 
                 Clipboard.Clear();
 
-                var viewModel = await GetActiveViewModelAsync();
-                var cmd = PlotDeviceCommandFactory.CopyAsMetafile(_workflow, viewModel);
-                cmd.Should().BeEnabled();
-                await cmd.InvokeAsync();
+                var deviceVC = _workflow.Plots.GetPlotVisualComponent(_workflow.Plots.ActiveDevice);
+                var deviceCommands = new RPlotDeviceCommands(_workflow, deviceVC);
+
+                deviceCommands.CopyAsMetafile.Should().BeEnabled();
+                await deviceCommands.CopyAsMetafile.InvokeAsync();
 
                 Clipboard.ContainsData(DataFormats.EnhancedMetafile).Should().BeTrue();
                 CoreShell.LastShownErrorMessage.Should().BeNullOrEmpty();
@@ -212,7 +218,7 @@ namespace Microsoft.R.Components.Test.Plots {
         [Test(ThreadType.UI)]
         [Category.Plots]
         public async Task DeviceCopy() {
-            _plotVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
+            _plotDeviceVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
                 var plot1to10 = await GetExpectedImageAsync("bmp", 600, 500, 96, "plot1-10", "plot(1:10)");
                 var plot2to10 = await GetExpectedImageAsync("bmp", 600, 500, 96, "plot2-10", "plot(2:10)");
@@ -222,42 +228,41 @@ namespace Microsoft.R.Components.Test.Plots {
                     "plot(1:10)",
                 });
 
-                var viewModel1 = await GetActiveViewModelAsync();
-                var device1 = viewModel1.DeviceId;
-                var plot1 = viewModel1.ActivePlotId;
+                var device1 = _workflow.Plots.ActiveDevice;
+                var device1VC = _workflow.Plots.GetPlotVisualComponent(device1);
+                var device1Commands = new RPlotDeviceCommands(_workflow, device1VC);
+                var plot1 = device1.ActivePlot;
 
                 await InitializeGraphicsDevice();
                 await ExecuteAndWaitForPlotsAsync(new string[] {
                     "plot(2:10)",
                 });
 
-                var viewModel2 = await GetActiveViewModelAsync();
-                var device2 = viewModel2.DeviceId;
-                var plot2 = viewModel2.ActivePlotId;
+                var device2 = _workflow.Plots.ActiveDevice;
+                var device2VC = _workflow.Plots.GetPlotVisualComponent(device2);
+                var device2Commands = new RPlotDeviceCommands(_workflow, device2VC);
+                var plot2 = device2.ActivePlot;
 
-                var copyCmd = PlotDeviceCommandFactory.CutCopy(_workflow, viewModel1, cut: false);
-                copyCmd.Should().BeEnabled();
-                await copyCmd.InvokeAsync();
+                device1Commands.Copy.Should().BeEnabled();
+                await device1Commands.Copy.InvokeAsync();
 
                 CoreShell.LastShownErrorMessage.Should().BeNullOrEmpty();
 
-                var pasteCmd = PlotDeviceCommandFactory.Paste(_workflow, viewModel2);
-                pasteCmd.Should().BeEnabled();
-                var plotReceivedTask = EventTaskSources.IRPlotManager.PlotMessageReceived.Create(_workflow.Plots);
-                await pasteCmd.InvokeAsync();
+                device2Commands.Paste.Should().BeEnabled();
+                var plotReceivedTask = EventTaskSources.IRPlotDevice.PlotAddedOrUpdated.Create(device2);
+                await device2Commands.Paste.InvokeAsync();
                 await plotReceivedTask;
 
                 CoreShell.LastShownErrorMessage.Should().BeNullOrEmpty();
 
-                viewModel2.PlotImage.Should().HaveSamePixels(plot1to10);
-                _workflow.Plots.History.Entries.Count.Should().Be(3);
+                device2.ActivePlot.Image.Should().HaveSamePixels(plot1to10);
             }
         }
 
         [Test(ThreadType.UI)]
         [Category.Plots]
         public async Task DeviceCut() {
-            _plotVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
+            _plotDeviceVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
                 var plot1to10 = await GetExpectedImageAsync("bmp", 600, 500, 96, "plot1-10", "plot(1:10)");
                 var plot2to10 = await GetExpectedImageAsync("bmp", 600, 500, 96, "plot2-10", "plot(2:10)");
@@ -267,44 +272,45 @@ namespace Microsoft.R.Components.Test.Plots {
                     "plot(1:10)",
                 });
 
-                var viewModel1 = await GetActiveViewModelAsync();
-                var device1 = viewModel1.DeviceId;
-                var plot1 = viewModel1.ActivePlotId;
+                var device1 = _workflow.Plots.ActiveDevice;
+                var device1VC = _workflow.Plots.GetPlotVisualComponent(device1);
+                var device1Commands = new RPlotDeviceCommands(_workflow, device1VC);
+                var plot1 = device1.ActivePlot;
 
                 await InitializeGraphicsDevice();
                 await ExecuteAndWaitForPlotsAsync(new string[] {
                     "plot(2:10)",
                 });
 
-                var viewModel2 = await GetActiveViewModelAsync();
-                var device2 = viewModel2.DeviceId;
-                var plot2 = viewModel2.ActivePlotId;
+                var device2 = _workflow.Plots.ActiveDevice;
+                var device2VC = _workflow.Plots.GetPlotVisualComponent(device2);
+                var device2Commands = new RPlotDeviceCommands(_workflow, device2VC);
+                var plot2 = device2.ActivePlot;
 
-                var copyCmd = PlotDeviceCommandFactory.CutCopy(_workflow, viewModel1, cut: true);
-                copyCmd.Should().BeEnabled();
-                await copyCmd.InvokeAsync();
+                device1Commands.Cut.Should().BeEnabled();
+                await device1Commands.Cut.InvokeAsync();
 
                 CoreShell.LastShownErrorMessage.Should().BeNullOrEmpty();
 
-                var pasteCmd = PlotDeviceCommandFactory.Paste(_workflow, viewModel2);
-                pasteCmd.Should().BeEnabled();
-                var plotReceivedTask = EventTaskSources.IRPlotManager.PlotMessageReceived.Create(_workflow.Plots);
-                await pasteCmd.InvokeAsync();
+                device2Commands.Paste.Should().BeEnabled();
+                var plotReceivedTask = EventTaskSources.IRPlotDevice.PlotAddedOrUpdated.Create(device2);
+                var plotRemovedTask = EventTaskSources.IRPlotDevice.PlotRemoved.Create(device1);
+                await device2Commands.Paste.InvokeAsync();
                 await plotReceivedTask;
+                await plotRemovedTask;
 
                 CoreShell.LastShownErrorMessage.Should().BeNullOrEmpty();
 
-                viewModel1.PlotImage.Should().BeNull();
-                viewModel2.PlotImage.Should().HaveSamePixels(plot1to10);
-
-                _workflow.Plots.History.Entries.Count.Should().Be(2);
+                device1.ActivePlot.Should().BeNull();
+                device2.ActivePlot.Should().NotBeNull();
+                device2.ActivePlot.Image.Should().HaveSamePixels(plot1to10);
             }
         }
 
         [Test(ThreadType.UI)]
         [Category.Plots]
         public async Task DeviceRemoveAll() {
-            _plotVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
+            _plotDeviceVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
                 await InitializeGraphicsDevice();
                 await ExecuteAndWaitForPlotsAsync(new string[] {
@@ -312,41 +318,40 @@ namespace Microsoft.R.Components.Test.Plots {
                     "plot(1:20)",
                 });
 
-                var viewModel1 = await GetActiveViewModelAsync();
-                var device1 = viewModel1.DeviceId;
-                var plot1 = viewModel1.ActivePlotId;
+                var device1 = _workflow.Plots.ActiveDevice;
+                var device1VC = _workflow.Plots.GetPlotVisualComponent(device1);
+                var device1Commands = new RPlotDeviceCommands(_workflow, device1VC);
+                var plot1 = device1.ActivePlot;
 
                 await InitializeGraphicsDevice();
                 await ExecuteAndWaitForPlotsAsync(new string[] {
                     "plot(2:10)",
                 });
 
-                var viewModel2 = await GetActiveViewModelAsync();
-                var device2 = viewModel2.DeviceId;
-                var plot2 = viewModel2.ActivePlotId;
+                var device2 = _workflow.Plots.ActiveDevice;
+                var device2VC = _workflow.Plots.GetPlotVisualComponent(device2);
+                var plot2 = device2.ActivePlot;
 
-                var removeAllCmd = PlotDeviceCommandFactory.RemoveAllPlots(_workflow, viewModel1);
-                removeAllCmd.Should().BeEnabled();
-                var plotReceivedTask = EventTaskSources.IRPlotManager.PlotMessageReceived.Create(_workflow.Plots);
-                await removeAllCmd.InvokeAsync();
+                // Remove all plots from device 1
+                device1Commands.RemoveAllPlots.Should().BeEnabled();
+                var plotReceivedTask = EventTaskSources.IRPlotDevice.PlotRemoved.Create(device1);
+                await device1Commands.RemoveAllPlots.InvokeAsync();
                 await plotReceivedTask;
 
                 CoreShell.LastShownErrorMessage.Should().BeNullOrEmpty();
 
-                viewModel1.PlotImage.Should().BeNull();
-                viewModel2.PlotImage.Should().NotBeNull();
-
-                _workflow.Plots.History.Entries.Should().HaveCount(1);
-                _workflow.Plots.History.Entries[0].PlotId.Should().Be(plot2);
+                device1.ActivePlot.Should().BeNull();
+                device2.ActivePlot.Should().NotBeNull();
             }
         }
 
         [Test(ThreadType.UI)]
         [Category.Plots]
         public async Task DeviceRemoveCurrent() {
-            _plotVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
+            _plotDeviceVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
                 var plot1to10 = await GetExpectedImageAsync("bmp", 600, 500, 96, "plot1-10", "plot(1:10)");
+                var plot2to10 = await GetExpectedImageAsync("bmp", 600, 500, 96, "plot2-10", "plot(2:10)");
 
                 await InitializeGraphicsDevice();
                 await ExecuteAndWaitForPlotsAsync(new string[] {
@@ -354,32 +359,30 @@ namespace Microsoft.R.Components.Test.Plots {
                     "plot(1:20)",
                 });
 
-                var viewModel1 = await GetActiveViewModelAsync();
-                var device1 = viewModel1.DeviceId;
-                var plot1 = viewModel1.ActivePlotId;
+                var device1 = _workflow.Plots.ActiveDevice;
+                var device1VC = _workflow.Plots.GetPlotVisualComponent(device1);
+                var device1Commands = new RPlotDeviceCommands(_workflow, device1VC);
+                var plot1 = device1.ActivePlot;
 
                 await InitializeGraphicsDevice();
                 await ExecuteAndWaitForPlotsAsync(new string[] {
                     "plot(2:10)",
                 });
 
-                var viewModel2 = await GetActiveViewModelAsync();
-                var device2 = viewModel2.DeviceId;
-                var plot2 = viewModel2.ActivePlotId;
+                var device2 = _workflow.Plots.ActiveDevice;
+                var device2VC = _workflow.Plots.GetPlotVisualComponent(device2);
+                var plot2 = device2.ActivePlot;
 
-                var removeAllCmd = PlotDeviceCommandFactory.RemoveCurrentPlot(_workflow, viewModel1);
-                removeAllCmd.Should().BeEnabled();
-                var plotReceivedTask = EventTaskSources.IRPlotManager.PlotMessageReceived.Create(_workflow.Plots);
-                await removeAllCmd.InvokeAsync();
-                await plotReceivedTask;
+                // Remove plot 1:20 from device 1, leaving plot 1:10 as active
+                device1Commands.RemoveCurrentPlot.Should().BeEnabled();
+                var plotRemovedTask = EventTaskSources.IRPlotDevice.PlotRemoved.Create(device1);
+                await device1Commands.RemoveCurrentPlot.InvokeAsync();
+                await plotRemovedTask;
 
                 CoreShell.LastShownErrorMessage.Should().BeNullOrEmpty();
 
-                viewModel1.PlotImage.Should().HaveSamePixels(plot1to10);
-                viewModel2.PlotImage.Should().NotBeNull();
-
-                _workflow.Plots.History.Entries.Should().HaveCount(2);
-                _workflow.Plots.History.Entries.Should().NotContain(e => e.PlotId == plot1);
+                device1.ActivePlot.Image.Should().HaveSamePixels(plot1to10);
+                device2.ActivePlot.Image.Should().HaveSamePixels(plot2to10);
             }
         }
 
@@ -387,23 +390,23 @@ namespace Microsoft.R.Components.Test.Plots {
         [Category.Plots]
         public async Task NewDevice() {
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
-                var newCmd = PlotDeviceCommandFactory.NewPlotDevice(_workflow);
+                var newCmd = new PlotDeviceNewCommand(_workflow);
                 newCmd.Should().BeEnabled();
 
-                _workflow.Plots.ActiveDeviceId.Should().BeEmpty();
+                _workflow.Plots.ActiveDevice.Should().BeNull();
 
                 var deviceChangedTask = EventTaskSources.IRPlotManager.ActiveDeviceChanged.Create(_workflow.Plots);
                 await newCmd.InvokeAsync();
                 await deviceChangedTask;
 
-                _workflow.Plots.ActiveDeviceId.Should().NotBeEmpty();
+                _workflow.Plots.ActiveDevice.Should().NotBeNull();
 
                 var eval = _workflow.ActiveWindow.InteractiveWindow.Evaluator;
                 deviceChangedTask = EventTaskSources.IRPlotManager.ActiveDeviceChanged.Create(_workflow.Plots);
                 await eval.ExecuteCodeAsync("dev.off()".EnsureLineBreak());
                 await deviceChangedTask;
 
-                _workflow.Plots.ActiveDeviceId.Should().BeEmpty();
+                _workflow.Plots.ActiveDevice.Should().BeNull();
             }
         }
 
@@ -412,43 +415,45 @@ namespace Microsoft.R.Components.Test.Plots {
         public async Task ActivateDevice() {
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
                 await InitializeGraphicsDevice();
-                var viewModel1 = await GetActiveViewModelAsync();
-                var activateDevice1Cmd = PlotDeviceCommandFactory.ActivatePlotDevice(_workflow, viewModel1);
-                activateDevice1Cmd.Should().BeChecked();
-                activateDevice1Cmd.Should().BeEnabled();
-                _workflow.Plots.ActiveDeviceId.Should().Be(viewModel1.DeviceId);
+                var device1 = _workflow.Plots.ActiveDevice;
+                var device1VC = _workflow.Plots.GetPlotVisualComponent(device1);
+                var device1Commands = new RPlotDeviceCommands(_workflow, device1VC);
+
+                device1Commands.ActivatePlotDevice.Should().BeChecked();
+                device1Commands.ActivatePlotDevice.Should().BeEnabled();
 
                 await InitializeGraphicsDevice();
-                var viewModel2 = await GetActiveViewModelAsync();
-                var activateDevice2Cmd = PlotDeviceCommandFactory.ActivatePlotDevice(_workflow, viewModel2);
-                activateDevice1Cmd.Should().BeUnchecked();
-                activateDevice1Cmd.Should().BeEnabled();
-                activateDevice2Cmd.Should().BeChecked();
-                activateDevice2Cmd.Should().BeEnabled();
-                _workflow.Plots.ActiveDeviceId.Should().Be(viewModel2.DeviceId);
+                var device2 = _workflow.Plots.ActiveDevice;
+                var device2VC = _workflow.Plots.GetPlotVisualComponent(device2);
+                var device2Commands = new RPlotDeviceCommands(_workflow, device2VC);
+
+                device1Commands.ActivatePlotDevice.Should().BeUnchecked();
+                device1Commands.ActivatePlotDevice.Should().BeEnabled();
+                device2Commands.ActivatePlotDevice.Should().BeChecked();
+                device2Commands.ActivatePlotDevice.Should().BeEnabled();
 
                 var deviceChangedTask = EventTaskSources.IRPlotManager.ActiveDeviceChanged.Create(_workflow.Plots);
-                await activateDevice1Cmd.InvokeAsync();
+                await device1Commands.ActivatePlotDevice.InvokeAsync();
                 await deviceChangedTask;
 
-                _workflow.Plots.ActiveDeviceId.Should().Be(viewModel1.DeviceId);
-                activateDevice1Cmd.Should().BeChecked();
-                activateDevice2Cmd.Should().BeUnchecked();
+                _workflow.Plots.ActiveDevice.Should().Be(device1);
+                device1Commands.ActivatePlotDevice.Should().BeChecked();
+                device2Commands.ActivatePlotDevice.Should().BeUnchecked();
 
                 deviceChangedTask = EventTaskSources.IRPlotManager.ActiveDeviceChanged.Create(_workflow.Plots);
-                await activateDevice2Cmd.InvokeAsync();
+                await device2Commands.ActivatePlotDevice.InvokeAsync();
                 await deviceChangedTask;
 
-                _workflow.Plots.ActiveDeviceId.Should().Be(viewModel2.DeviceId);
-                activateDevice1Cmd.Should().BeUnchecked();
-                activateDevice2Cmd.Should().BeChecked();
+                _workflow.Plots.ActiveDevice.Should().Be(device2);
+                device1Commands.ActivatePlotDevice.Should().BeUnchecked();
+                device2Commands.ActivatePlotDevice.Should().BeChecked();
             }
         }
 
         [Test(ThreadType.UI)]
         [Category.Plots]
         public async Task ExportAsPdf() {
-            _plotVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
+            _plotDeviceVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
                 await InitializeGraphicsDevice();
                 await ExecuteAndWaitForPlotsAsync(new string[] {
@@ -458,10 +463,11 @@ namespace Microsoft.R.Components.Test.Plots {
                 var outputFilePath = _testFiles.GetDestinationPath("ExportedPlot.pdf");
                 CoreShell.SaveFilePath = outputFilePath;
 
-                var viewModel = await GetActiveViewModelAsync();
-                var cmd = PlotDeviceCommandFactory.ExportAsPdf(_workflow, viewModel);
-                cmd.Should().BeEnabled();
-                await cmd.InvokeAsync();
+                var deviceVC = _workflow.Plots.GetPlotVisualComponent(_workflow.Plots.ActiveDevice);
+                var deviceCommands = new RPlotDeviceCommands(_workflow, deviceVC);
+
+                deviceCommands.ExportAsPdf.Should().BeEnabled();
+                await deviceCommands.ExportAsPdf.InvokeAsync();
 
                 File.Exists(outputFilePath).Should().BeTrue();
                 CoreShell.LastShownErrorMessage.Should().BeNullOrEmpty();
@@ -471,7 +477,7 @@ namespace Microsoft.R.Components.Test.Plots {
         [Test(ThreadType.UI)]
         [Category.Plots]
         public async Task ExportAsImage() {
-            _plotVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
+            _plotDeviceVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
                 await InitializeGraphicsDevice();
                 await ExecuteAndWaitForPlotsAsync(new string[] {
@@ -482,10 +488,11 @@ namespace Microsoft.R.Components.Test.Plots {
                     var outputFilePath = _testFiles.GetDestinationPath("ExportedPlot." + ext);
                     CoreShell.SaveFilePath = outputFilePath;
 
-                    var viewModel = await GetActiveViewModelAsync();
-                    var cmd = PlotDeviceCommandFactory.ExportAsImage(_workflow, viewModel);
-                    cmd.Should().BeEnabled();
-                    await cmd.InvokeAsync();
+                    var deviceVC = _workflow.Plots.GetPlotVisualComponent(_workflow.Plots.ActiveDevice);
+                    var deviceCommands = new RPlotDeviceCommands(_workflow, deviceVC);
+
+                    deviceCommands.ExportAsImage.Should().BeEnabled();
+                    await deviceCommands.ExportAsImage.InvokeAsync();
 
                     File.Exists(outputFilePath).Should().BeTrue();
                     CoreShell.LastShownErrorMessage.Should().BeNullOrEmpty();
@@ -502,7 +509,7 @@ namespace Microsoft.R.Components.Test.Plots {
         [Test(ThreadType.UI)]
         [Category.Plots]
         public async Task ExportAsImageUnsupportedExtension() {
-            _plotVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
+            _plotDeviceVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
                 await InitializeGraphicsDevice();
                 await ExecuteAndWaitForPlotsAsync(new string[] {
@@ -515,10 +522,11 @@ namespace Microsoft.R.Components.Test.Plots {
                 var outputFilePath = _testFiles.GetDestinationPath("ExportedPlot.unsupportedextension");
                 CoreShell.SaveFilePath = outputFilePath;
 
-                var viewModel = await GetActiveViewModelAsync();
-                var cmd = PlotDeviceCommandFactory.ExportAsImage(_workflow, viewModel);
-                cmd.Should().BeEnabled();
-                await cmd.InvokeAsync();
+                var deviceVC = _workflow.Plots.GetPlotVisualComponent(_workflow.Plots.ActiveDevice);
+                var deviceCommands = new RPlotDeviceCommands(_workflow, deviceVC);
+
+                deviceCommands.ExportAsImage.Should().BeEnabled();
+                await deviceCommands.ExportAsImage.InvokeAsync();
 
                 File.Exists(CoreShell.SaveFilePath).Should().BeFalse();
                 CoreShell.LastShownErrorMessage.Should().Contain(".unsupportedextension");
@@ -634,39 +642,38 @@ namespace Microsoft.R.Components.Test.Plots {
                 "plot(women)",
             };
 
-            _plotVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
+            _plotDeviceVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
                 await InitializeGraphicsDevice();
                 await ExecuteAndWaitForPlotsAsync(scripts);
 
-                var viewModel = await GetActiveViewModelAsync();
-                var prevCmd = PlotDeviceCommandFactory.PreviousPlot(_workflow, viewModel);
-                var nextCmd = PlotDeviceCommandFactory.NextPlot(_workflow, viewModel);
+                var deviceVC = _workflow.Plots.GetPlotVisualComponent(_workflow.Plots.ActiveDevice);
+                var deviceCommands = new RPlotDeviceCommands(_workflow, deviceVC);
 
                 for (int i = 0; i < scripts.Length - 1; i++) {
-                    prevCmd.Should().BeEnabled();
-                    var plotReceivedTask = EventTaskSources.IRPlotManager.PlotMessageReceived.Create(_workflow.Plots);
-                    await prevCmd.InvokeAsync();
+                    deviceCommands.PreviousPlot.Should().BeEnabled();
+                    var plotReceivedTask = EventTaskSources.IRPlotDevice.PlotAddedOrUpdated.Create(_workflow.Plots.ActiveDevice);
+                    await deviceCommands.PreviousPlot.InvokeAsync();
                     await plotReceivedTask;
                 }
 
-                prevCmd.Should().BeDisabled();
+                deviceCommands.PreviousPlot.Should().BeDisabled();
 
                 for (int i = 0; i < scripts.Length - 1; i++) {
-                    nextCmd.Should().BeEnabled();
-                    var plotReceivedTask = EventTaskSources.IRPlotManager.PlotMessageReceived.Create(_workflow.Plots);
-                    await nextCmd.InvokeAsync();
+                    deviceCommands.NextPlot.Should().BeEnabled();
+                    var plotReceivedTask = EventTaskSources.IRPlotDevice.PlotAddedOrUpdated.Create(_workflow.Plots.ActiveDevice);
+                    await deviceCommands.NextPlot.InvokeAsync();
                     await plotReceivedTask;
                 }
 
-                nextCmd.Should().BeDisabled();
+                deviceCommands.NextPlot.Should().BeDisabled();
             }
         }
 
         [Test(ThreadType.UI)]
         [Category.Plots]
         public async Task PlotError() {
-            _plotVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
+            _plotDeviceVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
                 await InitializeGraphicsDevice();
                 await ExecuteAndWaitForPlotsAsync(new string[] {
@@ -684,37 +691,33 @@ namespace Microsoft.R.Components.Test.Plots {
                     "plot(state.region)",
                 });
 
-                var viewModel = await GetActiveViewModelAsync();
-                var prevCmd = PlotDeviceCommandFactory.PreviousPlot(_workflow, viewModel);
+                var deviceVC = _workflow.Plots.GetPlotVisualComponent(_workflow.Plots.ActiveDevice);
+                var deviceCommands = new RPlotDeviceCommands(_workflow, deviceVC);
 
                 // Navigating to a plot in the history that cannot be rendered
                 // will send a plot with zero-file size, which translate into an error message.
-                prevCmd.Should().BeEnabled();
-                var plotReceivedTask = EventTaskSources.IRPlotManager.PlotMessageReceived.Create(_workflow.Plots);
-                await prevCmd.InvokeAsync();
+                deviceCommands.PreviousPlot.Should().BeEnabled();
+                var plotReceivedTask = EventTaskSources.IRPlotDevice.PlotAddedOrUpdated.Create(_workflow.Plots.ActiveDevice);
+                await deviceCommands.PreviousPlot.InvokeAsync();
                 await plotReceivedTask;
 
-                viewModel.PlotImage.Should().BeNull();
-                viewModel.ShowError.Should().BeTrue();
-                viewModel.ShowWatermark.Should().BeFalse();
+                _workflow.Plots.ActiveDevice.ActivePlot.Image.Should().BeNull();
 
-                prevCmd.Should().BeEnabled();
-                plotReceivedTask = EventTaskSources.IRPlotManager.PlotMessageReceived.Create(_workflow.Plots);
-                await prevCmd.InvokeAsync();
+                deviceCommands.PreviousPlot.Should().BeEnabled();
+                plotReceivedTask = EventTaskSources.IRPlotDevice.PlotAddedOrUpdated.Create(_workflow.Plots.ActiveDevice);
+                await deviceCommands.PreviousPlot.InvokeAsync();
                 await plotReceivedTask;
 
-                viewModel.PlotImage.Should().NotBeNull();
-                viewModel.ShowError.Should().BeFalse();
-                viewModel.ShowWatermark.Should().BeFalse();
+                _workflow.Plots.ActiveDevice.ActivePlot.Image.Should().NotBeNull();
 
-                prevCmd.Should().BeDisabled();
+                deviceCommands.PreviousPlot.Should().BeDisabled();
             }
         }
 
         [Test(ThreadType.UI)]
         [Category.Plots]
         public async Task LocatorCommand() {
-            _plotVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(360, 360, 96);
+            _plotDeviceVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(360, 360, 96);
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
                 await InitializeGraphicsDevice();
 
@@ -722,13 +725,13 @@ namespace Microsoft.R.Components.Test.Plots {
                     "plot(0:10)",
                 });
 
-                var viewModel = await GetActiveViewModelAsync();
-                viewModel.LocatorMode.Should().BeFalse();
+                var deviceVC = _workflow.Plots.GetPlotVisualComponent(_workflow.Plots.ActiveDevice);
+                var deviceCommands = new RPlotDeviceCommands(_workflow, deviceVC);
+                deviceVC.LocatorMode.Should().BeFalse();
 
-                var cmd = PlotDeviceCommandFactory.EndLocator(_workflow, viewModel);
-                cmd.Should().BeInvisibleAndDisabled();
+                deviceCommands.EndLocator.Should().BeInvisibleAndDisabled();
 
-                var firstLocatorModeTask = EventTaskSources.IRPlotManager.LocatorModeChanged.Create(_workflow.Plots);
+                var firstLocatorModeTask = EventTaskSources.IRPlotDevice.LocatorModeChanged.Create(_workflow.Plots.ActiveDevice);
                 ExecuteAndDoNotWaitForPlotsAsync(new string[] {
                     "res <- locator()",
                 }).DoNotWait();
@@ -748,31 +751,31 @@ namespace Microsoft.R.Components.Test.Plots {
                 // The high-level locator() function stops its loop when it gets
                 // the not clicked result.
                 foreach (var point in points) {
-                    viewModel.LocatorMode.Should().BeTrue();
-                    cmd.Should().BeEnabled();
+                    deviceVC.LocatorMode.Should().BeTrue();
+                    deviceCommands.EndLocator.Should().BeEnabled();
 
                     // Send a result with a click point, which will causes
                     // locator mode to end and immediately start again
-                    var locatorModeTask = EventTaskSources.IRPlotManager.LocatorModeChanged.Create(_workflow.Plots);
-                    viewModel.ClickPlot((int)point.X, (int)point.Y);
+                    var locatorModeTask = EventTaskSources.IRPlotDevice.LocatorModeChanged.Create(_workflow.Plots.ActiveDevice);
+                    deviceVC.ClickPlot((int)point.X, (int)point.Y);
                     await locatorModeTask;
 
-                    viewModel.LocatorMode.Should().BeFalse();
-                    cmd.Should().BeInvisibleAndDisabled();
+                    deviceVC.LocatorMode.Should().BeFalse();
+                    deviceCommands.EndLocator.Should().BeInvisibleAndDisabled();
 
-                    locatorModeTask = EventTaskSources.IRPlotManager.LocatorModeChanged.Create(_workflow.Plots);
+                    locatorModeTask = EventTaskSources.IRPlotDevice.LocatorModeChanged.Create(_workflow.Plots.ActiveDevice);
                     await locatorModeTask;
                 }
 
                 // Send a result with a not clicked result, which causes
                 // locator mode to end, and the high-level locator() function
                 // call will return.
-                var lastLocatorModeTask = EventTaskSources.IRPlotManager.LocatorModeChanged.Create(_workflow.Plots);
-                await cmd.InvokeAsync();
+                var lastLocatorModeTask = EventTaskSources.IRPlotDevice.LocatorModeChanged.Create(_workflow.Plots.ActiveDevice);
+                await deviceCommands.EndLocator.InvokeAsync();
                 await lastLocatorModeTask;
 
-                viewModel.LocatorMode.Should().BeFalse();
-                cmd.Should().BeInvisibleAndDisabled();
+                deviceVC.LocatorMode.Should().BeFalse();
+                deviceCommands.EndLocator.Should().BeInvisibleAndDisabled();
 
                 string outputFilePath = _testFiles.GetDestinationPath("LocatorResult.csv");
                 await ExecuteAndDoNotWaitForPlotsAsync(new string[] {
@@ -795,27 +798,28 @@ namespace Microsoft.R.Components.Test.Plots {
                     "plot(0:10)",
                 });
 
-                var viewModel = await GetActiveViewModelAsync();
-                viewModel.LocatorMode.Should().BeFalse();
+                var deviceVC = _workflow.Plots.GetPlotVisualComponent(_workflow.Plots.ActiveDevice);
+                var deviceCommands = new RPlotDeviceCommands(_workflow, deviceVC);
 
-                var cmd = PlotDeviceCommandFactory.EndLocator(_workflow, viewModel);
-                cmd.Should().BeInvisibleAndDisabled();
+                deviceVC.LocatorMode.Should().BeFalse();
 
-                var locatorModeTask = EventTaskSources.IRPlotManager.LocatorModeChanged.Create(_workflow.Plots);
+                deviceCommands.EndLocator.Should().BeInvisibleAndDisabled();
+
+                var locatorModeTask = EventTaskSources.IRPlotDevice.LocatorModeChanged.Create(_workflow.Plots.ActiveDevice);
                 ExecuteAndDoNotWaitForPlotsAsync(new string[] {
                     "res <- locator()",
                 }).DoNotWait();
                 await locatorModeTask;
 
-                viewModel.LocatorMode.Should().BeTrue();
-                cmd.Should().BeEnabled();
+                deviceVC.LocatorMode.Should().BeTrue();
+                deviceCommands.EndLocator.Should().BeEnabled();
 
-                locatorModeTask = EventTaskSources.IRPlotManager.LocatorModeChanged.Create(_workflow.Plots);
-                await cmd.InvokeAsync();
+                locatorModeTask = EventTaskSources.IRPlotDevice.LocatorModeChanged.Create(_workflow.Plots.ActiveDevice);
+                await deviceCommands.EndLocator.InvokeAsync();
                 await locatorModeTask;
 
-                viewModel.LocatorMode.Should().BeFalse();
-                cmd.Should().BeInvisibleAndDisabled();
+                deviceVC.LocatorMode.Should().BeFalse();
+                deviceCommands.EndLocator.Should().BeInvisibleAndDisabled();
 
                 string outputFilePath = _testFiles.GetDestinationPath("LocatorResultNoClick.csv");
                 await ExecuteAndDoNotWaitForPlotsAsync(new string[] {
@@ -830,175 +834,183 @@ namespace Microsoft.R.Components.Test.Plots {
         [Test(ThreadType.UI)]
         [Category.Plots]
         public async Task HistoryActivate() {
-            _plotVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
+            _plotDeviceVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
-                await InitializeGraphicsDevice();
-                await ExecuteAndWaitForPlotsAsync(new string[] {
-                    "plot(1:10)",
-                });
+                using (_workflow.Plots.GetOrCreateVisualComponent(_plotHistoryVisualComponentContainerFactory, 0)) {
+                    var plot1to10 = await GetExpectedImageAsync("bmp", 600, 500, 96, "plot1-10", "plot(1:10)");
+                    var plot2to10 = await GetExpectedImageAsync("bmp", 600, 500, 96, "plot2-10", "plot(2:10)");
 
-                await ExecuteAndWaitForPlotsAsync(new string[] {
-                    "plot(2:10)",
-                });
+                    await InitializeGraphicsDevice();
+                    await ExecuteAndWaitForPlotsAsync(new string[] {
+                        "plot(1:10)",
+                        "plot(2:10)",
+                    });
 
-                var viewModel = await GetActiveViewModelAsync();
+                    var deviceVC = _workflow.Plots.GetPlotVisualComponent(_workflow.Plots.ActiveDevice);
+                    var historyVC = _workflow.Plots.HistoryVisualComponent;
+                    var historyCommands = new RPlotHistoryCommands(_workflow, historyVC);
 
-                var activateCmd = PlotHistoryCommandFactory.ActivatePlot(_workflow);
-                _workflow.Plots.History.SelectedPlot = null;
-                activateCmd.Should().BeDisabled();
+                    historyCommands.ActivatePlot.Should().BeDisabled();
 
-                foreach (var plot in _workflow.Plots.History.Entries) {
-                    _workflow.Plots.History.SelectedPlot = plot;
-                    activateCmd.Should().BeEnabled();
-                    var plotReceivedTask = EventTaskSources.IRPlotManager.PlotMessageReceived.Create(_workflow.Plots);
-                    await activateCmd.InvokeAsync();
+                    // Select and activate the first plot
+                    historyVC.SelectedPlot = _workflow.Plots.ActiveDevice.GetPlotAt(0);
+                    historyCommands.ActivatePlot.Should().BeEnabled();
+                    var plotReceivedTask = EventTaskSources.IRPlotDevice.PlotAddedOrUpdated.Create(_workflow.Plots.ActiveDevice);
+                    await historyCommands.ActivatePlot.InvokeAsync();
                     await plotReceivedTask;
-                    viewModel.ActivePlotId.Should().Be(plot.PlotId);
-                }
+                    _workflow.Plots.ActiveDevice.ActivePlot.Image.Should().HaveSamePixels(plot1to10);
 
-                CoreShell.LastShownErrorMessage.Should().BeNullOrEmpty();
+                    CoreShell.LastShownErrorMessage.Should().BeNullOrEmpty();
+                }
             }
         }
 
         [Test(ThreadType.UI)]
         [Category.Plots]
         public async Task HistoryCopy() {
-            _plotVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
+            _plotDeviceVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
-                await InitializeGraphicsDevice();
-                await ExecuteAndWaitForPlotsAsync(new string[] {
-                    "plot(1:10)",
-                });
+                using (_workflow.Plots.GetOrCreateVisualComponent(_plotHistoryVisualComponentContainerFactory, 0)) {
+                    await InitializeGraphicsDevice();
+                    await ExecuteAndWaitForPlotsAsync(new string[] {
+                        "plot(1:10)",
+                    });
 
-                var viewModel1 = await GetActiveViewModelAsync();
-                var device1 = viewModel1.DeviceId;
-                var plot1 = viewModel1.ActivePlotId;
+                    var historyVC = _workflow.Plots.HistoryVisualComponent;
+                    var historyCommands = new RPlotHistoryCommands(_workflow, historyVC);
 
-                await InitializeGraphicsDevice();
-                await ExecuteAndWaitForPlotsAsync(new string[] {
-                    "plot(2:10)",
-                });
+                    var device1 = _workflow.Plots.ActiveDevice;
+                    var device1VC = _workflow.Plots.GetPlotVisualComponent(device1);
+                    var plot1 = device1.ActivePlot;
 
-                var viewModel2 = await GetActiveViewModelAsync();
-                var device2 = viewModel2.DeviceId;
-                var plot2 = viewModel2.ActivePlotId;
+                    await InitializeGraphicsDevice();
+                    await ExecuteAndWaitForPlotsAsync(new string[] {
+                        "plot(2:10)",
+                    });
 
-                _workflow.Plots.History.SelectedPlot = _workflow.Plots.History.Entries.Single(e => e.PlotId == plot1);
-                var copyCmd = PlotHistoryCommandFactory.CutCopy(_workflow, cut: false);
-                copyCmd.Should().BeEnabled();
-                await copyCmd.InvokeAsync();
+                    var device2 = _workflow.Plots.ActiveDevice;
+                    var device2VC = _workflow.Plots.GetPlotVisualComponent(device2);
+                    var device2Commands = new RPlotDeviceCommands(_workflow, device2VC);
+                    var plot2 = device2.ActivePlot;
 
-                CoreShell.LastShownErrorMessage.Should().BeNullOrEmpty();
+                    historyVC.SelectedPlot = plot1;
 
-                var pasteCmd = PlotDeviceCommandFactory.Paste(_workflow, viewModel2);
-                pasteCmd.Should().BeEnabled();
-                var plotReceivedTask = EventTaskSources.IRPlotManager.PlotMessageReceived.Create(_workflow.Plots);
-                await pasteCmd.InvokeAsync();
-                await plotReceivedTask;
+                    historyCommands.Copy.Should().BeEnabled();
+                    await historyCommands.Copy.InvokeAsync();
 
-                CoreShell.LastShownErrorMessage.Should().BeNullOrEmpty();
+                    CoreShell.LastShownErrorMessage.Should().BeNullOrEmpty();
 
-                viewModel2.PlotImage.Should().HaveSamePixels(viewModel1.PlotImage);
-                _workflow.Plots.History.Entries.Count.Should().Be(3);
+                    device2Commands.Paste.Should().BeEnabled();
+                    var plotReceivedTask = EventTaskSources.IRPlotDevice.PlotAddedOrUpdated.Create(device2);
+                    await device2Commands.Paste.InvokeAsync();
+                    await plotReceivedTask;
+
+                    CoreShell.LastShownErrorMessage.Should().BeNullOrEmpty();
+
+                    device2.ActivePlot.Image.Should().HaveSamePixels(plot1.Image);
+                }
             }
         }
 
         [Test(ThreadType.UI)]
         [Category.Plots]
         public async Task HistoryRemove() {
-            _plotVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
+            _plotDeviceVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
-                await InitializeGraphicsDevice();
-                await ExecuteAndWaitForPlotsAsync(new string[] {
-                    "plot(1:10)",
-                });
+                using (_workflow.Plots.GetOrCreateVisualComponent(_plotHistoryVisualComponentContainerFactory, 0)) {
+                    await InitializeGraphicsDevice();
+                    await ExecuteAndWaitForPlotsAsync(new string[] {
+                        "plot(1:10)",
+                    });
 
-                var viewModel1 = await GetActiveViewModelAsync();
-                var device1 = viewModel1.DeviceId;
-                var plot1 = viewModel1.ActivePlotId;
+                    var historyVC = _workflow.Plots.HistoryVisualComponent;
+                    var historyCommands = new RPlotHistoryCommands(_workflow, historyVC);
 
-                await InitializeGraphicsDevice();
-                await ExecuteAndWaitForPlotsAsync(new string[] {
-                    "plot(2:10)",
-                });
+                    var device1 = _workflow.Plots.ActiveDevice;
+                    var device1VC = _workflow.Plots.GetPlotVisualComponent(device1);
+                    var plot1 = device1.ActivePlot;
 
-                var viewModel2 = await GetActiveViewModelAsync();
-                var device2 = viewModel2.DeviceId;
-                var plot2 = viewModel2.ActivePlotId;
+                    await InitializeGraphicsDevice();
+                    await ExecuteAndWaitForPlotsAsync(new string[] {
+                        "plot(2:10)",
+                    });
 
-                var removeCmd = PlotHistoryCommandFactory.Remove(_workflow);
-                _workflow.Plots.History.SelectedPlot = null;
-                removeCmd.Should().BeDisabled();
+                    var device2 = _workflow.Plots.ActiveDevice;
+                    var device2VC = _workflow.Plots.GetPlotVisualComponent(device2);
+                    var plot2 = device2.ActivePlot;
 
-                _workflow.Plots.History.SelectedPlot = _workflow.Plots.History.Entries.Single(e => e.PlotId == plot1);
-                removeCmd.Should().BeEnabled();
-                var plotReceivedTask = EventTaskSources.IRPlotManager.PlotMessageReceived.Create(_workflow.Plots);
-                await removeCmd.InvokeAsync();
-                await plotReceivedTask;
+                    historyVC.SelectedPlot = null;
+                    historyCommands.Remove.Should().BeDisabled();
 
-                viewModel1.PlotImage.Should().BeNull();
-                _workflow.Plots.History.Entries.Should().HaveCount(1);
-                _workflow.Plots.History.Entries[0].PlotId.Should().Be(plot2);
+                    // Select the only plot in device 1 and remove it
+                    historyVC.SelectedPlot = plot1;
+                    historyCommands.Remove.Should().BeEnabled();
+                    var plotRemovedTask = EventTaskSources.IRPlotDevice.PlotRemoved.Create(device1);
+                    await historyCommands.Remove.InvokeAsync();
+                    await plotRemovedTask;
 
-                _workflow.Plots.History.SelectedPlot = _workflow.Plots.History.Entries.Single(e => e.PlotId == plot2);
-                removeCmd.Should().BeEnabled();
-                plotReceivedTask = EventTaskSources.IRPlotManager.PlotMessageReceived.Create(_workflow.Plots);
-                await removeCmd.InvokeAsync();
-                await plotReceivedTask;
+                    device1.ActivePlot.Should().BeNull();
+                    device1.PlotCount.Should().Be(0);
+                    device1.ActiveIndex.Should().Be(-1);
 
-                viewModel2.PlotImage.Should().BeNull();
-                _workflow.Plots.History.Entries.Should().BeEmpty();
+                    // Select the only plot in device 2 and remove it
+                    historyVC.SelectedPlot = plot2;
+                    historyCommands.Remove.Should().BeEnabled();
+                    plotRemovedTask = EventTaskSources.IRPlotDevice.PlotRemoved.Create(device2);
+                    await historyCommands.Remove.InvokeAsync();
+                    await plotRemovedTask;
+
+                    device2.ActivePlot.Should().BeNull();
+                    device2.PlotCount.Should().Be(0);
+                    device2.ActiveIndex.Should().Be(-1);
+                }
             }
         }
 
         [Test(ThreadType.UI)]
         [Category.Plots]
         public async Task HistoryZoom() {
-            _plotVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
+            _plotDeviceVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
-                var zoomInCmd = PlotHistoryCommandFactory.ZoomIn(_workflow);
-                var zoomOutCmd = PlotHistoryCommandFactory.ZoomOut(_workflow);
+                using (_workflow.Plots.GetOrCreateVisualComponent(_plotHistoryVisualComponentContainerFactory, 0)) {
+                    var historyVC = _workflow.Plots.HistoryVisualComponent;
+                    var historyCommands = new RPlotHistoryCommands(_workflow, historyVC);
 
-                _workflow.Plots.History.ThumbnailSize = 96;
-                zoomOutCmd.Should().BeEnabled();
-                await zoomOutCmd.InvokeAsync();
-                _workflow.Plots.History.ThumbnailSize.Should().Be(48);
+                    // Default is 96, and minimum is 48, so we are able to zoom out once
+                    historyCommands.ZoomOut.Should().BeEnabled();
+                    await historyCommands.ZoomOut.InvokeAsync();
+                    historyCommands.ZoomOut.Should().BeDisabled();
 
-                _workflow.Plots.History.ThumbnailSize = 432;
-                zoomInCmd.Should().BeEnabled();
-                await zoomInCmd.InvokeAsync();
-                _workflow.Plots.History.ThumbnailSize.Should().Be(480);
-
-                _workflow.Plots.History.ThumbnailSize = RPlotHistoryViewModel.MinThumbnailSize;
-                zoomInCmd.Should().BeEnabled();
-                zoomOutCmd.Should().BeDisabled();
-
-                _workflow.Plots.History.ThumbnailSize = RPlotHistoryViewModel.MaxThumbnailSize;
-                zoomInCmd.Should().BeDisabled();
-                zoomOutCmd.Should().BeEnabled();
+                    historyCommands.ZoomIn.Should().BeEnabled();
+                    await historyCommands.ZoomIn.InvokeAsync();
+                    historyCommands.ZoomOut.Should().BeEnabled();
+                }
             }
         }
 
         [Test(ThreadType.UI)]
         [Category.Plots]
         public async Task HistoryAutoHide() {
-            _plotVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
+            _plotDeviceVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
-                var autoHideCmd = PlotHistoryCommandFactory.AutoHide(_workflow);
+                using (_workflow.Plots.GetOrCreateVisualComponent(_plotHistoryVisualComponentContainerFactory, 0)) {
+                    var historyVC = _workflow.Plots.HistoryVisualComponent;
+                    var historyCommands = new RPlotHistoryCommands(_workflow, historyVC);
 
-                _workflow.Plots.History.AutoHide = false;
-                autoHideCmd.Should().BeVisibleAndEnabled();
-                autoHideCmd.Should().BeUnchecked();
+                    historyVC.AutoHide = false;
+                    historyCommands.AutoHide.Should().BeVisibleAndEnabled();
+                    historyCommands.AutoHide.Should().BeUnchecked();
 
-                await autoHideCmd.InvokeAsync();
-                _workflow.Plots.History.AutoHide.Should().BeTrue();
-                autoHideCmd.Should().BeVisibleAndEnabled();
-                autoHideCmd.Should().BeChecked();
+                    await historyCommands.AutoHide.InvokeAsync();
+                    historyVC.AutoHide.Should().BeTrue();
+                    historyCommands.AutoHide.Should().BeVisibleAndEnabled();
+                    historyCommands.AutoHide.Should().BeChecked();
 
-                await autoHideCmd.InvokeAsync();
-                _workflow.Plots.History.AutoHide.Should().BeFalse();
-                autoHideCmd.Should().BeVisibleAndEnabled();
-                autoHideCmd.Should().BeUnchecked();
+                    await historyCommands.AutoHide.InvokeAsync();
+                    historyVC.AutoHide.Should().BeFalse();
+                    historyCommands.AutoHide.Should().BeVisibleAndEnabled();
+                    historyCommands.AutoHide.Should().BeUnchecked();
+                }
             }
         }
 
@@ -1019,7 +1031,7 @@ namespace Microsoft.R.Components.Test.Plots {
         }
 
         private async Task InitializeGraphicsDevice() {
-            var deviceCreatedTask = EventTaskSources.IRPlotManager.DeviceCreateMessageReceived.Create(_workflow.Plots);
+            var deviceCreatedTask = EventTaskSources.IRPlotManager.DeviceAdded.Create(_workflow.Plots);
             var deviceChangedTask = EventTaskSources.IRPlotManager.ActiveDeviceChanged.Create(_workflow.Plots);
 
             var eval = _workflow.ActiveWindow.InteractiveWindow.Evaluator;
@@ -1031,10 +1043,14 @@ namespace Microsoft.R.Components.Test.Plots {
         }
 
         private async Task ExecuteAndWaitForPlotsAsync(string[] scripts) {
+            await ExecuteAndWaitForPlotsAsync(_workflow.Plots.ActiveDevice, scripts);
+        }
+
+        private async Task ExecuteAndWaitForPlotsAsync(IRPlotDevice device, string[] scripts) {
             var eval = _workflow.ActiveWindow.InteractiveWindow.Evaluator;
 
             foreach (string script in scripts) {
-                var plotReceivedTask = EventTaskSources.IRPlotManager.PlotMessageReceived.Create(_workflow.Plots);
+                var plotReceivedTask = EventTaskSources.IRPlotDevice.PlotAddedOrUpdated.Create(device);
 
                 var result = await eval.ExecuteCodeAsync(script.EnsureLineBreak());
                 result.IsSuccessful.Should().BeTrue();
@@ -1051,10 +1067,6 @@ namespace Microsoft.R.Components.Test.Plots {
             }
         }
 
-        private Task<IRPlotDeviceViewModel> GetActiveViewModelAsync() {
-            return Task.FromResult(_workflow.Plots.GetDeviceViewModel(_workflow.Plots.ActiveDeviceId));
-        }
-
         private async Task<BitmapImage> GetExpectedImageAsync(string imageType, int width, int height, int res, string name, string code) {
             var filePath = _testFiles.GetDestinationPath(_testMethod.Name + name + "." + imageType);
             var script = string.Format(@"
@@ -1068,39 +1080,41 @@ dev.off()
             return BitmapImageFactory.Load(filePath);
         }
 
-        private void CheckEnabledCommands(IRPlotDeviceViewModel viewModel, bool isFirst, bool isLast, bool anyPlot) {
-            PlotDeviceCommandFactory.EndLocator(_workflow, viewModel).Should().BeDisabled();
+        private void CheckEnabledCommands(IRPlotDeviceVisualComponent visualComponent, bool isFirst, bool isLast, bool anyPlot) {
+            var deviceCommands = new RPlotDeviceCommands(_workflow, visualComponent);
+
+            deviceCommands.EndLocator.Should().BeDisabled();
 
             if (anyPlot) {
-                PlotDeviceCommandFactory.RemoveAllPlots(_workflow, viewModel).Should().BeEnabled();
-                PlotDeviceCommandFactory.RemoveCurrentPlot(_workflow, viewModel).Should().BeEnabled();
-                PlotDeviceCommandFactory.CutCopy(_workflow, viewModel, cut: false).Should().BeEnabled();
-                PlotDeviceCommandFactory.CutCopy(_workflow, viewModel, cut: true).Should().BeEnabled();
-                PlotDeviceCommandFactory.CopyAsBitmap(_workflow, viewModel).Should().BeEnabled();
-                PlotDeviceCommandFactory.CopyAsMetafile(_workflow, viewModel).Should().BeEnabled();
-                PlotDeviceCommandFactory.ExportAsImage(_workflow, viewModel).Should().BeEnabled();
-                PlotDeviceCommandFactory.ExportAsPdf(_workflow, viewModel).Should().BeEnabled();
+                deviceCommands.RemoveAllPlots.Should().BeEnabled();
+                deviceCommands.RemoveCurrentPlot.Should().BeEnabled();
+                deviceCommands.Cut.Should().BeEnabled();
+                deviceCommands.Copy.Should().BeEnabled();
+                deviceCommands.CopyAsBitmap.Should().BeEnabled();
+                deviceCommands.CopyAsMetafile.Should().BeEnabled();
+                deviceCommands.ExportAsImage.Should().BeEnabled();
+                deviceCommands.ExportAsPdf.Should().BeEnabled();
             } else {
-                PlotDeviceCommandFactory.RemoveAllPlots(_workflow, viewModel).Should().BeDisabled();
-                PlotDeviceCommandFactory.RemoveCurrentPlot(_workflow, viewModel).Should().BeDisabled();
-                PlotDeviceCommandFactory.CutCopy(_workflow, viewModel, cut: false).Should().BeDisabled();
-                PlotDeviceCommandFactory.CutCopy(_workflow, viewModel, cut: true).Should().BeDisabled();
-                PlotDeviceCommandFactory.CopyAsBitmap(_workflow, viewModel).Should().BeDisabled();
-                PlotDeviceCommandFactory.CopyAsMetafile(_workflow, viewModel).Should().BeDisabled();
-                PlotDeviceCommandFactory.ExportAsImage(_workflow, viewModel).Should().BeDisabled();
-                PlotDeviceCommandFactory.ExportAsPdf(_workflow, viewModel).Should().BeDisabled();
+                deviceCommands.RemoveAllPlots.Should().BeDisabled();
+                deviceCommands.RemoveCurrentPlot.Should().BeDisabled();
+                deviceCommands.Cut.Should().BeDisabled();
+                deviceCommands.Copy.Should().BeDisabled();
+                deviceCommands.CopyAsBitmap.Should().BeDisabled();
+                deviceCommands.CopyAsMetafile.Should().BeDisabled();
+                deviceCommands.ExportAsImage.Should().BeDisabled();
+                deviceCommands.ExportAsPdf.Should().BeDisabled();
             }
 
             if (isFirst || !anyPlot) {
-                PlotDeviceCommandFactory.PreviousPlot(_workflow, viewModel).Should().BeDisabled();
+                deviceCommands.PreviousPlot.Should().BeDisabled();
             } else {
-                PlotDeviceCommandFactory.PreviousPlot(_workflow, viewModel).Should().BeEnabled();
+                deviceCommands.PreviousPlot.Should().BeEnabled();
             }
 
             if (isLast || !anyPlot) {
-                PlotDeviceCommandFactory.NextPlot(_workflow, viewModel).Should().BeDisabled();
+                deviceCommands.NextPlot.Should().BeDisabled();
             } else {
-                PlotDeviceCommandFactory.NextPlot(_workflow, viewModel).Should().BeEnabled();
+                deviceCommands.NextPlot.Should().BeEnabled();
             }
         }
     }

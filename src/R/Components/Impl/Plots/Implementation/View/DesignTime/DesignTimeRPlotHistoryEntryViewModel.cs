@@ -13,6 +13,12 @@ namespace Microsoft.R.Components.Plots.Implementation.View.DesignTime {
 
         public string DeviceName { get; set; }
 
+        public IRPlot Plot {
+            get {
+                return new RPlot(new RPlotDevice(DeviceId), PlotId, PlotImage);
+            }
+        }
+
         public Guid PlotId { get; set; }
 
         public BitmapImage PlotImage { get; set; }
@@ -20,6 +26,9 @@ namespace Microsoft.R.Components.Plots.Implementation.View.DesignTime {
         public int? SessionProcessId { get; set; }
 
         public Task ActivatePlotAsync() => Task.CompletedTask;
+
+        public void RefreshDeviceName() {
+        }
     }
 #endif
 }

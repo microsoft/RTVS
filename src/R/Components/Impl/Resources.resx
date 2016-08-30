@@ -396,9 +396,6 @@
   <data name="Plots_TransportError" xml:space="preserve">
     <value>Connection to R host process failed.</value>
   </data>
-  <data name="Plots_CannotCopyAcrossSession" xml:space="preserve">
-    <value>Plots cannot be copied across R sessions.</value>
-  </data>
   <data name="Plots_DeviceName" xml:space="preserve">
     <value>Device {0}</value>
   </data>

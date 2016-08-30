@@ -4,17 +4,16 @@
 using System.Threading.Tasks;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Components.Plots.Implementation.ViewModel;
 
 namespace Microsoft.R.Components.Plots.Implementation.Commands {
-    internal sealed class PlotHistoryZoomOutCommand : InteractiveWorkflowAsyncCommand, IAsyncCommand {
-        public PlotHistoryZoomOutCommand(IRInteractiveWorkflow interactiveWorkflow) :
-            base(interactiveWorkflow) {
+    internal sealed class PlotHistoryZoomOutCommand : PlotHistoryCommand, IAsyncCommand {
+        public PlotHistoryZoomOutCommand(IRInteractiveWorkflow interactiveWorkflow, IRPlotHistoryVisualComponent visualComponent) :
+            base(interactiveWorkflow, visualComponent) {
         }
 
         public CommandStatus Status {
             get {
-                if (InteractiveWorkflow.Plots.History.ThumbnailSize > RPlotHistoryViewModel.MinThumbnailSize) {
+                if (VisualComponent.CanDecreaseThumbnailSize) {
                     return CommandStatus.SupportedAndEnabled;
                 }
 
@@ -23,7 +22,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
         }
 
         public Task<CommandResult> InvokeAsync() {
-            InteractiveWorkflow.Plots.History.DecreaseThumbnailSize();
+            VisualComponent.DecreaseThumbnailSize();
             return Task.FromResult(CommandResult.Executed);
         }
     }

@@ -7,12 +7,11 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Components.Plots.ViewModel;
 
 namespace Microsoft.R.Components.Plots.Implementation.Commands {
     internal sealed class PlotDeviceRemoveCurrentCommand : PlotDeviceCommand, IAsyncCommand {
-        public PlotDeviceRemoveCurrentCommand(IRInteractiveWorkflow interactiveWorkflow, IRPlotDeviceViewModel viewModel)
-            : base(interactiveWorkflow, viewModel) {
+        public PlotDeviceRemoveCurrentCommand(IRInteractiveWorkflow interactiveWorkflow, IRPlotDeviceVisualComponent visualComponent)
+            : base(interactiveWorkflow, visualComponent) {
         }
 
         public CommandStatus Status {
@@ -26,10 +25,10 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
         }
 
         public async Task<CommandResult> InvokeAsync() {
-            var msg = string.Format(CultureInfo.CurrentUICulture, Resources.Plots_RemoveCurrentPlotWarning, ViewModel.DeviceName);
+            var msg = string.Format(CultureInfo.CurrentUICulture, Resources.Plots_RemoveCurrentPlotWarning, VisualComponent.DeviceName);
             if (InteractiveWorkflow.Shell.ShowMessage(msg, MessageButtons.YesNo) == MessageButtons.Yes) {
                 try {
-                    await ViewModel.RemoveActivePlotAsync();
+                    await VisualComponent.RemoveActivePlotAsync();
                 } catch (RPlotManagerException ex) {
                     InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);
                 } catch (OperationCanceledException) {

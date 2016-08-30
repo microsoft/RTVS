@@ -7,17 +7,16 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Components.Plots.ViewModel;
 
 namespace Microsoft.R.Components.Plots.Implementation.Commands {
     internal sealed class PlotDeviceRemoveAllCommand : PlotDeviceCommand, IAsyncCommand {
-        public PlotDeviceRemoveAllCommand(IRInteractiveWorkflow interactiveWorkflow, IRPlotDeviceViewModel viewModel)
-            : base(interactiveWorkflow, viewModel) {
+        public PlotDeviceRemoveAllCommand(IRInteractiveWorkflow interactiveWorkflow, IRPlotDeviceVisualComponent visualComponent)
+            : base(interactiveWorkflow, visualComponent) {
         }
 
         public CommandStatus Status {
             get {
-                if (ViewModel.HasPlot && !IsInLocatorMode) {
+                if (VisualComponent.HasPlot && !IsInLocatorMode) {
                     return CommandStatus.SupportedAndEnabled;
                 }
 
@@ -26,10 +25,10 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
         }
 
         public async Task<CommandResult> InvokeAsync() {
-            var msg = string.Format(CultureInfo.CurrentUICulture, Resources.Plots_RemoveAllPlotsWarning, ViewModel.DeviceName);
+            var msg = string.Format(CultureInfo.CurrentUICulture, Resources.Plots_RemoveAllPlotsWarning, VisualComponent.DeviceName);
             if (InteractiveWorkflow.Shell.ShowMessage(msg, MessageButtons.YesNo) == MessageButtons.Yes) {
                 try {
-                    await ViewModel.ClearAllPlotsAsync();
+                    await VisualComponent.ClearAllPlotsAsync();
                 } catch (RPlotManagerException ex) {
                     InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);
                 } catch (OperationCanceledException) {

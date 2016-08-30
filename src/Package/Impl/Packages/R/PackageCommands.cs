@@ -8,6 +8,7 @@ using Microsoft.R.Components.ConnectionManager.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Commands;
 using Microsoft.R.Components.Plots;
+using Microsoft.R.Components.Plots.Commands;
 using Microsoft.R.Components.Sql;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Browsers;
@@ -123,10 +124,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new GotoSolutionExplorerCommand(),
 
                 // Plot commands
-                CreateRCmdSetCommand(RPackageCommandId.icmdNewPlotWindow, PlotDeviceCommandFactory.NewPlotDevice(interactiveWorkflow)),
-                CreateRCmdSetCommand(RPackageCommandId.icmdPlotHistoryZoomIn, PlotHistoryCommandFactory.ZoomIn(interactiveWorkflow)),
-                CreateRCmdSetCommand(RPackageCommandId.icmdPlotHistoryZoomOut, PlotHistoryCommandFactory.ZoomOut(interactiveWorkflow)),
-                CreateRCmdSetCommand(RPackageCommandId.icmdPlotHistoryAutoHide, PlotHistoryCommandFactory.AutoHide(interactiveWorkflow)),
+                CreateRCmdSetCommand(RPackageCommandId.icmdNewPlotWindow, new PlotDeviceNewCommand(interactiveWorkflow)),
 
                 // Connection manager commands
                 CreateRCmdSetCommand(RPackageCommandId.icmdReconnect, new ReconnectCommand(interactiveWorkflow)),

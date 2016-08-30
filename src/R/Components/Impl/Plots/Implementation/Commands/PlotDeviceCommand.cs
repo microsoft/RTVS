@@ -3,30 +3,29 @@
 
 using System;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Components.Plots.ViewModel;
 
 namespace Microsoft.R.Components.Plots.Implementation.Commands {
     internal abstract class PlotDeviceCommand : InteractiveWorkflowAsyncCommand {
-        protected IRPlotDeviceViewModel ViewModel { get; }
+        protected IRPlotDeviceVisualComponent VisualComponent { get; }
 
-        public PlotDeviceCommand(IRInteractiveWorkflow interactiveWorkflow, IRPlotDeviceViewModel viewModel) :
+        public PlotDeviceCommand(IRInteractiveWorkflow interactiveWorkflow, IRPlotDeviceVisualComponent visualComponent) :
             base(interactiveWorkflow) {
-            if (viewModel == null) {
-                throw new ArgumentNullException(nameof(viewModel));
+            if (visualComponent == null) {
+                throw new ArgumentNullException(nameof(visualComponent));
             }
 
-            ViewModel = viewModel;
+            VisualComponent = visualComponent;
         }
 
         protected bool IsInLocatorMode {
             get {
-                return ViewModel.LocatorMode;
+                return VisualComponent.LocatorMode;
             }
         }
 
         protected bool HasCurrentPlot {
             get {
-                return ViewModel.HasPlot;
+                return VisualComponent.HasPlot;
             }
         }
     }

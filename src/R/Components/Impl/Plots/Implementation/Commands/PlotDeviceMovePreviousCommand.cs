@@ -5,17 +5,16 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Components.Plots.ViewModel;
 
 namespace Microsoft.R.Components.Plots.Implementation.Commands {
     internal sealed class PlotDeviceMovePreviousCommand : PlotDeviceCommand, IAsyncCommand {
-        public PlotDeviceMovePreviousCommand(IRInteractiveWorkflow interactiveWorkflow, IRPlotDeviceViewModel viewModel) :
-            base(interactiveWorkflow, viewModel) {
+        public PlotDeviceMovePreviousCommand(IRInteractiveWorkflow interactiveWorkflow, IRPlotDeviceVisualComponent visualComponent) :
+            base(interactiveWorkflow, visualComponent) {
         }
 
         public CommandStatus Status {
             get {
-                if (ViewModel.ActivePlotIndex > 0 &&
+                if (VisualComponent.ActivePlotIndex > 0 &&
                     !IsInLocatorMode) {
                     return CommandStatus.SupportedAndEnabled;
                 }
@@ -26,7 +25,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
 
         public async Task<CommandResult> InvokeAsync() {
             try {
-                await ViewModel.PreviousPlotAsync();
+                await VisualComponent.PreviousPlotAsync();
             } catch (RPlotManagerException ex) {
                 InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);
             } catch (OperationCanceledException) {

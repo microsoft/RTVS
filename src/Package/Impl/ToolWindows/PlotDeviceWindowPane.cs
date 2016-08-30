@@ -47,22 +47,23 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
 
         protected override void OnCreate() {
             var controller = new AsyncCommandController();
-            var viewModel = new RPlotDeviceViewModel(_plotManager, _session, _instanceId);
-            //controller.AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdNewPlotWindow, PlotDeviceCommandFactory.NewPlotDevice(_plotManager.InteractiveWorkflow));
-            controller.AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdActivatePlotWindow, PlotDeviceCommandFactory.ActivatePlotDevice(_plotManager.InteractiveWorkflow, viewModel));
-            controller.AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdClearPlots, PlotDeviceCommandFactory.RemoveAllPlots(_plotManager.InteractiveWorkflow, viewModel));
-            controller.AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdRemovePlot, PlotDeviceCommandFactory.RemoveCurrentPlot(_plotManager.InteractiveWorkflow, viewModel));
-            controller.AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdNextPlot, PlotDeviceCommandFactory.NextPlot(_plotManager.InteractiveWorkflow, viewModel));
-            controller.AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdPrevPlot, PlotDeviceCommandFactory.PreviousPlot(_plotManager.InteractiveWorkflow, viewModel));
-            controller.AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdExportPlotAsImage, PlotDeviceCommandFactory.ExportAsImage(_plotManager.InteractiveWorkflow, viewModel));
-            controller.AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdExportPlotAsPdf, PlotDeviceCommandFactory.ExportAsPdf(_plotManager.InteractiveWorkflow, viewModel));
-            controller.AddCommand(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Copy, PlotDeviceCommandFactory.CutCopy(_plotManager.InteractiveWorkflow, viewModel, false));
-            controller.AddCommand(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Cut, PlotDeviceCommandFactory.CutCopy(_plotManager.InteractiveWorkflow, viewModel, true));
-            controller.AddCommand(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Paste, PlotDeviceCommandFactory.Paste(_plotManager.InteractiveWorkflow, viewModel));
-            controller.AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdCopyPlotAsBitmap, PlotDeviceCommandFactory.CopyAsBitmap(_plotManager.InteractiveWorkflow, viewModel));
-            controller.AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdCopyPlotAsMetafile, PlotDeviceCommandFactory.CopyAsMetafile(_plotManager.InteractiveWorkflow, viewModel));
-            controller.AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdEndLocator, PlotDeviceCommandFactory.EndLocator(_plotManager.InteractiveWorkflow, viewModel));
-            Component = new RPlotDeviceVisualComponent(_plotManager, controller, viewModel, this, _settings, _coreShell);
+            var visualComponent  = new RPlotDeviceVisualComponent(_plotManager, controller, _instanceId, this, _coreShell);
+            var commands = new RPlotDeviceCommands(_plotManager.InteractiveWorkflow, visualComponent);
+
+            controller.AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdActivatePlotWindow, commands.ActivatePlotDevice);
+            controller.AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdClearPlots, commands.RemoveAllPlots);
+            controller.AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdRemovePlot, commands.RemoveCurrentPlot);
+            controller.AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdNextPlot, commands.NextPlot);
+            controller.AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdPrevPlot, commands.PreviousPlot);
+            controller.AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdExportPlotAsImage, commands.ExportAsImage);
+            controller.AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdExportPlotAsPdf, commands.ExportAsPdf);
+            controller.AddCommand(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Copy, commands.Copy);
+            controller.AddCommand(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Cut, commands.Cut);
+            controller.AddCommand(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Paste, commands.Paste);
+            controller.AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdCopyPlotAsBitmap, commands.CopyAsBitmap);
+            controller.AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdCopyPlotAsMetafile, commands.CopyAsMetafile);
+            controller.AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdEndLocator, commands.EndLocator);
+            Component = visualComponent;
             _plotManager.RegisterVisualComponent(Component);
             _commandTarget = new CommandTargetToOleShim(null, Component.Controller);
             base.OnCreate();

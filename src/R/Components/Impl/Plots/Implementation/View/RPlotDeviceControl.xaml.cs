@@ -76,14 +76,12 @@ namespace Microsoft.R.Components.Plots.Implementation.View {
             if (e.Data.GetDataPresent(PlotClipboardData.Format)) {
                 var source = PlotClipboardData.Parse((string)e.Data.GetData(PlotClipboardData.Format));
                 if (source != null) {
-                    var targetDeviceId = Model?.DeviceId;
+                    var targetDeviceId = Model?.Device.DeviceId;
                     if (targetDeviceId != source.DeviceId) {
-                        if (source.ProcessId == Model?.SessionProcessId) {
-                            bool isMove = (e.KeyStates & DragDropKeyStates.ShiftKey) != 0;
-                            e.Effects = isMove ? DragDropEffects.Move : DragDropEffects.Copy;
-                            e.Handled = true;
-                            return;
-                        }
+                        bool isMove = (e.KeyStates & DragDropKeyStates.ShiftKey) != 0;
+                        e.Effects = isMove ? DragDropEffects.Move : DragDropEffects.Copy;
+                        e.Handled = true;
+                        return;
                     }
                 }
             }
@@ -100,7 +98,7 @@ namespace Microsoft.R.Components.Plots.Implementation.View {
             if (_dragSurface.IsMouseMoveStartingDrag(e)) {
                 var data = new DataObject(
                     PlotClipboardData.Format,
-                    new PlotClipboardData(Model.DeviceId, Model.ActivePlotId, Model.SessionProcessId, false).ToString()
+                    new PlotClipboardData(Model.Device.DeviceId, Model.Device.ActivePlot.PlotId, false).ToString()
                 );
                 DragDrop.DoDragDrop(this, data, DragDropEffects.Copy | DragDropEffects.Move);
             }

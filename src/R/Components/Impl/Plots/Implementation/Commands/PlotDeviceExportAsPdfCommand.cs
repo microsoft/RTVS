@@ -5,12 +5,11 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Components.Plots.ViewModel;
 
 namespace Microsoft.R.Components.Plots.Implementation.Commands {
     internal sealed class PlotDeviceExportAsPdfCommand : PlotDeviceCommand, IAsyncCommand {
-        public PlotDeviceExportAsPdfCommand(IRInteractiveWorkflow interactiveWorkflow, IRPlotDeviceViewModel viewModel)
-            : base(interactiveWorkflow, viewModel) {
+        public PlotDeviceExportAsPdfCommand(IRInteractiveWorkflow interactiveWorkflow, IRPlotDeviceVisualComponent visualComponent)
+            : base(interactiveWorkflow, visualComponent) {
         }
 
         public CommandStatus Status {
@@ -27,7 +26,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
             string filePath = InteractiveWorkflow.Shell.ShowSaveFileDialog(Resources.Plots_ExportAsPdfFilter, null, Resources.Plots_ExportAsPdfDialogTitle);
             if (!string.IsNullOrEmpty(filePath)) {
                 try {
-                    await ViewModel.ExportToPdfAsync(filePath);
+                    await VisualComponent.ExportToPdfAsync(filePath);
                 } catch (RPlotManagerException ex) {
                     InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);
                 } catch (OperationCanceledException) {
