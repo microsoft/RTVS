@@ -10,11 +10,9 @@ using FluentAssertions;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Navigation.Peek;
 using Microsoft.R.Editor.Test.Mocks;
-using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
@@ -22,7 +20,6 @@ using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using NSubstitute;
-using Xunit;
 
 namespace Microsoft.R.Editor.Test.Navigation {
     [ExcludeFromCodeCoverage]

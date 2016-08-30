@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using FluentAssertions;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Test.Controls;
+using Microsoft.R.Components.Help;
 using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
@@ -14,7 +15,6 @@ using Microsoft.VisualStudio.R.Package.Help;
 using Microsoft.VisualStudio.R.Package.Test.Utility;
 using Microsoft.VisualStudio.R.Packages.R;
 using mshtml;
-using Microsoft.R.Components.Help;
 using Xunit;
 
 namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
@@ -22,12 +22,17 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
     [Collection(CollectionNames.NonParallel)]
     public class HelpWindowTest : InteractiveTest {
         private const string darkThemeCssColor = "rgb(36,36,36)";
+        private readonly BrokerFixture _broker;
+
+        public HelpWindowTest(BrokerFixture broker) {
+            _broker = broker;
+        }
 
         [Test(Skip = "https://github.com/Microsoft/RTVS/issues/1983")]
         [Category.Interactive]
         public void HelpTest() {
             var clientApp = new RHostClientHelpTestApp();
-            using (var hostScript = new VsRHostScript(clientApp)) {
+            using (var hostScript = new VsRHostScript(_sessionProvider, _broker.BrokerConnector, clientApp)) {
                 using (var script = new ControlTestScript(typeof(HelpVisualComponent))) {
                     DoIdle(100);
 

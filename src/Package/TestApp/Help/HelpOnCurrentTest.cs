@@ -6,29 +6,34 @@ using FluentAssertions;
 using Microsoft.Common.Core.Test.Controls;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Help;
+using Microsoft.R.Components.Test.StubFactories;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.Help;
-using Microsoft.VisualStudio.R.Package.Test;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Package.Test;
+using Microsoft.VisualStudio.R.Package.Test.FakeFactories;
 using Microsoft.VisualStudio.R.Package.Test.Mocks;
+using Microsoft.VisualStudio.R.Package.Test.Utility;
 using Microsoft.VisualStudio.Text;
 using Xunit;
-using Microsoft.R.Components.Test.StubFactories;
-using Microsoft.VisualStudio.R.Package.Test.FakeFactories;
-using Microsoft.VisualStudio.R.Package.Test.Utility;
 
 namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
     public class HelpOnCurrentTest : InteractiveTest {
+        private readonly BrokerFixture _broker;
+
+        public HelpOnCurrentTest(BrokerFixture broker) {
+            _broker = broker;
+        }
+
         [Test(Skip = "https://github.com/Microsoft/RTVS/issues/1983")]
         [Category.Interactive]
         public void HelpTest() {
             var clientApp = new RHostClientHelpTestApp();
             var historyProvider = RHistoryProviderStubFactory.CreateDefault();
-            using (var hostScript = new VsRHostScript(clientApp)) {
+            using (var hostScript = new VsRHostScript(_sessionProvider, _broker.BrokerConnector, clientApp)) {
                 using (var script = new ControlTestScript(typeof(HelpVisualComponent))) {
                     DoIdle(100);
 

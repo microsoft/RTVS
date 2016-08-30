@@ -14,17 +14,19 @@ using Xunit;
 namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
-    public class VariableExplorerTest : InteractiveTest {
+    public sealed class VariableExplorerTest : InteractiveTest {
         private readonly TestFilesFixture _files;
+        private readonly BrokerFixture _broker;
 
-        public VariableExplorerTest(TestFilesFixture files) {
+        public VariableExplorerTest(TestFilesFixture files, BrokerFixture brokerFixture) {
             _files = files;
+            _broker = brokerFixture;
         }
 
         [Test]
         [Category.Interactive]
         public void ConstructorTest02() {
-            using (var hostScript = new VsRHostScript()) {
+            using (var hostScript = new VsRHostScript(_sessionProvider, _broker.BrokerConnector)) {
                 using (var script = new ControlTestScript(typeof(VariableView))) {
                     var actual = VisualTreeObject.Create(script.Control);
                     ViewTreeDump.CompareVisualTrees(_files, actual, "VariableExplorer02");
@@ -36,7 +38,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         [Category.Interactive]
         public async Task SimpleDataTest() {
             VisualTreeObject actual = null;
-            using (var hostScript = new VsRHostScript()) {
+            using (var hostScript = new VsRHostScript(_sessionProvider, _broker.BrokerConnector)) {
                 using (var script = new ControlTestScript(typeof(VariableView))) {
                     DoIdle(100);
                     await hostScript.Session.ExecuteAsync("x <- c(1:10)");
@@ -51,7 +53,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         [Category.Interactive]
         public void SimpleFunctionTest() {
             VisualTreeObject actual = null;
-            using (var hostScript = new VsRHostScript()) {
+            using (var hostScript = new VsRHostScript(_sessionProvider, _broker.BrokerConnector)) {
                 using (var script = new ControlTestScript(typeof(VariableView))) {
                     DoIdle(100);
                     Task.Run(async () => {

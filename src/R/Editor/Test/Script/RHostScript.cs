@@ -61,8 +61,6 @@ namespace Microsoft.R.Host.Client.Test.Script {
                 if (SessionProvider != null) {
                     SessionProvider = null;
                 }
-
-                BrokerConnector?.Dispose();
             }
 
             _disposed = true;

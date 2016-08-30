@@ -3,8 +3,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Media;
 using FluentAssertions;
 using Microsoft.Common.Core.Test.Controls;
 using Microsoft.UnitTests.Core.Threading;
@@ -21,15 +19,17 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
     [Collection(CollectionNames.NonParallel)]
     public class VariableGridTest : InteractiveTest {
         private readonly TestFilesFixture _files;
+        private readonly BrokerFixture _broker;
 
-        public VariableGridTest(TestFilesFixture files) {
+        public VariableGridTest(TestFilesFixture files, BrokerFixture broker) {
             _files = files;
+            _broker = broker;
         }
 
         [Test]
         public async Task ConstructorTest() {
             VisualTreeObject actual = null;
-            using (var hostScript = new VariableRHostScript()) {
+            using (var hostScript = new VariableRHostScript(_sessionProvider, _broker.BrokerConnector)) {
                 using (var script = new ControlTestScript(typeof(VariableGridHost))) {
                     await PrepareControl(hostScript, script, "grid.test <- matrix(1:10, 2, 5)");
                     actual = VisualTreeObject.Create(script.Control);
@@ -41,7 +41,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         [Test]
         public async Task SortTest01() {
             VisualTreeObject actual = null;
-            using (var hostScript = new VariableRHostScript()) {
+            using (var hostScript = new VariableRHostScript(_sessionProvider, _broker.BrokerConnector)) {
                 using (var script = new ControlTestScript(typeof(VariableGridHost))) {
                     await PrepareControl(hostScript, script, "grid.test <- matrix(1:10, 2, 5)");
                     var header = VisualTreeTestExtensions.FindFirstVisualChildOfType<HeaderTextVisual>(script.Control);
@@ -62,7 +62,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         [Test]
         public async Task SortTest02() {
             VisualTreeObject actual = null;
-            using (var hostScript = new VariableRHostScript()) {
+            using (var hostScript = new VariableRHostScript(_sessionProvider, _broker.BrokerConnector)) {
                 using (var script = new ControlTestScript(typeof(VariableGridHost))) {
                     await PrepareControl(hostScript, script, "grid.test <- mtcars");
                     UIThreadHelper.Instance.Invoke(() => {

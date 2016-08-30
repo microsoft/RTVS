@@ -49,8 +49,9 @@
     <Compile Include="Help\HelpWindowTest.cs" />
     <Compile Include="Help\RHostClientHelpTestApp.cs" />
     <Compile Include="InteractiveTest.cs" />
+    <Compile Include="Fixtures\BrokerFixture.cs" />
     <Compile Include="Utility\IdleTime.cs" />
-    <Compile Include="TestFilesFixture.cs" />
+    <Compile Include="Fixtures\TestFilesFixture.cs" />
     <Compile Include="Utility\ViewTreeDump.cs" />
     <Compile Include="Utility\VisualTreeExtensions.cs" />
     <Compile Include="Utility\VisualTreeObject.cs" />
