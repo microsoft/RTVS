@@ -12,6 +12,7 @@ using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Sql.Publish;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using EnvDTE;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
@@ -29,7 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
         private readonly IDacPackageServices _dacServices;
 
         [ImportingConstructor]
-        public PublishSProcCommand(IApplicationShell appShell, IProjectSystemServices pss) : 
+        public PublishSProcCommand(IApplicationShell appShell, IProjectSystemServices pss) :
             this(appShell, pss, new FileSystem(), new DacPackageServices()) {
         }
 
@@ -61,10 +62,14 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
                 var sprocFiles = project.GetSProcFiles(_pss);
                 if (sprocFiles.Any()) {
                     try {
+                        // Make sure all files are saved and up to date on disk.
+                        var dte = _appShell.GetGlobalService<DTE>(typeof(DTE));
+                        dte.ExecuteCommand("File.SaveAll");
+
                         var publisher = new SProcPublisher(_appShell, _pss, _fs, _dacServices);
                         var settings = new SqlSProcPublishSettings(_appShell.SettingsStorage);
                         publisher.Publish(settings, sprocFiles);
-                    } catch(Exception ex) {
+                    } catch (Exception ex) {
                         _appShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.SqlPublish_PublishError, ex.Message));
                     }
                 } else {

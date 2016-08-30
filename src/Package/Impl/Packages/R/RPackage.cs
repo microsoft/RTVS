@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Components.ContentTypes;
@@ -94,8 +95,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-transforms", @"Snippets\mrs-transforms")]
     internal class RPackage : BasePackage<RLanguageService>, IRPackage {
         public const string OptionsDialogName = "R Tools";
-
-        private System.Threading.Tasks.Task _indexBuildingTask;
         private IPackageIndex _packageIndex;
 
         public static IRPackage Current { get; private set; }
@@ -111,7 +110,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             VsWpfOverrides.Apply(VsAppShell.Current);
             CranMirrorList.Download();
 
-            RtvsTelemetry.Initialize();
+            RtvsTelemetry.Initialize(_packageIndex);
 
             using (var p = Current.GetDialogPage(typeof(RToolsOptionsPage)) as RToolsOptionsPage) {
                 p?.LoadSettings();
@@ -128,9 +127,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             AdviseExportedWindowFrameEvents<VsActiveRInteractiveWindowTracker>();
             AdviseExportedDebuggerEvents<VsDebuggerModeTracker>();
 
-            System.Threading.Tasks.Task.Run(() => RtvsTelemetry.Current.ReportConfiguration());
-
             IdleTimeAction.Create(ExpansionsCache.Load, 200, typeof(ExpansionsCache), VsAppShell.Current);
+            IdleTimeAction.Create(() => RtvsTelemetry.Current.ReportConfiguration(), 5000, typeof(RtvsTelemetry), VsAppShell.Current);
         }
 
         protected override void Dispose(bool disposing) {
@@ -198,18 +196,12 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
         private void BuildFunctionIndex() {
             _packageIndex = VsAppShell.Current.ExportProvider.GetExportedValue<IPackageIndex>();
-            _indexBuildingTask = _packageIndex.BuildIndexAsync();
+            _packageIndex.BuildIndexAsync().DoNotWait();
         }
 
         private void SavePackageIndex() {
-            if (_indexBuildingTask != null && !_indexBuildingTask.IsFaulted) {
-                _indexBuildingTask.Wait(2000);
-                if (_indexBuildingTask.IsCompleted) {
-                    _packageIndex.WriteToDisk();
-                }
-                _packageIndex?.Dispose();
-                _indexBuildingTask = null;
-            }
+            _packageIndex?.WriteToDisk();
+            _packageIndex?.Dispose();
         }
     }
 }

@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Microsoft.Common.Core {
@@ -154,6 +155,13 @@ namespace Microsoft.Common.Core {
                 }
             }
             return "\n"; // default
+        }
+
+        public static string GetMD5Hash(this string input) {
+            SHA512 sha = SHA512.Create();
+            byte[] inputBytes = Encoding.Unicode.GetBytes(input);
+            byte[] hash = sha.ComputeHash(inputBytes);
+            return BitConverter.ToString(hash);
         }
     }
 }
