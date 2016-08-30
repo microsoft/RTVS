@@ -135,14 +135,20 @@ namespace Microsoft.R.Editor.Completion {
                     return typedChar == '(' || typedChar == '\t' || (char.IsWhiteSpace(typedChar) && completionSet.SelectionStatus.IsUnique);
                 }
 
+                if(typedChar == '=') {
+                    var rset = completionSet as RCompletionSet;
+                    rset?.Filter(typedChar);
+                    rset?.SelectBestMatch();
+                }
+
                 switch (typedChar) {
+                    case '=':
                     case '<':
                     case '>':
                     case '+':
                     case '-':
                     case '*':
                     case '^':
-                    case '=':
                     case '%':
                     case '|':
                     case '&':
@@ -348,10 +354,9 @@ namespace Microsoft.R.Editor.Completion {
 
         public override bool IsMuteCharacter(char typedCharacter) {
             if (typedCharacter == '=') {
-                bool equalsCompletion = CompletionSession.SelectedCompletionSet
-                                                         .SelectionStatus.Completion
-                                                         .InsertionText.TrimEnd().EndsWithOrdinal("=");
-                if (equalsCompletion) {
+                bool? equalsCompletion = CompletionSession.SelectedCompletionSet?.SelectionStatus?
+                                                         .Completion.InsertionText.TrimEnd().EndsWithOrdinal("=");
+                if (equalsCompletion.HasValue && equalsCompletion.Value) {
                     return true;
                 }
             }

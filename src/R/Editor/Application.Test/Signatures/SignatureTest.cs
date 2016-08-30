@@ -110,12 +110,12 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
                 var info = await PackageIndexUtility.GetFunctionInfoAsync(functionIndex, "addmargins");
 
                 script.DoIdle(100);
-                script.Type("addmargins(marG");
+                script.Type("addmargins(Fu");
                 script.DoIdle(300);
                 script.Type("=");
                 script.DoIdle(300);
 
-                string expected = "addmargins(margin = )";
+                string expected = "addmargins(FUN = )";
                 string actual = script.EditorText;
 
                 actual.Should().Be(expected);
