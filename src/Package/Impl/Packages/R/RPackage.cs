@@ -66,6 +66,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     [ProvideToolWindow(typeof(PlotManagerWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
     [ProvideToolWindow(typeof(HelpWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.PropertiesWindow)]
     [ProvideToolWindow(typeof(HistoryWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
+    [ProvideToolWindow(typeof(ConnectionManagerWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
     [ProvideToolWindow(typeof(PackageManagerWindowPane), Style = VsDockStyle.MDI)]
     [ProvideDebugEngine(RContentTypeDefinition.LanguageName, DebuggerGuids.DebugEngineString, typeof(AD7Engine), SupportsAttach = true)]
     [ProvideToolWindow(typeof(VariableWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]

@@ -36,6 +36,10 @@ namespace Microsoft.VisualStudio.R.Package.Wpf {
             Brushes.ButtonFaceBrushKey = VsBrushes.ButtonFaceKey;
             Brushes.ButtonTextBrushKey = VsBrushes.ButtonTextKey;
             Brushes.ComboBoxBorderKey = VsBrushes.ComboBoxBorderKey;
+            Brushes.ControlKey = VsBrushes.ThreeDFaceKey;
+            Brushes.ControlDarkKey = VsBrushes.ThreeDShadowKey;
+            Brushes.ControlLightKey = VsBrushes.ThreeDLightShadowKey;
+            Brushes.ControlTextKey = VsBrushes.ButtonTextKey;
             Brushes.ControlLinkTextHoverKey = VsBrushes.ControlLinkTextHoverKey;
             Brushes.ControlLinkTextKey = VsBrushes.ControlLinkTextKey;
             Brushes.DetailPaneBackgroundKey = VsBrushes.BrandedUIBackgroundKey;

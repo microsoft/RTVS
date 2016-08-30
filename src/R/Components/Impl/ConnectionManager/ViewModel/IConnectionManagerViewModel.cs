@@ -10,11 +10,15 @@ namespace Microsoft.R.Components.ConnectionManager.ViewModel {
     public interface IConnectionManagerViewModel : INotifyPropertyChanged, IDisposable {
         ReadOnlyObservableCollection<IConnectionViewModel> Items { get; }
         IConnectionViewModel SelectedConnection { get; }
+        IConnectionViewModel NewConnection { get; }
         bool IsConnected { get; }
 
         void SelectConnection(IConnectionViewModel connection);
         void AddNew();
-        void CancelSelected();
+        void CancelNew();
+        void BrowseLocalPath(IConnectionViewModel connection);
+        void Edit(IConnectionViewModel connection);
+        Task TestConnectionAsync(IConnectionViewModel connection);
         void SaveSelected();
         bool TryDelete(IConnectionViewModel connection);
 

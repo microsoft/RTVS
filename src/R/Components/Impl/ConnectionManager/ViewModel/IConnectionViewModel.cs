@@ -14,7 +14,7 @@ namespace Microsoft.R.Components.ConnectionManager.ViewModel {
         bool IsActive { get; set; }
         bool IsConnected { get; set; }
         bool IsRemote { get; }
-        bool CanConnect { get; }
+        bool IsValid { get; }
         bool HasChanges { get; }
 
         void Reset();

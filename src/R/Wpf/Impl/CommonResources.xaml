@@ -7,8 +7,9 @@
                     xmlns:selectors="clr-namespace:Microsoft.Common.Wpf.Selectors;assembly=Microsoft.R.Common.Wpf"
                     mc:Ignorable="d">
     <!--Icons-->
-    <PathGeometry FillRule="NonZero" x:Key="TreeArrowCollapsed" Figures="M3,0 L6,3 L3,6 z" />
-    <PathGeometry FillRule="NonZero" x:Key="TreeArrowExpanded" Figures="M0,6 L6,6 L6,0 z" />
+    <PathGeometry FillRule="NonZero" x:Key="ArrowRigth10" Figures="M0,0 L5,5 L0,10 z" />
+    <PathGeometry FillRule="NonZero" x:Key="ArrowRightDown6" Figures="M0,6 L6,6 L6,0 z" />
+    <PathGeometry FillRule="NonZero" x:Key="ArrowDown8" Figures="M0,4 L4,8 L8,4 z" />
     <PathGeometry FillRule="NonZero" x:Key="GeometryCircle18" Figures="m 17 8 a 9 9 0 0 1 -9 9 9 9 0 0 1 -9 -9 9 9 0 0 1 9 -9 9 9 0 0 1 9 9 z"/>
     <PathGeometry FillRule="NonZero" x:Key="GeometryLocal" Figures="M 2 3 L 2 12 L 7 12 L 7 13 L 4 13 L 4 14 L 12 14 L 12 13 L 9 13 L 9 12 L 14 12 L 14 3 L 2 3 z"/>
     <PathGeometry FillRule="NonZero" x:Key="GeometryCloud" Figures="M 6 3 A 3 3 0 0 0 3 6 A 3 3 0 0 0 3.2109375 7.1054688 A 3 3 0 0 0 1 10 A 3 3 0 0 0 4 13 L 12 13 A 3 3 0 0 0 15 10 A 3 3 0 0 0 12.787109 7.1054688 A 3 3 0 0 0 13 6 A 3 3 0 0 0 10 3 A 3 3 0 0 0 9.0019531 3.1757812 A 3 3 0 0 0 8 3 A 3 3 0 0 0 6.9980469 3.1738281 A 3 3 0 0 0 6 3 z"/>
@@ -330,42 +331,97 @@
         </Style.Triggers>
     </Style>
 
-    <Style x:Uid="ExpandCollapseToggleStyle" x:Key="ExpandCollapseToggleStyle" TargetType="{x:Type ToggleButton}">
+    <Style x:Key="ExpandCollapseToggleStyle" TargetType="{x:Type ToggleButton}">
         <Setter Property="Focusable" Value="False" />
         <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Foreground" Value="Transparent"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource ToolWindowTextColor}"/>
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.UITextKey}}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Brushes.ToolWindowTextKey}}"/>
         <Setter Property="BorderThickness" Value="1.5"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ToggleButton}">
-                    <Border HorizontalAlignment="Center" VerticalAlignment="Center" Background="{TemplateBinding Background}" Padding="5">
-                        <Path x:Name="ExpandPath" HorizontalAlignment="Center" VerticalAlignment="Center"
-                              Fill="{TemplateBinding Foreground}" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="{TemplateBinding BorderThickness}"
-                              Data="{StaticResource TreeArrowCollapsed}" UseLayoutRounding="True">
-                        </Path>
+                    <Border x:Name="Border" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource {x:Static wpf:Brushes.ControlKey}}">
+                        <StackPanel Orientation="Horizontal" Background="{TemplateBinding Background}">
+                            <Path x:Name="CollapsedPath" HorizontalAlignment="Center" VerticalAlignment="Center" Height="10" Width="6" Margin="5,3,5,3"
+                                  Fill="{TemplateBinding Background}" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="1"
+                                  Data="{StaticResource ArrowRigth10}" UseLayoutRounding="True" />
+                            <Path x:Name="ExpandedPath" HorizontalAlignment="Center" VerticalAlignment="Center" Height="6" Width="6" Margin="5,5,5,5"
+                                  Fill="{TemplateBinding Foreground}" StrokeThickness="0"
+                                  Data="{StaticResource ArrowRightDown6}" UseLayoutRounding="True" Visibility="Collapsed" />
+                            <TextBlock Margin="1,0,0,0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                                       Text="{TemplateBinding Content}" FontWeight="SemiBold" Foreground="{TemplateBinding Foreground}" />
+                        </StackPanel>
                     </Border>
+                    
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsChecked" Value="True">
-                            <Setter Property="Data" TargetName="ExpandPath" Value="{StaticResource TreeArrowExpanded}"/>
-                            <Setter Property="Fill" TargetName="ExpandPath" Value="{DynamicResource {x:Static wpf:Brushes.ToolWindowTextKey}}" />
+                            <Setter TargetName="CollapsedPath" Property="Visibility" Value="Collapsed"/>
+                            <Setter TargetName="ExpandedPath" Property="Visibility" Value="Visible"/>
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Stroke" TargetName="ExpandPath" Value="{DynamicResource {x:Static wpf:Brushes.SelectedItemActiveBrushKey}}" />
+                            <Setter Property="BorderBrush" TargetName="Border" Value="{DynamicResource {x:Static wpf:Brushes.ActiveBorderKey}}"/>
                         </Trigger>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="IsMouseOver" Value="True" />
-                                <Condition Property="IsChecked" Value="True" />
-                            </MultiTrigger.Conditions>
-                            <Setter Property="Fill" TargetName="ExpandPath" Value="{DynamicResource {x:Static wpf:Brushes.SelectedItemActiveBrushKey}}" />
-                        </MultiTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
 
+    <Style TargetType="{x:Type ButtonBase}" x:Key="HyperlinkButton">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.ControlLinkTextKey}}" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ButtonBase}">
+                    <TextBlock x:Name="Text" Foreground="{TemplateBinding Foreground}"
+                               TextWrapping="Wrap" VerticalAlignment="Center" Text="{TemplateBinding Content}"/>
+                    <ControlTemplate.Triggers>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsMouseOver" Value="True" />
+                                <Condition Property="IsEnabled" Value="True" />
+                            </MultiTrigger.Conditions>
+                            <Setter Property="TextDecorations" TargetName="Text" Value="Underline" />
+                            <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.ControlLinkTextHoverKey}}" />
+                        </MultiTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.GrayTextBrushKey}}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style TargetType="{x:Type ButtonBase}" x:Key="HyperlinkDownArrowButton" BasedOn="{StaticResource HyperlinkButton}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ButtonBase}">
+                    <StackPanel Orientation="Horizontal" Background="Transparent">
+                        <TextBlock x:Name="Text" Foreground="{TemplateBinding Foreground}"
+                                   TextWrapping="Wrap" VerticalAlignment="Center" Text="{TemplateBinding Content}"/>
+                        <Path x:Name="Arrow" VerticalAlignment="Center" StrokeThickness="0"
+                              Height="8" Width="8" Margin="5,0,0,1" UseLayoutRounding="True"
+                              Fill="{TemplateBinding Foreground}" Data="{StaticResource ArrowDown8}" />
+                    </StackPanel>
+                    <ControlTemplate.Triggers>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsMouseOver" Value="True" />
+                                <Condition Property="IsEnabled" Value="True" />
+                            </MultiTrigger.Conditions>
+                            <Setter Property="TextDecorations" TargetName="Text" Value="Underline" />
+                            <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.ControlLinkTextHoverKey}}" />
+                        </MultiTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
     <Style TargetType="{x:Type Hyperlink}" x:Key="HyperlinkStyle">
         <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.ControlLinkTextKey}}" />
 

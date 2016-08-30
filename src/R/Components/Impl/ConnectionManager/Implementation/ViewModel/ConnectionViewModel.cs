@@ -16,7 +16,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private bool _isConnected;
         private bool _isRemote;
         private bool _hasChanges;
-        private bool _canConnect;
+        private bool _isValid;
 
         public ConnectionViewModel() {}
 
@@ -62,9 +62,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             private set { SetProperty(ref _isRemote, value); }
         }
         
-        public bool CanConnect {
-            get { return _canConnect; }
-            private set { SetProperty(ref _canConnect, value); }
+        public bool IsValid {
+            get { return _isValid; }
+            private set { SetProperty(ref _isValid, value); }
         }
 
         public bool HasChanges {
@@ -90,7 +90,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                 || !RCommandLineArguments.EqualsIgnoreCase(_connection?.RCommandLineArguments);
 
             Uri uri = null;
-            CanConnect = !string.IsNullOrEmpty(Name) && Uri.TryCreate(Path, UriKind.Absolute, out uri);
+            IsValid = !string.IsNullOrEmpty(Name) && Uri.TryCreate(Path, UriKind.Absolute, out uri);
 
             IsRemote = !(uri?.IsFile ?? true);
         }

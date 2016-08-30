@@ -29,12 +29,11 @@ namespace Microsoft.Languages.Editor.Test.Shell {
 
         public string SaveFileIfDirty(string fullPath) => fullPath;
 
-        public string ShowOpenFileDialog(string filter, string initialPath = null, string title = null) {
-            return null;
-        }
-        public string ShowSaveFileDialog(string filter, string initialPath = null, string title = null) {
-            return null;
-        }
+        public string ShowOpenFileDialog(string filter, string initialPath = null, string title = null) => null;
+
+        public string ShowBrowseDirectoryDialog(string initialPath = null, string title = null) => null;
+
+        public string ShowSaveFileDialog(string filter, string initialPath = null, string title = null) => null;
 
         public void UpdateCommandStatus(bool immediate) { }
 

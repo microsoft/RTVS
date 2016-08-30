@@ -6,7 +6,6 @@ using System.ComponentModel;
 using System.Drawing.Design;
 using System.IO;
 using Microsoft.R.Interpreters;
-using Microsoft.R.Host.Client.Install;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudioTools;
 

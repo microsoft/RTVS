@@ -178,6 +178,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Connection Manager.
+        /// </summary>
+        public static string ConnectionManagerWindowCaption {
+            get {
+                return ResourceManager.GetString("ConnectionManagerWindowCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Database connection string.
         /// </summary>
         public static string ConnectionStringDescription {

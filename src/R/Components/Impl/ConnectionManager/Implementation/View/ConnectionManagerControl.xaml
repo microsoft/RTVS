@@ -7,6 +7,7 @@
              xmlns:components="clr-namespace:Microsoft.R.Components"
              xmlns:designTime="clr-namespace:Microsoft.R.Components.ConnectionManager.Implementation.View.DesignTime"
              xmlns:viewModel="clr-namespace:Microsoft.R.Components.ConnectionManager.ViewModel"
+             xmlns:controls="clr-namespace:Microsoft.R.Wpf.Controls;assembly=Microsoft.R.Wpf"
              mc:Ignorable="d" x:Name="Self"
              d:DataContext="{d:DesignInstance Type=designTime:DesignTimeConnectionManagerViewModel, IsDesignTimeCreatable=True}"
              d:DesignHeight="600" d:DesignWidth="400">
@@ -15,6 +16,74 @@
             <ResourceDictionary.MergedDictionaries>
                 <rwpf:CommonResources />
             </ResourceDictionary.MergedDictionaries>
+
+            <Style x:Key="InputTextBoxStyle" TargetType="{x:Type TextBox}">
+                <Setter Property="MaxLines" Value="10" />
+                <Setter Property="ClipToBounds" Value="True" />
+                <Setter Property="Margin" Value="0,0,0,6" />
+                <Setter Property="TextWrapping" Value="Wrap" />
+                <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Path=Text, RelativeSource={RelativeSource Self}, Converter={x:Static rwpf:Converters.NullOrEmptyIsTrue}}" Value="true">
+                        <Setter Property="Background" Value="{DynamicResource {x:Static rwpf:Brushes.InfoBackgroundKey}}"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
+            <DataTemplate x:Key="EditConnectionDataTemplate" DataType="{x:Type viewModel:IConnectionViewModel}">
+                <AdornerDecorator>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBox Grid.Row="0" Grid.Column="0" Style="{StaticResource InputTextBoxStyle}"
+                                     Text="{Binding Path=Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     controls:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_Name}" />
+
+                        <TextBox Grid.Row="1" Grid.Column="0" Style="{StaticResource InputTextBoxStyle}" 
+                                     Text="{Binding Path=Path, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     controls:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_Path}" />
+
+                        <Button Grid.Row="1" Grid.Column="1" Margin="3,0,0,6" Padding="2,0,2,0" Content="..." 
+                                    VerticalAlignment="Stretch" MinHeight="0" MinWidth="0" Click="ButtonPath_Click"/>
+
+                        <TextBox Grid.Row="2" Grid.Column="0" Style="{StaticResource InputTextBoxStyle}" 
+                                     Text="{Binding Path=RCommandLineArguments, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     controls:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_RCommandLineArguments}" />
+
+                        <WrapPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,0,0">
+                            <Button Margin="0,0,4,0" Padding="6,2,6,2" MinWidth="75" MinHeight="23"
+                                    VerticalAlignment="Center" Click="ButtonSave_Click" 
+                                    IsEnabled="{Binding Path=IsValid}"
+                                    Content="{x:Static components:Resources.ConnectionManager_Save}" />
+
+                            <Button VerticalAlignment="Center" Click="ButtonTestConnection_Click"
+                                    Style="{StaticResource HyperlinkButton}"
+                                    IsEnabled="{Binding Path=IsValid}"
+                                    Content="{x:Static components:Resources.ConnectionManager_TestConnection}"
+                                    ToolTip="{x:Static components:Resources.ConnectionManager_TestConnectionTooltip}"/>
+
+                            <Separator Margin="4,4,4,3" BorderThickness="0"
+                                       Style="{StaticResource VerticalSeparator}" 
+                                       Background="{DynamicResource {x:Static rwpf:Brushes.ControlLinkTextKey}}"/>
+
+                            <Button VerticalAlignment="Center" Click="ButtonCancel_Click"
+                                        Style="{StaticResource HyperlinkButton}"
+                                        Content="{x:Static components:Resources.ConnectionManager_Cancel}"/>
+
+                        </WrapPanel>
+                    </Grid>
+                </AdornerDecorator>
+            </DataTemplate>
 
             <DataTemplate DataType="{x:Type viewModel:IConnectionViewModel}">
                 <Border BorderThickness="0,0,0,0" BorderBrush="{DynamicResource {x:Static rwpf:Brushes.ActiveBorderKey}}" Background="Transparent" x:Name="Container">
@@ -54,9 +123,9 @@
                         </Grid>
 
                         <!-- Name & path -->
-                        <TextBlock Grid.Column="1" Margin="0,0,6,3" Text="{Binding Path=Name}"/>
-                        <Separator Grid.Column="2" Margin="0,0,6,3" Style="{StaticResource VerticalSeparator}"/>
-                        <TextBlock Grid.Column="3" Margin="0,0,3,3" Text="{Binding Path=Path, Mode=OneWay}"
+                        <TextBlock Grid.Column="1" Margin="0,1,6,2" Text="{Binding Path=Name}"/>
+                        <Separator Grid.Column="2" Margin="0,1,6,2" Style="{StaticResource VerticalSeparator}"/>
+                        <TextBlock Grid.Column="3" Margin="0,1,3,2" Text="{Binding Path=Path, Mode=OneWay}"
                                    TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
 
                         <!-- edit button -->
@@ -81,6 +150,44 @@
                 </DataTemplate.Triggers>
             </DataTemplate>
 
+            <Style x:Key="ConnectionsListBoxItemStyle" TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource FillingListBoxItemStyle}">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                            <Border x:Name="Border" BorderThickness="0" Background="{TemplateBinding Background}"
+                                    Padding="0" SnapsToDevicePixels="true">
+                                <StackPanel>
+                                    <ContentPresenter x:Name="RegularContentPresenter"
+                                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                      SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                                    <ContentPresenter x:Name="SelectedContentPresenter"
+                                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                      SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                      ContentTemplate="{StaticResource EditConnectionDataTemplate}"
+                                                      Visibility="Collapsed"/>
+                                </StackPanel>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <!-- set the background for IsEnabled == false -->
+                                <Trigger Property="IsEnabled" Value="false">
+                                    <Setter Property="Background" TargetName="Border" Value="{DynamicResource {x:Static rwpf:Brushes.ListPaneBackgroundKey}}" />
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" TargetName="Border" Value="{DynamicResource {x:Static rwpf:Brushes.ContentMouseOverBrushKey}}" />
+                                    <Setter Property="TextBlock.Foreground" Value="{DynamicResource {x:Static rwpf:Brushes.ContentMouseOverTextBrushKey}}" />
+                                </Trigger>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Visibility" TargetName="RegularContentPresenter" Value="Collapsed" />
+                                    <Setter Property="Visibility" TargetName="SelectedContentPresenter" Value="Visible" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            
             <Style x:Key="ConnectionsListBox" TargetType="{x:Type ListBox}">
                 <Setter Property="Background" Value="{x:Static Brushes.Transparent}" />
                 <Setter Property="Foreground" Value="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}" />
@@ -92,7 +199,7 @@
                 <Setter Property="VirtualizingPanel.CacheLengthUnit" Value="Page"/>
                 <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                 <Setter Property="BorderThickness" Value="0,0,0,0" />
-                <Setter Property="ItemContainerStyle" Value="{StaticResource FillingListBoxItemStyle}" />
+                <Setter Property="ItemContainerStyle" Value="{StaticResource ConnectionsListBoxItemStyle}" />
                 <Setter Property="ItemTemplateSelector" Value="{StaticResource TypeDataTemplateSelector}"/>
                 <Setter Property="ItemsSource" Value="{Binding Path=Items}" />
                 <Setter Property="SelectedItem" Value="{Binding Path=SelectedConnection, Mode=OneWay}"/>
@@ -108,6 +215,13 @@
                     </Setter.Value>
                 </Setter>
             </Style>
+
+            <Style x:Key="InputBorderStyle" TargetType="{x:Type Border}">
+                <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" />
+                <Setter Property="Control.Foreground" Value="{DynamicResource {x:Static rwpf:Brushes.WindowTextKey}}" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Padding" Value="6" />
+            </Style>
         </ResourceDictionary>
     </UserControl.Resources>
     <ScrollViewer x:Name="Root" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
@@ -121,194 +235,31 @@
 
             <!-- Implicit local connections -->
 
+            <!-- Header -->
+            <ToggleButton x:Name="ToggleButtonConnections" DockPanel.Dock="Top" Style="{StaticResource ExpandCollapseToggleStyle}"
+                          ToolTip="Expand/Collapse section" IsChecked="True" Content="Connections"/>
+
             <!-- Explicit connections -->
-            <Grid DockPanel.Dock="Top">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="16" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto" />
-                    <RowDefinition Height="auto" />
-                    <RowDefinition Height="auto" />
-                </Grid.RowDefinitions>
-                <!-- Header -->
-                <ToggleButton Grid.Column="0" Grid.Row="0" Style="{StaticResource ExpandCollapseToggleStyle}" ToolTip="Expand/Collapse section"
-                              IsChecked="True"/>
-
-                <TextBlock Grid.Row="0" Grid.Column="1" Margin="1,0,0,0" VerticalAlignment="Center"
-                           TextTrimming="CharacterEllipsis" Text="Connections" FontWeight="SemiBold" />
-
-                <!-- Clone options panel -->
-                <Border x:Uid="cloneOptionsBorder" Grid.Row="1" Margin="6,0,6,6" Style="{StaticResource EmbeddedDialog}">
-                    <Border.Visibility>
-                        <MultiBinding Converter="{StaticResource AnyTrueToVisibleConverter}">
-                            <MultiBinding.Bindings>
-                                <Binding Path="ShowCloneOptions"/>
-                                <Binding Path="JobProgressVm.IsProgressPaneDisplayed"/>
-                            </MultiBinding.Bindings>
-                        </MultiBinding>
-                    </Border.Visibility>
-
-                    <Grid x:Uid="cloneOptionsGrid">
-                        <Grid.RowDefinitions>
-                            <RowDefinition x:Uid="cloneRemoteRow" Height="Auto"/>
-                            <RowDefinition x:Uid="clonePathRow" Height="Auto"/>
-                            <RowDefinition x:Uid="cloneRecursiveRow" Height="Auto"/>
-                            <RowDefinition x:Uid="cloneActionsRow" Height="Auto"/>
-                            <RowDefinition x:Uid="cloneProgressRow" Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition x:Uid="cloneFirstCol" Width="*"/>
-                            <ColumnDefinition x:Uid="cloneSecondCol" Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-
-                        <tfcwpf:LabeledTextBox x:Uid="cloneRemoteUrlTextBox" x:Name="cloneRemoteUrlTextBox"
-                                       Grid.Row="0" Grid.Column="0" Margin="0,0,0,6"
-                                       Text="{Binding Path=CloneRemoteUrlText, Mode=TwoWay}"
-                                       HintText="Enter the URL of a Git repo to clone &lt;Required&gt;"
-                                       NameAndAutomationId="Clone Remote"
-                                       Localization.Attributes="HintText (Modifiable Readable Text) NameAndAutomationId (Modifiable Readable Text)"
-                                       IsRequired="true"
-                                       AcceptsReturn="false"
-                                       Visibility="{Binding Path=JobProgressVm.IsProgressPaneDisplayed, Converter={StaticResource TrueToVisibleConverter}, ConverterParameter=Invert}">
-                            <tfcwpf:LabeledTextBox.InputBindings>
-                                <KeyBinding Key="Enter" Command="{Binding Path=CloneRepositoryCommand}"/>
-                            </tfcwpf:LabeledTextBox.InputBindings>
-                        </tfcwpf:LabeledTextBox>
-
-                        <tfcwpf:LabeledTextBox x:Uid="clonePathTextBox" x:Name="clonePathTextBox"
-                                       Grid.Row="1" Grid.Column="0" Margin="0,0,0,6"
-                                       Text="{Binding Path=CloneRepoPathText, Mode=TwoWay}"
-                                       HintText="Enter a path for the cloned Git repo &lt;Required&gt;"
-                                       NameAndAutomationId="Clone Path"
-                                       Localization.Attributes="HintText (Modifiable Readable Text) NameAndAutomationId (Modifiable Readable Text)"
-                                       IsRequired="true"
-                                       AcceptsReturn="false"
-                                       Visibility="{Binding Path=JobProgressVm.IsProgressPaneDisplayed, Converter={StaticResource TrueToVisibleConverter}, ConverterParameter=Invert}">
-                            <tfcwpf:LabeledTextBox.InputBindings>
-                                <KeyBinding Key="Enter" Command="{Binding Path=CloneRepositoryCommand}"/>
-                            </tfcwpf:LabeledTextBox.InputBindings>
-                        </tfcwpf:LabeledTextBox>
-
-                        <Button x:Uid="cloneBrowseButton" Grid.Row="1" Grid.Column="1"
-                        Margin="3,0,0,6" Padding="2,0,2,0" MinWidth="0" MinHeight="0" VerticalAlignment="Stretch"
-                        AutomationProperties.Name="Browse for Folder"
-                        Content="..." Localization.Attributes="Content (Unmodifiable Readable Text) Content (Modifiable Readable Text)"
-                        Command="{Binding Path=BrowseForFolderCommand, RelativeSource={RelativeSource AncestorType={x:Type local:RepositoryListSectionView}}}"
-                        Visibility="{Binding Path=JobProgressVm.IsProgressPaneDisplayed, Converter={StaticResource TrueToVisibleConverter}, ConverterParameter=Invert}"/>
-
-                        <CheckBox x:Uid="cloneRecurseCheckBox" x:Name="cloneRecurseCheckBox" Grid.Row="2" Grid.Column="0" Margin="0,0,0,6"
-                          Content="Recursively Clone Submodules" Localization.Attributes="Text (Modifiable Readable Text)"
-                          IsChecked="{Binding Path=CloneRecurseSubmodules, Mode=TwoWay}"
-                          Visibility="{Binding Path=JobProgressVm.IsProgressPaneDisplayed, Converter={StaticResource TrueToVisibleConverter}, ConverterParameter=Invert}">
-                            <AutomationProperties.Name>Recursive</AutomationProperties.Name>
-                        </CheckBox>
-
-                        <!-- Clone Actions -->
-                        <WrapPanel x:Uid="cloneActionsPanel" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,0,0"
-                           Visibility="{Binding Path=JobProgressVm.IsProgressPaneDisplayed, Converter={StaticResource TrueToVisibleConverter}, ConverterParameter=Invert}">
-                            <Button x:Uid="cloneButton"
-                            x:Name="cloneButton"
-                            Margin="0"
-                            Padding="6,2,6,2"
-                            MinWidth="75"
-                            MinHeight="23"
-                            VerticalAlignment="Center"
-                            Command="{Binding Path=CloneRepositoryCommand}">_Clone</Button>
-
-                            <tfcte:TextLink x:Uid="cancelCloneLink" VerticalAlignment="Center" Margin="6,0,0,0"
-                                    Text="Cancel" Localization.Attributes="Text (Modifiable Readable Text)"
-                                    Command="{Binding Path=CancelCloneOptionsCommand}"/>
-                        </WrapPanel>
-
-                        <!-- Clone Progress -->
-                        <gitCommonControls:LabeledProgress x:Uid="cloneProgress"
-                                                   Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,0,0"
-                                                   Visibility="{Binding Path=JobProgressVm.IsProgressPaneDisplayed, Converter={StaticResource TrueToVisibleConverter}}"
-                                                   MaxProgressValue="{Binding Path=JobProgressVm.ProgressTotal}"
-                                                   ProgressValue="{Binding Path=JobProgressVm.ProgressCurrent}"
-                                                   BottomLabel="{Binding Path=JobProgressVm.Message}"
-                                                   CancelCommand="{Binding Path=JobProgressVm.CancelCurrentOperationCommand}"
-                                                   IndeterminateProgress="{Binding Path=JobProgressVm.IsProgressIndeterminate}"
-												   IsCancelable="{Binding Path=JobProgressVm.IsCancellationSupported}"
-                                                   TopLabel="{Binding Path=JobProgressVm.Label}" />
-                    </Grid>
+            <DockPanel DockPanel.Dock="Top" Margin="16,0,0,0" 
+                       Visibility="{Binding ElementName=ToggleButtonConnections, Path=IsChecked, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}">
+                <WrapPanel DockPanel.Dock="Top" Margin="1,4,0,6">
+                    <Button x:Name="ToggleButtonAdd" Style="{StaticResource HyperlinkDownArrowButton}"
+                            IsEnabled="{Binding Path=NewConnection, Converter={x:Static rwpf:Converters.NullIsTrue}}"
+                            Content="{x:Static components:Resources.ConnectionManager_Add}"
+                            Click="ButtonAdd_Click"/>
+                </WrapPanel>
+                
+                <!-- Add options panel -->
+                <Border DockPanel.Dock="Top" Margin="0,0,6,6" Style="{StaticResource InputBorderStyle}"
+                        Visibility="{Binding Path=NewConnection, Converter={x:Static rwpf:Converters.NullIsCollapsed}}">
+                    <ContentPresenter DataContext="{Binding Path=NewConnection}" ContentTemplate="{StaticResource EditConnectionDataTemplate}" />
                 </Border>
 
                 <!-- List -->
-                <Grid Grid.Row="2" Grid.Column="1">
+                <Grid DockPanel.Dock="Top">
                     <ListBox x:Name="List" Style="{StaticResource ConnectionsListBox}" SelectionChanged="List_SelectionChanged" />
                 </Grid>
-
-                <!-- right side -->
-                <Grid Grid.Row="2" Margin="24,8,7,8" DataContext="{Binding Path=SelectedConnection}" 
-                      Visibility="Collapsed">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="8" />
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="8" />
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="8" />
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="8" />
-                        <RowDefinition Height="auto" />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="auto" />
-                        <ColumnDefinition Width="6" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-
-                    <!-- row 0 -->
-                    <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="Bold" 
-                                   Text="{x:Static components:Resources.ConnectionManager_Name}" />
-
-                    <TextBox Grid.Row="0" Grid.Column="2" VerticalAlignment="Top" VerticalContentAlignment="Center"
-                                 Text="{Binding Path=Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-
-                    <!-- row 2 -->
-                    <TextBlock Grid.Row="2" Grid.Column="0" FontWeight="Bold" 
-                                   Text="{x:Static components:Resources.ConnectionManager_Path}" />
-
-                    <TextBox Grid.Row="2" Grid.Column="2" VerticalAlignment="Top" VerticalContentAlignment="Center"
-                                 Text="{Binding Path=Path, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-
-                    <!-- row 4 -->
-                    <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" FontWeight="Bold" 
-                                   Text="{x:Static components:Resources.ConnectionManager_RCommandLineArguments}" />
-
-                    <TextBox Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Top" VerticalContentAlignment="Center"
-                                 Text="{Binding Path=RCommandLineArguments, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-
-                    <!-- row 6 -->
-                    <Grid Grid.Row="8" ColumnSpan="3">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="auto" />
-                            <ColumnDefinition Width="6" />
-                            <ColumnDefinition Width="auto" />
-                            <ColumnDefinition Width="6" />
-                            <ColumnDefinition Width="auto" />
-                        </Grid.ColumnDefinitions>
-                        <Button Grid.Row="8" Grid.Column="1" MinWidth="80" MinHeight="24" HorizontalAlignment="Left" Click="ButtonCancel_Click"
-                                    Content="{x:Static components:Resources.ConnectionManager_Cancel}" IsEnabled="{Binding Path=HasChanges}" />
-                        <Button Grid.Row="8" Grid.Column="3" MinWidth="80" MinHeight="24" HorizontalAlignment="Left" Click="ButtonSave_Click"
-                                    Content="{x:Static components:Resources.ConnectionManager_Save}" IsEnabled="{Binding Path=HasChanges}" />
-                        <Button Grid.Row="8" Grid.Column="5" MinWidth="80" MinHeight="24" HorizontalAlignment="Left" Click="ButtonConnect_Click"
-                                    Content="{x:Static components:Resources.ConnectionManager_Connect}">
-                            <Button.IsEnabled>
-                                <MultiBinding Converter="{x:Static rwpf:Converters.All}">
-                                    <Binding Path="CanConnect" />
-                                    <Binding Path="IsConnected" Converter="{x:Static rwpf:Converters.Not}" />
-                                </MultiBinding>
-                            </Button.IsEnabled>
-                        </Button>
-                    </Grid>
-
-                </Grid>
-            </Grid>
+            </DockPanel>
         </DockPanel>
     </ScrollViewer>
 </UserControl>

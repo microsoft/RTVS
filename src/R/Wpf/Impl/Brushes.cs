@@ -18,6 +18,10 @@ namespace Microsoft.R.Wpf {
         public static object ContentMouseOverTextBrushKey { get; set; } = SystemColors.ControlTextBrushKey;
         public static object ContentSelectedBrushKey { get; set; } = SystemColors.ActiveCaptionBrushKey;
         public static object ContentSelectedTextBrushKey { get; set; } = SystemColors.ActiveCaptionTextBrushKey;
+        public static object ControlKey { get; set; } = SystemColors.ControlBrushKey;
+        public static object ControlDarkKey { get; set; } = SystemColors.ControlDarkBrushKey;
+        public static object ControlLightKey { get; set; } = SystemColors.ControlLightBrushKey;
+        public static object ControlTextKey { get; set; } = SystemColors.ControlTextBrushKey;
         public static object ControlLinkTextHoverKey { get; set; } = SystemColors.HotTrackBrushKey;
         public static object ControlLinkTextKey { get; set; } = SystemColors.HighlightBrushKey;
         public static object DetailPaneBackgroundKey { get; set; } = SystemColors.WindowBrushKey;

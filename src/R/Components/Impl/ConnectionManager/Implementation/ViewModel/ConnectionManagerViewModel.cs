@@ -1,7 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Disposables;
@@ -10,6 +12,7 @@ using Microsoft.Common.Wpf;
 using Microsoft.Common.Wpf.Collections;
 using Microsoft.R.Components.ConnectionManager.ViewModel;
 using Microsoft.R.Components.Extensions;
+using Microsoft.R.Interpreters;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
     internal sealed class ConnectionManagerViewModel : BindableBase, IConnectionManagerViewModel {
@@ -18,6 +21,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private readonly BatchObservableCollection<IConnectionViewModel> _items;
         private readonly DisposableBag _disposableBag;
         private IConnectionViewModel _selectedConnection;
+        private IConnectionViewModel _newConnection;
         private bool _isConnected;
 
         public ConnectionManagerViewModel(IConnectionManager connectionManager, ICoreShell shell) {
@@ -38,6 +42,11 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         }
 
         public ReadOnlyObservableCollection<IConnectionViewModel> Items { get; }
+
+        public IConnectionViewModel NewConnection {
+            get { return _newConnection; }
+            private set { SetProperty(ref _newConnection, value); }
+        }
 
         public IConnectionViewModel SelectedConnection {
             get { return _selectedConnection; }
@@ -62,7 +71,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                         SaveSelected();
                         break;
                     case MessageButtons.No:
-                        CancelSelected();
+                        CancelNew();
                         break;
                     default:
                         return;
@@ -73,13 +82,46 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         }
 
         public void AddNew() {
-            SelectConnection(new ConnectionViewModel());
+            _shell.AssertIsOnMainThread();
+            NewConnection = new ConnectionViewModel();
         }
 
-        public void CancelSelected() {
+        public void CancelNew() {
             _shell.AssertIsOnMainThread();
-            SelectedConnection?.Reset();
+            NewConnection = null;
         }
+
+        public void BrowseLocalPath(IConnectionViewModel connection) {
+            string latestLocalPath;
+            Uri latestLocalPathUri;
+
+            if (connection.Path != null && Uri.TryCreate(connection.Path, UriKind.Absolute, out latestLocalPathUri) && latestLocalPathUri.IsFile && !latestLocalPathUri.IsUnc) {
+                latestLocalPath = latestLocalPathUri.LocalPath;
+            } else { 
+                latestLocalPath = Environment.SystemDirectory;
+
+                try {
+                    latestLocalPath = new RInstallation().GetCompatibleEnginePathFromRegistry();
+                    if (string.IsNullOrEmpty(latestLocalPath) || !Directory.Exists(latestLocalPath)) {
+                        // Force 64-bit PF
+                        latestLocalPath = Environment.GetEnvironmentVariable("ProgramFiles");
+                    }
+                }
+                catch (ArgumentException) { }
+                catch (IOException) { }
+            }
+
+            var path = _shell.ShowBrowseDirectoryDialog(latestLocalPath);
+            if (path != null) {
+                connection.Path = path;
+            }
+        }
+
+        public void Edit(IConnectionViewModel connection) {
+            
+        }
+
+        public Task TestConnectionAsync(IConnectionViewModel connection) => Task.CompletedTask;
 
         public void SaveSelected() {
             _shell.AssertIsOnMainThread();

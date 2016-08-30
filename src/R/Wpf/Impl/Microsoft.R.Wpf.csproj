@@ -38,6 +38,7 @@
     </Compile>
     <Compile Include="BindableBase.cs" />
     <Compile Include="Brushes.cs" />
+    <Compile Include="Controls\Watermark.cs" />
     <Compile Include="Converters.cs" />
     <Compile Include="CommonResources.xaml.cs">
       <DependentUpon>CommonResources.xaml</DependentUpon>

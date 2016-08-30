@@ -240,13 +240,14 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         public string SaveFileIfDirty(string fullPath) =>
             new RunningDocumentTable(RPackage.Current).SaveFileIfDirty(fullPath);
 
-        public string ShowOpenFileDialog(string filter, string initialPath = null, string title = null) {
-            return BrowseForFileOpen(IntPtr.Zero, filter, initialPath, title);
-        }
+        public string ShowOpenFileDialog(string filter, string initialPath = null, string title = null) 
+            => BrowseForFileOpen(IntPtr.Zero, filter, initialPath, title);
 
-        public string ShowSaveFileDialog(string filter, string initialPath = null, string title = null) {
-            return BrowseForFileSave(IntPtr.Zero, filter, initialPath, title);
-        }
+        public string ShowBrowseDirectoryDialog(string initialPath = null, string title = null)
+            => VisualStudioTools.Dialogs.BrowseForDirectory(this.GetDialogOwnerWindow(), initialPath, title);
+
+        public string ShowSaveFileDialog(string filter, string initialPath = null, string title = null) 
+            => BrowseForFileSave(IntPtr.Zero, filter, initialPath, title);
 
         public void UpdateCommandStatus(bool immediate) {
             DispatchOnUIThread(() => {

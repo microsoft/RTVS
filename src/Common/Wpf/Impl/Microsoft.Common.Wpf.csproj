@@ -36,6 +36,7 @@
     </Compile>
     <Compile Include="BindableBase.cs" />
     <Compile Include="Collections\BatchObservableCollection.cs" />
+    <Compile Include="Controls\Overlay.cs" />
     <Compile Include="Extensions\VisualTreeExtensions.cs" />
     <Compile Include="Imaging\BitmapImageFactory.cs" />
     <Compile Include="LambdaConverter\ILambdaConverterProvider.cs" />
@@ -62,6 +63,5 @@
       <Name>Microsoft.Common.Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
