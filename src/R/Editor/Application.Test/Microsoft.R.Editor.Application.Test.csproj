@@ -135,8 +135,9 @@
   <ItemGroup>
     <Compile Include="Completion\ProvisionalTextTest.cs" />
     <Compile Include="Documentation\SelectionTest.cs" />
-    <Compile Include="EditorAppTestFilesFixture.cs" />
-    <Compile Include="EditorHostMethodFixture.cs" />
+    <Compile Include="Fixtures\BrokerFixture.cs" />
+    <Compile Include="Fixtures\EditorAppTestFilesFixture.cs" />
+    <Compile Include="Fixtures\EditorHostMethodFixture.cs" />
     <Compile Include="EditorScript.cs" />
     <Compile Include="Formatting\FormatDocumentTest.cs" />
     <Compile Include="Formatting\FormatSelectionTest.cs" />
@@ -146,7 +147,7 @@
     <Compile Include="Markdown\RmdClassificationTest.cs" />
     <Compile Include="Markdown\MarkdownRCompletionTest.cs" />
     <Compile Include="Outline\OutlineTest.cs" />
-    <Compile Include="REditorMefCatalogFixture.cs" />
+    <Compile Include="Fixtures\REditorMefCatalogFixture.cs" />
     <Compile Include="Selection\SelectionTest.cs" />
     <Compile Include="Signatures\SignatureTest.cs" />
     <Compile Include="SuggestedActions\SmartTagsTest.cs" />

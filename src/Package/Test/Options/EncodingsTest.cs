@@ -1,12 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Host;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.Options.R.Tools;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -18,25 +16,20 @@ namespace Microsoft.VisualStudio.R.Package.Test.Options {
     [ExcludeFromCodeCoverage]
     [Category.Repl]
     [Collection(CollectionNames.NonParallel)]
-    public class EncodingsTest: IDisposable {
-        private readonly IRHostBrokerConnector _brokerConnector;
+    public class EncodingsTest {
+        private readonly BrokerFixture _broker;
         private readonly IRSessionProvider _sessionProvider;
 
-        public EncodingsTest() {
-            _brokerConnector = new RHostBrokerConnector();
-            _brokerConnector.SwitchToLocalBroker(nameof(EncodingsTest));
+        public EncodingsTest(BrokerFixture broker) {
+            _broker = broker;
             _sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-        }
-
-        public void Dispose() {
-            _brokerConnector.Dispose();
         }
 
         [Test]
         public void ValidateEncodings() {
             var etc = new EncodingTypeConverter();
             var codePages = etc.GetStandardValues();
-            using(var script = new VsRHostScript(_sessionProvider, _brokerConnector)) {
+            using(var script = new VsRHostScript(_sessionProvider, _broker.BrokerConnector)) {
                 foreach (var cp in codePages) {
                     if ((int)cp > 0) {
                         var completed = Task.Run(async () => {

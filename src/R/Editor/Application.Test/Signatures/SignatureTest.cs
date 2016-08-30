@@ -6,7 +6,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Test.Utility;
@@ -21,9 +20,11 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
     public class SignatureTest : IDisposable {
         private readonly IExportProvider _exportProvider;
         private readonly EditorHostMethodFixture _editorHost;
+        private readonly BrokerFixture _broker;
 
-        public SignatureTest(REditorApplicationMefCatalogFixture catalogFixture, EditorHostMethodFixture editorHost) {
+        public SignatureTest(REditorApplicationMefCatalogFixture catalogFixture, BrokerFixture broker, EditorHostMethodFixture editorHost) {
             _exportProvider = catalogFixture.CreateExportProvider();
+            _broker = broker;
             _editorHost = editorHost;
         }
 
@@ -36,7 +37,7 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
         public async Task R_SignatureParametersMatch() {
             using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 IntelliSenseRSession.HostStartTimeout = 10000;
-                using (new RHostScript(_exportProvider)) {
+                using (new RHostScript(_exportProvider, _broker.BrokerConnector)) {
                     var functionIndex = await PrepareFunctionIndexAsync();
                     await PackageIndexUtility.GetFunctionInfoAsync(functionIndex, "lm");
 
@@ -72,7 +73,7 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
         public async Task R_SignatureSessionNavigation() {
             using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 IntelliSenseRSession.HostStartTimeout = 10000;
-                using (new RHostScript(_exportProvider)) {
+                using (new RHostScript(_exportProvider, _broker.BrokerConnector)) {
                     var functionIndex = await PrepareFunctionIndexAsync();
                     await PackageIndexUtility.GetFunctionInfoAsync(functionIndex, "lm");
 

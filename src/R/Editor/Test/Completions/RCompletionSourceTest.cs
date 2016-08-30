@@ -3,28 +3,17 @@
 
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
-using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Core.AST;
-using Microsoft.R.Core.Parser;
-using Microsoft.R.Editor.Completion;
-using Microsoft.R.Editor.Test.Utility;
-using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.XUnit;
-using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Language.Intellisense;
-using Microsoft.VisualStudio.Text;
 using Xunit;
 
 namespace Microsoft.R.Editor.Test.Completions {
     [ExcludeFromCodeCoverage]
     [Category.R.Completion]
-    public class RCompletionSourceTest : FunctionIndexBasedTest {
-        public RCompletionSourceTest(REditorMefCatalogFixture catalog): base(catalog) { }
+    public class RCompletionSourceTest : RCompletionSourceTestBase {
+        public RCompletionSourceTest(REditorMefCatalogFixture catalog) : base(catalog) { }
 
         [Test]
         public void BaseFunctions01() {
@@ -236,7 +225,7 @@ bbb123 = 1
         [Test]
         public void UserVariables03() {
             var completionSets = new List<CompletionSet>();
-            var content = 
+            var content =
 @"x123 <- 1
 for(x456 in 1:10) x";
 
@@ -342,57 +331,6 @@ aaa(a
 
             completionSets[0].Completions.Should().NotBeEmpty()
                 .And.Contain(c => c.DisplayText == "a =");
-        }
-
-        [Test]
-        public async Task InstallPackageTest01() {
-            using (var script = new RHostScript(_exportProvider)) {
-                try {
-                    await script.Session.ExecuteAsync("remove.packages('abc')", REvaluationKind.Mutating);
-                } catch(RException) { }
-
-                await _packageIndex.BuildIndexAsync();
-
-                var completionSets = new List<CompletionSet>();
-                GetCompletions("abc::", 5, completionSets);
-
-                completionSets.Should().ContainSingle();
-                completionSets[0].Completions.Should().BeEmpty();
-
-                try {
-                    await script.Session.ExecuteAsync("install.packages('abc')", REvaluationKind.Mutating);
-                } catch (RException) { }
-
-                await _packageIndex.BuildIndexAsync();
-
-                completionSets.Clear();
-                GetCompletions("abc::", 5, completionSets);
-
-                completionSets.Should().ContainSingle();
-                completionSets[0].Completions.Should().NotBeEmpty();
-            }
-        }
-
-        private void GetCompletions(string content, int lineNumber, int column, IList<CompletionSet> completionSets, ITextRange selectedRange = null) {
-            TextBufferMock textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            var line = textBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber);
-            GetCompletions(content, line.Start + column, completionSets, selectedRange);
-        }
-
-        private void GetCompletions(string content, int caretPosition, IList<CompletionSet> completionSets, ITextRange selectedRange = null) {
-            AstRoot ast = RParser.Parse(content);
-
-            TextBufferMock textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            TextViewMock textView = new TextViewMock(textBuffer, caretPosition);
-
-            if (selectedRange != null) {
-                textView.Selection.Select(new SnapshotSpan(textBuffer.CurrentSnapshot, selectedRange.Start, selectedRange.Length), false);
-            }
-
-            CompletionSessionMock completionSession = new CompletionSessionMock(textView, completionSets, caretPosition);
-            RCompletionSource completionSource = new RCompletionSource(textBuffer, _exportProvider.GetExportedValue<ICoreShell>());
-
-            completionSource.PopulateCompletionList(caretPosition, completionSession, completionSets, ast);
         }
     }
 }

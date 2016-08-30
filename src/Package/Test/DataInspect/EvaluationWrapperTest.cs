@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Host;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.DataInspect;
 using Microsoft.VisualStudio.R.Package.DataInspect.DataSource;
@@ -19,12 +18,11 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]   // required for tests using R Host 
     public sealed class EvaluationWrapperTest : IAsyncLifetime {
-        private readonly IRHostBrokerConnector _brokerConnector;
+        private readonly BrokerFixture _broker;
         private readonly IRSessionProvider _sessionProvider;
 
-        public EvaluationWrapperTest() {
-            _brokerConnector = new RHostBrokerConnector();
-            _brokerConnector.SwitchToLocalBroker(nameof(EvaluationWrapperTest));
+        public EvaluationWrapperTest(BrokerFixture broker) {
+            _broker = broker;
             _sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
         }
 
@@ -34,10 +32,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         }
 
         public Task DisposeAsync() {
-            _brokerConnector.Dispose();
             return Task.CompletedTask;
         }
-
 
         // TODO: RStudio difference
         //    value.integer.1   RS 1L                    RTVS just 1
@@ -100,7 +96,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                 CanShowDetail = expectedCanShowDetail
             };
 
-            using (var hostScript = new VariableRHostScript(_sessionProvider, _brokerConnector)) {
+            using (var hostScript = new VariableRHostScript(_sessionProvider, _broker.BrokerConnector)) {
                 await hostScript.EvaluateAndAssert(script, expected, VariableRHostScript.AssertEvaluationWrapper);
             }
         }
@@ -138,7 +134,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         [Test]
         [Category.Variable.Explorer]
         public async Task TruncateGrandChildrenTest() {
-            using (var hostScript = new VariableRHostScript(_sessionProvider, _brokerConnector)) {
+            using (var hostScript = new VariableRHostScript(_sessionProvider, _broker.BrokerConnector)) {
                 await hostScript.EvaluateAsync("x.truncate.children<-1:100");
                 var children = await hostScript.GlobalEnvrionment.GetChildrenAsync();
                 var child = children.First(c => c.Name == "x.truncate.children");
@@ -163,7 +159,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                 CanShowDetail = true
             };
 
-            using (var hostScript = new VariableRHostScript(_sessionProvider, _brokerConnector)) {
+            using (var hostScript = new VariableRHostScript(_sessionProvider, _broker.BrokerConnector)) {
                 var evaluation = (VariableViewModel)await hostScript.EvaluateAndAssert(
                     script,
                     expectation,
@@ -198,7 +194,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             var script = "matrix.named <- matrix(1:10, 2, 5, dimnames = list(r = c('r1', 'r2'), c = c('a', 'b', 'c', 'd', 'e')))";
             var expectation = new VariableExpectation() { Name = "matrix.named", Value = "int [1:2, 1:5] 1 2 3 4 5 6 7 8 9 10", TypeName = "integer", Class = "matrix", HasChildren = true, CanShowDetail = true };
 
-            using (var hostScript = new VariableRHostScript(_sessionProvider, _brokerConnector)) {
+            using (var hostScript = new VariableRHostScript(_sessionProvider, _broker.BrokerConnector)) {
                 var evaluation = (VariableViewModel)await hostScript.EvaluateAndAssert(
                     script,
                     expectation,
@@ -233,7 +229,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             var script = "matrix.na.header <- matrix(c(1, 2, 3, 4, NA, NaN, 7, 8, 9, 10), 2, 5, dimnames = list(r = c('r1', NA), c = c('a', 'b', NA, 'd', NA)))";
             var expectation = new VariableExpectation() { Name = "matrix.na.header", Value = "num [1:2, 1:5] 1 2 3 4 NA NaN 7 8 9 10", TypeName = "double", Class = "matrix", HasChildren = true, CanShowDetail = true };
 
-            using (var hostScript = new VariableRHostScript(_sessionProvider, _brokerConnector)) {
+            using (var hostScript = new VariableRHostScript(_sessionProvider, _broker.BrokerConnector)) {
                 var evaluation = (VariableViewModel)await hostScript.EvaluateAndAssert(
                     script,
                     expectation,
@@ -285,7 +281,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                 CanShowDetail = true
             };
 
-            using (var hostScript = new VariableRHostScript(_sessionProvider, _brokerConnector)) {
+            using (var hostScript = new VariableRHostScript(_sessionProvider, _broker.BrokerConnector)) {
                 var evaluation = (VariableViewModel)await hostScript.EvaluateAndAssert(
                     script1,
                     expectation1,
@@ -339,7 +335,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             var script = "matrix.rowname.na <- matrix(c(1,2,3,4), nrow=2, ncol=2);rownames(matrix.rowname.na)<-c(NA, 'row2');";
             var expectation = new VariableExpectation() { Name = "matrix.rowname.na", Value = "num [1:2, 1:2] 1 2 3 4", TypeName = "double", Class = "matrix", HasChildren = true, CanShowDetail = true };
 
-            using (var hostScript = new VariableRHostScript(_sessionProvider, _brokerConnector)) {
+            using (var hostScript = new VariableRHostScript(_sessionProvider, _broker.BrokerConnector)) {
                 var evaluation = (VariableViewModel)await hostScript.EvaluateAndAssert(
                     script,
                     expectation,
@@ -371,7 +367,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             var script = "matrix.colname.na <- matrix(1:6, nrow=2, ncol=3);colnames(matrix.colname.na)<-c('col1',NA,'col3');";
             var expectation = new VariableExpectation() { Name = "matrix.colname.na", Value = "int [1:2, 1:3] 1 2 3 4 5 6", TypeName = "integer", Class = "matrix", HasChildren = true, CanShowDetail = true };
 
-            using (var hostScript = new VariableRHostScript(_sessionProvider, _brokerConnector)) {
+            using (var hostScript = new VariableRHostScript(_sessionProvider, _broker.BrokerConnector)) {
                 var evaluation = (VariableViewModel)await hostScript.EvaluateAndAssert(
                     script,
                     expectation,
@@ -406,7 +402,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             var script = "matrix.largecell <- matrix(list(as.double(1:5000), 2, 3, 4), nrow = 2, ncol = 2);";
             var expectation = new VariableExpectation() { Name = "matrix.largecell", Value = "List of 4", TypeName = "list", Class = "matrix", HasChildren = true, CanShowDetail = true };
 
-            using (var hostScript = new VariableRHostScript(_sessionProvider, _brokerConnector)) {
+            using (var hostScript = new VariableRHostScript(_sessionProvider, _broker.BrokerConnector)) {
                 var evaluation = (VariableViewModel)await hostScript.EvaluateAndAssert(
                     script,
                     expectation,
@@ -430,7 +426,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             var script = "df.test <- data.frame(101:103, c('\"a', 'b', 'c'))";
             var expectation = new VariableExpectation() { Name = "df.test", Value = "3 obs. of  2 variables", TypeName = "list", Class = "data.frame", HasChildren = true, CanShowDetail = true };
 
-            using (var hostScript = new VariableRHostScript(_sessionProvider, _brokerConnector)) {
+            using (var hostScript = new VariableRHostScript(_sessionProvider, _broker.BrokerConnector)) {
                 var evaluation = (VariableViewModel)await hostScript.EvaluateAndAssert(
                     script,
                     expectation,
@@ -481,7 +477,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             var script = "df.lang <- data.frame(col1=c('a','中'),col2=c('國','d'),row.names = c('マイクロソフト','row2'));";
             var expectation = new VariableExpectation() { Name = "df.lang", Value = "2 obs. of  2 variables", TypeName = "list", Class = "data.frame", HasChildren = true, CanShowDetail = true };
 
-            using (var hostScript = new VariableRHostScript(_sessionProvider, _brokerConnector)) {
+            using (var hostScript = new VariableRHostScript(_sessionProvider, _broker.BrokerConnector)) {
                 var evaluation = (VariableViewModel)await hostScript.EvaluateAndAssert(
                     script,
                     expectation,
@@ -512,7 +508,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         public async Task DataFrameManyColumnTest() {
             var script = "df.manycolumn<-data.frame(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30);";
             var expectation = new VariableExpectation() { Name = "df.manycolumn", Value = "1 obs. of  30 variables", TypeName = "list", Class = "data.frame", HasChildren = true, CanShowDetail = true };
-            using (var hostScript = new VariableRHostScript(_sessionProvider, _brokerConnector)) {
+            using (var hostScript = new VariableRHostScript(_sessionProvider, _broker.BrokerConnector)) {
                 var evaluation = (VariableViewModel)await hostScript.EvaluateAndAssert(
                     script,
                     expectation,
@@ -532,7 +528,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             var x_expectation = new VariableExpectation() { Name = "x", Value = "1", TypeName = "<promise>", Class = "<promise>", HasChildren = false, CanShowDetail = false };
             var y_expectation = new VariableExpectation() { Name = "z", Value = "3", TypeName = "<promise>", Class = "<promise>", HasChildren = false, CanShowDetail = false };
 
-            using (var hostScript = new VariableRHostScript(_sessionProvider, _brokerConnector)) {
+            using (var hostScript = new VariableRHostScript(_sessionProvider, _broker.BrokerConnector)) {
                 var evaluation = (VariableViewModel)await hostScript.EvaluateAndAssert(
                     script,
                     expectation,
@@ -552,7 +548,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             // This is the equivalent of what we get when we fetch a variable
             // for a data grid after that variable is no longer available (rm or reset).
             var script = "idonotexist";
-            using (var hostScript = new VariableRHostScript(_sessionProvider, _brokerConnector)) {
+            using (var hostScript = new VariableRHostScript(_sessionProvider, _broker.BrokerConnector)) {
                 var evaluationResult = await hostScript.EvaluateAsync(script);
                 evaluationResult.Name.Should().BeNull();
                 evaluationResult.Expression.Should().Be("idonotexist");
@@ -596,7 +592,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         }
 
         private async Task RunTest(object[,] testData) {
-            using (var hostScript = new VariableRHostScript(_sessionProvider, _brokerConnector)) {
+            using (var hostScript = new VariableRHostScript(_sessionProvider, _broker.BrokerConnector)) {
                 int testCount = testData.GetLength(0);
 
                 for (int i = 0; i < testCount; i++) {

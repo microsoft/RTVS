@@ -26,9 +26,11 @@ namespace Microsoft.R.Editor.Test.Navigation {
     [Category.R.Navigation]
     public class RPeekableItemSourceTest : IDisposable {
         private readonly IExportProvider _exportProvider;
+        private readonly BrokerFixture _broker;
 
-        public RPeekableItemSourceTest(REditorMefCatalogFixture catalog) {
+        public RPeekableItemSourceTest(REditorMefCatalogFixture catalog, BrokerFixture broker) {
             _exportProvider = catalog.CreateExportProvider();
+            _broker = broker;
         }
 
         public void Dispose() {
@@ -80,7 +82,7 @@ x <- function(a) {
 
         [Test]
         public void PeekInternalFunction01() {
-            using (new RHostScript(_exportProvider)) {
+            using (new RHostScript(_exportProvider, _broker.BrokerConnector)) {
                 string content = @"lm()";
                 RunInternalItemPeekTest(content, 0, 1, "lm");
             }
