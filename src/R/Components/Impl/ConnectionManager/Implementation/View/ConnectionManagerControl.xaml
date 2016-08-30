@@ -46,19 +46,19 @@
                         </Grid.ColumnDefinitions>
 
                         <TextBox Grid.Row="0" Grid.Column="0" Style="{StaticResource InputTextBoxStyle}"
-                                     Text="{Binding Path=Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                     controls:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_Name}" />
+                                 Text="{Binding Path=Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 controls:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_Name}" />
 
                         <TextBox Grid.Row="1" Grid.Column="0" Style="{StaticResource InputTextBoxStyle}" 
-                                     Text="{Binding Path=Path, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                     controls:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_Path}" />
+                                 Text="{Binding Path=Path, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 controls:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_Path}" />
 
                         <Button Grid.Row="1" Grid.Column="1" Margin="3,0,0,6" Padding="2,0,2,0" Content="..." 
-                                    VerticalAlignment="Stretch" MinHeight="0" MinWidth="0" Click="ButtonPath_Click"/>
+                                VerticalAlignment="Stretch" MinHeight="0" MinWidth="0" Click="ButtonPath_Click"/>
 
                         <TextBox Grid.Row="2" Grid.Column="0" Style="{StaticResource InputTextBoxStyle}" 
-                                     Text="{Binding Path=RCommandLineArguments, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                     controls:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_RCommandLineArguments}" />
+                                 Text="{Binding Path=RCommandLineArguments, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 controls:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_RCommandLineArguments}" />
 
                         <WrapPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,0,0">
                             <Button Margin="0,0,4,0" Padding="6,2,6,2" MinWidth="75" MinHeight="23"
@@ -85,6 +85,35 @@
                 </AdornerDecorator>
             </DataTemplate>
 
+            <DataTemplate x:Key="ConnectButtonDataTemplate" DataType="{x:Type viewModel:IConnectionViewModel}">
+                <StackPanel  Margin="14,1,6,1">
+                    <!-- Connect button -->
+                    <Button x:Name="ButtonConnect" Style="{StaticResource ToolWindowButtonStyle}" Click="ButtonConnect_Click" 
+                            VerticalAlignment="Center" Padding="0" BorderThickness="0"
+                            Visibility="{Binding Path=IsConnected, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}">
+                        <Button.ToolTip>
+                            <TextBlock Text="{Binding Path=Name, StringFormat={x:Static components:Resources.ConnectionManager_ConnectTooltip}}" />
+                        </Button.ToolTip>
+                        <Grid>
+                            <Grid Visibility="{Binding Path=IsActive, Converter={x:Static rwpf:Converters.FalseIsNotCollapsed}}">
+                                <Rectangle Width="18" Height="18" SnapsToDevicePixels="True" Fill="{StaticResource IconRLocalInactive}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}" />
+                                <Rectangle Width="18" Height="18" SnapsToDevicePixels="True" Fill="{StaticResource IconRCloudInactive}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"/>
+                            </Grid>
+                            <Grid Visibility="{Binding Path=IsActive, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}">
+                                <Rectangle Width="18" Height="18" SnapsToDevicePixels="True" Fill="{StaticResource IconRLocalDisconnected}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}" />
+                                <Rectangle Width="18" Height="18" SnapsToDevicePixels="True" Fill="{StaticResource IconRCloudDisconnected}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"/>
+                            </Grid>
+                        </Grid>
+                    </Button>
+
+                    <!-- Connected icon -->
+                    <Grid Visibility="{Binding Path=IsConnected, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}" VerticalAlignment="Center">
+                        <Rectangle Width="18" Height="18" SnapsToDevicePixels="True" Fill="{StaticResource IconRLocalConnected}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}" />
+                        <Rectangle Width="18" Height="18" SnapsToDevicePixels="True" Fill="{StaticResource IconRCloudConnected}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"/>
+                    </Grid>
+                </StackPanel>
+            </DataTemplate>
+            
             <DataTemplate DataType="{x:Type viewModel:IConnectionViewModel}">
                 <Border BorderThickness="0,0,0,0" BorderBrush="{DynamicResource {x:Static rwpf:Brushes.ActiveBorderKey}}" Background="Transparent" x:Name="Container">
                     <Grid MinHeight="20">
@@ -98,29 +127,8 @@
                         </Grid.ColumnDefinitions>
 
                         <!-- Connect button -->
-                        <Button x:Name="ButtonConnect" Grid.Column="0" Style="{StaticResource ToolWindowButtonStyle}" Click="ButtonConnect_Click" 
-                                VerticalAlignment="Center" Margin="14,1,6,1" Padding="0" BorderThickness="0"
-                                Visibility="{Binding Path=IsConnected, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}">
-                            <Button.ToolTip>
-                                <TextBlock Text="{Binding Path=Name, StringFormat={x:Static components:Resources.ConnectionManager_ConnectTooltip}}" />
-                            </Button.ToolTip>
-                            <Grid>
-                                <Grid Visibility="{Binding Path=IsActive, Converter={x:Static rwpf:Converters.FalseIsNotCollapsed}}">
-                                    <Rectangle Width="18" Height="18" SnapsToDevicePixels="True" Fill="{StaticResource IconRLocalInactive}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}" />
-                                    <Rectangle Width="18" Height="18" SnapsToDevicePixels="True" Fill="{StaticResource IconRCloudInactive}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"/>
-                                </Grid>
-                                <Grid Visibility="{Binding Path=IsActive, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}">
-                                    <Rectangle Width="18" Height="18" SnapsToDevicePixels="True" Fill="{StaticResource IconRLocalDisconnected}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}" />
-                                    <Rectangle Width="18" Height="18" SnapsToDevicePixels="True" Fill="{StaticResource IconRCloudDisconnected}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"/>
-                                </Grid>
-                            </Grid>
-                        </Button>
-
-                        <!-- Connected icon -->
-                        <Grid Grid.Column="0" Visibility="{Binding Path=IsConnected, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}" VerticalAlignment="Center" Margin="14,1,6,1">
-                            <Rectangle Width="18" Height="18" SnapsToDevicePixels="True" Fill="{StaticResource IconRLocalConnected}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}" />
-                            <Rectangle Width="18" Height="18" SnapsToDevicePixels="True" Fill="{StaticResource IconRCloudConnected}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"/>
-                        </Grid>
+                        <ContentPresenter DataContext="{Binding}" Grid.Column="0" 
+                                          ContentTemplate="{StaticResource ConnectButtonDataTemplate}" />
 
                         <!-- Name & path -->
                         <TextBlock Grid.Column="1" Margin="0,1,6,2" Text="{Binding Path=Name}"/>
@@ -150,6 +158,52 @@
                 </DataTemplate.Triggers>
             </DataTemplate>
 
+            <DataTemplate DataType="{x:Type viewModel:IConnectionViewModel}" x:Key="SelectedConnectionDataTemplate">
+                <Border BorderThickness="0,0,0,0" Background="Transparent" x:Name="Container" Margin="0,0,0,2"
+                        BorderBrush="{DynamicResource {x:Static rwpf:Brushes.ActiveBorderKey}}">
+                    <Grid MinHeight="20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <!-- Connect button -->
+                        <ContentPresenter DataContext="{Binding}" Grid.Column="0" Grid.Row="0"
+                                          ContentTemplate="{StaticResource ConnectButtonDataTemplate}" />
+
+                        <!-- Name & path & command line -->
+                        <TextBlock Grid.Column="1" Grid.Row="0" Margin="0,1,6,3" Text="{Binding Path=Name}"
+                                   FontWeight="SemiBold" TextWrapping="Wrap" />
+                        <TextBlock Grid.Column="1" Grid.Row="1" Margin="0,0,3,3" Text="{Binding Path=Path}"
+                                   TextWrapping="Wrap"/>
+                        <TextBlock Grid.Column="1" Grid.Row="2" Margin="0,0,3,3"
+                                   Text="{Binding Path=RCommandLineArguments}" TextWrapping="Wrap"
+                                   Visibility="{Binding Path=RCommandLineArguments, Converter={x:Static rwpf:Converters.NullOrEmptyIsCollapsed}}"/>
+
+                        <!-- edit button -->
+                        <Button x:Name="ButtonEdit" Grid.Column="2" Grid.Row="0" Click="ButtonEdit_Click"
+                                Style="{StaticResource ToolWindowButtonStyle}"
+                                ToolTip="{x:Static components:Resources.ConnectionManager_EditTooltip}">
+                            <Image Source="{x:Static rwpf:ImageSources.Edit}" Width="16" Height="16" />
+                        </Button>
+
+                        <!-- delete button -->
+                        <Button x:Name="ButtonDelete" Grid.Column="3" Grid.Row="0" Click="ButtonDelete_Click"
+                                Style="{StaticResource ToolWindowButtonStyle}"
+                                ToolTip="{x:Static components:Resources.ConnectionManager_DeleteTooltip}">
+                            <Rectangle Fill="{StaticResource IconUninstall}" Width="16" Height="16" />
+                        </Button>
+                    </Grid>
+                </Border>
+            </DataTemplate>
+
             <Style x:Key="ConnectionsListBoxItemStyle" TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource FillingListBoxItemStyle}">
                 <Setter Property="Template">
                     <Setter.Value>
@@ -165,7 +219,7 @@
                                                       HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                                       SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
                                                       VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                                      ContentTemplate="{StaticResource EditConnectionDataTemplate}"
+                                                      ContentTemplate="{StaticResource SelectedConnectionDataTemplate}"
                                                       Visibility="Collapsed"/>
                                 </StackPanel>
                             </Border>
@@ -174,10 +228,14 @@
                                 <Trigger Property="IsEnabled" Value="false">
                                     <Setter Property="Background" TargetName="Border" Value="{DynamicResource {x:Static rwpf:Brushes.ListPaneBackgroundKey}}" />
                                 </Trigger>
-                                <Trigger Property="IsMouseOver" Value="True">
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsMouseOver" Value="True" />
+                                        <Condition Property="IsSelected" Value="False" />
+                                    </MultiTrigger.Conditions>
                                     <Setter Property="Background" TargetName="Border" Value="{DynamicResource {x:Static rwpf:Brushes.ContentMouseOverBrushKey}}" />
                                     <Setter Property="TextBlock.Foreground" Value="{DynamicResource {x:Static rwpf:Brushes.ContentMouseOverTextBrushKey}}" />
-                                </Trigger>
+                                </MultiTrigger>
                                 <Trigger Property="IsSelected" Value="True">
                                     <Setter Property="Visibility" TargetName="RegularContentPresenter" Value="Collapsed" />
                                     <Setter Property="Visibility" TargetName="SelectedContentPresenter" Value="Visible" />
@@ -252,7 +310,7 @@
                 <!-- Add options panel -->
                 <Border DockPanel.Dock="Top" Margin="0,0,6,6" Style="{StaticResource InputBorderStyle}"
                         Visibility="{Binding Path=NewConnection, Converter={x:Static rwpf:Converters.NullIsCollapsed}}">
-                    <ContentPresenter DataContext="{Binding Path=NewConnection}" ContentTemplate="{StaticResource EditConnectionDataTemplate}" />
+                    <ContentPresenter Content="{Binding Path=NewConnection}" ContentTemplate="{StaticResource EditConnectionDataTemplate}" />
                 </Border>
 
                 <!-- List -->

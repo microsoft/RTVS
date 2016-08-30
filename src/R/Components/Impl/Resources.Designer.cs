@@ -133,6 +133,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Edit the connection.
+        /// </summary>
+        public static string ConnectionManager_EditTooltip {
+            get {
+                return ResourceManager.GetString("ConnectionManager_EditTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Enter the name of the connection..
         /// </summary>
         public static string ConnectionManager_Name {

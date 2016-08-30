@@ -15,11 +15,11 @@ namespace Microsoft.R.Components.ConnectionManager.ViewModel {
 
         void SelectConnection(IConnectionViewModel connection);
         void AddNew();
-        void CancelNew();
+        void Cancel(IConnectionViewModel connection);
         void BrowseLocalPath(IConnectionViewModel connection);
         void Edit(IConnectionViewModel connection);
         Task TestConnectionAsync(IConnectionViewModel connection);
-        void SaveSelected();
+        void Save(IConnectionViewModel connectionViewModel);
         bool TryDelete(IConnectionViewModel connection);
 
         Task ConnectAsync(IConnectionViewModel connection);

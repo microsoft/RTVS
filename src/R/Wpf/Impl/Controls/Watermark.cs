@@ -46,7 +46,8 @@ namespace Microsoft.R.Wpf.Controls {
             var textBlock = new TextBlock {
                 Foreground = (Brush)textBox.FindResource(Brushes.GrayTextBrushKey),
                 Margin = new Thickness(2,0,0,0),
-                VerticalAlignment = VerticalAlignment.Center
+                VerticalAlignment = VerticalAlignment.Center,
+                Visibility = string.IsNullOrEmpty(textBox.Text) ? Visibility.Visible : Visibility.Collapsed
             };
 
             textBox.TextChanged += (sender, args) => {

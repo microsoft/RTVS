@@ -327,6 +327,9 @@
   <data name="ConnectionManager_Add" xml:space="preserve">
     <value>Add</value>
   </data>
+  <data name="ConnectionManager_EditTooltip" xml:space="preserve">
+    <value>Edit the connection</value>
+  </data>
   <data name="ConnectionManager_DeleteTooltip" xml:space="preserve">
     <value>Delete the connection</value>
   </data>

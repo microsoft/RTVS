@@ -28,11 +28,11 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
         }
 
         private void ButtonCancel_Click(object sender, RoutedEventArgs e) {
-            Model?.CancelNew();
+            Model?.Cancel(GetConnection(e));
         }
 
         private void ButtonSave_Click(object sender, RoutedEventArgs e) {
-            Model?.SaveSelected();
+            Model?.Save(GetConnection(e));
         }
 
         private void ButtonConnect_Click(object sender, RoutedEventArgs e) {
