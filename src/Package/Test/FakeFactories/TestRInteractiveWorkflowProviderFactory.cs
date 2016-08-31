@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using Microsoft.Common.Core.Shell;
-using Microsoft.Common.Core.Workspace;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.History;
@@ -12,6 +11,7 @@ using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Test.Fakes.InteractiveWindow;
 using Microsoft.R.Components.Test.StubFactories;
+using Microsoft.R.Components.Workspace;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Mocks;

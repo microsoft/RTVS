@@ -115,7 +115,6 @@
     <Compile Include="Threading\BinaryAsyncLock.cs" />
     <Compile Include="Threading\DelayedAsyncAction.cs" />
     <Compile Include="Versions\Toolset.cs" />
-    <Compile Include="Workspace\IWorkspaceServices.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="project.json" />
