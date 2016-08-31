@@ -38,11 +38,13 @@
     </Compile>
     <Compile Include="BindableBase.cs" />
     <Compile Include="Brushes.cs" />
+    <Compile Include="Controls\Watermark.cs" />
     <Compile Include="Converters.cs" />
     <Compile Include="CommonResources.xaml.cs">
       <DependentUpon>CommonResources.xaml</DependentUpon>
     </Compile>
     <Compile Include="FontKeys.cs" />
+    <Compile Include="ImageSources.cs" />
     <Compile Include="StyleKeys.cs" />
     <Compile Include="ValueConverters\EnumDescriptionValueConverter.cs" />
     <Compile Include="ValueConverters\IconUrlToImageCacheConverter.cs" />

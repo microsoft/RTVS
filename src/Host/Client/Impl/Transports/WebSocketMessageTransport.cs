@@ -7,17 +7,13 @@ using System.Net.Sockets;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Threading.Tasks.Dataflow;
 using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Client {
     internal class WebSocketMessageTransport : IMessageTransport {
         private readonly WebSocket _socket;
-        private readonly BufferBlock<Task<Message>> _incomingMessages = new BufferBlock<Task<Message>>();
         private readonly SemaphoreSlim _sendLock = new SemaphoreSlim(1, 1);
-
-        private WebSocket Socket => _socket;
-
+        
         public WebSocketMessageTransport(WebSocket socket) {
             _socket = socket;
         }
@@ -47,7 +43,9 @@ namespace Microsoft.R.Host.Client {
 
                 if (wsrr.CloseStatus != null) {
                     throw new MessageTransportException("Connection closed by host.");
-                } else if (wsrr.EndOfMessage) {
+                }
+
+                if (wsrr.EndOfMessage) {
                     return new Message(buffer.ToArray());
                 }
             }

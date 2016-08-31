@@ -8,9 +8,6 @@ using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Support.Settings;
-using Microsoft.VisualStudio.R.Package.Options.R;
-using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.Win32;
 
 namespace Microsoft.VisualStudio.R.Package.RClient {
@@ -32,10 +29,10 @@ namespace Microsoft.VisualStudio.R.Package.RClient {
 
         public static void CheckInstall(ICoreShell coreShell) {
             coreShell.AssertIsOnMainThread();
+            var connections = coreShell.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate().Connections;
 
             string rClientPath = CheckMicrosoftRClientInstall(coreShell);
             if (rClientPath != null) {
-                var connections = coreShell.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate().Connections;
                 connections.GetOrAddConnection("Microsoft R Client", rClientPath, string.Empty);
             }
         }

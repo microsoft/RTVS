@@ -27,7 +27,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         private readonly IRHostBrokerConnector _brokerConnector;
         private readonly DisposableBag _disposableBag;
         private readonly ConnectionStatusBarViewModel _statusBarViewModel;
-        private readonly ConcurrentDictionary<Uri, IConnection> _connections;
+        private readonly ConcurrentDictionary<Uri, IConnection> _userConnections;
 
         public bool IsConnected { get; private set; }
         public IConnection ActiveConnection { get; private set; }
@@ -60,21 +60,11 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             _shell.DispatchOnUIThread(() => _disposableBag.Add(_statusBar.AddItem(new ConnectionStatusBar { DataContext = _statusBarViewModel })));
 
             // Get initial values
-            var connections = GetConnectionsFromSettings();
-            _connections = new ConcurrentDictionary<Uri, IConnection>(connections);
+            var userConnections = GetConnectionsFromSettings();
+            _userConnections = new ConcurrentDictionary<Uri, IConnection>(userConnections);
 
             UpdateRecentConnections();
             SwitchBrokerToLastConnection();
-        }
-
-        private Dictionary<Uri, IConnection> GetConnectionsFromSettings() => _settings.Connections
-            .Select(c => CreateConnection(c.Name, c.Path, c.RCommandLineArguments))
-            .ToDictionary(k => k.Id);
-
-        private void SaveConnectionsToSettings() {
-            _settings.Connections = RecentConnections
-                .Select(c => new ConnectionInfo { Name = c.Name, Path = c.Path, RCommandLineArguments = c.RCommandLineArguments })
-                .ToArray();
         }
 
         public void Dispose() {
@@ -92,7 +82,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
         public IConnection AddOrUpdateConnection(string name, string path, string rCommandLineArguments) {
             var newConnection = new Connection(name, path, rCommandLineArguments, DateTime.Now);
-            var connection = _connections.AddOrUpdate(newConnection.Id, newConnection, (k, v) => UpdateConnectionFactory(v, newConnection));
+            var connection = _userConnections.AddOrUpdate(newConnection.Id, newConnection, (k, v) => UpdateConnectionFactory(v, newConnection));
 
             UpdateRecentConnections();
             return connection;
@@ -100,14 +90,14 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
         public IConnection GetOrAddConnection(string name, string path, string rCommandLineArguments) {
             var newConnection = CreateConnection(name, path, rCommandLineArguments);
-            var connection = _connections.GetOrAdd(newConnection.Id, newConnection);
+            var connection = _userConnections.GetOrAdd(newConnection.Id, newConnection);
             UpdateRecentConnections();
             return connection;
         }
 
         public bool TryRemove(Uri id) {
             IConnection connection;
-            var isRemoved = _connections.TryRemove(id, out connection);
+            var isRemoved = _userConnections.TryRemove(id, out connection);
             if (isRemoved) {
                 UpdateRecentConnections();
             }
@@ -156,7 +146,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         private IConnection GetOrCreateConnection(string name, string path, string rCommandLineArguments) {
             var newConnection = CreateConnection(name, path, rCommandLineArguments);
             IConnection connection;
-            return _connections.TryGetValue(newConnection.Id, out connection) ? connection : newConnection;
+            return _userConnections.TryGetValue(newConnection.Id, out connection) ? connection : newConnection;
         }
 
         private IConnection UpdateConnectionFactory(IConnection oldConnection, IConnection newConnection) {
@@ -168,8 +158,18 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             return newConnection;
         }
 
+        private Dictionary<Uri, IConnection> GetConnectionsFromSettings() => _settings.Connections
+            .Select(c => CreateConnection(c.Name, c.Path, c.RCommandLineArguments))
+            .ToDictionary(k => k.Id);
+
+        private void SaveConnectionsToSettings() {
+            _settings.Connections = RecentConnections
+                .Select(c => new ConnectionInfo { Name = c.Name, Path = c.Path, RCommandLineArguments = c.RCommandLineArguments })
+                .ToArray();
+        }
+
         private void UpdateRecentConnections() {
-            RecentConnections = new ReadOnlyCollection<IConnection>(_connections.Values.OrderByDescending(c => c.TimeStamp).ToList());
+            RecentConnections = new ReadOnlyCollection<IConnection>(_userConnections.Values.OrderByDescending(c => c.TimeStamp).ToList());
             SaveConnectionsToSettings();
             RecentConnectionsChanged?.Invoke(this, new EventArgs());
         }

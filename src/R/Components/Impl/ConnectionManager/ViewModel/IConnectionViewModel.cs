@@ -12,9 +12,12 @@ namespace Microsoft.R.Components.ConnectionManager.ViewModel {
         string Path { get; set; }
         string RCommandLineArguments { get; set; }
         bool IsActive { get; set; }
+        bool IsEditing { get; set; }
         bool IsConnected { get; set; }
+
+        string SaveButtonTooltip { get; }
         bool IsRemote { get; }
-        bool CanConnect { get; }
+        bool IsValid { get; }
         bool HasChanges { get; }
 
         void Reset();

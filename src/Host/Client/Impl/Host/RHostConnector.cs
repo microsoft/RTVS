@@ -182,8 +182,7 @@ namespace Microsoft.R.Host.Client.Host {
                 _log.RHostProcessExited();
             });
 
-            var host = new RHost(name, callbacks, transport, null, cts);
-            return host;
+            return new RHost(name, callbacks, transport, cts);
         }
     }
 }

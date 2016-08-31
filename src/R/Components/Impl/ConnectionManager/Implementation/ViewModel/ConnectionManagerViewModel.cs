@@ -1,7 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Disposables;
@@ -10,6 +12,7 @@ using Microsoft.Common.Wpf;
 using Microsoft.Common.Wpf.Collections;
 using Microsoft.R.Components.ConnectionManager.ViewModel;
 using Microsoft.R.Components.Extensions;
+using Microsoft.R.Interpreters;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
     internal sealed class ConnectionManagerViewModel : BindableBase, IConnectionManagerViewModel {
@@ -18,6 +21,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private readonly BatchObservableCollection<IConnectionViewModel> _items;
         private readonly DisposableBag _disposableBag;
         private IConnectionViewModel _selectedConnection;
+        private IConnectionViewModel _newConnection;
         private bool _isConnected;
 
         public ConnectionManagerViewModel(IConnectionManager connectionManager, ICoreShell shell) {
@@ -39,6 +43,11 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public ReadOnlyObservableCollection<IConnectionViewModel> Items { get; }
 
+        public IConnectionViewModel NewConnection {
+            get { return _newConnection; }
+            private set { SetProperty(ref _newConnection, value); }
+        }
+
         public IConnectionViewModel SelectedConnection {
             get { return _selectedConnection; }
             private set { SetProperty(ref _selectedConnection, value); }
@@ -51,7 +60,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public void SelectConnection(IConnectionViewModel connection) {
             _shell.AssertIsOnMainThread();
-            if (connection == _selectedConnection) {
+            if (connection == SelectedConnection) {
                 return;
             }
 
@@ -59,10 +68,10 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                 var dialogResult = _shell.ShowMessage(Resources.ConnectionManager_ChangedSelection_HasChanges, MessageButtons.YesNoCancel);
                 switch (dialogResult) {
                     case MessageButtons.Yes:
-                        SaveSelected();
+                        Save(SelectedConnection);
                         break;
                     case MessageButtons.No:
-                        CancelSelected();
+                        CancelEdit(SelectedConnection);
                         break;
                     default:
                         return;
@@ -73,50 +82,90 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         }
 
         public void AddNew() {
-            SelectConnection(new ConnectionViewModel());
+            _shell.AssertIsOnMainThread();
+            CancelEdit(SelectedConnection);
+            NewConnection = new ConnectionViewModel();
+        }
+        
+        public void CancelEdit(IConnectionViewModel connection) {
+            _shell.AssertIsOnMainThread();
+            if (connection == NewConnection) {
+                NewConnection = null;
+            } else {
+                connection?.Reset();
+            }
         }
 
-        public void CancelSelected() {
+        public void BrowseLocalPath(IConnectionViewModel connection) {
             _shell.AssertIsOnMainThread();
-            SelectedConnection?.Reset();
+            string latestLocalPath;
+            Uri latestLocalPathUri;
+
+            if (connection.Path != null && Uri.TryCreate(connection.Path, UriKind.Absolute, out latestLocalPathUri) && latestLocalPathUri.IsFile && !latestLocalPathUri.IsUnc) {
+                latestLocalPath = latestLocalPathUri.LocalPath;
+            } else { 
+                latestLocalPath = Environment.SystemDirectory;
+
+                try {
+                    latestLocalPath = new RInstallation().GetCompatibleEnginePathFromRegistry();
+                    if (string.IsNullOrEmpty(latestLocalPath) || !Directory.Exists(latestLocalPath)) {
+                        // Force 64-bit PF
+                        latestLocalPath = Environment.GetEnvironmentVariable("ProgramFiles");
+                    }
+                }
+                catch (ArgumentException) { }
+                catch (IOException) { }
+            }
+
+            var path = _shell.ShowBrowseDirectoryDialog(latestLocalPath);
+            if (path != null) {
+                connection.Path = path;
+            }
         }
 
-        public void SaveSelected() {
+        public void Edit(IConnectionViewModel connection) {
             _shell.AssertIsOnMainThread();
-            if (string.IsNullOrEmpty(SelectedConnection.Name)) {
-                _shell.ShowMessage(Resources.ConnectionManager_ShouldHaveName, MessageButtons.OK);
-                return;
-            }
+            CancelEdit(NewConnection);
+            CancelEdit(SelectedConnection);
+            SelectedConnection = connection;
+            connection.IsEditing = true;
+        }
 
-            if (string.IsNullOrEmpty(SelectedConnection.Path)) {
-                _shell.ShowMessage(Resources.ConnectionManager_ShouldHavePath, MessageButtons.OK);
-                return;
-            }
+        public Task TestConnectionAsync(IConnectionViewModel connection) => Task.CompletedTask;
+
+        public void Save(IConnectionViewModel connectionViewModel) {
+            _shell.AssertIsOnMainThread();
 
             var connection = _connectionManager.AddOrUpdateConnection(
-                SelectedConnection.Name,
-                SelectedConnection.Path,
-                SelectedConnection.RCommandLineArguments);
+                connectionViewModel.Name,
+                connectionViewModel.Path,
+                connectionViewModel.RCommandLineArguments);
 
-            if (connection.Id != SelectedConnection.Id && SelectedConnection.Id != null) {
-                _connectionManager.TryRemove(SelectedConnection.Id);
+            if (connection.Id != connectionViewModel.Id && connectionViewModel.Id != null) {
+                _connectionManager.TryRemove(connectionViewModel.Id);
+            }
+
+            if (connectionViewModel == NewConnection) {
+                NewConnection = null;
             }
 
             UpdateConnections();
         }
 
-        public void DeleteSelected() {
-            _connectionManager.TryRemove(SelectedConnection.Id);
+        public bool TryDelete(IConnectionViewModel connection) {
+            _shell.AssertIsOnMainThread();
+            var result = _connectionManager.TryRemove(SelectedConnection.Id);
             UpdateConnections();
+            return result;
         }
 
         public async Task ConnectAsync(IConnectionViewModel connection) {
             _shell.AssertIsOnMainThread();
-            await _connectionManager.ConnectAsync(SelectedConnection.Name, SelectedConnection.Path, SelectedConnection.RCommandLineArguments);
+            await _connectionManager.ConnectAsync(connection.Name, connection.Path, connection.RCommandLineArguments);
             UpdateConnections();
         }
 
-        private void UpdateConnections() {
+        private void UpdateConnections() { 
             var selectedId = SelectedConnection?.Id;
             _items.ReplaceWith(_connectionManager.RecentConnections.Select(c => new ConnectionViewModel(c) {
                 IsActive = c == _connectionManager.ActiveConnection,

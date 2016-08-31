@@ -2388,6 +2388,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Workspaces.
+        /// </summary>
+        public static string WorkspacesWindowCaption {
+            get {
+                return ResourceManager.GetString("WorkspacesWindowCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Yes.
         /// </summary>
         public static string Yes {

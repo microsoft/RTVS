@@ -18,7 +18,6 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
             InitializeComponent();
         }
 
-
         private void List_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             var connection = e.AddedItems.OfType<IConnectionViewModel>().FirstOrDefault();
             if (connection != null) {
@@ -28,11 +27,11 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
         }
 
         private void ButtonCancel_Click(object sender, RoutedEventArgs e) {
-            Model?.CancelSelected();
+            Model?.CancelEdit(GetConnection(e));
         }
 
         private void ButtonSave_Click(object sender, RoutedEventArgs e) {
-            Model?.SaveSelected();
+            Model?.Save(GetConnection(e));
         }
 
         private void ButtonConnect_Click(object sender, RoutedEventArgs e) {
@@ -43,8 +42,20 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
             Model?.AddNew();
         }
 
+        private void ButtonPath_Click(object sender, RoutedEventArgs e) {
+            Model?.BrowseLocalPath(GetConnection(e));
+        }
+
+        private void ButtonEdit_Click(object sender, RoutedEventArgs e) {
+            Model?.Edit(GetConnection(e));
+        }
+
         private void ButtonDelete_Click(object sender, RoutedEventArgs e) {
-            Model?.DeleteSelected();
+            Model?.TryDelete(GetConnection(e));
+        }
+
+        private void ButtonTestConnection_Click(object sender, RoutedEventArgs e) {
+            Model?.TestConnectionAsync(GetConnection(e)).DoNotWait();
         }
 
         private static IConnectionViewModel GetConnection(RoutedEventArgs e) => ((FrameworkElement)e.Source).DataContext as IConnectionViewModel;
