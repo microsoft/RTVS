@@ -77,7 +77,7 @@ namespace Microsoft.R.Support.Test.Packages {
             using (var host = new IntelliSenseRSession(_shell, _sessionProvider, _workflowProvider)) {
                 await host.CreateSessionAsync();
                 var functionIndex = new FunctionIndex(_shell, null, host);
-                packageIndex = new PackageIndex(_shell, host, functionIndex);
+                packageIndex = new PackageIndex(_workflowProvider, _shell, host, functionIndex);
                 await packageIndex.BuildIndexAsync();
             }
 
@@ -96,7 +96,7 @@ namespace Microsoft.R.Support.Test.Packages {
             using (var host = new IntelliSenseRSession(_shell, _sessionProvider, _workflowProvider)) {
                 await host.CreateSessionAsync();
                 var functionIndex = new FunctionIndex(_shell, null, host);
-                packageIndex = new PackageIndex(_shell, host, functionIndex);
+                packageIndex = new PackageIndex(_workflowProvider, _shell, host, functionIndex);
                 await packageIndex.BuildIndexAsync();
             }
             IPackageInfo pi = await packageIndex.GetPackageInfoAsync("base");

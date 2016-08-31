@@ -4,9 +4,6 @@
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using FluentAssertions;
-using Microsoft.Common.Core;
-using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Interpreters;
 using Microsoft.R.Support.Settings;
@@ -19,15 +16,17 @@ namespace Microsoft.R.Host.Client.Test.Script {
 
         public IRSessionProvider SessionProvider { get; private set; }
         public IRSession Session { get; }
+        public IRHostBrokerConnector BrokerConnector { get; }
 
         public static Version RVersion => new RInstallation().GetInstallationData(RToolsSettings.Current.LastActiveConnection.Path, new SupportedRVersionRange()).Version;
 
-        public RHostScript(IExportProvider exportProvider, IRSessionCallback clientApp = null)
-            : this(exportProvider.GetExportedValue<IRSessionProvider>(), exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate().BrokerConnector, clientApp) { 
+        public RHostScript(IExportProvider exportProvider, IRHostBrokerConnector brokerConnector, IRSessionCallback clientApp = null)
+            : this(exportProvider.GetExportedValue<IRSessionProvider>(), brokerConnector, clientApp) { 
         }
 
         public RHostScript(IRSessionProvider sessionProvider, IRHostBrokerConnector brokerConnector, IRSessionCallback clientApp = null) {
             SessionProvider = sessionProvider;
+            BrokerConnector = brokerConnector;
 
             Session = SessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, brokerConnector);
             if (Session.IsHostRunning) {

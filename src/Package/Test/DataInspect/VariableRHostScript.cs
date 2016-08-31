@@ -7,10 +7,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Editor.Data;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.R.StackTracing;
 using Microsoft.VisualStudio.R.Package.DataInspect;
@@ -23,11 +23,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         private VariableViewModel _globalEnv;
         private SemaphoreSlim _sem = new SemaphoreSlim(1, 1);
 
-        public VariableRHostScript()
-            : base(
-                VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>(),
-                VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate().BrokerConnector) {
-        }
+        public VariableRHostScript(IRSessionProvider sessionProvider, IRHostBrokerConnector brokerConnector)
+            : base(sessionProvider, brokerConnector) { }
 
         public VariableViewModel GlobalEnvrionment {
             get {

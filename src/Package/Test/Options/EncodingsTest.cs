@@ -7,6 +7,7 @@ using FluentAssertions;
 using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.Options.R.Tools;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Test.Utility;
 using Xunit;
 using static System.FormattableString;
@@ -16,11 +17,19 @@ namespace Microsoft.VisualStudio.R.Package.Test.Options {
     [Category.Repl]
     [Collection(CollectionNames.NonParallel)]
     public class EncodingsTest {
+        private readonly BrokerFixture _broker;
+        private readonly IRSessionProvider _sessionProvider;
+
+        public EncodingsTest(BrokerFixture broker) {
+            _broker = broker;
+            _sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+        }
+
         [Test]
         public void ValidateEncodings() {
             var etc = new EncodingTypeConverter();
             var codePages = etc.GetStandardValues();
-            using(var script = new VsRHostScript()) {
+            using(var script = new VsRHostScript(_sessionProvider, _broker.BrokerConnector)) {
                 foreach (var cp in codePages) {
                     if ((int)cp > 0) {
                         var completed = Task.Run(async () => {

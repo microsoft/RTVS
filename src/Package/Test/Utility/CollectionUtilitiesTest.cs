@@ -7,7 +7,7 @@ using FluentAssertions;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.Utilities;
 
-namespace Microsoft.VisualStudio.R.Package.Test.Utilities {
+namespace Microsoft.VisualStudio.R.Package.Test.Utility {
     [ExcludeFromCodeCoverage]
     public class CollectionUtilitiesTest {
         [Test]

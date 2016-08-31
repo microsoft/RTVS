@@ -76,6 +76,8 @@ namespace Microsoft.R.Components.Test.Fakes.Shell {
 
         public bool IsUnitTestEnvironment => true;
 
+        public IntPtr ApplicationWindowHandle { get; }
+
         #region IMainThread
         public int ThreadId => MainThread.ManagedThreadId;
         public void Post(Action action) => UIThreadHelper.Instance.InvokeAsync(action).DoNotWait();
