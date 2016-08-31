@@ -354,8 +354,8 @@
   <data name="ConnectionManager_ShouldHavePath" xml:space="preserve">
     <value>Can't save changes. Connection should have path specified.</value>
   </data>
-  <data name="ConnectionManager_ChangedSelection_HasChanges" xml:space="preserve">
-    <value>Selected connection has unsaved changes. Do you want to save them?</value>
+  <data name="ConnectionManager_EditedConnectionHasChanges" xml:space="preserve">
+    <value>Edited connection has unsaved changes. Do you want to save them?</value>
   </data>
   <data name="Plots_RemoveAllPlotsWarning" xml:space="preserve">
     <value>Are you sure you want to remove all plots?</value>

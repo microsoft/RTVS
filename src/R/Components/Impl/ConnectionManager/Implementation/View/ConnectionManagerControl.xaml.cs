@@ -17,17 +17,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
         public ConnectionManagerControl() {
             InitializeComponent();
         }
-
-        private void List_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            var connection = e.AddedItems.OfType<IConnectionViewModel>().FirstOrDefault();
-            if (connection != null) {
-                Model.SelectConnection(connection);
-                List.ScrollIntoView(connection);
-            }
-        }
-
+        
         private void ButtonCancel_Click(object sender, RoutedEventArgs e) {
-            Model?.CancelEdit(GetConnection(e));
+            Model?.CancelEdit();
         }
 
         private void ButtonSave_Click(object sender, RoutedEventArgs e) {
@@ -39,7 +31,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
         }
 
         private void ButtonAdd_Click(object sender, RoutedEventArgs e) {
-            Model?.AddNew();
+            Model?.EditNew();
         }
 
         private void ButtonPath_Click(object sender, RoutedEventArgs e) {
@@ -48,6 +40,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
 
         private void ButtonEdit_Click(object sender, RoutedEventArgs e) {
             Model?.Edit(GetConnection(e));
+            ScrollEditedIntoView();
         }
 
         private void ButtonDelete_Click(object sender, RoutedEventArgs e) {
@@ -59,5 +52,13 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
         }
 
         private static IConnectionViewModel GetConnection(RoutedEventArgs e) => ((FrameworkElement)e.Source).DataContext as IConnectionViewModel;
+
+        private void ScrollEditedIntoView() {
+            var model = Model;
+            if (model != null && !model.IsEditingNew && model.EditedConnection != null) {
+                List.ScrollIntoView(model.EditedConnection);
+                List.SelectedItems.Add(model.EditedConnection);
+            }
+        }
     }
 }

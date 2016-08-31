@@ -97,15 +97,6 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Selected connection has unsaved changes. Do you want to save them?.
-        /// </summary>
-        public static string ConnectionManager_ChangedSelection_HasChanges {
-            get {
-                return ResourceManager.GetString("ConnectionManager_ChangedSelection_HasChanges", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Connect.
         /// </summary>
         public static string ConnectionManager_Connect {
@@ -129,6 +120,15 @@ namespace Microsoft.R.Components {
         public static string ConnectionManager_DeleteTooltip {
             get {
                 return ResourceManager.GetString("ConnectionManager_DeleteTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edited connection has unsaved changes. Do you want to save them?.
+        /// </summary>
+        public static string ConnectionManager_EditedConnectionHasChanges {
+            get {
+                return ResourceManager.GetString("ConnectionManager_EditedConnectionHasChanges", resourceCulture);
             }
         }
         

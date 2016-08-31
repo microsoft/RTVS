@@ -21,13 +21,12 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View.DesignTim
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public IConnectionViewModel SelectedConnection => Items[0];
-        public IConnectionViewModel NewConnection => new DesignTimeConnectionViewModel();
+        public IConnectionViewModel EditedConnection => Items[0];
+        public bool IsEditingNew => true;
         public bool IsConnected => false;
-
-        public void SelectConnection(IConnectionViewModel connection) { }
-        public void AddNew() {}
-        public void CancelEdit(IConnectionViewModel connection) { }
+        
+        public void EditNew() {}
+        public void CancelEdit() { }
         public void BrowseLocalPath(IConnectionViewModel connection) { }
         public void Edit(IConnectionViewModel connection) { }
         public Task TestConnectionAsync(IConnectionViewModel connection) => Task.CompletedTask;
