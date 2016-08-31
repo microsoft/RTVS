@@ -311,7 +311,6 @@
     <Compile Include="Options\Attributes\LocDefaultValueAttribute.cs" />
     <Compile Include="Options\Attributes\HelpBrowserTypeConverter.cs" />
     <Compile Include="Options\Attributes\YesNoAskTypeConverter.cs" />
-    <Compile Include="Options\R\Tools\ChooseRFolderUIEditor.cs" />
     <Compile Include="Options\R\Tools\GoToEditorOptionsCommand.cs" />
     <Compile Include="Options\R\Tools\ImportRSettingsCommand.cs" />
     <Compile Include="Packages\Definitions\IPackage.cs" />

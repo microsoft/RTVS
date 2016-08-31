@@ -12,13 +12,17 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private string _name;
         private string _path;
         private string _rCommandLineArguments;
+        private string _saveButtonTooltip;
         private bool _isActive;
+        private bool _isEditing;
         private bool _isConnected;
         private bool _isRemote;
         private bool _hasChanges;
-        private bool _canConnect;
+        private bool _isValid;
 
-        public ConnectionViewModel() {}
+        public ConnectionViewModel() {
+            UpdateCalculated();
+        }
 
         public ConnectionViewModel(IConnection connection) {
             _connection = connection;
@@ -52,9 +56,19 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             }
         }
 
+        public string SaveButtonTooltip {
+            get { return _saveButtonTooltip; }
+            private set { SetProperty(ref _saveButtonTooltip, value); }
+        }
+
         public bool IsActive {
             get { return _isActive; }
             set { SetProperty(ref _isActive, value); }
+        }
+
+        public bool IsEditing {
+            get { return _isEditing; }
+            set { SetProperty(ref _isEditing, value); }
         }
 
         public bool IsRemote {
@@ -62,9 +76,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             private set { SetProperty(ref _isRemote, value); }
         }
         
-        public bool CanConnect {
-            get { return _canConnect; }
-            private set { SetProperty(ref _canConnect, value); }
+        public bool IsValid {
+            get { return _isValid; }
+            private set { SetProperty(ref _isValid, value); }
         }
 
         public bool HasChanges {
@@ -82,6 +96,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             Path = _connection?.Path;
             RCommandLineArguments = _connection?.RCommandLineArguments;
             IsRemote = _connection?.IsRemote ?? false;
+            IsEditing = false;
         }
 
         private void UpdateCalculated() {
@@ -90,8 +105,18 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                 || !RCommandLineArguments.EqualsIgnoreCase(_connection?.RCommandLineArguments);
 
             Uri uri = null;
-            CanConnect = !string.IsNullOrEmpty(Name) && Uri.TryCreate(Path, UriKind.Absolute, out uri);
-
+            var isPathValid = Uri.TryCreate(Path, UriKind.Absolute, out uri);
+            if (string.IsNullOrEmpty(Name)) {
+                IsValid = false;
+                SaveButtonTooltip = Resources.ConnectionManager_ShouldHaveName;
+            } else if (!isPathValid) {
+                IsValid = false;
+                SaveButtonTooltip = Resources.ConnectionManager_ShouldHavePath;
+            } else {
+                IsValid = true;
+                SaveButtonTooltip = Resources.ConnectionManager_Save;
+            }
+            
             IsRemote = !(uri?.IsFile ?? true);
         }
     }

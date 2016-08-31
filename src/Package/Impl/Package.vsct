@@ -1009,9 +1009,9 @@
         <Icon guid="ImageCatalogGuid" id="WMIConnection"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
-          <ButtonText>Connections</ButtonText>
-          <MenuText>C&amp;onnections</MenuText>
-          <CommandName>Show Connections Window</CommandName>
+          <ButtonText>Workspaces</ButtonText>
+          <MenuText>W&amp;orkspaces</MenuText>
+          <CommandName>Show Workspaces Window</CommandName>
         </Strings>
       </Button>
 

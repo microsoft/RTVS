@@ -124,16 +124,25 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Delete.
+        ///   Looks up a localized string similar to Delete the connection.
         /// </summary>
-        public static string ConnectionManager_Delete {
+        public static string ConnectionManager_DeleteTooltip {
             get {
-                return ResourceManager.GetString("ConnectionManager_Delete", resourceCulture);
+                return ResourceManager.GetString("ConnectionManager_DeleteTooltip", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Name:.
+        ///   Looks up a localized string similar to Edit the connection.
+        /// </summary>
+        public static string ConnectionManager_EditTooltip {
+            get {
+                return ResourceManager.GetString("ConnectionManager_EditTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connection name..
         /// </summary>
         public static string ConnectionManager_Name {
             get {
@@ -142,7 +151,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Path:.
+        ///   Looks up a localized string similar to Connection path. Either an URL (http://machine:port) or a local path..
         /// </summary>
         public static string ConnectionManager_Path {
             get {
@@ -151,7 +160,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R Command Line Arguments:.
+        ///   Looks up a localized string similar to R command line arguments..
         /// </summary>
         public static string ConnectionManager_RCommandLineArguments {
             get {
@@ -183,6 +192,24 @@ namespace Microsoft.R.Components {
         public static string ConnectionManager_ShouldHavePath {
             get {
                 return ResourceManager.GetString("ConnectionManager_ShouldHavePath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Test Connection.
+        /// </summary>
+        public static string ConnectionManager_TestConnection {
+            get {
+                return ResourceManager.GetString("ConnectionManager_TestConnection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Test connection to the R interperter. Authentication credentials may be required..
+        /// </summary>
+        public static string ConnectionManager_TestConnectionTooltip {
+            get {
+                return ResourceManager.GetString("ConnectionManager_TestConnectionTooltip", resourceCulture);
             }
         }
         

@@ -316,19 +316,22 @@
     <value>Connect to '{0}'.</value>
   </data>
   <data name="ConnectionManager_Name" xml:space="preserve">
-    <value>Name:</value>
+    <value>Connection name.</value>
   </data>
   <data name="ConnectionManager_Path" xml:space="preserve">
-    <value>Path:</value>
+    <value>Connection path. Either an URL (http://machine:port) or a local path.</value>
   </data>
   <data name="ConnectionManager_RCommandLineArguments" xml:space="preserve">
-    <value>R Command Line Arguments:</value>
+    <value>R command line arguments.</value>
   </data>
   <data name="ConnectionManager_Add" xml:space="preserve">
     <value>Add</value>
   </data>
-  <data name="ConnectionManager_Delete" xml:space="preserve">
-    <value>Delete</value>
+  <data name="ConnectionManager_EditTooltip" xml:space="preserve">
+    <value>Edit the connection</value>
+  </data>
+  <data name="ConnectionManager_DeleteTooltip" xml:space="preserve">
+    <value>Delete the connection</value>
   </data>
   <data name="ConnectionManager_Save" xml:space="preserve">
     <value>Save</value>
@@ -338,6 +341,12 @@
   </data>
   <data name="ConnectionManager_Connect" xml:space="preserve">
     <value>Connect</value>
+  </data>
+  <data name="ConnectionManager_TestConnection" xml:space="preserve">
+    <value>Test Connection</value>
+  </data>
+  <data name="ConnectionManager_TestConnectionTooltip" xml:space="preserve">
+    <value>Test connection to the R interperter. Authentication credentials may be required.</value>
   </data>
   <data name="ConnectionManager_ShouldHaveName" xml:space="preserve">
     <value>Can't save changes. Connection should have name specified.</value>

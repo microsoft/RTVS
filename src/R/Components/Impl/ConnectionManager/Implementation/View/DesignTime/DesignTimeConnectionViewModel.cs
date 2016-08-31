@@ -15,10 +15,14 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View.DesignTim
         public string Path { get; set; }
         public string RCommandLineArguments { get; set; }
         public bool IsActive { get; set; }
+        public bool IsEditing { get; set; }
         public bool IsConnected { get; set; }
         public bool IsRemote { get; set; }
-        public bool CanConnect { get; } = false;
+
+        public string SaveButtonTooltip { get; } = string.Empty;
+        public bool IsValid { get; } = false;
         public bool HasChanges { get; } = false;
+
         public void Reset() {}
         public void Dispose() {}
     }
