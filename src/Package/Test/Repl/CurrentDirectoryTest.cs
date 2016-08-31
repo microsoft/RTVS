@@ -41,7 +41,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
             var debuggerModeTracker = new TestDebuggerModeTracker();
             _interactiveWorkflow = new RInteractiveWorkflow(
                 _sessionProvider, connectionsProvider, historyProvider, packagesProvider, plotsProvider, activeTextViewTracker,
-                debuggerModeTracker, _broker.BrokerConnector, VsAppShell.Current, RToolsSettings.Current, () => { });
+                debuggerModeTracker, _broker.BrokerConnector, VsAppShell.Current, RToolsSettings.Current, null, () => { });
         }
 
         public void Dispose() {

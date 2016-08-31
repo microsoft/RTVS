@@ -6,6 +6,7 @@ using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Workspace;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -33,6 +34,7 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
         private readonly IActiveWpfTextViewTracker _activeTextViewTracker;
         private readonly IDebuggerModeTracker _debuggerModeTracker;
         private readonly IRHostBrokerConnector _brokerConnector;
+        private readonly IWorkspaceServices _wss;
 
         private Lazy<IRInteractiveWorkflow> _instanceLazy;
         public IRSessionCallback HostClientApp { get; set; }
@@ -50,7 +52,9 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
             // Required for the tests that create TestRInteractiveWorkflowProvider explicitly
             , [Import(AllowDefault = true)] IRHostBrokerConnector brokerConnector
             , ICoreShell shell
-            , IRSettings settings) {
+            , IRSettings settings
+            , [Import(AllowDefault = true)] IWorkspaceServices wss
+            ) {
             _sessionProvider = sessionProvider;
             _connectionManagerProvider = connectionManagerProvider;
             _historyProvider = historyProvider;
@@ -61,6 +65,7 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
             _brokerConnector = brokerConnector;
             _shell = shell;
             _settings = settings;
+            _wss = wss;
         }
 
         public void Dispose() {
@@ -87,6 +92,7 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
                 , brokerConnector
                 , _shell
                 , _settings
+                , _wss
                 , () => DisposeInstance(brokerConnector));
         }
 

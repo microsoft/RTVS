@@ -3,13 +3,13 @@
 
 using System.Threading.Tasks;
 
-namespace Microsoft.Languages.Editor.Workspace {
+namespace Microsoft.Common.Core.Workspace {
     /// <summary>
     /// Provides services related to the workspace (project).
     /// Exported via MEF by the host application.
     /// </summary>
     public interface IWorkspaceServices {
         string ActiveProjectPath { get; }
-        Task<string> GetRUserFolder();
+        bool IsRProjectActive { get; }
     }
 }

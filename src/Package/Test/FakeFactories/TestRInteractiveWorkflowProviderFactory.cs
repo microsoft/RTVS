@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Workspace;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.History;
@@ -32,7 +33,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.FakeFactories {
             , IDebuggerModeTracker debuggerModeTracker = null
             , IRHostBrokerConnector brokerConnector = null
             , ICoreShell shell = null
-            , IRSettings settings = null) {
+            , IRSettings settings = null
+            , IWorkspaceServices wss = null) {
             sessionProvider = sessionProvider ?? new RSessionProviderMock();
             connectionsProvider = connectionsProvider ?? ConnectionManagerProviderStubFactory.CreateDefault();
             historyProvider = historyProvider ?? RHistoryProviderStubFactory.CreateDefault();
@@ -45,7 +47,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.FakeFactories {
             shell = shell ?? VsAppShell.Current;
             settings = settings ?? RToolsSettings.Current;
 
-            return new TestRInteractiveWorkflowProvider(sessionProvider, connectionsProvider, historyProvider, packagesProvider, plotsProvider, activeTextViewTracker, debuggerModeTracker, brokerConnector, shell, settings) { BrokerName = brokerConnectorName };
+            return new TestRInteractiveWorkflowProvider(
+                sessionProvider, connectionsProvider, historyProvider, packagesProvider, 
+                plotsProvider, activeTextViewTracker, debuggerModeTracker, brokerConnector, 
+                shell, settings, wss) { BrokerName = brokerConnectorName };
         }
     }
 }

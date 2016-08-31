@@ -1,23 +1,21 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using Microsoft.Common.Core;
+using Microsoft.Common.Core.Workspace;
 using System.ComponentModel.Composition;
 using System.IO;
-using System.Threading.Tasks;
-using Microsoft.Languages.Editor.Workspace;
-using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Host.Client.Session;
+using Microsoft.R.Components.ContentTypes;
 
-namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
+namespace Microsoft.VisualStudio.R.Package.ProjectSystem
+{
     [Export(typeof(IWorkspaceServices))]
     internal sealed class WorkspaceServices : IWorkspaceServices {
-        private readonly IRInteractiveWorkflowProvider _provider;
         private readonly IProjectSystemServices _pss;
 
         [ImportingConstructor]
-        public WorkspaceServices(IProjectSystemServices pss, IRInteractiveWorkflowProvider provider) {
+        public WorkspaceServices(IProjectSystemServices pss) {
             _pss = pss;
-            _provider = provider;
         }
 
         public string ActiveProjectPath {
@@ -27,9 +25,12 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             }
         }
 
-        public Task<string> GetRUserFolder() {
-            var session = _provider.GetOrCreate()?.RSession;
-            return session?.GetRUserDirectoryAsync();
+        public bool IsRProjectActive {
+            get {
+                var projectFile = _pss.GetActiveProject()?.FullName;
+                // Either there is no project or it is R project
+                return string.IsNullOrEmpty(projectFile) && Path.GetExtension(projectFile).EqualsIgnoreCase(RContentTypeDefinition.VsRProjectExtension);
+            }
         }
     }
 }

@@ -2,8 +2,11 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Workspace;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.History;
@@ -21,6 +24,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         private readonly IRSettings _settings;
         private readonly Action _onDispose;
         private readonly RInteractiveWorkflowOperations _operations;
+        private readonly IWorkspaceServices _wss;
 
         private bool _replLostFocus;
         private bool _disposed;
@@ -48,11 +52,13 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             , IRHostBrokerConnector brokerConnector
             , ICoreShell coreShell
             , IRSettings settings
+            , IWorkspaceServices wss
             , Action onDispose) {
 
             _activeTextViewTracker = activeTextViewTracker;
             _debuggerModeTracker = debuggerModeTracker;
             _settings = settings;
+            _wss = wss;
             _onDispose = onDispose;
 
             Shell = coreShell;
@@ -105,7 +111,9 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 // i.e. user worked in the REPL and not in the editor. Pull 
                 // the focus back here. 
                 _replLostFocus = false;
-                ActiveWindow.Container.Show(true);
+                if (IsRProjectActive()) {
+                    ActiveWindow.Container.Show(true);
+                }
 
                 // Reset the flag, so that further focus changes are not affected until the next debugger break occurs.
                 _debuggerJustEnteredBreakMode = false;
@@ -114,6 +122,11 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
         private void RSessionDisconnected(object o, EventArgs eventArgs) {
             Operations.ClearPendingInputs();
+        }
+
+        private bool IsRProjectActive() {
+            var wss = Shell.ExportProvider.GetExportedValue<IWorkspaceServices>();
+            return wss.IsRProjectActive;
         }
 
         public async Task<IInteractiveWindowVisualComponent> GetOrCreateVisualComponent(IInteractiveWindowComponentContainerFactory componentContainerFactory, int instanceId = 0) {
