@@ -17,21 +17,16 @@ namespace Microsoft.R.Editor.Test.Completions {
     [ExcludeFromCodeCoverage]
     [Category.R.Completion]
     [Collection(CollectionNames.NonParallel)]
-    public class PackageInstallTest : RCompletionSourceTestBase, IDisposable {
-        private readonly RHostBrokerConnector _brokerConnector;
+    public class PackageInstallTest : RCompletionSourceTestBase {
+        private readonly BrokerFixture _broker;
 
-        public PackageInstallTest(REditorMefCatalogFixture catalog) : base(catalog) {
-            _brokerConnector = new RHostBrokerConnector();
-            _brokerConnector.SwitchToLocalBroker(this.GetType().Name);
-        }
-
-        public void Dispose() {
-            _brokerConnector.Dispose();
+        public PackageInstallTest(REditorMefCatalogFixture catalog, BrokerFixture broker) : base(catalog) {
+            _broker = broker;
         }
 
         [Test]
         public async Task InstallPackageTest() {
-            using (var script = new RHostScript(_exportProvider, _brokerConnector)) {
+            using (var script = new RHostScript(_exportProvider, _broker.BrokerConnector)) {
                 try {
                     await script.Session.ExecuteAsync("remove.packages('abc')", REvaluationKind.Mutating);
                 } catch (RException) { }
