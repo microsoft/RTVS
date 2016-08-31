@@ -12,6 +12,7 @@ using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Implementation;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Plots;
+using Microsoft.R.Components.Workspace;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Support.Settings;
@@ -29,6 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         private readonly IActiveWpfTextViewTracker _activeTextViewTracker;
         private readonly IDebuggerModeTracker _debuggerModeTracker;
         private readonly ICoreShell _shell;
+        private readonly IWorkspaceServices _wss;
 
         private Lazy<IRInteractiveWorkflow> _instanceLazy;
 
@@ -40,7 +42,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             , IRPlotManagerProvider plotsProvider
             , IActiveWpfTextViewTracker activeTextViewTracker
             , IDebuggerModeTracker debuggerModeTracker
-            , ICoreShell shell) {
+            , ICoreShell shell
+            , IWorkspaceServices wss) {
 
             _sessionProvider = sessionProvider;
             _connectionsProvider = connectionsProvider;
@@ -50,6 +53,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             _activeTextViewTracker = activeTextViewTracker;
             _debuggerModeTracker = debuggerModeTracker;
             _shell = shell;
+            _wss = wss;
         }
 
         public void Dispose() {
@@ -66,7 +70,9 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         private IRInteractiveWorkflow CreateRInteractiveWorkflow() {
             var settings = RToolsSettings.Current;
             var brokerConnector = new RHostBrokerConnector();
-            var workflow = new RInteractiveWorkflow(_sessionProvider, _connectionsProvider, _historyProvider, _packagesProvider, _plotsProvider, _activeTextViewTracker, _debuggerModeTracker, brokerConnector, _shell, settings, () => DisposeInstance(brokerConnector));
+            var workflow = new RInteractiveWorkflow(_sessionProvider, _connectionsProvider, _historyProvider, _packagesProvider, 
+                                                    _plotsProvider, _activeTextViewTracker, _debuggerModeTracker, brokerConnector, 
+                                                    _shell, settings, _wss, () => DisposeInstance(brokerConnector));
             _disposableBag.Add(workflow);
             return workflow;
         }

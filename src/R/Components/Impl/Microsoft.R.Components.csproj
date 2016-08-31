@@ -242,6 +242,7 @@
     <Compile Include="View\IVisualComponent.cs" />
     <Compile Include="View\IVisualComponentContainer.cs" />
     <Compile Include="View\IVisualComponentContainerFactory.cs" />
+    <Compile Include="Workspace\IWorkspaceServices.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">

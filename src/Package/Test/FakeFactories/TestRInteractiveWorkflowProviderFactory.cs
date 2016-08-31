@@ -11,6 +11,7 @@ using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Test.Fakes.InteractiveWindow;
 using Microsoft.R.Components.Test.StubFactories;
+using Microsoft.R.Components.Workspace;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Mocks;
@@ -32,7 +33,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.FakeFactories {
             , IDebuggerModeTracker debuggerModeTracker = null
             , IRHostBrokerConnector brokerConnector = null
             , ICoreShell shell = null
-            , IRSettings settings = null) {
+            , IRSettings settings = null
+            , IWorkspaceServices wss = null) {
             sessionProvider = sessionProvider ?? new RSessionProviderMock();
             connectionsProvider = connectionsProvider ?? ConnectionManagerProviderStubFactory.CreateDefault();
             historyProvider = historyProvider ?? RHistoryProviderStubFactory.CreateDefault();
@@ -45,7 +47,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.FakeFactories {
             shell = shell ?? VsAppShell.Current;
             settings = settings ?? RToolsSettings.Current;
 
-            return new TestRInteractiveWorkflowProvider(sessionProvider, connectionsProvider, historyProvider, packagesProvider, plotsProvider, activeTextViewTracker, debuggerModeTracker, brokerConnector, shell, settings) { BrokerName = brokerConnectorName };
+            return new TestRInteractiveWorkflowProvider(
+                sessionProvider, connectionsProvider, historyProvider, packagesProvider, 
+                plotsProvider, activeTextViewTracker, debuggerModeTracker, brokerConnector, 
+                shell, settings, wss) { BrokerName = brokerConnectorName };
         }
     }
 }

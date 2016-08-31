@@ -4,7 +4,6 @@
 using System.ComponentModel.Composition;
 using Microsoft.Languages.Editor.DragDrop;
 using Microsoft.Languages.Editor.Shell;
-using Microsoft.Languages.Editor.Workspace;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.Text.Editor;
@@ -19,16 +18,16 @@ namespace Microsoft.R.Editor.DragDrop {
     [Order(Before = "DefaultFileDropHandler")]
     internal sealed class DropHandlerProvider : IDropHandlerProvider {
         private readonly IEditorShell _editorShell;
-        private readonly IWorkspaceServices _wsps;
+        private readonly IRInteractiveWorkflowProvider _workflowProvider;
 
         [ImportingConstructor]
-        public DropHandlerProvider(IEditorShell editorShell, IWorkspaceServices wsps) {
+        public DropHandlerProvider(IEditorShell editorShell, IRInteractiveWorkflowProvider workflowProvider) {
             _editorShell = editorShell;
-            _wsps = wsps;
+            _workflowProvider = workflowProvider;
         }
 
         public IDropHandler GetAssociatedDropHandler(IWpfTextView wpfTextView) {
-            return new DropHandler(wpfTextView, _editorShell, _wsps);
+            return new DropHandler(wpfTextView, _editorShell, _workflowProvider);
         }
     }
 }
