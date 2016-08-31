@@ -91,9 +91,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             _shell.AssertIsOnMainThread();
             if (connection == NewConnection) {
                 NewConnection = null;
-            } else if (connection != null) {
-                connection.Reset();
-                connection.IsEditing = false;
+            } else {
+                connection?.Reset();
             }
         }
 
@@ -136,15 +135,6 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public void Save(IConnectionViewModel connectionViewModel) {
             _shell.AssertIsOnMainThread();
-            if (string.IsNullOrEmpty(connectionViewModel.Name)) {
-                _shell.ShowMessage(Resources.ConnectionManager_ShouldHaveName, MessageButtons.OK);
-                return;
-            }
-
-            if (string.IsNullOrEmpty(connectionViewModel.Path)) {
-                _shell.ShowMessage(Resources.ConnectionManager_ShouldHavePath, MessageButtons.OK);
-                return;
-            }
 
             var connection = _connectionManager.AddOrUpdateConnection(
                 connectionViewModel.Name,

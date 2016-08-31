@@ -178,15 +178,6 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Connection Manager.
-        /// </summary>
-        public static string ConnectionManagerWindowCaption {
-            get {
-                return ResourceManager.GetString("ConnectionManagerWindowCaption", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Database connection string.
         /// </summary>
         public static string ConnectionStringDescription {
@@ -2393,6 +2384,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string WorkspaceFileFilter {
             get {
                 return ResourceManager.GetString("WorkspaceFileFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Workspaces.
+        /// </summary>
+        public static string WorkspacesWindowCaption {
+            get {
+                return ResourceManager.GetString("WorkspacesWindowCaption", resourceCulture);
             }
         }
         

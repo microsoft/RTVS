@@ -142,7 +142,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enter the name of the connection..
+        ///   Looks up a localized string similar to Connection name..
         /// </summary>
         public static string ConnectionManager_Name {
             get {
@@ -151,7 +151,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enter the path to the connection. Either an URL or a local path..
+        ///   Looks up a localized string similar to Connection path. Either an URL (http://machine:port) or a local path..
         /// </summary>
         public static string ConnectionManager_Path {
             get {
@@ -160,7 +160,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enter command line arguments that will be used when R starts..
+        ///   Looks up a localized string similar to R command line arguments..
         /// </summary>
         public static string ConnectionManager_RCommandLineArguments {
             get {

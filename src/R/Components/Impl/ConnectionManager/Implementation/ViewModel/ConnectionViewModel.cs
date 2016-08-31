@@ -12,6 +12,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private string _name;
         private string _path;
         private string _rCommandLineArguments;
+        private string _saveButtonTooltip;
         private bool _isActive;
         private bool _isEditing;
         private bool _isConnected;
@@ -19,7 +20,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private bool _hasChanges;
         private bool _isValid;
 
-        public ConnectionViewModel() {}
+        public ConnectionViewModel() {
+            UpdateCalculated();
+        }
 
         public ConnectionViewModel(IConnection connection) {
             _connection = connection;
@@ -51,6 +54,11 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                 SetProperty(ref _rCommandLineArguments, value);
                 UpdateCalculated();
             }
+        }
+
+        public string SaveButtonTooltip {
+            get { return _saveButtonTooltip; }
+            private set { SetProperty(ref _saveButtonTooltip, value); }
         }
 
         public bool IsActive {
@@ -88,6 +96,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             Path = _connection?.Path;
             RCommandLineArguments = _connection?.RCommandLineArguments;
             IsRemote = _connection?.IsRemote ?? false;
+            IsEditing = false;
         }
 
         private void UpdateCalculated() {
@@ -96,8 +105,18 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                 || !RCommandLineArguments.EqualsIgnoreCase(_connection?.RCommandLineArguments);
 
             Uri uri = null;
-            IsValid = !string.IsNullOrEmpty(Name) && Uri.TryCreate(Path, UriKind.Absolute, out uri);
-
+            var isPathValid = Uri.TryCreate(Path, UriKind.Absolute, out uri);
+            if (string.IsNullOrEmpty(Name)) {
+                IsValid = false;
+                SaveButtonTooltip = Resources.ConnectionManager_ShouldHaveName;
+            } else if (!isPathValid) {
+                IsValid = false;
+                SaveButtonTooltip = Resources.ConnectionManager_ShouldHavePath;
+            } else {
+                IsValid = true;
+                SaveButtonTooltip = Resources.ConnectionManager_Save;
+            }
+            
             IsRemote = !(uri?.IsFile ?? true);
         }
     }

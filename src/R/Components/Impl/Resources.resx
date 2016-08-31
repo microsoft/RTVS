@@ -316,13 +316,13 @@
     <value>Connect to '{0}'.</value>
   </data>
   <data name="ConnectionManager_Name" xml:space="preserve">
-    <value>Enter the name of the connection.</value>
+    <value>Connection name.</value>
   </data>
   <data name="ConnectionManager_Path" xml:space="preserve">
-    <value>Enter the path to the connection. Either an URL or a local path.</value>
+    <value>Connection path. Either an URL (http://machine:port) or a local path.</value>
   </data>
   <data name="ConnectionManager_RCommandLineArguments" xml:space="preserve">
-    <value>Enter command line arguments that will be used when R starts.</value>
+    <value>R command line arguments.</value>
   </data>
   <data name="ConnectionManager_Add" xml:space="preserve">
     <value>Add</value>

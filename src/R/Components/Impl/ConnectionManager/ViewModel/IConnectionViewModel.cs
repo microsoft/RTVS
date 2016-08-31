@@ -14,6 +14,8 @@ namespace Microsoft.R.Components.ConnectionManager.ViewModel {
         bool IsActive { get; set; }
         bool IsEditing { get; set; }
         bool IsConnected { get; set; }
+
+        string SaveButtonTooltip { get; }
         bool IsRemote { get; }
         bool IsValid { get; }
         bool HasChanges { get; }

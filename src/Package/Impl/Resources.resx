@@ -465,8 +465,8 @@
   <data name="HistoryWindowCaption" xml:space="preserve">
     <value>R History</value>
   </data>
-  <data name="ConnectionManagerWindowCaption" xml:space="preserve">
-    <value>Connection Manager</value>
+  <data name="WorkspacesWindowCaption" xml:space="preserve">
+    <value>Workspaces</value>
   </data>
   <data name="PackageManagerWindowCaption" xml:space="preserve">
     <value>R Package Manager</value>
