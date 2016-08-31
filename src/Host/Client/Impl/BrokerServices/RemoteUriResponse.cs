@@ -2,13 +2,11 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.R.Host.Protocol;
+using System.IO;
 
 namespace Microsoft.R.Host.Client.BrokerServices {
-    public interface ISessionsWebService {
-        Task<IEnumerable<SessionInfo>> GetAsync();
-
-        Task<SessionInfo> PutAsync(string id, SessionCreateRequest request);
+    public class RemoteUriResponse {
+        public Dictionary<string, string> Headers { get; set; }
+        public Stream Content { get; set; }
     }
 }

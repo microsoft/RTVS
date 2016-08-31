@@ -75,7 +75,5 @@ namespace Microsoft.R.Host.Client.Host {
             _ignoreSavedCredentials = !isValid;
             _credentialsValidated.Set();
         }
-
-
     }
 }

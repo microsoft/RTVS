@@ -12,6 +12,8 @@ using Microsoft.R.Host.Broker.Logging;
 using Microsoft.R.Host.Broker.Security;
 using Microsoft.R.Host.Broker.Sessions;
 using Odachi.AspNetCore.Authentication.Basic;
+using Microsoft.R.Host.Broker.RemoteUri;
+using System.Threading.Tasks;
 
 namespace Microsoft.R.Host.Broker.Startup {
     public class Startup {
@@ -65,7 +67,13 @@ namespace Microsoft.R.Host.Broker.Startup {
             });
 
             app.Use((context, next) => {
-                if (!context.User.Identity.IsAuthenticated) {
+                if (context.Request.Path.Value.Contains("/remoteuri")) {
+                    if (!context.User.Identity.IsAuthenticated) {
+                        return Task.WhenAll(context.Authentication.ChallengeAsync(), RemoteUriHelper.HandlerAsync(context));
+                    } else {
+                        return RemoteUriHelper.HandlerAsync(context);
+                    }
+                } else if (!context.User.Identity.IsAuthenticated) {
                     return context.Authentication.ChallengeAsync();
                 } else {
                     return next();

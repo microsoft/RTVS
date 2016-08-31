@@ -23,15 +23,4 @@ namespace Microsoft.R.Host.Client.BrokerServices {
         public Task<SessionInfo> PutAsync(string id, SessionCreateRequest request) =>
             HttpPutAsync<SessionCreateRequest, SessionInfo>(putUri, request, id);
     }
-
-    public class RemoteUriWebService : WebService, IRemoteUriWebService {
-
-        public RemoteUriWebService(HttpClient httpClient) : base(httpClient) {
-        }
-
-        private static readonly Uri postUri = new Uri("/remoteuri", UriKind.Relative);
-
-        public Task<RemoteUriResponse> PostAsync(RemoteUriRequest request) =>
-            HttpPostAsync<RemoteUriRequest, RemoteUriResponse>(postUri, request);
-    }
 }
