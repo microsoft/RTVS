@@ -16,7 +16,6 @@ using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test;
 using Microsoft.R.Host.Client.Test.Script;
-using Microsoft.R.Interpreters;
 using Microsoft.R.StackTracing;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;

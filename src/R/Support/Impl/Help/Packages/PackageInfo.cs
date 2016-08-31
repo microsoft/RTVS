@@ -72,7 +72,7 @@ namespace Microsoft.R.Support.Help.Packages {
 
         private async Task<IEnumerable<string>> GetFunctionNamesAsync() {
             var functions = TryRestoreFromCache();
-            if (functions == null) {
+            if (functions == null || !functions.Any()) {
                 try {
                     var result = await _host.Session.EvaluateAsync<JArray>(Invariant($"as.list(getNamespaceExports('{this.Name}'))"), REvaluationKind.BaseEnv);
                     functions = result

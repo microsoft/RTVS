@@ -107,7 +107,12 @@ namespace Microsoft.R.Host.Broker.Startup {
                 // Give cooperative cancellation 10 seconds to shut the process down gracefully,
                 // but if it didn't work, just terminate it.
                 await Task.Delay(10000);
+#if DEBUG
+                // Avoid annoying 'application crashed' on Debug | Terminate
+                _logger.LogCritical("Timed out waiting for graceful shutdown");
+#else
                 Environment.FailFast("Timed out waiting for graceful shutdown.");
+#endif
             });
         }
     }

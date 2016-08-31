@@ -4,24 +4,16 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
-using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Core.AST;
-using Microsoft.R.Core.Parser;
-using Microsoft.R.Editor.Completion;
-using Microsoft.R.Editor.Test.Utility;
 using Microsoft.UnitTests.Core.XUnit;
-using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Language.Intellisense;
-using Microsoft.VisualStudio.Text;
 using Xunit;
 
 namespace Microsoft.R.Editor.Test.Completions {
     [ExcludeFromCodeCoverage]
     [Category.R.Completion]
-    public class RCompletionSourceTest : FunctionIndexBasedTest {
-        public RCompletionSourceTest(REditorMefCatalogFixture catalog): base(catalog) { }
+    public class RCompletionSourceTest : RCompletionSourceTestBase {
+        public RCompletionSourceTest(REditorMefCatalogFixture catalog) : base(catalog) { }
 
         [Test]
         public void BaseFunctions01() {
@@ -36,7 +28,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         [Test]
         public void BaseFunctions02() {
             var completionSets = new List<CompletionSet>();
-            GetCompletions("f", 1, completionSets, new TextRange(0, 1));
+            GetCompletions("FAC", 3, completionSets, new TextRange(0, 3));
 
             completionSets.Should().ContainSingle();
             completionSets[0].Filter();
@@ -59,7 +51,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         [Test]
         public void Packages01() {
             var completionSets = new List<CompletionSet>();
-            GetCompletions("library(", 8, completionSets);
+            GetCompletions("lIbrAry(", 8, completionSets);
 
             completionSets.Should().ContainSingle();
 
@@ -148,18 +140,6 @@ namespace Microsoft.R.Editor.Test.Completions {
         }
 
         [Test]
-        public void CaseSentivity() {
-            var completionSets = new List<CompletionSet>();
-            GetCompletions("x <- T", 6, completionSets);
-
-            completionSets.Should().ContainSingle();
-            completionSets[0].Filter();
-
-            completionSets[0].Completions.Should().NotBeEmpty()
-                .And.OnlyContain(c => c.DisplayText[0] == 'T');
-        }
-
-        [Test]
         public void UserVariables01() {
             var completionSets = new List<CompletionSet>();
             var content =
@@ -245,7 +225,7 @@ bbb123 = 1
         [Test]
         public void UserVariables03() {
             var completionSets = new List<CompletionSet>();
-            var content = 
+            var content =
 @"x123 <- 1
 for(x456 in 1:10) x";
 
@@ -351,28 +331,6 @@ aaa(a
 
             completionSets[0].Completions.Should().NotBeEmpty()
                 .And.Contain(c => c.DisplayText == "a =");
-        }
-
-        private void GetCompletions(string content, int lineNumber, int column, IList<CompletionSet> completionSets, ITextRange selectedRange = null) {
-            TextBufferMock textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            var line = textBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber);
-            GetCompletions(content, line.Start + column, completionSets, selectedRange);
-        }
-
-        private void GetCompletions(string content, int caretPosition, IList<CompletionSet> completionSets, ITextRange selectedRange = null) {
-            AstRoot ast = RParser.Parse(content);
-
-            TextBufferMock textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            TextViewMock textView = new TextViewMock(textBuffer, caretPosition);
-
-            if (selectedRange != null) {
-                textView.Selection.Select(new SnapshotSpan(textBuffer.CurrentSnapshot, selectedRange.Start, selectedRange.Length), false);
-            }
-
-            CompletionSessionMock completionSession = new CompletionSessionMock(textView, completionSets, caretPosition);
-            RCompletionSource completionSource = new RCompletionSource(textBuffer, _exportProvider.GetExportedValue<ICoreShell>());
-
-            completionSource.PopulateCompletionList(caretPosition, completionSession, completionSets, ast);
         }
     }
 }

@@ -29,12 +29,23 @@ namespace Microsoft.R.Editor.Completion {
             get { return _filteredCompletions; }
         }
 
+        /// <summary>
+        /// Performs filtering based on the potential commit character
+        /// such as when user completes partially typed function argument
+        /// with = and we need to pick exactly entry with = and not plain one.
+        /// </summary>
+        /// <param name="commitChar"></param>
+        public void Filter(char commitChar) {
+            UpdateVisibility(commitChar);
+            _filteredCompletions.Filter(x => ((RCompletion)x).IsVisible);
+        }
+
         public override void Filter() {
             UpdateVisibility();
             _filteredCompletions.Filter(x => ((RCompletion)x).IsVisible);
         }
 
-        private void UpdateVisibility() {
+        private void UpdateVisibility(char commitChar = '\0') {
             Dictionary<int, List<Completion>> matches = new Dictionary<int, List<Completion>>();
             int maxKey = 0;
 
@@ -44,7 +55,7 @@ namespace Microsoft.R.Editor.Completion {
             }
 
             foreach (RCompletion c in _completions) {
-                int key = Match(typedText, c.DisplayText);
+                int key = Match(typedText, c.DisplayText, commitChar);
                 if (key > 0) {
                     List<Completion> list;
                     if (!matches.TryGetValue(key, out list)) {
@@ -62,11 +73,17 @@ namespace Microsoft.R.Editor.Completion {
             }
         }
 
-        private int Match(string typedText, string compText) {
+        private int Match(string typedText, string compText, char commitChar) {
+            if (compText[compText.Length-1] == commitChar) { // like 'name ='
+                if (compText.StartsWithIgnoreCase(typedText)) {
+                    return compText.Length;
+                }
+            }
+
             // Match at least something
             int i = 0;
             for (i = 0; i < Math.Min(typedText.Length, compText.Length); i++) {
-                if (typedText[i] != compText[i]) {
+                if (char.ToLowerInvariant(typedText[i]) != char.ToLowerInvariant(compText[i])) {
                     return i;
                 }
             }

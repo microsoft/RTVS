@@ -4,14 +4,12 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.DataInspect;
@@ -25,17 +23,16 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
     [Collection(CollectionNames.NonParallel)]   // required for tests using R Host 
     public class ViewersTest : IAsyncLifetime {
         private readonly IRSessionProvider _sessionProvider;
-        private readonly IRHostBrokerConnector _brokerConnector;
+        private readonly BrokerFixture _broker;
         private readonly IObjectDetailsViewerAggregator _aggregator;
         private readonly IRInteractiveWorkflow _workflow;
 
-        public ViewersTest() {
+        public ViewersTest(BrokerFixture broker) {
             _sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
             _aggregator = VsAppShell.Current.ExportProvider.GetExportedValue<IObjectDetailsViewerAggregator>();
 
             _workflow = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
-            _brokerConnector = _workflow.BrokerConnector;
-            
+            _broker = broker;
         }
 
         public Task InitializeAsync() => _workflow.Connections.ConnectAsync(_workflow.Connections.ActiveConnection);
@@ -47,7 +44,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         public async Task ViewLibraryTest() {
             var cb = Substitute.For<IRSessionCallback>();
             cb.ViewLibrary().Returns(Task.CompletedTask);
-            using (var hostScript = new RHostScript(_sessionProvider, _brokerConnector, cb)) {
+            using (var hostScript = new RHostScript(_sessionProvider, _broker.BrokerConnector, cb)) {
                 using (var inter = await hostScript.Session.BeginInteractionAsync()) {
                     await inter.RespondAsync("library()" + Environment.NewLine);
                 }
@@ -60,7 +57,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         public async Task ViewDataTest01() {
             var cb = Substitute.For<IRSessionCallback>();
             cb.When(x => x.ViewObject(Arg.Any<string>(), Arg.Any<string>())).Do(x => { });
-            using (var hostScript = new RHostScript(_sessionProvider, _brokerConnector, cb)) {
+            using (var hostScript = new RHostScript(_sessionProvider, _broker.BrokerConnector, cb)) {
                 using (var inter = await hostScript.Session.BeginInteractionAsync()) {
                     await inter.RespondAsync("View(mtcars)" + Environment.NewLine);
                 }
@@ -71,7 +68,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         [Test]
         [Category.Viewers]
         public async Task ViewerExportTest() {
-            using (var hostScript = new RHostScript(_sessionProvider, _brokerConnector)) {
+            using (var hostScript = new RHostScript(_sessionProvider, _broker.BrokerConnector)) {
                 var session = hostScript.Session;
 
                 var funcViewer = await _aggregator.GetViewer(session, REnvironments.GlobalEnv, "lm");
@@ -102,7 +99,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         [InlineData("`?` <- function(a, b, c) { }", "`?`", "function(a, b, c)")]
         [InlineData("`?` <- function(a, b, c) { }; x <- `?`", "x", "function(a, b, c)")]
         public async Task FunctionViewerTest(string expression, string functionName, string expected) {
-            using (var hostScript = new RHostScript(_sessionProvider, _brokerConnector)) {
+            using (var hostScript = new RHostScript(_sessionProvider, _broker.BrokerConnector)) {
                 if(!string.IsNullOrEmpty(expression)) {
                     await hostScript.Session.ExecuteAsync(expression);
                 }
@@ -117,7 +114,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         [Test]
         [Category.Viewers]
         public async Task FormulaViewerTest() {
-            using (var hostScript = new RHostScript(_sessionProvider, _brokerConnector)) {
+            using (var hostScript = new RHostScript(_sessionProvider, _broker.BrokerConnector)) {
                 string formula = "1 ~ 2";
 
                 var funcViewer = await _aggregator.GetViewer(hostScript.Session, REnvironments.GlobalEnv, formula) as CodeViewer;
@@ -209,7 +206,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         public async Task ViewDataTest02() {
             var cb = Substitute.For<IRSessionCallback>();
             cb.When(x => x.ViewFile(Arg.Any<string>(), "R data sets", true)).Do(x => { });
-            using (var hostScript = new RHostScript(_sessionProvider, _brokerConnector, cb)) {
+            using (var hostScript = new RHostScript(_sessionProvider, _broker.BrokerConnector, cb)) {
                 using (var inter = await hostScript.Session.BeginInteractionAsync()) {
                     await inter.RespondAsync("data()" + Environment.NewLine);
                 }

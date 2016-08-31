@@ -273,6 +273,16 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         public ITelemetryService TelemetryService => RtvsTelemetry.Current.TelemetryService;
 
         public bool IsUnitTestEnvironment { get; set; }
+
+        public IntPtr ApplicationWindowHandle {
+            get {
+                var uiShell = GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+                IntPtr handle;
+                uiShell.GetDialogOwnerHwnd(out handle);
+                return handle;
+            }
+        }
+
         #endregion
 
         #region IIdleTimeService

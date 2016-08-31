@@ -34,7 +34,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
             var window = _interactiveWorkflow.ActiveWindow;
             if (window != null && window.Container.IsOnScreen) {
                 Visible = true;
-                Enabled = _rSession.IsHostRunning;
+                Enabled = _rSession.IsHostRunning && !_rSession.IsRemote;
             } else {
                 Visible = false;
             }

@@ -125,7 +125,7 @@ namespace Microsoft.R.Support.RD.Parser {
             return context.Tokens[index].End;
         }
 
-        public static IReadOnlyList<ISignatureInfo> ParseSignatures(string usageContent, IReadOnlyDictionary<string, string> argumentsDescriptions = null) {
+        public static IReadOnlyList<ISignatureInfo> ParseSignatures(string usageContent) {
             // RD signature text may contain \dots sequence  which denotes ellipsis.
             // R parser does not know  about it and hence we will replace \dots by ...
             // Also, signatures may contain S3 method info like 
@@ -157,7 +157,7 @@ namespace Microsoft.R.Support.RD.Parser {
                 string functionName = textProvider.GetText(tokens.CurrentToken);
                 tokens.MoveToNextToken();
 
-                ISignatureInfo info = ParseSignature(functionName, parseContext, argumentsDescriptions);
+                ISignatureInfo info = ParseSignature(functionName, parseContext);
                 if (info != null) {
                     signatures.Add(info);
                 }
@@ -166,7 +166,7 @@ namespace Microsoft.R.Support.RD.Parser {
             return signatures;
         }
 
-        private static ISignatureInfo ParseSignature(string functionName, ParseContext context, IReadOnlyDictionary<string, string> argumentsDescriptions = null) {
+        private static ISignatureInfo ParseSignature(string functionName, ParseContext context) {
             SignatureInfo info = new SignatureInfo(functionName);
             List<IArgumentInfo> signatureArguments = new List<IArgumentInfo>();
 
@@ -211,12 +211,6 @@ namespace Microsoft.R.Support.RD.Parser {
                     argInfo.IsEllipsis = isEllipsis;
                     argInfo.IsOptional = isOptional; // TODO: actually parse
 
-                    if (argumentsDescriptions != null) {
-                        string description;
-                        if (argumentsDescriptions.TryGetValue(argName, out description)) {
-                            argInfo.Description = description;
-                        }
-                    }
                     signatureArguments.Add(argInfo);
                 }
             }
