@@ -13,6 +13,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private string _path;
         private string _rCommandLineArguments;
         private bool _isActive;
+        private bool _isEditing;
         private bool _isConnected;
         private bool _isRemote;
         private bool _hasChanges;
@@ -55,6 +56,11 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         public bool IsActive {
             get { return _isActive; }
             set { SetProperty(ref _isActive, value); }
+        }
+
+        public bool IsEditing {
+            get { return _isEditing; }
+            set { SetProperty(ref _isEditing, value); }
         }
 
         public bool IsRemote {

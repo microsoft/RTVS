@@ -15,7 +15,7 @@ namespace Microsoft.R.Components.ConnectionManager.ViewModel {
 
         void SelectConnection(IConnectionViewModel connection);
         void AddNew();
-        void Cancel(IConnectionViewModel connection);
+        void CancelEdit(IConnectionViewModel connection);
         void BrowseLocalPath(IConnectionViewModel connection);
         void Edit(IConnectionViewModel connection);
         Task TestConnectionAsync(IConnectionViewModel connection);

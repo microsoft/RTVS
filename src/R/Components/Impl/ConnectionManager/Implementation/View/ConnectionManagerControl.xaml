@@ -86,7 +86,7 @@
             </DataTemplate>
 
             <DataTemplate x:Key="ConnectButtonDataTemplate" DataType="{x:Type viewModel:IConnectionViewModel}">
-                <StackPanel  Margin="14,1,6,1">
+                <StackPanel Margin="14,1,6,1">
                     <!-- Connect button -->
                     <Button x:Name="ButtonConnect" Style="{StaticResource ToolWindowButtonStyle}" Click="ButtonConnect_Click" 
                             VerticalAlignment="Center" Padding="0" BorderThickness="0"
@@ -138,8 +138,7 @@
 
                         <!-- edit button -->
                         <Button x:Name="ButtonEdit" Grid.Column="4" Style="{StaticResource ToolWindowButtonStyle}" Click="ButtonEdit_Click"
-                                ToolTip="{x:Static components:Resources.ConnectionManager_DeleteTooltip}"
-                                Visibility="Collapsed">
+                                ToolTip="{x:Static components:Resources.ConnectionManager_EditTooltip}" Visibility="Collapsed">
                             <Image Source="{x:Static rwpf:ImageSources.Edit}" />
                         </Button>
 
@@ -170,8 +169,7 @@
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
                         <!-- Connect button -->
@@ -179,18 +177,26 @@
                                           ContentTemplate="{StaticResource ConnectButtonDataTemplate}" />
 
                         <!-- Name & path & command line -->
-                        <TextBlock Grid.Column="1" Grid.Row="0" Margin="0,1,6,3" Text="{Binding Path=Name}"
+                        <StackPanel Grid.Column="1" Grid.RowSpan="2"
+                                    Visibility="{Binding Path=IsEditing, Converter={x:Static rwpf:Converters.FalseIsNotCollapsed}}">
+                            <TextBlock Margin="0,1,6,3" Text="{Binding Path=Name}"
                                    FontWeight="SemiBold" TextWrapping="Wrap" />
-                        <TextBlock Grid.Column="1" Grid.Row="1" Margin="0,0,3,3" Text="{Binding Path=Path}"
+                            <TextBlock Margin="0,0,3,3" Text="{Binding Path=Path}"
                                    TextWrapping="Wrap"/>
-                        <TextBlock Grid.Column="1" Grid.Row="2" Margin="0,0,3,3"
+                            <TextBlock Margin="0,0,3,3"
                                    Text="{Binding Path=RCommandLineArguments}" TextWrapping="Wrap"
                                    Visibility="{Binding Path=RCommandLineArguments, Converter={x:Static rwpf:Converters.NullOrEmptyIsCollapsed}}"/>
+                        </StackPanel>
 
+                        <ContentPresenter Grid.Column="1" Grid.RowSpan="2"
+                                          ContentTemplate="{StaticResource EditConnectionDataTemplate}"
+                                          Visibility="{Binding Path=IsEditing, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}"/>
+                        
                         <!-- edit button -->
                         <Button x:Name="ButtonEdit" Grid.Column="2" Grid.Row="0" Click="ButtonEdit_Click"
                                 Style="{StaticResource ToolWindowButtonStyle}"
-                                ToolTip="{x:Static components:Resources.ConnectionManager_EditTooltip}">
+                                ToolTip="{x:Static components:Resources.ConnectionManager_EditTooltip}"
+                                Visibility="{Binding Path=IsEditing, Converter={x:Static rwpf:Converters.FalseIsNotCollapsed}}">
                             <Image Source="{x:Static rwpf:ImageSources.Edit}" Width="16" Height="16" />
                         </Button>
 

@@ -27,7 +27,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View.DesignTim
 
         public void SelectConnection(IConnectionViewModel connection) { }
         public void AddNew() {}
-        public void Cancel(IConnectionViewModel connection) { }
+        public void CancelEdit(IConnectionViewModel connection) { }
         public void BrowseLocalPath(IConnectionViewModel connection) { }
         public void Edit(IConnectionViewModel connection) { }
         public Task TestConnectionAsync(IConnectionViewModel connection) => Task.CompletedTask;

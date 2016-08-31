@@ -18,7 +18,6 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
             InitializeComponent();
         }
 
-
         private void List_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             var connection = e.AddedItems.OfType<IConnectionViewModel>().FirstOrDefault();
             if (connection != null) {
@@ -28,7 +27,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
         }
 
         private void ButtonCancel_Click(object sender, RoutedEventArgs e) {
-            Model?.Cancel(GetConnection(e));
+            Model?.CancelEdit(GetConnection(e));
         }
 
         private void ButtonSave_Click(object sender, RoutedEventArgs e) {

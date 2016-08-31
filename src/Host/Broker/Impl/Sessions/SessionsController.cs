@@ -25,9 +25,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
         }
 
         [HttpGet]
-        public Task<IEnumerable<SessionInfo>> GetAsync() {
-            return Task.FromResult(Enumerable.Empty<SessionInfo>());
-        }
+        public Task<IEnumerable<SessionInfo>> GetAsync() => Task.FromResult(_sessionManager.GetSessions(User.Identity).Select(s => s.Info));
 
         [HttpPut("{id}")]
         public Task<SessionInfo> PutAsync(string id, [FromBody] SessionCreateRequest request) {

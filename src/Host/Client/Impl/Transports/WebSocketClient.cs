@@ -28,57 +28,30 @@ namespace Microsoft.AspNetCore.WebSockets.Client {
             SubProtocols = new List<string>();
         }
 
-        public IList<string> SubProtocols {
-            get;
-            private set;
-        }
-
-        public TimeSpan KeepAliveInterval {
-            get;
-            set;
-        }
-
-        public int ReceiveBufferSize {
-            get;
-            set;
-        }
-
-        public bool UseZeroMask {
-            get;
-            set;
-        }
-
-        public Action<HttpWebRequest> ConfigureRequest {
-            get;
-            set;
-        }
-
-        public Action<HttpWebResponse> InspectResponse {
-            get;
-            set;
-        }
+        public IList<string> SubProtocols { get; }
+        public TimeSpan KeepAliveInterval { get; set; }
+        public int ReceiveBufferSize { get; set; }
+        public bool UseZeroMask { get; set; }
+        public Action<HttpWebRequest> ConfigureRequest { get; set; }
+        public Action<HttpWebResponse> InspectResponse { get; set; }
 
         public async Task<WebSocket> ConnectAsync(Uri uri, CancellationToken cancellationToken) {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
 
-            CancellationTokenRegistration cancellation = cancellationToken.Register(() => request.Abort());
+            var cancellation = cancellationToken.Register(() => request.Abort());
 
             request.Headers[Constants.Headers.SecWebSocketVersion] = Constants.Headers.SupportedVersion;
             if (SubProtocols.Count > 0) {
                 request.Headers[Constants.Headers.SecWebSocketProtocol] = string.Join(", ", SubProtocols);
             }
 
-            if (ConfigureRequest != null) {
-                ConfigureRequest(request);
-            }
+            ConfigureRequest?.Invoke(request);
 
             HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
 
             cancellation.Dispose();
 
-            if (InspectResponse != null) {
-                InspectResponse(response);
-            }
+            InspectResponse?.Invoke(response);
 
             // TODO: Validate handshake
             HttpStatusCode statusCode = response.StatusCode;
@@ -93,9 +66,9 @@ namespace Microsoft.AspNetCore.WebSockets.Client {
                 throw new InvalidOperationException("Incomplete handshake, the server specified an unknown sub-protocol: " + subProtocol);
             }
 
-            Stream stream = response.GetResponseStream();
+            var stream = response.GetResponseStream();
 
-            return CommonWebSocket.CreateClientWebSocket(stream, subProtocol, KeepAliveInterval, ReceiveBufferSize, useZeroMask: UseZeroMask);
+            return CommonWebSocket.CreateClientWebSocket(stream, subProtocol, KeepAliveInterval, ReceiveBufferSize, UseZeroMask);
         }
     }
 }

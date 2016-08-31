@@ -20,7 +20,6 @@ namespace Microsoft.R.Host.Client {
         event EventHandler<EventArgs> PackagesRemoved;
 
         int Id { get; }
-        int? ProcessId { get; }
         string Prompt { get; }
         bool IsHostRunning { get; }
         Task HostStarted { get; }

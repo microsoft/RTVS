@@ -71,7 +71,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                         Save(SelectedConnection);
                         break;
                     case MessageButtons.No:
-                        CancelEdit();
+                        CancelEdit(SelectedConnection);
                         break;
                     default:
                         return;
@@ -83,24 +83,22 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public void AddNew() {
             _shell.AssertIsOnMainThread();
+            CancelEdit(SelectedConnection);
             NewConnection = new ConnectionViewModel();
         }
-
-        public void CancelEdit() {
-            _shell.AssertIsOnMainThread();
-            SelectedConnection?.Reset();
-        }
-
-        public void Cancel(IConnectionViewModel connection) {
+        
+        public void CancelEdit(IConnectionViewModel connection) {
             _shell.AssertIsOnMainThread();
             if (connection == NewConnection) {
                 NewConnection = null;
-            } else {
+            } else if (connection != null) {
                 connection.Reset();
+                connection.IsEditing = false;
             }
         }
 
         public void BrowseLocalPath(IConnectionViewModel connection) {
+            _shell.AssertIsOnMainThread();
             string latestLocalPath;
             Uri latestLocalPathUri;
 
@@ -127,7 +125,11 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         }
 
         public void Edit(IConnectionViewModel connection) {
-            
+            _shell.AssertIsOnMainThread();
+            CancelEdit(NewConnection);
+            CancelEdit(SelectedConnection);
+            SelectedConnection = connection;
+            connection.IsEditing = true;
         }
 
         public Task TestConnectionAsync(IConnectionViewModel connection) => Task.CompletedTask;
@@ -161,6 +163,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         }
 
         public bool TryDelete(IConnectionViewModel connection) {
+            _shell.AssertIsOnMainThread();
             var result = _connectionManager.TryRemove(SelectedConnection.Id);
             UpdateConnections();
             return result;
