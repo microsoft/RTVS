@@ -20,6 +20,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
     public sealed class EvaluationWrapperTest : IAsyncLifetime {
         private readonly BrokerFixture _broker;
         private readonly IRSessionProvider _sessionProvider;
+        private VariableRHostScript _hostScript;
 
         public EvaluationWrapperTest(BrokerFixture broker) {
             _broker = broker;
@@ -27,11 +28,13 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         }
 
         public Task InitializeAsync() {
+            _hostScript = new VariableRHostScript(_sessionProvider, _broker.BrokerConnector);
             var connections = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate().Connections;
             return connections.ConnectAsync(connections.RecentConnections[0]);
         }
 
         public Task DisposeAsync() {
+            _hostScript.Dispose();
             return Task.CompletedTask;
         }
 
@@ -73,7 +76,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         [CompositeTest]
         [InlineData("value.na <- NA", "value.na", "NA", "logical", "logical", false, false)]
         [InlineData("value.null <- NULL", "value.null", "NULL", "NULL", "NULL", false, false)]
-        [InlineData("value.NaN <- NaN","value.NaN", "NaN", "double", "numeric", false, false)]
+        [InlineData("value.NaN <- NaN", "value.NaN", "NaN", "double", "numeric", false, false)]
         [InlineData("value.character <- 'abcdefghijklmnopqrstuvwxyz'", "value.character", "\"abcdefghijklmnopqrstuvwxyz\"", "character", "character", false, false)]
         [InlineData("value.character.1 <- 'abcde\"fhi,kjl \"op,qr\" s @t#u$v%w^x&y*z*()./\\`-+_=!'", "value.character.1", "\"abcde\\\"fhi,kjl \\\"op,qr\\\" s @t#u$v%w^x&y*z*()./`-+_=!\"", "character", "character", false, false)]
         [InlineData("value.numeric.1 <- 1", "value.numeric.1", "1", "double", "numeric", false, false)]
@@ -96,9 +99,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                 CanShowDetail = expectedCanShowDetail
             };
 
-            using (var hostScript = new VariableRHostScript(_sessionProvider, _broker.BrokerConnector)) {
-                await hostScript.EvaluateAndAssert(script, expected, VariableRHostScript.AssertEvaluationWrapper);
-            }
+            await _hostScript.EvaluateAndAssert(script, expected, VariableRHostScript.AssertEvaluationWrapper);
         }
 
         [Test]
@@ -134,16 +135,14 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         [Test]
         [Category.Variable.Explorer]
         public async Task TruncateGrandChildrenTest() {
-            using (var hostScript = new VariableRHostScript(_sessionProvider, _broker.BrokerConnector)) {
-                await hostScript.EvaluateAsync("x.truncate.children<-1:100");
-                var children = await hostScript.GlobalEnvrionment.GetChildrenAsync();
-                var child = children.First(c => c.Name == "x.truncate.children");
+            await _hostScript.EvaluateAsync("x.truncate.children<-1:100");
+            var children = await _hostScript.GlobalEnvrionment.GetChildrenAsync();
+            var child = children.First(c => c.Name == "x.truncate.children");
 
-                var grandChildren = await child.GetChildrenAsync();
+            var grandChildren = await child.GetChildrenAsync();
 
-                grandChildren.Count.Should().Be(21);   // truncate 20 + ellipsis
-                grandChildren[20].Value.Should().Be(Resources.VariableExplorer_Truncated);
-            }
+            grandChildren.Count.Should().Be(21);   // truncate 20 + ellipsis
+            grandChildren[20].Value.Should().Be(Resources.VariableExplorer_Truncated);
         }
 
         [Test]
@@ -159,33 +158,31 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                 CanShowDetail = true
             };
 
-            using (var hostScript = new VariableRHostScript(_sessionProvider, _broker.BrokerConnector)) {
-                var evaluation = (VariableViewModel)await hostScript.EvaluateAndAssert(
-                    script,
-                    expectation,
-                    VariableRHostScript.AssertEvaluationWrapper);
+            var evaluation = (VariableViewModel)await _hostScript.EvaluateAndAssert(
+                script,
+                expectation,
+                VariableRHostScript.AssertEvaluationWrapper);
 
-                Range rowRange = new Range(0, 2);
-                Range columnRange = new Range(1, 3);
-                var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, new GridRange(rowRange, columnRange));
+            Range rowRange = new Range(0, 2);
+            Range columnRange = new Range(1, 3);
+            var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, new GridRange(rowRange, columnRange));
 
-                grid.ColumnHeader.Range.Should().Be(columnRange);
-                grid.ColumnHeader[1].Should().Be("[,2]");
-                grid.ColumnHeader[2].Should().Be("[,3]");
-                grid.ColumnHeader[3].Should().Be("[,4]");
+            grid.ColumnHeader.Range.Should().Be(columnRange);
+            grid.ColumnHeader[1].Should().Be("[,2]");
+            grid.ColumnHeader[2].Should().Be("[,3]");
+            grid.ColumnHeader[3].Should().Be("[,4]");
 
-                grid.RowHeader.Range.Should().Be(rowRange);
-                grid.RowHeader[0].Should().Be("[1,]");
-                grid.RowHeader[1].Should().Be("[2,]");
+            grid.RowHeader.Range.Should().Be(rowRange);
+            grid.RowHeader[0].Should().Be("[1,]");
+            grid.RowHeader[1].Should().Be("[2,]");
 
-                grid.Grid.Range.Should().Be(new GridRange(rowRange, columnRange));
-                grid.Grid[0, 1].Should().Be("11");
-                grid.Grid[0, 2].Should().Be("21");
-                grid.Grid[0, 3].Should().Be("31");
-                grid.Grid[1, 1].Should().Be("12");
-                grid.Grid[1, 2].Should().Be("22");
-                grid.Grid[1, 3].Should().Be("32");
-            }
+            grid.Grid.Range.Should().Be(new GridRange(rowRange, columnRange));
+            grid.Grid[0, 1].Should().Be("11");
+            grid.Grid[0, 2].Should().Be("21");
+            grid.Grid[0, 3].Should().Be("31");
+            grid.Grid[1, 1].Should().Be("12");
+            grid.Grid[1, 2].Should().Be("22");
+            grid.Grid[1, 3].Should().Be("32");
         }
 
         [Test]
@@ -194,33 +191,31 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             var script = "matrix.named <- matrix(1:10, 2, 5, dimnames = list(r = c('r1', 'r2'), c = c('a', 'b', 'c', 'd', 'e')))";
             var expectation = new VariableExpectation() { Name = "matrix.named", Value = "int [1:2, 1:5] 1 2 3 4 5 6 7 8 9 10", TypeName = "integer", Class = "matrix", HasChildren = true, CanShowDetail = true };
 
-            using (var hostScript = new VariableRHostScript(_sessionProvider, _broker.BrokerConnector)) {
-                var evaluation = (VariableViewModel)await hostScript.EvaluateAndAssert(
-                    script,
-                    expectation,
-                    VariableRHostScript.AssertEvaluationWrapper);
+            var evaluation = (VariableViewModel)await _hostScript.EvaluateAndAssert(
+                script,
+                expectation,
+                VariableRHostScript.AssertEvaluationWrapper);
 
-                Range rowRange = new Range(0, 2);
-                Range columnRange = new Range(2, 3);
-                var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, new GridRange(rowRange, columnRange));
+            Range rowRange = new Range(0, 2);
+            Range columnRange = new Range(2, 3);
+            var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, new GridRange(rowRange, columnRange));
 
-                grid.ColumnHeader.Range.Should().Be(columnRange);
-                grid.ColumnHeader[2].Should().Be("c");
-                grid.ColumnHeader[3].Should().Be("d");
-                grid.ColumnHeader[4].Should().Be("e");
+            grid.ColumnHeader.Range.Should().Be(columnRange);
+            grid.ColumnHeader[2].Should().Be("c");
+            grid.ColumnHeader[3].Should().Be("d");
+            grid.ColumnHeader[4].Should().Be("e");
 
-                grid.RowHeader.Range.Should().Be(rowRange);
-                grid.RowHeader[0].Should().Be("r1");
-                grid.RowHeader[1].Should().Be("r2");
+            grid.RowHeader.Range.Should().Be(rowRange);
+            grid.RowHeader[0].Should().Be("r1");
+            grid.RowHeader[1].Should().Be("r2");
 
-                grid.Grid.Range.Should().Be(new GridRange(rowRange, columnRange));
-                grid.Grid[0, 2].Should().Be("5");
-                grid.Grid[0, 3].Should().Be("7");
-                grid.Grid[0, 4].Should().Be("9");
-                grid.Grid[1, 2].Should().Be("6");
-                grid.Grid[1, 3].Should().Be("8");
-                grid.Grid[1, 4].Should().Be("10");
-            }
+            grid.Grid.Range.Should().Be(new GridRange(rowRange, columnRange));
+            grid.Grid[0, 2].Should().Be("5");
+            grid.Grid[0, 3].Should().Be("7");
+            grid.Grid[0, 4].Should().Be("9");
+            grid.Grid[1, 2].Should().Be("6");
+            grid.Grid[1, 3].Should().Be("8");
+            grid.Grid[1, 4].Should().Be("10");
         }
 
         [Test]
@@ -229,33 +224,31 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             var script = "matrix.na.header <- matrix(c(1, 2, 3, 4, NA, NaN, 7, 8, 9, 10), 2, 5, dimnames = list(r = c('r1', NA), c = c('a', 'b', NA, 'd', NA)))";
             var expectation = new VariableExpectation() { Name = "matrix.na.header", Value = "num [1:2, 1:5] 1 2 3 4 NA NaN 7 8 9 10", TypeName = "double", Class = "matrix", HasChildren = true, CanShowDetail = true };
 
-            using (var hostScript = new VariableRHostScript(_sessionProvider, _broker.BrokerConnector)) {
-                var evaluation = (VariableViewModel)await hostScript.EvaluateAndAssert(
-                    script,
-                    expectation,
-                    VariableRHostScript.AssertEvaluationWrapper);
+            var evaluation = (VariableViewModel)await _hostScript.EvaluateAndAssert(
+                script,
+                expectation,
+                VariableRHostScript.AssertEvaluationWrapper);
 
-                Range rowRange = new Range(0, 2);
-                Range columnRange = new Range(2, 3);
-                var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, new GridRange(rowRange, columnRange));
+            Range rowRange = new Range(0, 2);
+            Range columnRange = new Range(2, 3);
+            var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, new GridRange(rowRange, columnRange));
 
-                grid.ColumnHeader.Range.Should().Be(columnRange);
-                grid.ColumnHeader[2].Should().Be("[,1]");
-                grid.ColumnHeader[3].Should().Be("d");
-                grid.ColumnHeader[4].Should().Be("[,3]");
+            grid.ColumnHeader.Range.Should().Be(columnRange);
+            grid.ColumnHeader[2].Should().Be("[,1]");
+            grid.ColumnHeader[3].Should().Be("d");
+            grid.ColumnHeader[4].Should().Be("[,3]");
 
-                grid.RowHeader.Range.Should().Be(rowRange);
-                grid.RowHeader[0].Should().Be("r1");
-                grid.RowHeader[1].Should().Be("[2,]");
+            grid.RowHeader.Range.Should().Be(rowRange);
+            grid.RowHeader[0].Should().Be("r1");
+            grid.RowHeader[1].Should().Be("[2,]");
 
-                grid.Grid.Range.Should().Be(new GridRange(rowRange, columnRange));
-                grid.Grid[0, 2].Should().Be("NA");
-                grid.Grid[0, 3].Should().Be("7");
-                grid.Grid[0, 4].Should().Be("9");
-                grid.Grid[1, 2].Should().Be("NaN");
-                grid.Grid[1, 3].Should().Be("8");
-                grid.Grid[1, 4].Should().Be("10");
-            }
+            grid.Grid.Range.Should().Be(new GridRange(rowRange, columnRange));
+            grid.Grid[0, 2].Should().Be("NA");
+            grid.Grid[0, 3].Should().Be("7");
+            grid.Grid[0, 4].Should().Be("9");
+            grid.Grid[1, 2].Should().Be("NaN");
+            grid.Grid[1, 3].Should().Be("8");
+            grid.Grid[1, 4].Should().Be("10");
         }
 
         [Test]
@@ -281,52 +274,50 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                 CanShowDetail = true
             };
 
-            using (var hostScript = new VariableRHostScript(_sessionProvider, _broker.BrokerConnector)) {
-                var evaluation = (VariableViewModel)await hostScript.EvaluateAndAssert(
-                    script1,
-                    expectation1,
-                    VariableRHostScript.AssertEvaluationWrapper);
+            var evaluation = (VariableViewModel)await _hostScript.EvaluateAndAssert(
+                script1,
+                expectation1,
+                VariableRHostScript.AssertEvaluationWrapper);
 
-                Range rowRange = new Range(0, 1);
-                Range columnRange = new Range(0, 3);
-                var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, new GridRange(rowRange, columnRange));
+            Range rowRange = new Range(0, 1);
+            Range columnRange = new Range(0, 3);
+            var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, new GridRange(rowRange, columnRange));
 
-                grid.ColumnHeader.Range.Should().Be(columnRange);
-                grid.ColumnHeader[0].Should().Be("[,1]");
-                grid.ColumnHeader[1].Should().Be("[,2]");
-                grid.ColumnHeader[2].Should().Be("[,3]");
+            grid.ColumnHeader.Range.Should().Be(columnRange);
+            grid.ColumnHeader[0].Should().Be("[,1]");
+            grid.ColumnHeader[1].Should().Be("[,2]");
+            grid.ColumnHeader[2].Should().Be("[,3]");
 
-                grid.RowHeader.Range.Should().Be(rowRange);
-                grid.RowHeader[0].Should().Be("[1,]");
+            grid.RowHeader.Range.Should().Be(rowRange);
+            grid.RowHeader[0].Should().Be("[1,]");
 
-                grid.Grid.Range.Should().Be(new GridRange(rowRange, columnRange));
-                grid.Grid[0, 0].Should().Be("1");
-                grid.Grid[0, 1].Should().Be("2");
-                grid.Grid[0, 2].Should().Be("3");
+            grid.Grid.Range.Should().Be(new GridRange(rowRange, columnRange));
+            grid.Grid[0, 0].Should().Be("1");
+            grid.Grid[0, 1].Should().Be("2");
+            grid.Grid[0, 2].Should().Be("3");
 
 
-                evaluation = (VariableViewModel)await hostScript.EvaluateAndAssert(
-                    script2,
-                    expectation2,
-                    VariableRHostScript.AssertEvaluationWrapper);
+            evaluation = (VariableViewModel)await _hostScript.EvaluateAndAssert(
+                script2,
+                expectation2,
+                VariableRHostScript.AssertEvaluationWrapper);
 
-                rowRange = new Range(0, 3);
-                columnRange = new Range(0, 1);
-                grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, new GridRange(rowRange, columnRange));
+            rowRange = new Range(0, 3);
+            columnRange = new Range(0, 1);
+            grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, new GridRange(rowRange, columnRange));
 
-                grid.ColumnHeader.Range.Should().Be(columnRange);
-                grid.ColumnHeader[0].Should().Be("[,1]");
+            grid.ColumnHeader.Range.Should().Be(columnRange);
+            grid.ColumnHeader[0].Should().Be("[,1]");
 
-                grid.RowHeader.Range.Should().Be(rowRange);
-                grid.RowHeader[0].Should().Be("[1,]");
-                grid.RowHeader[1].Should().Be("[2,]");
-                grid.RowHeader[2].Should().Be("[3,]");
+            grid.RowHeader.Range.Should().Be(rowRange);
+            grid.RowHeader[0].Should().Be("[1,]");
+            grid.RowHeader[1].Should().Be("[2,]");
+            grid.RowHeader[2].Should().Be("[3,]");
 
-                grid.Grid.Range.Should().Be(new GridRange(rowRange, columnRange));
-                grid.Grid[0, 0].Should().Be("1");
-                grid.Grid[1, 0].Should().Be("2");
-                grid.Grid[2, 0].Should().Be("3");
-            }
+            grid.Grid.Range.Should().Be(new GridRange(rowRange, columnRange));
+            grid.Grid[0, 0].Should().Be("1");
+            grid.Grid[1, 0].Should().Be("2");
+            grid.Grid[2, 0].Should().Be("3");
         }
 
         [Test]
@@ -335,30 +326,28 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             var script = "matrix.rowname.na <- matrix(c(1,2,3,4), nrow=2, ncol=2);rownames(matrix.rowname.na)<-c(NA, 'row2');";
             var expectation = new VariableExpectation() { Name = "matrix.rowname.na", Value = "num [1:2, 1:2] 1 2 3 4", TypeName = "double", Class = "matrix", HasChildren = true, CanShowDetail = true };
 
-            using (var hostScript = new VariableRHostScript(_sessionProvider, _broker.BrokerConnector)) {
-                var evaluation = (VariableViewModel)await hostScript.EvaluateAndAssert(
-                    script,
-                    expectation,
-                    VariableRHostScript.AssertEvaluationWrapper);
+            var evaluation = (VariableViewModel)await _hostScript.EvaluateAndAssert(
+                script,
+                expectation,
+                VariableRHostScript.AssertEvaluationWrapper);
 
-                Range rowRange = new Range(0, 2);
-                Range columnRange = new Range(0, 2);
-                var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, new GridRange(rowRange, columnRange));
+            Range rowRange = new Range(0, 2);
+            Range columnRange = new Range(0, 2);
+            var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, new GridRange(rowRange, columnRange));
 
-                grid.ColumnHeader.Range.Should().Be(columnRange);
-                grid.ColumnHeader[0].Should().Be("[,1]");
-                grid.ColumnHeader[1].Should().Be("[,2]");
+            grid.ColumnHeader.Range.Should().Be(columnRange);
+            grid.ColumnHeader[0].Should().Be("[,1]");
+            grid.ColumnHeader[1].Should().Be("[,2]");
 
-                grid.RowHeader.Range.Should().Be(rowRange);
-                grid.RowHeader[0].Should().Be("[1,]");
-                grid.RowHeader[1].Should().Be("row2");
+            grid.RowHeader.Range.Should().Be(rowRange);
+            grid.RowHeader[0].Should().Be("[1,]");
+            grid.RowHeader[1].Should().Be("row2");
 
-                grid.Grid.Range.Should().Be(new GridRange(rowRange, columnRange));
-                grid.Grid[0, 0].Should().Be("1");
-                grid.Grid[0, 1].Should().Be("3");
-                grid.Grid[1, 0].Should().Be("2");
-                grid.Grid[1, 1].Should().Be("4");
-            }
+            grid.Grid.Range.Should().Be(new GridRange(rowRange, columnRange));
+            grid.Grid[0, 0].Should().Be("1");
+            grid.Grid[0, 1].Should().Be("3");
+            grid.Grid[1, 0].Should().Be("2");
+            grid.Grid[1, 1].Should().Be("4");
         }
 
         [Test]
@@ -367,33 +356,31 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             var script = "matrix.colname.na <- matrix(1:6, nrow=2, ncol=3);colnames(matrix.colname.na)<-c('col1',NA,'col3');";
             var expectation = new VariableExpectation() { Name = "matrix.colname.na", Value = "int [1:2, 1:3] 1 2 3 4 5 6", TypeName = "integer", Class = "matrix", HasChildren = true, CanShowDetail = true };
 
-            using (var hostScript = new VariableRHostScript(_sessionProvider, _broker.BrokerConnector)) {
-                var evaluation = (VariableViewModel)await hostScript.EvaluateAndAssert(
-                    script,
-                    expectation,
-                    VariableRHostScript.AssertEvaluationWrapper);
+            var evaluation = (VariableViewModel)await _hostScript.EvaluateAndAssert(
+                script,
+                expectation,
+                VariableRHostScript.AssertEvaluationWrapper);
 
-                Range rowRange = new Range(0, 2);
-                Range columnRange = new Range(0, 3);
-                var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, new GridRange(rowRange, columnRange));
+            Range rowRange = new Range(0, 2);
+            Range columnRange = new Range(0, 3);
+            var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, new GridRange(rowRange, columnRange));
 
-                grid.ColumnHeader.Range.Should().Be(columnRange);
-                grid.ColumnHeader[0].Should().Be("col1");
-                grid.ColumnHeader[1].Should().Be("[,2]");
-                grid.ColumnHeader[2].Should().Be("col3");
+            grid.ColumnHeader.Range.Should().Be(columnRange);
+            grid.ColumnHeader[0].Should().Be("col1");
+            grid.ColumnHeader[1].Should().Be("[,2]");
+            grid.ColumnHeader[2].Should().Be("col3");
 
-                grid.RowHeader.Range.Should().Be(rowRange);
-                grid.RowHeader[0].Should().Be("[1,]");
-                grid.RowHeader[1].Should().Be("[2,]");
+            grid.RowHeader.Range.Should().Be(rowRange);
+            grid.RowHeader[0].Should().Be("[1,]");
+            grid.RowHeader[1].Should().Be("[2,]");
 
-                grid.Grid.Range.Should().Be(new GridRange(rowRange, columnRange));
-                grid.Grid[0, 0].Should().Be("1");
-                grid.Grid[0, 1].Should().Be("3");
-                grid.Grid[0, 2].Should().Be("5");
-                grid.Grid[1, 0].Should().Be("2");
-                grid.Grid[1, 1].Should().Be("4");
-                grid.Grid[1, 2].Should().Be("6");
-            }
+            grid.Grid.Range.Should().Be(new GridRange(rowRange, columnRange));
+            grid.Grid[0, 0].Should().Be("1");
+            grid.Grid[0, 1].Should().Be("3");
+            grid.Grid[0, 2].Should().Be("5");
+            grid.Grid[1, 0].Should().Be("2");
+            grid.Grid[1, 1].Should().Be("4");
+            grid.Grid[1, 2].Should().Be("6");
         }
 
         [Test]
@@ -402,22 +389,20 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             var script = "matrix.largecell <- matrix(list(as.double(1:5000), 2, 3, 4), nrow = 2, ncol = 2);";
             var expectation = new VariableExpectation() { Name = "matrix.largecell", Value = "List of 4", TypeName = "list", Class = "matrix", HasChildren = true, CanShowDetail = true };
 
-            using (var hostScript = new VariableRHostScript(_sessionProvider, _broker.BrokerConnector)) {
-                var evaluation = (VariableViewModel)await hostScript.EvaluateAndAssert(
-                    script,
-                    expectation,
-                    VariableRHostScript.AssertEvaluationWrapper);
+            var evaluation = (VariableViewModel)await _hostScript.EvaluateAndAssert(
+                script,
+                expectation,
+                VariableRHostScript.AssertEvaluationWrapper);
 
-                Range rowRange = new Range(0, 1);
-                Range columnRange = new Range(0, 1);
-                var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, new GridRange(rowRange, columnRange));
+            Range rowRange = new Range(0, 1);
+            Range columnRange = new Range(0, 1);
+            var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, new GridRange(rowRange, columnRange));
 
-                grid.ColumnHeader.Range.Should().Be(columnRange);
-                grid.RowHeader.Range.Should().Be(rowRange);
-                grid.Grid.Range.Should().Be(new GridRange(rowRange, columnRange));
+            grid.ColumnHeader.Range.Should().Be(columnRange);
+            grid.RowHeader.Range.Should().Be(rowRange);
+            grid.Grid.Range.Should().Be(new GridRange(rowRange, columnRange));
 
-                grid.Grid[0, 0].Should().Be("1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27...");
-            }
+            grid.Grid[0, 0].Should().Be("1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27...");
         }
 
         [Test]
@@ -426,49 +411,47 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             var script = "df.test <- data.frame(101:103, c('\"a', 'b', 'c'))";
             var expectation = new VariableExpectation() { Name = "df.test", Value = "3 obs. of  2 variables", TypeName = "list", Class = "data.frame", HasChildren = true, CanShowDetail = true };
 
-            using (var hostScript = new VariableRHostScript(_sessionProvider, _broker.BrokerConnector)) {
-                var evaluation = (VariableViewModel)await hostScript.EvaluateAndAssert(
-                    script,
-                    expectation,
-                    VariableRHostScript.AssertEvaluationWrapper);
+            var evaluation = (VariableViewModel)await _hostScript.EvaluateAndAssert(
+                script,
+                expectation,
+                VariableRHostScript.AssertEvaluationWrapper);
 
-                Range rowRange = new Range(0, 3);
-                Range columnRange = new Range(0, 2);
-                var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, new GridRange(rowRange, columnRange));
+            Range rowRange = new Range(0, 3);
+            Range columnRange = new Range(0, 2);
+            var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, new GridRange(rowRange, columnRange));
 
-                grid.ColumnHeader.Range.Should().Be(columnRange);
-                grid.ColumnHeader[0].Should().Be("X101.103");
-                grid.ColumnHeader[1].Should().Be("c....a....b....c..");
+            grid.ColumnHeader.Range.Should().Be(columnRange);
+            grid.ColumnHeader[0].Should().Be("X101.103");
+            grid.ColumnHeader[1].Should().Be("c....a....b....c..");
 
-                grid.RowHeader.Range.Should().Be(rowRange);
-                grid.RowHeader[0].Should().Be("1");
-                grid.RowHeader[1].Should().Be("2");
-                grid.RowHeader[2].Should().Be("3");
+            grid.RowHeader.Range.Should().Be(rowRange);
+            grid.RowHeader[0].Should().Be("1");
+            grid.RowHeader[1].Should().Be("2");
+            grid.RowHeader[2].Should().Be("3");
 
-                grid.Grid.Range.Should().Be(new GridRange(rowRange, columnRange));
-                grid.Grid[0, 0].Should().Be("101");
-                grid.Grid[0, 1].Should().Be("\"a");
-                grid.Grid[1, 0].Should().Be("102");
-                grid.Grid[1, 1].Should().Be("b");
-                grid.Grid[2, 0].Should().Be("103");
-                grid.Grid[2, 1].Should().Be("c");
+            grid.Grid.Range.Should().Be(new GridRange(rowRange, columnRange));
+            grid.Grid[0, 0].Should().Be("101");
+            grid.Grid[0, 1].Should().Be("\"a");
+            grid.Grid[1, 0].Should().Be("102");
+            grid.Grid[1, 1].Should().Be("b");
+            grid.Grid[2, 0].Should().Be("103");
+            grid.Grid[2, 1].Should().Be("c");
 
-                // single column
-                columnRange = new Range(1, 1);
-                grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, new GridRange(rowRange, columnRange));
-                grid.ColumnHeader.Range.Should().Be(columnRange);
-                grid.ColumnHeader[1].Should().Be("c....a....b....c..");
+            // single column
+            columnRange = new Range(1, 1);
+            grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, new GridRange(rowRange, columnRange));
+            grid.ColumnHeader.Range.Should().Be(columnRange);
+            grid.ColumnHeader[1].Should().Be("c....a....b....c..");
 
-                grid.RowHeader.Range.Should().Be(rowRange);
-                grid.RowHeader[0].Should().Be("1");
-                grid.RowHeader[1].Should().Be("2");
-                grid.RowHeader[2].Should().Be("3");
+            grid.RowHeader.Range.Should().Be(rowRange);
+            grid.RowHeader[0].Should().Be("1");
+            grid.RowHeader[1].Should().Be("2");
+            grid.RowHeader[2].Should().Be("3");
 
-                grid.Grid.Range.Should().Be(new GridRange(rowRange, columnRange));
-                grid.Grid[0, 1].Should().Be("\"a");
-                grid.Grid[1, 1].Should().Be("b");
-                grid.Grid[2, 1].Should().Be("c");
-            }
+            grid.Grid.Range.Should().Be(new GridRange(rowRange, columnRange));
+            grid.Grid[0, 1].Should().Be("\"a");
+            grid.Grid[1, 1].Should().Be("b");
+            grid.Grid[2, 1].Should().Be("c");
         }
 
         [Test]
@@ -477,30 +460,28 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             var script = "df.lang <- data.frame(col1=c('a','中'),col2=c('國','d'),row.names = c('マイクロソフト','row2'));";
             var expectation = new VariableExpectation() { Name = "df.lang", Value = "2 obs. of  2 variables", TypeName = "list", Class = "data.frame", HasChildren = true, CanShowDetail = true };
 
-            using (var hostScript = new VariableRHostScript(_sessionProvider, _broker.BrokerConnector)) {
-                var evaluation = (VariableViewModel)await hostScript.EvaluateAndAssert(
-                    script,
-                    expectation,
-                    VariableRHostScript.AssertEvaluationWrapper);
+            var evaluation = (VariableViewModel)await _hostScript.EvaluateAndAssert(
+                script,
+                expectation,
+                VariableRHostScript.AssertEvaluationWrapper);
 
-                Range rowRange = new Range(0, 2);
-                Range columnRange = new Range(0, 2);
-                var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, new GridRange(rowRange, columnRange));
+            Range rowRange = new Range(0, 2);
+            Range columnRange = new Range(0, 2);
+            var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, new GridRange(rowRange, columnRange));
 
-                grid.ColumnHeader.Range.Should().Be(columnRange);
-                grid.ColumnHeader[0].Should().Be("col1");
-                grid.ColumnHeader[1].Should().Be("col2");
+            grid.ColumnHeader.Range.Should().Be(columnRange);
+            grid.ColumnHeader[0].Should().Be("col1");
+            grid.ColumnHeader[1].Should().Be("col2");
 
-                grid.RowHeader.Range.Should().Be(rowRange);
-                grid.RowHeader[0].Should().Be("マイクロソフト");
-                grid.RowHeader[1].Should().Be("row2");
+            grid.RowHeader.Range.Should().Be(rowRange);
+            grid.RowHeader[0].Should().Be("マイクロソフト");
+            grid.RowHeader[1].Should().Be("row2");
 
-                grid.Grid.Range.Should().Be(new GridRange(rowRange, columnRange));
-                grid.Grid[0, 0].Should().Be("a");
-                grid.Grid[0, 1].Should().Be("國");
-                grid.Grid[1, 0].Should().Be("中");
-                grid.Grid[1, 1].Should().Be("d");
-            }
+            grid.Grid.Range.Should().Be(new GridRange(rowRange, columnRange));
+            grid.Grid[0, 0].Should().Be("a");
+            grid.Grid[0, 1].Should().Be("國");
+            grid.Grid[1, 0].Should().Be("中");
+            grid.Grid[1, 1].Should().Be("d");
         }
 
         [Test]
@@ -508,15 +489,13 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         public async Task DataFrameManyColumnTest() {
             var script = "df.manycolumn<-data.frame(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30);";
             var expectation = new VariableExpectation() { Name = "df.manycolumn", Value = "1 obs. of  30 variables", TypeName = "list", Class = "data.frame", HasChildren = true, CanShowDetail = true };
-            using (var hostScript = new VariableRHostScript(_sessionProvider, _broker.BrokerConnector)) {
-                var evaluation = (VariableViewModel)await hostScript.EvaluateAndAssert(
-                    script,
-                    expectation,
-                    VariableRHostScript.AssertEvaluationWrapper);
+            var evaluation = (VariableViewModel)await _hostScript.EvaluateAndAssert(
+                script,
+                expectation,
+                VariableRHostScript.AssertEvaluationWrapper);
 
-                var children = await evaluation.GetChildrenAsync();
-                children.Count.Should().BeGreaterOrEqualTo(30);
-            }
+            var children = await evaluation.GetChildrenAsync();
+            children.Count.Should().BeGreaterOrEqualTo(30);
         }
 
         [Test]
@@ -528,18 +507,16 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             var x_expectation = new VariableExpectation() { Name = "x", Value = "1", TypeName = "<promise>", Class = "<promise>", HasChildren = false, CanShowDetail = false };
             var y_expectation = new VariableExpectation() { Name = "z", Value = "3", TypeName = "<promise>", Class = "<promise>", HasChildren = false, CanShowDetail = false };
 
-            using (var hostScript = new VariableRHostScript(_sessionProvider, _broker.BrokerConnector)) {
-                var evaluation = (VariableViewModel)await hostScript.EvaluateAndAssert(
-                    script,
-                    expectation,
-                    VariableRHostScript.AssertEvaluationWrapper_ValueStartWith);
+            var evaluation = (VariableViewModel)await _hostScript.EvaluateAndAssert(
+                script,
+                expectation,
+                VariableRHostScript.AssertEvaluationWrapper_ValueStartWith);
 
-                var children = await evaluation.GetChildrenAsync();
+            var children = await evaluation.GetChildrenAsync();
 
-                children.Count.Should().Be(2);
-                VariableRHostScript.AssertEvaluationWrapper(children[0], x_expectation);
-                VariableRHostScript.AssertEvaluationWrapper(children[1], y_expectation);
-            }
+            children.Count.Should().Be(2);
+            VariableRHostScript.AssertEvaluationWrapper(children[0], x_expectation);
+            VariableRHostScript.AssertEvaluationWrapper(children[1], y_expectation);
         }
 
         [Test]
@@ -548,15 +525,13 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             // This is the equivalent of what we get when we fetch a variable
             // for a data grid after that variable is no longer available (rm or reset).
             var script = "idonotexist";
-            using (var hostScript = new VariableRHostScript(_sessionProvider, _broker.BrokerConnector)) {
-                var evaluationResult = await hostScript.EvaluateAsync(script);
-                evaluationResult.Name.Should().BeNull();
-                evaluationResult.Expression.Should().Be("idonotexist");
+            var evaluationResult = await _hostScript.EvaluateAsync(script);
+            evaluationResult.Name.Should().BeNull();
+            evaluationResult.Expression.Should().Be("idonotexist");
 
-                var model = new VariableViewModel(evaluationResult, null);
-                model.TypeName.Should().BeNull();
-                model.Value.Should().BeNull();
-            }
+            var model = new VariableViewModel(evaluationResult, null);
+            model.TypeName.Should().BeNull();
+            model.Value.Should().BeNull();
         }
 
         object[,] arrayTestData = new object[,] {
@@ -592,15 +567,13 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         }
 
         private async Task RunTest(object[,] testData) {
-            using (var hostScript = new VariableRHostScript(_sessionProvider, _broker.BrokerConnector)) {
-                int testCount = testData.GetLength(0);
+            int testCount = testData.GetLength(0);
 
-                for (int i = 0; i < testCount; i++) {
-                    await hostScript.EvaluateAndAssert(
-                        (string)testData[i, 0],
-                        (VariableExpectation)testData[i, 1],
-                        VariableRHostScript.AssertEvaluationWrapper);
-                }
+            for (int i = 0; i < testCount; i++) {
+                await _hostScript.EvaluateAndAssert(
+                    (string)testData[i, 0],
+                    (VariableExpectation)testData[i, 1],
+                    VariableRHostScript.AssertEvaluationWrapper);
             }
         }
     }

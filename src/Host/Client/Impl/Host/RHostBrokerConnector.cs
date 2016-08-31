@@ -4,7 +4,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Interpreters;
 
@@ -19,14 +18,11 @@ namespace Microsoft.R.Host.Client.Host {
 
         public event EventHandler BrokerChanged;
         public RHostBrokerConnector(ICoreShell coreShell = null) {
-            //GeneralLog.Write($"RHostBrokerConnector.ctor() : {Environment.StackTrace}");
-
             _coreShell = coreShell;
             _hostConnector = new NullRHostConnector();
         }
 
         public void Dispose() {
-            //GeneralLog.Write($"RHostBrokerConnector.Dispose() : {Environment.StackTrace}");
             _hostConnector.Dispose();
         }
 

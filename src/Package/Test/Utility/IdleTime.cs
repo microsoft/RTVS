@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core.Test.Script;
 using Microsoft.VisualStudio.R.Package.Shell;
 
-namespace Microsoft.VisualStudio.R.Interactive.Test.Utility {
+namespace Microsoft.VisualStudio.R.Package.Test.Utility {
     [ExcludeFromCodeCoverage]
     public static class IdleTime {
         public static void DoIdle() {

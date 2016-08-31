@@ -10,7 +10,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Threading;
 using Newtonsoft.Json;
 
@@ -92,11 +91,8 @@ namespace Microsoft.R.Host.Client.Host {
                     process = Process.Start(psi);
                     process.EnableRaisingEvents = true;
 
-                    //GeneralLog.Write($"Broker start {process.Id}");
-
                     var cts = new CancellationTokenSource(10000);
                     process.Exited += delegate {
-                        //GeneralLog.Write($"Broker terminated: {process.Id}");
                         cts.Cancel();
                         _brokerProcess = null;
                         _connectLock.Reset();

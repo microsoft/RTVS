@@ -10,6 +10,7 @@ using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Interactive.Test.Utility;
 using Microsoft.VisualStudio.R.Package.DataInspect;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Package.Test;
 using Microsoft.VisualStudio.R.Package.Test.DataInspect;
 using Xunit;
 
@@ -20,72 +21,73 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
     public class VariableGridTest : InteractiveTest {
         private readonly TestFilesFixture _files;
         private readonly BrokerFixture _broker;
+        private readonly VariableRHostScript _hostScript;
 
         public VariableGridTest(TestFilesFixture files, BrokerFixture broker) {
             _files = files;
             _broker = broker;
+            _hostScript = new VariableRHostScript(SessionProvider, _broker.BrokerConnector);
+        }
+
+        protected override void Dispose(bool disposing) {
+            _hostScript.Dispose();
+            base.Dispose(disposing);
         }
 
         [Test]
         public async Task ConstructorTest() {
             VisualTreeObject actual = null;
-            using (var hostScript = new VariableRHostScript(_sessionProvider, _broker.BrokerConnector)) {
-                using (var script = new ControlTestScript(typeof(VariableGridHost))) {
-                    await PrepareControl(hostScript, script, "grid.test <- matrix(1:10, 2, 5)");
-                    actual = VisualTreeObject.Create(script.Control);
-                    ViewTreeDump.CompareVisualTrees(_files, actual, "VariableGrid02");
-                }
+            using (var script = new ControlTestScript(typeof(VariableGridHost))) {
+                await PrepareControl(_hostScript, script, "grid.test <- matrix(1:10, 2, 5)");
+                actual = VisualTreeObject.Create(script.Control);
+                ViewTreeDump.CompareVisualTrees(_files, actual, "VariableGrid02");
             }
         }
 
         [Test]
         public async Task SortTest01() {
             VisualTreeObject actual = null;
-            using (var hostScript = new VariableRHostScript(_sessionProvider, _broker.BrokerConnector)) {
-                using (var script = new ControlTestScript(typeof(VariableGridHost))) {
-                    await PrepareControl(hostScript, script, "grid.test <- matrix(1:10, 2, 5)");
-                    var header = VisualTreeTestExtensions.FindFirstVisualChildOfType<HeaderTextVisual>(script.Control);
-                    var grid = VisualTreeTestExtensions.FindFirstVisualChildOfType<VisualGrid>(script.Control);
-                    header.Should().NotBeNull();
-                    await UIThreadHelper.Instance.InvokeAsync(() => {
-                        grid.ToggleSort(header, false);
-                        DoIdle(200);
-                        grid.ToggleSort(header, false);
-                    });
+            using (var script = new ControlTestScript(typeof(VariableGridHost))) {
+                await PrepareControl(_hostScript, script, "grid.test <- matrix(1:10, 2, 5)");
+                var header = VisualTreeTestExtensions.FindFirstVisualChildOfType<HeaderTextVisual>(script.Control);
+                var grid = VisualTreeTestExtensions.FindFirstVisualChildOfType<VisualGrid>(script.Control);
+                header.Should().NotBeNull();
+                await UIThreadHelper.Instance.InvokeAsync(() => {
+                    grid.ToggleSort(header, false);
                     DoIdle(200);
-                    actual = VisualTreeObject.Create(script.Control);
-                    ViewTreeDump.CompareVisualTrees(_files, actual, "VariableGridSorted01");
-                }
+                    grid.ToggleSort(header, false);
+                });
+                DoIdle(200);
+                actual = VisualTreeObject.Create(script.Control);
+                ViewTreeDump.CompareVisualTrees(_files, actual, "VariableGridSorted01");
             }
         }
 
         [Test]
         public async Task SortTest02() {
             VisualTreeObject actual = null;
-            using (var hostScript = new VariableRHostScript(_sessionProvider, _broker.BrokerConnector)) {
-                using (var script = new ControlTestScript(typeof(VariableGridHost))) {
-                    await PrepareControl(hostScript, script, "grid.test <- mtcars");
-                    UIThreadHelper.Instance.Invoke(() => {
-                        var grid = VisualTreeTestExtensions.FindFirstVisualChildOfType<VisualGrid>(script.Control);
+            using (var script = new ControlTestScript(typeof(VariableGridHost))) {
+                await PrepareControl(_hostScript, script, "grid.test <- mtcars");
+                UIThreadHelper.Instance.Invoke(() => {
+                    var grid = VisualTreeTestExtensions.FindFirstVisualChildOfType<VisualGrid>(script.Control);
 
-                        var header = VisualTreeTestExtensions.FindFirstVisualChildOfType<HeaderTextVisual>(script.Control); // mpg
-                        header = VisualTreeTestExtensions.FindNextVisualSiblingOfType<HeaderTextVisual>(header); // cyl
-                        header.Should().NotBeNull();
+                    var header = VisualTreeTestExtensions.FindFirstVisualChildOfType<HeaderTextVisual>(script.Control); // mpg
+                    header = VisualTreeTestExtensions.FindNextVisualSiblingOfType<HeaderTextVisual>(header); // cyl
+                    header.Should().NotBeNull();
 
-                        grid.ToggleSort(header, false);
-                        DoIdle(200);
+                    grid.ToggleSort(header, false);
+                    DoIdle(200);
 
-                        header = VisualTreeTestExtensions.FindNextVisualSiblingOfType<HeaderTextVisual>(header); // disp
-                        header = VisualTreeTestExtensions.FindNextVisualSiblingOfType<HeaderTextVisual>(header); // hp
+                    header = VisualTreeTestExtensions.FindNextVisualSiblingOfType<HeaderTextVisual>(header); // disp
+                    header = VisualTreeTestExtensions.FindNextVisualSiblingOfType<HeaderTextVisual>(header); // hp
 
-                        grid.ToggleSort(header, add: true);
-                        grid.ToggleSort(header, add: true);
-                        DoIdle(200);
-                    });
+                    grid.ToggleSort(header, add: true);
+                    grid.ToggleSort(header, add: true);
+                    DoIdle(200);
+                });
 
-                    actual = VisualTreeObject.Create(script.Control);
-                    ViewTreeDump.CompareVisualTrees(_files, actual, "VariableGridSorted02");
-                }
+                actual = VisualTreeObject.Create(script.Control);
+                ViewTreeDump.CompareVisualTrees(_files, actual, "VariableGridSorted02");
             }
         }
 

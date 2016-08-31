@@ -14,59 +14,52 @@ using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Test;
 using Microsoft.VisualStudio.R.Package.Test.FakeFactories;
 using Microsoft.VisualStudio.R.Package.Test.Mocks;
-using Microsoft.VisualStudio.R.Package.Test.Utility;
 using Microsoft.VisualStudio.Text;
 using Xunit;
 
 namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
-    public class HelpOnCurrentTest : InteractiveTest {
-        private readonly BrokerFixture _broker;
-
-        public HelpOnCurrentTest(BrokerFixture broker) {
-            _broker = broker;
-        }
+    public class HelpOnCurrentTest : HostBasedInteractiveTest {
+        public HelpOnCurrentTest(BrokerFixture broker) : base(broker.BrokerConnector) { }
 
         [Test(Skip = "https://github.com/Microsoft/RTVS/issues/1983")]
         [Category.Interactive]
         public void HelpTest() {
             var clientApp = new RHostClientHelpTestApp();
             var historyProvider = RHistoryProviderStubFactory.CreateDefault();
-            using (var hostScript = new VsRHostScript(_sessionProvider, _broker.BrokerConnector, clientApp)) {
-                using (var script = new ControlTestScript(typeof(HelpVisualComponent))) {
-                    DoIdle(100);
+            using (var script = new ControlTestScript(typeof(HelpVisualComponent))) {
+                DoIdle(100);
 
-                    var activeViewTrackerMock = new ActiveTextViewTrackerMock("  plot", RContentTypeDefinition.ContentType);
-                    var activeReplTrackerMock = new ActiveRInteractiveWindowTrackerMock();
-                    var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-                    var interactiveWorkflowProvider = TestRInteractiveWorkflowProviderFactory.Create(nameof(HelpTest), sessionProvider, activeTextViewTracker: activeViewTrackerMock);
-                    var interactiveWorkflow = interactiveWorkflowProvider.GetOrCreate();
+                var activeViewTrackerMock = new ActiveTextViewTrackerMock("  plot", RContentTypeDefinition.ContentType);
+                var activeReplTrackerMock = new ActiveRInteractiveWindowTrackerMock();
+                var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+                var interactiveWorkflowProvider = TestRInteractiveWorkflowProviderFactory.Create(nameof(HelpTest), sessionProvider, activeTextViewTracker: activeViewTrackerMock);
+                var interactiveWorkflow = interactiveWorkflowProvider.GetOrCreate();
 
-                    var component = ControlWindow.Component as IHelpVisualComponent;
-                    component.Should().NotBeNull();
+                var component = ControlWindow.Component as IHelpVisualComponent;
+                component.Should().NotBeNull();
 
-                    component.VisualTheme = "Light.css";
-                    clientApp.Component = component;
+                component.VisualTheme = "Light.css";
+                clientApp.Component = component;
 
-                    var view = activeViewTrackerMock.GetLastActiveTextView(RContentTypeDefinition.ContentType);
+                var view = activeViewTrackerMock.GetLastActiveTextView(RContentTypeDefinition.ContentType);
 
-                    var cmd = new ShowHelpOnCurrentCommand(interactiveWorkflow, activeViewTrackerMock, activeReplTrackerMock);
+                var cmd = new ShowHelpOnCurrentCommand(interactiveWorkflow, activeViewTrackerMock, activeReplTrackerMock);
 
-                    cmd.Should().BeVisibleAndDisabled();
-                    view.Caret.MoveTo(new SnapshotPoint(view.TextBuffer.CurrentSnapshot, 3));
+                cmd.Should().BeVisibleAndDisabled();
+                view.Caret.MoveTo(new SnapshotPoint(view.TextBuffer.CurrentSnapshot, 3));
 
-                    cmd.Should().BeVisibleAndEnabled();
-                    cmd.Text.Should().EndWith("plot");
+                cmd.Should().BeVisibleAndEnabled();
+                cmd.Text.Should().EndWith("plot");
 
-                    cmd.Invoke();
-                    WaitForAppReady(clientApp);
+                cmd.Invoke();
+                WaitForAppReady(clientApp);
 
-                    clientApp.Uri.IsLoopback.Should().Be(true);
-                    clientApp.Uri.PathAndQuery.Should().Be("/library/graphics/html/plot.html");
+                clientApp.Uri.IsLoopback.Should().Be(true);
+                clientApp.Uri.PathAndQuery.Should().Be("/library/graphics/html/plot.html");
 
-                    DoIdle(500);
-                }
+                DoIdle(500);
             }
         }
 

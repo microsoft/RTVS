@@ -12,6 +12,7 @@ using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Help;
+using Microsoft.VisualStudio.R.Package.Test;
 using Microsoft.VisualStudio.R.Package.Test.Utility;
 using Microsoft.VisualStudio.R.Packages.R;
 using mshtml;
@@ -20,19 +21,15 @@ using Xunit;
 namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
-    public class HelpWindowTest : InteractiveTest {
+    public class HelpWindowTest : HostBasedInteractiveTest {
         private const string darkThemeCssColor = "rgb(36,36,36)";
-        private readonly BrokerFixture _broker;
 
-        public HelpWindowTest(BrokerFixture broker) {
-            _broker = broker;
-        }
+        public HelpWindowTest(BrokerFixture broker): base(broker.BrokerConnector) { }
 
         [Test(Skip = "https://github.com/Microsoft/RTVS/issues/1983")]
         [Category.Interactive]
         public void HelpTest() {
             var clientApp = new RHostClientHelpTestApp();
-            using (var hostScript = new VsRHostScript(_sessionProvider, _broker.BrokerConnector, clientApp)) {
                 using (var script = new ControlTestScript(typeof(HelpVisualComponent))) {
                     DoIdle(100);
 
@@ -42,7 +39,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
                     component.VisualTheme = "Dark.css";
                     clientApp.Component = component;
 
-                    ShowHelp("plot", hostScript, clientApp);
+                    ShowHelp("plot", HostScript, clientApp);
                     clientApp.Uri.IsLoopback.Should().Be(true);
                     clientApp.Uri.PathAndQuery.Should().Be("/library/graphics/html/plot.html");
 
@@ -55,7 +52,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
                     GetBackgroundColor(component.Browser).Should().Be(darkThemeCssColor);
 
                     component.VisualTheme = "Light.css";
-                    ShowHelp("lm", hostScript, clientApp);
+                    ShowHelp("lm", HostScript, clientApp);
                     clientApp.Uri.PathAndQuery.Should().Be("/library/stats/html/lm.html");
 
                     GetBackgroundColor(component.Browser).Should().Be("white");
@@ -68,8 +65,6 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
 
                     ExecCommand(clientApp, RPackageCommandId.icmdHelpHome);
                     clientApp.Uri.PathAndQuery.Should().Be("/doc/html/index.html");
-
-                }
             }
         }
 
