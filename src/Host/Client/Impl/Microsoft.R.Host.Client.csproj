@@ -45,7 +45,6 @@
     </Compile>
     <Compile Include="BrokerServices\IRemoteUriWebService.cs" />
     <Compile Include="BrokerServices\ISessionsWebService.cs" />
-    <Compile Include="BrokerServices\RemoteUriResponse.cs" />
     <Compile Include="BrokerServices\RemoteUriWebService.cs" />
     <Compile Include="BrokerServices\WebServer.cs" />
     <Compile Include="BrokerServices\WebService.cs" />

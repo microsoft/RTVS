@@ -15,15 +15,10 @@ using System.Net.Http.Headers;
 namespace Microsoft.R.Host.Broker.RemoteUri {
     public class RemoteUriHelper {
         public static async Task HandlerAsync(HttpContext context) {
-            string url = null;
-            string method = null;
-            Dictionary<string, string> headers = null;
-            Stream content = null;
-
             BinaryReader reader = new BinaryReader(context.Request.Body);
-            url = reader.ReadString();
-            method = reader.ReadString();
-            headers = JsonConvert.DeserializeObject<Dictionary<string, string>>(reader.ReadString());
+            var url = reader.ReadString();
+            var method = reader.ReadString();
+            Dictionary<string, string> headers = JsonConvert.DeserializeObject<Dictionary<string, string>>(reader.ReadString());
 
             HttpClient client = new HttpClient();
             Uri uri = new Uri(url);
@@ -36,6 +31,7 @@ namespace Microsoft.R.Host.Broker.RemoteUri {
                 req.Headers.Add(key, val);
             }
 
+            Stream content = null;
             if (httpMethod == HttpMethod.Post) {
                 content = new MemoryStream();
                 long length = context.Request.Body.Length - context.Request.Body.Position;
@@ -52,15 +48,29 @@ namespace Microsoft.R.Host.Broker.RemoteUri {
             var respHeaders = new Dictionary<string, string>();
 
             foreach (var pair in httpResponse.Headers) {
-                StringBuilder value = new StringBuilder("");
+                StringBuilder vb = new StringBuilder("");
                 foreach (var val in pair.Value) {
-                    value.Append(val);
-                    value.Append(",");
+                    vb.Append(val);
+                    vb.Append(",");
                 }
-                respHeaders.Add(pair.Key, value.ToString());
+                string value = vb.ToString();
+                value = value.Substring(0, value.Length - 1);
+                respHeaders.Add(pair.Key, value);
+            }
+
+            foreach (var pair in httpResponse.Content.Headers) {
+                StringBuilder vb = new StringBuilder("");
+                foreach (var val in pair.Value) {
+                    vb.Append(val);
+                    vb.Append(",");
+                }
+                string value = vb.ToString();
+                value = value.Substring(0, value.Length - 1);
+                respHeaders.Add(pair.Key, value);
             }
 
             BinaryWriter writer = new BinaryWriter(context.Response.Body);
+            writer.Write((int)httpResponse.StatusCode);
             writer.Write(JsonConvert.SerializeObject(respHeaders));
             await httpResponse.Content.CopyToAsync(context.Response.Body);
         }

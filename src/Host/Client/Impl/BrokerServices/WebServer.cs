@@ -10,45 +10,46 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Newtonsoft.Json;
+using System.Text;
 
 namespace Microsoft.R.Host.Client.BrokerServices {
     public class WebServer {
-        private readonly string _newHost;
-        public string Host => _newHost;
-
-        private readonly int _newPort;
-        public int Port => _newPort;
-
-        private readonly string _remoteHost;
-        public string RemoteHost => _remoteHost;
-
-        private readonly int _remotePort;
-        public int RemotePort => _remotePort;
+        public string Host { get; }
+        public int Port { get; }
+        public string RemoteHost { get; }
+        public int RemotePort { get; }
 
         private HttpListener _listener;
 
-        private static List<WebServer> _servers = new List<WebServer>();
-        public static IReadOnlyList<WebServer> Servers => _servers;
+        private static Dictionary<int, WebServer> _servers = new Dictionary<int, WebServer>();
+        public static IReadOnlyDictionary<int, WebServer> Servers => _servers;
 
-        private readonly RemoteUriWebService _service;
-        private IRemoteUriWebService RemoteUriService => _service;
+        private IRemoteUriWebService RemoteUriService { get; }
+
+        private class RemoteUriResponse {
+            public string ContentType { get; set; }
+            public long ContentLength { get; set; }
+            public int StatusCode { get; set; }
+            public Dictionary<string, string> Headers { get; set; }
+            public Stream Content { get; set; }
+        }
 
         private WebServer(string remoteHostIp, int remotePort, HttpClient httpClient) {
-            _newHost = IPAddress.Loopback.ToString();
-            _remoteHost = remoteHostIp;
-            _remotePort = remotePort;
-            _service = new RemoteUriWebService(httpClient);
+            Host = IPAddress.Loopback.ToString();
+            RemoteHost = remoteHostIp;
+            RemotePort = remotePort;
+            RemoteUriService = new RemoteUriWebService(httpClient);
             Random r = new Random();
 
             // if remote port is between 10000 and 32000, select a port in the same range.
             // R Help uses ports in that range.
-            int localPortMin = (_remotePort >= 10000 && _remotePort <= 32000)? 10000: 49152;
-            int localPortMax = (_remotePort >= 10000 && _remotePort <= 32000) ? 32000 : 65535;
+            int localPortMin = (RemotePort >= 10000 && RemotePort <= 32000)? 10000: 49152;
+            int localPortMax = (RemotePort >= 10000 && RemotePort <= 32000) ? 32000 : 65535;
 
             while(true) {
                 _listener = new HttpListener();
-                _newPort = r.Next(localPortMin, localPortMax);
-                _listener.Prefixes.Add($"http://{_newHost}:{_newPort}/");
+                Port = r.Next(localPortMin, localPortMax);
+                _listener.Prefixes.Add($"http://{Host}:{Port}/");
 
                 try {
                     _listener.Start();
@@ -66,6 +67,11 @@ namespace Microsoft.R.Host.Client.BrokerServices {
         }
 
         private async Task DoWorkAsync(CancellationToken ct) {
+            if (_listener.IsListening) {
+                // There is already a thread listening.
+                return;
+            }
+
             while (_listener.IsListening) {
                 if (ct.IsCancellationRequested) {
                     _listener.Stop();
@@ -76,23 +82,39 @@ namespace Microsoft.R.Host.Client.BrokerServices {
 
                 RemoteUriResponse resp = null;
                 using (var requestStream = await CreateRequestAsync(context.Request, RemoteHost, RemotePort)) {
-                    var responseStream = await _service.PostAsync(requestStream);
+                    var responseStream = await RemoteUriService.PostAsync(requestStream);
                     resp = await ParseResponseAsync(responseStream);
                 }
 
-                string localHostPort = $"{_newHost}:{_newPort}";
-                string remoteHostPort = $"{_remoteHost}:{_remotePort}";
+                string localHostPort = $"{Host}:{Port}";
+                string remoteHostPort = $"{RemoteHost}:{RemotePort}";
 
-                var webHeaders = new WebHeaderCollection();
                 foreach (var pair in resp.Headers) {
                     string value = pair.Value;
                     value = value.Replace(remoteHostPort, localHostPort);
-                    webHeaders.Add($"{pair.Key}:{value}");
+                    context.Response.AddHeader(pair.Key, value);
                 }
 
-                context.Response.Headers = webHeaders;
-                await resp.Content.CopyToAsync(context.Response.OutputStream);
-                await context.Response.OutputStream.FlushAsync();
+                context.Response.ContentLength64 = resp.ContentLength;
+
+                if (!string.IsNullOrWhiteSpace(resp.ContentType)) {
+                    using (MemoryStream ms = new MemoryStream()) {
+                        // using the internal media type parser by using a temp response message
+                        HttpResponseMessage tempMessage = new HttpResponseMessage();
+                        tempMessage.Content = new StreamContent(ms);
+                        tempMessage.Content.Headers.Add("Content-Type", resp.ContentType);
+                        context.Response.ContentType = tempMessage.Content.Headers.ContentType.MediaType;
+                        if (!string.IsNullOrWhiteSpace(tempMessage.Content.Headers.ContentType.CharSet)) {
+                            context.Response.ContentEncoding = Encoding.GetEncoding(tempMessage.Content.Headers.ContentType.CharSet);
+                        }
+                    }
+                }
+
+                context.Response.StatusCode = resp.StatusCode;
+                if(resp.Content.Length != 0) {
+                    await resp.Content.CopyToAsync(context.Response.OutputStream);
+                    await context.Response.OutputStream.FlushAsync();
+                }
                 context.Response.OutputStream.Close();
             }
         }
@@ -127,6 +149,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             RemoteUriResponse resp = new RemoteUriResponse();
             
             BinaryReader reader = new BinaryReader(response);
+            resp.StatusCode = reader.ReadInt32();
             string headerString = reader.ReadString();
             resp.Headers = JsonConvert.DeserializeObject<Dictionary<string, string>>(headerString);
 
@@ -136,6 +159,24 @@ namespace Microsoft.R.Host.Client.BrokerServices {
 
             resp.Content = new MemoryStream(buffer);
             resp.Content.Position = 0;
+
+            string contentTypeKey = "Content-Type";
+            if (resp.Headers.ContainsKey(contentTypeKey)) {
+                resp.ContentType = resp.Headers[contentTypeKey];
+                resp.Headers.Remove(contentTypeKey);
+            }
+
+            string contentLengthKey = "Content-Length";
+            if (resp.Headers.ContainsKey(contentLengthKey)) {
+                long result = 0;
+                if (!long.TryParse(resp.Headers[contentLengthKey], out result) || result < 0) {
+                    // use the calculated length
+                    result = length;
+                }
+                resp.ContentLength = result;
+                resp.Headers.Remove(contentLengthKey);
+            }
+
             return resp;
         }
 
@@ -143,8 +184,14 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             Uri remoteUri = new Uri(remoteUrl);
             UriBuilder localUri = new UriBuilder(remoteUri);
 
-            var server = new WebServer(remoteUri.Host, remoteUri.Port, httpClient);
-            _servers.Add(server);
+            WebServer server = null;
+            if (!_servers.ContainsKey(remoteUri.Port)) {
+                server = _servers[remoteUri.Port];
+            } else {
+                server = new WebServer(remoteUri.Host, remoteUri.Port, httpClient);
+                _servers.Add(remoteUri.Port, server);
+            }
+            
             server.DoWorkAsync(ct).DoNotWait();
 
             localUri.Host = server.Host;
