@@ -151,9 +151,5 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             localUri.Port = server.Port;
             return localUri.Uri.ToString();
         }
-
-        private static int GetAvaialblePort() {
-            throw new NotImplementedException();
-        }
     }
 }
