@@ -196,7 +196,7 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         public string HandleUrl(string url, CancellationToken ct) {
-            if (!IsRemote) {
+            if (IsRemote) {
                 return WebServer.CreateWebServer(url, HttpClient, ct);
             } else {
                 return url;

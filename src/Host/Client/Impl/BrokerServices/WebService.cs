@@ -50,7 +50,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
         }
 
         public async Task<Stream> HttpPostAsync(Uri uri, Stream request) {
-            var content = new StreamContent(request); // new StringContent(requestBody, Encoding.UTF8, "application/json");
+            var content = new StreamContent(request);
             var response = (await HttpClient.PostAsync(uri, content)).EnsureSuccessStatusCode();
             return await response.Content.ReadAsStreamAsync();
         }
