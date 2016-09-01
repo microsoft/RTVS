@@ -9,7 +9,6 @@ using System.Linq;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
 using Microsoft.Win32;
-using static System.FormattableString;
 
 namespace Microsoft.R.Interpreters {
     /// <summary>
@@ -39,18 +38,23 @@ namespace Microsoft.R.Interpreters {
         /// from registry. Typically in the form 'Program Files\R\R-3.2.1'
         /// Selects highest from compatible versions, not just the highest.
         /// </summary>
-        public IRInterpreterInfo GetCompatibleEngineFromRegistry(ISupportedRVersionRange svl = null) {
-            var engine = GetMRSInfo();
-            if (engine == null) {
-                engine = GetCompatibleEnginesFromRegistry(svl).OrderBy(e => e.Version).FirstOrDefault();
+        public IEnumerable<IRInterpreterInfo> GetCompatibleEngines(ISupportedRVersionRange svl = null) {
+            var mrc = GetMicrosoftRClientInfo();
+            var engines = GetCompatibleEnginesFromRegistry(svl).OrderBy(e => e.Version);
+            if(mrc != null) {
+                var list = new List<IRInterpreterInfo>() { mrc };
+                list.AddRange(engines);
+                return list;
+            } else if (!engines.Any()) {
+                return new List<IRInterpreterInfo>() { TryFindRInProgramFiles(svl) };
             }
-            return engine;
+            return engines;
         }
 
         /// <summary>
         /// Retrieves path to the all compatible R installations from registry. 
         /// </summary>
-        public IEnumerable<IRInterpreterInfo> GetCompatibleEnginesFromRegistry(ISupportedRVersionRange svl = null) {
+        private IEnumerable<IRInterpreterInfo> GetCompatibleEnginesFromRegistry(ISupportedRVersionRange svl = null) {
             svl = svl ?? new SupportedRVersionRange();
             return GetInstalledEnginesFromRegistry().Where(e => svl.IsCompatibleVersion(e.Version));
         }
@@ -58,7 +62,7 @@ namespace Microsoft.R.Interpreters {
         /// <summary>
         /// Retrieves information on installed R versions in registry.
         /// </summary>
-        public IEnumerable<IRInterpreterInfo> GetInstalledEnginesFromRegistry() {
+        private IEnumerable<IRInterpreterInfo> GetInstalledEnginesFromRegistry() {
             List<IRInterpreterInfo> engines = new List<IRInterpreterInfo>();
 
             // HKEY_LOCAL_MACHINE\SOFTWARE\R-core
@@ -81,7 +85,7 @@ namespace Microsoft.R.Interpreters {
             return engines;
         }
 
-        private IRInterpreterInfo GetMRSInfo() {
+        private IRInterpreterInfo GetMicrosoftRClientInfo() {
             // First check that MRS is present on the machine.
             bool mrsInstalled = false;
             try {
@@ -119,7 +123,7 @@ namespace Microsoft.R.Interpreters {
             return null;
         }
 
-        public static Version GetRVersionFromFolderName(string folderName) {
+        private static Version GetRVersionFromFolderName(string folderName) {
             if (folderName.StartsWith("R-", StringComparison.OrdinalIgnoreCase)) {
                 try {
                     Version v;
@@ -131,10 +135,11 @@ namespace Microsoft.R.Interpreters {
             return new Version(0, 0);
         }
 
-        private string TryFindRInProgramFiles(string folder, ISupportedRVersionRange supportedVersions) {
-            string root = Path.GetPathRoot(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles));
-            string baseRFolder = Path.Combine(root + @"Program Files\", folder);
-            List<Version> versions = new List<Version>();
+        private IRInterpreterInfo TryFindRInProgramFiles(ISupportedRVersionRange supportedVersions) {
+            // Force 64-bit PF
+            var programFiles = Environment.GetEnvironmentVariable("ProgramFiles");
+            var baseRFolder = Path.Combine(programFiles, @"R");
+            var versions = new List<Version>();
             try {
                 IEnumerable<IFileSystemInfo> directories = _fileSystem.GetDirectoryInfo(baseRFolder)
                                                                 .EnumerateFileSystemInfos()
@@ -153,10 +158,12 @@ namespace Microsoft.R.Interpreters {
             if (versions.Count > 0) {
                 versions.Sort();
                 Version highest = versions[versions.Count - 1];
-                return Path.Combine(baseRFolder, string.Format(CultureInfo.InvariantCulture, "R-{0}.{1}.{2}", highest.Major, highest.Minor, highest.Build));
+                var name = string.Format(CultureInfo.InvariantCulture, "R-{0}.{1}.{2}", highest.Major, highest.Minor, highest.Build);
+                var path = Path.Combine(baseRFolder, name);
+                return new RInterpreterInfo(name, path);
             }
 
-            return string.Empty;
+            return null;
         }
     }
 }

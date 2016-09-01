@@ -2,12 +2,16 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Globalization;
 using System.IO;
+using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
 
 namespace Microsoft.R.Interpreters {
     internal sealed class RInterpreterInfo : IRInterpreterInfo {
+        private bool? _valid;
+
         /// <summary>
         /// User-friendly name of the interpreter. Determined from the registry
         /// key for CRAN interpreters or via other means for MRO/MRC.
@@ -29,13 +33,30 @@ namespace Microsoft.R.Interpreters {
         /// </summary>
         public string BinPath { get; }
 
-        public RInstallStatus CheckInstallation(IFileSystem fs, bool showErrors) {
+        public RInterpreterInfo(string name, string path) {
+            InstallPath = NormalizeRPath(path);
+            BinPath = Path.Combine(path, @"bin\x64");
+            Version = DetermineVersion();
+        }
+
+        public bool CheckInstallation(ISupportedRVersionRange svl, IFileSystem fs = null, ICoreShell coreShell = null, bool showErrors = false) {
+            if(_valid.HasValue) {
+                return _valid.Value;
+            }
+
+            if(showErrors) {
+                Check.ArgumentNull(nameof(coreShell), coreShell);
+            }
+
+            fs = fs ?? new FileSystem();
+
             // Normalize path so it points to R root and not to bin or bin\x64
             string rDllPath = Path.Combine(BinPath, "R.dll");
             string rGraphAppPath = Path.Combine(BinPath, "Rgraphapp.dll");
             string rTermPath = Path.Combine(BinPath, "RTerm.exe");
             string rScriptPath = Path.Combine(BinPath, "RScript.exe");
             string rGuiPath = Path.Combine(BinPath, "RGui.exe");
+            Exception ex = null;
 
             try {
                 if (fs.FileExists(rDllPath) && fs.FileExists(rTermPath) &&
@@ -43,53 +64,32 @@ namespace Microsoft.R.Interpreters {
                     fs.FileExists(rGuiPath)) {
 
                     var fileVersion = GetRVersionFromBinary(rDllPath, fs);
-                    if (fileVersion != Version) {
-                        return RInstallStatus.UnsupportedVersion;
+                    if (fileVersion == Version) {
+                        return true;
                     }
+
+                    coreShell.ShowMessage(
+                        string.Format(CultureInfo.InvariantCulture, Resources.Error_UnsupportedRVersion,
+                        Version.Major, Version.Minor, Version.Build, svl.MinMajorVersion, svl.MinMinorVersion, "*",
+                        svl.MaxMajorVersion, svl.MaxMinorVersion, "*"), MessageButtons.OK);
+
                 } else {
-                    return RInstallStatus.NoRBinaries;
+                    coreShell.ShowMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotFindRBinariesFormat, InstallPath), MessageButtons.OK);
                 }
             } catch(IOException ioex) {
-
+                ex = ioex;
             } catch (ArgumentException aex) {
+                ex = aex;
 
             } catch(UnauthorizedAccessException uaex) {
-
+                ex = uaex;
             }
 
-            return RInstallStatus.OK;
-        }
-
-        private static MessageButtons ShowMessage(ICoreShell coreShell, RInstallData data, ISupportedRVersionRange svl) {
-            Debug.Assert(data.Status != RInstallStatus.OK);
-
-            switch (data.Status) {
-                case RInstallStatus.UnsupportedVersion:
-                    return coreShell.ShowMessage(
-                        string.Format(CultureInfo.InvariantCulture, Resources.Error_UnsupportedRVersion,
-                        data.Version.Major, data.Version.Minor, data.Version.Build,
-                        svl.MinMajorVersion, svl.MinMinorVersion, "*",
-                        svl.MaxMajorVersion, svl.MaxMinorVersion, "*",
-                        Environment.NewLine + Environment.NewLine),
-                        MessageButtons.YesNo);
-
-                case RInstallStatus.ExceptionAccessingPath:
-                    coreShell.ShowErrorMessage(
-                        string.Format(CultureInfo.InvariantCulture, Resources.Error_ExceptionAccessingPath,
-                        data.Path, data.Exception.Message));
-                    return MessageButtons.OK;
-
-                case RInstallStatus.NoRBinaries:
-                    return coreShell.ShowMessage(
-                        string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotFindRBinariesFormat,
-                            data.Path, Environment.NewLine + Environment.NewLine, Environment.NewLine),
-                        MessageButtons.YesNo);
-
-                case RInstallStatus.PathNotSpecified:
-                    return coreShell.ShowMessage(string.Format(CultureInfo.InvariantCulture,
-                        Resources.Error_UnableToFindR, Environment.NewLine + Environment.NewLine), MessageButtons.YesNo);
+            if(ex != null) {
+                coreShell.ShowErrorMessage(
+                    string.Format(CultureInfo.InvariantCulture, Resources.Error_ExceptionAccessingPath, InstallPath, ex.Message));
             }
-            return MessageButtons.OK;
+            return false;
         }
 
         private Version GetRVersionFromBinary(string basePath, IFileSystem fs) {
@@ -127,12 +127,6 @@ namespace Microsoft.R.Interpreters {
             } else {
                 minor = minorVersion / 100;
             }
-        }
-
-        public RInterpreterInfo(string name, string path) {
-            InstallPath = NormalizeRPath(path);
-            BinPath = System.IO.Path.Combine(path, @"bin\x64");
-            Version = DetermineVersion();
         }
 
         private Version DetermineVersion() {

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text;
+using Microsoft.Common.Core.IO;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.R.Interpreters;
@@ -15,7 +16,7 @@ namespace Microsoft.R.Host.Broker.Interpreters {
         private readonly ROptions _options;
         private readonly ILogger _logger;
         private readonly RInstallation _rInstallation = new RInstallation();
-
+        private IFileSystem _fs;
         public IReadOnlyCollection<Interpreter> Interpreters { get; private set; }
 
         [ImportingConstructor]
@@ -24,7 +25,9 @@ namespace Microsoft.R.Host.Broker.Interpreters {
             _logger = logger;
         }
 
-        public void Initialize() {
+        public void Initialize(IFileSystem fs) {
+            _fs = fs;
+
             Interpreters = GetInterpreters().ToArray();
             var sb = new StringBuilder($"{Interpreters.Count} interpreters configured:");
             foreach (var interp in Interpreters) {
@@ -37,24 +40,17 @@ namespace Microsoft.R.Host.Broker.Interpreters {
             if (_options.AutoDetect) {
                 _logger.LogTrace("Auto-detecting R ...");
 
-                var rid = _rInstallation.GetInstallationData(null, new SupportedRVersionRange());
-                if (rid.Status == RInstallStatus.OK) {
-                    var detected = new Interpreter(this, "", rid.Path, rid.BinPath, rid.Version);
-                    _logger.LogTrace($"R {detected.Version} detected at \"{detected.Path}\".");
-                    yield return detected;
-                } else {
-                    _logger.LogWarning("No R interpreters found.");
+                var svr = new SupportedRVersionRange();
+                var engines = _rInstallation.GetCompatibleEngines();
+                foreach (var e in engines) {
+                    if (e.CheckInstallation(svr, _fs)) {
+                        var detected = new Interpreter(this, "", e.InstallPath, e.BinPath, e.Version);
+                        _logger.LogTrace($"R {detected.Version} detected at \"{detected.Path}\".");
+                        yield return detected;
+                    } else {
+                        _logger.LogWarning("No R interpreters found.");
+                    }
                 }
-            }
-
-            foreach (var kv in _options.Interpreters) {
-                var rid = _rInstallation.GetInstallationData(kv.Value.BasePath, new SupportedRVersionRange());
-                if (rid.Status != RInstallStatus.OK) {
-                    _logger.LogError($"Failed to retrieve R installation data for \"{kv.Value.BasePath}\" ({rid.Status})");
-                    continue;
-                }
-
-                yield return new Interpreter(this, kv.Key, rid.Path, rid.BinPath, rid.Version);
             }
         }
     }

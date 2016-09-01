@@ -36,11 +36,14 @@
     <Compile Include="IMicrosoftRClientInstaller.cs" />
     <Compile Include="IRInterpreterInfo.cs" />
     <Compile Include="ISupportedRVersionRange.cs" />
-    <Compile Include="RInstallation.cs" />
-    <Compile Include="RInstallData.cs" />
-    <Compile Include="RInstallStatus.cs" />
-    <Compile Include="RInterpreterInfo.cs" />
-    <Compile Include="SupportedRVersionRange.cs" />
+    <Compile Include="Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Implementation\RInstallation.cs" />
+    <Compile Include="Implementation\RInterpreterInfo.cs" />
+    <Compile Include="Implementation\SupportedRVersionRange.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -57,6 +60,12 @@
       <Project>{8D408909-459F-4853-A36C-745118F99869}</Project>
       <Name>Microsoft.Common.Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\..\R.Build.Version.targets" />

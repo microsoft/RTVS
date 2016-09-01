@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.Shell;
 
 namespace Microsoft.R.Interpreters {
     public interface IRInterpreterInfo {
@@ -32,6 +33,6 @@ namespace Microsoft.R.Interpreters {
         /// </summary>
         /// <param name="fs"></param>
         /// <returns></returns>
-        RInstallStatus CheckInstallation(IFileSystem fs);
+        bool CheckInstallation(ISupportedRVersionRange svl, IFileSystem fs = null, ICoreShell coreShell = null, bool showErrors = false);
     }
 }

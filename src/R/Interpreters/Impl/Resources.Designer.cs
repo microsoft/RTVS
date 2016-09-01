@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Microsoft.R.Host.Client {
+namespace Microsoft.R.Interpreters {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Microsoft.R.Host.Client {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Microsoft.R.Host.Client.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Microsoft.R.Interpreters.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,7 +61,7 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot find R binaries in {0}.{1}Click Yes to install latest Microsoft R Client (recommended).{2}Click No to set path to R engine in R Tools | Options dialog yourself..
+        ///   Looks up a localized string similar to Cannot find R binaries in {0}.{1}.
         /// </summary>
         internal static string Error_CannotFindRBinariesFormat {
             get {
@@ -79,7 +79,7 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R {0}.{1}.{2} is not compatible with R Tools for Visual Studio. Supported versions are {3}.{4}.{5} - {6}.{7}.{8}.{9}Visual Studio can launch setup of the Microsoft R Client. Click Yes if you would you like to start installation of Microsoft R Client now. Visual Studio will close when the setup application starts..
+        ///   Looks up a localized string similar to R {0}.{1}.{2} is not compatible with R Tools for Visual Studio. Supported versions are {3}.{4}.{5} - {6}.{7}.{8}..
         /// </summary>
         internal static string Error_UnsupportedRVersion {
             get {

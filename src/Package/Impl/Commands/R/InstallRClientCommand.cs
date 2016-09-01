@@ -3,7 +3,6 @@
 
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Interpreters;
-using Microsoft.R.Host.Client.Install;
 using Microsoft.VisualStudio.R.Package.RClient;
 using Microsoft.VisualStudio.R.Packages.R;
 

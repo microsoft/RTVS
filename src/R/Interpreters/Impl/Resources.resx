@@ -118,12 +118,12 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Error_CannotFindRBinariesFormat" xml:space="preserve">
-    <value>Cannot find R binaries in {0}.{1}Click Yes to install latest Microsoft R Client (recommended).{2}Click No to set path to R engine in R Tools | Options dialog yourself.</value>
+    <value>Cannot find R binaries in {0}.{1}</value>
   </data>
   <data name="Error_ExceptionAccessingPath" xml:space="preserve">
     <value>Unable to access path {0}. Exception: {1}.</value>
   </data>
   <data name="Error_UnsupportedRVersion" xml:space="preserve">
-    <value>R {0}.{1}.{2} is not compatible with R Tools for Visual Studio. Supported versions are {3}.{4}.{5} - {6}.{7}.{8}.{9}Visual Studio can launch setup of the Microsoft R Client. Click Yes if you would you like to start installation of Microsoft R Client now. Visual Studio will close when the setup application starts.</value>
+    <value>R {0}.{1}.{2} is not compatible with R Tools for Visual Studio. Supported versions are {3}.{4}.{5} - {6}.{7}.{8}.</value>
   </data>
 </root>

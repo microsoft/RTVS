@@ -3,18 +3,14 @@
 
 using System;
 using System.Reflection;
-using System.Runtime;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.R.Host.Client.Host;
-using Microsoft.R.Host.Client.Install;
 using Microsoft.R.Host.Client.Session;
-using Microsoft.R.Interpreters;
 using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 using Xunit;
-using FluentAssertions;
 
 namespace Microsoft.R.Host.Client.Test.Session {
     public partial class RSessionTest {

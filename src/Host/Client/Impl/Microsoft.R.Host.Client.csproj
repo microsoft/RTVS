@@ -125,11 +125,6 @@
     <Compile Include="Host\RHostDisconnectedException.cs" />
     <Compile Include="Session\RConnectedEventArgs.cs" />
     <Compile Include="Session\ROutputEventArgs.cs" />
-    <Compile Include="Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <Compile Include="Session\RSession.cs" />
     <Compile Include="Session\RSessionEvaluation.cs" />
     <Compile Include="Session\RSessionEvaluationCommands.cs" />
@@ -237,12 +232,6 @@
       <Authenticode>Microsoft</Authenticode>
       <StrongName>StrongName</StrongName>
     </FilesToSign>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\..\R.Build.Version.targets" />
