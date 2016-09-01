@@ -83,6 +83,7 @@
     <Compile Include="ConnectionManager\Implementation\Connection.cs" />
     <Compile Include="ConnectionManager\Implementation\ConnectionManagerProvider.cs" />
     <Compile Include="ConnectionManager\Implementation\ConnectionManagerVisualComponent.cs" />
+    <Compile Include="ConnectionManager\Implementation\LocalConnections.cs" />
     <Compile Include="ConnectionManager\Implementation\ViewModel\ConnectionManagerViewModel.cs" />
     <Compile Include="ConnectionManager\Implementation\ViewModel\ConnectionStatusBarViewModel.cs" />
     <Compile Include="ConnectionManager\Implementation\ViewModel\ConnectionViewModel.cs" />
@@ -219,8 +220,6 @@
     </Compile>
     <Compile Include="Resources\Images.cs" />
     <Compile Include="InteractiveWorkflow\Commands\SourceRScriptCommand.cs" />
-    <Compile Include="Script\InstallPackages.cs" />
-    <Compile Include="Script\RCommand.cs" />
     <Compile Include="Search\ISearchControl.cs" />
     <Compile Include="Search\ISearchControlProvider.cs" />
     <Compile Include="Search\ISearchHandler.cs" />

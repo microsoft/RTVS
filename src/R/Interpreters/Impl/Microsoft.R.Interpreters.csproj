@@ -34,10 +34,12 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="IMicrosoftRClientInstaller.cs" />
+    <Compile Include="IRInterpreterInfo.cs" />
     <Compile Include="ISupportedRVersionRange.cs" />
     <Compile Include="RInstallation.cs" />
     <Compile Include="RInstallData.cs" />
     <Compile Include="RInstallStatus.cs" />
+    <Compile Include="RInterpreterInfo.cs" />
     <Compile Include="SupportedRVersionRange.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

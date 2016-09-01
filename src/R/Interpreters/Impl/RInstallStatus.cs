@@ -9,11 +9,6 @@ namespace Microsoft.R.Interpreters {
         OK,
 
         /// <summary>
-        /// No path to R can be found in Tools | Options
-        /// </summary>
-        PathNotSpecified,
-
-        /// <summary>
         /// R is installed but version does not match
         /// </summary>
         UnsupportedVersion,
@@ -22,11 +17,5 @@ namespace Microsoft.R.Interpreters {
         /// Path appears to exist but no R.dll can be found
         /// </summary>
         NoRBinaries,
-
-        /// <summary>
-        /// Specified path to R binaries does not exist
-        /// or is not accessible
-        /// </summary>
-        ExceptionAccessingPath
     }
 }

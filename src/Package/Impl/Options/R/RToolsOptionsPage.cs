@@ -263,20 +263,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             }
         }
 
-        private string ValidateRBasePath(string path) {
-            // If path is null, folder selector dialog was canceled
-            if (path != null) {
-                var ri = new RInstallation();
-                path = ri.NormalizeRPath(path);
-                bool valid = ri.VerifyRIsInstalled(VsAppShell.Current, null, path, showErrors: !_allowLoadingFromStorage);
-                if (!valid) {
-                    path = null; // Prevents assignment of bad values to the property.
-                }
-            }
-
-            return path;
-        }
-
         protected override void OnClosed(EventArgs e) {
             if (!_applied) {
                 // On cancel load previously saved settings back
