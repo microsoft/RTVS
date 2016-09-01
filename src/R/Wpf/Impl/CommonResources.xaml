@@ -382,7 +382,7 @@
                     <Border x:Name="Border" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource {x:Static wpf:Brushes.ControlKey}}">
                         <StackPanel Orientation="Horizontal" Background="{TemplateBinding Background}">
                             <Rectangle x:Name="Collapsed" Fill="{StaticResource IconArrowRigth16}" Height="16" Width="16" />
-                            <Rectangle x:Name="Expanded" Fill="{StaticResource IconArrowRigthDown16}" Height="16" Width="16" />
+                            <Rectangle x:Name="Expanded" Fill="{StaticResource IconArrowRigthDown16}" Height="16" Width="16" Visibility="Collapsed" />
                             <ContentPresenter Margin="1,0,0,0" VerticalAlignment="Center" />
                         </StackPanel>
                     </Border>

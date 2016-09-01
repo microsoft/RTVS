@@ -10,7 +10,12 @@ using Microsoft.R.Components.ConnectionManager.ViewModel;
 namespace Microsoft.R.Components.ConnectionManager.Implementation.View.DesignTime {
 #if DEBUG
     internal class DesignTimeConnectionManagerViewModel : IConnectionManagerViewModel {
-        public ReadOnlyObservableCollection<IConnectionViewModel> Items { get; } = new ReadOnlyObservableCollection<IConnectionViewModel>(new ObservableCollection<IConnectionViewModel> {
+        public ReadOnlyObservableCollection<IConnectionViewModel> LocalConnections { get; } = new ReadOnlyObservableCollection<IConnectionViewModel>(new ObservableCollection<IConnectionViewModel> {
+            new DesignTimeConnectionViewModel { IsActive = true, IsRemote = false, IsConnected = false, Name = "CRAN R", Path = @"c:\Program Files\R\R-3.3.1" },
+            new DesignTimeConnectionViewModel { IsActive = true, IsRemote = false, IsConnected = false, Name = "Microsoft R", Path = @"c:\Program Files\Microsoft\R Client\R_SERVER" },
+        });
+
+        public ReadOnlyObservableCollection<IConnectionViewModel> UserConnections { get; } = new ReadOnlyObservableCollection<IConnectionViewModel>(new ObservableCollection<IConnectionViewModel> {
             new DesignTimeConnectionViewModel { IsActive = false, IsRemote = false, IsConnected = false, Name = "Microsoft R", Path = @"c:\Program Files\Microsoft\R Client\R_SERVER" },
             new DesignTimeConnectionViewModel { IsActive = true, IsRemote = false, IsConnected = false, Name = "CRAN R", Path = @"c:\Program Files\R\R-3.3.1", RCommandLineArguments = "--slave" },
             new DesignTimeConnectionViewModel { IsActive = true, IsRemote = false, IsConnected = true, Name = "Old CRAN R", Path = @"c:\Program Files\R\R-3.2.3", RCommandLineArguments = "--slave" },
@@ -21,7 +26,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View.DesignTim
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public IConnectionViewModel EditedConnection => Items[0];
+        public IConnectionViewModel EditedConnection => UserConnections[0];
+        public bool HasLocalConnections => false;
         public bool IsEditingNew => true;
         public bool IsConnected => false;
         

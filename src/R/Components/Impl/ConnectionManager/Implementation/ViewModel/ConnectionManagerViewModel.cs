@@ -18,10 +18,12 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
     internal sealed class ConnectionManagerViewModel : BindableBase, IConnectionManagerViewModel {
         private readonly IConnectionManager _connectionManager;
         private readonly ICoreShell _shell;
-        private readonly BatchObservableCollection<IConnectionViewModel> _items;
+        private readonly BatchObservableCollection<IConnectionViewModel> _localConnections;
+        private readonly BatchObservableCollection<IConnectionViewModel> _userConnections;
         private readonly DisposableBag _disposableBag;
         private IConnectionViewModel _editedConnection;
         private bool _isEditingNew;
+        private bool _hasLocalConnections;
         private bool _isConnected;
 
         public ConnectionManagerViewModel(IConnectionManager connectionManager, ICoreShell shell) {
@@ -30,8 +32,10 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             _disposableBag = DisposableBag.Create<ConnectionManagerViewModel>()
                 .Add(() => connectionManager.ConnectionStateChanged -= ConnectionStateChanged);
 
-            _items = new BatchObservableCollection<IConnectionViewModel>();
-            Items = new ReadOnlyObservableCollection<IConnectionViewModel>(_items);
+            _userConnections = new BatchObservableCollection<IConnectionViewModel>();
+            UserConnections = new ReadOnlyObservableCollection<IConnectionViewModel>(_userConnections);
+            _localConnections = new BatchObservableCollection<IConnectionViewModel>();
+            LocalConnections = new ReadOnlyObservableCollection<IConnectionViewModel>(_localConnections);
             connectionManager.ConnectionStateChanged += ConnectionStateChanged;
             IsConnected = connectionManager.IsConnected;
             UpdateConnections();
@@ -41,7 +45,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             _disposableBag.TryMarkDisposed();
         }
 
-        public ReadOnlyObservableCollection<IConnectionViewModel> Items { get; }
+        public ReadOnlyObservableCollection<IConnectionViewModel> LocalConnections { get; }
+        public ReadOnlyObservableCollection<IConnectionViewModel> UserConnections { get; }
 
         public IConnectionViewModel EditedConnection {
             get { return _editedConnection; }
@@ -51,6 +56,11 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         public bool IsEditingNew {
             get { return _isEditingNew; }
             private set { SetProperty(ref _isEditingNew, value); }
+        }
+
+        public bool HasLocalConnections {
+            get { return _hasLocalConnections; }
+            private set { SetProperty(ref _hasLocalConnections, value); }
         }
 
         public bool IsConnected {
@@ -163,21 +173,23 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         private void UpdateConnections() { 
             var selectedId = EditedConnection?.Id;
-            _items.ReplaceWith(_connectionManager.RecentConnections.Select(c => new ConnectionViewModel(c) {
+            _userConnections.ReplaceWith(_connectionManager.RecentConnections.Select(c => new ConnectionViewModel(c) {
                 IsActive = c == _connectionManager.ActiveConnection,
                 IsConnected = c == _connectionManager.ActiveConnection && IsConnected
             }).OrderBy(c => c.Name));
 
-            var editedConnection = Items.FirstOrDefault(i => i.Id == selectedId);
+            var editedConnection = UserConnections.FirstOrDefault(i => i.Id == selectedId);
             if (editedConnection != null) {
                 EditedConnection = editedConnection;
             }
+
+            HasLocalConnections = false;
         }
 
         private void ConnectionStateChanged(object sender, ConnectionEventArgs e) {
             _shell.DispatchOnUIThread(() => {
                 IsConnected = e.State;
-                foreach (var item in _items) {
+                foreach (var item in _userConnections) {
                     item.IsConnected = e.State && item.IsActive;
                 }
             });

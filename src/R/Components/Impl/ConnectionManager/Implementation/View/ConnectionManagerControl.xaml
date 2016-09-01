@@ -265,7 +265,7 @@
                 <Setter Property="Background" Value="{x:Static Brushes.Transparent}" />
                 <Setter Property="Foreground" Value="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}" />
                 <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
-                <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Visible" />
+                <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
                 <Setter Property="VirtualizingPanel.IsVirtualizing" Value="true" />
                 <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling" />
                 <Setter Property="VirtualizingPanel.CacheLength" Value="1,2" />
@@ -274,13 +274,12 @@
                 <Setter Property="BorderThickness" Value="0,0,0,0" />
                 <Setter Property="ItemContainerStyle" Value="{StaticResource ConnectionsListBoxItemStyle}" />
                 <Setter Property="ItemTemplateSelector" Value="{StaticResource TypeDataTemplateSelector}"/>
-                <Setter Property="ItemsSource" Value="{Binding Path=Items}" />
                 <Setter Property="SelectionMode" Value="Multiple"/>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type ListBox}">
                             <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="1" SnapsToDevicePixels="true">
-                                <ScrollViewer Focusable="false" Padding="{TemplateBinding Padding}">
+                                <ScrollViewer Focusable="false">
                                     <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
                                 </ScrollViewer>
                             </Border>
@@ -298,7 +297,7 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <ScrollViewer x:Name="Root" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-        <DockPanel x:Name="RootContent" LastChildFill="True" MinWidth="250">
+        <DockPanel x:Name="RootContent" LastChildFill="True" MinWidth="250" >
             <DockPanel.MaxWidth>
                 <MultiBinding Converter="{x:Static rwpf:Converters.Max}">
                     <Binding ElementName="Root" Path="ActualWidth" />
@@ -306,15 +305,24 @@
                 </MultiBinding>
             </DockPanel.MaxWidth>
 
-            <!-- Implicit local connections -->
+            <!-- Implicit local connections header -->
+            <ToggleButton x:Name="ToggleButtonLocalConnections" DockPanel.Dock="Top" Style="{StaticResource ExpandCollapseToggleStyle}"
+                          ToolTip="{x:Static components:Resources.ConnectionManager_LocalConnectionsTooltip}" IsChecked="False"
+                          Content="{x:Static components:Resources.ConnectionManager_LocalConnections}"
+                          Visibility="{Binding Path=HasLocalConnections, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}"/>
 
-            <!-- Header -->
-            <ToggleButton x:Name="ToggleButtonConnections" DockPanel.Dock="Top" Style="{StaticResource ExpandCollapseToggleStyle}"
-                          ToolTip="Expand/Collapse section" IsChecked="True" Content="Connections"/>
+            <!-- Implicit local connections -->
+            <ListBox DockPanel.Dock="Top" Style="{StaticResource ConnectionsListBox}" Margin="11,0,0,16" ItemsSource="{Binding Path=LocalConnections}" 
+                     Visibility="{Binding ElementName=ToggleButtonLocalConnections, Path=IsChecked, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}"/>
+
+            <!-- Explicit connections header -->
+            <ToggleButton x:Name="ToggleButtonUserConnections" DockPanel.Dock="Top" Style="{StaticResource ExpandCollapseToggleStyle}"
+                          ToolTip="{x:Static components:Resources.ConnectionManager_UserConnectionsTooltip}" IsChecked="True"
+                          Content="{x:Static components:Resources.ConnectionManager_UserConnections}"/>
 
             <!-- Explicit connections -->
             <DockPanel DockPanel.Dock="Top" Margin="16,0,0,0" 
-                       Visibility="{Binding ElementName=ToggleButtonConnections, Path=IsChecked, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}">
+                       Visibility="{Binding ElementName=ToggleButtonUserConnections, Path=IsChecked, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}">
                 <WrapPanel DockPanel.Dock="Top" Margin="1,4,0,6">
                     <Button x:Name="ToggleButtonAdd" Style="{StaticResource HyperlinkDownArrowButton}"
                             IsEnabled="{Binding Path=IsEditingNew, Converter={x:Static rwpf:Converters.Not}}"
@@ -329,9 +337,8 @@
                 </Border>
 
                 <!-- List -->
-                <Grid DockPanel.Dock="Top">
-                    <ListBox x:Name="List" Style="{StaticResource ConnectionsListBox}" />
-                </Grid>
+                <ListBox x:Name="List" Margin="-5,0,6,0" DockPanel.Dock="Top" Style="{StaticResource ConnectionsListBox}" 
+                         ItemsSource="{Binding Path=UserConnections}" />
             </DockPanel>
         </DockPanel>
     </ScrollViewer>
