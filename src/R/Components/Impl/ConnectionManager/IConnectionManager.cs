@@ -20,11 +20,11 @@ namespace Microsoft.R.Components.ConnectionManager {
         event EventHandler RecentConnectionsChanged;
         event EventHandler<ConnectionEventArgs> ConnectionStateChanged;
 
-        IConnection AddOrUpdateConnection(string name, string path, string rCommandLineArguments);
-        IConnection GetOrAddConnection(string name, string path, string rCommandLineArguments);
+        IConnection AddOrUpdateConnection(string name, string path, string rCommandLineArguments, bool isUserCreated);
+        IConnection GetOrAddConnection(string name, string path, string rCommandLineArguments, bool isUserCreated);
         bool TryRemove(Uri id);
 
-        Task ConnectAsync(string name, string path, string rCommandLineArguments);
+        Task ConnectAsync(string name, string path, string rCommandLineArguments, bool isUserCreated);
         Task ConnectAsync(IConnection connection);
     }
 }

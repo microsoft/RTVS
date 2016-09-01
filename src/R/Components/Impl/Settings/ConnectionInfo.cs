@@ -6,5 +6,6 @@ namespace Microsoft.R.Components.Settings {
         public string Name { get; set; }
         public string Path { get; set; }
         public string RCommandLineArguments { get; set; }
+        public bool IsUserCreated { get; set; }
     }
 }

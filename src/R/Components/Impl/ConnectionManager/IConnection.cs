@@ -7,10 +7,36 @@ using System.Threading.Tasks;
 namespace Microsoft.R.Components.ConnectionManager {
     public interface IConnection {
         Uri Id { get; }
+        /// <summary>
+        /// User-friendly name of the connection.
+        /// </summary>
         string Name { get; }
+
+        /// <summary>
+        /// Path to local interpreter installation or URL to remote machine.
+        /// </summary>
         string Path { get; }
-        bool IsRemote { get; }
-        DateTime TimeStamp { get; }
+
+        /// <summary>
+        /// Optional command line arguments to R interpreter.
+        /// </summary>
         string RCommandLineArguments { get; }
+
+        /// <summary>
+        /// If true, the connection is to a remote machine
+        /// </summary>
+        bool IsRemote { get; }
+
+        /// <summary>
+        /// Indicates that this is user-created connection rather than
+        /// automatically created one when interpreter has been detected 
+        /// in registry or via other means automatically.
+        /// </summary>
+        bool IsUserCreated { get; set; }
+
+        /// <summary>
+        /// When was the connection last used.
+        /// </summary>
+        DateTime TimeStamp { get; }
     }
 }

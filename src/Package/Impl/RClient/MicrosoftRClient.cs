@@ -33,7 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.RClient {
 
             string rClientPath = CheckMicrosoftRClientInstall(coreShell);
             if (rClientPath != null) {
-                connections.GetOrAddConnection("Microsoft R Client", rClientPath, string.Empty);
+                connections.GetOrAddConnection("Microsoft R Client", rClientPath, string.Empty, false);
             }
         }
 

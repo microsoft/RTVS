@@ -84,16 +84,16 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             return VisualComponent;
         }
 
-        public IConnection AddOrUpdateConnection(string name, string path, string rCommandLineArguments) {
-            var newConnection = new Connection(name, path, rCommandLineArguments, DateTime.Now);
+        public IConnection AddOrUpdateConnection(string name, string path, string rCommandLineArguments, bool isUserCreated) {
+            var newConnection = new Connection(name, path, rCommandLineArguments, DateTime.Now, isUserCreated);
             var connection = _userConnections.AddOrUpdate(newConnection.Id, newConnection, (k, v) => UpdateConnectionFactory(v, newConnection));
 
             UpdateRecentConnections();
             return connection;
         }
 
-        public IConnection GetOrAddConnection(string name, string path, string rCommandLineArguments) {
-            var newConnection = CreateConnection(name, path, rCommandLineArguments);
+        public IConnection GetOrAddConnection(string name, string path, string rCommandLineArguments, bool isUserCreated) {
+            var newConnection = CreateConnection(name, path, rCommandLineArguments, isUserCreated);
             var connection = _userConnections.GetOrAdd(newConnection.Id, newConnection);
             UpdateRecentConnections();
             return connection;
@@ -109,8 +109,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             return isRemoved;
         }
 
-        public async Task ConnectAsync(string name, string path, string rCommandLineArguments) {
-            var connection = GetOrCreateConnection(name, path, rCommandLineArguments);
+        public async Task ConnectAsync(string name, string path, string rCommandLineArguments, bool isUserCreated) {
+            var connection = GetOrCreateConnection(name, path, rCommandLineArguments, isUserCreated);
             await ConnectAsync(connection);
         }
 
@@ -129,8 +129,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             }
         }
 
-        public void SwitchBroker(string name, string path, string rCommandLineArguments) {
-            var connection = GetOrCreateConnection(name, path, rCommandLineArguments);
+        public void SwitchBroker(ConnectionInfo info) {
+            var connection = GetOrCreateConnection(info.Name, info.Path, info.RCommandLineArguments, info.IsUserCreated);
             SwitchBroker(connection);
         }
 
@@ -147,11 +147,11 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             }
         }
 
-        private IConnection CreateConnection(string name, string path, string rCommandLineArguments) =>
-            new Connection(name, path, rCommandLineArguments, DateTime.Now);
+        private IConnection CreateConnection(string name, string path, string rCommandLineArguments, bool isUserCreated) =>
+            new Connection(name, path, rCommandLineArguments, DateTime.Now, isUserCreated);
 
-        private IConnection GetOrCreateConnection(string name, string path, string rCommandLineArguments) {
-            var newConnection = CreateConnection(name, path, rCommandLineArguments);
+        private IConnection GetOrCreateConnection(string name, string path, string rCommandLineArguments, bool isUserCreated) {
+            var newConnection = CreateConnection(name, path, rCommandLineArguments, isUserCreated);
             IConnection connection;
             return _userConnections.TryGetValue(newConnection.Id, out connection) ? connection : newConnection;
         }
@@ -166,12 +166,12 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         private Dictionary<Uri, IConnection> GetConnectionsFromSettings() => _settings.Connections
-            .Select(c => CreateConnection(c.Name, c.Path, c.RCommandLineArguments))
+            .Select(c => CreateConnection(c.Name, c.Path, c.RCommandLineArguments, isUserCreated:true))
             .ToDictionary(k => k.Id);
 
         private void SaveConnectionsToSettings() {
             _settings.Connections = RecentConnections
-                .Select(c => new ConnectionInfo { Name = c.Name, Path = c.Path, RCommandLineArguments = c.RCommandLineArguments })
+                .Select(c => new ConnectionInfo { Name = c.Name, Path = c.Path, RCommandLineArguments = c.RCommandLineArguments, IsUserCreated = c.IsUserCreated })
                 .ToArray();
         }
 
@@ -185,9 +185,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             var connections = GetConnectionsFromSettings();
             var localEngines = new RInstallation().GetCompatibleEngines();
             if (connections.Count == 0) {
-                if(!localEngines.Any()) {
+                if (!localEngines.Any()) {
                     var message = string.Format(CultureInfo.InvariantCulture, Resources.NoLocalR, Environment.NewLine + Environment.NewLine, Environment.NewLine);
-                    if(_shell.ShowMessage(message, MessageButtons.YesNo) == MessageButtons.Yes) {
+                    if (_shell.ShowMessage(message, MessageButtons.YesNo) == MessageButtons.Yes) {
                         var installer = _shell.ExportProvider.GetExportedValue<IMicrosoftRClientInstaller>();
                         installer.LaunchRClientSetup(_shell);
                         return connections;
@@ -196,11 +196,12 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 // No connections, may be first use or connections were somehow removed.
                 // Add local connections so there is at least something available.
                 foreach (var e in localEngines) {
-                    var c = CreateConnection(e.Name, e.InstallPath, string.Empty);
+                    var c = CreateConnection(e.Name, e.InstallPath, string.Empty, isUserCreated: false);
                     connections[new Uri(e.InstallPath, UriKind.Absolute)] = c;
                 }
             } else {
                 // Remove missing engines and add engines missing from saved connections
+                // Set 'is used created' to false if path points to locally found interpreter
                 foreach (var kvp in connections.ToList()) {
                     if (!kvp.Value.IsRemote) {
                         bool valid = false;
@@ -213,6 +214,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                         if (!valid) {
                             connections.Remove(kvp.Key);
                         }
+                        if(localEngines.FirstOrDefault(c => c.InstallPath.EqualsIgnoreCase(kvp.Value.Path)) != null) {
+                            kvp.Value.IsUserCreated = false;
+                        }
                     }
                 }
             }
@@ -222,7 +226,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         private void SwitchBrokerToLastConnection() {
             var connectionInfo = _settings.LastActiveConnection;
             if (!string.IsNullOrEmpty(connectionInfo?.Path)) {
-                SwitchBroker(connectionInfo.Name, connectionInfo.Path, connectionInfo.RCommandLineArguments);
+                SwitchBroker(connectionInfo);
                 return;
             }
 

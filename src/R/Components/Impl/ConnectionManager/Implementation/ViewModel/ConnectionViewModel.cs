@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Windows.Input;
 using Microsoft.Common.Core;
 using Microsoft.Common.Wpf;
 using Microsoft.R.Components.ConnectionManager.ViewModel;
@@ -9,9 +10,12 @@ using Microsoft.R.Components.ConnectionManager.ViewModel;
 namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
     internal sealed class ConnectionViewModel : BindableBase, IConnectionViewModel {
         private readonly IConnection _connection;
+        private readonly IConnectionManagerViewModel _cmvm;
+
         private string _name;
         private string _path;
         private string _rCommandLineArguments;
+        private bool _isUserCreated;
         private string _saveButtonTooltip;
         private bool _isActive;
         private bool _isEditing;
@@ -24,8 +28,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             UpdateCalculated();
         }
 
-        public ConnectionViewModel(IConnection connection) {
+        public ConnectionViewModel(IConnection connection, IConnectionManagerViewModel cmvm) {
             _connection = connection;
+            _cmvm = cmvm;
             Id = _connection.Id;
             Reset();
         }
@@ -56,6 +61,11 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             }
         }
 
+        public bool IsUserCreated {
+            get { return _isUserCreated; }
+            set { SetProperty(ref _isUserCreated, value); }
+        }
+
         public string SaveButtonTooltip {
             get { return _saveButtonTooltip; }
             private set { SetProperty(ref _saveButtonTooltip, value); }
@@ -75,7 +85,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             get { return _isRemote; }
             private set { SetProperty(ref _isRemote, value); }
         }
-        
+
         public bool IsValid {
             get { return _isValid; }
             private set { SetProperty(ref _isValid, value); }
@@ -85,16 +95,19 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             get { return _hasChanges; }
             private set { SetProperty(ref _hasChanges, value); }
         }
-        
+
         public bool IsConnected {
             get { return _isConnected; }
             set { SetProperty(ref _isConnected, value); }
         }
 
+        public ICommand ConnectCommand => new ConnectCommandImpl(this, _cmvm);
+
         public void Reset() {
             Name = _connection?.Name;
             Path = _connection?.Path;
             RCommandLineArguments = _connection?.RCommandLineArguments;
+            IsUserCreated = _connection.IsUserCreated;
             IsRemote = _connection?.IsRemote ?? false;
             IsEditing = false;
         }
@@ -116,8 +129,27 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                 IsValid = true;
                 SaveButtonTooltip = Resources.ConnectionManager_Save;
             }
-            
+
             IsRemote = !(uri?.IsFile ?? true);
+        }
+
+        class ConnectCommandImpl : ICommand {
+            private readonly IConnectionManagerViewModel _cmvm;
+            private readonly IConnectionViewModel _connection;
+
+            public ConnectCommandImpl(IConnectionViewModel connection, IConnectionManagerViewModel cmvm) {
+                _connection = connection;
+                _cmvm = cmvm;
+            }
+
+            public bool CanExecute(object parameter) => true;
+
+            public void Execute(object parameter) {
+                _cmvm.ConnectAsync(_connection).DoNotWait();
+            }
+
+#pragma warning disable 67
+            public event EventHandler CanExecuteChanged;
         }
     }
 }

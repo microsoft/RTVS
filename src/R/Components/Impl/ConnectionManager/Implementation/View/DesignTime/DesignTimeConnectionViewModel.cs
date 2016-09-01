@@ -14,6 +14,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View.DesignTim
         public string Name { get; set; }
         public string Path { get; set; }
         public string RCommandLineArguments { get; set; }
+        public bool IsUserCreated { get; set; }
         public bool IsActive { get; set; }
         public bool IsEditing { get; set; }
         public bool IsConnected { get; set; }

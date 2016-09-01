@@ -11,6 +11,7 @@ namespace Microsoft.R.Components.ConnectionManager.ViewModel {
         string Name { get; set; }
         string Path { get; set; }
         string RCommandLineArguments { get; set; }
+        bool IsUserCreated { get; set; }
         bool IsActive { get; set; }
         bool IsEditing { get; set; }
         bool IsConnected { get; set; }
@@ -19,7 +20,7 @@ namespace Microsoft.R.Components.ConnectionManager.ViewModel {
         bool IsRemote { get; }
         bool IsValid { get; }
         bool HasChanges { get; }
-
+        
         void Reset();
     }
 }

@@ -47,14 +47,17 @@
 
                         <TextBox Grid.Row="0" Grid.Column="0" Style="{StaticResource InputTextBoxStyle}"
                                  Text="{Binding Path=Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                 controls:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_Name}" />
+                                 controls:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_Name}" 
+                                 IsEnabled="{Binding Path=IsUserCreated}" />
 
                         <TextBox Grid.Row="1" Grid.Column="0" Style="{StaticResource InputTextBoxStyle}" 
                                  Text="{Binding Path=Path, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                 controls:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_Path}" />
+                                 controls:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_Path}" 
+                                 IsEnabled="{Binding Path=IsUserCreated}" />
 
                         <Button Grid.Row="1" Grid.Column="1" Margin="3,0,0,6" Padding="2,0,2,0" Content="..." 
-                                VerticalAlignment="Stretch" MinHeight="0" MinWidth="0" Click="ButtonPath_Click"/>
+                                VerticalAlignment="Stretch" MinHeight="0" MinWidth="0" Click="ButtonPath_Click"
+                                IsEnabled="{Binding Path=IsUserCreated}" />
 
                         <TextBox Grid.Row="2" Grid.Column="0" Style="{StaticResource InputTextBoxStyle}" 
                                  Text="{Binding Path=RCommandLineArguments, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -145,17 +148,15 @@
 
                         <!-- edit button -->
                         <Button x:Name="ButtonEdit" Grid.Column="5" Style="{StaticResource ToolWindowButtonStyle}" Click="ButtonEdit_Click"
-                                ToolTip="{x:Static components:Resources.ConnectionManager_EditTooltip}" Visibility="Collapsed"
-                                Opacity="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.FalseIsGrayedOut}}"
-                                IsEnabled="{Binding Path=IsRemote}">
+                                ToolTip="{x:Static components:Resources.ConnectionManager_EditTooltip}" Visibility="Collapsed">
                             <Image Source="{x:Static rwpf:ImageSources.Edit}"/>
                         </Button>
 
                         <!-- delete button -->
                         <Button x:Name="ButtonDelete" Grid.Column="6" Style="{StaticResource ToolWindowButtonStyle}" Click="ButtonDelete_Click"
                                 ToolTip="{x:Static components:Resources.ConnectionManager_DeleteTooltip}" Visibility="Collapsed"
-                                Opacity="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.FalseIsGrayedOut}}"
-                                IsEnabled="{Binding Path=IsRemote}">
+                                Opacity="{Binding Path=IsUserCreated, Converter={x:Static rwpf:Converters.FalseIsGrayedOut}}"
+                                IsEnabled="{Binding Path=IsUserCreated}">
                             <Rectangle Fill="{StaticResource IconUninstall}" Width="16" Height="16" />
                         </Button>
                     </Grid>
@@ -194,12 +195,9 @@
                         <!-- Name & path & command line -->
                         <StackPanel Grid.Column="2" Grid.RowSpan="2"
                                     Visibility="{Binding Path=IsEditing, Converter={x:Static rwpf:Converters.FalseIsNotCollapsed}}">
-                            <TextBlock Margin="0,1,6,3" Text="{Binding Path=Name}"
-                                   FontWeight="SemiBold" TextWrapping="Wrap" />
-                            <TextBlock Margin="0,0,3,3" Text="{Binding Path=Path}"
-                                   TextWrapping="Wrap"/>
-                            <TextBlock Margin="0,0,3,3"
-                                   Text="{Binding Path=RCommandLineArguments}" TextWrapping="Wrap"
+                            <TextBlock Margin="0,1,6,3" Text="{Binding Path=Name}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                            <TextBlock Margin="0,0,3,3" Text="{Binding Path=Path}" TextWrapping="Wrap" />
+                            <TextBlock Margin="0,0,3,3" Text="{Binding Path=RCommandLineArguments}" TextWrapping="Wrap"
                                    Visibility="{Binding Path=RCommandLineArguments, Converter={x:Static rwpf:Converters.NullOrEmptyIsCollapsed}}"/>
                         </StackPanel>
 
@@ -210,9 +208,7 @@
                         <!-- edit button -->
                         <Button x:Name="ButtonEdit" Grid.Column="3" Grid.Row="0" Click="ButtonEdit_Click"
                                 Style="{StaticResource ToolWindowButtonStyle}"
-                                ToolTip="{x:Static components:Resources.ConnectionManager_EditTooltip}"
-                                Opacity="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.FalseIsGrayedOut}}"
-                                IsEnabled="{Binding Path=IsRemote}">
+                                ToolTip="{x:Static components:Resources.ConnectionManager_EditTooltip}">
                             <Image Source="{x:Static rwpf:ImageSources.Edit}" Width="16" Height="16" />
                         </Button>
 
@@ -220,8 +216,8 @@
                         <Button x:Name="ButtonDelete" Grid.Column="4" Grid.Row="0" Click="ButtonDelete_Click"
                                 Style="{StaticResource ToolWindowButtonStyle}"
                                 ToolTip="{x:Static components:Resources.ConnectionManager_DeleteTooltip}"
-                                Opacity="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.FalseIsGrayedOut}}"
-                                IsEnabled="{Binding Path=IsRemote}">
+                                Opacity="{Binding Path=IsUserCreated, Converter={x:Static rwpf:Converters.FalseIsGrayedOut}}"
+                                IsEnabled="{Binding Path=IsUserCreated}">
                             <Rectangle Fill="{StaticResource IconUninstall}" Width="16" Height="16" />
                         </Button>
                     </Grid>
@@ -229,6 +225,8 @@
             </DataTemplate>
 
             <Style x:Key="ConnectionsListBoxItemStyle" TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource FillingListBoxItemStyle}">
+                <EventSetter Event="MouseDoubleClick" Handler="Connection_MouseDoubleClick" />
+                <EventSetter Event="KeyUp" Handler="Connection_KeyUp" />
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type ListBoxItem}">
@@ -316,7 +314,7 @@
 
             <!-- Implicit local connections header -->
             <ToggleButton x:Name="ToggleButtonLocalConnections" DockPanel.Dock="Top" Style="{StaticResource ExpandCollapseToggleStyle}"
-                          ToolTip="{x:Static components:Resources.ConnectionManager_LocalConnectionsTooltip}" IsChecked="False"
+                          ToolTip="{x:Static components:Resources.ConnectionManager_LocalConnectionsTooltip}" IsChecked="True"
                           Content="{x:Static components:Resources.ConnectionManager_LocalConnections}"
                           Visibility="{Binding Path=HasLocalConnections, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}"/>
 

@@ -39,7 +39,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
                 return;
             }
 
-            connection = _connectionManager.GetOrAddConnection("Microsoft R Client", rClientPath, string.Empty);
+            connection = _connectionManager.GetOrAddConnection("Microsoft R Client", rClientPath, string.Empty, isUserCreated:false);
             _connectionManager.ConnectAsync(connection).DoNotWait();
         }
     }
