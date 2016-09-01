@@ -80,16 +80,15 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
         }
 
         private void ReportLocalRConfiguration() {
-            // Report local R installation
-            string rInstallPath = new RInstallation().GetRInstallPath();
-            TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RInstallPath, rInstallPath);
+            // Report local R installations
+            var engines = new RInstallation().GetCompatibleEngines();
+            foreach (var e in engines) {
+                TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RInstallPath, e.InstallPath);
+            }
 
             string rClientPath = MicrosoftRClient.GetRClientPath();
             if (rClientPath != null) {
                 TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RClientFound);
-                if (rInstallPath != null && rInstallPath.EqualsIgnoreCase(rClientPath)) {
-                    TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RClientActive);
-                }
             }
 
             var rEngines = GetRSubfolders("R");

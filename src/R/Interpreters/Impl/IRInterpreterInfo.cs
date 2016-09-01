@@ -29,6 +29,12 @@ namespace Microsoft.R.Interpreters {
         string BinPath { get; }
 
         /// <summary>
+        /// Indicates that installation appears to be valid with binaries present
+        /// and the binary version matches version listed in the registry.
+        /// </summary>
+        bool IsValid { get; }
+
+        /// <summary>
         /// Verifies actual installation on disk
         /// </summary>
         /// <param name="fs"></param>

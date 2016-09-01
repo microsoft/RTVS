@@ -394,6 +394,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Visual Studio is unable to find local R installation. Would you like to install Microsoft R Client (recommended)?{1}Click Yes to install latest Microsoft R Client. {2}Click No if you are planning to set up connection to a remote machine..
+        /// </summary>
+        public static string NoLocalR {
+            get {
+                return ResourceManager.GetString("NoLocalR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to OK.
         /// </summary>
         public static string Ok {

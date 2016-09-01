@@ -114,7 +114,7 @@
                     </Grid>
                 </StackPanel>
             </DataTemplate>
-            
+
             <DataTemplate DataType="{x:Type viewModel:IConnectionViewModel}">
                 <Border BorderThickness="0,0,0,0" BorderBrush="{DynamicResource {x:Static rwpf:Brushes.ActiveBorderKey}}" Background="Transparent" x:Name="Container">
                     <Grid MinHeight="20">
@@ -137,19 +137,25 @@
 
                         <!-- Name & path -->
                         <TextBlock Grid.Column="2" Margin="0,1,6,2" Text="{Binding Path=Name}"/>
-                        <Separator Grid.Column="3" Margin="0,1,6,2" Style="{StaticResource VerticalSeparator}"/>
+                        <Separator Grid.Column="3" Margin="0,1,6,2" Style="{StaticResource VerticalSeparator}"
+                                   Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"/>
                         <TextBlock Grid.Column="4" Margin="0,1,3,2" Text="{Binding Path=Path, Mode=OneWay}"
-                                   TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                                   TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"
+                                   Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"/>
 
                         <!-- edit button -->
                         <Button x:Name="ButtonEdit" Grid.Column="5" Style="{StaticResource ToolWindowButtonStyle}" Click="ButtonEdit_Click"
-                                ToolTip="{x:Static components:Resources.ConnectionManager_EditTooltip}" Visibility="Collapsed">
-                            <Image Source="{x:Static rwpf:ImageSources.Edit}" />
+                                ToolTip="{x:Static components:Resources.ConnectionManager_EditTooltip}" Visibility="Collapsed"
+                                Opacity="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.FalseIsGrayedOut}}"
+                                IsEnabled="{Binding Path=IsRemote}">
+                            <Image Source="{x:Static rwpf:ImageSources.Edit}"/>
                         </Button>
 
                         <!-- delete button -->
                         <Button x:Name="ButtonDelete" Grid.Column="6" Style="{StaticResource ToolWindowButtonStyle}" Click="ButtonDelete_Click"
-                                ToolTip="{x:Static components:Resources.ConnectionManager_DeleteTooltip}" Visibility="Collapsed">
+                                ToolTip="{x:Static components:Resources.ConnectionManager_DeleteTooltip}" Visibility="Collapsed"
+                                Opacity="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.FalseIsGrayedOut}}"
+                                IsEnabled="{Binding Path=IsRemote}">
                             <Rectangle Fill="{StaticResource IconUninstall}" Width="16" Height="16" />
                         </Button>
                     </Grid>
@@ -200,19 +206,22 @@
                         <ContentPresenter Grid.Column="2" Grid.RowSpan="2"
                                           ContentTemplate="{StaticResource EditConnectionDataTemplate}"
                                           Visibility="{Binding Path=IsEditing, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}"/>
-                        
+
                         <!-- edit button -->
                         <Button x:Name="ButtonEdit" Grid.Column="3" Grid.Row="0" Click="ButtonEdit_Click"
                                 Style="{StaticResource ToolWindowButtonStyle}"
                                 ToolTip="{x:Static components:Resources.ConnectionManager_EditTooltip}"
-                                Visibility="{Binding Path=IsEditing, Converter={x:Static rwpf:Converters.FalseIsNotCollapsed}}">
+                                Opacity="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.FalseIsGrayedOut}}"
+                                IsEnabled="{Binding Path=IsRemote}">
                             <Image Source="{x:Static rwpf:ImageSources.Edit}" Width="16" Height="16" />
                         </Button>
 
                         <!-- delete button -->
                         <Button x:Name="ButtonDelete" Grid.Column="4" Grid.Row="0" Click="ButtonDelete_Click"
                                 Style="{StaticResource ToolWindowButtonStyle}"
-                                ToolTip="{x:Static components:Resources.ConnectionManager_DeleteTooltip}">
+                                ToolTip="{x:Static components:Resources.ConnectionManager_DeleteTooltip}"
+                                Opacity="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.FalseIsGrayedOut}}"
+                                IsEnabled="{Binding Path=IsRemote}">
                             <Rectangle Fill="{StaticResource IconUninstall}" Width="16" Height="16" />
                         </Button>
                     </Grid>
@@ -260,7 +269,7 @@
                     </Setter.Value>
                 </Setter>
             </Style>
-            
+
             <Style x:Key="ConnectionsListBox" TargetType="{x:Type ListBox}">
                 <Setter Property="Background" Value="{x:Static Brushes.Transparent}" />
                 <Setter Property="Foreground" Value="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}" />
@@ -329,7 +338,7 @@
                             Content="{x:Static components:Resources.ConnectionManager_Add}"
                             Click="ButtonAdd_Click"/>
                 </WrapPanel>
-                
+
                 <!-- Add options panel -->
                 <Border DockPanel.Dock="Top" Margin="0,0,6,6" Style="{StaticResource InputBorderStyle}"
                         Visibility="{Binding Path=IsEditingNew, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}">

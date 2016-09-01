@@ -42,14 +42,14 @@ namespace Microsoft.R.Host.Broker.Interpreters {
 
                 var svr = new SupportedRVersionRange();
                 var engines = _rInstallation.GetCompatibleEngines();
-                foreach (var e in engines) {
-                    if (e.CheckInstallation(svr, _fs)) {
+                if (engines.Any()) {
+                    foreach (var e in engines) {
                         var detected = new Interpreter(this, "", e.InstallPath, e.BinPath, e.Version);
                         _logger.LogTrace($"R {detected.Version} detected at \"{detected.Path}\".");
                         yield return detected;
-                    } else {
-                        _logger.LogWarning("No R interpreters found.");
                     }
+                } else {
+                    _logger.LogWarning("No R interpreters found.");
                 }
             }
         }

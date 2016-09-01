@@ -9,9 +9,9 @@ using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
 
 namespace Microsoft.R.Interpreters {
-    internal sealed class RInterpreterInfo : IRInterpreterInfo {
-        private bool? _valid;
-
+    public sealed class RInterpreterInfo : IRInterpreterInfo {
+        private readonly IFileSystem _fs;
+        
         /// <summary>
         /// User-friendly name of the interpreter. Determined from the registry
         /// key for CRAN interpreters or via other means for MRO/MRC.
@@ -33,17 +33,25 @@ namespace Microsoft.R.Interpreters {
         /// </summary>
         public string BinPath { get; }
 
-        public RInterpreterInfo(string name, string path) {
+        /// <summary>
+        /// Indicates that installation appears to be valid with binaries present
+        /// and the binary version matches version listed in the registry.
+        /// </summary>
+        public bool IsValid { get; }
+
+        public RInterpreterInfo(string name, string path, IFileSystem fs = null, ISupportedRVersionRange svr = null) {
+            _fs = fs ?? new FileSystem();
+            svr = svr ?? new SupportedRVersionRange();
+
+            Name = name;
             InstallPath = NormalizeRPath(path);
             BinPath = Path.Combine(path, @"bin\x64");
             Version = DetermineVersion();
+
+            IsValid = CheckInstallation(svr, fs);
         }
 
         public bool CheckInstallation(ISupportedRVersionRange svl, IFileSystem fs = null, ICoreShell coreShell = null, bool showErrors = false) {
-            if(_valid.HasValue) {
-                return _valid.Value;
-            }
-
             if(showErrors) {
                 Check.ArgumentNull(nameof(coreShell), coreShell);
             }
@@ -63,7 +71,7 @@ namespace Microsoft.R.Interpreters {
                     fs.FileExists(rScriptPath) && fs.FileExists(rGraphAppPath) &&
                     fs.FileExists(rGuiPath)) {
 
-                    var fileVersion = GetRVersionFromBinary(rDllPath, fs);
+                    var fileVersion = GetRVersionFromBinary(rDllPath);
                     if (fileVersion == Version) {
                         return true;
                     }
@@ -92,9 +100,9 @@ namespace Microsoft.R.Interpreters {
             return false;
         }
 
-        private Version GetRVersionFromBinary(string basePath, IFileSystem fs) {
+        private Version GetRVersionFromBinary(string basePath) {
             string rDllPath = Path.Combine(BinPath, @"R.dll");
-            IFileVersionInfo fvi = fs.GetVersionInfo(rDllPath);
+            IFileVersionInfo fvi = _fs.GetVersionInfo(rDllPath);
             int minor, revision;
 
             GetRVersionPartsFromFileMinorVersion(fvi.FileMinorPart, out minor, out revision);
@@ -130,12 +138,21 @@ namespace Microsoft.R.Interpreters {
         }
 
         private Version DetermineVersion() {
+            Version v = null;
+
             string versionString = ExtractVersionString(Name);
-            Version v;
-            if (string.IsNullOrEmpty(versionString) || !Version.TryParse(versionString, out v)) {
-                v = new Version();
+            if(string.IsNullOrEmpty(versionString)) {
+                // Try from file
+                try {
+                    string rDllPath = Path.Combine(BinPath, @"R.dll");
+                    v = GetRVersionFromBinary(rDllPath);
+                } catch(IOException) { } catch(UnauthorizedAccessException) { }
             }
-            return v;
+            else {
+                Version.TryParse(versionString, out v);
+            }
+
+            return v ?? new Version();
         }
 
         private string ExtractVersionString(string original) {

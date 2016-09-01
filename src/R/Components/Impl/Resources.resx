@@ -426,4 +426,7 @@
   <data name="Error_ConnectionStringFormat" xml:space="preserve">
     <value>The connection string appears to be in incorrect format. Would you like to re-created it?</value>
   </data>
+  <data name="NoLocalR" xml:space="preserve">
+    <value>Visual Studio is unable to find local R installation. Would you like to install Microsoft R Client (recommended)?{1}Click Yes to install latest Microsoft R Client. {2}Click No if you are planning to set up connection to a remote machine.</value>
+  </data>
 </root>

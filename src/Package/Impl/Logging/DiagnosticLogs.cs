@@ -203,16 +203,11 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
                 var ri = new RInstallation();
                 var workflow = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
                 if (detailed) {
-                    IEnumerable<string> rEngines = ri.GetInstalledEngineVersionsFromRegistry();
+                    var rEngines = ri.GetCompatibleEngines();
                     writer.WriteLine("Installed R Engines (from registry):");
-                    foreach (string e in rEngines) {
-                        writer.WriteLine("    " + e);
+                    foreach (var e in rEngines) {
+                        writer.WriteLine(Invariant($"{e.Name} {e.Version} {e.InstallPath}"));
                     }
-                    writer.WriteLine();
-
-                    string latestEngine = ri.GetCompatibleEnginePathFromRegistry();
-                    writer.WriteLine("Latest R Engine (from registry):");
-                    writer.WriteLine("    " + latestEngine);
                     writer.WriteLine();
 
                     var connections = workflow.Connections.RecentConnections;

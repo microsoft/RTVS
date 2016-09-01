@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
@@ -27,13 +28,14 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         public void SwitchToLocalBroker(string name, string rBasePath = null, string rHostDirectory = null) {
-            var installPath = new RInstallation().GetRInstallPath(rBasePath, new SupportedRVersionRange());
-            var newConnector = new LocalRHostConnector(name, installPath, rHostDirectory);
-            var oldConnector = Interlocked.Exchange(ref _hostConnector, newConnector);
+            var installPath = new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath;
+            if (string.IsNullOrEmpty(installPath)) {
+                var newConnector = new LocalRHostConnector(name, installPath, rHostDirectory);
+                var oldConnector = Interlocked.Exchange(ref _hostConnector, newConnector);
 
-            oldConnector.Dispose();
-
-            BrokerChanged?.Invoke(this, new EventArgs());
+                oldConnector.Dispose();
+                BrokerChanged?.Invoke(this, new EventArgs());
+            }
         }
 
         public void SwitchToRemoteBroker(Uri uri) {
