@@ -312,6 +312,18 @@
   <data name="PackageManager_PackageUpdateWarning" xml:space="preserve">
     <value>Are you sure you wish to update '{0}' package? This action cannot be undone.</value>
   </data>
+  <data name="ConnectionManager_LocalConnections" xml:space="preserve">
+    <value>Local workspaces</value>
+  </data>
+  <data name="ConnectionManager_UserConnections" xml:space="preserve">
+    <value>User defined workspaces</value>
+  </data>
+  <data name="ConnectionManager_LocalConnectionsTooltip" xml:space="preserve">
+    <value>Expand/Collapse local workspaces</value>
+  </data>
+  <data name="ConnectionManager_UserConnectionsTooltip" xml:space="preserve">
+    <value>Expand/Collapse user defined workspaces</value>
+  </data>
   <data name="ConnectionManager_ConnectTooltip" xml:space="preserve">
     <value>Connect to '{0}'.</value>
   </data>

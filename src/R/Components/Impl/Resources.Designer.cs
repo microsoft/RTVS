@@ -142,6 +142,24 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Local workspaces.
+        /// </summary>
+        public static string ConnectionManager_LocalConnections {
+            get {
+                return ResourceManager.GetString("ConnectionManager_LocalConnections", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Expand/Collapse local workspaces.
+        /// </summary>
+        public static string ConnectionManager_LocalConnectionsTooltip {
+            get {
+                return ResourceManager.GetString("ConnectionManager_LocalConnectionsTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Connection name..
         /// </summary>
         public static string ConnectionManager_Name {
@@ -210,6 +228,24 @@ namespace Microsoft.R.Components {
         public static string ConnectionManager_TestConnectionTooltip {
             get {
                 return ResourceManager.GetString("ConnectionManager_TestConnectionTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User defined workspaces.
+        /// </summary>
+        public static string ConnectionManager_UserConnections {
+            get {
+                return ResourceManager.GetString("ConnectionManager_UserConnections", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Expand/Collapse user defined workspaces.
+        /// </summary>
+        public static string ConnectionManager_UserConnectionsTooltip {
+            get {
+                return ResourceManager.GetString("ConnectionManager_UserConnectionsTooltip", resourceCulture);
             }
         }
         

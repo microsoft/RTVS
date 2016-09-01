@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 namespace Microsoft.R.Components.ConnectionManager.ViewModel {
     public interface IConnectionManagerViewModel : INotifyPropertyChanged, IDisposable {
-        ReadOnlyObservableCollection<IConnectionViewModel> Items { get; }
+        ReadOnlyObservableCollection<IConnectionViewModel> LocalConnections { get; }
+        ReadOnlyObservableCollection<IConnectionViewModel> UserConnections { get; }
         IConnectionViewModel EditedConnection { get; }
+        bool HasLocalConnections { get; }
         bool IsEditingNew { get; }
         bool IsConnected { get; }
         
