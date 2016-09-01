@@ -56,13 +56,21 @@ namespace Microsoft.R.Host.Broker.Security {
             }
 
             IntPtr token;
-            if (!NativeMethods.LogonUser(user.ToString(), domain.ToString(), context.Password, NativeMethods.LOGON32_LOGON_NETWORK, NativeMethods.LOGON32_PROVIDER_DEFAULT, out token)) {
+            WindowsIdentity winIdentity = null;
+            if (NativeMethods.LogonUser(user.ToString(), domain.ToString(), context.Password, (int)LogonType.LOGON32_LOGON_NETWORK, (int)LogonProvider.LOGON32_PROVIDER_DEFAULT, out token)) {
+                winIdentity = new WindowsIdentity(token);
+                StringBuilder profileDir = new StringBuilder(NativeMethods.MAX_PATH);
+                uint size = (uint)profileDir.Capacity;
+                uint error = NativeMethods.CreateProfile(winIdentity.User.Value, user.ToString(), profileDir, size);
+                // 0x800700b7 - Profile already exists.
+                if (error != 0 && error != 0x800700b7) {
+                    return null;
+                }
+            } else {
                 return null;
             }
 
-            var winIdentity = new WindowsIdentity(token);
             var principal = new WindowsPrincipal(winIdentity);
-
             if (principal.IsInRole(_options.AllowedGroup)) {
                 var claims = new[] {
                     //new Claim(ClaimTypes.Name, context.Username),

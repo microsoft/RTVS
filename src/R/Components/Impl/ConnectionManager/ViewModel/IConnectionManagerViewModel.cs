@@ -8,18 +8,20 @@ using System.Threading.Tasks;
 
 namespace Microsoft.R.Components.ConnectionManager.ViewModel {
     public interface IConnectionManagerViewModel : INotifyPropertyChanged, IDisposable {
-        ReadOnlyObservableCollection<IConnectionViewModel> Items { get; }
-        IConnectionViewModel SelectedConnection { get; }
-        IConnectionViewModel NewConnection { get; }
+        ReadOnlyObservableCollection<IConnectionViewModel> LocalConnections { get; }
+        ReadOnlyObservableCollection<IConnectionViewModel> UserConnections { get; }
+        IConnectionViewModel EditedConnection { get; }
+        bool HasLocalConnections { get; }
+        bool IsEditingNew { get; }
         bool IsConnected { get; }
-
-        void SelectConnection(IConnectionViewModel connection);
-        void AddNew();
-        void CancelEdit(IConnectionViewModel connection);
-        void BrowseLocalPath(IConnectionViewModel connection);
+        
         void Edit(IConnectionViewModel connection);
-        Task TestConnectionAsync(IConnectionViewModel connection);
+        void EditNew();
+        void CancelEdit();
         void Save(IConnectionViewModel connectionViewModel);
+
+        void BrowseLocalPath(IConnectionViewModel connection);
+        Task TestConnectionAsync(IConnectionViewModel connection);
         bool TryDelete(IConnectionViewModel connection);
 
         Task ConnectAsync(IConnectionViewModel connection);

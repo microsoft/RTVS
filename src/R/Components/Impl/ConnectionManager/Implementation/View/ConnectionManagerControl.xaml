@@ -87,7 +87,7 @@
             </DataTemplate>
 
             <DataTemplate x:Key="ConnectButtonDataTemplate" DataType="{x:Type viewModel:IConnectionViewModel}">
-                <StackPanel Margin="14,1,6,1">
+                <StackPanel Margin="4,1,6,1">
                     <!-- Connect button -->
                     <Button x:Name="ButtonConnect" Style="{StaticResource ToolWindowButtonStyle}" Click="ButtonConnect_Click" 
                             VerticalAlignment="Center" Padding="0" BorderThickness="0"
@@ -122,29 +122,33 @@
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
+                        <!-- Collapsed -->
+                        <Rectangle Fill="{StaticResource IconArrowRigth16}" Height="16" Width="16" />
+
                         <!-- Connect button -->
-                        <ContentPresenter DataContext="{Binding}" Grid.Column="0" 
+                        <ContentPresenter DataContext="{Binding}" Grid.Column="1" 
                                           ContentTemplate="{StaticResource ConnectButtonDataTemplate}" />
 
                         <!-- Name & path -->
-                        <TextBlock Grid.Column="1" Margin="0,1,6,2" Text="{Binding Path=Name}"/>
-                        <Separator Grid.Column="2" Margin="0,1,6,2" Style="{StaticResource VerticalSeparator}"/>
-                        <TextBlock Grid.Column="3" Margin="0,1,3,2" Text="{Binding Path=Path, Mode=OneWay}"
+                        <TextBlock Grid.Column="2" Margin="0,1,6,2" Text="{Binding Path=Name}"/>
+                        <Separator Grid.Column="3" Margin="0,1,6,2" Style="{StaticResource VerticalSeparator}"/>
+                        <TextBlock Grid.Column="4" Margin="0,1,3,2" Text="{Binding Path=Path, Mode=OneWay}"
                                    TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
 
                         <!-- edit button -->
-                        <Button x:Name="ButtonEdit" Grid.Column="4" Style="{StaticResource ToolWindowButtonStyle}" Click="ButtonEdit_Click"
+                        <Button x:Name="ButtonEdit" Grid.Column="5" Style="{StaticResource ToolWindowButtonStyle}" Click="ButtonEdit_Click"
                                 ToolTip="{x:Static components:Resources.ConnectionManager_EditTooltip}" Visibility="Collapsed">
                             <Image Source="{x:Static rwpf:ImageSources.Edit}" />
                         </Button>
 
                         <!-- delete button -->
-                        <Button x:Name="ButtonDelete" Grid.Column="5" Style="{StaticResource ToolWindowButtonStyle}" Click="ButtonDelete_Click"
+                        <Button x:Name="ButtonDelete" Grid.Column="6" Style="{StaticResource ToolWindowButtonStyle}" Click="ButtonDelete_Click"
                                 ToolTip="{x:Static components:Resources.ConnectionManager_DeleteTooltip}" Visibility="Collapsed">
                             <Rectangle Fill="{StaticResource IconUninstall}" Width="16" Height="16" />
                         </Button>
@@ -164,6 +168,7 @@
                     <Grid MinHeight="20">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
@@ -173,12 +178,15 @@
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
+                        <!-- Expanded -->
+                        <Rectangle Fill="{StaticResource IconArrowRigthDown16}" Height="16" Width="16" />
+
                         <!-- Connect button -->
-                        <ContentPresenter DataContext="{Binding}" Grid.Column="0" Grid.Row="0"
+                        <ContentPresenter DataContext="{Binding}" Grid.Column="1" Grid.Row="0"
                                           ContentTemplate="{StaticResource ConnectButtonDataTemplate}" />
 
                         <!-- Name & path & command line -->
-                        <StackPanel Grid.Column="1" Grid.RowSpan="2"
+                        <StackPanel Grid.Column="2" Grid.RowSpan="2"
                                     Visibility="{Binding Path=IsEditing, Converter={x:Static rwpf:Converters.FalseIsNotCollapsed}}">
                             <TextBlock Margin="0,1,6,3" Text="{Binding Path=Name}"
                                    FontWeight="SemiBold" TextWrapping="Wrap" />
@@ -189,12 +197,12 @@
                                    Visibility="{Binding Path=RCommandLineArguments, Converter={x:Static rwpf:Converters.NullOrEmptyIsCollapsed}}"/>
                         </StackPanel>
 
-                        <ContentPresenter Grid.Column="1" Grid.RowSpan="2"
+                        <ContentPresenter Grid.Column="2" Grid.RowSpan="2"
                                           ContentTemplate="{StaticResource EditConnectionDataTemplate}"
                                           Visibility="{Binding Path=IsEditing, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}"/>
                         
                         <!-- edit button -->
-                        <Button x:Name="ButtonEdit" Grid.Column="2" Grid.Row="0" Click="ButtonEdit_Click"
+                        <Button x:Name="ButtonEdit" Grid.Column="3" Grid.Row="0" Click="ButtonEdit_Click"
                                 Style="{StaticResource ToolWindowButtonStyle}"
                                 ToolTip="{x:Static components:Resources.ConnectionManager_EditTooltip}"
                                 Visibility="{Binding Path=IsEditing, Converter={x:Static rwpf:Converters.FalseIsNotCollapsed}}">
@@ -202,7 +210,7 @@
                         </Button>
 
                         <!-- delete button -->
-                        <Button x:Name="ButtonDelete" Grid.Column="3" Grid.Row="0" Click="ButtonDelete_Click"
+                        <Button x:Name="ButtonDelete" Grid.Column="4" Grid.Row="0" Click="ButtonDelete_Click"
                                 Style="{StaticResource ToolWindowButtonStyle}"
                                 ToolTip="{x:Static components:Resources.ConnectionManager_DeleteTooltip}">
                             <Rectangle Fill="{StaticResource IconUninstall}" Width="16" Height="16" />
@@ -257,7 +265,7 @@
                 <Setter Property="Background" Value="{x:Static Brushes.Transparent}" />
                 <Setter Property="Foreground" Value="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}" />
                 <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
-                <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Visible" />
+                <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
                 <Setter Property="VirtualizingPanel.IsVirtualizing" Value="true" />
                 <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling" />
                 <Setter Property="VirtualizingPanel.CacheLength" Value="1,2" />
@@ -266,13 +274,12 @@
                 <Setter Property="BorderThickness" Value="0,0,0,0" />
                 <Setter Property="ItemContainerStyle" Value="{StaticResource ConnectionsListBoxItemStyle}" />
                 <Setter Property="ItemTemplateSelector" Value="{StaticResource TypeDataTemplateSelector}"/>
-                <Setter Property="ItemsSource" Value="{Binding Path=Items}" />
-                <Setter Property="SelectedItem" Value="{Binding Path=SelectedConnection, Mode=OneWay}"/>
+                <Setter Property="SelectionMode" Value="Multiple"/>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type ListBox}">
                             <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="1" SnapsToDevicePixels="true">
-                                <ScrollViewer Focusable="false" Padding="{TemplateBinding Padding}">
+                                <ScrollViewer Focusable="false">
                                     <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
                                 </ScrollViewer>
                             </Border>
@@ -290,7 +297,7 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <ScrollViewer x:Name="Root" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-        <DockPanel x:Name="RootContent" LastChildFill="True" MinWidth="250">
+        <DockPanel x:Name="RootContent" LastChildFill="True" MinWidth="250" >
             <DockPanel.MaxWidth>
                 <MultiBinding Converter="{x:Static rwpf:Converters.Max}">
                     <Binding ElementName="Root" Path="ActualWidth" />
@@ -298,32 +305,40 @@
                 </MultiBinding>
             </DockPanel.MaxWidth>
 
-            <!-- Implicit local connections -->
+            <!-- Implicit local connections header -->
+            <ToggleButton x:Name="ToggleButtonLocalConnections" DockPanel.Dock="Top" Style="{StaticResource ExpandCollapseToggleStyle}"
+                          ToolTip="{x:Static components:Resources.ConnectionManager_LocalConnectionsTooltip}" IsChecked="False"
+                          Content="{x:Static components:Resources.ConnectionManager_LocalConnections}"
+                          Visibility="{Binding Path=HasLocalConnections, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}"/>
 
-            <!-- Header -->
-            <ToggleButton x:Name="ToggleButtonConnections" DockPanel.Dock="Top" Style="{StaticResource ExpandCollapseToggleStyle}"
-                          ToolTip="Expand/Collapse section" IsChecked="True" Content="Connections"/>
+            <!-- Implicit local connections -->
+            <ListBox DockPanel.Dock="Top" Style="{StaticResource ConnectionsListBox}" Margin="11,0,0,16" ItemsSource="{Binding Path=LocalConnections}" 
+                     Visibility="{Binding ElementName=ToggleButtonLocalConnections, Path=IsChecked, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}"/>
+
+            <!-- Explicit connections header -->
+            <ToggleButton x:Name="ToggleButtonUserConnections" DockPanel.Dock="Top" Style="{StaticResource ExpandCollapseToggleStyle}"
+                          ToolTip="{x:Static components:Resources.ConnectionManager_UserConnectionsTooltip}" IsChecked="True"
+                          Content="{x:Static components:Resources.ConnectionManager_UserConnections}"/>
 
             <!-- Explicit connections -->
             <DockPanel DockPanel.Dock="Top" Margin="16,0,0,0" 
-                       Visibility="{Binding ElementName=ToggleButtonConnections, Path=IsChecked, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}">
+                       Visibility="{Binding ElementName=ToggleButtonUserConnections, Path=IsChecked, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}">
                 <WrapPanel DockPanel.Dock="Top" Margin="1,4,0,6">
                     <Button x:Name="ToggleButtonAdd" Style="{StaticResource HyperlinkDownArrowButton}"
-                            IsEnabled="{Binding Path=NewConnection, Converter={x:Static rwpf:Converters.NullIsTrue}}"
+                            IsEnabled="{Binding Path=IsEditingNew, Converter={x:Static rwpf:Converters.Not}}"
                             Content="{x:Static components:Resources.ConnectionManager_Add}"
                             Click="ButtonAdd_Click"/>
                 </WrapPanel>
                 
                 <!-- Add options panel -->
                 <Border DockPanel.Dock="Top" Margin="0,0,6,6" Style="{StaticResource InputBorderStyle}"
-                        Visibility="{Binding Path=NewConnection, Converter={x:Static rwpf:Converters.NullIsCollapsed}}">
-                    <ContentPresenter Content="{Binding Path=NewConnection}" ContentTemplate="{StaticResource EditConnectionDataTemplate}" />
+                        Visibility="{Binding Path=IsEditingNew, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}">
+                    <ContentPresenter Content="{Binding Path=EditedConnection, Mode=OneWay}" ContentTemplate="{StaticResource EditConnectionDataTemplate}" />
                 </Border>
 
                 <!-- List -->
-                <Grid DockPanel.Dock="Top">
-                    <ListBox x:Name="List" Style="{StaticResource ConnectionsListBox}" SelectionChanged="List_SelectionChanged" />
-                </Grid>
+                <ListBox x:Name="List" Margin="-5,0,6,0" DockPanel.Dock="Top" Style="{StaticResource ConnectionsListBox}" 
+                         ItemsSource="{Binding Path=UserConnections}" />
             </DockPanel>
         </DockPanel>
     </ScrollViewer>
