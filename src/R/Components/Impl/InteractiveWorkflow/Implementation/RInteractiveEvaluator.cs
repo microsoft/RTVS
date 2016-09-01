@@ -61,7 +61,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 if (!Session.IsHostRunning) {
                     var startupInfo = new RHostStartupInfo {
                         Name = "REPL",
-                        RHostCommandLineArguments = _connections.ActiveConnection.RCommandLineArguments,
+                        RHostCommandLineArguments = _connections.ActiveConnection?.RCommandLineArguments,
                         CranMirrorName = _settings.CranMirror,
                         CodePage = _settings.RCodePage,
                         WorkingDirectory = _settings.WorkingDirectory,
