@@ -61,7 +61,7 @@ namespace Microsoft.R.Interpreters {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot find R binaries in {0}.{1}.
+        ///   Looks up a localized string similar to Cannot find R binaries in {0}..
         /// </summary>
         internal static string Error_CannotFindRBinariesFormat {
             get {

@@ -31,7 +31,7 @@ namespace Microsoft.R.Interpreters {
 
         public RInstallation(IRegistry registry, IFileSystem fileSystem) {
             _registry = registry;
-            _fileSystem = fileSystem;
+            _fileSystem = fileSystem ?? new FileSystem();
         }
 
         /// <summary>
@@ -41,13 +41,17 @@ namespace Microsoft.R.Interpreters {
         /// </summary>
         public IEnumerable<IRInterpreterInfo> GetCompatibleEngines(ISupportedRVersionRange svl = null) {
             var mrc = GetMicrosoftRClientInfo();
-            var engines = GetCompatibleEnginesFromRegistry(svl).Where(e => e.CheckInstallation(svl)).OrderBy(e => e.Version);
+            var engines = GetCompatibleEnginesFromRegistry(svl);
+            engines = engines.Where(e => e.VerifyInstallation(svl, _fileSystem)).OrderBy(e => e.Version);
             if(mrc != null) {
                 var list = new List<IRInterpreterInfo>() { mrc };
                 list.AddRange(engines);
                 return list;
             } else if (!engines.Any()) {
-                return new List<IRInterpreterInfo>() { TryFindRInProgramFiles(svl) };
+                var e = TryFindRInProgramFiles(svl);
+                if (e != null) {
+                    return new List<IRInterpreterInfo>() { e };
+                }
             }
             return engines;
         }
@@ -55,9 +59,9 @@ namespace Microsoft.R.Interpreters {
         /// <summary>
         /// Retrieves path to the all compatible R installations from registry. 
         /// </summary>
-        private IEnumerable<IRInterpreterInfo> GetCompatibleEnginesFromRegistry(ISupportedRVersionRange svl = null) {
-            svl = svl ?? new SupportedRVersionRange();
-            return GetInstalledEnginesFromRegistry().Where(e => svl.IsCompatibleVersion(e.Version));
+        private IEnumerable<IRInterpreterInfo> GetCompatibleEnginesFromRegistry(ISupportedRVersionRange svr) {
+            svr = svr ?? new SupportedRVersionRange();
+            return GetInstalledEnginesFromRegistry().Where(e => svr.IsCompatibleVersion(e.Version));
         }
 
         /// <summary>
@@ -76,7 +80,7 @@ namespace Microsoft.R.Interpreters {
                             using (var subKey = rKey.OpenSubKey(name)) {
                                 var path = subKey.GetValue(_installPathValueName) as string;
                                 if (!string.IsNullOrEmpty(path)) {
-                                    engines.Add(new RInterpreterInfo(Invariant($"R {name}"), path));
+                                    engines.Add(new RInterpreterInfo(Invariant($"R {name}"), path, _fileSystem));
                                 }
                             }
                         }
@@ -112,7 +116,7 @@ namespace Microsoft.R.Interpreters {
                                         var path = (string)rsKey?.GetValue(_installPathValueName);
                                         if (!string.IsNullOrEmpty(path) && path.Contains(_rServer)) {
                                             var info = new RInterpreterInfo(string.Empty, path);
-                                            if (info.CheckInstallation()) {
+                                            if (info.VerifyInstallation(new SupportedRVersionRange(), _fileSystem)) {
                                                 return new RInterpreterInfo(Invariant($"Microsoft R Client ({info.Version.Major}.{info.Version.Minor}.{info.Version.Build})"), info.InstallPath);
                                             }
                                         }

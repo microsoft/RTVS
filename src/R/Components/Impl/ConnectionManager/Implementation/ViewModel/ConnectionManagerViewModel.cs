@@ -198,7 +198,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private void ConnectionStateChanged(object sender, ConnectionEventArgs e) {
             _shell.DispatchOnUIThread(() => {
                 IsConnected = e.State;
-                foreach (var item in _userConnections) {
+                foreach (var item in _userConnections.Union(_localConnections)) {
                     item.IsConnected = e.State && item.IsActive;
                 }
             });

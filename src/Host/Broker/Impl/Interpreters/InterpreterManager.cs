@@ -41,7 +41,7 @@ namespace Microsoft.R.Host.Broker.Interpreters {
                 var opt = _options.Interpreters.FirstOrDefault();
                 if (!string.IsNullOrEmpty(opt.Value.BasePath)) {
                     var e = new RInterpreterInfo(string.Empty, opt.Value.BasePath);
-                    if (e.CheckInstallation()) { 
+                    if (e.VerifyInstallation()) { 
                         Interpreters = new List<Interpreter>() { new Interpreter(this, _localId, e.InstallPath, e.BinPath, e.Version) };
                     } else {
                         Debug.Fail("Specified interpreter us incompatible");

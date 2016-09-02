@@ -202,7 +202,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                         bool valid = false;
                         try {
                             var info = new RInterpreterInfo(kvp.Value.Name, kvp.Value.Path);
-                            valid = info.CheckInstallation();
+                            valid = info.VerifyInstallation();
                         } catch (Exception ex) when (!ex.IsCriticalException()) {
                             GeneralLog.Write(ex);
                         }

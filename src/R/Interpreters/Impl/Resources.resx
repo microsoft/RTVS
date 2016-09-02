@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Error_CannotFindRBinariesFormat" xml:space="preserve">
-    <value>Cannot find R binaries in {0}.{1}</value>
+    <value>Cannot find R binaries in {0}.</value>
   </data>
   <data name="Error_ExceptionAccessingPath" xml:space="preserve">
     <value>Unable to access path {0}. Exception: {1}.</value>
