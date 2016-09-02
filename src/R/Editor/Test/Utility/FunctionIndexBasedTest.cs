@@ -13,25 +13,25 @@ using Xunit;
 namespace Microsoft.R.Editor.Test.Utility {
     [ExcludeFromCodeCoverage]
     public abstract class FunctionIndexBasedTest : IAsyncLifetime {
-        protected readonly IExportProvider _exportProvider;
-        protected readonly IEditorShell _editorShell;
-        protected readonly IPackageIndex _packageIndex;
-        protected readonly IFunctionIndex _functionIndex;
+        protected readonly IExportProvider ExportProvider;
+        protected readonly IEditorShell EditorShell;
+        protected readonly IPackageIndex PackageIndex;
+        protected readonly IFunctionIndex FunctionIndex;
 
         protected FunctionIndexBasedTest(AssemblyMefCatalogFixture catalog) {
-            _exportProvider = catalog.CreateExportProvider();
-            _editorShell = _exportProvider.GetExportedValue<IEditorShell>();
-            _packageIndex = _exportProvider.GetExportedValue<IPackageIndex>();
-            _functionIndex = _exportProvider.GetExportedValue<IFunctionIndex>();
+            ExportProvider = catalog.CreateExportProvider();
+            EditorShell = ExportProvider.GetExportedValue<IEditorShell>();
+            PackageIndex = ExportProvider.GetExportedValue<IPackageIndex>();
+            FunctionIndex = ExportProvider.GetExportedValue<IFunctionIndex>();
         }
 
         public Task InitializeAsync() {
-            return _packageIndex.InitializeAsync(_functionIndex);
+            return PackageIndex.InitializeAsync(FunctionIndex);
         }
 
         public virtual async Task DisposeAsync() {
-            await _packageIndex.DisposeAsync(_exportProvider);
-            _exportProvider.Dispose();
+            await PackageIndex.DisposeAsync(ExportProvider);
+            ExportProvider.Dispose();
         }
      }
 }

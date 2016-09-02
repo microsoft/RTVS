@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -13,7 +14,8 @@ namespace Microsoft.VisualStudio.R.Package.Test {
         protected IRSessionProvider SessionProvider { get; }
 
         public InteractiveTest() {
-            SessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+            var workflow = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
+            SessionProvider = workflow.RSessions;
         }
 
         public void Dispose() => Dispose(true);

@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Microsoft.UnitTests.Core.XUnit;
 
-namespace Microsoft.R.Host.Client.Test {
+namespace Microsoft.R.Host.Client.Test.Fixtures {
     [AssemblyFixture]
     [ExcludeFromCodeCoverage]
     public class GraphicsDeviceTestFilesFixture : DeployFilesFixture {

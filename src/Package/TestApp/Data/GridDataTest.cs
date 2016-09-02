@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
+using Microsoft.R.Host.Client.Test.Fixtures;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
@@ -29,18 +30,17 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         }
 
         private readonly MethodInfo _testMethod;
-        private readonly BrokerFixture _broker;
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _session;
 
-        public GridDataTest(TestMethodFixture testMethod, BrokerFixture broker) {
+        public GridDataTest(TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo;
-            _broker = broker;
             _sessionProvider = new RSessionProvider();
-            _session = _sessionProvider.GetOrCreate(Guid.NewGuid(), _broker.BrokerConnector);
+            _session = _sessionProvider.GetOrCreate(Guid.NewGuid());
         }
 
         public async Task InitializeAsync() {
+            await _sessionProvider.TrySwitchBroker(GetType().Name);
             await _session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name
             }, new RHostClientTestApp(), 50000);

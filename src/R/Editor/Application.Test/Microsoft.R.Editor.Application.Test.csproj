@@ -135,7 +135,6 @@
   <ItemGroup>
     <Compile Include="Completion\ProvisionalTextTest.cs" />
     <Compile Include="Documentation\SelectionTest.cs" />
-    <Compile Include="Fixtures\BrokerFixture.cs" />
     <Compile Include="Fixtures\EditorAppTestFilesFixture.cs" />
     <Compile Include="Fixtures\EditorHostMethodFixture.cs" />
     <Compile Include="EditorScript.cs" />

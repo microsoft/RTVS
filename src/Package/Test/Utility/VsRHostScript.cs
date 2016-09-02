@@ -13,8 +13,8 @@ using Microsoft.VisualStudio.R.Package.Shell;
 namespace Microsoft.VisualStudio.R.Package.Test.Utility {
     [ExcludeFromCodeCoverage]
     public sealed class VsRHostScript : RHostScript {
-        public VsRHostScript(IRSessionProvider sessionProvider, IRHostBrokerConnector brokerConnector, IRSessionCallback clientApp = null)
-            : base(sessionProvider, brokerConnector, clientApp) { }
+        public VsRHostScript(IRSessionProvider sessionProvider, IRSessionCallback clientApp = null)
+            : base(sessionProvider, clientApp) { }
 
         public static void DoIdle(int ms) {
             UIThreadHelper.Instance.Invoke(() => {

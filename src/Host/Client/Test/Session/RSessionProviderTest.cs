@@ -9,23 +9,12 @@ using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Host.Client.Test.Session {
-    public class RSessionProviderTest : IDisposable {
-        private readonly IRHostBrokerConnector _brokerConnector;
-
-        public RSessionProviderTest() {
-            _brokerConnector = new RHostBrokerConnector();
-            _brokerConnector.SwitchToLocalBroker(nameof(RSessionProviderTest));
-        }
-
-        public void Dispose() {
-            _brokerConnector.Dispose();
-        }
-
+    public class RSessionProviderTest {
         [Test]
         public void Lifecycle() {
             var sessionProvider = new RSessionProvider();
             // ReSharper disable once AccessToDisposedClosure
-            Action a = () => sessionProvider.GetOrCreate(new Guid(), _brokerConnector);
+            Action a = () => sessionProvider.GetOrCreate(new Guid());
             a.ShouldNotThrow();
 
             sessionProvider.Dispose();
@@ -34,18 +23,19 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
         [Test]
         public void GetOrCreate() {
-            var sessionProvider = new RSessionProvider();
-            var guid = new Guid();
-            var session1 = sessionProvider.GetOrCreate(guid, _brokerConnector);
-            session1.Should().NotBeNull();
+            using (var sessionProvider = new RSessionProvider()) {
+                var guid = new Guid();
+                var session1 = sessionProvider.GetOrCreate(guid);
+                session1.Should().NotBeNull();
 
-            var session2 = sessionProvider.GetOrCreate(guid, _brokerConnector);
-            session2.Should().BeSameAs(session1);
+                var session2 = sessionProvider.GetOrCreate(guid);
+                session2.Should().BeSameAs(session1);
 
-            session1.Dispose();
-            var session3 = sessionProvider.GetOrCreate(guid, _brokerConnector);
-            session3.Should().NotBeSameAs(session1);
-            session3.Id.Should().NotBe(session1.Id);
+                session1.Dispose();
+                var session3 = sessionProvider.GetOrCreate(guid);
+                session3.Should().NotBeSameAs(session1);
+                session3.Id.Should().NotBe(session1.Id);
+            }
         }
 
         [Test]
@@ -53,7 +43,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
             using (var sessionProvider = new RSessionProvider()) {
                 var guids = new[] { new Guid(), new Guid() };
                 ParallelTools.Invoke(100, i => {
-                    var session = sessionProvider.GetOrCreate(guids[i % 2], _brokerConnector);
+                    var session = sessionProvider.GetOrCreate(guids[i % 2]);
                     session.Dispose();
                 });
             }

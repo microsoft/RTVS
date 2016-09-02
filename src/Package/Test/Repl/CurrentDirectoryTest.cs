@@ -13,6 +13,7 @@ using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Test.Fakes.Trackers;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
+using Microsoft.R.Host.Client.Test.Fixtures;
 using Microsoft.R.Support.Settings;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.Repl.Commands;
@@ -26,12 +27,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
     [Collection(CollectionNames.NonParallel)]
     public class CurrentDirectoryTest : IDisposable {
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
-        private readonly BrokerFixture _broker;
         private readonly IRSessionProvider _sessionProvider;
 
-        public CurrentDirectoryTest(BrokerFixture broker) {
-            _broker = broker;
-            _sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+        public CurrentDirectoryTest() {
+            _sessionProvider = new RSessionProvider();
 
             var connectionsProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IConnectionManagerProvider>();
             var historyProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRHistoryProvider>();
@@ -41,11 +40,12 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
             var debuggerModeTracker = new TestDebuggerModeTracker();
             _interactiveWorkflow = new RInteractiveWorkflow(
                 _sessionProvider, connectionsProvider, historyProvider, packagesProvider, plotsProvider, activeTextViewTracker,
-                debuggerModeTracker, _broker.BrokerConnector, VsAppShell.Current, RToolsSettings.Current, null, () => { });
+                debuggerModeTracker, VsAppShell.Current, RToolsSettings.Current, null, () => { });
         }
 
         public void Dispose() {
             _interactiveWorkflow.Dispose();
+            _sessionProvider.Dispose();
         }
 
         [Test]
@@ -53,7 +53,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
         public void DefaultDirectoryTest() {
             string myDocs = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
             string actual;
-            using (var script = new VsRHostScript(_sessionProvider, _broker.BrokerConnector)) {
+            using (var script = new VsRHostScript(_sessionProvider)) {
                 var cmd = new WorkingDirectoryCommand(_interactiveWorkflow);
                 cmd.InitializationTask.Wait();
                 cmd.UserDirectory.Should().BeEquivalentTo(myDocs);
@@ -68,7 +68,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
         public void SetDirectoryTest() {
             string dir = "c:\\";
             string actual;
-            using (new VsRHostScript(_sessionProvider, _broker.BrokerConnector)) {
+            using (new VsRHostScript(_sessionProvider)) {
                 var cmd = new WorkingDirectoryCommand(_interactiveWorkflow);
                 cmd.InitializationTask.Wait();
                 cmd.SetDirectory(dir).Wait();
@@ -82,7 +82,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
         [Category.Repl]
         public void GetFriendlyNameTest01() {
             string actual;
-            using (new VsRHostScript(_sessionProvider, _broker.BrokerConnector)) {
+            using (new VsRHostScript(_sessionProvider)) {
                 var cmd = new WorkingDirectoryCommand(_interactiveWorkflow);
                 cmd.InitializationTask.Wait();
                 actual = cmd.GetFriendlyDirectoryName(Environment.GetFolderPath(Environment.SpecialFolder.Personal));
@@ -95,7 +95,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
         [Category.Repl]
         public void GetFriendlyNameTest02() {
             string actual;
-            using (new VsRHostScript(_sessionProvider, _broker.BrokerConnector)) {
+            using (new VsRHostScript(_sessionProvider)) {
                 var cmd = new WorkingDirectoryCommand(_interactiveWorkflow);
                 cmd.InitializationTask.Wait();
                 actual = cmd.GetFriendlyDirectoryName("c:\\");
@@ -108,7 +108,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
         [Category.Repl]
         public void GetFullPathNameTest() {
             string dir;
-            using (new VsRHostScript(_sessionProvider, _broker.BrokerConnector)) {
+            using (new VsRHostScript(_sessionProvider)) {
                 var cmd = new WorkingDirectoryCommand(_interactiveWorkflow);
                 cmd.InitializationTask.Wait();
                 dir = cmd.GetFullPathName("~");

@@ -26,9 +26,16 @@ namespace Microsoft.UnitTests.Core.XUnit {
 
             _assemblyLoaders = AssemblyLoaderAttribute.GetAssemblyLoaders(TestAssembly.Assembly);
 
-            var assemblyFixtureTypes = TestAssembly.Assembly.GetTypes(false)
+            var assembly = TestAssembly.Assembly;
+            var importedAssemblyFixtureTypes = assembly.GetCustomAttributes(typeof (AssemblyFixtureImportAttribute))
+                .SelectMany(ai => ai.GetConstructorArguments())
+                .OfType<Type[]>()
+                .SelectMany(a => a);
+
+            var assemblyFixtureTypes = assembly.GetTypes(false)
                 .Where(t => t.GetCustomAttributes(typeof(AssemblyFixtureAttribute).AssemblyQualifiedName).Any())
                 .Select(t => t.ToRuntimeType())
+                .Concat(importedAssemblyFixtureTypes)
                 .ToList();
 
             var fixtures = new Dictionary<Type, object>();

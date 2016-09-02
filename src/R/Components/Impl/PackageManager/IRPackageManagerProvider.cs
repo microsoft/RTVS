@@ -3,10 +3,9 @@
 
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
-using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Components.PackageManager {
     public interface IRPackageManagerProvider {
-        IRPackageManager CreateRPackageManager(IRSessionProvider sessionProvider, IRSettings settings, IRInteractiveWorkflow interactiveWorkflow);
+        IRPackageManager CreateRPackageManager(IRSettings settings, IRInteractiveWorkflow interactiveWorkflow);
     }
 }

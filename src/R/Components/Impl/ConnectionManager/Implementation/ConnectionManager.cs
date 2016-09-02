@@ -24,7 +24,6 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         private readonly ICoreShell _shell;
         private readonly IStatusBar _statusBar;
         private readonly IRSessionProvider _sessionProvider;
-        private readonly IRHostBrokerConnector _brokerConnector;
         private readonly DisposableBag _disposableBag;
         private readonly ConnectionStatusBarViewModel _statusBarViewModel;
         private readonly ConcurrentDictionary<Uri, IConnection> _userConnections;
@@ -37,10 +36,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         public event EventHandler RecentConnectionsChanged;
         public event EventHandler<ConnectionEventArgs> ConnectionStateChanged;
 
-        public ConnectionManager(IStatusBar statusBar, IRSessionProvider sessionProvider, IRSettings settings, IRInteractiveWorkflow interactiveWorkflow) {
+        public ConnectionManager(IStatusBar statusBar, IRSettings settings, IRInteractiveWorkflow interactiveWorkflow) {
             _statusBar = statusBar;
-            _sessionProvider = sessionProvider;
-            _brokerConnector = interactiveWorkflow.BrokerConnector;
+            _sessionProvider = interactiveWorkflow.RSessions;
             _settings = settings;
             _shell = interactiveWorkflow.Shell;
 
@@ -48,11 +46,11 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
             _disposableBag = DisposableBag.Create<ConnectionManager>()
                 .Add(_statusBarViewModel)
-                .Add(() => _brokerConnector.BrokerChanged -= BrokerChanged)
+                .Add(() => _sessionProvider.BrokerChanged -= BrokerChanged)
                 .Add(() => interactiveWorkflow.RSession.Connected -= RSessionOnConnected)
                 .Add(() => interactiveWorkflow.RSession.Disconnected -= RSessionOnDisconnected);
 
-            _brokerConnector.BrokerChanged += BrokerChanged;
+            _sessionProvider.BrokerChanged += BrokerChanged;
             // TODO: Temporary solution - need to separate RHost errors and network connection issues
             interactiveWorkflow.RSession.Connected += RSessionOnConnected;
             interactiveWorkflow.RSession.Disconnected += RSessionOnDisconnected;
@@ -133,11 +131,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         private void SwitchBroker(IConnection connection) {
             ActiveConnection = connection;
             SaveActiveConnectionToSettings();
-            if (connection.IsRemote) {
-                _brokerConnector.SwitchToRemoteBroker(connection.Id);
-            } else {
-                _brokerConnector.SwitchToLocalBroker(connection.Name, connection.Path);
-            }
+            _sessionProvider.TrySwitchBroker(connection.Name, connection.Path);
         }
 
         private IConnection CreateConnection(string name, string path, string rCommandLineArguments) => 
@@ -208,11 +202,11 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         private void UpdateActiveConnection() {
-            if (ActiveConnection?.Id == _brokerConnector.BrokerUri) {
+            if (ActiveConnection?.Id == _sessionProvider.BrokerUri) {
                 return;
             }
 
-            ActiveConnection = RecentConnections.FirstOrDefault(c => c.Id == _brokerConnector.BrokerUri);
+            ActiveConnection = RecentConnections.FirstOrDefault(c => c.Id == _sessionProvider.BrokerUri);
             SaveActiveConnectionToSettings();
         }
 

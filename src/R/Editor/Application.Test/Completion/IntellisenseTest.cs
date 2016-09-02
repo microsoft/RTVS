@@ -12,10 +12,12 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Components.ContentTypes;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Editor.Snippets;
 using Microsoft.R.Editor.Test.Utility;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.R.Support.Settings;
 using Microsoft.UnitTests.Core.Threading;
@@ -30,18 +32,18 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
     [Collection(CollectionNames.NonParallel)]
     public class IntellisenseTest : FunctionIndexBasedTest {
         private readonly EditorHostMethodFixture _editorHost;
-        private readonly BrokerFixture _broker;
         private readonly IRSessionProvider _sessionProvider;
 
-        public IntellisenseTest(REditorApplicationMefCatalogFixture catalog, BrokerFixture broker, EditorHostMethodFixture editorHost) : base(catalog) {
+        public IntellisenseTest(REditorApplicationMefCatalogFixture catalog, EditorHostMethodFixture editorHost) : base(catalog) {
             _editorHost = editorHost;
-            _broker = broker;
-            _sessionProvider = _exportProvider.GetExportedValue<IRSessionProvider>();
+
+            var workflow = ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
+            _sessionProvider = workflow.RSessions;
         }
 
         [Test]
         public async Task R_KeywordIntellisense() {
-            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
+            using (var script = await _editorHost.StartScript(ExportProvider, RContentTypeDefinition.ContentType)) {
                 script.Type("funct");
                 script.DoIdle(100);
                 script.Type("{TAB}");
@@ -55,7 +57,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
 
         [Test]
         public async Task R_LibraryIntellisense() {
-            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
+            using (var script = await _editorHost.StartScript(ExportProvider, RContentTypeDefinition.ContentType)) {
                 script.Type("library(ut");
                 script.DoIdle(100);
                 script.Type("{TAB}");
@@ -69,7 +71,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
 
         [Test]
         public async Task R_RequireIntellisense() {
-            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
+            using (var script = await _editorHost.StartScript(ExportProvider, RContentTypeDefinition.ContentType)) {
                 script.Type("require(uti");
                 script.DoIdle(100);
                 script.Type("{TAB}");
@@ -83,7 +85,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
 
         [Test]
         public async Task R_CompletionFilter01() {
-            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
+            using (var script = await _editorHost.StartScript(ExportProvider, RContentTypeDefinition.ContentType)) {
                 script.Type("x <- lm");
                 script.DoIdle();
                 script.Type("mmm");
@@ -104,7 +106,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
 
         [Test]
         public async Task R_CompletionFilter02() {
-            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
+            using (var script = await _editorHost.StartScript(ExportProvider, RContentTypeDefinition.ContentType)) {
                 script.Type("x <- lm");
                 script.DoIdle(100);
                 script.Type("+");
@@ -118,8 +120,8 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
 
         [Test]
         public async Task R_LoadedPackageFunctionCompletion() {
-            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType))
-            using (new RHostScript(_sessionProvider, _broker.BrokerConnector)) {
+            using (var script = await _editorHost.StartScript(ExportProvider, RContentTypeDefinition.ContentType))
+            using (new RHostScript(_sessionProvider)) {
                 script.Type("c");
                 script.DoIdle(200);
                 var session = script.GetCompletionSession();
@@ -130,7 +132,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                 var item = list.FirstOrDefault(x => x.DisplayText == "codoc");
                 item.Should().BeNull();
 
-                var rSession = _sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, _broker.BrokerConnector);
+                var rSession = _sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
                 rSession.Should().NotBeNull();
 
                 await rSession.ExecuteAsync("library('tools')");
@@ -157,7 +159,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
 
         [Test]
         public async Task R_CompletionFiles() {
-            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
+            using (var script = await _editorHost.StartScript(ExportProvider, RContentTypeDefinition.ContentType)) {
                 string asmPath = Assembly.GetExecutingAssembly().GetAssemblyPath();
                 RToolsSettings.Current.WorkingDirectory = Path.GetDirectoryName(asmPath);
 
@@ -179,8 +181,8 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
 
         [Test]
         public async Task R_CompletionFilesUserFolder() {
-            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType))
-            using (new RHostScript(_sessionProvider, _broker.BrokerConnector)) {
+            using (var script = await _editorHost.StartScript(ExportProvider, RContentTypeDefinition.ContentType))
+            using (new RHostScript(_sessionProvider)) {
                 var myDocs = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
                 var testFolder = Path.Combine(myDocs, "_rtvs_test_");
                 if (!Directory.Exists(testFolder)) {
@@ -209,7 +211,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
 
         [Test]
         public async Task R_CompletionFilesAbsolute() {
-            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
+            using (var script = await _editorHost.StartScript(ExportProvider, RContentTypeDefinition.ContentType)) {
                 var root = Path.GetPathRoot(Environment.GetFolderPath(Environment.SpecialFolder.Windows));
 
                 script.DoIdle(100);
@@ -232,8 +234,8 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         //[Test]
         [Category.Interactive]
         public async Task R_CompletionFunctionBraces01() {
-            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType))
-            using (var hostScript = new RHostScript(_sessionProvider, _broker.BrokerConnector)) {
+            using (var script = await _editorHost.StartScript(ExportProvider, RContentTypeDefinition.ContentType))
+            using (var hostScript = new RHostScript(_sessionProvider)) {
 
                 string message = null;
                 hostScript.Session.Output += (s, e) => {
@@ -256,8 +258,8 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
 
         [Test]
         public async Task R_CompletionFunctionBraces02() {
-            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType))
-            using (var hostScript = new RHostScript(_sessionProvider, _broker.BrokerConnector)) {
+            using (var script = await _editorHost.StartScript(ExportProvider, RContentTypeDefinition.ContentType))
+            using (var hostScript = new RHostScript(_sessionProvider)) {
 
                 string message = null;
                 hostScript.Session.Output += (s, e) => {
@@ -279,8 +281,8 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
 
         [Test]
         public async Task R_NoCompletionOnTab() {
-            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType))
-            using (var hostScript = new RHostScript(_sessionProvider, _broker.BrokerConnector)) {
+            using (var script = await _editorHost.StartScript(ExportProvider, RContentTypeDefinition.ContentType))
+            using (new RHostScript(_sessionProvider)) {
 
                 script.DoIdle(100);
                 script.Type("f1<-function(x,y");
@@ -297,8 +299,8 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
 
         [Test]
         public async Task R_CompletionOnTab() {
-            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType))
-            using (var hostScript = new RHostScript(_sessionProvider, _broker.BrokerConnector)) {
+            using (var script = await _editorHost.StartScript(ExportProvider, RContentTypeDefinition.ContentType))
+            using (new RHostScript(_sessionProvider)) {
 
                 REditorSettings.ShowCompletionOnTab = true;
                 script.DoIdle(100);
@@ -322,7 +324,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         public async Task R_NoCompletionOnTabWhenNoMatch() {
             // Tab only completes when selected item starts
             // with the text typed so far in the buffer
-            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
+            using (var script = await _editorHost.StartScript(ExportProvider, RContentTypeDefinition.ContentType)) {
                 script.DoIdle(100);
                 script.Type("while aaa");
                 script.DoIdle(300);
@@ -340,7 +342,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         public async Task R_NoCompletionOnTabInComment() {
             // Tab only completes when selected item starts
             // with the text typed so far in the buffer
-            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
+            using (var script = await _editorHost.StartScript(ExportProvider, RContentTypeDefinition.ContentType)) {
                 script.DoIdle(100);
                 script.Type("#com");
                 script.DoIdle(300);
@@ -354,7 +356,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
 
         [Test]
         public async Task R_SnippetsCompletion01() {
-            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
+            using (var script = await _editorHost.StartScript(ExportProvider, RContentTypeDefinition.ContentType)) {
                 script.DoIdle(100);
                 script.Type("whil");
                 script.DoIdle(300);
@@ -363,7 +365,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                     var session = script.GetCompletionSession();
                     session.Should().NotBeNull();
 
-                    var infoSourceProvider = _exportProvider.GetExportedValue<ISnippetInformationSourceProvider>();
+                    var infoSourceProvider = ExportProvider.GetExportedValue<ISnippetInformationSourceProvider>();
                     var infoSource = infoSourceProvider.InformationSource;
                     var completion = session.SelectedCompletionSet.SelectionStatus.Completion;
 
@@ -371,7 +373,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                     isSnippet.Should().BeTrue();
 
                     var glyph = completion.IconSource;
-                    var snippetGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphCSharpExpansion, StandardGlyphItem.GlyphItemPublic, _exportProvider.GetExportedValue<ICoreShell>());
+                    var snippetGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphCSharpExpansion, StandardGlyphItem.GlyphItemPublic, ExportProvider.GetExportedValue<ICoreShell>());
                     glyph.Should().Be(snippetGlyph);
                 });
             }
@@ -379,8 +381,8 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
 
         [Test]
         public async Task R_DeclaredVariablesCompletion01() {
-            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType))
-            using (var hostScript = new RHostScript(_sessionProvider, _broker.BrokerConnector)) {
+            using (var script = await _editorHost.StartScript(ExportProvider, RContentTypeDefinition.ContentType))
+            using (var hostScript = new RHostScript(_sessionProvider)) {
 
                 await ExecuteRCode(hostScript.Session, "zzz111 <- 1\r\n");
                 await ExecuteRCode(hostScript.Session, "zzz111$y222 <- 2\r\n");
@@ -407,8 +409,8 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
 
         [Test]
         public async Task R_DeclaredVariablesCompletion02() {
-            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType))
-            using (var hostScript = new RHostScript(_sessionProvider, _broker.BrokerConnector)) {
+            using (var script = await _editorHost.StartScript(ExportProvider, RContentTypeDefinition.ContentType))
+            using (var hostScript = new RHostScript(_sessionProvider)) {
 
                 await ExecuteRCode(hostScript.Session, "setClass('Person', representation(name = 'character', age = 'numeric'))\r\n");
                 await ExecuteRCode(hostScript.Session, "hadley <- new('Person', name = 'Hadley', age = 31)\r\n");
@@ -435,8 +437,8 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
 
         [Test]
         public async Task R_DeclaredVariablesCompletion03() {
-            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType))
-            using (var hostScript = new RHostScript(_sessionProvider, _broker.BrokerConnector)) {
+            using (var script = await _editorHost.StartScript(ExportProvider, RContentTypeDefinition.ContentType))
+            using (var hostScript = new RHostScript(_sessionProvider)) {
 
                 await ExecuteRCode(hostScript.Session, "i1 <- 1\r\n");
                 PrimeIntellisenseProviders(script);
@@ -470,8 +472,8 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
 
         [Test]
         public async Task R_PackageVariablesCompletion() {
-            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType))
-            using (var hostScript = new RHostScript(_sessionProvider, _broker.BrokerConnector)) {
+            using (var script = await _editorHost.StartScript(ExportProvider, RContentTypeDefinition.ContentType))
+            using (new RHostScript(_sessionProvider)) {
                 PrimeIntellisenseProviders(script);
                 script.DoIdle(1000);
 
@@ -491,7 +493,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         private void PrimeIntellisenseProviders(IEditorScript script) {
             // Prime variable provider
             UIThreadHelper.Instance.Invoke(() => {
-                var broker = _exportProvider.GetExportedValue<ICompletionBroker>();
+                var broker = ExportProvider.GetExportedValue<ICompletionBroker>();
                 broker.TriggerCompletion(script.View);
                 broker.DismissAllSessions(script.View);
             });

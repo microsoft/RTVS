@@ -15,6 +15,7 @@ using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Workspace;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
+using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Support.Settings;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
@@ -22,7 +23,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
     internal class VsRInteractiveWorkflowProvider : IRInteractiveWorkflowProvider, IDisposable {
         private readonly DisposableBag _disposableBag = DisposableBag.Create<VsRInteractiveWorkflowProvider>();
 
-        private readonly IRSessionProvider _sessionProvider;
         private readonly IConnectionManagerProvider _connectionsProvider;
         private readonly IRHistoryProvider _historyProvider;
         private readonly IRPackageManagerProvider _packagesProvider;
@@ -35,8 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         private Lazy<IRInteractiveWorkflow> _instanceLazy;
 
         [ImportingConstructor]
-        public VsRInteractiveWorkflowProvider(IRSessionProvider sessionProvider
-            , IConnectionManagerProvider connectionsProvider
+        public VsRInteractiveWorkflowProvider(IConnectionManagerProvider connectionsProvider
             , IRHistoryProvider historyProvider
             , IRPackageManagerProvider packagesProvider
             , IRPlotManagerProvider plotsProvider
@@ -45,7 +44,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             , ICoreShell shell
             , IWorkspaceServices wss) {
 
-            _sessionProvider = sessionProvider;
             _connectionsProvider = connectionsProvider;
             _historyProvider = historyProvider;
             _packagesProvider = packagesProvider;
@@ -69,16 +67,16 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
         private IRInteractiveWorkflow CreateRInteractiveWorkflow() {
             var settings = RToolsSettings.Current;
-            var brokerConnector = new RHostBrokerConnector();
-            var workflow = new RInteractiveWorkflow(_sessionProvider, _connectionsProvider, _historyProvider, _packagesProvider, 
-                                                    _plotsProvider, _activeTextViewTracker, _debuggerModeTracker, brokerConnector, 
-                                                    _shell, settings, _wss, () => DisposeInstance(brokerConnector));
+            var sessionProvider = new RSessionProvider();
+            var workflow = new RInteractiveWorkflow(sessionProvider, _connectionsProvider, _historyProvider, _packagesProvider, 
+                                                    _plotsProvider, _activeTextViewTracker, _debuggerModeTracker, 
+                                                    _shell, settings, _wss, () => DisposeInstance(sessionProvider));
             _disposableBag.Add(workflow);
             return workflow;
         }
 
-        private void DisposeInstance(IRHostBrokerConnector brokerConnector) {
-            brokerConnector.Dispose();
+        private void DisposeInstance(IRSessionProvider sessionProvider) {
+            sessionProvider.Dispose();
             _instanceLazy = null;
         }
     }
