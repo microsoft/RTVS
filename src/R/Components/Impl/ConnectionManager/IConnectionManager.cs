@@ -24,7 +24,6 @@ namespace Microsoft.R.Components.ConnectionManager {
         IConnection GetOrAddConnection(string name, string path, string rCommandLineArguments, bool isUserCreated);
         bool TryRemove(Uri id);
 
-        Task ConnectAsync(string name, string path, string rCommandLineArguments, bool isUserCreated);
-        Task ConnectAsync(IConnection connection);
+        Task ConnectAsync(IConnectionInfo ci);
     }
 }

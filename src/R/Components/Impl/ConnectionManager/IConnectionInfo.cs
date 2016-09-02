@@ -13,7 +13,7 @@ namespace Microsoft.R.Components.ConnectionManager {
         /// <summary>
         /// Path to local interpreter installation or URL to remote machine.
         /// </summary>
-        string Path { get; }
+        string Path { get; set; }
 
         /// <summary>
         /// Optional command line arguments to R interpreter.

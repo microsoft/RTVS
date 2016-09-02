@@ -109,18 +109,13 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             return isRemoved;
         }
 
-        public async Task ConnectAsync(string name, string path, string rCommandLineArguments, bool isUserCreated) {
-            var connection = GetOrCreateConnection(name, path, rCommandLineArguments, isUserCreated);
-            await ConnectAsync(connection);
-        }
-
-        public async Task ConnectAsync(IConnection connection) {
+        public async Task ConnectAsync(IConnectionInfo connection) {
             var sessions = _sessionProvider.GetSessions().ToList();
             if (sessions.Any()) {
                 await Task.WhenAll(sessions.Select(s => s.StopHostAsync()));
             }
 
-            if (ActiveConnection != null && (ActiveConnection.Id != connection.Id || _brokerConnector.BrokerUri.IsLoopback)) {
+            if (ActiveConnection != null && (!ActiveConnection.Path.EqualsIgnoreCase(connection.Path)  || _brokerConnector.BrokerUri.IsLoopback)) {
                 SwitchBroker(connection);
             }
 
@@ -166,7 +161,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         private Dictionary<Uri, IConnection> GetConnectionsFromSettings() => _settings.Connections
-            .Select(c => CreateConnection(c.Name, c.Path, c.RCommandLineArguments, isUserCreated:true))
+            .Select(c => CreateConnection(c.Name, c.Path, c.RCommandLineArguments, c.IsUserCreated))
             .ToDictionary(k => k.Id);
 
         private void SaveConnectionsToSettings() {
@@ -207,13 +202,20 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                         bool valid = false;
                         try {
                             var info = new RInterpreterInfo(kvp.Value.Name, kvp.Value.Path);
-                            valid = info.IsValid;
+                            valid = info.CheckInstallation();
                         } catch (Exception ex) when (!ex.IsCriticalException()) {
                             GeneralLog.Write(ex);
                         }
                         if (!valid) {
                             connections.Remove(kvp.Key);
                         }
+                    }
+                }
+
+                // Add newly installed engines
+                foreach (var e in localEngines) {
+                    if (!connections.Values.Any(x => x.Path.TrimTrailingSlash().EqualsIgnoreCase(e.InstallPath.TrimTrailingSlash()))) {
+                        connections[new Uri(e.InstallPath, UriKind.Absolute)] = CreateConnection(e.Name, e.InstallPath, string.Empty, isUserCreated: false);
                     }
                 }
             }

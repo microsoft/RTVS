@@ -28,7 +28,7 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         public void SwitchToLocalBroker(string name, string rBasePath = null, string rHostDirectory = null) {
-            var installPath = new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath;
+            var installPath = rBasePath ?? new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath;
             if (!string.IsNullOrEmpty(installPath)) {
                 var newConnector = new LocalRHostConnector(name, installPath, rHostDirectory);
                 var oldConnector = Interlocked.Exchange(ref _hostConnector, newConnector);

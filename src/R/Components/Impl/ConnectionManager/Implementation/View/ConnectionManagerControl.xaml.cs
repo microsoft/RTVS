@@ -64,20 +64,13 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
 
         private void Connection_KeyUp(object sender, KeyEventArgs e) {
             if (e.Key == Key.Enter) {
-                HandleDefaultAction(sender);
+                Model?.ConnectAsync(GetConnection(e)).DoNotWait();
             }
         }
 
         private void Connection_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
-            HandleDefaultAction(sender);
+            Model?.ConnectAsync(GetConnection(e)).DoNotWait();
             e.Handled = true;
-        }
-
-        private void HandleDefaultAction(object sender) {
-            var cvm = (sender as ListBoxItem)?.DataContext as IConnectionViewModel;
-            if (cvm != null && !cvm.IsEditing && !cvm.IsConnected) {
-                Model?.ConnectAsync(cvm);
-            }
         }
 
         private bool SuppressClose(object sender) {

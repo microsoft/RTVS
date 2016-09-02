@@ -142,7 +142,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Local workspaces.
+        ///   Looks up a localized string similar to Local.
         /// </summary>
         public static string ConnectionManager_LocalConnections {
             get {
@@ -232,7 +232,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to User defined workspaces.
+        ///   Looks up a localized string similar to Custom.
         /// </summary>
         public static string ConnectionManager_UserConnections {
             get {

@@ -41,7 +41,7 @@ namespace Microsoft.R.Interpreters {
         /// </summary>
         public IEnumerable<IRInterpreterInfo> GetCompatibleEngines(ISupportedRVersionRange svl = null) {
             var mrc = GetMicrosoftRClientInfo();
-            var engines = GetCompatibleEnginesFromRegistry(svl).Where(e => e.IsValid).OrderBy(e => e.Version);
+            var engines = GetCompatibleEnginesFromRegistry(svl).Where(e => e.CheckInstallation(svl)).OrderBy(e => e.Version);
             if(mrc != null) {
                 var list = new List<IRInterpreterInfo>() { mrc };
                 list.AddRange(engines);
@@ -76,7 +76,7 @@ namespace Microsoft.R.Interpreters {
                             using (var subKey = rKey.OpenSubKey(name)) {
                                 var path = subKey.GetValue(_installPathValueName) as string;
                                 if (!string.IsNullOrEmpty(path)) {
-                                    engines.Add(new RInterpreterInfo(name, path));
+                                    engines.Add(new RInterpreterInfo(Invariant($"R {name}"), path));
                                 }
                             }
                         }
@@ -112,7 +112,7 @@ namespace Microsoft.R.Interpreters {
                                         var path = (string)rsKey?.GetValue(_installPathValueName);
                                         if (!string.IsNullOrEmpty(path) && path.Contains(_rServer)) {
                                             var info = new RInterpreterInfo(string.Empty, path);
-                                            if (info.IsValid) {
+                                            if (info.CheckInstallation()) {
                                                 return new RInterpreterInfo(Invariant($"Microsoft R Client ({info.Version.Major}.{info.Version.Minor}.{info.Version.Build})"), info.InstallPath);
                                             }
                                         }

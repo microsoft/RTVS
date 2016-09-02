@@ -60,5 +60,11 @@ namespace Microsoft.Common.Core {
             return files;
         }
 
+        public static string TrimTrailingSlash(this string path) {
+            if (path.EndsWithOrdinal("\\")) {
+                return path.Substring(0, path.Length - 1);
+            }
+            return path;
+        }
     }
 }

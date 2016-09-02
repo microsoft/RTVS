@@ -29,16 +29,10 @@ namespace Microsoft.R.Interpreters {
         string BinPath { get; }
 
         /// <summary>
-        /// Indicates that installation appears to be valid with binaries present
-        /// and the binary version matches version listed in the registry.
-        /// </summary>
-        bool IsValid { get; }
-
-        /// <summary>
         /// Verifies actual installation on disk
         /// </summary>
         /// <param name="fs"></param>
         /// <returns></returns>
-        bool CheckInstallation(ISupportedRVersionRange svl, IFileSystem fs = null, ICoreShell coreShell = null, bool showErrors = false);
+        bool CheckInstallation(ISupportedRVersionRange svl = null, IFileSystem fs = null, ICoreShell coreShell = null, bool showErrors = false);
     }
 }

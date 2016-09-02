@@ -101,13 +101,13 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             set { SetProperty(ref _isConnected, value); }
         }
 
-        public ICommand ConnectCommand => new ConnectCommandImpl(this, _cmvm);
+        public DateTime LastUsed => _connection.LastUsed;
 
         public void Reset() {
             Name = _connection?.Name;
             Path = _connection?.Path;
             RCommandLineArguments = _connection?.RCommandLineArguments;
-            IsUserCreated = _connection.IsUserCreated;
+            IsUserCreated = _connection != null ? _connection.IsUserCreated : false;
             IsRemote = _connection?.IsRemote ?? false;
             IsEditing = false;
         }
@@ -131,25 +131,6 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             }
 
             IsRemote = !(uri?.IsFile ?? true);
-        }
-
-        class ConnectCommandImpl : ICommand {
-            private readonly IConnectionManagerViewModel _cmvm;
-            private readonly IConnectionViewModel _connection;
-
-            public ConnectCommandImpl(IConnectionViewModel connection, IConnectionManagerViewModel cmvm) {
-                _connection = connection;
-                _cmvm = cmvm;
-            }
-
-            public bool CanExecute(object parameter) => true;
-
-            public void Execute(object parameter) {
-                _cmvm.ConnectAsync(_connection).DoNotWait();
-            }
-
-#pragma warning disable 67
-            public event EventHandler CanExecuteChanged;
         }
     }
 }

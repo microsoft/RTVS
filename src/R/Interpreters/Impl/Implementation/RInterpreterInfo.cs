@@ -33,29 +33,21 @@ namespace Microsoft.R.Interpreters {
         /// </summary>
         public string BinPath { get; }
 
-        /// <summary>
-        /// Indicates that installation appears to be valid with binaries present
-        /// and the binary version matches version listed in the registry.
-        /// </summary>
-        public bool IsValid { get; }
-
         public RInterpreterInfo(string name, string path, IFileSystem fs = null, ISupportedRVersionRange svr = null) {
             _fs = fs ?? new FileSystem();
-            svr = svr ?? new SupportedRVersionRange();
 
             Name = name;
             InstallPath = NormalizeRPath(path);
             BinPath = Path.Combine(path, @"bin\x64");
             Version = DetermineVersion();
-
-            IsValid = CheckInstallation(svr, fs);
         }
 
-        public bool CheckInstallation(ISupportedRVersionRange svl, IFileSystem fs = null, ICoreShell coreShell = null, bool showErrors = false) {
-            if(showErrors) {
+        public bool CheckInstallation(ISupportedRVersionRange svr = null, IFileSystem fs = null, ICoreShell coreShell = null, bool showErrors = false) {
+            if (showErrors) {
                 Check.ArgumentNull(nameof(coreShell), coreShell);
             }
 
+            svr = svr ?? new SupportedRVersionRange();
             fs = fs ?? new FileSystem();
 
             // Normalize path so it points to R root and not to bin or bin\x64
@@ -78,8 +70,8 @@ namespace Microsoft.R.Interpreters {
 
                     coreShell.ShowMessage(
                         string.Format(CultureInfo.InvariantCulture, Resources.Error_UnsupportedRVersion,
-                        Version.Major, Version.Minor, Version.Build, svl.MinMajorVersion, svl.MinMinorVersion, "*",
-                        svl.MaxMajorVersion, svl.MaxMinorVersion, "*"), MessageButtons.OK);
+                        Version.Major, Version.Minor, Version.Build, svr.MinMajorVersion, svr.MinMinorVersion, "*",
+                        svr.MaxMajorVersion, svr.MaxMinorVersion, "*"), MessageButtons.OK);
 
                 } else {
                     coreShell.ShowMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotFindRBinariesFormat, InstallPath), MessageButtons.OK);

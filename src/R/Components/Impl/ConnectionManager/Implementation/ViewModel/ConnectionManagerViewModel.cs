@@ -170,7 +170,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public async Task ConnectAsync(IConnectionViewModel connection) {
             _shell.AssertIsOnMainThread();
-            await _connectionManager.ConnectAsync(connection.Name, connection.Path, connection.RCommandLineArguments, connection.IsUserCreated);
+            await _connectionManager.ConnectAsync(connection);
             UpdateConnections();
         }
 

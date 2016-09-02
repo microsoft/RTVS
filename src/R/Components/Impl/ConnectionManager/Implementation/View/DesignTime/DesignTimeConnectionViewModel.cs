@@ -20,12 +20,12 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View.DesignTim
         public bool IsConnected { get; set; }
         public bool IsRemote { get; set; }
 
-        public string SaveButtonTooltip { get; } = string.Empty;
-        public bool IsValid { get; } = false;
-        public bool HasChanges { get; } = false;
-
-        public void Reset() {}
-        public void Dispose() {}
+        public string SaveButtonTooltip => string.Empty;
+        public bool IsValid => false;
+        public bool HasChanges => false;
+        public DateTime LastUsed => DateTime.Now;
+        public void Reset() { }
+        public void Dispose() { }
     }
 #endif
 }
