@@ -195,7 +195,7 @@
     <Compile Include="AssertionExtensions.cs" />
     <Compile Include="Assertions\MenuCommandAssertions.cs" />
     <Compile Include="Browsers\WebBrowserServicesTest.cs" />
-    <Compile Include="Fixtures\BrokerFixture.cs" />
+    <Compile Include="Fixtures\DisposeRInteractiveWorkflowFixture.cs" />
     <Compile Include="Project\SettingsTest.cs" />
     <Compile Include="Project\ProjectSystem\PropertyPages\ProjectSettingsControlTest.cs" />
     <Compile Include="Project\ProjectSystem\PropertyPages\ProjectSettingsViewModelTest.cs" />
@@ -226,7 +226,6 @@
     <Compile Include="Images\ImagesProviderTest.cs" />
     <Compile Include="Mocks\VsRegisterProjectGeneratorsMock.cs" />
     <Compile Include="Package\RPackageTest.cs" />
-    <Compile Include="Repl\ExportsTest.cs" />
     <Compile Include="Shell\TestVsAppShell.cs" />
     <Compile Include="Mocks\InteractiveWindowComponentContainerFactoryMock.cs" />
     <Compile Include="Sql\ExtensionsTest.cs" />

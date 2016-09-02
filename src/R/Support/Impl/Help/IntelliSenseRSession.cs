@@ -17,14 +17,12 @@ namespace Microsoft.R.Support.Help {
         private static readonly Guid SessionId = new Guid("8BEF9C06-39DC-4A64-B7F3-0C68353362C9");
         private readonly ICoreShell _coreShell;
         private readonly IRSessionProvider _sessionProvider;
-        private readonly IRHostBrokerConnector _brokerConnector;
         private readonly BinaryAsyncLock _lock = new BinaryAsyncLock();
 
         [ImportingConstructor]
-        public IntelliSenseRSession(ICoreShell coreShell, IRSessionProvider sessionProvider, IRInteractiveWorkflowProvider workflowProvider) {
+        public IntelliSenseRSession(ICoreShell coreShell, IRInteractiveWorkflowProvider workflowProvider) {
             _coreShell = coreShell;
-            _sessionProvider = sessionProvider;
-            _brokerConnector = workflowProvider.GetOrCreate().BrokerConnector;
+            _sessionProvider = workflowProvider.GetOrCreate().RSessions;
         }
 
         /// <summary>
@@ -44,7 +42,7 @@ namespace Microsoft.R.Support.Help {
             await _lock.WaitAsync();
             try {
                 if (Session == null) {
-                    Session = _sessionProvider.GetOrCreate(SessionId, _brokerConnector);
+                    Session = _sessionProvider.GetOrCreate(SessionId);
                 }
 
                 if (!Session.IsHostRunning) {

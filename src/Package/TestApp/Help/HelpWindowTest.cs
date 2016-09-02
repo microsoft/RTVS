@@ -24,8 +24,6 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
     public class HelpWindowTest : HostBasedInteractiveTest {
         private const string darkThemeCssColor = "rgb(36,36,36)";
 
-        public HelpWindowTest(BrokerFixture broker): base(broker.BrokerConnector) { }
-
         [Test(Skip = "https://github.com/Microsoft/RTVS/issues/1983")]
         [Category.Interactive]
         public void HelpTest() {

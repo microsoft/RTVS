@@ -325,7 +325,9 @@
   <ItemGroup>
     <Resource Include="Resources\packageicon.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Fixtures\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\..\Common\BuildTasks\Microsoft.Common.BuildTasks.targets" />
   <Import Project="..\..\..\R.Build.Version.targets" />

@@ -30,7 +30,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
             AstRoot ast = RParser.Parse(content);
             int caretPosition = 15;
             ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            SignatureHelpSource signatureHelpSource = new SignatureHelpSource(textBuffer, _editorShell);
+            SignatureHelpSource signatureHelpSource = new SignatureHelpSource(textBuffer, EditorShell);
             SignatureHelpSessionMock signatureHelpSession = new SignatureHelpSessionMock(textBuffer, caretPosition);
             List<ISignature> signatures = new List<ISignature>();
 
@@ -55,7 +55,7 @@ x( )
             AstRoot ast = RParser.Parse(content);
             int caretPosition = content.IndexOf("( )")+1;
             ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            SignatureHelpSource signatureHelpSource = new SignatureHelpSource(textBuffer, _editorShell);
+            SignatureHelpSource signatureHelpSource = new SignatureHelpSource(textBuffer, EditorShell);
             SignatureHelpSessionMock signatureHelpSession = new SignatureHelpSessionMock(textBuffer, caretPosition);
             List<ISignature> signatures = new List<ISignature>();
 

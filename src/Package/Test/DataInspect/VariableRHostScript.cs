@@ -10,7 +10,6 @@ using FluentAssertions;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Editor.Data;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.R.StackTracing;
 using Microsoft.VisualStudio.R.Package.DataInspect;
@@ -23,14 +22,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         private VariableViewModel _globalEnv;
         private SemaphoreSlim _sem = new SemaphoreSlim(1, 1);
 
-        public VariableRHostScript(IRSessionProvider sessionProvider, IRHostBrokerConnector brokerConnector)
-            : base(sessionProvider, brokerConnector) { }
+        public VariableRHostScript(IRSessionProvider sessionProvider)
+            : base(sessionProvider) { }
 
-        public VariableViewModel GlobalEnvrionment {
-            get {
-                return _globalEnv;
-            }
-        }
+        public VariableViewModel GlobalEnvrionment => _globalEnv;
 
         public async Task<IREvaluationResultInfo> EvaluateAsync(string rScript) {
             // One eval at a time

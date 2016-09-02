@@ -29,9 +29,9 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         private bool _debuggerJustEnteredBreakMode;
 
         public ICoreShell Shell { get; }
-        public IRHostBrokerConnector BrokerConnector { get; }
         public IConnectionManager Connections { get; }
         public IRHistory History { get; }
+        public IRSessionProvider RSessions { get; }
         public IRSession RSession { get; }
         public IRPackageManager Packages { get; }
         public IRPlotManager Plots { get; }
@@ -47,7 +47,6 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             , IRPlotManagerProvider plotsProvider
             , IActiveWpfTextViewTracker activeTextViewTracker
             , IDebuggerModeTracker debuggerModeTracker
-            , IRHostBrokerConnector brokerConnector
             , ICoreShell coreShell
             , IRSettings settings
             , IWorkspaceServices wss
@@ -60,13 +59,13 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             _onDispose = onDispose;
 
             Shell = coreShell;
-            BrokerConnector = brokerConnector;
+            RSessions = sessionProvider;
 
-            RSession = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, brokerConnector);
+            RSession = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
             Connections = connectionsProvider.CreateConnectionManager(this);
 
             History = historyProvider.CreateRHistory(this);
-            Packages = packagesProvider.CreateRPackageManager(sessionProvider, settings, this);
+            Packages = packagesProvider.CreateRPackageManager(settings, this);
             Plots = plotsProvider.CreatePlotManager(settings, this);
             _operations = new RInteractiveWorkflowOperations(this, _debuggerModeTracker, Shell);
 

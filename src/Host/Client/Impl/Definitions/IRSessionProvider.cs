@@ -5,11 +5,14 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.R.Host.Client.Host;
 
 namespace Microsoft.R.Host.Client {
     public interface IRSessionProvider : IDisposable {
-        IRSession GetOrCreate(Guid guid, IRHostBrokerConnector brokerConnector);
+        Uri BrokerUri { get; }
+
+        event EventHandler BrokerChanged;
+
+        IRSession GetOrCreate(Guid guid);
         IEnumerable<IRSession> GetSessions();
 
         /// <summary>
@@ -20,6 +23,13 @@ namespace Microsoft.R.Host.Client {
         /// <param name="startupInfo"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<IRSessionEvaluation> BeginEvaluationAsync(IRHostBrokerConnector hostFactory, RHostStartupInfo startupInfo, CancellationToken cancellationToken = default(CancellationToken));
+        Task<IRSessionEvaluation> BeginEvaluationAsync(RHostStartupInfo startupInfo, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name">Name of the broker. Will be displayed in REPL.</param>
+        /// <param name="path">Either a local path to the R binary or a URL to the broker.</param>
+        Task<bool> TrySwitchBroker(string name, string path = null);
     }
 }

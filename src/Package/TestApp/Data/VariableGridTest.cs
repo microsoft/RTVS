@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Test.Controls;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Interactive.Test.Utility;
@@ -20,13 +21,12 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
     [Collection(CollectionNames.NonParallel)]
     public class VariableGridTest : InteractiveTest {
         private readonly TestFilesFixture _files;
-        private readonly BrokerFixture _broker;
         private readonly VariableRHostScript _hostScript;
 
-        public VariableGridTest(TestFilesFixture files, BrokerFixture broker) {
+        public VariableGridTest(TestFilesFixture files) {
             _files = files;
-            _broker = broker;
-            _hostScript = new VariableRHostScript(SessionProvider, _broker.BrokerConnector);
+            var workflow = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
+            _hostScript = new VariableRHostScript(SessionProvider);
         }
 
         protected override void Dispose(bool disposing) {

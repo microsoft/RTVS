@@ -8,28 +8,21 @@ using System.Linq;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Interpreters;
 using Microsoft.R.Support.Settings;
-using Microsoft.UnitTests.Core.Mef;
 
 namespace Microsoft.R.Host.Client.Test.Script {
     [ExcludeFromCodeCoverage]
     public class RHostScript : IDisposable {
-        private bool _disposed = false;
+        private bool _disposed;
 
         public IRSessionProvider SessionProvider { get; private set; }
         public IRSession Session { get; }
-        public IRHostBrokerConnector BrokerConnector { get; }
 
         public static Version RVersion => new RInstallation().GetCompatibleEngines().First().Version;
 
-        public RHostScript(IExportProvider exportProvider, IRHostBrokerConnector brokerConnector, IRSessionCallback clientApp = null)
-            : this(exportProvider.GetExportedValue<IRSessionProvider>(), brokerConnector, clientApp) { 
-        }
-
-        public RHostScript(IRSessionProvider sessionProvider, IRHostBrokerConnector brokerConnector, IRSessionCallback clientApp = null) {
+        public RHostScript(IRSessionProvider sessionProvider, IRSessionCallback clientApp = null) {
             SessionProvider = sessionProvider;
-            BrokerConnector = brokerConnector;
 
-            Session = SessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, brokerConnector);
+            Session = SessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
             if (Session.IsHostRunning) {
                 Session.StopHostAsync().Wait();
             }

@@ -3,8 +3,10 @@
 
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.References;
+using Microsoft.VisualStudio.R.Package.Test.Fixtures;
 
 [assembly: TestFrameworkOverride]
+[assembly: AssemblyFixtureImport(typeof(DisposeRInteractiveWorkflowFixture))]
 #if VS14
 [assembly: Dev14AssemblyLoader]
 #endif

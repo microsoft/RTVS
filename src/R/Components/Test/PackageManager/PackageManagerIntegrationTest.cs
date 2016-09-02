@@ -274,7 +274,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
         private async Task<IRInteractiveWorkflow> CreateWorkflowAsync() {
             var workflow = _workflowProvider.GetOrCreate();
             var settings = _exportProvider.GetExportedValue<IRSettings>();
-            workflow.BrokerConnector.SwitchToLocalBroker(nameof(PackageManagerIntegrationTest));
+            await workflow.RSessions.TrySwitchBroker(nameof(PackageManagerIntegrationTest));
             await workflow.RSession.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name,
                 CranMirrorName = settings.CranMirror,

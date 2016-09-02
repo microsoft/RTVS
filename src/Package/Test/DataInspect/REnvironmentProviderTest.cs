@@ -10,11 +10,8 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
-using Microsoft.R.Host.Client.Test.Mocks;
 using Microsoft.R.Host.Client.Test.Script;
-using Microsoft.R.Interpreters;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 using Microsoft.VisualStudio.R.Package.DataInspect;
@@ -26,16 +23,14 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
     [Collection(CollectionNames.NonParallel)]   // required for tests using R Host 
     public class REnvironmentProviderTest : IAsyncLifetime {
         private readonly MethodInfo _testMethod;
-        private readonly IRHostBrokerConnector _brokerConnector;
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _session;
 
         public REnvironmentProviderTest(TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo;
-            _brokerConnector = new RHostBrokerConnector();
-            _brokerConnector.SwitchToLocalBroker(nameof(REnvironmentProviderTest));
             _sessionProvider = new RSessionProvider();
-            _session = _sessionProvider.GetOrCreate(Guid.NewGuid(), _brokerConnector);
+            _sessionProvider.TrySwitchBroker(nameof(REnvironmentProviderTest));
+            _session = _sessionProvider.GetOrCreate(Guid.NewGuid());
         }
 
         public async Task InitializeAsync() {
@@ -47,7 +42,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         public async Task DisposeAsync() {
             await _session.StopHostAsync();
             _sessionProvider.Dispose();
-            _brokerConnector.Dispose();
         }
 
         private static IREnvironment Environment(string name, REnvironmentKind kind) {
@@ -103,7 +97,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             await _session.ExecuteAsync("while (length(search()) > 2) detach(2)");
 
             // Wait for prompt to appear.
-            using (var eval = await _session.BeginInteractionAsync()) { }
+            using (await _session.BeginInteractionAsync()) { }
 
             var envProvider = new REnvironmentProvider(_session);
             var envTcs = new TaskCompletionSource<IREnvironment[]>();

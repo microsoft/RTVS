@@ -40,7 +40,7 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
 
         public async Task InitializeAsync() {
             var settings = _exportProvider.GetExportedValue<IRSettings>();
-            _workflow.BrokerConnector.SwitchToLocalBroker(settings.LastActiveConnection.Name, settings.LastActiveConnection.Path);
+            await _workflow.RSessions.TrySwitchBroker(settings.LastActiveConnection.Name, settings.LastActiveConnection.Path);
 
             await _workflow.RSession.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name,

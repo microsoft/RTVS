@@ -130,11 +130,10 @@ namespace Microsoft.R.Host.Client.Test.Session {
             [Test]
             public async Task DestroyBlob_DisconnectedDuringDestroy() {
                 var blobIds = new ulong[1024 * 1024];
-                ManualResetEvent testStarted = new ManualResetEvent(false);
 
                 Func<Task> f = () => _session.DestroyBlobsAsync(blobIds);
 
-                var assertion = f.ShouldThrowAsync<RHostDisconnectedException>();
+                var assertion = Task.Run(() => f.ShouldThrowAsync<RHostDisconnectedException>());
                 await _session.StopHostAsync();
                 await assertion;
             }

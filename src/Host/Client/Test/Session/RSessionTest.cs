@@ -108,7 +108,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [Category.R.Session]
         public void StartRHostMissing() {
             var session = new RSession(0, _brokerConnector, () => { });
-            session.BrokerConnector.SwitchToLocalBroker(nameof(RSessionTest), @"C:\", Environment.SystemDirectory);
+            _brokerConnector.SwitchToLocalBroker(nameof(RSessionTest), @"C:\", Environment.SystemDirectory);
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name
             }, null, 10000);
@@ -120,7 +120,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [Category.R.Session]
         public async Task StopBeforeInitialized() {
             var session = new RSession(0, _brokerConnector, () => { });
-            session.BrokerConnector.SwitchToLocalBroker(nameof(RSessionTest), @"C:\", Environment.SystemDirectory);
+            _brokerConnector.SwitchToLocalBroker(nameof(RSessionTest), @"C:\", Environment.SystemDirectory);
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name
             }, null, 10000);

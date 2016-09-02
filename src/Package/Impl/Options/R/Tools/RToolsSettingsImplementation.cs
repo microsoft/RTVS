@@ -34,6 +34,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         private bool _showPackageManagerDisclaimer = true;
         private IConnectionInfo[] _connections = new IConnectionInfo[0];
         private IConnectionInfo _lastActiveConnection;
+        private IRInteractiveWorkflowProvider _workflowProvider;
 
         public YesNoAsk LoadRDataOnProjectLoad { get; set; } = YesNoAsk.No;
 
@@ -122,13 +123,14 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         public BrowserType ShinyBrowserType { get; set; } = BrowserType.Internal;
         public BrowserType MarkdownBrowserType { get; set; } = BrowserType.External;
 
-        public RToolsSettingsImplementation() {
+        [ImportingConstructor]
+        public RToolsSettingsImplementation(IRInteractiveWorkflowProvider workflowProvider) {
             _workingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            _workflowProvider = workflowProvider;
         }
 
         private async Task SetMirrorToSession() {
-            IRSessionProvider sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-            var sessions = sessionProvider.GetSessions();
+            var sessions = _workflowProvider.GetOrCreate().RSessions.GetSessions();
             string mirrorName = RToolsSettings.Current.CranMirror;
             string mirrorUrl = CranMirrorList.UrlFromName(mirrorName);
 
@@ -144,8 +146,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         }
 
         private async Task SetSessionCodePage() {
-            IRSessionProvider sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-            var sessions = sessionProvider.GetSessions();
+            var sessions = _workflowProvider.GetOrCreate().RSessions.GetSessions();
             var cp = RToolsSettings.Current.RCodePage;
  
             foreach (var s in sessions.Where(s => s.IsHostRunning)) {
