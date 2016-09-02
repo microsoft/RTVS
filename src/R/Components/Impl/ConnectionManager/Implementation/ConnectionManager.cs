@@ -129,7 +129,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             }
         }
 
-        public void SwitchBroker(ConnectionInfo info) {
+        public void SwitchBroker(IConnectionInfo info) {
             var connection = GetOrCreateConnection(info.Name, info.Path, info.RCommandLineArguments, info.IsUserCreated);
             SwitchBroker(connection);
         }
@@ -176,7 +176,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         private void UpdateRecentConnections() {
-            RecentConnections = new ReadOnlyCollection<IConnection>(_userConnections.Values.OrderByDescending(c => c.TimeStamp).ToList());
+            RecentConnections = new ReadOnlyCollection<IConnection>(_userConnections.Values.OrderByDescending(c => c.LastUsed).ToList());
             SaveConnectionsToSettings();
             RecentConnectionsChanged?.Invoke(this, new EventArgs());
         }
@@ -213,9 +213,6 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                         }
                         if (!valid) {
                             connections.Remove(kvp.Key);
-                        }
-                        if(localEngines.FirstOrDefault(c => c.InstallPath.EqualsIgnoreCase(kvp.Value.Path)) != null) {
-                            kvp.Value.IsUserCreated = false;
                         }
                     }
                 }

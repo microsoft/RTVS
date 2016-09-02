@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Microsoft.Common.Core.Enums;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.ConnectionManager.Implementation;
@@ -18,7 +19,7 @@ namespace Microsoft.R.Support.Test.Utility {
     public sealed class TestRToolsSettings : IRToolsSettings {
         private static readonly IConnectionInfo[] _connections = {new ConnectionInfo {
             Name = "Test",
-            Path = new Uri(new RInstallation().GetRInstallPath()).LocalPath
+            Path = new RInstallation().GetCompatibleEngines().First().InstallPath
         }};
 
         public IConnectionInfo[] Connections {

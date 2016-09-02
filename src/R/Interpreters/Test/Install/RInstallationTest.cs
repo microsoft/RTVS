@@ -4,17 +4,18 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using FluentAssertions;
 using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Registry;
-using Microsoft.R.Interpreters;
-using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.XUnit;
 using NSubstitute;
 using Xunit;
 
 namespace Microsoft.R.Interpreters.Test {
     [ExcludeFromCodeCoverage]
+    [Category.R.Install]
     [Collection(CollectionNames.NonParallel)]
     public class RInstallationTest {
         [CompositeTest]
@@ -24,27 +25,31 @@ namespace Microsoft.R.Interpreters.Test {
         [InlineData(@"C:\R\bin", @"C:\R")]
         [InlineData(@"C:\R\bin\x64", @"C:\R")]
         public void NormalizePath(string path, string expected) {
-            new RInstallation().NormalizeRPath(path).Should().Be(expected);
+            RInterpreterInfo.NormalizeRPath(path).Should().Be(expected);
         }
 
         [Test]
-        [Category.R.Install]
-        public void Test02() {
+        public void ActualInstall() {
             // Use actual files and registry
-            var ri = new RInstallation();
-            var svl = new SupportedRVersionRange(3, 2, 3, 9);
-            RInstallData data = ri.GetInstallationData(null, svl);
-            data.Status.Should().Be(RInstallStatus.OK);
-            data.Version.Major.Should().BeGreaterOrEqualTo(3);
-            data.Version.Minor.Should().BeGreaterOrEqualTo(2);
-            string path = Path.Combine(data.Path, @"bin\x64");
+            var svr = new SupportedRVersionRange(3, 2, 3, 9);
+            var engine = new RInstallation().GetCompatibleEngines(svr).FirstOrDefault();
+
+            engine.Should().NotBeNull();
+            engine.Name.Should().NotBeNullOrEmpty();
+
+            engine.Version.Major.Should().BeGreaterOrEqualTo(3);
+            engine.Version.Minor.Should().BeGreaterOrEqualTo(2);
+
+            Directory.Exists(engine.InstallPath).Should().BeTrue();
+            Directory.Exists(engine.BinPath).Should().BeTrue();
+
+            string path = Path.Combine(engine.InstallPath, @"bin\x64");
             Directory.Exists(path).Should().BeTrue();
         }
 
         [Test]
-        [Category.R.Install]
-        public void Test03() {
-            var tr = new RegistryMock(SimulateRegistry03());
+        public void Simulate01() {
+            var tr = new RegistryMock(SimulateRegistry01());
 
             string dir = @"C:\Program Files\MRO\R-3.2.3";
             string dir64 = dir + @"\bin\x64\";
@@ -58,17 +63,21 @@ namespace Microsoft.R.Interpreters.Test {
 
             var ri = new RInstallation(tr, fs);
             var svl = new SupportedRVersionRange(3, 2, 3, 2);
-            RInstallData data = ri.GetInstallationData(null, svl);
 
-            data.Status.Should().Be(RInstallStatus.OK);
-            data.Version.Major.Should().BeGreaterOrEqualTo(3);
-            data.Version.Minor.Should().BeGreaterOrEqualTo(2);
-            data.Path.Should().StartWithEquivalent(@"C:\Program Files");
-            data.Path.Should().Contain("R-");
-            data.Version.Should().Be(new Version(3, 2, 3));
+            var engines = ri.GetCompatibleEngines(svl);
+            engines.Should().NotBeEmpty();
+
+            var e = engines.FirstOrDefault();
+            e.CheckInstallation(svl, fs).Should().BeTrue();
+            
+            e.Version.Major.Should().BeGreaterOrEqualTo(3);
+            e.Version.Minor.Should().BeGreaterOrEqualTo(2);
+            e.InstallPath.Should().StartWithEquivalent(@"C:\Program Files");
+            e.InstallPath.Should().Contain("R-");
+            e.Version.Should().Be(new Version(3, 2, 3));
         }
 
-        private RegistryKeyMock[] SimulateRegistry03() {
+        private RegistryKeyMock[] SimulateRegistry01() {
             return new RegistryKeyMock[] {
                 new RegistryKeyMock(
                      @"SOFTWARE\R-core\R",
@@ -86,34 +95,39 @@ namespace Microsoft.R.Interpreters.Test {
         }
 
         [Test]
-        [Category.R.Install]
-        public void Test04() {
-            var tr = new RegistryMock(SimulateRegistry04());
+        public void Simulate02() {
+            var tr = new RegistryMock(SimulateRegistry02());
             var svl = new SupportedRVersionRange(3, 2, 3, 9);
             var ri = new RInstallation(tr, null);
 
-            ri.GetCompatibleEnginePathFromRegistry(svl).Should().BeNullOrEmpty();
+            ri.GetCompatibleEngines(svl).Should().BeEmpty();
 
             string dir = @"C:\Program Files\RRO\R-3.1.3";
             var fs = Substitute.For<IFileSystem>();
             var fsi = Substitute.For<IFileSystemInfo>();
-            fsi.Attributes.Returns(System.IO.FileAttributes.Directory);
+            fsi.Attributes.Returns(FileAttributes.Directory);
             fsi.FullName.Returns(dir);
             fs.GetDirectoryInfo(@"C:\Program Files\RRO").EnumerateFileSystemInfos().Returns(new IFileSystemInfo[] { fsi });
             
             ri = new RInstallation(tr, fs);
-            RInstallData data = ri.GetInstallationData(null, svl);
-            data.Status.Should().Be(RInstallStatus.PathNotSpecified);
+            var e = ri.GetCompatibleEngines(svl).FirstOrDefault();
+            e.Should().NotBeNull();
+            e.Version.Should().Be(new Version(3, 1, 3));
+            e.Name.Should().Be("R-3.1.3");
 
             PretendRFilesAvailable(fs, dir);
-            data = ri.GetInstallationData(dir, svl);
-            data.Status.Should().Be(RInstallStatus.UnsupportedVersion);
+
+            var coreShell = Substitute.For<ICoreShell>();
+            e.CheckInstallation(svl, fs, coreShell, showErrors: true).Should().BeFalse();
+            coreShell.When(x => x.ShowErrorMessage(Arg.Any<string>())).Do(x => {
+                var s = x.Args()[0] as string;
+                s.Should().Contain("not compatible");
+            });
         }
 
         [Test]
-        [Category.R.Install]
-        public void Test05() {
-            var tr = new RegistryMock(SimulateRegistry04());
+        public void Simulate03() {
+            var tr = new RegistryMock(SimulateRegistry02());
 
             string dir = @"C:\Program Files\RRO\R-3.1.3";
             var fs = Substitute.For<IFileSystem>();
@@ -126,11 +140,19 @@ namespace Microsoft.R.Interpreters.Test {
 
             var ri = new RInstallation(tr, fs);
             var svl = new SupportedRVersionRange(3, 2, 3, 2);
-            RInstallData data = ri.GetInstallationData(dir, svl);
-            data.Status.Should().Be(RInstallStatus.UnsupportedVersion);
+
+            var e = ri.GetCompatibleEngines().FirstOrDefault();
+            e.Should().NotBeNull();
+
+            var coreShell = Substitute.For<ICoreShell>();
+            e.CheckInstallation(svl, fs, coreShell, showErrors: true).Should().BeFalse();
+            coreShell.When(x => x.ShowErrorMessage(Arg.Any<string>())).Do(x => {
+                var s = x.Args()[0] as string;
+                s.Should().Contain("Cannot find");
+            });
         }
 
-        private RegistryKeyMock[] SimulateRegistry04() {
+        private RegistryKeyMock[] SimulateRegistry02() {
             return new RegistryKeyMock[] {
                 new RegistryKeyMock(
                      @"SOFTWARE\R-core\R",

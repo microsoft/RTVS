@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Interpreters;
 using Microsoft.R.Support.Settings;
@@ -18,7 +19,7 @@ namespace Microsoft.R.Host.Client.Test.Script {
         public IRSession Session { get; }
         public IRHostBrokerConnector BrokerConnector { get; }
 
-        public static Version RVersion => new RInstallation().GetInstallationData(RToolsSettings.Current.LastActiveConnection.Path, new SupportedRVersionRange()).Version;
+        public static Version RVersion => new RInstallation().GetCompatibleEngines().First().Version;
 
         public RHostScript(IExportProvider exportProvider, IRHostBrokerConnector brokerConnector, IRSessionCallback clientApp = null)
             : this(exportProvider.GetExportedValue<IRSessionProvider>(), brokerConnector, clientApp) { 

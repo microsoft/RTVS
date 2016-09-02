@@ -28,29 +28,29 @@ namespace Microsoft.R.Host.Broker.Interpreters {
         public void Initialize(IFileSystem fs) {
             _fs = fs;
 
-            Interpreters = GetInterpreters().ToArray();
-            var sb = new StringBuilder($"{Interpreters.Count} interpreters configured:");
-            foreach (var interp in Interpreters) {
-                sb.Append(Environment.NewLine + $"'{interp.Id}': {interp.Version} at \"{interp.Path}\"");
+            if (_options.AutoDetect) {
+                Interpreters = GetInterpreters().ToArray();
+                var sb = new StringBuilder($"{Interpreters.Count} interpreters configured:");
+                foreach (var interp in Interpreters) {
+                    sb.Append(Environment.NewLine + $"'{interp.Id}': {interp.Version} at \"{interp.Path}\"");
+                }
+                _logger.LogInformation(sb.ToString());
             }
-            _logger.LogInformation(sb.ToString());
         }
 
         private IEnumerable<Interpreter> GetInterpreters() {
-            if (_options.AutoDetect) {
-                _logger.LogTrace("Auto-detecting R ...");
+            _logger.LogTrace("Auto-detecting R ...");
 
-                var svr = new SupportedRVersionRange();
-                var engines = _rInstallation.GetCompatibleEngines();
-                if (engines.Any()) {
-                    foreach (var e in engines) {
-                        var detected = new Interpreter(this, "", e.InstallPath, e.BinPath, e.Version);
-                        _logger.LogTrace($"R {detected.Version} detected at \"{detected.Path}\".");
-                        yield return detected;
-                    }
-                } else {
-                    _logger.LogWarning("No R interpreters found.");
+            var svr = new SupportedRVersionRange();
+            var engines = _rInstallation.GetCompatibleEngines();
+            if (engines.Any()) {
+                foreach (var e in engines) {
+                    var detected = new Interpreter(this, "", e.InstallPath, e.BinPath, e.Version);
+                    _logger.LogTrace($"R {detected.Version} detected at \"{detected.Path}\".");
+                    yield return detected;
                 }
+            } else {
+                _logger.LogWarning("No R interpreters found.");
             }
         }
     }
