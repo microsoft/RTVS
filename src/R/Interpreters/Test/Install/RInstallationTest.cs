@@ -13,7 +13,7 @@ using Microsoft.UnitTests.Core.XUnit;
 using NSubstitute;
 using Xunit;
 
-namespace Microsoft.R.Core.Test.Install {
+namespace Microsoft.R.Interpreters.Test {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
     public class RInstallationTest {

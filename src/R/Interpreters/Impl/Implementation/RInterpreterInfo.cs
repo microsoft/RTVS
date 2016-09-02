@@ -109,7 +109,7 @@ namespace Microsoft.R.Interpreters {
             return new Version(fvi.FileMajorPart, minor, revision);
         }
 
-        private static string NormalizeRPath(string path) {
+        internal string NormalizeRPath(string path) {
             string[] suffixes = { @"\bin", @"\bin\x64" };
             foreach (var s in suffixes) {
                 if (path.EndsWith(s, StringComparison.OrdinalIgnoreCase)) {
