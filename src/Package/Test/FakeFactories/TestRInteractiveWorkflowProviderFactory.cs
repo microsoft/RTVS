@@ -48,8 +48,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.FakeFactories {
             settings = settings ?? RToolsSettings.Current;
 
             return new TestRInteractiveWorkflowProvider(
-                sessionProvider, connectionsProvider, historyProvider, packagesProvider, 
-                plotsProvider, activeTextViewTracker, debuggerModeTracker, brokerConnector, 
+                connectionsProvider, historyProvider, packagesProvider, plotsProvider,
+                activeTextViewTracker, debuggerModeTracker, sessionProvider, brokerConnector, 
                 shell, settings, wss) { BrokerName = brokerConnectorName };
         }
     }

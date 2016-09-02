@@ -6,6 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Components.ContentTypes;
+using Microsoft.R.Host.Client.Test.Fixtures;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Test.Utility;
@@ -37,7 +38,7 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
         public async Task R_SignatureParametersMatch() {
             using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 IntelliSenseRSession.HostStartTimeout = 10000;
-                using (new RHostScript(_exportProvider, _broker.BrokerConnector)) {
+                using (new RHostScript(_broker.SessionProvider, _broker.BrokerConnector)) {
                     var functionIndex = await PrepareFunctionIndexAsync();
                     await PackageIndexUtility.GetFunctionInfoAsync(functionIndex, "lm");
 
@@ -73,7 +74,7 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
         public async Task R_SignatureSessionNavigation() {
             using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 IntelliSenseRSession.HostStartTimeout = 10000;
-                using (new RHostScript(_exportProvider, _broker.BrokerConnector)) {
+                using (new RHostScript(_broker.SessionProvider, _broker.BrokerConnector)) {
                     var functionIndex = await PrepareFunctionIndexAsync();
                     await PackageIndexUtility.GetFunctionInfoAsync(functionIndex, "lm");
 

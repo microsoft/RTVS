@@ -17,6 +17,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow {
         IRHostBrokerConnector BrokerConnector { get; }
         IConnectionManager Connections { get; }
         IRHistory History { get; }
+        IRSessionProvider RSessions { get; }
         IRSession RSession { get; }
         IRPackageManager Packages { get; }
         IRPlotManager Plots { get; }

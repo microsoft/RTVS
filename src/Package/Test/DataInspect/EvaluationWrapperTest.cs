@@ -18,19 +18,12 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]   // required for tests using R Host 
     public sealed class EvaluationWrapperTest : IAsyncLifetime {
-        private readonly BrokerFixture _broker;
-        private readonly IRSessionProvider _sessionProvider;
         private VariableRHostScript _hostScript;
 
-        public EvaluationWrapperTest(BrokerFixture broker) {
-            _broker = broker;
-            _sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-        }
-
         public Task InitializeAsync() {
-            _hostScript = new VariableRHostScript(_sessionProvider, _broker.BrokerConnector);
-            var connections = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate().Connections;
-            return connections.ConnectAsync(connections.RecentConnections[0]);
+            var workflow = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
+            _hostScript = new VariableRHostScript(workflow.RSessions, workflow.BrokerConnector);
+            return workflow.Connections.ConnectAsync(workflow.Connections.RecentConnections[0]);
         }
 
         public Task DisposeAsync() {

@@ -16,6 +16,7 @@ using Microsoft.VisualStudio.R.Package.Test;
 using Microsoft.VisualStudio.R.Package.Test.Utility;
 using Microsoft.VisualStudio.R.Packages.R;
 using mshtml;
+using Microsoft.R.Host.Client.Test.Fixtures;
 using Xunit;
 
 namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
@@ -24,7 +25,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
     public class HelpWindowTest : HostBasedInteractiveTest {
         private const string darkThemeCssColor = "rgb(36,36,36)";
 
-        public HelpWindowTest(BrokerFixture broker): base(broker.BrokerConnector) { }
+        public HelpWindowTest(BrokerFixture broker): base() { }
 
         [Test(Skip = "https://github.com/Microsoft/RTVS/issues/1983")]
         [Category.Interactive]

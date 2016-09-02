@@ -4,17 +4,19 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.R.Host.Client.Host;
-using Microsoft.UnitTests.Core.XUnit;
+using Microsoft.R.Host.Client.Session;
 
-namespace Microsoft.VisualStudio.R.Interactive.Test {
+namespace Microsoft.R.Host.Client.Test.Fixtures {
     [ExcludeFromCodeCoverage]
-    [AssemblyFixture]
+    // Fixture doesn't import itself. Use AssemblyFixtureImportAttribute
     public sealed class BrokerFixture: IDisposable {
         public IRHostBrokerConnector BrokerConnector { get; }
+        public IRSessionProvider SessionProvider { get; }
 
         public BrokerFixture() {
+            SessionProvider = new RSessionProvider();
             BrokerConnector = new RHostBrokerConnector();
-            BrokerConnector.SwitchToLocalBroker(this.GetType().Name);
+            BrokerConnector.SwitchToLocalBroker(GetType().Name);
         }
 
         public void Dispose() {

@@ -150,7 +150,6 @@
     <Compile Include="Documentation\RoxygenTest.cs" />
     <Compile Include="DragDrop\DragDropTest.cs" />
     <Compile Include="Extensions\TextViewExtensionsTest.cs" />
-    <Compile Include="Fixtures\BrokerFixture.cs" />
     <Compile Include="Formatting\FormatCommandTest.cs" />
     <Compile Include="Fixtures\REditorMefCatalogFixture.cs" />
     <Compile Include="Navigation\TextStructureTest.cs" />

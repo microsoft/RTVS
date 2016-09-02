@@ -17,8 +17,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
     public sealed class VariableExplorerTest : HostBasedInteractiveTest {
         private readonly TestFilesFixture _files;
 
-        public VariableExplorerTest(TestFilesFixture files, BrokerFixture brokerFixture): 
-            base(brokerFixture.BrokerConnector) {
+        public VariableExplorerTest(TestFilesFixture files) {
             _files = files;
         }
 

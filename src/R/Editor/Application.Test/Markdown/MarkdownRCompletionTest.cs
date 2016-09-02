@@ -6,6 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Markdown.Editor.ContentTypes;
+using Microsoft.R.Host.Client.Test.Fixtures;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Test.Utility;
@@ -64,7 +65,7 @@ x <- function() {
         public async Task RSignature() {
             using (var script = await _editorHost.StartScript(_exportProvider, "```{r}\r\n\r\n```", MdContentTypeDefinition.ContentType)) {
                 IntelliSenseRSession.HostStartTimeout = 10000;
-                using (new RHostScript(_exportProvider, _broker.BrokerConnector)) {
+                using (new RHostScript(_broker.SessionProvider, _broker.BrokerConnector)) {
                     var packageIndex = _exportProvider.GetExportedValue<IPackageIndex>();
                     await packageIndex.BuildIndexAsync();
                     var functionIndex = _exportProvider.GetExportedValue<IFunctionIndex>();

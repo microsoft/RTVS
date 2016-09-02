@@ -5,24 +5,21 @@ using System.ComponentModel.Composition;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.StatusBar;
-using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation {
     [Export(typeof(IConnectionManagerProvider))]
     internal class ConnectionManagerProvider : IConnectionManagerProvider {
         private readonly IStatusBar _statusBar;
         private readonly IRSettings _settings;
-        private readonly IRSessionProvider _sessionProvider;
 
         [ImportingConstructor]
-        public ConnectionManagerProvider(IStatusBar statusBar, IRSessionProvider sessionProvider, IRSettings settings) {
+        public ConnectionManagerProvider(IStatusBar statusBar, IRSettings settings) {
             _statusBar = statusBar;
-            _sessionProvider = sessionProvider;
             _settings = settings;
         }
 
         public IConnectionManager CreateConnectionManager(IRInteractiveWorkflow interactiveWorkflow) {
-            return new ConnectionManager(_statusBar, _sessionProvider, _settings, interactiveWorkflow);
+            return new ConnectionManager(_statusBar, _settings, interactiveWorkflow);
         }
     }
 }

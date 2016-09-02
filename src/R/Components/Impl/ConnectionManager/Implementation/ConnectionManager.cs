@@ -37,9 +37,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         public event EventHandler RecentConnectionsChanged;
         public event EventHandler<ConnectionEventArgs> ConnectionStateChanged;
 
-        public ConnectionManager(IStatusBar statusBar, IRSessionProvider sessionProvider, IRSettings settings, IRInteractiveWorkflow interactiveWorkflow) {
+        public ConnectionManager(IStatusBar statusBar, IRSettings settings, IRInteractiveWorkflow interactiveWorkflow) {
             _statusBar = statusBar;
-            _sessionProvider = sessionProvider;
+            _sessionProvider = interactiveWorkflow.RSessions;
             _brokerConnector = interactiveWorkflow.BrokerConnector;
             _settings = settings;
             _shell = interactiveWorkflow.Shell;

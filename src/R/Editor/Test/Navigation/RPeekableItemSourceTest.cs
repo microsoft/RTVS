@@ -11,8 +11,10 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Components.ContentTypes;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Navigation.Peek;
 using Microsoft.R.Editor.Test.Mocks;
+using Microsoft.R.Host.Client.Test.Fixtures;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
@@ -26,11 +28,9 @@ namespace Microsoft.R.Editor.Test.Navigation {
     [Category.R.Navigation]
     public class RPeekableItemSourceTest : IDisposable {
         private readonly IExportProvider _exportProvider;
-        private readonly BrokerFixture _broker;
 
-        public RPeekableItemSourceTest(REditorMefCatalogFixture catalog, BrokerFixture broker) {
+        public RPeekableItemSourceTest(REditorMefCatalogFixture catalog) {
             _exportProvider = catalog.CreateExportProvider();
-            _broker = broker;
         }
 
         public void Dispose() {
@@ -82,7 +82,8 @@ x <- function(a) {
 
         [Test]
         public void PeekInternalFunction01() {
-            using (new RHostScript(_exportProvider, _broker.BrokerConnector)) {
+            var workflow = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
+            using (new RHostScript(workflow.RSessions, workflow.BrokerConnector)) {
                 string content = @"lm()";
                 RunInternalItemPeekTest(content, 0, 1, "lm");
             }

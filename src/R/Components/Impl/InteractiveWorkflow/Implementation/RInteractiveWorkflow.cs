@@ -32,6 +32,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         public IRHostBrokerConnector BrokerConnector { get; }
         public IConnectionManager Connections { get; }
         public IRHistory History { get; }
+        public IRSessionProvider RSessions { get; }
         public IRSession RSession { get; }
         public IRPackageManager Packages { get; }
         public IRPlotManager Plots { get; }
@@ -60,13 +61,14 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             _onDispose = onDispose;
 
             Shell = coreShell;
+            RSessions = sessionProvider;
             BrokerConnector = brokerConnector;
 
             RSession = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, brokerConnector);
             Connections = connectionsProvider.CreateConnectionManager(this);
 
             History = historyProvider.CreateRHistory(this);
-            Packages = packagesProvider.CreateRPackageManager(sessionProvider, settings, this);
+            Packages = packagesProvider.CreateRPackageManager(settings, this);
             Plots = plotsProvider.CreatePlotManager(settings, this);
             _operations = new RInteractiveWorkflowOperations(this, _debuggerModeTracker, Shell);
 

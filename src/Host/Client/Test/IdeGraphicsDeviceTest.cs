@@ -15,6 +15,7 @@ using Microsoft.R.Host.Client.Extensions;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Install;
 using Microsoft.R.Host.Client.Session;
+using Microsoft.R.Host.Client.Test.Fixtures;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;

@@ -36,7 +36,7 @@ namespace Microsoft.R.Editor.Test.Completions {
             }
 
             CompletionSessionMock completionSession = new CompletionSessionMock(textView, completionSets, caretPosition);
-            RCompletionSource completionSource = new RCompletionSource(textBuffer, _exportProvider.GetExportedValue<ICoreShell>());
+            RCompletionSource completionSource = new RCompletionSource(textBuffer, ExportProvider.GetExportedValue<ICoreShell>());
 
             completionSource.PopulateCompletionList(caretPosition, completionSession, completionSets, ast);
         }

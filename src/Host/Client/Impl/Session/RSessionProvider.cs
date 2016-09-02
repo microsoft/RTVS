@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
@@ -12,7 +11,6 @@ using Microsoft.Common.Core.Disposables;
 using Microsoft.R.Host.Client.Host;
 
 namespace Microsoft.R.Host.Client.Session {
-    [Export(typeof(IRSessionProvider))]
     public class RSessionProvider : IRSessionProvider {
         private readonly ConcurrentDictionary<Guid, RSession> _sessions = new ConcurrentDictionary<Guid, RSession>();
         private readonly DisposeToken _disposeToken = DisposeToken.Create<RSessionProvider>();

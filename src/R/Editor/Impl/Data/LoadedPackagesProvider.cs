@@ -11,6 +11,7 @@ using Microsoft.Common.Core;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Completion;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Host;
 
 namespace Microsoft.R.Editor.Data {
     [Export(typeof(ILoadedPackagesProvider))]
@@ -28,6 +29,8 @@ namespace Microsoft.R.Editor.Data {
             string result;
             try {
                 result = await Session.EvaluateAsync<string>("paste0(.packages(), collapse = ' ')", REvaluationKind.Normal);
+            } catch (RHostDisconnectedException) {
+                return;
             } catch (RException) {
                 return;
             }

@@ -25,8 +25,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
 
         public IRPackageManagerVisualComponent VisualComponent { get; private set; }
 
-        public RPackageManager(IRSessionProvider sessionProvider, IRSettings settings, IRInteractiveWorkflow interactiveWorkflow, Action dispose) {
-            _sessionProvider = sessionProvider;
+        public RPackageManager(IRSettings settings, IRInteractiveWorkflow interactiveWorkflow, Action dispose) {
+            _sessionProvider = interactiveWorkflow.RSessions;
             _settings = settings;
             _interactiveWorkflow = interactiveWorkflow;
             _disposableBag = DisposableBag.Create<RPackageManager>(dispose);

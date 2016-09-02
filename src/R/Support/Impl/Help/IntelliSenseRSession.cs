@@ -21,9 +21,9 @@ namespace Microsoft.R.Support.Help {
         private readonly BinaryAsyncLock _lock = new BinaryAsyncLock();
 
         [ImportingConstructor]
-        public IntelliSenseRSession(ICoreShell coreShell, IRSessionProvider sessionProvider, IRInteractiveWorkflowProvider workflowProvider) {
+        public IntelliSenseRSession(ICoreShell coreShell, IRInteractiveWorkflowProvider workflowProvider) {
             _coreShell = coreShell;
-            _sessionProvider = sessionProvider;
+            _sessionProvider = workflowProvider.GetOrCreate().RSessions;
             _brokerConnector = workflowProvider.GetOrCreate().BrokerConnector;
         }
 

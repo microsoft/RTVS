@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Test.Fixtures;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.Options.R.Tools;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -22,7 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Options {
 
         public EncodingsTest(BrokerFixture broker) {
             _broker = broker;
-            _sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+            _sessionProvider = broker.SessionProvider;
         }
 
         [Test]

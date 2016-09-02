@@ -26,11 +26,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         public VariableRHostScript(IRSessionProvider sessionProvider, IRHostBrokerConnector brokerConnector)
             : base(sessionProvider, brokerConnector) { }
 
-        public VariableViewModel GlobalEnvrionment {
-            get {
-                return _globalEnv;
-            }
-        }
+        public VariableViewModel GlobalEnvrionment => _globalEnv;
 
         public async Task<IREvaluationResultInfo> EvaluateAsync(string rScript) {
             // One eval at a time

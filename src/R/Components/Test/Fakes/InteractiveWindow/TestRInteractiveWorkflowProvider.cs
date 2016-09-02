@@ -16,6 +16,7 @@ using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Workspace;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
+using Microsoft.R.Host.Client.Session;
 using Microsoft.UnitTests.Core.Mef;
 
 namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
@@ -42,14 +43,14 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
         public string BrokerName { get; set; }
 
         [ImportingConstructor]
-        public TestRInteractiveWorkflowProvider(IRSessionProvider sessionProvider
-            , IConnectionManagerProvider connectionManagerProvider
+        public TestRInteractiveWorkflowProvider(IConnectionManagerProvider connectionManagerProvider
             , IRHistoryProvider historyProvider
             , IRPackageManagerProvider packagesProvider
             , IRPlotManagerProvider plotsProvider
             , IActiveWpfTextViewTracker activeTextViewTracker
             , IDebuggerModeTracker debuggerModeTracker
             // Required for the tests that create TestRInteractiveWorkflowProvider explicitly
+            , [Import(AllowDefault = true)] IRSessionProvider sessionProvider
             , [Import(AllowDefault = true)] IRHostBrokerConnector brokerConnector
             , ICoreShell shell
             , IRSettings settings
@@ -80,9 +81,10 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
         }
         
         private IRInteractiveWorkflow CreateRInteractiveWorkflow() {
+            var sessionProvider = _sessionProvider ?? new RSessionProvider();
             var brokerConnector = _brokerConnector ?? new RHostBrokerConnector();
             brokerConnector.SwitchToLocalBroker(BrokerName);
-            return new RInteractiveWorkflow(_sessionProvider
+            return new RInteractiveWorkflow(sessionProvider
                 , _connectionManagerProvider
                 , _historyProvider
                 , _packagesProvider

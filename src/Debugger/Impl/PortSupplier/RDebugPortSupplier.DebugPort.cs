@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
-using Microsoft.R.Host.Client;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Debugger.Interop;
@@ -19,7 +19,7 @@ namespace Microsoft.R.Debugger.PortSupplier {
             private readonly Guid _guid = Guid.NewGuid();
 
             [Import]
-            private IRSessionProvider RSessionProvider { get; set; }
+            private IRInteractiveWorkflowProvider WorkflowProvider { get; set; }
 
             public DebugPort(RDebugPortSupplier supplier, IDebugPortRequest2 request) {
                 _supplier = supplier;
@@ -30,7 +30,8 @@ namespace Microsoft.R.Debugger.PortSupplier {
             }
 
             private IEnumerable<DebugProcess> GetProcesses() {
-                return RSessionProvider.GetSessions().Select(session => new DebugProcess(this, session));
+                var sessionProvider = WorkflowProvider.GetOrCreate().RSessions;
+                return sessionProvider.GetSessions().Select(session => new DebugProcess(this, session));
             }
 
             public int EnumProcesses(out IEnumDebugProcesses2 ppEnum) {
