@@ -1,26 +1,28 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.R.Host.Client.Host;
+using System.Threading.Tasks;
 using Microsoft.R.Host.Client.Session;
+using Xunit;
 
 namespace Microsoft.R.Host.Client.Test.Fixtures {
     [ExcludeFromCodeCoverage]
     // Fixture doesn't import itself. Use AssemblyFixtureImportAttribute
-    public sealed class BrokerFixture: IDisposable {
-        public IRHostBrokerConnector BrokerConnector { get; }
+    public sealed class SessionProviderFixture: IAsyncLifetime {
         public IRSessionProvider SessionProvider { get; }
 
-        public BrokerFixture() {
+        public SessionProviderFixture() {
             SessionProvider = new RSessionProvider();
-            BrokerConnector = new RHostBrokerConnector();
-            BrokerConnector.SwitchToLocalBroker(GetType().Name);
         }
 
-        public void Dispose() {
-            BrokerConnector.Dispose();
+        public async Task InitializeAsync() {
+            await SessionProvider.TrySwitchBroker(nameof(SessionProviderFixture));
+        }
+
+        public Task DisposeAsync() {
+            SessionProvider.Dispose();
+            return Task.CompletedTask;
         }
     }
 }

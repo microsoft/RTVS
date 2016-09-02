@@ -24,19 +24,17 @@ namespace Microsoft.R.ExecutionTracing.Test {
     [Category.R.ExecutionTracing]
     public class SteppingTest : IAsyncLifetime {
         private readonly MethodInfo _testMethod;
-        private readonly IRHostBrokerConnector _brokerConnector;
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _session;
 
         public SteppingTest(TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo;
-            _brokerConnector = new RHostBrokerConnector();
-            _brokerConnector.SwitchToLocalBroker(nameof(SteppingTest));
             _sessionProvider = new RSessionProvider();
-            _session = _sessionProvider.GetOrCreate(Guid.NewGuid(), _brokerConnector);
+            _session = _sessionProvider.GetOrCreate(Guid.NewGuid());
         }
 
         public async Task InitializeAsync() {
+            await _sessionProvider.TrySwitchBroker(nameof(SteppingTest));
             await _session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name
             }, new RHostClientTestApp(), 50000);
@@ -45,7 +43,6 @@ namespace Microsoft.R.ExecutionTracing.Test {
         public async Task DisposeAsync() {
             await _session.StopHostAsync();
             _sessionProvider.Dispose();
-            _brokerConnector.Dispose();
         }
 
         [Test(Skip = "https://github.com/Microsoft/RTVS/issues/2009")]

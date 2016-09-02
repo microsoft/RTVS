@@ -102,8 +102,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
                     CodePage = _settings.RCodePage
                 };
 
-                var brokerConnector = _interactiveWorkflow.BrokerConnector;
-                using (var eval = await _sessionProvider.BeginEvaluationAsync(brokerConnector, startupInfo)) {
+                using (var eval = await _sessionProvider.BeginEvaluationAsync(startupInfo)) {
                     // Get the repos and libpaths from the REPL session and set them
                     // in the package query session
                     var repositories = (await DeparseRepositoriesAsync());

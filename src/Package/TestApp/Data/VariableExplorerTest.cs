@@ -45,14 +45,11 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
 
         [Test]
         [Category.Interactive]
-        public void SimpleFunctionTest() {
+        public async Task SimpleFunctionTest() {
             VisualTreeObject actual = null;
             using (var script = new ControlTestScript(typeof(VariableView))) {
                 DoIdle(100);
-                Task.Run(async () => {
-                    await HostScript.Session.ExecuteAsync("x <- lm");
-                }).Wait();
-
+                await HostScript.Session.ExecuteAsync("x <- lm");
                 DoIdle(1000);
                 actual = VisualTreeObject.Create(script.Control);
             }

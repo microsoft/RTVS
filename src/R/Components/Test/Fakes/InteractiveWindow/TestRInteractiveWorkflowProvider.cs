@@ -51,7 +51,6 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
             , IDebuggerModeTracker debuggerModeTracker
             // Required for the tests that create TestRInteractiveWorkflowProvider explicitly
             , [Import(AllowDefault = true)] IRSessionProvider sessionProvider
-            , [Import(AllowDefault = true)] IRHostBrokerConnector brokerConnector
             , ICoreShell shell
             , IRSettings settings
             , [Import(AllowDefault = true)] IWorkspaceServices wss
@@ -63,7 +62,6 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
             _plotsProvider = plotsProvider;
             _activeTextViewTracker = activeTextViewTracker;
             _debuggerModeTracker = debuggerModeTracker;
-            _brokerConnector = brokerConnector;
             _shell = shell;
             _settings = settings;
             _wss = wss;
@@ -82,8 +80,7 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
         
         private IRInteractiveWorkflow CreateRInteractiveWorkflow() {
             var sessionProvider = _sessionProvider ?? new RSessionProvider();
-            var brokerConnector = _brokerConnector ?? new RHostBrokerConnector();
-            brokerConnector.SwitchToLocalBroker(BrokerName);
+            sessionProvider.TrySwitchBroker(BrokerName).Wait();
             return new RInteractiveWorkflow(sessionProvider
                 , _connectionManagerProvider
                 , _historyProvider
@@ -91,15 +88,14 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
                 , _plotsProvider
                 , _activeTextViewTracker
                 , _debuggerModeTracker
-                , brokerConnector
                 , _shell
                 , _settings
                 , _wss
-                , () => DisposeInstance(brokerConnector));
+                , () => DisposeInstance(sessionProvider));
         }
 
-        private void DisposeInstance(IRHostBrokerConnector brokerConnector) {
-            brokerConnector.Dispose();
+        private void DisposeInstance(IRSessionProvider sessionProvider) {
+            sessionProvider.Dispose();
             _instanceLazy = null;
         }
     }

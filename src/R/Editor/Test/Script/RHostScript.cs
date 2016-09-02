@@ -15,15 +15,13 @@ namespace Microsoft.R.Host.Client.Test.Script {
 
         public IRSessionProvider SessionProvider { get; private set; }
         public IRSession Session { get; }
-        public IRHostBrokerConnector BrokerConnector { get; }
 
         public static Version RVersion => new RInstallation().GetInstallationData(RToolsSettings.Current.LastActiveConnection.Path, new SupportedRVersionRange()).Version;
 
-        public RHostScript(IRSessionProvider sessionProvider, IRHostBrokerConnector brokerConnector, IRSessionCallback clientApp = null) {
+        public RHostScript(IRSessionProvider sessionProvider, IRSessionCallback clientApp = null) {
             SessionProvider = sessionProvider;
-            BrokerConnector = brokerConnector;
 
-            Session = SessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, brokerConnector);
+            Session = SessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
             if (Session.IsHostRunning) {
                 Session.StopHostAsync().Wait();
             }

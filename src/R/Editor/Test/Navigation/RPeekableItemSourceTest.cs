@@ -83,7 +83,7 @@ x <- function(a) {
         [Test]
         public void PeekInternalFunction01() {
             var workflow = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
-            using (new RHostScript(workflow.RSessions, workflow.BrokerConnector)) {
+            using (new RHostScript(workflow.RSessions)) {
                 string content = @"lm()";
                 RunInternalItemPeekTest(content, 0, 1, "lm");
             }

@@ -6,7 +6,7 @@ using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.References;
 
 [assembly: TestFrameworkOverride]
-[assembly: AssemblyFixtureImport(typeof(BrokerFixture))]
+[assembly: AssemblyFixtureImport(typeof(SessionProviderFixture))]
 #if VS14
 [assembly: Dev14AssemblyLoader]
 #endif

@@ -3,22 +3,28 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Xunit;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Fixtures {
     [ExcludeFromCodeCoverage]
     // Fixture doesn't import itself. Use AssemblyFixtureImportAttribute
-    public sealed class DisposeRInteractiveWorkflowFixture : IDisposable {
+    public sealed class DisposeRInteractiveWorkflowFixture : IAsyncLifetime {
         private readonly IRInteractiveWorkflow _workflow;
 
         public DisposeRInteractiveWorkflowFixture() {
             _workflow = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
-            _workflow.BrokerConnector.SwitchToLocalBroker(GetType().Name);
+        }
+        
+        public async Task InitializeAsync() {
+            await _workflow.RSessions.TrySwitchBroker(GetType().Name);
         }
 
-        public void Dispose() {
+        public Task DisposeAsync() {
             _workflow.Dispose();
+            return Task.CompletedTask;
         }
     }
 }

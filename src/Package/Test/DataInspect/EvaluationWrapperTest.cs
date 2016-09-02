@@ -22,7 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
         public Task InitializeAsync() {
             var workflow = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
-            _hostScript = new VariableRHostScript(workflow.RSessions, workflow.BrokerConnector);
+            _hostScript = new VariableRHostScript(workflow.RSessions);
             return workflow.Connections.ConnectAsync(workflow.Connections.RecentConnections[0]);
         }
 

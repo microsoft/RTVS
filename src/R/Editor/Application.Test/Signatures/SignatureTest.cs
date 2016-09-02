@@ -6,6 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Components.ContentTypes;
+using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Fixtures;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.R.Support.Help;
@@ -21,11 +22,11 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
     public class SignatureTest : IDisposable {
         private readonly IExportProvider _exportProvider;
         private readonly EditorHostMethodFixture _editorHost;
-        private readonly BrokerFixture _broker;
+        private readonly IRSessionProvider _sessionProvider;
 
-        public SignatureTest(REditorApplicationMefCatalogFixture catalogFixture, BrokerFixture broker, EditorHostMethodFixture editorHost) {
+        public SignatureTest(REditorApplicationMefCatalogFixture catalogFixture, SessionProviderFixture sessionProviderFixture, EditorHostMethodFixture editorHost) {
             _exportProvider = catalogFixture.CreateExportProvider();
-            _broker = broker;
+            _sessionProvider = sessionProviderFixture.SessionProvider;
             _editorHost = editorHost;
         }
 
@@ -38,7 +39,7 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
         public async Task R_SignatureParametersMatch() {
             using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 IntelliSenseRSession.HostStartTimeout = 10000;
-                using (new RHostScript(_broker.SessionProvider, _broker.BrokerConnector)) {
+                using (new RHostScript(_sessionProvider)) {
                     var functionIndex = await PrepareFunctionIndexAsync();
                     await PackageIndexUtility.GetFunctionInfoAsync(functionIndex, "lm");
 
@@ -74,7 +75,7 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
         public async Task R_SignatureSessionNavigation() {
             using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 IntelliSenseRSession.HostStartTimeout = 10000;
-                using (new RHostScript(_broker.SessionProvider, _broker.BrokerConnector)) {
+                using (new RHostScript(_sessionProvider)) {
                     var functionIndex = await PrepareFunctionIndexAsync();
                     await PackageIndexUtility.GetFunctionInfoAsync(functionIndex, "lm");
 

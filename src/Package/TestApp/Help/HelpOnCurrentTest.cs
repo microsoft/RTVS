@@ -9,7 +9,6 @@ using Microsoft.R.Components.Help;
 using Microsoft.R.Components.Test.StubFactories;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
-using Microsoft.R.Host.Client.Test.Fixtures;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.Help;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -23,20 +22,17 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
     public class HelpOnCurrentTest : HostBasedInteractiveTest {
-        public HelpOnCurrentTest(BrokerFixture broker) : base() { }
 
         [Test(Skip = "https://github.com/Microsoft/RTVS/issues/1983")]
         [Category.Interactive]
         public void HelpTest() {
             var clientApp = new RHostClientHelpTestApp();
-            var historyProvider = RHistoryProviderStubFactory.CreateDefault();
-            using (var script = new ControlTestScript(typeof(HelpVisualComponent))) {
+            using (new ControlTestScript(typeof(HelpVisualComponent))) {
                 DoIdle(100);
 
                 var activeViewTrackerMock = new ActiveTextViewTrackerMock("  plot", RContentTypeDefinition.ContentType);
                 var activeReplTrackerMock = new ActiveRInteractiveWindowTrackerMock();
-                var sessionProvider = new RSessionProvider();
-                var interactiveWorkflowProvider = TestRInteractiveWorkflowProviderFactory.Create(nameof(HelpTest), sessionProvider, activeTextViewTracker: activeViewTrackerMock);
+                var interactiveWorkflowProvider = TestRInteractiveWorkflowProviderFactory.Create(nameof(HelpTest), SessionProvider, activeTextViewTracker: activeViewTrackerMock);
                 var interactiveWorkflow = interactiveWorkflowProvider.GetOrCreate();
 
                 var component = ControlWindow.Component as IHelpVisualComponent;

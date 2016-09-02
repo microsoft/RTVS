@@ -9,12 +9,10 @@ using Microsoft.R.Components.History;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Plots;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Host;
 
 namespace Microsoft.R.Components.InteractiveWorkflow {
     public interface IRInteractiveWorkflow : IDisposable {
         ICoreShell Shell { get; }
-        IRHostBrokerConnector BrokerConnector { get; }
         IConnectionManager Connections { get; }
         IRHistory History { get; }
         IRSessionProvider RSessions { get; }
