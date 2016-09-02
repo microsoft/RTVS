@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
+using Microsoft.R.Components.ConnectionManager;
 
 namespace Microsoft.R.Components.Settings {
     public interface IRSettings {
@@ -13,13 +13,13 @@ namespace Microsoft.R.Components.Settings {
         /// Array of saved connections
         /// Sorted by latest usage
         /// </summary>
-        ConnectionInfo[] Connections { get; set; }
-        
+        IConnectionInfo[] Connections { get; set; }
+
         /// <summary>
         /// Latest active connection
         /// May not be in list of  <see cref="Connections"/>
         /// </summary>
-        ConnectionInfo LastActiveConnection { get; set; }
+        IConnectionInfo LastActiveConnection { get; set; }
         
         /// <summary>
         /// Selected CRAN mirror

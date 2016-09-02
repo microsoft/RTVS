@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel;
 using Microsoft.Common.Core.Enums;
+using Microsoft.R.Components.ConnectionManager.Implementation;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Settings.Definitions;

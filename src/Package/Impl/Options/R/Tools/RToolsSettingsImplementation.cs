@@ -11,6 +11,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Enums;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Settings.Mirrors;
 using Microsoft.R.Host.Client;
@@ -31,8 +32,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         private string _workingDirectory;
         private int _codePage;
         private bool _showPackageManagerDisclaimer = true;
-        private ConnectionInfo[] _connections = new ConnectionInfo[0];
-        private ConnectionInfo _lastActiveConnection;
+        private IConnectionInfo[] _connections = new IConnectionInfo[0];
+        private IConnectionInfo _lastActiveConnection;
 
         public YesNoAsk LoadRDataOnProjectLoad { get; set; } = YesNoAsk.No;
 
@@ -69,7 +70,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             }
         }
 
-        public ConnectionInfo[] Connections {
+        public IConnectionInfo[] Connections {
             get { return _connections; }
             set {
                 using (SaveSettings()) {
@@ -78,7 +79,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             }
         }
 
-        public ConnectionInfo LastActiveConnection {
+        public IConnectionInfo LastActiveConnection {
             get { return _lastActiveConnection; }
             set {
                 using (SaveSettings()) {
