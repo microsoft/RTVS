@@ -142,7 +142,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Local.
+        ///   Looks up a localized string similar to Local R.
         /// </summary>
         public static string ConnectionManager_LocalConnections {
             get {
@@ -232,7 +232,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Custom.
+        ///   Looks up a localized string similar to Remote and custom.
         /// </summary>
         public static string ConnectionManager_UserConnections {
             get {

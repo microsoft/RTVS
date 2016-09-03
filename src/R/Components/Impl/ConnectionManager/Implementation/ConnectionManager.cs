@@ -113,7 +113,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 await Task.WhenAll(sessions.Select(s => s.StopHostAsync()));
             }
 
-            if (ActiveConnection != null && (!ActiveConnection.Path.EqualsIgnoreCase(connection.Path)  || _brokerConnector.BrokerUri.IsLoopback)) {
+            if (ActiveConnection != null && (!ActiveConnection.Path.EqualsIgnoreCase(connection.Path)  || _sessionProvider.BrokerUri.IsLoopback)) {
                 SwitchBroker(connection);
             }
 

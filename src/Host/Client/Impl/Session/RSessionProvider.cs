@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
@@ -102,10 +103,9 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         public Task<bool> TrySwitchBroker(string name, string path = null) {
-            path = path ?? new RInstallation().GetRInstallPath();
-
+            path = path ?? new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath;
             Uri uri;
-            if (!Uri.TryCreate(path, UriKind.Absolute, out uri)) {
+            if (string.IsNullOrEmpty(path) || !Uri.TryCreate(path, UriKind.Absolute, out uri)) {
                 return Task.FromResult(false);
             }
 

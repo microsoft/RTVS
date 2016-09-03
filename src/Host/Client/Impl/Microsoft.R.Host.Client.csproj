@@ -93,8 +93,6 @@
     <Compile Include="ExecutionTracing\RSessionExtensions.cs" />
     <Compile Include="ExecutionTracing\RSourceLocation.cs" />
     <Compile Include="Host\LocalRHostConnector.cs" />
-    <Compile Include="Install\RInstallationExtensions.cs" />
-    <Compile Include="Host\RHostBrokerConnectorExtensions.cs" />
     <Compile Include="Extensions\DirectoryExtensions.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

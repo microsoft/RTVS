@@ -12,6 +12,7 @@ using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Enums;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ConnectionManager;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Settings.Mirrors;
 using Microsoft.R.Host.Client;
@@ -34,7 +35,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         private bool _showPackageManagerDisclaimer = true;
         private IConnectionInfo[] _connections = new IConnectionInfo[0];
         private IConnectionInfo _lastActiveConnection;
-        private IRInteractiveWorkflowProvider _workflowProvider;
 
         public YesNoAsk LoadRDataOnProjectLoad { get; set; } = YesNoAsk.No;
 
@@ -123,14 +123,13 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         public BrowserType ShinyBrowserType { get; set; } = BrowserType.Internal;
         public BrowserType MarkdownBrowserType { get; set; } = BrowserType.External;
 
-        [ImportingConstructor]
-        public RToolsSettingsImplementation(IRInteractiveWorkflowProvider workflowProvider) {
+        public RToolsSettingsImplementation() {
             _workingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            _workflowProvider = workflowProvider;
         }
 
         private async Task SetMirrorToSession() {
-            var sessions = _workflowProvider.GetOrCreate().RSessions.GetSessions();
+            var provider = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
+            var sessions = provider.GetOrCreate().RSessions.GetSessions();
             string mirrorName = RToolsSettings.Current.CranMirror;
             string mirrorUrl = CranMirrorList.UrlFromName(mirrorName);
 
@@ -146,7 +145,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         }
 
         private async Task SetSessionCodePage() {
-            var sessions = _workflowProvider.GetOrCreate().RSessions.GetSessions();
+            var provider = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
+            var sessions = provider.GetOrCreate().RSessions.GetSessions();
             var cp = RToolsSettings.Current.RCodePage;
  
             foreach (var s in sessions.Where(s => s.IsHostRunning)) {
