@@ -34,8 +34,10 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
             _userConnections = new BatchObservableCollection<IConnectionViewModel>();
             UserConnections = new ReadOnlyObservableCollection<IConnectionViewModel>(_userConnections);
+
             _localConnections = new BatchObservableCollection<IConnectionViewModel>();
             LocalConnections = new ReadOnlyObservableCollection<IConnectionViewModel>(_localConnections);
+
             connectionManager.ConnectionStateChanged += ConnectionStateChanged;
             IsConnected = connectionManager.IsConnected;
             UpdateConnections();
@@ -118,10 +120,10 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                 latestLocalPath = Environment.SystemDirectory;
 
                 try {
-                    latestLocalPath = new RInstallation().GetCompatibleEnginePathFromRegistry();
+                    latestLocalPath = new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath;
                     if (string.IsNullOrEmpty(latestLocalPath) || !Directory.Exists(latestLocalPath)) {
                         // Force 64-bit PF
-                        latestLocalPath = Environment.GetEnvironmentVariable("ProgramFiles");
+                        latestLocalPath = Environment.GetEnvironmentVariable("ProgramW6432");
                     }
                 }
                 catch (ArgumentException) { }
@@ -147,7 +149,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             var connection = _connectionManager.AddOrUpdateConnection(
                 connectionViewModel.Name,
                 connectionViewModel.Path,
-                connectionViewModel.RCommandLineArguments);
+                connectionViewModel.RCommandLineArguments,
+                connectionViewModel.IsUserCreated);
 
             if (connection.Id != connectionViewModel.Id && connectionViewModel.Id != null) {
                 _connectionManager.TryRemove(connectionViewModel.Id);
@@ -167,13 +170,19 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public async Task ConnectAsync(IConnectionViewModel connection) {
             _shell.AssertIsOnMainThread();
-            await _connectionManager.ConnectAsync(connection.Name, connection.Path, connection.RCommandLineArguments);
+            await _connectionManager.ConnectAsync(connection);
             UpdateConnections();
         }
 
         private void UpdateConnections() { 
             var selectedId = EditedConnection?.Id;
-            _userConnections.ReplaceWith(_connectionManager.RecentConnections.Select(c => new ConnectionViewModel(c) {
+
+            _localConnections.ReplaceWith(_connectionManager.RecentConnections.Where(c => !c.IsRemote && !c.IsUserCreated).Select(c => new ConnectionViewModel(c) {
+                IsActive = c == _connectionManager.ActiveConnection,
+                IsConnected = c == _connectionManager.ActiveConnection && IsConnected
+            }).OrderBy(c => c.Name));
+
+            _userConnections.ReplaceWith(_connectionManager.RecentConnections.Where(c => c.IsUserCreated).Select(c => new ConnectionViewModel(c) {
                 IsActive = c == _connectionManager.ActiveConnection,
                 IsConnected = c == _connectionManager.ActiveConnection && IsConnected
             }).OrderBy(c => c.Name));
@@ -183,13 +192,13 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                 EditedConnection = editedConnection;
             }
 
-            HasLocalConnections = false;
+            HasLocalConnections = _localConnections.Count > 0;
         }
 
         private void ConnectionStateChanged(object sender, ConnectionEventArgs e) {
             _shell.DispatchOnUIThread(() => {
                 IsConnected = e.State;
-                foreach (var item in _userConnections) {
+                foreach (var item in _userConnections.Union(_localConnections)) {
                     item.IsConnected = e.State && item.IsActive;
                 }
             });

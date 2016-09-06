@@ -68,6 +68,7 @@ namespace Microsoft.R.Host.Client.Host {
             Process process = null;
             try {
                 string pipeName = Guid.NewGuid().ToString();
+               
                 using (var serverUriPipe = new NamedPipeServerStream(pipeName, PipeDirection.In)) {
                     var psi = new ProcessStartInfo {
                         FileName = rhostBrokerExe,
@@ -81,7 +82,7 @@ namespace Microsoft.R.Host.Client.Host {
                             $" --lifetime:parentProcessId {Process.GetCurrentProcess().Id}" +
                             $" --security:secret \"{_credentials.Password}\"" +
                             $" --R:autoDetect false" +
-                            $" --R:interpreters:{InterpreterId}:basePath \"{_rHome}\""
+                            $" --R:interpreters:{InterpreterId}:basePath \"{_rHome.TrimTrailingSlash()}\""
                     };
 
                     if (!ShowConsole) {

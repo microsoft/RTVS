@@ -5,12 +5,9 @@ using System;
 using System.ComponentModel;
 
 namespace Microsoft.R.Components.ConnectionManager.ViewModel {
-    public interface IConnectionViewModel : INotifyPropertyChanged {
+    public interface IConnectionViewModel : IConnectionInfo, INotifyPropertyChanged {
         Uri Id { get; }
 
-        string Name { get; set; }
-        string Path { get; set; }
-        string RCommandLineArguments { get; set; }
         bool IsActive { get; set; }
         bool IsEditing { get; set; }
         bool IsConnected { get; set; }
@@ -19,7 +16,7 @@ namespace Microsoft.R.Components.ConnectionManager.ViewModel {
         bool IsRemote { get; }
         bool IsValid { get; }
         bool HasChanges { get; }
-
+        
         void Reset();
     }
 }

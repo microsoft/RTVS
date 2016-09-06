@@ -5,9 +5,12 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager.Implementation.View;
 using Microsoft.R.Components.ConnectionManager.Implementation.ViewModel;
@@ -15,7 +18,6 @@ using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.StatusBar;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Interpreters;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation {
@@ -55,14 +57,22 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             interactiveWorkflow.RSession.Connected += RSessionOnConnected;
             interactiveWorkflow.RSession.Disconnected += RSessionOnDisconnected;
 
-            _shell.DispatchOnUIThread(() => _disposableBag.Add(_statusBar.AddItem(new ConnectionStatusBar { DataContext = _statusBarViewModel })));
+            _shell.Idle += OnIdle;
 
             // Get initial values
-            var userConnections = GetConnectionsFromSettings();
+            var userConnections = CreateConnectionList();
             _userConnections = new ConcurrentDictionary<Uri, IConnection>(userConnections);
 
             UpdateRecentConnections();
             SwitchBrokerToLastConnection();
+        }
+
+        private void OnIdle(object sender, EventArgs e) {
+            _shell.Idle -= OnIdle;
+
+            _disposableBag.Add(_statusBar.AddItem(new ConnectionStatusBar {
+                DataContext = _statusBarViewModel
+            }));
         }
 
         public void Dispose() {
@@ -78,16 +88,16 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             return VisualComponent;
         }
 
-        public IConnection AddOrUpdateConnection(string name, string path, string rCommandLineArguments) {
-            var newConnection = new Connection(name, path, rCommandLineArguments, DateTime.Now);
+        public IConnection AddOrUpdateConnection(string name, string path, string rCommandLineArguments, bool isUserCreated) {
+            var newConnection = new Connection(name, path, rCommandLineArguments, DateTime.Now, isUserCreated);
             var connection = _userConnections.AddOrUpdate(newConnection.Id, newConnection, (k, v) => UpdateConnectionFactory(v, newConnection));
 
             UpdateRecentConnections();
             return connection;
         }
 
-        public IConnection GetOrAddConnection(string name, string path, string rCommandLineArguments) {
-            var newConnection = CreateConnection(name, path, rCommandLineArguments);
+        public IConnection GetOrAddConnection(string name, string path, string rCommandLineArguments, bool isUserCreated) {
+            var newConnection = CreateConnection(name, path, rCommandLineArguments, isUserCreated);
             var connection = _userConnections.GetOrAdd(newConnection.Id, newConnection);
             UpdateRecentConnections();
             return connection;
@@ -103,18 +113,13 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             return isRemoved;
         }
 
-        public async Task ConnectAsync(string name, string path, string rCommandLineArguments) {
-            var connection = GetOrCreateConnection(name, path, rCommandLineArguments);
-            await ConnectAsync(connection);
-        }
-
-        public async Task ConnectAsync(IConnection connection) {
+        public async Task ConnectAsync(IConnectionInfo connection) {
             var sessions = _sessionProvider.GetSessions().ToList();
             if (sessions.Any()) {
                 await Task.WhenAll(sessions.Select(s => s.StopHostAsync()));
             }
 
-            if (ActiveConnection != null && ActiveConnection.Id != connection.Id) {
+            if (ActiveConnection != null && (!ActiveConnection.Path.EqualsIgnoreCase(connection.Path) || _sessionProvider.BrokerUri.IsLoopback)) {
                 SwitchBroker(connection);
             }
 
@@ -123,8 +128,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             }
         }
 
-        public void SwitchBroker(string name, string path, string rCommandLineArguments) {
-            var connection = GetOrCreateConnection(name, path, rCommandLineArguments);
+        public void SwitchBroker(IConnectionInfo info) {
+            var connection = GetOrCreateConnection(info.Name, info.Path, info.RCommandLineArguments, info.IsUserCreated);
             SwitchBroker(connection);
         }
 
@@ -134,11 +139,11 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             _sessionProvider.TrySwitchBroker(connection.Name, connection.Path);
         }
 
-        private IConnection CreateConnection(string name, string path, string rCommandLineArguments) => 
-            new Connection(name, path, rCommandLineArguments, DateTime.Now);
+        private IConnection CreateConnection(string name, string path, string rCommandLineArguments, bool isUserCreated) =>
+            new Connection(name, path, rCommandLineArguments, DateTime.Now, isUserCreated);
 
-        private IConnection GetOrCreateConnection(string name, string path, string rCommandLineArguments) {
-            var newConnection = CreateConnection(name, path, rCommandLineArguments);
+        private IConnection GetOrCreateConnection(string name, string path, string rCommandLineArguments, bool isUserCreated) {
+            var newConnection = CreateConnection(name, path, rCommandLineArguments, isUserCreated);
             IConnection connection;
             return _userConnections.TryGetValue(newConnection.Id, out connection) ? connection : newConnection;
         }
@@ -153,25 +158,80 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         private Dictionary<Uri, IConnection> GetConnectionsFromSettings() => _settings.Connections
-            .Select(c => CreateConnection(c.Name, c.Path, c.RCommandLineArguments))
+            .Select(c => CreateConnection(c.Name, c.Path, c.RCommandLineArguments, c.IsUserCreated))
             .ToDictionary(k => k.Id);
 
         private void SaveConnectionsToSettings() {
             _settings.Connections = RecentConnections
-                .Select(c => new ConnectionInfo { Name = c.Name, Path = c.Path, RCommandLineArguments = c.RCommandLineArguments })
+                .Select(c => new ConnectionInfo { Name = c.Name, Path = c.Path, RCommandLineArguments = c.RCommandLineArguments, IsUserCreated = c.IsUserCreated })
                 .ToArray();
         }
 
         private void UpdateRecentConnections() {
-            RecentConnections = new ReadOnlyCollection<IConnection>(_userConnections.Values.OrderByDescending(c => c.TimeStamp).ToList());
+            RecentConnections = new ReadOnlyCollection<IConnection>(_userConnections.Values.OrderByDescending(c => c.LastUsed).ToList());
             SaveConnectionsToSettings();
             RecentConnectionsChanged?.Invoke(this, new EventArgs());
+        }
+
+        private Dictionary<Uri, IConnection> CreateConnectionList() {
+            var connections = GetConnectionsFromSettings();
+            var localEngines = new RInstallation().GetCompatibleEngines();
+
+            // Remove missing engines and add engines missing from saved connections
+            // Set 'is used created' to false if path points to locally found interpreter
+            foreach (var kvp in connections.Where(c => !c.Value.IsRemote).ToList()) {
+                var valid = IsValidLocalConnection(kvp.Value.Name, kvp.Value.Path);
+                if (!valid) {
+                    connections.Remove(kvp.Key);
+                }
+            }
+
+            // Add newly installed engines
+            foreach (var e in localEngines) {
+                if (!connections.Values.Any(x => x.Path.PathEquals(e.InstallPath))) {
+                    connections[new Uri(e.InstallPath, UriKind.Absolute)] = CreateConnection(e.Name, e.InstallPath, string.Empty, isUserCreated: false);
+                }
+            }
+
+            // Verify that most recently used connection is still valid
+            var last = _settings.LastActiveConnection;
+            if (last != null && !IsValidLocalConnection(last.Name, last.Path)) {
+                _settings.LastActiveConnection = null;
+            }
+
+            if (connections.Count == 0) {
+                if (!localEngines.Any()) {
+                    var message = string.Format(CultureInfo.InvariantCulture, Resources.NoLocalR, Environment.NewLine + Environment.NewLine, Environment.NewLine);
+                    if (_shell.ShowMessage(message, MessageButtons.YesNo) == MessageButtons.Yes) {
+                        var installer = _shell.ExportProvider.GetExportedValue<IMicrosoftRClientInstaller>();
+                        installer.LaunchRClientSetup(_shell);
+                        return connections;
+                    }
+                }
+                // No connections, may be first use or connections were removed.
+                // Add local connections so there is at least something available.
+                foreach (var e in localEngines) {
+                    var c = CreateConnection(e.Name, e.InstallPath, string.Empty, isUserCreated: false);
+                    connections[new Uri(e.InstallPath, UriKind.Absolute)] = c;
+                }
+            }
+            return connections;
+        }
+
+        private bool IsValidLocalConnection(string name, string path) {
+            try {
+                var info = new RInterpreterInfo(name, path);
+                return info.VerifyInstallation();
+            } catch (Exception ex) when (!ex.IsCriticalException()) {
+                GeneralLog.Write(ex);
+            }
+            return false;
         }
 
         private void SwitchBrokerToLastConnection() {
             var connectionInfo = _settings.LastActiveConnection;
             if (!string.IsNullOrEmpty(connectionInfo?.Path)) {
-                SwitchBroker(connectionInfo.Name, connectionInfo.Path, connectionInfo.RCommandLineArguments);
+                SwitchBroker(connectionInfo);
                 return;
             }
 
@@ -181,9 +241,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 return;
             }
 
-            var localRPath = new RInstallation().GetRInstallPath();
-            if (localRPath != null) {
-                SwitchBroker(CreateConnection("Local", localRPath, string.Empty));
+            var local = _userConnections.Values.FirstOrDefault(c => !c.IsRemote);
+            if (local != null) {
+                SwitchBroker(local);
             }
         }
 

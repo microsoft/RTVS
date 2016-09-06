@@ -142,7 +142,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Local workspaces.
+        ///   Looks up a localized string similar to Local R.
         /// </summary>
         public static string ConnectionManager_LocalConnections {
             get {
@@ -232,7 +232,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to User defined workspaces.
+        ///   Looks up a localized string similar to Remote and custom.
         /// </summary>
         public static string ConnectionManager_UserConnections {
             get {
@@ -390,6 +390,15 @@ namespace Microsoft.R.Components {
         public static string MicrosoftRHostStopping {
             get {
                 return ResourceManager.GetString("MicrosoftRHostStopping", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Visual Studio is unable to find local R installation. Would you like to install Microsoft R Client (recommended)?{0}Click Yes to install latest Microsoft R Client. {1}Click No if you are planning to set up connection to a remote machine..
+        /// </summary>
+        public static string NoLocalR {
+            get {
+                return ResourceManager.GetString("NoLocalR", resourceCulture);
             }
         }
         

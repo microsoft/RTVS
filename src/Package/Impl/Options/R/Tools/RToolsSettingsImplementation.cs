@@ -11,12 +11,11 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Enums;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Settings.Mirrors;
-using Microsoft.R.Interpreters;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Install;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Settings.Definitions;
@@ -34,9 +33,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         private string _workingDirectory;
         private int _codePage;
         private bool _showPackageManagerDisclaimer = true;
-        private ConnectionInfo[] _connections = new ConnectionInfo[0];
-        private ConnectionInfo _lastActiveConnection;
-        private IRInteractiveWorkflowProvider _workflowProvider;
+        private IConnectionInfo[] _connections = new IConnectionInfo[0];
+        private IConnectionInfo _lastActiveConnection;
 
         public YesNoAsk LoadRDataOnProjectLoad { get; set; } = YesNoAsk.No;
 
@@ -73,7 +71,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             }
         }
 
-        public ConnectionInfo[] Connections {
+        public IConnectionInfo[] Connections {
             get { return _connections; }
             set {
                 using (SaveSettings()) {
@@ -82,7 +80,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             }
         }
 
-        public ConnectionInfo LastActiveConnection {
+        public IConnectionInfo LastActiveConnection {
             get { return _lastActiveConnection; }
             set {
                 using (SaveSettings()) {
@@ -96,8 +94,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set {
                 var newDirectory = value;
                 var newDirectoryIsRoot = newDirectory.Length >= 2 && newDirectory[newDirectory.Length - 2] == Path.VolumeSeparatorChar;
-                if (newDirectory.EndsWithOrdinal("\\") && !newDirectoryIsRoot) {
-                    newDirectory = newDirectory.Substring(0, newDirectory.Length - 1);
+                if (!newDirectoryIsRoot) {
+                    newDirectory = newDirectory.TrimTrailingSlash();
                 }
 
                 _workingDirectory = newDirectory;
@@ -125,14 +123,12 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         public BrowserType ShinyBrowserType { get; set; } = BrowserType.Internal;
         public BrowserType MarkdownBrowserType { get; set; } = BrowserType.External;
 
-        [ImportingConstructor]
-        public RToolsSettingsImplementation(IRInteractiveWorkflowProvider workflowProvider) {
+        public RToolsSettingsImplementation() {
             _workingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            _workflowProvider = workflowProvider;
         }
 
         private async Task SetMirrorToSession() {
-            var sessions = _workflowProvider.GetOrCreate().RSessions.GetSessions();
+            var sessions = GetRSessions();
             string mirrorName = RToolsSettings.Current.CranMirror;
             string mirrorUrl = CranMirrorList.UrlFromName(mirrorName);
 
@@ -148,9 +144,9 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         }
 
         private async Task SetSessionCodePage() {
-            var sessions = _workflowProvider.GetOrCreate().RSessions.GetSessions();
+            var sessions = GetRSessions();
             var cp = RToolsSettings.Current.RCodePage;
- 
+
             foreach (var s in sessions.Where(s => s.IsHostRunning)) {
                 try {
                     using (var eval = await s.BeginEvaluationAsync()) {
@@ -177,6 +173,12 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             return page != null && !page.IsLoadingFromStorage
                 ? Disposable.Create(() => page.SaveSettings())
                 : Disposable.Empty;
+        }
+
+        private static IEnumerable<IRSession> GetRSessions() {
+            var provider = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
+            var instance = provider.Active;
+            return instance != null ? instance.RSessions.GetSessions() : Enumerable.Empty<IRSession>();
         }
     }
 }

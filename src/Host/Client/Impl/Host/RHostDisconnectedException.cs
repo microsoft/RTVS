@@ -9,7 +9,7 @@ namespace Microsoft.R.Host.Client.Host {
     [Serializable]
     [System.Runtime.InteropServices.ComVisible(true)]
     public class RHostDisconnectedException : OperationCanceledException {
-        public RHostDisconnectedException() : this("RHost disconnected") { }
+        public RHostDisconnectedException() : this(Resources.RHostDisconnected) { }
 
         public RHostDisconnectedException(string message) : base(message) {}
 

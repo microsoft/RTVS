@@ -117,14 +117,13 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="NoConnectionsAvailable" xml:space="preserve">
-    <value>There is no local R detected and no remote connection established.
-You can try re-connecting to the remote machine, 
-use another connection or install local R.</value>
+  <data name="Error_CannotFindRBinariesFormat" xml:space="preserve">
+    <value>Cannot find R binaries in {0}.</value>
   </data>
-  <data name="RHostDisconnected" xml:space="preserve">
-    <value>Interactive Window is disconnected from R Session.
-Try connecting to a remote machine in the Workspaces window or
-click Reset to restart local R interpreter.</value>
+  <data name="Error_ExceptionAccessingPath" xml:space="preserve">
+    <value>Unable to access path {0}. Exception: {1}.</value>
+  </data>
+  <data name="Error_UnsupportedRVersion" xml:space="preserve">
+    <value>R {0}.{1}.{2} is not compatible with R Tools for Visual Studio. Supported versions are {3}.{4}.{5} - {6}.{7}.{8}.</value>
   </data>
 </root>

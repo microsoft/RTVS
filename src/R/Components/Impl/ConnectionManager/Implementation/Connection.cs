@@ -4,21 +4,21 @@
 using System;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation {
-    internal class Connection : IConnection {
-        public Connection(string name, string path, string rCommandLineArguments, DateTime timeStamp) {
+    internal class Connection : ConnectionInfo, IConnection {
+        public Connection(IConnectionInfo ci) :
+            this(ci.Name, ci.Path, ci.RCommandLineArguments, ci.LastUsed, ci.IsUserCreated) { }
+
+        public Connection(string name, string path, string rCommandLineArguments, DateTime lastUsed, bool isUserCreated): 
+            base(name, path, rCommandLineArguments, lastUsed, isUserCreated) {
             Id = new Uri(path);
-            Name = name;
-            Path = path;
             IsRemote = !Id.IsFile;
-            TimeStamp = timeStamp;
-            RCommandLineArguments = rCommandLineArguments;
         }
 
         public Uri Id { get; }
-        public string Name { get; }
-        public string Path { get; }
-        public string RCommandLineArguments { get; }
+
+        /// <summary>
+        /// If true, the connection is to a remote machine
+        /// </summary>
         public bool IsRemote { get; }
-        public DateTime TimeStamp { get; }
     }
 }

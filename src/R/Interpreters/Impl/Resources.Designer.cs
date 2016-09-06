@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Microsoft.R.Host.Client {
+namespace Microsoft.R.Interpreters {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Microsoft.R.Host.Client {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Microsoft.R.Host.Client.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Microsoft.R.Interpreters.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,24 +61,29 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There is no local R detected and no remote connection established.
-        ///You can try re-connecting to the remote machine, 
-        ///use another connection or install local R..
+        ///   Looks up a localized string similar to Cannot find R binaries in {0}..
         /// </summary>
-        internal static string NoConnectionsAvailable {
+        internal static string Error_CannotFindRBinariesFormat {
             get {
-                return ResourceManager.GetString("NoConnectionsAvailable", resourceCulture);
+                return ResourceManager.GetString("Error_CannotFindRBinariesFormat", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Interactive Window is disconnected from R Session.
-        ///Try connecting to a remote machine in the Workspaces window or
-        ///click Reset to restart local R interpreter..
+        ///   Looks up a localized string similar to Unable to access path {0}. Exception: {1}..
         /// </summary>
-        internal static string RHostDisconnected {
+        internal static string Error_ExceptionAccessingPath {
             get {
-                return ResourceManager.GetString("RHostDisconnected", resourceCulture);
+                return ResourceManager.GetString("Error_ExceptionAccessingPath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R {0}.{1}.{2} is not compatible with R Tools for Visual Studio. Supported versions are {3}.{4}.{5} - {6}.{7}.{8}..
+        /// </summary>
+        internal static string Error_UnsupportedRVersion {
+            get {
+                return ResourceManager.GetString("Error_UnsupportedRVersion", resourceCulture);
             }
         }
     }

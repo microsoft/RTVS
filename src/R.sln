@@ -94,6 +94,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.UnitTests.Referen
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Host.Broker", "Host\Broker\Impl\Microsoft.R.Host.Broker.csproj", "{2CC10E50-392E-4B5D-98E4-D38F0061D363}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Interpreters.Test", "R\Interpreters\Test\Microsoft.R.Interpreters.Test.csproj", "{D73325D8-2406-47FF-9E7A-E295A847268B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -600,6 +602,18 @@ Global
 		{2CC10E50-392E-4B5D-98E4-D38F0061D363}.Release|x64.Build.0 = Release|x64
 		{2CC10E50-392E-4B5D-98E4-D38F0061D363}.Release|x86.ActiveCfg = Release|Any CPU
 		{2CC10E50-392E-4B5D-98E4-D38F0061D363}.Release|x86.Build.0 = Release|Any CPU
+		{D73325D8-2406-47FF-9E7A-E295A847268B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D73325D8-2406-47FF-9E7A-E295A847268B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D73325D8-2406-47FF-9E7A-E295A847268B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D73325D8-2406-47FF-9E7A-E295A847268B}.Debug|x64.Build.0 = Debug|Any CPU
+		{D73325D8-2406-47FF-9E7A-E295A847268B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D73325D8-2406-47FF-9E7A-E295A847268B}.Debug|x86.Build.0 = Debug|Any CPU
+		{D73325D8-2406-47FF-9E7A-E295A847268B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D73325D8-2406-47FF-9E7A-E295A847268B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D73325D8-2406-47FF-9E7A-E295A847268B}.Release|x64.ActiveCfg = Release|Any CPU
+		{D73325D8-2406-47FF-9E7A-E295A847268B}.Release|x64.Build.0 = Release|Any CPU
+		{D73325D8-2406-47FF-9E7A-E295A847268B}.Release|x86.ActiveCfg = Release|Any CPU
+		{D73325D8-2406-47FF-9E7A-E295A847268B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -626,5 +640,6 @@ Global
 		{A3978461-5C39-43AE-9067-D755D51E7B26} = {EE50720D-A0E5-45EE-B2EC-E065B569DB27}
 		{4297FA87-629A-4000-8169-D97E8E64890E} = {EE50720D-A0E5-45EE-B2EC-E065B569DB27}
 		{78203460-9937-45E5-81CC-3045DDC10527} = {EE50720D-A0E5-45EE-B2EC-E065B569DB27}
+		{D73325D8-2406-47FF-9E7A-E295A847268B} = {EE50720D-A0E5-45EE-B2EC-E065B569DB27}
 	EndGlobalSection
 EndGlobal

@@ -1,5 +1,6 @@
-﻿using System;
-using System.Linq;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -17,7 +18,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
         public ConnectionManagerControl() {
             InitializeComponent();
         }
-        
+
         private void ButtonCancel_Click(object sender, RoutedEventArgs e) {
             Model?.CancelEdit();
         }
@@ -59,6 +60,17 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
                 List.ScrollIntoView(model.EditedConnection);
                 List.SelectedItems.Add(model.EditedConnection);
             }
+        }
+
+        private void Connection_KeyUp(object sender, KeyEventArgs e) {
+            if (e.Key == Key.Enter) {
+                Model?.ConnectAsync(GetConnection(e)).DoNotWait();
+            }
+        }
+
+        private void Connection_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
+            Model?.ConnectAsync(GetConnection(e)).DoNotWait();
+            e.Handled = true;
         }
     }
 }

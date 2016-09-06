@@ -27,16 +27,6 @@ namespace Microsoft.VisualStudio.R.Package.RClient {
             set { _registry = value; }
         }
 
-        public static void CheckInstall(ICoreShell coreShell) {
-            coreShell.AssertIsOnMainThread();
-            var connections = coreShell.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate().Connections;
-
-            string rClientPath = CheckMicrosoftRClientInstall(coreShell);
-            if (rClientPath != null) {
-                connections.GetOrAddConnection("Microsoft R Client", rClientPath, string.Empty);
-            }
-        }
-
         internal static string CheckMicrosoftRClientInstall(ICoreShell coreShell) {
             coreShell.AssertIsOnMainThread();
 

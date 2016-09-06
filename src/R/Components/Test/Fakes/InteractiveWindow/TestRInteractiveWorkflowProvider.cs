@@ -77,7 +77,9 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
             Interlocked.CompareExchange(ref _instanceLazy, new Lazy<IRInteractiveWorkflow>(CreateRInteractiveWorkflow), null);
             return _instanceLazy.Value;
         }
-        
+
+        public IRInteractiveWorkflow Active => _instanceLazy.IsValueCreated ? _instanceLazy.Value : null;
+
         private IRInteractiveWorkflow CreateRInteractiveWorkflow() {
             var sessionProvider = _sessionProvider ?? new RSessionProvider();
             sessionProvider.TrySwitchBroker(BrokerName).Wait();

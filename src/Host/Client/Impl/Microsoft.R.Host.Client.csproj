@@ -93,7 +93,6 @@
     <Compile Include="ExecutionTracing\RSessionExtensions.cs" />
     <Compile Include="ExecutionTracing\RSourceLocation.cs" />
     <Compile Include="Host\LocalRHostConnector.cs" />
-    <Compile Include="Install\RInstallationExtensions.cs" />
     <Compile Include="Extensions\DirectoryExtensions.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -115,6 +114,11 @@
     <Compile Include="Definitions\OutputType.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Host\RHostLoggingExtensions.cs" />
+    <Compile Include="Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Session\RAfterRequestEventArgs.cs" />
     <Compile Include="Session\RBeforeRequestEventArgs.cs" />
     <Compile Include="Context\RContext.cs" />
@@ -124,11 +128,6 @@
     <Compile Include="Host\RHostDisconnectedException.cs" />
     <Compile Include="Session\RConnectedEventArgs.cs" />
     <Compile Include="Session\ROutputEventArgs.cs" />
-    <Compile Include="Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <Compile Include="Session\RSession.cs" />
     <Compile Include="Session\RSessionEvaluation.cs" />
     <Compile Include="Session\RSessionEvaluationCommands.cs" />

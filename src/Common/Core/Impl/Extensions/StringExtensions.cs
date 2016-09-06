@@ -25,6 +25,9 @@ namespace Microsoft.Common.Core {
         public static bool EndsWithOrdinal(this string s, string suffix) {
             return s.EndsWith(suffix, StringComparison.Ordinal);
         }
+        public static bool EndsWith(this string s, char ch) {
+            return s.Length > 0 && s[s.Length-1] == ch;
+        }
         public static int IndexOfIgnoreCase(this string s, string searchFor) {
             return s.IndexOf(searchFor, StringComparison.OrdinalIgnoreCase);
         }

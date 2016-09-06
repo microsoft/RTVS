@@ -61,7 +61,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 if (!Session.IsHostRunning) {
                     var startupInfo = new RHostStartupInfo {
                         Name = "REPL",
-                        RHostCommandLineArguments = _connections.ActiveConnection.RCommandLineArguments,
+                        RHostCommandLineArguments = _connections.ActiveConnection?.RCommandLineArguments,
                         CranMirrorName = _settings.CranMirror,
                         CodePage = _settings.RCodePage,
                         WorkingDirectory = _settings.WorkingDirectory,
@@ -157,8 +157,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 }
 
                 return ExecutionResult.Success;
-            } catch (RHostDisconnectedException) {
-                WriteError(Resources.MicrosoftRHostDisconnected);
+            } catch (RHostDisconnectedException rhdex) {
+                WriteError(rhdex.Message);
                 return ExecutionResult.Success;
             } catch (OperationCanceledException) {
                 // Cancellation reason was already reported via RSession.Error and printed out;

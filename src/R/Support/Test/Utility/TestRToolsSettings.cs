@@ -4,7 +4,10 @@
 using System;
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Microsoft.Common.Core.Enums;
+using Microsoft.R.Components.ConnectionManager;
+using Microsoft.R.Components.ConnectionManager.Implementation;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Interpreters;
 using Microsoft.R.Support.Settings.Definitions;
@@ -14,17 +17,17 @@ namespace Microsoft.R.Support.Test.Utility {
     [Export(typeof(IRSettings))]
     [Export(typeof(IRToolsSettings))]
     public sealed class TestRToolsSettings : IRToolsSettings {
-        private static readonly ConnectionInfo[] _connections = {new ConnectionInfo {
+        private static readonly IConnectionInfo[] _connections = {new ConnectionInfo {
             Name = "Test",
-            Path = new Uri(new RInstallation().GetRInstallPath()).LocalPath
+            Path = new RInstallation().GetCompatibleEngines().First().InstallPath
         }};
 
-        public ConnectionInfo[] Connections {
+        public IConnectionInfo[] Connections {
             get { return _connections; }
             set { }
         }
 
-        public ConnectionInfo LastActiveConnection {
+        public IConnectionInfo LastActiveConnection {
             get { return _connections[0]; }
             set { }
         }

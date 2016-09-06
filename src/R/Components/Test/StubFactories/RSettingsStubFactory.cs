@@ -3,7 +3,8 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.R.Components.Settings;
+using System.Linq;
+using Microsoft.R.Components.ConnectionManager.Implementation;
 using Microsoft.R.Components.Test.Stubs;
 using Microsoft.R.Interpreters;
 
@@ -13,8 +14,7 @@ namespace Microsoft.R.Components.Test.StubFactories {
         public static RSettingsStub CreateForExistingRPath() {
             var connection = new ConnectionInfo {
                 Name = "Test",
-                Path = new Uri(new RInstallation().GetRInstallPath()).LocalPath
-            };
+                Path = new RInstallation().GetCompatibleEngines().First().InstallPath };
 
             return new RSettingsStub {
                 Connections = new [] { connection },
