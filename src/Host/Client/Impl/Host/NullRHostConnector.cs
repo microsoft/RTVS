@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
@@ -10,8 +9,7 @@ using Microsoft.Common.Core;
 namespace Microsoft.R.Host.Client.Host {
     internal sealed class NullRHostConnector : IRHostConnector {
         private static Task<RHost> Result { get; } = TaskUtilities.CreateCanceled<RHost>(
-            new RHostDisconnectedException(
-                string.Format(CultureInfo.InvariantCulture, Resources.NoConnectionsAvailable, Environment.NewLine, Environment.NewLine)));
+            new RHostDisconnectedException(Resources.NoConnectionsAvailable));
 
         public Uri BrokerUri { get; } = new Uri("http://localhost");
         public bool IsRemote { get; } = true;

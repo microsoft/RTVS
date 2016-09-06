@@ -118,9 +118,13 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="NoConnectionsAvailable" xml:space="preserve">
-    <value>There is no local R detected and no remote connection established.{0}You can try re-connecting to the remote machine,{1}use another connection or install local R.</value>
+    <value>There is no local R detected and no remote connection established.
+You can try re-connecting to the remote machine, 
+use another connection or install local R.</value>
   </data>
   <data name="RHostDisconnected" xml:space="preserve">
-    <value>Interactive Window is disconnected from R Session.{0}Try connecting to a remote machine in the Workspaces window or{1}click Reset to restart local R interpreter.</value>
+    <value>Interactive Window is disconnected from R Session.
+Try connecting to a remote machine in the Workspaces window or
+click Reset to restart local R interpreter.</value>
   </data>
 </root>

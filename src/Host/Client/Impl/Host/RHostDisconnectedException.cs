@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Globalization;
 using System.Runtime.Serialization;
 using System.Threading;
 
@@ -10,8 +9,7 @@ namespace Microsoft.R.Host.Client.Host {
     [Serializable]
     [System.Runtime.InteropServices.ComVisible(true)]
     public class RHostDisconnectedException : OperationCanceledException {
-        public RHostDisconnectedException() : this(
-            string.Format(CultureInfo.InvariantCulture, Resources.RHostDisconnected, Environment.NewLine, Environment.NewLine)) { }
+        public RHostDisconnectedException() : this(Resources.RHostDisconnected) { }
 
         public RHostDisconnectedException(string message) : base(message) {}
 
