@@ -18,10 +18,15 @@ namespace Microsoft.R.Wpf {
         public static object ContentMouseOverTextBrushKey { get; set; } = SystemColors.ControlTextBrushKey;
         public static object ContentSelectedBrushKey { get; set; } = SystemColors.ActiveCaptionBrushKey;
         public static object ContentSelectedTextBrushKey { get; set; } = SystemColors.ActiveCaptionTextBrushKey;
+        public static object ControlKey { get; set; } = SystemColors.ControlBrushKey;
+        public static object ControlDarkKey { get; set; } = SystemColors.ControlDarkBrushKey;
+        public static object ControlLightKey { get; set; } = SystemColors.ControlLightBrushKey;
+        public static object ControlTextKey { get; set; } = SystemColors.ControlTextBrushKey;
         public static object ControlLinkTextHoverKey { get; set; } = SystemColors.HotTrackBrushKey;
         public static object ControlLinkTextKey { get; set; } = SystemColors.HighlightBrushKey;
         public static object DetailPaneBackgroundKey { get; set; } = SystemColors.WindowBrushKey;
         public static object GrayTextBrushKey { get; set; } = SystemColors.GrayTextBrushKey;
+        public static object GrayTextColorKey { get; set; } = SystemColors.GrayTextColorKey;
         public static object HeaderBackgroundKey { get; set; } = SystemColors.WindowBrushKey;
         public static object HeaderColorsDefaultBrushKey { get; set; } = SystemColors.WindowBrushKey;
         public static object HeaderColorsDefaultTextBrushKey { get; set; } = SystemColors.WindowTextBrushKey;
@@ -41,6 +46,7 @@ namespace Microsoft.R.Wpf {
         public static object ToolWindowButtonDownKey { get; set; } = SystemColors.WindowBrushKey;
         public static object ToolWindowButtonHoverActiveBorderKey { get; set; } = SystemColors.WindowBrushKey;
         public static object ToolWindowButtonHoverActiveKey { get; set; } = SystemColors.WindowBrushKey;
+        public static object ToolWindowTextKey { get; set; } = SystemColors.ControlTextBrushKey;
         public static object UITextKey { get; set; } = SystemColors.ControlTextBrushKey;
         public static object WindowTextKey { get; set; } = SystemColors.WindowTextBrushKey;
         public static object WindowKey { get; set; } = SystemColors.WindowBrushKey;
@@ -70,5 +76,7 @@ namespace Microsoft.R.Wpf {
         public static object StatusBarTextBrushKey { get; set; } = SystemColors.ControlTextBrushKey; 
         public static object StatusBarTextColorKey { get; set; } = SystemColors.ControlTextColorKey;
 
+        public static object SelectedItemActiveBrushKey { get; set; } = SystemColors.ControlTextBrushKey;
+        public static object SelectedItemActiveColorKey { get; set; } = SystemColors.ControlTextColorKey;
     }
 }

@@ -10,6 +10,7 @@ using Microsoft.R.Components.History;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Settings;
+using Microsoft.R.Components.Workspace;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.VisualStudio.R.Package.Repl;
@@ -21,15 +22,16 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         private readonly IRSettings _settings;
         private readonly Action _onDispose;
         private readonly RInteractiveWorkflowOperations _operations;
+        private readonly IWorkspaceServices _wss;
 
         private bool _replLostFocus;
         private bool _disposed;
         private bool _debuggerJustEnteredBreakMode;
 
         public ICoreShell Shell { get; }
-        public IRHostBrokerConnector BrokerConnector { get; }
         public IConnectionManager Connections { get; }
         public IRHistory History { get; }
+        public IRSessionProvider RSessions { get; }
         public IRSession RSession { get; }
         public IRPackageManager Packages { get; }
         public IRPlotManager Plots { get; }
@@ -45,24 +47,25 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             , IRPlotManagerProvider plotsProvider
             , IActiveWpfTextViewTracker activeTextViewTracker
             , IDebuggerModeTracker debuggerModeTracker
-            , IRHostBrokerConnector brokerConnector
             , ICoreShell coreShell
             , IRSettings settings
+            , IWorkspaceServices wss
             , Action onDispose) {
 
             _activeTextViewTracker = activeTextViewTracker;
             _debuggerModeTracker = debuggerModeTracker;
             _settings = settings;
+            _wss = wss;
             _onDispose = onDispose;
 
             Shell = coreShell;
-            BrokerConnector = brokerConnector;
+            RSessions = sessionProvider;
 
-            RSession = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, brokerConnector);
+            RSession = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
             Connections = connectionsProvider.CreateConnectionManager(this);
 
             History = historyProvider.CreateRHistory(this);
-            Packages = packagesProvider.CreateRPackageManager(sessionProvider, settings, this);
+            Packages = packagesProvider.CreateRPackageManager(settings, this);
             Plots = plotsProvider.CreatePlotManager(settings, this);
             _operations = new RInteractiveWorkflowOperations(this, _debuggerModeTracker, Shell);
 
@@ -105,7 +108,9 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 // i.e. user worked in the REPL and not in the editor. Pull 
                 // the focus back here. 
                 _replLostFocus = false;
-                ActiveWindow.Container.Show(focus: true, immediate: false);
+                if (IsRProjectActive()) {
+                    ActiveWindow.Container.Show(focus: true, immediate: false);
+                }
 
                 // Reset the flag, so that further focus changes are not affected until the next debugger break occurs.
                 _debuggerJustEnteredBreakMode = false;
@@ -114,6 +119,11 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
         private void RSessionDisconnected(object o, EventArgs eventArgs) {
             Operations.ClearPendingInputs();
+        }
+
+        private bool IsRProjectActive() {
+            var wss = Shell.ExportProvider.GetExportedValue<IWorkspaceServices>();
+            return wss.IsRProjectActive;
         }
 
         public async Task<IInteractiveWindowVisualComponent> GetOrCreateVisualComponent(IInteractiveWindowComponentContainerFactory componentContainerFactory, int instanceId = 0) {

@@ -142,7 +142,6 @@
     <Compile Include="Undo\TextUndoTransactionThatRollsBackProperly.cs" />
     <Compile Include="Utility\GuardedOperations.cs" />
     <Compile Include="Utility\StringUtility.cs" />
-    <Compile Include="Workspace\IWorkspaceServices.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">

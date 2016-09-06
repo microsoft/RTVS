@@ -30,14 +30,14 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
         [InlineData(false)]
         public async Task QuickInfoSourceTest01(bool cached) {
             if(!cached) {
-                PackageIndex.ClearCache();
+                Support.Help.Packages.PackageIndex.ClearCache();
             }
             string content = @"x <- as.matrix(x)";
             AstRoot ast = RParser.Parse(content);
 
             int caretPosition = 15; // in arguments
             ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            QuickInfoSource quickInfoSource = new QuickInfoSource(textBuffer, _editorShell);
+            QuickInfoSource quickInfoSource = new QuickInfoSource(textBuffer, EditorShell);
             QuickInfoSessionMock quickInfoSession = new QuickInfoSessionMock(textBuffer, caretPosition);
             List<object> quickInfoContent = new List<object>();
 
@@ -60,7 +60,7 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
 
             int caretPosition = 23; // in arguments
             ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            QuickInfoSource quickInfoSource = new QuickInfoSource(textBuffer, _editorShell);
+            QuickInfoSource quickInfoSource = new QuickInfoSource(textBuffer, EditorShell);
             QuickInfoSessionMock quickInfoSession = new QuickInfoSessionMock(textBuffer, caretPosition);
             List<object> quickInfoContent = new List<object>();
 

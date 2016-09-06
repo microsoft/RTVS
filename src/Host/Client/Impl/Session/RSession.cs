@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -56,14 +55,12 @@ namespace Microsoft.R.Host.Client.Session {
         private volatile RHostStartupInfo _startupInfo;
 
         public int Id { get; }
-        internal IRHostBrokerConnector BrokerConnector { get; }
+        internal IRHostConnector BrokerConnector { get; }
         public string Prompt { get; private set; } = DefaultPrompt;
         public int MaxLength { get; private set; } = 0x1000;
         public bool IsHostRunning => _isHostRunning;
         public Task HostStarted => _initializationTcs?.Task ?? Task.FromCanceled(new CancellationToken(true));
-        public bool IsRemote { get; private set; }
-
-        public int? ProcessId => _host?.ProcessId;
+        public bool IsRemote => BrokerConnector.IsRemote;
 
         /// <summary>
         /// For testing purpose only
@@ -76,7 +73,7 @@ namespace Microsoft.R.Host.Client.Session {
             CanceledBeginInteractionTask = TaskUtilities.CreateCanceled<IRSessionInteraction>(new RHostDisconnectedException());
         }
 
-        public RSession(int id, IRHostBrokerConnector brokerConnector, Action onDispose) {
+        public RSession(int id, IRHostConnector brokerConnector, Action onDispose) {
             Id = id;
             BrokerConnector = brokerConnector;
             _onDispose = onDispose;
@@ -91,8 +88,6 @@ namespace Microsoft.R.Host.Client.Session {
             });
 
             _afterHostStartedTask = TaskUtilities.CreateCanceled(new RHostDisconnectedException());
-
-            IsRemote = brokerConnector.IsRemoteConnection();
         }
 
         private void OnMutated() {
@@ -317,13 +312,11 @@ namespace Microsoft.R.Host.Client.Session {
             using (var evaluation = await evaluationSource.Task) {
                 // Load RTVS R package before doing anything in R since the calls
                 // below calls may depend on functions exposed from the RTVS package
-                var libPath = BrokerConnector.IsRemote 
-                    ? "."
-                    : Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetAssemblyPath());
+                var libPath = IsRemote ? "." : Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetAssemblyPath());
 
                 await LoadRtvsPackage(evaluation, libPath);
 
-                if (startupInfo.WorkingDirectory != null) {
+                if (!IsRemote && startupInfo.WorkingDirectory != null) {
                     await evaluation.SetWorkingDirectoryAsync(startupInfo.WorkingDirectory);
                 } else {
                     await evaluation.SetDefaultWorkingDirectoryAsync();
@@ -354,7 +347,6 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         Task IRCallbacks.Connected(string rVersion) {
-            IsRemote = BrokerConnector.IsRemoteConnection();
             Prompt = DefaultPrompt;
             _isHostRunning = true;
             _initializationTcs.SetResult(null);

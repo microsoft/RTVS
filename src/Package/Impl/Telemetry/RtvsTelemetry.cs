@@ -9,9 +9,9 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Telemetry;
-using Microsoft.R.Interpreters;
 using Microsoft.R.Editor.Settings;
-using Microsoft.R.Host.Client.Install;
+using Microsoft.R.Interpreters;
+using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.RClient;
 using Microsoft.VisualStudio.R.Package.Telemetry.Data;
@@ -25,6 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
     /// </summary>
     internal sealed class RtvsTelemetry : IRtvsTelemetry {
         private ToolWindowTracker _toolWindowTracker = new ToolWindowTracker();
+        private readonly IPackageIndex _packageIndex;
 
         public static IRtvsTelemetry Current { get; set; }
 
@@ -34,8 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
             public const string REngine = "R Engine";
             public const string RROEngine = "RRO Engine";
             public const string MROEngine = "MRO Engine";
-            public const string RBasePackages = "R Base Package";
-            public const string RUserPackages = "R User Package";
+            public const string RPackages = "R Package";
             public const string RClientFound = "MRC Found";
             public const string RClientInstallYes = "MRC Install Yes";
             public const string RClientInstallCancel = "MRC Install Canceled";
@@ -51,13 +51,14 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
             public const string ToolWindow = "Tool Window";
         }
 
-        public static void Initialize(ITelemetryService service = null) {
+        public static void Initialize(IPackageIndex packageIndex, ITelemetryService service = null) {
             if (Current == null) {
-                Current = new RtvsTelemetry(service);
+                Current = new RtvsTelemetry(packageIndex, service);
             }
         }
 
-        public RtvsTelemetry(ITelemetryService service = null) {
+        public RtvsTelemetry(IPackageIndex packageIndex, ITelemetryService service = null) {
+            _packageIndex = packageIndex;
             TelemetryService = service ?? VsTelemetryService.Current;
         }
 
@@ -70,44 +71,44 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
                     TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RtvsVersion, thisAssembly.GetName().Version.ToString());
 
                     //TODO: Fix telemetry. There may be no local install path, and remote R brokers may be offline.
+                    ReportLocalRConfiguration();
 
-                    //string rInstallPath = new RInstallation().GetRInstallPath(RToolsSettings.Current.RBasePath);
-                    //TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RInstallPath, rInstallPath);
-
-                    //string rClientPath = MicrosoftRClient.GetRClientPath();
-                    //if (rClientPath != null) {
-                    //    TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RClientFound);
-                    //    if (rInstallPath != null && rInstallPath.EqualsIgnoreCase(rClientPath)) {
-                    //        TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RClientActive);
-                    //    }
-                    //}
-
-                    //var rEngines = GetRSubfolders("R");
-                    //foreach (var s in rEngines) {
-                    //    TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.REngine, s);
-                    //}
-
-                    //var rroEngines = GetRSubfolders("RRO");
-                    //foreach (var s in rroEngines) {
-                    //    TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RROEngine, s);
-                    //}
-
-                    //var mroEngines = GetRSubfolders("MRO");
-                    //foreach (var s in mroEngines) {
-                    //    TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.MROEngine, s);
-                    //}
-
-                    //var hashes = RPackageData.GetInstalledPackageHashes(RPackageType.Base);
-                    //foreach (var s in hashes) {
-                    //    TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RBasePackages, s);
-                    //}
-
-                    //hashes = RPackageData.GetInstalledPackageHashes(RPackageType.User);
-                    //foreach (var s in hashes) {
-                    //    TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RUserPackages, s);
-                    //}
                 } catch (Exception ex) {
                     Trace.Fail("Telemetry exception: " + ex.Message);
+                }
+            }
+        }
+
+        private void ReportLocalRConfiguration() {
+            // Report local R installations
+            var engines = new RInstallation().GetCompatibleEngines();
+            foreach (var e in engines) {
+                TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RInstallPath, e.InstallPath);
+            }
+
+            string rClientPath = MicrosoftRClient.GetRClientPath();
+            if (rClientPath != null) {
+                TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RClientFound);
+            }
+
+            var rEngines = GetRSubfolders("R");
+            foreach (var s in rEngines) {
+                TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.REngine, s);
+            }
+
+            var rroEngines = GetRSubfolders("RRO");
+            foreach (var s in rroEngines) {
+                TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RROEngine, s);
+            }
+
+            var mroEngines = GetRSubfolders("MRO");
+            foreach (var s in mroEngines) {
+                TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.MROEngine, s);
+            }
+
+            if (_packageIndex != null) {
+                foreach(var p in _packageIndex.Packages) {
+                    TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RPackages, p.Name.GetMD5Hash());
                 }
             }
         }
@@ -133,6 +134,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
                                 CompletionEnabled = REditorSettings.CompletionEnabled,
                                 SyntaxCheckInRepl = REditorSettings.SyntaxCheckInRepl,
                                 PartialArgumentNameMatch = REditorSettings.PartialArgumentNameMatch,
+                                RCommandLineArguments = RToolsSettings.Current.LastActiveConnection.RCommandLineArguments
                             });
                 } catch (Exception ex) {
                     Trace.Fail("Telemetry exception: " + ex.Message);

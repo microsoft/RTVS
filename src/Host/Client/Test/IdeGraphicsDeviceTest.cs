@@ -13,13 +13,14 @@ using FluentAssertions;
 using Microsoft.Common.Core;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
+using Microsoft.R.Host.Client.Test.Fixtures;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 
 namespace Microsoft.R.Host.Client.Test {
     [ExcludeFromCodeCoverage]
-    public class IdeGraphicsDeviceTest : IDisposable {
+    public class IdeGraphicsDeviceTest {
         private readonly GraphicsDeviceTestFilesFixture _files;
         private readonly MethodInfo _testMethod;
 
@@ -40,12 +41,6 @@ namespace Microsoft.R.Host.Client.Test {
         public IdeGraphicsDeviceTest(GraphicsDeviceTestFilesFixture files, TestMethodFixture testMethod) {
             _files = files;
             _testMethod = testMethod.MethodInfo;
-            _brokerConnector = new RHostBrokerConnector();
-            _brokerConnector.SwitchToLocalBroker(nameof(IdeGraphicsDeviceTest));
-        }
-
-        public void Dispose() {
-            _brokerConnector.Dispose();
         }
 
         private int X(double percentX) {
@@ -573,7 +568,8 @@ dev.off()
 
         private async Task ExecuteInSession(string[] inputs, IRSessionCallback app) {
             using (var sessionProvider = new RSessionProvider()) {
-                var session = sessionProvider.GetOrCreate(Guid.NewGuid(), _brokerConnector);
+                await sessionProvider.TrySwitchBroker(nameof(IdeGraphicsDeviceTest));
+                var session = sessionProvider.GetOrCreate(Guid.NewGuid());
                 await session.StartHostAsync(new RHostStartupInfo {
                     Name = _testMethod.Name
                 }, app, 50000);
@@ -600,7 +596,8 @@ rtvs:::export_to_image(device_id, rtvs:::graphics.ide.getactiveplotid(device_id)
         private async Task<IEnumerable<string>> ExportToImageAsync(string[] inputs, string[] format, string[] paths, int widthInPixels, int heightInPixels, int resolution) {
             var app = new RHostClientTestApp { PlotHandler = OnPlot, PlotDeviceCreateHandler = OnDeviceCreate, PlotDeviceDestroyHandler = OnDeviceDestroy };
             using (var sessionProvider = new RSessionProvider()) {
-                var session = sessionProvider.GetOrCreate(Guid.NewGuid(), _brokerConnector);
+                await sessionProvider.TrySwitchBroker(nameof(IdeGraphicsDeviceTest));
+                var session = sessionProvider.GetOrCreate(Guid.NewGuid());
                 await session.StartHostAsync(new RHostStartupInfo {
                     Name = _testMethod.Name
                 }, app, 50000);
@@ -628,7 +625,8 @@ rtvs:::export_to_image(device_id, rtvs:::graphics.ide.getactiveplotid(device_id)
         private async Task<IEnumerable<string>> ExportToPdfAsync(string[] inputs, string filePath, int width, int height) {
             var app = new RHostClientTestApp { PlotHandler = OnPlot, PlotDeviceCreateHandler = OnDeviceCreate, PlotDeviceDestroyHandler = OnDeviceDestroy };
             using (var sessionProvider = new RSessionProvider()) {
-                var session = sessionProvider.GetOrCreate(Guid.NewGuid(), _brokerConnector);
+                await sessionProvider.TrySwitchBroker(nameof(IdeGraphicsDeviceTest));
+                var session = sessionProvider.GetOrCreate(Guid.NewGuid());
                 await session.StartHostAsync(new RHostStartupInfo {
                     Name = _testMethod.Name
                 }, app, 50000);

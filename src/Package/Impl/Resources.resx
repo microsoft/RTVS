@@ -468,6 +468,9 @@
   <data name="HistoryWindowCaption" xml:space="preserve">
     <value>R History</value>
   </data>
+  <data name="WorkspacesWindowCaption" xml:space="preserve">
+    <value>Workspaces</value>
+  </data>
   <data name="PackageManagerWindowCaption" xml:space="preserve">
     <value>R Package Manager</value>
   </data>
@@ -767,14 +770,14 @@ Additional information:
   <data name="BrowserType_Internal" xml:space="preserve">
     <value>Internal</value>
   </data>
-  <data name="Settings_ShinyBrowserType" xml:space="preserve">
-    <value>Shiny pages browser</value>
+  <data name="Settings_HtmlBrowserType" xml:space="preserve">
+    <value>HTML pages browser</value>
   </data>
-  <data name="Settings_ShinyBrowserType_Description" xml:space="preserve">
-    <value>Defines if Shiny pages should be opened in internal Visual Studio browser or in the external Web browser.</value>
+  <data name="Settings_HtmlBrowserType_Description" xml:space="preserve">
+    <value>Defines if HTML pages should be opened in internal Visual Studio browser or in the external Web browser.</value>
   </data>
-  <data name="Settings_ShinyCategory" xml:space="preserve">
-    <value>Shiny</value>
+  <data name="Settings_HtmlCategory" xml:space="preserve">
+    <value>HTML</value>
   </data>
   <data name="WebHelpWindowTitle" xml:space="preserve">
     <value>R Web Help</value>

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Test.Fixtures;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Test.Utility;
@@ -21,9 +22,11 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
     public class SignatureTest : IDisposable {
         private readonly IExportProvider _exportProvider;
         private readonly EditorHostMethodFixture _editorHost;
+        private readonly IRSessionProvider _sessionProvider;
 
-        public SignatureTest(REditorApplicationMefCatalogFixture catalogFixture, EditorHostMethodFixture editorHost) {
+        public SignatureTest(REditorApplicationMefCatalogFixture catalogFixture, SessionProviderFixture sessionProviderFixture, EditorHostMethodFixture editorHost) {
             _exportProvider = catalogFixture.CreateExportProvider();
+            _sessionProvider = sessionProviderFixture.SessionProvider;
             _editorHost = editorHost;
         }
 
@@ -36,9 +39,9 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
         public async Task R_SignatureParametersMatch() {
             using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 IntelliSenseRSession.HostStartTimeout = 10000;
-                using (new RHostScript(_exportProvider)) {
-                    var functionIndex = PrepareFunctionIndex();
-                    PackageIndexUtility.GetFunctionInfoAsync(functionIndex, "lm").Wait(3000);
+                using (new RHostScript(_sessionProvider)) {
+                    var functionIndex = await PrepareFunctionIndexAsync();
+                    await PackageIndexUtility.GetFunctionInfoAsync(functionIndex, "lm");
 
                     script.Type("x <- lm(");
                     script.DoIdle(2000);
@@ -72,9 +75,9 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
         public async Task R_SignatureSessionNavigation() {
             using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 IntelliSenseRSession.HostStartTimeout = 10000;
-                using (new RHostScript(_exportProvider)) {
-                    var functionIndex = PrepareFunctionIndex();
-                    PackageIndexUtility.GetFunctionInfoAsync(functionIndex, "lm").Wait(3000);
+                using (new RHostScript(_sessionProvider)) {
+                    var functionIndex = await PrepareFunctionIndexAsync();
+                    await PackageIndexUtility.GetFunctionInfoAsync(functionIndex, "lm");
 
                     script.Type("x <- lm(subset = a, sing");
                     script.DoIdle(1000);
@@ -106,11 +109,11 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
         [Category.Interactive]
         public async Task R_EqualsCompletion01() {
             using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
-                var functionIndex = PrepareFunctionIndex();
-                PackageIndexUtility.GetFunctionInfoAsync(functionIndex, "addmargins").Wait(3000);
+                var functionIndex = await PrepareFunctionIndexAsync();
+                var info = await PackageIndexUtility.GetFunctionInfoAsync(functionIndex, "addmargins");
 
                 script.DoIdle(100);
-                script.Type("addmargins(FU");
+                script.Type("addmargins(Fu");
                 script.DoIdle(300);
                 script.Type("=");
                 script.DoIdle(300);
@@ -122,9 +125,9 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
             }
         }
 
-        private IFunctionIndex PrepareFunctionIndex() {
+        private async Task<IFunctionIndex> PrepareFunctionIndexAsync() {
             var packageIndex = _exportProvider.GetExportedValue<IPackageIndex>();
-            packageIndex.BuildIndexAsync().Wait();
+            await packageIndex.BuildIndexAsync();
             return _exportProvider.GetExportedValue<IFunctionIndex>();
         }
     }

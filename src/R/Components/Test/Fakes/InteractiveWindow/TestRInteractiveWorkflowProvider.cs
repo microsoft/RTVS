@@ -13,8 +13,10 @@ using Microsoft.R.Components.InteractiveWorkflow.Implementation;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Settings;
+using Microsoft.R.Components.Workspace;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
+using Microsoft.R.Host.Client.Session;
 using Microsoft.UnitTests.Core.Mef;
 
 namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
@@ -33,6 +35,7 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
         private readonly IActiveWpfTextViewTracker _activeTextViewTracker;
         private readonly IDebuggerModeTracker _debuggerModeTracker;
         private readonly IRHostBrokerConnector _brokerConnector;
+        private readonly IWorkspaceServices _wss;
 
         private Lazy<IRInteractiveWorkflow> _instanceLazy;
         public IRSessionCallback HostClientApp { get; set; }
@@ -40,17 +43,18 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
         public string BrokerName { get; set; }
 
         [ImportingConstructor]
-        public TestRInteractiveWorkflowProvider(IRSessionProvider sessionProvider
-            , IConnectionManagerProvider connectionManagerProvider
+        public TestRInteractiveWorkflowProvider(IConnectionManagerProvider connectionManagerProvider
             , IRHistoryProvider historyProvider
             , IRPackageManagerProvider packagesProvider
             , IRPlotManagerProvider plotsProvider
             , IActiveWpfTextViewTracker activeTextViewTracker
             , IDebuggerModeTracker debuggerModeTracker
             // Required for the tests that create TestRInteractiveWorkflowProvider explicitly
-            , [Import(AllowDefault = true)] IRHostBrokerConnector brokerConnector
+            , [Import(AllowDefault = true)] IRSessionProvider sessionProvider
             , ICoreShell shell
-            , IRSettings settings) {
+            , IRSettings settings
+            , [Import(AllowDefault = true)] IWorkspaceServices wss
+            ) {
             _sessionProvider = sessionProvider;
             _connectionManagerProvider = connectionManagerProvider;
             _historyProvider = historyProvider;
@@ -58,9 +62,9 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
             _plotsProvider = plotsProvider;
             _activeTextViewTracker = activeTextViewTracker;
             _debuggerModeTracker = debuggerModeTracker;
-            _brokerConnector = brokerConnector;
             _shell = shell;
             _settings = settings;
+            _wss = wss;
         }
 
         public void Dispose() {
@@ -73,25 +77,27 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
             Interlocked.CompareExchange(ref _instanceLazy, new Lazy<IRInteractiveWorkflow>(CreateRInteractiveWorkflow), null);
             return _instanceLazy.Value;
         }
-        
+
+        public IRInteractiveWorkflow Active => _instanceLazy.IsValueCreated ? _instanceLazy.Value : null;
+
         private IRInteractiveWorkflow CreateRInteractiveWorkflow() {
-            var brokerConnector = _brokerConnector ?? new RHostBrokerConnector();
-            brokerConnector.SwitchToLocalBroker(BrokerName);
-            return new RInteractiveWorkflow(_sessionProvider
+            var sessionProvider = _sessionProvider ?? new RSessionProvider();
+            sessionProvider.TrySwitchBroker(BrokerName).Wait();
+            return new RInteractiveWorkflow(sessionProvider
                 , _connectionManagerProvider
                 , _historyProvider
                 , _packagesProvider
                 , _plotsProvider
                 , _activeTextViewTracker
                 , _debuggerModeTracker
-                , brokerConnector
                 , _shell
                 , _settings
-                , () => DisposeInstance(brokerConnector));
+                , _wss
+                , () => DisposeInstance(sessionProvider));
         }
 
-        private void DisposeInstance(IRHostBrokerConnector brokerConnector) {
-            brokerConnector.Dispose();
+        private void DisposeInstance(IRSessionProvider sessionProvider) {
+            sessionProvider.Dispose();
             _instanceLazy = null;
         }
     }

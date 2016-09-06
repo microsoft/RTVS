@@ -12,6 +12,8 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Threading;
+using Microsoft.Languages.Editor.Tasks;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
@@ -24,21 +26,29 @@ namespace Microsoft.R.Support.Help.Packages {
     /// </summary>
     [Export(typeof(IPackageIndex))]
     public sealed class PackageIndex : IPackageIndex {
+        private readonly IRSession _interactiveSession;
         private readonly ICoreShell _shell;
         private readonly IIntellisenseRSession _host;
         private readonly IFunctionIndex _functionIndex;
         private readonly ConcurrentDictionary<string, PackageInfo> _packages = new ConcurrentDictionary<string, PackageInfo>();
         private readonly BinaryAsyncLock _buildIndexLock = new BinaryAsyncLock();
-
+        
         public static readonly IEnumerable<string> PreloadedPackages = new string[]
             { "base", "stats", "utils", "graphics", "datasets", "methods" };
 
         [ImportingConstructor]
-        public PackageIndex(ICoreShell shell, IIntellisenseRSession host, IFunctionIndex functionIndex) {
+        public PackageIndex(IRInteractiveWorkflowProvider interactiveWorkflowProvider, ICoreShell shell, IIntellisenseRSession host, IFunctionIndex functionIndex) {
             _shell = shell;
             _host = host;
             _functionIndex = functionIndex;
+
+            _interactiveSession = interactiveWorkflowProvider.GetOrCreate().RSession;
+
+            _interactiveSession.PackagesInstalled += OnPackagesChanged;
+            _interactiveSession.PackagesRemoved += OnPackagesChanged;
         }
+
+        private void OnPackagesChanged(object sender, EventArgs e) => ScheduleIdleTimeRebuild();
 
         #region IPackageIndex
         /// <summary>
@@ -106,13 +116,19 @@ namespace Microsoft.R.Support.Help.Packages {
         }
 
         public void WriteToDisk() {
-            foreach (var pi in _packages.Values) {
-                pi.WriteToDisk();
+            if (_buildIndexLock.IsCompleted) {
+                foreach (var pi in _packages.Values) {
+                    pi.WriteToDisk();
+                }
             }
         }
         #endregion
 
         public void Dispose() {
+            if (_interactiveSession != null) {
+                _interactiveSession.PackagesInstalled -= OnPackagesChanged;
+                _interactiveSession.PackagesRemoved -= OnPackagesChanged;
+            }
             _host?.Dispose();
         }
 
@@ -170,6 +186,23 @@ namespace Microsoft.R.Support.Help.Packages {
             try {
                 Directory.Delete(CacheFolderPath, recursive: true);
             } catch (IOException) { } catch (UnauthorizedAccessException) { }
+        }
+
+        private void ScheduleIdleTimeRebuild() {
+            IdleTimeAction.Cancel(typeof(PackageIndex));
+            IdleTimeAction.Create(() => RebuildIndex(), 100, typeof(PackageIndex), _shell);
+        }
+
+        private void RebuildIndex() {
+            if(!_buildIndexLock.IsCompleted) {
+                // Stull building, try again later
+                ScheduleIdleTimeRebuild();
+                return;
+            }
+
+            _buildIndexLock.Reset();
+            _packages.Clear();
+            BuildIndexAsync().DoNotWait();
         }
     }
 }

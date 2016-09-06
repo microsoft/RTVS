@@ -66,6 +66,7 @@
     <Compile Include="Threading\UIThreadHelper.cs" />
     <Compile Include="Threading\UIThreadTools.cs" />
     <Compile Include="UI\ContainerHost.cs" />
+    <Compile Include="XUnit\AssemblyFixtureImportAttribute.cs" />
     <Compile Include="XUnit\AssemblyLoaderAttribute.cs" />
     <Compile Include="XUnit\AssemblyRunner.cs" />
     <Compile Include="XUnit\BeforeCtorAfterDisposeAttribute.cs" />

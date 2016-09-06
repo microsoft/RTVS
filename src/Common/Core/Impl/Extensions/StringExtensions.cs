@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Microsoft.Common.Core {
@@ -23,6 +24,9 @@ namespace Microsoft.Common.Core {
         }
         public static bool EndsWithOrdinal(this string s, string suffix) {
             return s.EndsWith(suffix, StringComparison.Ordinal);
+        }
+        public static bool EndsWith(this string s, char ch) {
+            return s.Length > 0 && s[s.Length-1] == ch;
         }
         public static int IndexOfIgnoreCase(this string s, string searchFor) {
             return s.IndexOf(searchFor, StringComparison.OrdinalIgnoreCase);
@@ -155,6 +159,13 @@ namespace Microsoft.Common.Core {
                 }
             }
             return "\n"; // default
+        }
+
+        public static string GetMD5Hash(this string input) {
+            SHA512 sha = SHA512.Create();
+            byte[] inputBytes = Encoding.Unicode.GetBytes(input);
+            byte[] hash = sha.ComputeHash(inputBytes);
+            return BitConverter.ToString(hash);
         }
     }
 }

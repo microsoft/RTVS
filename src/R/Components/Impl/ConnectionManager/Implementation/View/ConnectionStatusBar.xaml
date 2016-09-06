@@ -36,15 +36,15 @@
     </UserControl.Resources>
     <StackPanel>
         <Grid Margin="0,0,7,0" Visibility="{Binding Path=IsRemote, Converter={x:Static wpf:Converters.FalseIsNotCollapsed}}">
-            <Rectangle Fill="{StaticResource IconRLocalConnectedStatusBar}" Width="18"
+            <Rectangle Fill="{StaticResource IconRLocalConnected}" Width="18"
                        Visibility="{Binding Path=IsConnected, Converter={x:Static wpf:Converters.TrueIsNotCollapsed}}"/>
-            <Rectangle Fill="{StaticResource IconRLocalDisconnectedStatusBar}" Width="18"
+            <Rectangle Fill="{StaticResource IconRLocalDisconnected}" Width="18"
                        Visibility="{Binding Path=IsConnected, Converter={x:Static wpf:Converters.FalseIsNotCollapsed}}" />
         </Grid>
         <Grid Margin="0,0,7,0" Visibility="{Binding Path=IsRemote, Converter={x:Static wpf:Converters.TrueIsNotCollapsed}}">
-            <Rectangle Fill="{StaticResource IconRCloudConnectedStatusBar}" Width="18"
+            <Rectangle Fill="{StaticResource IconRCloudConnected}" Width="18"
                        Visibility="{Binding Path=IsConnected, Converter={x:Static wpf:Converters.TrueIsNotCollapsed}}"/>
-            <Rectangle Fill="{StaticResource IconRCloudDisconnectedStatusBar}" Width="18"
+            <Rectangle Fill="{StaticResource IconRCloudDisconnected}" Width="18"
                        Visibility="{Binding Path=IsConnected, Converter={x:Static wpf:Converters.FalseIsNotCollapsed}}" />
         </Grid>
         <TextBlock Text="{Binding Path=SelectedConnection}" Margin="0,0,7,0" MaxWidth="300"

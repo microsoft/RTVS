@@ -3,18 +3,14 @@
 
 using System;
 using System.Reflection;
-using System.Runtime;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.R.Host.Client.Host;
-using Microsoft.R.Host.Client.Install;
 using Microsoft.R.Host.Client.Session;
-using Microsoft.R.Interpreters;
 using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 using Xunit;
-using FluentAssertions;
 
 namespace Microsoft.R.Host.Client.Test.Session {
     public partial class RSessionTest {
@@ -134,11 +130,10 @@ namespace Microsoft.R.Host.Client.Test.Session {
             [Test]
             public async Task DestroyBlob_DisconnectedDuringDestroy() {
                 var blobIds = new ulong[1024 * 1024];
-                ManualResetEvent testStarted = new ManualResetEvent(false);
 
                 Func<Task> f = () => _session.DestroyBlobsAsync(blobIds);
 
-                var assertion = f.ShouldThrowAsync<RHostDisconnectedException>();
+                var assertion = Task.Run(() => f.ShouldThrowAsync<RHostDisconnectedException>());
                 await _session.StopHostAsync();
                 await assertion;
             }

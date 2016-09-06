@@ -8,10 +8,9 @@ using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
+using Microsoft.R.Host.Client.Test.Fixtures;
 using Microsoft.R.Host.Client.Test.Script;
-using Microsoft.R.Interpreters;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 using Microsoft.VisualStudio.R.Package.DataInspect;
@@ -31,19 +30,17 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         }
 
         private readonly MethodInfo _testMethod;
-        private readonly IRHostBrokerConnector _brokerConnector;
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _session;
 
         public GridDataTest(TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo;
-            _brokerConnector = new RHostBrokerConnector();
-            _brokerConnector.SwitchToLocalBroker(nameof(GridDataTest));
             _sessionProvider = new RSessionProvider();
-            _session = _sessionProvider.GetOrCreate(Guid.NewGuid(), _brokerConnector);
+            _session = _sessionProvider.GetOrCreate(Guid.NewGuid());
         }
 
         public async Task InitializeAsync() {
+            await _sessionProvider.TrySwitchBroker(GetType().Name);
             await _session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name
             }, new RHostClientTestApp(), 50000);
@@ -52,7 +49,6 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         public async Task DisposeAsync() {
             await _session.StopHostAsync();
             _sessionProvider.Dispose();
-            _brokerConnector.Dispose();
         }
 
         private static IEnumerable<T> ToEnumerable<T>(IRange<T> range) {

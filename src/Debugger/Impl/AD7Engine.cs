@@ -43,9 +43,6 @@ namespace Microsoft.R.Debugger {
         internal AD7Thread MainThread { get; private set; }
 
         [Import]
-        private IRSessionProvider RSessionProvider { get; set; }
-
-        [Import]
         internal IDebugGridViewProvider GridViewProvider { get; set; }
 
         public AD7Engine() {
@@ -73,7 +70,6 @@ namespace Microsoft.R.Debugger {
             MainThread = null;
 
             Tracer = null;
-            RSessionProvider = null;
 
             ExitBrowserAsync(Session).DoNotWait();
             Session = null;

@@ -3,17 +3,13 @@
 
 using System;
 using System.ComponentModel;
-using System.Drawing.Design;
 using Microsoft.Common.Core.Enums;
-using Microsoft.Common.Core.Shell;
+using Microsoft.R.Components.ConnectionManager.Implementation;
 using Microsoft.R.Components.Settings;
-using Microsoft.R.Interpreters;
-using Microsoft.R.Host.Client.Install;
 using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.VisualStudio.R.Package.Options.Attributes;
 using Microsoft.VisualStudio.R.Package.Options.R.Tools;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Telemetry;
 using Microsoft.VisualStudio.Shell;
 using Newtonsoft.Json;
@@ -27,6 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             this.SettingsRegistryPath = @"UserSettings\R_Tools";
         }
 
+        [Browsable(false)]
         public bool IsLoadingFromStorage { get; private set; }
 
         [LocCategory("Settings_GeneralCategory")]
@@ -260,20 +257,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
                 base.LoadSettingsFromStorage();
                 IsLoadingFromStorage = false;
             }
-        }
-
-        private string ValidateRBasePath(string path) {
-            // If path is null, folder selector dialog was canceled
-            if (path != null) {
-                var ri = new RInstallation();
-                path = ri.NormalizeRPath(path);
-                bool valid = ri.VerifyRIsInstalled(VsAppShell.Current, null, path, showErrors: !_allowLoadingFromStorage);
-                if (!valid) {
-                    path = null; // Prevents assignment of bad values to the property.
-                }
-            }
-
-            return path;
         }
 
         protected override void OnClosed(EventArgs e) {

@@ -7,13 +7,10 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
 using Microsoft.R.Host.Client.Host;
-using Microsoft.R.Interpreters;
-using Microsoft.R.Host.Client.Install;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
-using Xunit;
 
 namespace Microsoft.R.Host.Client.Test.Session {
     public partial class RSessionTest : IDisposable {
@@ -111,7 +108,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [Category.R.Session]
         public void StartRHostMissing() {
             var session = new RSession(0, _brokerConnector, () => { });
-            session.BrokerConnector.SwitchToLocalBroker(nameof(RSessionTest), @"C:\", Environment.SystemDirectory);
+            _brokerConnector.SwitchToLocalBroker(nameof(RSessionTest), @"C:\", Environment.SystemDirectory);
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name
             }, null, 10000);
@@ -123,7 +120,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [Category.R.Session]
         public async Task StopBeforeInitialized() {
             var session = new RSession(0, _brokerConnector, () => { });
-            session.BrokerConnector.SwitchToLocalBroker(nameof(RSessionTest), @"C:\", Environment.SystemDirectory);
+            _brokerConnector.SwitchToLocalBroker(nameof(RSessionTest), @"C:\", Environment.SystemDirectory);
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name
             }, null, 10000);

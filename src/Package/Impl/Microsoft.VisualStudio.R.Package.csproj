@@ -200,7 +200,9 @@
     <Compile Include="Options\Attributes\SurveyNewsPolicyTypeConverter.cs" />
     <Compile Include="Options\R\Tools\SurveyNewsCommand.cs" />
     <Compile Include="ToolWindows\PlotHistoryWindowPane.cs" />
+    <Compile Include="ProjectSystem\Commands\CopyRemoteItemPathCommand.cs" />
     <Compile Include="ProjectSystem\Commands\SetAsStartUpRScriptCommand.cs" />
+    <Compile Include="ProjectSystem\Definitions\IRProjectPropertiesExtensions.cs" />
     <Compile Include="ToolWindows\ConnectionManagerWindowPane.cs" />
     <Compile Include="ToolWindows\VsConnectionManagerVisualComponentContainerFactory.cs" />
     <Compile Include="ToolWindows\VsRPackageManagerVisualComponent.cs" />
@@ -311,7 +313,6 @@
     <Compile Include="Options\Attributes\LocDefaultValueAttribute.cs" />
     <Compile Include="Options\Attributes\HelpBrowserTypeConverter.cs" />
     <Compile Include="Options\Attributes\YesNoAskTypeConverter.cs" />
-    <Compile Include="Options\R\Tools\ChooseRFolderUIEditor.cs" />
     <Compile Include="Options\R\Tools\GoToEditorOptionsCommand.cs" />
     <Compile Include="Options\R\Tools\ImportRSettingsCommand.cs" />
     <Compile Include="Packages\Definitions\IPackage.cs" />
@@ -441,8 +442,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="RPackages\Commands\CheckForPackageUpdatesCommand.cs" />
-    <Compile Include="RPackages\Commands\InstallPackagesCommand.cs" />
     <Compile Include="Options\R\Tools\CranMirrorTypeConverter.cs" />
     <Compile Include="RtvsProductInfo.cs" />
     <Compile Include="Search\VsSearchControl.cs" />

@@ -549,15 +549,19 @@ namespace Microsoft.R.Core.AST.Expressions {
                     return ParseErrorType.LeftOperandExpected;
                 }
 
-                operatorNode.LeftOperand = leftOperand;
-                operatorNode.RightOperand = rightOperand;
+                if (leftOperand.End <= operatorNode.Start && rightOperand.Start >= operatorNode.End) {
+                    operatorNode.LeftOperand = leftOperand;
+                    operatorNode.RightOperand = rightOperand;
 
-                operatorNode.AppendChild(leftOperand);
-                operatorNode.AppendChild(rightOperand);
+                    operatorNode.AppendChild(leftOperand);
+                    operatorNode.AppendChild(rightOperand);
+                }
+                else {
+                    return ParseErrorType.UnexpectedToken;
+                }
             }
 
             _operands.Push(operatorNode);
-
             return ParseErrorType.None;
         }
 

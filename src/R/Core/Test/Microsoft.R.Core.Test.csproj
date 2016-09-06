@@ -104,7 +104,6 @@
     <Compile Include="Formatting\FormatLineBreaksTest.cs" />
     <Compile Include="Formatting\FormatOperatorsTest.cs" />
     <Compile Include="Formatting\FormatMultilineTest.cs" />
-    <Compile Include="Install\RInstallationTest.cs" />
     <Compile Include="Parser\ParseNamespaceTest.cs" />
     <Compile Include="Parser\ParsePrecedenceTest.cs" />
     <Compile Include="Parser\ParseUnaryTest.cs" />

@@ -1155,14 +1155,14 @@
         </Strings>
       </Button>
 
-      <Button guid="guidRToolsCmdSet" id="icmdShowConnectionsWindow" priority="0x0600" type="Button">
+      <Button guid="guidRToolsCmdSet" id="icmdShowConnectionsWindow" priority="0x0800" type="Button">
         <Parent guid="guidRToolsCmdSet" id="windowsSubMenuGroup"/>
         <Icon guid="ImageCatalogGuid" id="WMIConnection"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
-          <ButtonText>Connections</ButtonText>
-          <MenuText>C&amp;onnections</MenuText>
-          <CommandName>Show Connections Window</CommandName>
+          <ButtonText>Workspaces</ButtonText>
+          <MenuText>W&amp;orkspaces</MenuText>
+          <CommandName>Show Workspaces Window</CommandName>
         </Strings>
       </Button>
 
@@ -1626,6 +1626,18 @@
         <Strings>
           <ButtonText>Copy Item &amp;Path</ButtonText>
           <LocCanonicalName>CopyItemPath</LocCanonicalName>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdCopyRemoteItemPath" priority="0x0600" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup"/>
+        <Icon guid="ImageCatalogGuid" id="NavigationPath"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Copy &amp;Remote Item Path</ButtonText>
+          <LocCanonicalName>CopyRemoteItemPath</LocCanonicalName>
         </Strings>
       </Button>
 
@@ -2352,20 +2364,21 @@
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowPackagesWindow" editor="InteractiveWindow" key1="7" mod1="CONTROL"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowPackagesWindow" editor="SolutionExplorer" key1="7" mod1="CONTROL"/>
 
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowConnectionsWindow" editor="guidRToolsCmdSet" key1="8" mod1="CONTROL"/>
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowConnectionsWindow" editor="REditor" key1="8" mod1="CONTROL"/>
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowConnectionsWindow" editor="InteractiveWindow" key1="8" mod1="CONTROL"/>
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowConnectionsWindow" editor="SolutionExplorer" key1="8" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="guidRToolsCmdSet" key1="8" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="REditor" key1="8" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="InteractiveWindow" key1="8" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="SolutionExplorer" key1="8" mod1="CONTROL"/>
 
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="guidRToolsCmdSet" key1="9" mod1="CONTROL"/>
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="REditor" key1="9" mod1="CONTROL"/>
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="InteractiveWindow" key1="9" mod1="CONTROL"/>
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="SolutionExplorer" key1="9" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowConnectionsWindow" editor="guidRToolsCmdSet" key1="9" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowConnectionsWindow" editor="REditor" key1="9" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowConnectionsWindow" editor="InteractiveWindow" key1="9" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowConnectionsWindow" editor="SolutionExplorer" key1="9" mod1="CONTROL"/>
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceSelectedFiles" editor="SolutionExplorer" key1="G" mod1="CONTROL ALT"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceSelectedFilesWithEcho" editor="SolutionExplorer" key1="E" mod1="CONTROL ALT"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdCopyItemPath" editor="SolutionExplorer" key1="P" mod1="CONTROL ALT"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSetDirectoryHere" editor="SolutionExplorer" key1="H" mod1="CONTROL ALT"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdCopyRemoteItemPath" editor="SolutionExplorer" key1="R" mod1="CONTROL ALT"/>
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdNextPlot" editor="guidRToolsCmdSet" key1="VK_F12" mod1="CONTROL ALT"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdNextPlot" editor="REditor" key1="VK_F12" mod1="CONTROL ALT"/>
@@ -2680,6 +2693,7 @@
       <IDSymbol name="icmdOpenAdminCmdPromptHere" value = "1507" />
       <IDSymbol name="icmdSourceSelectedFilesWithEcho" value="1508"/>
       <IDSymbol name="icmdSetAsStartUpRScript" value="1509"/>
+      <IDSymbol name="icmdCopyRemoteItemPath" value="1510"/>
 
       <!-- Shiny -->
       <IDSymbol name="icmdRunShinyApp" value="1601"/>

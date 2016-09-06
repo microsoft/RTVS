@@ -25,7 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
         public ConnectionManagerWindowPane(IConnectionManager connectionManager, ICoreShell coreShell) {
             _connectionManager = connectionManager;
             _coreShell = coreShell;
-            Caption = Resources.PackageManagerWindowCaption;
+            Caption = Resources.WorkspacesWindowCaption;
         }
 
         protected override void OnCreate() {

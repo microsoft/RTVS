@@ -68,6 +68,7 @@ namespace Microsoft.R.Host.Client.Host {
             Process process = null;
             try {
                 string pipeName = Guid.NewGuid().ToString();
+               
                 using (var serverUriPipe = new NamedPipeServerStream(pipeName, PipeDirection.In)) {
                     var psi = new ProcessStartInfo {
                         FileName = rhostBrokerExe,
@@ -81,7 +82,7 @@ namespace Microsoft.R.Host.Client.Host {
                             $" --lifetime:parentProcessId {Process.GetCurrentProcess().Id}" +
                             $" --security:secret \"{_credentials.Password}\"" +
                             $" --R:autoDetect false" +
-                            $" --R:interpreters:{InterpreterId}:basePath \"{_rHome}\""
+                            $" --R:interpreters:{InterpreterId}:basePath \"{_rHome.TrimTrailingSlash()}\""
                     };
 
                     if (!ShowConsole) {
@@ -112,7 +113,7 @@ namespace Microsoft.R.Host.Client.Host {
                             serverUriData.Write(buffer, 0, count);
                         } while (serverUriPipe.IsConnected);
                     } catch (OperationCanceledException) {
-                        throw new RHostTimeoutException("Timed out while waiting for broker process to report its endpoint URI");
+                        throw new RHostDisconnectedException("Timed out while waiting for broker process to report its endpoint URI");
                     }
 
                     string serverUriStr = Encoding.UTF8.GetString(serverUriData.ToArray());

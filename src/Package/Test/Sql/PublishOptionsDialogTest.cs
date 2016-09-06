@@ -23,8 +23,9 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             var pss = Substitute.For<IProjectSystemServices>();
             var pcsp = Substitute.For<IProjectConfigurationSettingsProvider>();
             var storage = Substitute.For<IWritableSettingsStorage>();
+            var fs = Substitute.For<IFileSystem>();
 
-            var dlg = await SqlPublshOptionsDialog.CreateAsync(appShell, pss, pcsp);
+            var dlg = await SqlPublshOptionsDialog.CreateAsync(appShell, pss, fs, pcsp);
             dlg.Title.Should().Be(Resources.SqlPublishDialog_Title);
             dlg.DataContext.Should().BeOfType(typeof(SqlPublishOptionsDialogViewModel));
 

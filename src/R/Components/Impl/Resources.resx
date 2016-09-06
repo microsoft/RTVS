@@ -312,23 +312,38 @@
   <data name="PackageManager_PackageUpdateWarning" xml:space="preserve">
     <value>Are you sure you wish to update '{0}' package? This action cannot be undone.</value>
   </data>
+  <data name="ConnectionManager_LocalConnections" xml:space="preserve">
+    <value>Local R</value>
+  </data>
+  <data name="ConnectionManager_UserConnections" xml:space="preserve">
+    <value>Remote and custom</value>
+  </data>
+  <data name="ConnectionManager_LocalConnectionsTooltip" xml:space="preserve">
+    <value>Expand/Collapse local workspaces</value>
+  </data>
+  <data name="ConnectionManager_UserConnectionsTooltip" xml:space="preserve">
+    <value>Expand/Collapse user defined workspaces</value>
+  </data>
   <data name="ConnectionManager_ConnectTooltip" xml:space="preserve">
     <value>Connect to '{0}'.</value>
   </data>
   <data name="ConnectionManager_Name" xml:space="preserve">
-    <value>Name:</value>
+    <value>Connection name.</value>
   </data>
   <data name="ConnectionManager_Path" xml:space="preserve">
-    <value>Path:</value>
+    <value>Connection path. Either an URL (http://machine:port) or a local path.</value>
   </data>
   <data name="ConnectionManager_RCommandLineArguments" xml:space="preserve">
-    <value>R Command Line Arguments:</value>
+    <value>R command line arguments.</value>
   </data>
   <data name="ConnectionManager_Add" xml:space="preserve">
     <value>Add</value>
   </data>
-  <data name="ConnectionManager_Delete" xml:space="preserve">
-    <value>Delete</value>
+  <data name="ConnectionManager_EditTooltip" xml:space="preserve">
+    <value>Edit the connection</value>
+  </data>
+  <data name="ConnectionManager_DeleteTooltip" xml:space="preserve">
+    <value>Delete the connection</value>
   </data>
   <data name="ConnectionManager_Save" xml:space="preserve">
     <value>Save</value>
@@ -339,14 +354,20 @@
   <data name="ConnectionManager_Connect" xml:space="preserve">
     <value>Connect</value>
   </data>
+  <data name="ConnectionManager_TestConnection" xml:space="preserve">
+    <value>Test Connection</value>
+  </data>
+  <data name="ConnectionManager_TestConnectionTooltip" xml:space="preserve">
+    <value>Test connection to the R interperter. Authentication credentials may be required.</value>
+  </data>
   <data name="ConnectionManager_ShouldHaveName" xml:space="preserve">
     <value>Can't save changes. Connection should have name specified.</value>
   </data>
   <data name="ConnectionManager_ShouldHavePath" xml:space="preserve">
     <value>Can't save changes. Connection should have path specified.</value>
   </data>
-  <data name="ConnectionManager_ChangedSelection_HasChanges" xml:space="preserve">
-    <value>Selected connection has unsaved changes. Do you want to save them?</value>
+  <data name="ConnectionManager_EditedConnectionHasChanges" xml:space="preserve">
+    <value>Edited connection has unsaved changes. Do you want to save them?</value>
   </data>
   <data name="Plots_RemoveAllPlotsWarning" xml:space="preserve">
     <value>Are you sure you want to remove all plots from {0}?</value>
@@ -416,5 +437,8 @@
   </data>
   <data name="Error_ConnectionStringFormat" xml:space="preserve">
     <value>The connection string appears to be in incorrect format. Would you like to re-created it?</value>
+  </data>
+  <data name="NoLocalR" xml:space="preserve">
+    <value>Visual Studio is unable to find local R installation. Would you like to install Microsoft R Client (recommended)?{0}Click Yes to install latest Microsoft R Client. {1}Click No if you are planning to set up connection to a remote machine.</value>
   </data>
 </root>

@@ -6,8 +6,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Markdown.Editor.ContentTypes;
-using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Test.Fixtures;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Test.Utility;
@@ -21,10 +21,12 @@ namespace Microsoft.R.Editor.Application.Test.Markdown {
     [Collection(CollectionNames.NonParallel)]
     public class MarkdownRCompletionTest : IDisposable {
         private readonly IExportProvider _exportProvider;
+        private readonly IRSessionProvider _sessionProvider;
         private readonly EditorHostMethodFixture _editorHost;
 
-        public MarkdownRCompletionTest(REditorApplicationMefCatalogFixture catalogFixture, EditorHostMethodFixture editorHost) {
+        public MarkdownRCompletionTest(REditorApplicationMefCatalogFixture catalogFixture, SessionProviderFixture sessionProviderFixture, EditorHostMethodFixture editorHost) {
             _exportProvider = catalogFixture.CreateExportProvider();
+            _sessionProvider = sessionProviderFixture.SessionProvider;
             _editorHost = editorHost;
         }
 
@@ -64,7 +66,7 @@ x <- function() {
         public async Task RSignature() {
             using (var script = await _editorHost.StartScript(_exportProvider, "```{r}\r\n\r\n```", MdContentTypeDefinition.ContentType)) {
                 IntelliSenseRSession.HostStartTimeout = 10000;
-                using (new RHostScript(_exportProvider)) {
+                using (new RHostScript(_sessionProvider)) {
                     var packageIndex = _exportProvider.GetExportedValue<IPackageIndex>();
                     await packageIndex.BuildIndexAsync();
                     var functionIndex = _exportProvider.GetExportedValue<IFunctionIndex>();

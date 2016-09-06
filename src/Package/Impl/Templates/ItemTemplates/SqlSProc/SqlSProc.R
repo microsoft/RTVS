@@ -3,9 +3,8 @@
 
 # Test code
 # library(RODBC)
-# dbConnection <- 'Driver={SQL Server};Server=SERVER;Database=DATABASE;Trusted_Connection=yes'
 # channel <- odbcDriverConnect(dbConnection)
-# InputDataSet <- sqlQuery(channel, 'SQL QUERY')
+# InputDataSet <- sqlQuery(channel, )
 # odbcClose(channel)
 
 OutputDataSet <- InputDataSet

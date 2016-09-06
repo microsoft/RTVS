@@ -4,6 +4,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Settings;
@@ -32,7 +33,7 @@ namespace Microsoft.R.Support.Test.Utility {
         } 
 
         public static async Task DisposeAsync(this IPackageIndex packageIndex, IExportProvider exportProvider) {
-            IRSessionProvider sessionProvider = exportProvider.GetExportedValue<IRSessionProvider>();
+            var sessionProvider = exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate().RSessions;
             if (sessionProvider != null) {
                 await Task.WhenAll(sessionProvider.GetSessions().Select(s => s.StopHostAsync()));
             }

@@ -4,17 +4,14 @@
 using System;
 using System.Collections.Immutable;
 using System.ComponentModel.Composition;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using System.Windows.Forms;
+using Microsoft.Common.Core;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client.Session;
-using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
-using static System.FormattableString;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
@@ -47,9 +44,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
             var path = nodes.GetSingleNodePath();
             var directory = await _interactiveWorkflowProvider.GetOrCreate().RSession.MakeRelativeToRUserDirectoryAsync(path);
             if (!string.IsNullOrEmpty(directory)) {
-                try {
-                    Clipboard.SetData(DataFormats.UnicodeText, Invariant($"\"{directory}\""));
-                } catch (ExternalException) { }
+                directory.CopyToClipboard();
             }
 
             return true;

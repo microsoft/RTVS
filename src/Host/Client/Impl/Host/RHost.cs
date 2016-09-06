@@ -30,7 +30,6 @@ namespace Microsoft.R.Host.Client {
         
         private readonly IMessageTransport _transport;
         private readonly CancellationTokenSource _cts;
-        private readonly string _name;
         private readonly IRCallbacks _callbacks;
         private readonly LinesLog _log;
         private readonly FileLogWriter _fileLogWriter;
@@ -39,21 +38,17 @@ namespace Microsoft.R.Host.Client {
         private volatile Task<ulong> _cancelCreateBlobAfterRunTask;
         private volatile Task<byte[]> _cancelGetBlobAfterRunTask;
         private int _rLoopDepth;
-        private long _lastMessageId = 0;
+        private long _lastMessageId;
         private readonly ConcurrentDictionary<ulong, Request> _requests = new ConcurrentDictionary<ulong, Request>();
 
         private TaskCompletionSource<object> _cancelAllTcs;
         private CancellationTokenSource _cancelAllCts = new CancellationTokenSource();
 
-        public int? ProcessId { get; }
-
-        public RHost(string name, IRCallbacks callbacks, IMessageTransport transport, int? processId, CancellationTokenSource cts) {
+        public RHost(string name, IRCallbacks callbacks, IMessageTransport transport, CancellationTokenSource cts) {
             Check.ArgumentStringNullOrEmpty(nameof(name), name);
 
             _callbacks = callbacks;
-            _name = name;
             _transport = transport;
-            ProcessId = processId;
             _cts = cts;
 
             _fileLogWriter = FileLogWriter.InTempFolder("Microsoft.R.Host.Client" + "_" + name);
@@ -495,7 +490,7 @@ namespace Microsoft.R.Host.Client {
             // Create cancellation tasks before proceeding with anything else, to avoid race conditions in usage of those tasks.
             _cancelEvaluationAfterRunTask = _runTask.ContinueWith(t => RhostDisconnectedEvaluationResult).Unwrap();
             _cancelCreateBlobAfterRunTask = _runTask.ContinueWith(t => RhostDisconnectedCreateBlobResult).Unwrap();
-            _cancelGetBlobAfterRunTask = _runTask.ContinueWith(t => RhostDisconnectedGetBlobResult).Unwrap(); ;
+            _cancelGetBlobAfterRunTask = _runTask.ContinueWith(t => RhostDisconnectedGetBlobResult).Unwrap();
 
             try {
                 var message = await ReceiveMessageAsync(ct);

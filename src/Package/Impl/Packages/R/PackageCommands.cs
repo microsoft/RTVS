@@ -26,7 +26,6 @@ using Microsoft.VisualStudio.R.Package.Repl.Commands;
 using Microsoft.VisualStudio.R.Package.Repl.Debugger;
 using Microsoft.VisualStudio.R.Package.Repl.Shiny;
 using Microsoft.VisualStudio.R.Package.Repl.Workspace;
-using Microsoft.VisualStudio.R.Package.RPackages.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Sql;
 using Microsoft.VisualStudio.R.Package.ToolWindows;
@@ -103,9 +102,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new AddDbConnectionCommand(dbcs, pss, pcsp, interactiveWorkflow),
                 new AddDsnCommand(appShell, interactiveWorkflow),
                 new ManageDsnCommand(appShell, interactiveWorkflow),
-
-                new InstallPackagesCommand(),
-                new CheckForPackageUpdatesCommand(),
 
                 // Window commands
                 new ShowRInteractiveWindowsCommand(interactiveWorkflowProvider, interactiveWorkflowComponentContainerFactory),

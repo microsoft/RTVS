@@ -12,6 +12,9 @@ using Microsoft.Common.Core.Disposables;
 using Microsoft.R.Components.Application.Configuration;
 using Microsoft.R.Host.Client.Extensions;
 using Microsoft.VisualStudio.ProjectSystem;
+#if VS15
+using IThreadHandling = Microsoft.VisualStudio.ProjectSystem.IProjectThreadingService;
+#endif
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration {
     /// <summary>
@@ -43,7 +46,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration {
                 string projectFolder = Path.GetDirectoryName(unconfiguredProject.FullPath);
                 if (!_settings.TryGetValue(projectFolder, out access)) {
                     var settings = await OpenCollectionAsync(projectFolder, propertes);
-                    access = new SettingsAccess(this, projectFolder, settings);
+                    var th = unconfiguredProject.Services?.ExportProvider?.GetExportedValue<IThreadHandling>();
+                    access = new SettingsAccess(this, th, projectFolder, propertes, settings);
                     _settings[projectFolder] = access;
                 }
                 access.Counter.Increment();
@@ -70,7 +74,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration {
             return null;
         }
 
-        private void ReleaseSettings(string projectPath, bool save) {
+        private void ReleaseSettings(string projectPath, IThreadHandling threadHandling, IRProjectProperties propertes, bool save) {
             _semaphore.Wait();
             try {
                 var access = _settings[projectPath];
@@ -81,6 +85,14 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration {
                 if (save) {
                     access.Settings.Save(settingsFile);
                 }
+
+                threadHandling?.ExecuteSynchronously(async () => {
+                    var currentSettingsFile = await propertes.GetSettingsFileAsync();
+                    if (string.IsNullOrEmpty(currentSettingsFile)) {
+                        settingsFile = settingsFile.MakeRRelativePath(projectPath);
+                        await propertes.SetSettingsFileAsync(settingsFile);
+                    }
+                });
                 _settings.Remove(projectPath);
             } finally {
                 _semaphore.Release();
@@ -88,14 +100,19 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration {
         }
 
         class SettingsAccess : IProjectConfigurationSettingsAccess {
+            private readonly IThreadHandling _threadHandling;
             private readonly ProjectConfigurationSettingsProvider _provider;
             private readonly CountdownDisposable _counter;
             private readonly string _projectPath;
+            private readonly IRProjectProperties _properties;
             private bool _changed;
 
-            public SettingsAccess(ProjectConfigurationSettingsProvider provider, string projectPath, ConfigurationSettingCollection settings) {
+            public SettingsAccess(ProjectConfigurationSettingsProvider provider, IThreadHandling threadHandling,
+                                  string projectPath, IRProjectProperties propertes, ConfigurationSettingCollection settings) {
                 _provider = provider;
+                _threadHandling = threadHandling;
                 _projectPath = projectPath;
+                _properties = propertes;
 
                 _counter = new CountdownDisposable(Release);
 
@@ -119,7 +136,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration {
 
             private void Release() {
                 Settings.CollectionChanged -= OnCollectionChanged;
-                _provider.ReleaseSettings(_projectPath, _changed);
+                _provider.ReleaseSettings(_projectPath, _threadHandling, _properties, _changed);
             }
         }
     }

@@ -66,6 +66,23 @@ namespace Microsoft.R.Host.Broker {
     public enum DuplicateOptions : uint {
     }
 
+    public enum LogonType : int {
+        LOGON32_LOGON_INTERACTIVE = 2,
+        LOGON32_LOGON_NETWORK = 3,
+        LOGON32_LOGON_BATCH = 4,
+        LOGON32_LOGON_SERVICE = 5,
+        LOGON32_LOGON_UNLOCK = 7,
+        LOGON32_LOGON_NETWORK_CLEARTEXT = 8,
+        LOGON32_LOGON_NEW_CREDENTIALS = 9,
+    }
+
+    public enum LogonProvider : int {
+        LOGON32_PROVIDER_DEFAULT = 0,
+        LOGON32_PROVIDER_WINNT35 = 1,
+        LOGON32_PROVIDER_WINNT40 = 2,
+        LOGON32_PROVIDER_WINNT50 = 3
+    }
+
     internal static unsafe class NativeMethods {
         public const int MAX_PATH = 260;
 
@@ -96,10 +113,6 @@ namespace Microsoft.R.Host.Broker {
             TOKEN_DUPLICATE | TOKEN_IMPERSONATE | TOKEN_QUERY | TOKEN_QUERY_SOURCE |
             TOKEN_ADJUST_PRIVILEGES | TOKEN_ADJUST_GROUPS | TOKEN_ADJUST_DEFAULT |
             TOKEN_ADJUST_SESSIONID;
-
-        public const int LOGON32_PROVIDER_DEFAULT = 0;
-        public const int LOGON32_LOGON_INTERACTIVE = 2;
-        public const int LOGON32_LOGON_NETWORK = 3;
 
         public const int CRED_MAX_USERNAME_LENGTH = 513;
         public const int CRED_MAX_CREDENTIAL_BLOB_SIZE = 512;
@@ -200,11 +213,24 @@ namespace Microsoft.R.Host.Broker {
             out IntPtr phToken);
 
         [DllImport("credui.dll", CharSet = CharSet.Unicode)]
-        public  static extern int CredUIParseUserName(
+        public static extern int CredUIParseUserName(
                 string userName,
                 StringBuilder user,
                 int userMaxChars,
                 StringBuilder domain,
                 int domainMaxChars);
+
+        [DllImport("userenv.dll", CharSet = CharSet.Auto)]
+        public static extern uint CreateProfile(
+            [MarshalAs(UnmanagedType.LPWStr)] string pszUserSid,
+            [MarshalAs(UnmanagedType.LPWStr)] string pszUserName,
+            [Out][MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszProfilePath,
+            uint cchProfilePath);
+
+        [DllImport("userenv.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern bool GetUserProfileDirectory(
+            IntPtr hToken,
+            StringBuilder pszProfilePath,
+            ref uint cchProfilePath);
     }
 }

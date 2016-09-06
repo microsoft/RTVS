@@ -16,7 +16,6 @@ using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test;
 using Microsoft.R.Host.Client.Test.Script;
-using Microsoft.R.Interpreters;
 using Microsoft.R.StackTracing;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
@@ -31,19 +30,18 @@ namespace Microsoft.R.DataInspection.Test {
         private const REvaluationResultProperties AllFields = unchecked((REvaluationResultProperties)~0);
 
         private readonly MethodInfo _testMethod;
-        private readonly IRHostBrokerConnector _brokerConnector;
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _session;
 
         public ValuesTest(TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo;
-            _brokerConnector = new RHostBrokerConnector();
             _sessionProvider = new RSessionProvider();
-            _brokerConnector.SwitchToLocalBroker(nameof(ValuesTest));
-            _session = _sessionProvider.GetOrCreate(Guid.NewGuid(), _brokerConnector);
+            
+            _session = _sessionProvider.GetOrCreate(Guid.NewGuid());
         }
 
         public async Task InitializeAsync() {
+            await _sessionProvider.TrySwitchBroker(nameof(ValuesTest));
             await _session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name
             }, new RHostClientTestApp(), 50000);
@@ -52,7 +50,6 @@ namespace Microsoft.R.DataInspection.Test {
         public async Task DisposeAsync() {
             await _session.StopHostAsync();
             _sessionProvider.Dispose();
-            _brokerConnector.Dispose();
         }
 
         [Test]

@@ -61,47 +61,24 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot find R binaries in {0}.{1}Click Yes to install latest Microsoft R Client (recommended).{2}Click No to set path to R engine in R Tools | Options dialog yourself..
+        ///   Looks up a localized string similar to There is no local R detected and no remote connection established.
+        ///You can try re-connecting to the remote machine, 
+        ///use another connection or install local R..
         /// </summary>
-        internal static string Error_CannotFindRBinariesFormat {
+        internal static string NoConnectionsAvailable {
             get {
-                return ResourceManager.GetString("Error_CannotFindRBinariesFormat", resourceCulture);
+                return ResourceManager.GetString("NoConnectionsAvailable", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to access path {0}. Exception: {1}..
+        ///   Looks up a localized string similar to Interactive Window is disconnected from R Session.
+        ///Try connecting to a remote machine in the Workspaces window or
+        ///click Reset to restart local R interpreter..
         /// </summary>
-        internal static string Error_ExceptionAccessingPath {
+        internal static string RHostDisconnected {
             get {
-                return ResourceManager.GetString("Error_ExceptionAccessingPath", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Timeout installing package {0}.
-        /// </summary>
-        internal static string Error_InstallTimeout_Format {
-            get {
-                return ResourceManager.GetString("Error_InstallTimeout_Format", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unable to detect the location of the R interpreter.  If you have installed R, please specify path to R engine in  R Tools | Options. If R is not installed, Visual Studio can launch setup of the Microsoft R Client.{0}Would you like to start installation of the Microsoft R Client now?.
-        /// </summary>
-        internal static string Error_UnableToFindR {
-            get {
-                return ResourceManager.GetString("Error_UnableToFindR", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to R {0}.{1}.{2} is not compatible with R Tools for Visual Studio. Supported versions are {3}.{4}.{5} - {6}.{7}.{8}.{9}Visual Studio can launch setup of the Microsoft R Client. Click Yes if you would you like to start installation of Microsoft R Client now. Visual Studio will close when the setup application starts..
-        /// </summary>
-        internal static string Error_UnsupportedRVersion {
-            get {
-                return ResourceManager.GetString("Error_UnsupportedRVersion", resourceCulture);
+                return ResourceManager.GetString("RHostDisconnected", resourceCulture);
             }
         }
     }

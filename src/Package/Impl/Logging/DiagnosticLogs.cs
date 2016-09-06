@@ -14,8 +14,6 @@ using System.Threading;
 using Microsoft.Common.Core;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Interpreters;
-using Microsoft.R.Host.Client;
-using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
 using static System.FormattableString;
@@ -54,7 +52,8 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
 
             try {
                 zipPath = Path.Combine(Path.GetTempPath(), RtvsLogZipFile);
-                var rSessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+                var workflowProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
+                var rSessionProvider = workflowProvider.GetOrCreate().RSessions;
                 var sessions = rSessionProvider.GetSessions();
                 foreach (var s in sessions) {
                     s.FlushLog();
@@ -203,16 +202,11 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
                 var ri = new RInstallation();
                 var workflow = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
                 if (detailed) {
-                    IEnumerable<string> rEngines = ri.GetInstalledEngineVersionsFromRegistry();
+                    var rEngines = ri.GetCompatibleEngines();
                     writer.WriteLine("Installed R Engines (from registry):");
-                    foreach (string e in rEngines) {
-                        writer.WriteLine("    " + e);
+                    foreach (var e in rEngines) {
+                        writer.WriteLine(Invariant($"{e.Name} {e.Version} {e.InstallPath}"));
                     }
-                    writer.WriteLine();
-
-                    string latestEngine = ri.GetCompatibleEnginePathFromRegistry();
-                    writer.WriteLine("Latest R Engine (from registry):");
-                    writer.WriteLine("    " + latestEngine);
                     writer.WriteLine();
 
                     var connections = workflow.Connections.RecentConnections;

@@ -1,5 +1,6 @@
-﻿using System;
-using System.Linq;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -18,21 +19,12 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
             InitializeComponent();
         }
 
-
-        private void List_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            var connection = e.AddedItems.OfType<IConnectionViewModel>().FirstOrDefault();
-            if (connection != null) {
-                Model.SelectConnection(connection);
-                List.ScrollIntoView(connection);
-            }
-        }
-
         private void ButtonCancel_Click(object sender, RoutedEventArgs e) {
-            Model?.CancelSelected();
+            Model?.CancelEdit();
         }
 
         private void ButtonSave_Click(object sender, RoutedEventArgs e) {
-            Model?.SaveSelected();
+            Model?.Save(GetConnection(e));
         }
 
         private void ButtonConnect_Click(object sender, RoutedEventArgs e) {
@@ -40,13 +32,45 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
         }
 
         private void ButtonAdd_Click(object sender, RoutedEventArgs e) {
-            Model?.AddNew();
+            Model?.EditNew();
+        }
+
+        private void ButtonPath_Click(object sender, RoutedEventArgs e) {
+            Model?.BrowseLocalPath(GetConnection(e));
+        }
+
+        private void ButtonEdit_Click(object sender, RoutedEventArgs e) {
+            Model?.Edit(GetConnection(e));
+            ScrollEditedIntoView();
         }
 
         private void ButtonDelete_Click(object sender, RoutedEventArgs e) {
-            Model?.DeleteSelected();
+            Model?.TryDelete(GetConnection(e));
+        }
+
+        private void ButtonTestConnection_Click(object sender, RoutedEventArgs e) {
+            Model?.TestConnectionAsync(GetConnection(e)).DoNotWait();
         }
 
         private static IConnectionViewModel GetConnection(RoutedEventArgs e) => ((FrameworkElement)e.Source).DataContext as IConnectionViewModel;
+
+        private void ScrollEditedIntoView() {
+            var model = Model;
+            if (model != null && !model.IsEditingNew && model.EditedConnection != null) {
+                List.ScrollIntoView(model.EditedConnection);
+                List.SelectedItems.Add(model.EditedConnection);
+            }
+        }
+
+        private void Connection_KeyUp(object sender, KeyEventArgs e) {
+            if (e.Key == Key.Enter) {
+                Model?.ConnectAsync(GetConnection(e)).DoNotWait();
+            }
+        }
+
+        private void Connection_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
+            Model?.ConnectAsync(GetConnection(e)).DoNotWait();
+            e.Handled = true;
+        }
     }
 }

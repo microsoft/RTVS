@@ -126,17 +126,22 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                 return;
             }
 
-            var rdataPath = Path.Combine(_projectDirectory, DefaultRDataName);
-            bool loadDefaultWorkspace = _fileSystem.FileExists(rdataPath) && await GetLoadDefaultWorkspace(rdataPath);
-            using (var evaluation = await _session.BeginEvaluationAsync()) {
-                if (loadDefaultWorkspace) {
-                    await evaluation.LoadWorkspaceAsync(rdataPath);
+            // TODO: need to compute the proper paths for remote, but they might not even exist if the project hasn't been deployed.
+            // https://github.com/Microsoft/RTVS/issues/2223
+            if (!_session.IsRemote) {
+                var rdataPath = Path.Combine(_projectDirectory, DefaultRDataName);
+                bool loadDefaultWorkspace = _fileSystem.FileExists(rdataPath) && await GetLoadDefaultWorkspace(rdataPath);
+                using (var evaluation = await _session.BeginEvaluationAsync()) {
+                    if (loadDefaultWorkspace) {
+                        await evaluation.LoadWorkspaceAsync(rdataPath);
+                    }
+
+                    await evaluation.SetWorkingDirectoryAsync(_projectDirectory);
                 }
 
-                await evaluation.SetWorkingDirectoryAsync(_projectDirectory);
+                _toolsSettings.WorkingDirectory = _projectDirectory;
             }
 
-            _toolsSettings.WorkingDirectory = _projectDirectory;
             _history.TryLoadFromFile(Path.Combine(_projectDirectory, DefaultRHistoryName));
 
             CheckSurveyNews();

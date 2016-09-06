@@ -30,6 +30,8 @@ namespace Microsoft.R.Interpreters {
         /// <param name="v"></param>
         /// <returns></returns>
         public static bool IsCompatibleVersion(this ISupportedRVersionRange svr, Version v) {
+            svr = svr ?? new SupportedRVersionRange();
+
             var minVersion = new Version(svr.MinMajorVersion, svr.MinMinorVersion);
             var maxVersion = new Version(svr.MaxMajorVersion, svr.MaxMinorVersion);
 

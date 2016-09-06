@@ -18,6 +18,8 @@ namespace Microsoft.R.Wpf {
         public static IValueConverter StringJoin { get; } = LambdaConverter.Create<IEnumerable<string>>(x => string.Join(", ", x));
         public static IValueConverter NullIsTrue { get; } = LambdaConverter.Create<object>(x => x == null);
         public static IValueConverter NullIsFalse { get; } = LambdaConverter.Create<object>(x => x != null);
+        public static IValueConverter NullIsCollapsed { get; } = LambdaConverter.Create<object>(x => x == null ? Visibility.Collapsed : Visibility.Visible);
+        public static IValueConverter NullIsNotCollapsed { get; } = LambdaConverter.Create<object>(x => x == null ? Visibility.Visible : Visibility.Collapsed);
         public static IValueConverter TrueIsCollapsed { get; } = LambdaConverter.Create<bool>(x => x ? Visibility.Collapsed : Visibility.Visible);
         public static IValueConverter TrueIsNotCollapsed { get; } = LambdaConverter.Create<bool>(x => x ? Visibility.Visible : Visibility.Collapsed);
         public static IValueConverter FalseIsCollapsed { get; } = LambdaConverter.Create<bool>(x => !x ? Visibility.Collapsed : Visibility.Visible);
@@ -26,10 +28,12 @@ namespace Microsoft.R.Wpf {
         public static IValueConverter TrueIsNotHidden { get; } = LambdaConverter.Create<bool>(x => x ? Visibility.Visible : Visibility.Hidden);
         public static IValueConverter FalseIsHidden { get; } = LambdaConverter.Create<bool>(x => !x ? Visibility.Hidden : Visibility.Visible);
         public static IValueConverter FalseIsNotHidden { get; } = LambdaConverter.Create<bool>(x => !x ? Visibility.Visible : Visibility.Hidden);
+        public static IValueConverter FalseIsGrayedOut { get; } = LambdaConverter.Create<bool>(x => x ? 1.0 : 0.25);
         public static IValueConverter Not { get; } = LambdaConverter.Create<bool>(x => !x);
-        public static IValueConverter NullIsCollapsed { get; } = LambdaConverter.Create<object>(x => x == null ? Visibility.Collapsed : Visibility.Visible);
-        public static IValueConverter NullIsVisible { get; } = LambdaConverter.Create<object>(x => x != null ? Visibility.Collapsed : Visibility.Visible);
+        public static IValueConverter NullOrEmptyIsTrue { get; } = LambdaConverter.Create<IEnumerable>(x => x == null || !x.GetEnumerator().MoveNext());
+        public static IValueConverter NullOrEmptyIsFalse { get; } = LambdaConverter.Create<IEnumerable>(x => x != null && x.GetEnumerator().MoveNext());
         public static IValueConverter NullOrEmptyIsCollapsed { get; } = LambdaConverter.Create<IEnumerable>(x => x == null || !x.GetEnumerator().MoveNext() ? Visibility.Collapsed : Visibility.Visible);
+        public static IValueConverter NullOrEmptyIsNotCollapsed { get; } = LambdaConverter.Create<IEnumerable>(x => x == null || !x.GetEnumerator().MoveNext() ? Visibility.Visible : Visibility.Collapsed);
         public static IValueConverter TrueIsCrossCursor { get; } = LambdaConverter.Create<bool>(x => x ? Cursors.Cross : Cursors.Arrow);
 
         public static IMultiValueConverter Any { get; } = LambdaConverter.CreateMulti<bool>(x => x.Any());

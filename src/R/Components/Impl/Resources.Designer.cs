@@ -97,15 +97,6 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Selected connection has unsaved changes. Do you want to save them?.
-        /// </summary>
-        public static string ConnectionManager_ChangedSelection_HasChanges {
-            get {
-                return ResourceManager.GetString("ConnectionManager_ChangedSelection_HasChanges", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Connect.
         /// </summary>
         public static string ConnectionManager_Connect {
@@ -124,16 +115,52 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Delete.
+        ///   Looks up a localized string similar to Delete the connection.
         /// </summary>
-        public static string ConnectionManager_Delete {
+        public static string ConnectionManager_DeleteTooltip {
             get {
-                return ResourceManager.GetString("ConnectionManager_Delete", resourceCulture);
+                return ResourceManager.GetString("ConnectionManager_DeleteTooltip", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Name:.
+        ///   Looks up a localized string similar to Edited connection has unsaved changes. Do you want to save them?.
+        /// </summary>
+        public static string ConnectionManager_EditedConnectionHasChanges {
+            get {
+                return ResourceManager.GetString("ConnectionManager_EditedConnectionHasChanges", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit the connection.
+        /// </summary>
+        public static string ConnectionManager_EditTooltip {
+            get {
+                return ResourceManager.GetString("ConnectionManager_EditTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Local R.
+        /// </summary>
+        public static string ConnectionManager_LocalConnections {
+            get {
+                return ResourceManager.GetString("ConnectionManager_LocalConnections", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Expand/Collapse local workspaces.
+        /// </summary>
+        public static string ConnectionManager_LocalConnectionsTooltip {
+            get {
+                return ResourceManager.GetString("ConnectionManager_LocalConnectionsTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connection name..
         /// </summary>
         public static string ConnectionManager_Name {
             get {
@@ -142,7 +169,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Path:.
+        ///   Looks up a localized string similar to Connection path. Either an URL (http://machine:port) or a local path..
         /// </summary>
         public static string ConnectionManager_Path {
             get {
@@ -151,7 +178,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R Command Line Arguments:.
+        ///   Looks up a localized string similar to R command line arguments..
         /// </summary>
         public static string ConnectionManager_RCommandLineArguments {
             get {
@@ -183,6 +210,42 @@ namespace Microsoft.R.Components {
         public static string ConnectionManager_ShouldHavePath {
             get {
                 return ResourceManager.GetString("ConnectionManager_ShouldHavePath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Test Connection.
+        /// </summary>
+        public static string ConnectionManager_TestConnection {
+            get {
+                return ResourceManager.GetString("ConnectionManager_TestConnection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Test connection to the R interperter. Authentication credentials may be required..
+        /// </summary>
+        public static string ConnectionManager_TestConnectionTooltip {
+            get {
+                return ResourceManager.GetString("ConnectionManager_TestConnectionTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remote and custom.
+        /// </summary>
+        public static string ConnectionManager_UserConnections {
+            get {
+                return ResourceManager.GetString("ConnectionManager_UserConnections", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Expand/Collapse user defined workspaces.
+        /// </summary>
+        public static string ConnectionManager_UserConnectionsTooltip {
+            get {
+                return ResourceManager.GetString("ConnectionManager_UserConnectionsTooltip", resourceCulture);
             }
         }
         
@@ -327,6 +390,15 @@ namespace Microsoft.R.Components {
         public static string MicrosoftRHostStopping {
             get {
                 return ResourceManager.GetString("MicrosoftRHostStopping", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Visual Studio is unable to find local R installation. Would you like to install Microsoft R Client (recommended)?{0}Click Yes to install latest Microsoft R Client. {1}Click No if you are planning to set up connection to a remote machine..
+        /// </summary>
+        public static string NoLocalR {
+            get {
+                return ResourceManager.GetString("NoLocalR", resourceCulture);
             }
         }
         

@@ -6,10 +6,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.R.Interpreters;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
-using Microsoft.R.Host.Client.Install;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.XUnit;
@@ -23,19 +21,17 @@ namespace Microsoft.R.RtvsPackage.Test {
         private const string SameAsInput = "<INPUT>";
 
         private readonly MethodInfo _testMethod;
-        private readonly IRHostBrokerConnector _brokerConnector;
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _session;
 
         public JsonTest(TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo;
-            _brokerConnector = new RHostBrokerConnector();
-            _brokerConnector.SwitchToLocalBroker(nameof(JsonTest));
             _sessionProvider = new RSessionProvider();
-            _session = _sessionProvider.GetOrCreate(Guid.NewGuid(), _brokerConnector);
+            _session = _sessionProvider.GetOrCreate(Guid.NewGuid());
         }
 
         public async Task InitializeAsync() {
+            await _sessionProvider.TrySwitchBroker(nameof(JsonTest));
             await _session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name
             }, new RHostClientTestApp(), 50000);
@@ -44,7 +40,6 @@ namespace Microsoft.R.RtvsPackage.Test {
         public async Task DisposeAsync() {
             await _session.StopHostAsync();
             _sessionProvider.Dispose();
-            _brokerConnector.Dispose();
         }
 
         [CompositeTest]

@@ -5,8 +5,11 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Session;
+using Microsoft.R.Host.Client.Test.Fixtures;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.Options.R.Tools;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Test.Utility;
 using Xunit;
 using static System.FormattableString;
@@ -17,28 +20,24 @@ namespace Microsoft.VisualStudio.R.Package.Test.Options {
     [Collection(CollectionNames.NonParallel)]
     public class EncodingsTest {
         [Test]
-        public void ValidateEncodings() {
+        public async Task ValidateEncodings() {
             var etc = new EncodingTypeConverter();
             var codePages = etc.GetStandardValues();
-            using(var script = new VsRHostScript()) {
-                foreach (var cp in codePages) {
-                    if ((int)cp > 0) {
-                        var completed = Task.Run(async () => {
+            using (var sessionProvider = new RSessionProvider()) {
+                await sessionProvider.TrySwitchBroker(nameof(ValidateEncodings));
+                using (var script = new VsRHostScript(sessionProvider)) {
+                    foreach (var cp in codePages) {
+                        if ((int) cp > 0) {
                             var expression = Invariant($"Sys.setlocale('LC_CTYPE', '.{cp}')\n");
                             using (var inter = await script.Session.BeginInteractionAsync()) {
                                 await inter.RespondAsync(expression);
                             }
-                        }).Wait(5000);
-                        completed.Should().BeTrue(because: "Sys.setlocale() didn't complete within 5000 ms");
 
-                        string s = null;
-                        completed = Task.Run(async () => {
                             var res = await script.Session.EvaluateAsync("Sys.getlocale()", REvaluationKind.Normal);
-                            s = res.Result.ToString();
-                        }).Wait(5000);
+                            var s = res.Result.ToString();
 
-                        completed.Should().BeTrue(because: "Sys.getlocale() didn't complete within 5000 ms");
-                        s.Should().NotBeNull().And.Contain(cp.ToString());
+                            s.Should().NotBeNull().And.Contain(cp.ToString());
+                        }
                     }
                 }
             }

@@ -82,6 +82,15 @@ namespace Microsoft.Common.Core.Shell {
         string ShowOpenFileDialog(string filter, string initialPath = null, string title = null);
 
         /// <summary>
+        /// Shows the browse directory dialog.
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <param name="initialPath"></param>
+        /// <param name="title"></param>
+        /// <returns>Full path to the directory selected, or <c>null</c>.</returns>
+        string ShowBrowseDirectoryDialog(string initialPath = null, string title = null);
+
+        /// <summary>
         /// Shows the save file dialog.
         /// </summary>
         /// <param name="filter"></param>
@@ -105,5 +114,7 @@ namespace Microsoft.Common.Core.Shell {
         /// Tells if code runs in unit test environment
         /// </summary>
         bool IsUnitTestEnvironment { get; }
+
+        IntPtr ApplicationWindowHandle { get; }
     }
 }

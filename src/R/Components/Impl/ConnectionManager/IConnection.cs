@@ -2,15 +2,14 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Threading.Tasks;
 
 namespace Microsoft.R.Components.ConnectionManager {
-    public interface IConnection {
+    public interface IConnection: IConnectionInfo {
         Uri Id { get; }
-        string Name { get; }
-        string Path { get; }
+
+        /// <summary>
+        /// If true, the connection is to a remote machine
+        /// </summary>
         bool IsRemote { get; }
-        DateTime TimeStamp { get; }
-        string RCommandLineArguments { get; }
     }
 }

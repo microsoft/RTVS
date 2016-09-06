@@ -12,10 +12,14 @@ namespace Microsoft.R.Host.Client.Mocks {
     public sealed class RSessionProviderMock : IRSessionProvider {
         private Dictionary<Guid, IRSession> _sessions = new Dictionary<Guid, IRSession>();
 
-        public void Dispose() {
-        }
+        public void Dispose() { }
 
-        public IRSession GetOrCreate(Guid guid, IRHostBrokerConnector brokerConnector) {
+
+        public bool IsRemote { get; private set; }
+        public Uri BrokerUri { get; private set; }
+        public event EventHandler BrokerChanged;
+
+        public IRSession GetOrCreate(Guid guid) {
             IRSession session;
             if (!_sessions.TryGetValue(guid, out session)) {
                 session = new RSessionMock();
@@ -28,7 +32,13 @@ namespace Microsoft.R.Host.Client.Mocks {
             return _sessions.Values;
         }
 
-        public Task<IRSessionEvaluation> BeginEvaluationAsync(IRHostBrokerConnector hostFactory, RHostStartupInfo startupInfo, CancellationToken cancellationToken = new CancellationToken()) 
+        public Task<IRSessionEvaluation> BeginEvaluationAsync(RHostStartupInfo startupInfo, CancellationToken cancellationToken = new CancellationToken()) 
             => new RSessionMock().BeginEvaluationAsync(cancellationToken);
+
+        public Task<bool> TrySwitchBroker(string name, string path = null) {
+            BrokerUri = path != null ? new Uri(path) : new Uri(@"C:\");
+            IsRemote = !BrokerUri.IsFile;
+            return Task.FromResult(true);
+        }
     }
 }

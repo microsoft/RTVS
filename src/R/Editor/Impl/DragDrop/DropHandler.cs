@@ -9,10 +9,11 @@ using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Text;
-using Microsoft.Languages.Editor.Workspace;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Formatting;
 using Microsoft.R.Editor.Settings;
+using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Editor.DragDrop;
@@ -24,18 +25,18 @@ namespace Microsoft.R.Editor.DragDrop {
     internal sealed class DropHandler : IDropHandler {
         private readonly IWpfTextView _wpfTextView;
         private readonly IEditorShell _editorShell;
-        private readonly IWorkspaceServices _wsps;
+        private readonly IRInteractiveWorkflowProvider _workflowProvider;
 
-        public DropHandler(IWpfTextView wpfTextView, IEditorShell editorShell, IWorkspaceServices wsps) {
+        public DropHandler(IWpfTextView wpfTextView, IEditorShell editorShell, IRInteractiveWorkflowProvider workflowProvider) {
             _wpfTextView = wpfTextView;
             _editorShell = editorShell;
-            _wsps = wsps;
+            _workflowProvider = workflowProvider;
         }
 
         #region IDropHandler
         public DragDropPointerEffects HandleDataDropped(DragDropInfo dragDropInfo) {
             Task.Run(async () => {
-                var folder = await _wsps.GetRUserFolder();
+                var folder = await GetRUserFolder();
                 _editorShell.DispatchOnUIThread(() => HandleDrop(dragDropInfo, folder));
             }).DoNotWait();
             return DragDropPointerEffects.None;
@@ -86,6 +87,11 @@ namespace Microsoft.R.Editor.DragDrop {
                 }
                 undoAction.Commit();
             }
+        }
+
+        private Task<string> GetRUserFolder() {
+            var session = _workflowProvider.GetOrCreate()?.RSession;
+            return session?.GetRUserDirectoryAsync();
         }
     }
 }

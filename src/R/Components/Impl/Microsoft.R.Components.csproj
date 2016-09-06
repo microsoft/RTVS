@@ -73,6 +73,7 @@
     <Compile Include="Application\Configuration\Definitions\IConfigurationSettingsReader.cs" />
     <Compile Include="ConnectionManager\Commands\ReconnectCommand.cs" />
     <Compile Include="ConnectionManager\ConnectionEventArgs.cs" />
+    <Compile Include="ConnectionManager\IConnectionInfo.cs" />
     <Compile Include="ConnectionManager\IConnection.cs" />
     <Compile Include="ConnectionManager\IConnectionManager.cs" />
     <Compile Include="ConnectionManager\IConnectionManagerProvider.cs" />
@@ -253,15 +254,13 @@
     </Compile>
     <Compile Include="Resources\Images.cs" />
     <Compile Include="InteractiveWorkflow\Commands\SourceRScriptCommand.cs" />
-    <Compile Include="Script\InstallPackages.cs" />
-    <Compile Include="Script\RCommand.cs" />
     <Compile Include="Search\ISearchControl.cs" />
     <Compile Include="Search\ISearchControlProvider.cs" />
     <Compile Include="Search\ISearchHandler.cs" />
     <Compile Include="Search\SearchControlSettings.cs" />
     <Compile Include="Services\ServiceManagerBase.cs" />
     <Compile Include="Services\ServiceManagerEventArgs.cs" />
-    <Compile Include="Settings\ConnectionInfo.cs" />
+    <Compile Include="ConnectionManager\Implementation\ConnectionInfo.cs" />
     <Compile Include="Settings\HelpBrowserType.cs" />
     <Compile Include="Settings\IRSettings.cs" />
     <Compile Include="Settings\Mirrors\CranMirrorEntry.cs" />
@@ -276,6 +275,7 @@
     <Compile Include="View\IVisualComponent.cs" />
     <Compile Include="View\IVisualComponentContainer.cs" />
     <Compile Include="View\IVisualComponentContainerFactory.cs" />
+    <Compile Include="Workspace\IWorkspaceServices.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
@@ -362,7 +362,9 @@
   <ItemGroup>
     <Resource Include="Resources\packageicon.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Fixtures\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\..\Common\BuildTasks\Microsoft.Common.BuildTasks.targets" />
   <Import Project="..\..\..\R.Build.Version.targets" />

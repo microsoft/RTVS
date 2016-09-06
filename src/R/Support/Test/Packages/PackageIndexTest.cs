@@ -23,13 +23,11 @@ namespace Microsoft.R.Support.Test.Packages {
     public class PackageIndexTest : IDisposable {
         private readonly IExportProvider _exportProvider;
         private readonly ICoreShell _shell;
-        private readonly IRSessionProvider _sessionProvider;
         private readonly IRInteractiveWorkflowProvider _workflowProvider;
 
         public PackageIndexTest(RSupportMefCatalogFixture catalogFixture) {
             _exportProvider = catalogFixture.CreateExportProvider();
             _shell = _exportProvider.GetExportedValue<ICoreShell>();
-            _sessionProvider = _exportProvider.GetExportedValue<IRSessionProvider>();
             _workflowProvider = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
         }
 
@@ -74,10 +72,10 @@ namespace Microsoft.R.Support.Test.Packages {
              };
 
             IPackageIndex packageIndex;
-            using (var host = new IntelliSenseRSession(_shell, _sessionProvider, _workflowProvider)) {
+            using (var host = new IntelliSenseRSession(_shell, _workflowProvider)) {
                 await host.CreateSessionAsync();
                 var functionIndex = new FunctionIndex(_shell, null, host);
-                packageIndex = new PackageIndex(_shell, host, functionIndex);
+                packageIndex = new PackageIndex(_workflowProvider, _shell, host, functionIndex);
                 await packageIndex.BuildIndexAsync();
             }
 
@@ -93,10 +91,10 @@ namespace Microsoft.R.Support.Test.Packages {
         public async Task PackageDescriptionTest() {
             RToolsSettings.Current = new TestRToolsSettings();
             PackageIndex packageIndex;
-            using (var host = new IntelliSenseRSession(_shell, _sessionProvider, _workflowProvider)) {
+            using (var host = new IntelliSenseRSession(_shell, _workflowProvider)) {
                 await host.CreateSessionAsync();
                 var functionIndex = new FunctionIndex(_shell, null, host);
-                packageIndex = new PackageIndex(_shell, host, functionIndex);
+                packageIndex = new PackageIndex(_workflowProvider, _shell, host, functionIndex);
                 await packageIndex.BuildIndexAsync();
             }
             IPackageInfo pi = await packageIndex.GetPackageInfoAsync("base");

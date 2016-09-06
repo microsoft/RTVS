@@ -58,13 +58,11 @@ namespace Microsoft.R.Components.Test.Fakes.Shell {
 
         public string SaveFileIfDirty(string fullPath) => fullPath;
 
-        public string ShowOpenFileDialog(string filter, string initialPath = null, string title = null) {
-            return OpenFilePath;
-        }
+        public string ShowOpenFileDialog(string filter, string initialPath = null, string title = null) => OpenFilePath;
 
-        public string ShowSaveFileDialog(string filter, string initialPath = null, string title = null) {
-            return SaveFilePath;
-        }
+        public string ShowBrowseDirectoryDialog(string initialPath = null, string title = null) => BrowseDirectoryPath;
+
+        public string ShowSaveFileDialog(string filter, string initialPath = null, string title = null) => SaveFilePath;
 
         public void UpdateCommandStatus(bool immediate) { }
 
@@ -74,10 +72,13 @@ namespace Microsoft.R.Components.Test.Fakes.Shell {
         public string LastShownErrorMessage { get; private set; }
         public CommandID LastShownContextMenu { get; private set; }
         public string OpenFilePath { get; set; }
+        public string BrowseDirectoryPath { get; set; }
         public string SaveFilePath { get; set; }
         public ITelemetryService TelemetryService { get; }
 
         public bool IsUnitTestEnvironment => true;
+
+        public IntPtr ApplicationWindowHandle { get; }
 
         #region IMainThread
         public int ThreadId => MainThread.ManagedThreadId;
