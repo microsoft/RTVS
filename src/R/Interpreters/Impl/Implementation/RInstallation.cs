@@ -145,18 +145,20 @@ namespace Microsoft.R.Interpreters {
 
         private IRInterpreterInfo TryFindRInProgramFiles(ISupportedRVersionRange supportedVersions) {
             // Force 64-bit PF
-            var programFiles = Environment.GetEnvironmentVariable("ProgramFiles");
+            var programFiles = Environment.GetEnvironmentVariable("ProgramW6432");
             var baseRFolder = Path.Combine(programFiles, @"R");
             var versions = new List<Version>();
             try {
-                IEnumerable<IFileSystemInfo> directories = _fileSystem.GetDirectoryInfo(baseRFolder)
-                                                                .EnumerateFileSystemInfos()
-                                                                .Where(x => (x.Attributes & FileAttributes.Directory) != 0);
-                foreach (IFileSystemInfo fsi in directories) {
-                    string subFolderName = fsi.FullName.Substring(baseRFolder.Length + 1);
-                    Version v = GetRVersionFromFolderName(subFolderName);
-                    if (supportedVersions.IsCompatibleVersion(v)) {
-                        versions.Add(v);
+                if (_fileSystem.DirectoryExists(baseRFolder)) {
+                    IEnumerable<IFileSystemInfo> directories = _fileSystem.GetDirectoryInfo(baseRFolder)
+                                                                    .EnumerateFileSystemInfos()
+                                                                    .Where(x => (x.Attributes & FileAttributes.Directory) != 0);
+                    foreach (IFileSystemInfo fsi in directories) {
+                        string subFolderName = fsi.FullName.Substring(baseRFolder.Length + 1);
+                        Version v = GetRVersionFromFolderName(subFolderName);
+                        if (supportedVersions.IsCompatibleVersion(v)) {
+                            versions.Add(v);
+                        }
                     }
                 }
             } catch (IOException) {

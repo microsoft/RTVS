@@ -115,6 +115,11 @@
     <Compile Include="Definitions\OutputType.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Host\RHostLoggingExtensions.cs" />
+    <Compile Include="Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Session\RAfterRequestEventArgs.cs" />
     <Compile Include="Session\RBeforeRequestEventArgs.cs" />
     <Compile Include="Context\RContext.cs" />
@@ -231,6 +236,12 @@
       <Authenticode>Microsoft</Authenticode>
       <StrongName>StrongName</StrongName>
     </FilesToSign>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\..\R.Build.Version.targets" />

@@ -39,15 +39,15 @@ namespace Microsoft.R.Host.Broker.Interpreters {
                 _logger.LogInformation(sb.ToString());
             } else {
                 var opt = _options.Interpreters.FirstOrDefault();
-                if (!string.IsNullOrEmpty(opt.Value.BasePath)) {
+                if (!string.IsNullOrEmpty(opt.Value.BasePath) && _fs.DirectoryExists(opt.Value.BasePath)) {
                     var e = new RInterpreterInfo(string.Empty, opt.Value.BasePath);
                     if (e.VerifyInstallation()) { 
                         Interpreters = new List<Interpreter>() { new Interpreter(this, _localId, e.InstallPath, e.BinPath, e.Version) };
                     } else {
-                        Debug.Fail("Specified interpreter us incompatible");
+                        Debug.Fail("Specified interpreter is missing or incompatible.");
                     }
                 } else {
-                    Debug.Fail("Specified interpreter does not exist");
+                    Debug.Fail("Specified interpreter does not exist.");
                 }
             }
         }

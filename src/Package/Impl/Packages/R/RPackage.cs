@@ -116,7 +116,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 p?.LoadSettings();
             }
 
-            MicrosoftRClient.CheckInstall(VsAppShell.Current);
             base.Initialize();
 
             ProjectIconProvider.LoadProjectImages();

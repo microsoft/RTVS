@@ -5,7 +5,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,7 +18,6 @@ using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.StatusBar;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Interpreters;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation {
@@ -59,7 +57,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             interactiveWorkflow.RSession.Connected += RSessionOnConnected;
             interactiveWorkflow.RSession.Disconnected += RSessionOnDisconnected;
 
-            _shell.DispatchOnUIThread(() => _disposableBag.Add(_statusBar.AddItem(new ConnectionStatusBar { DataContext = _statusBarViewModel })));
+            _shell.Idle += OnIdle;
 
             // Get initial values
             var userConnections = CreateConnectionList();
@@ -67,6 +65,14 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
             UpdateRecentConnections();
             SwitchBrokerToLastConnection();
+        }
+
+        private void OnIdle(object sender, EventArgs e) {
+            _shell.Idle -= OnIdle;
+
+            _disposableBag.Add(_statusBar.AddItem(new ConnectionStatusBar {
+                DataContext = _statusBarViewModel
+            }));
         }
 
         public void Dispose() {
@@ -170,6 +176,29 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         private Dictionary<Uri, IConnection> CreateConnectionList() {
             var connections = GetConnectionsFromSettings();
             var localEngines = new RInstallation().GetCompatibleEngines();
+
+            // Remove missing engines and add engines missing from saved connections
+            // Set 'is used created' to false if path points to locally found interpreter
+            foreach (var kvp in connections.Where(c => !c.Value.IsRemote).ToList()) {
+                var valid = IsValidLocalConnection(kvp.Value.Name, kvp.Value.Path);
+                if (!valid) {
+                    connections.Remove(kvp.Key);
+                }
+            }
+
+            // Add newly installed engines
+            foreach (var e in localEngines) {
+                if (!connections.Values.Any(x => x.Path.TrimTrailingSlash().EqualsIgnoreCase(e.InstallPath.TrimTrailingSlash()))) {
+                    connections[new Uri(e.InstallPath, UriKind.Absolute)] = CreateConnection(e.Name, e.InstallPath, string.Empty, isUserCreated: false);
+                }
+            }
+
+            // Verify that most recently used connection is still valid
+            var last = _settings.LastActiveConnection;
+            if (last != null && !IsValidLocalConnection(last.Name, last.Path)) {
+                _settings.LastActiveConnection = null;
+            }
+
             if (connections.Count == 0) {
                 if (!localEngines.Any()) {
                     var message = string.Format(CultureInfo.InvariantCulture, Resources.NoLocalR, Environment.NewLine + Environment.NewLine, Environment.NewLine);
@@ -179,36 +208,24 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                         return connections;
                     }
                 }
-                // No connections, may be first use or connections were somehow removed.
+                // No connections, may be first use or connections were removed.
                 // Add local connections so there is at least something available.
                 foreach (var e in localEngines) {
                     var c = CreateConnection(e.Name, e.InstallPath, string.Empty, isUserCreated: false);
                     connections[new Uri(e.InstallPath, UriKind.Absolute)] = c;
                 }
-            } else {
-                // Remove missing engines and add engines missing from saved connections
-                // Set 'is used created' to false if path points to locally found interpreter
-                foreach (var kvp in connections.Where(c => !c.Value.IsRemote).ToList()) {
-                    bool valid = false;
-                    try {
-                        var info = new RInterpreterInfo(kvp.Value.Name, kvp.Value.Path);
-                        valid = info.VerifyInstallation();
-                    } catch (Exception ex) when (!ex.IsCriticalException()) {
-                        GeneralLog.Write(ex);
-                    }
-                    if (!valid) {
-                        connections.Remove(kvp.Key);
-                    }
-                }
-
-                // Add newly installed engines
-                foreach (var e in localEngines) {
-                    if (!connections.Values.Any(x => x.Path.TrimTrailingSlash().EqualsIgnoreCase(e.InstallPath.TrimTrailingSlash()))) {
-                        connections[new Uri(e.InstallPath, UriKind.Absolute)] = CreateConnection(e.Name, e.InstallPath, string.Empty, isUserCreated: false);
-                    }
-                }
             }
             return connections;
+        }
+
+        private bool IsValidLocalConnection(string name, string path) {
+            try {
+                var info = new RInterpreterInfo(name, path);
+                return info.VerifyInstallation();
+            } catch (Exception ex) when (!ex.IsCriticalException()) {
+                GeneralLog.Write(ex);
+            }
+            return false;
         }
 
         private void SwitchBrokerToLastConnection() {

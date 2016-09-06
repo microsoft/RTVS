@@ -8,7 +8,7 @@ using Microsoft.Common.Core;
 
 namespace Microsoft.R.Host.Client.Host {
     internal sealed class NullRHostConnector : IRHostConnector {
-        private static Task<RHost> Result { get; } = TaskUtilities.CreateCanceled<RHost>(new RHostDisconnectedException());
+        private static Task<RHost> Result { get; } = TaskUtilities.CreateCanceled<RHost>(new RHostDisconnectedException(Resources.NoConnectionsAvailable));
 
         public Uri BrokerUri { get; } = new Uri("http://localhost");
         public bool IsRemote { get; } = true;

@@ -146,7 +146,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         private async Task SetSessionCodePage() {
             var sessions = GetRSessions();
             var cp = RToolsSettings.Current.RCodePage;
- 
+
             foreach (var s in GetRSessions().Where(s => s.IsHostRunning)) {
                 try {
                     using (var eval = await s.BeginEvaluationAsync()) {
@@ -177,7 +177,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
 
         private static IEnumerable<IRSession> GetRSessions() {
             var provider = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
-            return provider.GetOrCreate().RSessions.GetSessions();
+            var instance = provider.Current;
+            return instance != null ? instance.RSessions.GetSessions() : Enumerable.Empty<IRSession>();
         }
     }
 }

@@ -157,8 +157,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 }
 
                 return ExecutionResult.Success;
-            } catch (RHostDisconnectedException) {
-                WriteError(Resources.MicrosoftRHostDisconnected);
+            } catch (RHostDisconnectedException rhdex) {
+                WriteError(rhdex.Message);
                 return ExecutionResult.Success;
             } catch (OperationCanceledException) {
                 // Cancellation reason was already reported via RSession.Error and printed out;

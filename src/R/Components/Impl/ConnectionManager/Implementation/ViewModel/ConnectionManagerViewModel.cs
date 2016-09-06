@@ -123,7 +123,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                     latestLocalPath = new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath;
                     if (string.IsNullOrEmpty(latestLocalPath) || !Directory.Exists(latestLocalPath)) {
                         // Force 64-bit PF
-                        latestLocalPath = Environment.GetEnvironmentVariable("ProgramFiles");
+                        latestLocalPath = Environment.GetEnvironmentVariable("ProgramW6432");
                     }
                 }
                 catch (ArgumentException) { }
