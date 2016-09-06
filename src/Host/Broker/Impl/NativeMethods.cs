@@ -83,6 +83,22 @@ namespace Microsoft.R.Host.Broker {
         LOGON32_PROVIDER_WINNT50 = 3
     }
 
+    [Flags]
+    public enum CreationFlags {
+        CREATE_SUSPENDED = 0x00000004,
+        CREATE_NEW_CONSOLE = 0x00000010,
+        CREATE_NEW_PROCESS_GROUP = 0x00000200,
+        CREATE_UNICODE_ENVIRONMENT = 0x00000400,
+        CREATE_SEPARATE_WOW_VDM = 0x00000800,
+        CREATE_DEFAULT_ERROR_MODE = 0x04000000,
+    }
+
+    [Flags]
+    public enum LogonFlags {
+        LOGON_WITH_PROFILE = 0x00000001,
+        LOGON_NETCREDENTIALS_ONLY = 0x00000002
+    }
+
     internal static unsafe class NativeMethods {
         public const int MAX_PATH = 260;
 
@@ -232,5 +248,25 @@ namespace Microsoft.R.Host.Broker {
             IntPtr hToken,
             StringBuilder pszProfilePath,
             ref uint cchProfilePath);
+
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern bool CreateProcessWithLogonW(
+           [MarshalAs(UnmanagedType.LPWStr)] string userName,
+           [MarshalAs(UnmanagedType.LPWStr)] string domain,
+           [MarshalAs(UnmanagedType.LPWStr)] string password,
+           LogonFlags logonFlags,
+           [MarshalAs(UnmanagedType.LPWStr)] string applicationName,
+           [MarshalAs(UnmanagedType.LPWStr)] string commandLine,
+           CreationFlags creationFlags,
+           [MarshalAs(UnmanagedType.LPWStr)] string environment,
+           [MarshalAs(UnmanagedType.LPWStr)] string currentDirectory,
+           ref STARTUPINFO startupInfo,
+           out PROCESS_INFORMATION processInformation);
+
+        [DllImport("userenv.dll", SetLastError = true)]
+        public static extern bool CreateEnvironmentBlock(out IntPtr lpEnvironment, IntPtr hToken, bool bInherit);
+
+        [DllImport("userenv.dll", SetLastError = true)]
+        public static extern bool DestroyEnvironmentBlock(IntPtr lpEnvironment);
     }
 }

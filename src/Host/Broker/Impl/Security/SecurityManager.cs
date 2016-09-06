@@ -57,7 +57,8 @@ namespace Microsoft.R.Host.Broker.Security {
 
             IntPtr token;
             WindowsIdentity winIdentity = null;
-            if (NativeMethods.LogonUser(user.ToString(), domain.ToString(), context.Password, (int)LogonType.LOGON32_LOGON_NETWORK, (int)LogonProvider.LOGON32_PROVIDER_DEFAULT, out token)) {
+            string profilePath = "";
+            if (NativeMethods.LogonUser(user.ToString(), domain.ToString(), context.Password, (int)LogonType.LOGON32_LOGON_INTERACTIVE, (int)LogonProvider.LOGON32_PROVIDER_DEFAULT, out token)) {
                 winIdentity = new WindowsIdentity(token);
                 StringBuilder profileDir = new StringBuilder(NativeMethods.MAX_PATH);
                 uint size = (uint)profileDir.Capacity;
@@ -66,6 +67,14 @@ namespace Microsoft.R.Host.Broker.Security {
                 if (error != 0 && error != 0x800700b7) {
                     return null;
                 }
+
+                profileDir = new StringBuilder(NativeMethods.MAX_PATH * 2);
+                size = (uint)profileDir.Capacity;
+
+                if (NativeMethods.GetUserProfileDirectory(token, profileDir, ref size)) {
+                    profilePath = profileDir.ToString();
+                }
+                
             } else {
                 return null;
             }
@@ -77,6 +86,7 @@ namespace Microsoft.R.Host.Broker.Security {
                     new Claim(Claims.RUser, ""),
                     // TODO: figure out how to avoid keeping raw credentials around. 
                     new Claim(Claims.Password, context.Password),
+                    new Claim(Claims.RUserProfileDir, profilePath)
                 };
 
                 var claimsIdentity = new ClaimsIdentity(claims, context.Options.AuthenticationScheme);

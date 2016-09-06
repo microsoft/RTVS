@@ -69,41 +69,60 @@ namespace Microsoft.R.Host.Broker.Sessions {
             CommandLineArguments = commandLineArguments;
         }
 
-        public void StartHost(SecureString password, ILogger outputLogger, ILogger messageLogger) {
+        public void StartHost(SecureString password, string profilePath, ILogger outputLogger, ILogger messageLogger) {
             string brokerPath = Path.GetDirectoryName(typeof(Program).Assembly.GetAssemblyPath());
             string rhostExePath = Path.Combine(brokerPath, RHostExe);
+            string arguments = $"--rhost-name \"{Id}\" {CommandLineArguments}";
+            var username = new StringBuilder(NativeMethods.CREDUI_MAX_USERNAME_LENGTH + 1);
+            var domain = new StringBuilder(NativeMethods.CREDUI_MAX_PASSWORD_LENGTH + 1);
 
-            var psi = new ProcessStartInfo(rhostExePath) {
-                UseShellExecute = false,
-                CreateNoWindow = false,
-                Arguments = $"--rhost-name \"{Id}\" {CommandLineArguments}",
-                RedirectStandardInput = true,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true
-            };
+            if (NativeMethods.CredUIParseUserName(User.Name, username, username.Capacity, domain, domain.Capacity) != 0) {
+                throw new ArgumentException();
+            }
+
+            ProcessStartInfo psi = null;
+            bool impersonate = WindowsIdentity.GetCurrent().User != ((WindowsIdentity)User).User;
+            if(impersonate) {
+                using (var impersonationContext = ((WindowsIdentity)User).Impersonate()) {
+                    psi = new ProcessStartInfo(rhostExePath) {
+                        UseShellExecute = false,
+                        CreateNoWindow = false,
+                        Arguments = arguments,
+                        RedirectStandardInput = true,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true
+                    };
+
+                    psi.EnvironmentVariables["USERNAME"] = username.ToString();
+                    psi.EnvironmentVariables["HOMEDRIVE"] = profilePath.Substring(0, 2);
+                    psi.EnvironmentVariables["HOMEPATH"] = profilePath.Substring(2);
+                    psi.EnvironmentVariables["USERPROFILE"] = $"{psi.EnvironmentVariables["HOMEDRIVE"]}{psi.EnvironmentVariables["HOMEPATH"]}";
+                    psi.EnvironmentVariables["APPDATA"] = $"{psi.EnvironmentVariables["USERPROFILE"]}\\AppData\\Roaming";
+                    psi.EnvironmentVariables["LOCALAPPDATA"] = $"{psi.EnvironmentVariables["USERPROFILE"]}\\AppData\\Local";
+                    psi.EnvironmentVariables["TEMP"] = $"{psi.EnvironmentVariables["LOCALAPPDATA"]}\\Temp";
+                    psi.EnvironmentVariables["TMP"] = $"{psi.EnvironmentVariables["LOCALAPPDATA"]}\\Temp";
+                }
+            } else {
+                psi = new ProcessStartInfo(rhostExePath) {
+                    UseShellExecute = false,
+                    CreateNoWindow = false,
+                    Arguments = arguments,
+                    RedirectStandardInput = true,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true
+                };
+            }
 
             var shortHome = new StringBuilder(NativeMethods.MAX_PATH);
             NativeMethods.GetShortPathName(Interpreter.Info.Path, shortHome, shortHome.Capacity);
             psi.EnvironmentVariables["R_HOME"] = shortHome.ToString();
             psi.EnvironmentVariables["PATH"] = Interpreter.Info.BinPath + ";" + Environment.GetEnvironmentVariable("PATH");
 
+            psi.WorkingDirectory = Path.GetDirectoryName(rhostExePath);
+
             if (password != null) {
-                psi.WorkingDirectory = Path.GetDirectoryName(rhostExePath);
-                string[] userNameParts = User.Name.Split('\\', '/');
-                if (userNameParts.Length == 2) {
-                    // Username of the form <domain>\<user>
-                    psi.Domain = userNameParts[0];
-                    psi.UserName = userNameParts[1];
-                } else if(User.Name.Contains("@")) {
-                    // Username of the form <user>@<domain>
-                    psi.Domain = null;
-                    psi.UserName = User.Name;
-                } else {
-                    // Username of the form <user> (no domain)
-                    psi.Domain = ".";
-                    psi.UserName = User.Name;
-                }
-                
+                psi.Domain = domain.ToString();
+                psi.UserName = username.ToString();
                 psi.Password = password;
             }
 
@@ -130,25 +149,6 @@ namespace Microsoft.R.Host.Broker.Sessions {
             ClientToHostWorker(_process.StandardInput.BaseStream, hostEnd).DoNotWait();
             HostToClientWorker(_process.StandardOutput.BaseStream, hostEnd).DoNotWait();
         }
-
-        //public void StartHost() {
-        //    string brokerPath = Path.GetDirectoryName(typeof(Program).Assembly.GetAssemblyPath());
-        //    string rhostExePath = Path.Combine(brokerPath, RHostExe);
-
-        //    Stream stdin, stdout;
-        //    int pid = ProcessHelpers.StartProcessAsUser(User, rhostExePath, $"--rhost-name {Id}", Interpreter.BinPath, out stdin, out stdout);
-
-        //    _pipe = new MessagePipe();
-
-        //    _process = Process.GetProcessById(pid);
-        //    _process.EnableRaisingEvents = true;
-        //    _process.Exited += delegate { _pipe = null; };
-
-        //    var hostEnd = _pipe.ConnectHost();
-
-        //    ClientToHostWorker(stdin, hostEnd).DoNotWait();
-        //    HostToClientWorker(stdout, hostEnd).DoNotWait();
-        //}
 
         public void KillHost() {
             try {
