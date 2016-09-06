@@ -13,7 +13,7 @@ namespace Microsoft.Common.Core {
             if (string.IsNullOrWhiteSpace(path) || string.IsNullOrWhiteSpace(basePath)) {
                 return path;
             }
-            var bp = basePath.EndsWithOrdinal(Path.DirectorySeparatorChar) ? basePath : basePath + Path.DirectorySeparatorChar;
+            var bp = basePath.EndsWith(Path.DirectorySeparatorChar) ? basePath : basePath + Path.DirectorySeparatorChar;
             if (path.PathEquals(bp)) {
                 return string.Empty;
             }
@@ -62,7 +62,7 @@ namespace Microsoft.Common.Core {
         }
 
         public static string TrimTrailingSlash(this string path) {
-            if (!string.IsNullOrEmpty(path) && (path.EndsWithOrdinal(Path.DirectorySeparatorChar) || path.EndsWithOrdinal(Path.AltDirectorySeparatorChar))) {
+            if (!string.IsNullOrEmpty(path) && (path.EndsWith(Path.DirectorySeparatorChar) || path.EndsWith(Path.AltDirectorySeparatorChar))) {
                 return path.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
             }
             return path;
@@ -79,7 +79,7 @@ namespace Microsoft.Common.Core {
             if (string.IsNullOrEmpty(path)) {
                 return 0;
             }
-            if (path.EndsWithOrdinal(Path.DirectorySeparatorChar) || path.EndsWithOrdinal(Path.AltDirectorySeparatorChar)) {
+            if (path.EndsWith(Path.DirectorySeparatorChar) || path.EndsWith(Path.AltDirectorySeparatorChar)) {
                 return path.Length - 1;
             }
             return path.Length;
