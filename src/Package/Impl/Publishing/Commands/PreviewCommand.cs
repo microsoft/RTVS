@@ -75,10 +75,15 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
             IMarkdownFlavorPublishHandler flavorHandler = GetFlavorHandler(TextView.TextBuffer);
             if (flavorHandler != null) {
                 var workflow = _workflowProvider.GetOrCreate();
+
                 var getPackagesTask = workflow.Packages.GetInstalledPackagesAsync();
                 getPackagesTask.Wait(5000);
-                var packages = getPackagesTask.Result;
-            
+                if(!getPackagesTask.IsCompleted) {
+                    return CommandResult.Disabled;
+                }
+
+                var packages =  getPackagesTask.Result;
+           
                 if (!packages.Any(p => p.Package.EqualsIgnoreCase(flavorHandler.RequiredPackageName))) {
                     _coreShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_PackageMissing, flavorHandler.RequiredPackageName));
                     return CommandResult.Disabled;
