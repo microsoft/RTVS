@@ -188,7 +188,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
             // Add newly installed engines
             foreach (var e in localEngines) {
-                if (!connections.Values.Any(x => x.Path.TrimTrailingSlash().EqualsIgnoreCase(e.InstallPath.TrimTrailingSlash()))) {
+                if (!connections.Values.Any(x => x.Path.PathEquals(e.InstallPath))) {
                     connections[new Uri(e.InstallPath, UriKind.Absolute)] = CreateConnection(e.Name, e.InstallPath, string.Empty, isUserCreated: false);
                 }
             }

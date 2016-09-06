@@ -78,7 +78,7 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
             return _instanceLazy.Value;
         }
 
-        public IRInteractiveWorkflow Current => _instanceLazy.IsValueCreated ? _instanceLazy.Value : null;
+        public IRInteractiveWorkflow Active => _instanceLazy.IsValueCreated ? _instanceLazy.Value : null;
 
         private IRInteractiveWorkflow CreateRInteractiveWorkflow() {
             var sessionProvider = _sessionProvider ?? new RSessionProvider();

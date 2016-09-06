@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using Microsoft.Common.Core.IO;
 
@@ -12,8 +13,8 @@ namespace Microsoft.Common.Core {
             if (string.IsNullOrWhiteSpace(path) || string.IsNullOrWhiteSpace(basePath)) {
                 return path;
             }
-            var bp = basePath.EndsWithOrdinal("\\") ? basePath : basePath + "\\";
-            if (path.EqualsIgnoreCase(bp) || bp.EqualsIgnoreCase(path + "\\")) {
+            var bp = basePath.EndsWithOrdinal(Path.DirectorySeparatorChar) ? basePath : basePath + Path.DirectorySeparatorChar;
+            if (path.PathEquals(bp)) {
                 return string.Empty;
             }
             return path.StartsWithIgnoreCase(bp) ? path.Substring(bp.Length) : path;
@@ -61,10 +62,27 @@ namespace Microsoft.Common.Core {
         }
 
         public static string TrimTrailingSlash(this string path) {
-            if (!string.IsNullOrEmpty(path) && (path.EndsWithOrdinal("\\") || path.EndsWithOrdinal("/"))) {
+            if (!string.IsNullOrEmpty(path) && (path.EndsWithOrdinal(Path.DirectorySeparatorChar) || path.EndsWithOrdinal(Path.AltDirectorySeparatorChar))) {
                 return path.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
             }
             return path;
+        }
+
+        public static bool PathEquals(this string path, string otherPath) {
+            var pathLength = GetTrailingSlashTrimmedPathLength(path);
+            var otherPathLength = GetTrailingSlashTrimmedPathLength(otherPath);
+
+            return pathLength == otherPathLength && (pathLength == 0 || string.Compare(path, 0, otherPath, 0, otherPathLength, true, CultureInfo.InvariantCulture) == 0);
+        }
+
+        private static int GetTrailingSlashTrimmedPathLength(string path) {
+            if (string.IsNullOrEmpty(path)) {
+                return 0;
+            }
+            if (path.EndsWithOrdinal(Path.DirectorySeparatorChar) || path.EndsWithOrdinal(Path.AltDirectorySeparatorChar)) {
+                return path.Length - 1;
+            }
+            return path.Length;
         }
     }
 }

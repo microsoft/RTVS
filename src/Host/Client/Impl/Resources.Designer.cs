@@ -61,7 +61,7 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There is no local R detected and no remote connection established. You can try re-connecting to the remote machine, use another connection or install local R..
+        ///   Looks up a localized string similar to There is no local R detected and no remote connection established.{0}You can try re-connecting to the remote machine,{1}use another connection or install local R..
         /// </summary>
         internal static string NoConnectionsAvailable {
             get {
@@ -70,7 +70,7 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Interactive Window is disconnected from R Session. Try connecting to remote machine in the Workspaces window or click Reset to restart local R interpreter..
+        ///   Looks up a localized string similar to Interactive Window is disconnected from R Session.{0}Try connecting to a remote machine in the Workspaces window or{1}click Reset to restart local R interpreter..
         /// </summary>
         internal static string RHostDisconnected {
             get {

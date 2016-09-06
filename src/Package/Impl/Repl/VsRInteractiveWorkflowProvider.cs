@@ -65,7 +65,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             return _instanceLazy.Value;
         }
 
-        public IRInteractiveWorkflow Current => (_instanceLazy != null && _instanceLazy.IsValueCreated) ? _instanceLazy.Value : null;
+        public IRInteractiveWorkflow Active => (_instanceLazy != null && _instanceLazy.IsValueCreated) ? _instanceLazy.Value : null;
 
         private IRInteractiveWorkflow CreateRInteractiveWorkflow() {
             var settings = RToolsSettings.Current;
