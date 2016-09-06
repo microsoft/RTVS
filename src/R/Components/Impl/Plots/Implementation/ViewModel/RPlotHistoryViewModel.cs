@@ -43,6 +43,13 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
 
             _plotManager.DeviceAdded += DeviceAdded;
             _plotManager.DeviceRemoved += DeviceRemoved;
+
+            foreach (var group in _plotManager.GetAllPlots().GroupBy(p => p.ParentDevice)) {
+                SubscribeDeviceEvents(group.Key);
+                foreach (var plot in group) {
+                    Entries.Add(new RPlotHistoryEntryViewModel(_plotManager, _shell, plot, plot.Image));
+                }
+            }
         }
 
         public bool AutoHide { get; set; }
@@ -139,15 +146,25 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
             _shell.DispatchOnUIThread(() => {
                 RemoveAll(e.Device.DeviceId);
             });
-            e.Device.PlotAddedOrUpdated -= ActivePlotChanged;
-            e.Device.DeviceNumChanged -= DeviceNumChanged;
-            e.Device.PlotRemoved -= PlotRemoved;
+            UnsubscribeDeviceEvents(e.Device);
         }
 
         private void DeviceAdded(object sender, RPlotDeviceEventArgs e) {
-            e.Device.PlotAddedOrUpdated += ActivePlotChanged;
-            e.Device.DeviceNumChanged += DeviceNumChanged;
-            e.Device.PlotRemoved += PlotRemoved;
+            SubscribeDeviceEvents(e.Device);
+        }
+
+        private void SubscribeDeviceEvents(IRPlotDevice device) {
+            device.PlotAddedOrUpdated += ActivePlotChanged;
+            device.Cleared += DeviceCleared;
+            device.DeviceNumChanged += DeviceNumChanged;
+            device.PlotRemoved += PlotRemoved;
+        }
+
+        private void UnsubscribeDeviceEvents(IRPlotDevice device) {
+            device.PlotAddedOrUpdated -= ActivePlotChanged;
+            device.Cleared -= DeviceCleared;
+            device.DeviceNumChanged -= DeviceNumChanged;
+            device.PlotRemoved -= PlotRemoved;
         }
 
         private void PlotRemoved(object sender, RPlotEventArgs e) {
@@ -172,6 +189,13 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
                 if (plot != null) {
                     AddOrUpdate(plot, plot.Image);
                 }
+            });
+        }
+
+        private void DeviceCleared(object sender, EventArgs e) {
+            _shell.DispatchOnUIThread(() => {
+                var device = (IRPlotDevice)sender;
+                RemoveAll(device.DeviceId);
             });
         }
     }

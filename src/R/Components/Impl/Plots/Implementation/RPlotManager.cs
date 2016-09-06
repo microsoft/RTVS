@@ -298,6 +298,19 @@ namespace Microsoft.R.Components.Plots.Implementation {
             }
         }
 
+        public IRPlot[] GetAllPlots() {
+            InteractiveWorkflow.Shell.AssertIsOnMainThread();
+
+            var plots = new List<IRPlot>();
+            foreach (var device in _devices) {
+                for (int i = 0; i < device.PlotCount; i++) {
+                    plots.Add(device.GetPlotAt(i));
+                }
+            }
+
+            return plots.ToArray();
+        }
+
         private async Task CopyPlotAsync(IRPlot sourcePlot, IRPlotDevice targetDevice) {
             await TaskUtilities.SwitchToBackgroundThread();
             try {

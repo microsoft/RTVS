@@ -18,6 +18,13 @@ namespace Microsoft.R.Components.Plots {
         event EventHandler<RPlotEventArgs> PlotAddedOrUpdated;
         event EventHandler<RPlotEventArgs> PlotRemoved;
 
+        /// <summary>
+        /// All plots in the device were removed. This event is fired instead
+        /// of multiple <see cref="PlotRemoved"/> events, since subscribers
+        /// can process a clear more efficiently than multiple removes.
+        /// </summary>
+        event EventHandler<EventArgs> Cleared;
+
         IRPlot GetPlotAt(int index);
         IRPlot Find(Guid plotId);
         void AddOrUpdate(Guid plotId, BitmapImage image);

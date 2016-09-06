@@ -334,9 +334,9 @@ namespace Microsoft.R.Components.Test.Plots {
 
                 // Remove all plots from device 1
                 device1Commands.RemoveAllPlots.Should().BeEnabled();
-                var plotReceivedTask = EventTaskSources.IRPlotDevice.PlotRemoved.Create(device1);
+                var plotClearedTask = EventTaskSources.IRPlotDevice.Cleared.Create(device1);
                 await device1Commands.RemoveAllPlots.InvokeAsync();
-                await plotReceivedTask;
+                await plotClearedTask;
 
                 CoreShell.LastShownErrorMessage.Should().BeNullOrEmpty();
 

@@ -245,6 +245,12 @@ namespace Microsoft.R.Components.Plots {
         Task CopyOrMovePlotFromAsync(Guid sourceDeviceId, Guid sourcePlotId, IRPlotDevice targetDevice, bool isMove);
 
         /// <summary>
+        /// Get all the plots stored in all the plot devices.
+        /// </summary>
+        /// <returns></returns>
+        IRPlot[] GetAllPlots();
+
+        /// <summary>
         /// Add a visual component to the pool of available components.
         /// </summary>
         /// <param name="visualComponent">Available visual component.</param>

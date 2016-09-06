@@ -94,6 +94,7 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
 
             _device = device;
             _device.PlotAddedOrUpdated += PlotAddedOrUpdated;
+            _device.Cleared += Cleared;
             _device.DeviceNumChanged += DeviceNumChanged;
 
             Refresh(_device.ActivePlot);
@@ -106,6 +107,7 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
 
             if (_device != null) {
                 _device.PlotAddedOrUpdated -= PlotAddedOrUpdated;
+                _device.Cleared -= Cleared;
                 _device.DeviceNumChanged -= DeviceNumChanged;
             }
 
@@ -245,6 +247,10 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
 
         private void PlotAddedOrUpdated(object sender, RPlotEventArgs e) {
             Refresh(_device.ActivePlot);
+        }
+
+        private void Cleared(object sender, EventArgs e) {
+            Refresh(null);
         }
 
         private void Refresh(IRPlot plot) {

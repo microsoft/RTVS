@@ -57,6 +57,11 @@ namespace Microsoft.R.Components.Test {
                 new EventTaskSource<Components.Plots.IRPlotDevice, RPlotEventArgs>(
                     (o, e) => o.PlotRemoved += e,
                     (o, e) => o.PlotRemoved -= e);
+
+            public static readonly EventTaskSource<Components.Plots.IRPlotDevice, EventArgs> Cleared =
+                new EventTaskSource<Components.Plots.IRPlotDevice, EventArgs>(
+                    (o, e) => o.Cleared += e,
+                    (o, e) => o.Cleared -= e);
         }
     }
 }

@@ -15,6 +15,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
         public event EventHandler<RPlotEventArgs> PlotAddedOrUpdated;
         public event EventHandler<RPlotDeviceEventArgs> DeviceNumChanged;
         public event EventHandler<RPlotEventArgs> PlotRemoved;
+        public event EventHandler<EventArgs> Cleared;
         public event EventHandler<RPlotDeviceEventArgs> LocatorModeChanged;
 
         public RPlotDevice(Guid deviceId) {
@@ -91,11 +92,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
             ActiveIndex = -1;
             PlotCount = 0;
 
-            PlotAddedOrUpdated?.Invoke(this, new RPlotEventArgs(null));
-
-            foreach (var plot in plots) {
-                PlotRemoved?.Invoke(this, new RPlotEventArgs(plot));
-            }
+            Cleared?.Invoke(this, new RPlotEventArgs(null));
         }
 
         public IRPlot GetPlotAt(int index) {
