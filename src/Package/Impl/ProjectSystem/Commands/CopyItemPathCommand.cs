@@ -15,6 +15,8 @@ using Microsoft.VisualStudio.R.Package.Shell;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
+#else
+using Microsoft.VisualStudio.ProjectSystem;
 #endif
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
