@@ -132,6 +132,13 @@ namespace Microsoft.R.Components.Plots.Implementation {
             } else if (plot.IsPlot) {
                 try {
                     var img = plot.ToBitmapImage();
+
+                    // Remember the size of the last plot.
+                    // We'll use that when exporting the plot to image/pdf.
+                    device.PixelWidth = img.PixelWidth;
+                    device.PixelHeight = img.PixelHeight;
+                    device.Resolution = (int)Math.Round(img.DpiX);
+
                     device.AddOrUpdate(plot.PlotId, img);
                 } catch (Exception e) when (!e.IsCriticalException()) {
                 }
@@ -162,6 +169,10 @@ namespace Microsoft.R.Components.Plots.Implementation {
                 Debug.Assert(false, "Failed to create a plot visual component.");
                 props = PlotDeviceProperties.Default;
             }
+
+            device.PixelWidth = props.Width;
+            device.PixelHeight = props.Height;
+            device.Resolution = props.Resolution;
 
             DeviceAdded?.Invoke(this, new RPlotDeviceEventArgs(device));
 

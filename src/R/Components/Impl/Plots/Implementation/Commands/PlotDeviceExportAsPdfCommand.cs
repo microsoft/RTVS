@@ -29,8 +29,8 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
                     await InteractiveWorkflow.Plots.ExportToPdfAsync(
                         VisualComponent.ActivePlot,
                         filePath,
-                        PixelsToInches(VisualComponent.LastPixelWidth),
-                        PixelsToInches(VisualComponent.LastPixelHeight));
+                        PixelsToInches(VisualComponent.Device.PixelWidth),
+                        PixelsToInches(VisualComponent.Device.PixelHeight));
                 } catch (RPlotManagerException ex) {
                     InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);
                 } catch (OperationCanceledException) {

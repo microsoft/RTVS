@@ -61,21 +61,6 @@ namespace Microsoft.R.Components.Plots.ViewModel {
         /// </summary>
         int InstanceId { get; }
 
-        /// <summary>
-        /// Width of the device, in pixels.
-        /// </summary>
-        int LastPixelWidth { get; }
-
-        /// <summary>
-        /// Height of the device, in pixels.
-        /// </summary>
-        int LastPixelHeight { get; }
-
-        /// <summary>
-        /// Resolution of the device, in dpi.
-        /// </summary>
-        int LastResolution { get; }
-
         IRPlotDevice Device { get; }
 
         /// <summary>

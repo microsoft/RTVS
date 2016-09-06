@@ -27,10 +27,6 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
         private bool _showError;
         private TaskCompletionSource<LocatorResult> _locatorTcs;
 
-        private int _lastPixelWidth = -1;
-        private int _lastPixelHeight = -1;
-        private int _lastResolution = -1;
-
         public int InstanceId { get; }
 
         public bool IsInLocatorMode => _locatorTcs != null;
@@ -87,24 +83,6 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
 
         public bool IsDeviceActive {
             get { return _device != null && _device == _plotManager.ActiveDevice; }
-        }
-
-        public int LastPixelWidth {
-            get {
-                return _lastPixelWidth;
-            }
-        }
-
-        public int LastPixelHeight {
-            get {
-                return _lastPixelHeight;
-            }
-        }
-
-        public int LastResolution {
-            get {
-                return _lastResolution;
-            }
         }
 
         public Task AssignAsync(IRPlotDevice device) {
@@ -214,14 +192,6 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
                     PlotImage = plot.Image;
                     ShowWatermark = false;
                     ShowError = plot.Image == null;
-
-                    // Remember the size of the last plot.
-                    // We'll use that when exporting the plot to image/pdf.
-                    if (plot.Image != null) {
-                        _lastPixelWidth = plot.Image.PixelWidth;
-                        _lastPixelHeight = plot.Image.PixelHeight;
-                        _lastResolution = (int)Math.Round(plot.Image.DpiX);
-                    }
                 } else {
                     PlotImage = null;
                     ShowWatermark = true;
@@ -231,10 +201,6 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
                 DeviceNameChanged?.Invoke(this, EventArgs.Empty);
                 PlotChanged?.Invoke(this, EventArgs.Empty);
             });
-        }
-
-        private static double PixelsToInches(int pixels) {
-            return pixels / 96.0;
         }
     }
 }

@@ -33,9 +33,9 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
                     VisualComponent.ActivePlot,
                     "bmp",
                     filePath,
-                    VisualComponent.LastPixelWidth,
-                    VisualComponent.LastPixelHeight,
-                    VisualComponent.LastResolution);
+                    VisualComponent.Device.PixelWidth,
+                    VisualComponent.Device.PixelHeight,
+                    VisualComponent.Device.Resolution);
 
                 InteractiveWorkflow.Shell.DispatchOnUIThread(() => {
                     try {

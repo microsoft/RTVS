@@ -12,6 +12,9 @@ namespace Microsoft.R.Components.Plots {
         int ActiveIndex { get; }
         IRPlot ActivePlot { get; }
         bool LocatorMode { get; set; }
+        int PixelWidth { get; set; }
+        int PixelHeight { get; set; }
+        int Resolution { get; set; }
 
         event EventHandler<RPlotDeviceEventArgs> DeviceNumChanged;
         event EventHandler<RPlotDeviceEventArgs> LocatorModeChanged;

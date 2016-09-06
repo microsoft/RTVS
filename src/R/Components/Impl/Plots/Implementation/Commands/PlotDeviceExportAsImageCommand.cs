@@ -33,9 +33,9 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
                             VisualComponent.ActivePlot,
                             device,
                             filePath,
-                            VisualComponent.LastPixelWidth,
-                            VisualComponent.LastPixelHeight,
-                            VisualComponent.LastResolution);
+                            VisualComponent.Device.PixelWidth,
+                            VisualComponent.Device.PixelHeight,
+                            VisualComponent.Device.Resolution);
                     } catch (RPlotManagerException ex) {
                         InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);
                     } catch (OperationCanceledException) {

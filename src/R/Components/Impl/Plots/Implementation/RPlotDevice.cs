@@ -59,6 +59,12 @@ namespace Microsoft.R.Components.Plots.Implementation {
 
         public IRPlot ActivePlot => ActiveIndex >= 0 ? _plots[ActiveIndex] : null;
 
+        public int PixelWidth { get; set; } = -1;
+
+        public int PixelHeight { get; set; } = -1;
+
+        public int Resolution { get; set; } = -1;
+
         public void AddOrUpdate(Guid plotId, BitmapImage image) {
             var plot = _plots.SingleOrDefault(p => p.PlotId == plotId);
             if (plot == null) {

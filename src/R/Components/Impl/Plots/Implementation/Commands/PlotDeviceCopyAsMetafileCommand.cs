@@ -31,9 +31,9 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
                 await InteractiveWorkflow.Plots.ExportToMetafileAsync(
                     VisualComponent.ActivePlot,
                     filePath,
-                    PixelsToInches(VisualComponent.LastPixelWidth),
-                    PixelsToInches(VisualComponent.LastPixelHeight),
-                    VisualComponent.LastResolution);
+                    PixelsToInches(VisualComponent.Device.PixelWidth),
+                    PixelsToInches(VisualComponent.Device.PixelHeight),
+                    VisualComponent.Device.Resolution);
 
                 InteractiveWorkflow.Shell.DispatchOnUIThread(() => {
                     try {

@@ -127,24 +127,6 @@ namespace Microsoft.R.Components.Plots.Implementation {
             }
         }
 
-        public int LastPixelWidth {
-            get {
-                return _viewModel.LastPixelWidth;
-            }
-        }
-
-        public int LastPixelHeight {
-            get {
-                return _viewModel.LastPixelHeight;
-            }
-        }
-
-        public int LastResolution {
-            get {
-                return _viewModel.LastResolution;
-            }
-        }
-
         public PlotDeviceProperties GetDeviceProperties() {
             if (TestDeviceProperties.HasValue) {
                 return TestDeviceProperties.Value;

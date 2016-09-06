@@ -13,9 +13,6 @@ namespace Microsoft.R.Components.Plots {
         Task AssignAsync(IRPlotDevice device);
         Task UnassignAsync();
         int InstanceId { get; }
-        int LastPixelWidth { get; }
-        int LastPixelHeight { get; }
-        int LastResolution { get; }
         bool HasPlot { get; }
         bool LocatorMode { get; }
         int ActivePlotIndex { get; }
