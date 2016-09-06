@@ -158,14 +158,16 @@ namespace Microsoft.R.Support.Help.Packages {
         }
 
         private async Task<IPackageInfo> TryAddNewPackageAsync(string packageName) {
-            var packages = await GetPackagesAsync();
-            var package = packages.FirstOrDefault(p => p.Package.EqualsOrdinal(packageName));
-            if (package != null) {
-                var p = new PackageInfo(_host, package.Package, package.Description, package.Version);
-                await p.LoadFunctionsIndexAsync();
-                _packages[packageName] = p;
-                _functionIndex.RegisterPackageFunctions(p);
-                return p;
+            if (_host.Session.IsHostRunning) {
+                var packages = await GetPackagesAsync();
+                var package = packages.FirstOrDefault(p => p.Package.EqualsOrdinal(packageName));
+                if (package != null) {
+                    var p = new PackageInfo(_host, package.Package, package.Description, package.Version);
+                    await p.LoadFunctionsIndexAsync();
+                    _packages[packageName] = p;
+                    _functionIndex.RegisterPackageFunctions(p);
+                    return p;
+                }
             }
             return null;
         }
