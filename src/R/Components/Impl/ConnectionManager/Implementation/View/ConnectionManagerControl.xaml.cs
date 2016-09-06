@@ -72,10 +72,5 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
             Model?.ConnectAsync(GetConnection(e)).DoNotWait();
             e.Handled = true;
         }
-
-        private bool SuppressClose(object sender) {
-            var cvm = (sender as ListBoxItem)?.DataContext as IConnectionViewModel;
-            return cvm != null && cvm.IsEditing;
-        }
     }
 }

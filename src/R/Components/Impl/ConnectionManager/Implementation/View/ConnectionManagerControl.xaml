@@ -132,7 +132,7 @@
                         <ContentPresenter DataContext="{Binding}" Grid.Column="1" 
                                           ContentTemplate="{StaticResource ConnectButtonDataTemplate}" />
 
-                        <!-- Name, path, command line  -->
+                        <!-- Name, path  -->
                         <TextBlock Grid.Column="2" Margin="0,1,6,2" Text="{Binding Path=Name}"/>
                         <Separator Grid.Column="3" Margin="0,1,6,2" Style="{StaticResource VerticalSeparator}"
                                    Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"/>

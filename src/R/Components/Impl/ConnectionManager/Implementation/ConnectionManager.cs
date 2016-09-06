@@ -113,7 +113,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 await Task.WhenAll(sessions.Select(s => s.StopHostAsync()));
             }
 
-            if (ActiveConnection != null && (!ActiveConnection.Path.EqualsIgnoreCase(connection.Path)  || _sessionProvider.BrokerUri.IsLoopback)) {
+            if (ActiveConnection != null && (!ActiveConnection.Path.EqualsIgnoreCase(connection.Path) || _sessionProvider.BrokerUri.IsLoopback)) {
                 SwitchBroker(connection);
             }
 
@@ -188,18 +188,16 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             } else {
                 // Remove missing engines and add engines missing from saved connections
                 // Set 'is used created' to false if path points to locally found interpreter
-                foreach (var kvp in connections.ToList()) {
-                    if (!kvp.Value.IsRemote) {
-                        bool valid = false;
-                        try {
-                            var info = new RInterpreterInfo(kvp.Value.Name, kvp.Value.Path);
-                            valid = info.VerifyInstallation();
-                        } catch (Exception ex) when (!ex.IsCriticalException()) {
-                            GeneralLog.Write(ex);
-                        }
-                        if (!valid) {
-                            connections.Remove(kvp.Key);
-                        }
+                foreach (var kvp in connections.Where(c => !c.Value.IsRemote).ToList()) {
+                    bool valid = false;
+                    try {
+                        var info = new RInterpreterInfo(kvp.Value.Name, kvp.Value.Path);
+                        valid = info.VerifyInstallation();
+                    } catch (Exception ex) when (!ex.IsCriticalException()) {
+                        GeneralLog.Write(ex);
+                    }
+                    if (!valid) {
+                        connections.Remove(kvp.Key);
                     }
                 }
 

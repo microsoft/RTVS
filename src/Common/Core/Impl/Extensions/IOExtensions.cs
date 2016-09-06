@@ -61,8 +61,8 @@ namespace Microsoft.Common.Core {
         }
 
         public static string TrimTrailingSlash(this string path) {
-            if (path.EndsWithOrdinal("\\")) {
-                return path.Substring(0, path.Length - 1);
+            if (!string.IsNullOrEmpty(path) && (path.EndsWithOrdinal("\\") || path.EndsWithOrdinal("/"))) {
+                return path.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
             }
             return path;
         }

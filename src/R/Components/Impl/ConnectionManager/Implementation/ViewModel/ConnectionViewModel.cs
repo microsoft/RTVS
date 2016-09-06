@@ -10,7 +10,6 @@ using Microsoft.R.Components.ConnectionManager.ViewModel;
 namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
     internal sealed class ConnectionViewModel : BindableBase, IConnectionViewModel {
         private readonly IConnection _connection;
-        private readonly IConnectionManagerViewModel _cmvm;
 
         private string _name;
         private string _path;
@@ -28,9 +27,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             UpdateCalculated();
         }
 
-        public ConnectionViewModel(IConnection connection, IConnectionManagerViewModel cmvm) {
+        public ConnectionViewModel(IConnection connection) {
             _connection = connection;
-            _cmvm = cmvm;
             Id = _connection.Id;
             Reset();
         }

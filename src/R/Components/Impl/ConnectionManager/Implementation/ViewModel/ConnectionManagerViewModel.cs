@@ -177,12 +177,12 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private void UpdateConnections() { 
             var selectedId = EditedConnection?.Id;
 
-            _localConnections.ReplaceWith(_connectionManager.RecentConnections.Where(c => !c.IsRemote && !c.IsUserCreated).Select(c => new ConnectionViewModel(c, this) {
+            _localConnections.ReplaceWith(_connectionManager.RecentConnections.Where(c => !c.IsRemote && !c.IsUserCreated).Select(c => new ConnectionViewModel(c) {
                 IsActive = c == _connectionManager.ActiveConnection,
                 IsConnected = c == _connectionManager.ActiveConnection && IsConnected
             }).OrderBy(c => c.Name));
 
-            _userConnections.ReplaceWith(_connectionManager.RecentConnections.Where(c => c.IsUserCreated).Select(c => new ConnectionViewModel(c, this) {
+            _userConnections.ReplaceWith(_connectionManager.RecentConnections.Where(c => c.IsUserCreated).Select(c => new ConnectionViewModel(c) {
                 IsActive = c == _connectionManager.ActiveConnection,
                 IsConnected = c == _connectionManager.ActiveConnection && IsConnected
             }).OrderBy(c => c.Name));

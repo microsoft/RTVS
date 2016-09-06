@@ -105,7 +105,7 @@ namespace Microsoft.R.Host.Client.Session {
         public Task<bool> TrySwitchBroker(string name, string path = null) {
             path = path ?? new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath;
             Uri uri;
-            if (string.IsNullOrEmpty(path) || !Uri.TryCreate(path, UriKind.Absolute, out uri)) {
+            if (!Uri.TryCreate(path, UriKind.Absolute, out uri)) {
                 return Task.FromResult(false);
             }
 
