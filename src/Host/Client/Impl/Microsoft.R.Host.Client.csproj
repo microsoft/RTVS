@@ -111,7 +111,6 @@
     <Compile Include="Definitions\IRSessionEvaluation.cs" />
     <Compile Include="Definitions\IRSessionProvider.cs" />
     <Compile Include="Definitions\IRSessionInteraction.cs" />
-    <Compile Include="Host\RHostTimeoutException.cs" />
     <Compile Include="Host\RHostBinaryMissingException.cs" />
     <Compile Include="Definitions\OutputType.cs" />
     <Compile Include="Program.cs" />

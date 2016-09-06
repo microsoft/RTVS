@@ -112,7 +112,7 @@ namespace Microsoft.R.Host.Client.Host {
                             serverUriData.Write(buffer, 0, count);
                         } while (serverUriPipe.IsConnected);
                     } catch (OperationCanceledException) {
-                        throw new RHostTimeoutException("Timed out while waiting for broker process to report its endpoint URI");
+                        throw new RHostDisconnectedException("Timed out while waiting for broker process to report its endpoint URI");
                     }
 
                     string serverUriStr = Encoding.UTF8.GetString(serverUriData.ToArray());
