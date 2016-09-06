@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.R.Components.Controller;
@@ -28,7 +29,12 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
                 var source = PlotClipboardData.Parse((string)Clipboard.GetData(PlotClipboardData.Format));
                 if (source != null) {
                     try {
-                        await VisualComponent.CopyPlotFromAsync(source.DeviceId, source.PlotId, source.Cut);
+                        if (VisualComponent.Device == null) {
+                            await InteractiveWorkflow.Plots.NewDeviceAsync(VisualComponent.InstanceId);
+                        }
+
+                        Debug.Assert(VisualComponent.Device != null);
+                        await InteractiveWorkflow.Plots.CopyOrMovePlotFromAsync(source.DeviceId, source.PlotId, VisualComponent.Device, source.Cut);
 
                         // If it's a move, clear the clipboard as we don't want
                         // the user to try to paste it again

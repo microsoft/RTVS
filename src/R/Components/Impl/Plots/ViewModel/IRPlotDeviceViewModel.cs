@@ -61,6 +61,21 @@ namespace Microsoft.R.Components.Plots.ViewModel {
         /// </summary>
         int InstanceId { get; }
 
+        /// <summary>
+        /// Width of the device, in pixels.
+        /// </summary>
+        int LastPixelWidth { get; }
+
+        /// <summary>
+        /// Height of the device, in pixels.
+        /// </summary>
+        int LastPixelHeight { get; }
+
+        /// <summary>
+        /// Resolution of the device, in dpi.
+        /// </summary>
+        int LastResolution { get; }
+
         IRPlotDevice Device { get; }
 
         /// <summary>
@@ -89,47 +104,6 @@ namespace Microsoft.R.Components.Plots.ViewModel {
         Task ResizePlotAsync(int pixelWidth, int pixelHeight, int resolution);
 
         /// <summary>
-        /// Export the active plot to the specified bitmap path.
-        /// </summary>
-        /// <param name="deviceName">Name of graphics device to export to (png, bmp, etc).</param>
-        /// <param name="outputFilePath">Path to save to.</param>
-        Task ExportToBitmapAsync(string deviceName, string outputFilePath);
-
-        /// <summary>
-        /// Export the active plot to the specified metafile path.
-        /// </summary>
-        /// <param name="outputFilePath">Path to save to.</param>
-        Task ExportToMetafileAsync(string outputFilePath);
-
-        /// <summary>
-        /// Export the active plot to the specified pdf file path.
-        /// </summary>
-        /// <param name="outputFilePath">Path to save to.</param>
-        Task ExportToPdfAsync(string outputFilePath);
-
-        /// <summary>
-        /// Remove the active plot from this device's history.
-        /// </summary>
-        /// <returns></returns>
-        Task RemoveActivePlotAsync();
-
-        /// <summary>
-        /// Remove all plots from this device's history.
-        /// </summary>
-        Task ClearAllPlotsAsync();
-
-        /// <summary>
-        /// Move to the next plot in this device's history.
-        /// </summary>
-        Task NextPlotAsync();
-
-        /// <summary>
-        /// Move to the previous plot in this device's history.
-        /// </summary>
-        /// <returns></returns>
-        Task PreviousPlotAsync();
-
-        /// <summary>
         /// Set the click result when in locator mode.
         /// </summary>
         /// <param name="pixelX"></param>
@@ -143,11 +117,6 @@ namespace Microsoft.R.Components.Plots.ViewModel {
         /// <param name="sourcePlotId">Plot to copy.</param>
         /// <param name="isMove"><c>true</c> to delete the source plot after move.</param>
         Task CopyPlotFromAsync(Guid sourceDeviceId, Guid sourcePlotId, bool isMove);
-
-        /// <summary>
-        /// Activate this device, creating a device if one isn't assigned to this view model.
-        /// </summary>
-        Task ActivateDeviceAsync();
 
         /// <summary>
         /// User initiated locator mode via script, wait for the user to click

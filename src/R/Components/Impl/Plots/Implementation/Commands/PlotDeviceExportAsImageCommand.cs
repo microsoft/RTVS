@@ -29,7 +29,13 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
                 string device = DeviceFromFileExtension(filePath);
                 if (!string.IsNullOrEmpty(device)) {
                     try {
-                        await VisualComponent.ExportToBitmapAsync(device, filePath);
+                        await InteractiveWorkflow.Plots.ExportToBitmapAsync(
+                            VisualComponent.ActivePlot,
+                            device,
+                            filePath,
+                            VisualComponent.LastPixelWidth,
+                            VisualComponent.LastPixelHeight,
+                            VisualComponent.LastResolution);
                     } catch (RPlotManagerException ex) {
                         InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);
                     } catch (OperationCanceledException) {

@@ -28,7 +28,12 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
         public async Task<CommandResult> InvokeAsync() {
             string filePath = Path.GetTempFileName();
             try {
-                await VisualComponent.ExportToMetafileAsync(filePath);
+                await InteractiveWorkflow.Plots.ExportToMetafileAsync(
+                    VisualComponent.ActivePlot,
+                    filePath,
+                    PixelsToInches(VisualComponent.LastPixelWidth),
+                    PixelsToInches(VisualComponent.LastPixelHeight),
+                    VisualComponent.LastResolution);
 
                 InteractiveWorkflow.Shell.DispatchOnUIThread(() => {
                     try {
@@ -49,6 +54,10 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
             }
 
             return CommandResult.Executed;
+        }
+
+        private static double PixelsToInches(int pixels) {
+            return pixels / 96.0;
         }
     }
 }

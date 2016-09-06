@@ -89,6 +89,24 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
             get { return _device != null && _device == _plotManager.ActiveDevice; }
         }
 
+        public int LastPixelWidth {
+            get {
+                return _lastPixelWidth;
+            }
+        }
+
+        public int LastPixelHeight {
+            get {
+                return _lastPixelHeight;
+            }
+        }
+
+        public int LastResolution {
+            get {
+                return _lastResolution;
+            }
+        }
+
         public Task AssignAsync(IRPlotDevice device) {
             _shell.AssertIsOnMainThread();
 
@@ -121,69 +139,6 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
             // This is safe to call from background thread
             if (_device != null) {
                 await _plotManager.ResizeAsync(_device, pixelWidth, pixelHeight, resolution);
-            }
-        }
-
-        public async Task ExportToBitmapAsync(string deviceName, string outputFilePath) {
-            _shell.AssertIsOnMainThread();
-
-            Debug.Assert(_device != null);
-            Debug.Assert(_device.ActivePlot != null);
-            await _plotManager.ExportToBitmapAsync(_device.ActivePlot, deviceName, outputFilePath, _lastPixelWidth, _lastPixelHeight, _lastResolution);
-        }
-
-        public async Task ExportToMetafileAsync(string outputFilePath) {
-            _shell.AssertIsOnMainThread();
-
-            Debug.Assert(_device != null);
-            Debug.Assert(_device.ActivePlot != null);
-            await _plotManager.ExportToMetafileAsync(_device.ActivePlot, outputFilePath, PixelsToInches(_lastPixelWidth), PixelsToInches(_lastPixelHeight), _lastResolution);
-        }
-
-        public async Task ExportToPdfAsync(string outputFilePath) {
-            _shell.AssertIsOnMainThread();
-
-            Debug.Assert(_device != null);
-            Debug.Assert(_device.ActivePlot != null);
-            await _plotManager.ExportToPdfAsync(_device.ActivePlot, outputFilePath, PixelsToInches(_lastPixelWidth), PixelsToInches(_lastPixelHeight));
-        }
-
-        public async Task RemoveActivePlotAsync() {
-            _shell.AssertIsOnMainThread();
-
-            Debug.Assert(_device != null);
-            Debug.Assert(_device.ActivePlot != null);
-            await _plotManager.RemovePlotAsync(_device.ActivePlot);
-        }
-
-        public async Task ClearAllPlotsAsync() {
-            _shell.AssertIsOnMainThread();
-
-            Debug.Assert(_device != null);
-            await _plotManager.RemoveAllPlotsAsync(_device);
-        }
-
-        public async Task NextPlotAsync() {
-            _shell.AssertIsOnMainThread();
-
-            Debug.Assert(_device != null);
-            await _plotManager.NextPlotAsync(_device);
-        }
-
-        public async Task PreviousPlotAsync() {
-            _shell.AssertIsOnMainThread();
-
-            Debug.Assert(_device != null);
-            await _plotManager.PreviousPlotAsync(_device);
-        }
-
-        public async Task ActivateDeviceAsync() {
-            _shell.AssertIsOnMainThread();
-
-            if (_device == null) {
-                await _plotManager.NewDeviceAsync(InstanceId);
-            } else {
-                await _plotManager.ActivateDeviceAsync(_device);
             }
         }
 

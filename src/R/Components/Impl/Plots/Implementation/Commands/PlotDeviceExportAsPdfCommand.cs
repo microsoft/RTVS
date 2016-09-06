@@ -26,7 +26,11 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
             string filePath = InteractiveWorkflow.Shell.ShowSaveFileDialog(Resources.Plots_ExportAsPdfFilter, null, Resources.Plots_ExportAsPdfDialogTitle);
             if (!string.IsNullOrEmpty(filePath)) {
                 try {
-                    await VisualComponent.ExportToPdfAsync(filePath);
+                    await InteractiveWorkflow.Plots.ExportToPdfAsync(
+                        VisualComponent.ActivePlot,
+                        filePath,
+                        PixelsToInches(VisualComponent.LastPixelWidth),
+                        PixelsToInches(VisualComponent.LastPixelHeight));
                 } catch (RPlotManagerException ex) {
                     InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);
                 } catch (OperationCanceledException) {
@@ -34,6 +38,10 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
             }
 
             return CommandResult.Executed;
+        }
+
+        private static double PixelsToInches(int pixels) {
+            return pixels / 96.0;
         }
     }
 }

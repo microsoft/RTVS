@@ -29,7 +29,13 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
         public async Task<CommandResult> InvokeAsync() {
             string filePath = Path.GetTempFileName();
             try {
-                await VisualComponent.ExportToBitmapAsync("bmp", filePath);
+                await InteractiveWorkflow.Plots.ExportToBitmapAsync(
+                    VisualComponent.ActivePlot,
+                    "bmp",
+                    filePath,
+                    VisualComponent.LastPixelWidth,
+                    VisualComponent.LastPixelHeight,
+                    VisualComponent.LastResolution);
 
                 InteractiveWorkflow.Shell.DispatchOnUIThread(() => {
                     try {

@@ -28,7 +28,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
             var msg = string.Format(CultureInfo.CurrentUICulture, Resources.Plots_RemoveCurrentPlotWarning, VisualComponent.DeviceName);
             if (InteractiveWorkflow.Shell.ShowMessage(msg, MessageButtons.YesNo) == MessageButtons.Yes) {
                 try {
-                    await VisualComponent.RemoveActivePlotAsync();
+                    await InteractiveWorkflow.Plots.RemovePlotAsync(VisualComponent.ActivePlot);
                 } catch (RPlotManagerException ex) {
                     InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);
                 } catch (OperationCanceledException) {

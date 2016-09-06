@@ -23,7 +23,11 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
 
         public async Task<CommandResult> InvokeAsync() {
             try {
-                await VisualComponent.ActivateDeviceAsync();
+                if (VisualComponent.Device == null) {
+                    await InteractiveWorkflow.Plots.NewDeviceAsync(VisualComponent.InstanceId);
+                } else {
+                    await InteractiveWorkflow.Plots.ActivateDeviceAsync(VisualComponent.Device);
+                }
             } catch (RPlotManagerException ex) {
                 InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);
             } catch (OperationCanceledException) {

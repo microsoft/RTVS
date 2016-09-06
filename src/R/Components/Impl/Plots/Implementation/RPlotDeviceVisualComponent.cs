@@ -115,6 +115,36 @@ namespace Microsoft.R.Components.Plots.Implementation {
             }
         }
 
+        public IRPlotDevice Device {
+            get {
+                return _viewModel.Device;
+            }
+        }
+
+        public IRPlot ActivePlot {
+            get {
+                return _viewModel.Device.ActivePlot;
+            }
+        }
+
+        public int LastPixelWidth {
+            get {
+                return _viewModel.LastPixelWidth;
+            }
+        }
+
+        public int LastPixelHeight {
+            get {
+                return _viewModel.LastPixelHeight;
+            }
+        }
+
+        public int LastResolution {
+            get {
+                return _viewModel.LastResolution;
+            }
+        }
+
         public PlotDeviceProperties GetDeviceProperties() {
             if (TestDeviceProperties.HasValue) {
                 return TestDeviceProperties.Value;
@@ -133,54 +163,12 @@ namespace Microsoft.R.Components.Plots.Implementation {
             Container.UpdateCommandStatus(false);
         }
 
-        public async Task ActivateDeviceAsync() {
-            await _viewModel.ActivateDeviceAsync();
-        }
-
-        public async Task ExportToBitmapAsync(string deviceName, string outputFilePath) {
-            await _viewModel.ExportToBitmapAsync(deviceName, outputFilePath);
-        }
-
-        public async Task ExportToMetafileAsync(string outputFilePath) {
-            await _viewModel.ExportToMetafileAsync(outputFilePath);
-        }
-
-        public async Task ExportToPdfAsync(string outputFilePath) {
-            await _viewModel.ExportToPdfAsync(outputFilePath);
-        }
-
-        public async Task RemoveActivePlotAsync() {
-            await _viewModel.RemoveActivePlotAsync();
-        }
-
-        public async Task ClearAllPlotsAsync() {
-            await _viewModel.ClearAllPlotsAsync();
-        }
-
-        public async Task NextPlotAsync() {
-            await _viewModel.NextPlotAsync();
-        }
-
-        public async Task PreviousPlotAsync() {
-            await _viewModel.PreviousPlotAsync();
-        }
-
         public async Task<LocatorResult> StartLocatorModeAsync(CancellationToken ct) {
             return await _viewModel.StartLocatorModeAsync(ct);
         }
 
         public void EndLocatorMode() {
             _viewModel.EndLocatorMode();
-        }
-
-        public async Task CopyPlotFromAsync(Guid sourceDeviceId, Guid sourcePlotId, bool isMove) {
-            await _viewModel.CopyPlotFromAsync(sourceDeviceId, sourcePlotId, isMove);
-        }
-
-        public void CopyToClipboard(bool cut) {
-            var data = PlotClipboardData.Serialize(new PlotClipboardData(_viewModel.Device.DeviceId, _viewModel.Device.ActivePlot.PlotId, cut));
-            Clipboard.Clear();
-            Clipboard.SetData(PlotClipboardData.Format, data);
         }
 
         public void ClickPlot(int x, int y) {

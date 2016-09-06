@@ -13,24 +13,19 @@ namespace Microsoft.R.Components.Plots {
         Task AssignAsync(IRPlotDevice device);
         Task UnassignAsync();
         int InstanceId { get; }
+        int LastPixelWidth { get; }
+        int LastPixelHeight { get; }
+        int LastResolution { get; }
         bool HasPlot { get; }
         bool LocatorMode { get; }
         int ActivePlotIndex { get; }
         int PlotCount { get; }
         string DeviceName { get; }
         bool IsDeviceActive { get; }
-        Task ActivateDeviceAsync();
-        Task ExportToBitmapAsync(string deviceName, string outputFilePath);
-        Task ExportToMetafileAsync(string outputFilePath);
-        Task ExportToPdfAsync(string outputFilePath);
-        Task RemoveActivePlotAsync();
-        Task ClearAllPlotsAsync();
-        Task NextPlotAsync();
-        Task PreviousPlotAsync();
+        IRPlotDevice Device { get; }
+        IRPlot ActivePlot { get; }
         Task<LocatorResult> StartLocatorModeAsync(CancellationToken ct);
         void EndLocatorMode();
-        Task CopyPlotFromAsync(Guid sourceDeviceId, Guid sourcePlotId, bool isMove);
-        void CopyToClipboard(bool cut);
         void ClickPlot(int x, int y);
     }
 }

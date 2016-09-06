@@ -3,6 +3,7 @@
 
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using System.Windows;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
 
@@ -27,7 +28,9 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
 
         public Task<CommandResult> InvokeAsync() {
             try {
-                VisualComponent.CopyToClipboard(_cut);
+                var data = PlotClipboardData.Serialize(new PlotClipboardData(VisualComponent.Device.DeviceId, VisualComponent.Device.ActivePlot.PlotId, _cut));
+                Clipboard.Clear();
+                Clipboard.SetData(PlotClipboardData.Format, data);
             } catch (ExternalException ex) {
                 InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);
             }

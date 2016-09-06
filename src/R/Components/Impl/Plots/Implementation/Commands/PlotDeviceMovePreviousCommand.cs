@@ -25,7 +25,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
 
         public async Task<CommandResult> InvokeAsync() {
             try {
-                await VisualComponent.PreviousPlotAsync();
+                await InteractiveWorkflow.Plots.PreviousPlotAsync(VisualComponent.Device);
             } catch (RPlotManagerException ex) {
                 InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);
             } catch (OperationCanceledException) {
