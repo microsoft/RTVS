@@ -11,7 +11,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
-using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Fixtures;
 using Microsoft.R.Host.Client.Test.Script;
@@ -35,8 +34,6 @@ namespace Microsoft.R.Host.Client.Test {
         public List<PlotMessage> OriginalPlotMessages { get; } = new List<PlotMessage>();
 
         private PlotDeviceProperties DefaultDeviceProperties = new PlotDeviceProperties(DefaultWidth, DefaultHeight, 96);
-
-        private readonly IRHostBrokerConnector _brokerConnector;
 
         public IdeGraphicsDeviceTest(GraphicsDeviceTestFilesFixture files, TestMethodFixture testMethod) {
             _files = files;
