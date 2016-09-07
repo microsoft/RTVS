@@ -45,7 +45,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                 line = TextView.Selection.End.Position.GetContainingLine();
             }
 
-            window.Container.Show(false);
+            window.Container.Show(focus: false, immediate: false);
             _interactiveWorkflow.Operations.EnqueueExpression(text, true);
 
             var targetLine = line;

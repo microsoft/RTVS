@@ -199,6 +199,7 @@
     <Compile Include="History\HistoryWindowPane.cs" />
     <Compile Include="Options\Attributes\SurveyNewsPolicyTypeConverter.cs" />
     <Compile Include="Options\R\Tools\SurveyNewsCommand.cs" />
+    <Compile Include="ToolWindows\PlotHistoryWindowPane.cs" />
     <Compile Include="ProjectSystem\Commands\CopyRemoteItemPathCommand.cs" />
     <Compile Include="ProjectSystem\Commands\SetAsStartUpRScriptCommand.cs" />
     <Compile Include="ProjectSystem\Definitions\IRProjectPropertiesExtensions.cs" />
@@ -208,8 +209,9 @@
     <Compile Include="ToolWindows\PackageManagerWindowPane.cs" />
     <Compile Include="Packages\Attributes\ProvideCodeExpansionPathAttribute.cs" />
     <Compile Include="Packages\Attributes\ProvideCodeExpansionsAttribute.cs" />
-    <Compile Include="ToolWindows\PlotManagerWindowPane.cs" />
-    <Compile Include="ToolWindows\VsRPlotManagerVisualComponent.cs" />
+    <Compile Include="ToolWindows\PlotDeviceWindowPane.cs" />
+    <Compile Include="ToolWindows\VsRPlotHistoryVisualComponent.cs" />
+    <Compile Include="ToolWindows\VsRPlotDeviceVisualComponent.cs" />
     <Compile Include="ProjectSystem\Configuration\IProjectConfigurationSettingsAccess.cs" />
     <Compile Include="ProjectSystem\Configuration\IProjectConfigurationSettingsProvider.cs" />
     <Compile Include="ProjectSystem\Configuration\ProjectConfigurationSettingsProvider.cs" />

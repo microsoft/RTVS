@@ -43,7 +43,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.MD {
             if (workflow.ActiveWindow == null) {
                 workflow
                     .GetOrCreateVisualComponent(_componentContainerFactory)
-                    .ContinueOnRanToCompletion(w => w.Container.Show(false));
+                    .ContinueOnRanToCompletion(w => w.Container.Show(focus: false, immediate: false));
             }
 
             return new ICommand[] {

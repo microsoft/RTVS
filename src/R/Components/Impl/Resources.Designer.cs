@@ -844,6 +844,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Device {0}.
+        /// </summary>
+        public static string Plots_DeviceName {
+            get {
+                return ResourceManager.GetString("Plots_DeviceName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error: {0}.
         /// </summary>
         public static string Plots_EvalError {
@@ -898,7 +907,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Are you sure you want to remove all plots?.
+        ///   Looks up a localized string similar to Are you sure you want to remove all plots from {0}?.
         /// </summary>
         public static string Plots_RemoveAllPlotsWarning {
             get {
@@ -907,11 +916,20 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Are you sure you want to remove the current plot?.
+        ///   Looks up a localized string similar to Are you sure you want to remove the current plot from {0}?.
         /// </summary>
         public static string Plots_RemoveCurrentPlotWarning {
             get {
                 return ResourceManager.GetString("Plots_RemoveCurrentPlotWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to remove the selected plot?.
+        /// </summary>
+        public static string Plots_RemoveSelectedPlotWarning {
+            get {
+                return ResourceManager.GetString("Plots_RemoveSelectedPlotWarning", resourceCulture);
             }
         }
         
@@ -934,20 +952,38 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R Plot.
+        ///   Looks up a localized string similar to R Plot - {0}.
         /// </summary>
-        public static string Plots_WindowCaption {
+        public static string Plots_WindowCaptionDevice {
             get {
-                return ResourceManager.GetString("Plots_WindowCaption", resourceCulture);
+                return ResourceManager.GetString("Plots_WindowCaptionDevice", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R Plot - Locator is Active.
+        ///   Looks up a localized string similar to R Plot - {0} - Active.
+        /// </summary>
+        public static string Plots_WindowCaptionDeviceActive {
+            get {
+                return ResourceManager.GetString("Plots_WindowCaptionDeviceActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R Plot - {0} - Locator is Active.
         /// </summary>
         public static string Plots_WindowCaptionLocatorActive {
             get {
                 return ResourceManager.GetString("Plots_WindowCaptionLocatorActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R Plot.
+        /// </summary>
+        public static string Plots_WindowCaptionNoDevice {
+            get {
+                return ResourceManager.GetString("Plots_WindowCaptionNoDevice", resourceCulture);
             }
         }
         

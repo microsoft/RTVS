@@ -68,19 +68,39 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             });
         }
 
-        public void Show(bool focus) {
+        public void Hide() {
             if (VsWindowFrame == null) {
                 return;
             }
 
             VsAppShell.Current.DispatchOnUIThread(() => {
+                ErrorHandler.ThrowOnFailure(VsWindowFrame.Hide());
+            });
+        }
+
+        public void Show(bool focus, bool immediate) {
+            if (VsWindowFrame == null) {
+                return;
+            }
+
+            if (immediate) {
+                VsAppShell.Current.AssertIsOnMainThread();
                 if (focus) {
                     ErrorHandler.ThrowOnFailure(VsWindowFrame.Show());
                     Component.Control?.Focus();
                 } else {
                     ErrorHandler.ThrowOnFailure(VsWindowFrame.ShowNoActivate());
                 }
-            });
+            } else {
+                VsAppShell.Current.DispatchOnUIThread(() => {
+                    if (focus) {
+                        ErrorHandler.ThrowOnFailure(VsWindowFrame.Show());
+                        Component.Control?.Focus();
+                    } else {
+                        ErrorHandler.ThrowOnFailure(VsWindowFrame.ShowNoActivate());
+                    }
+                });
+            }
         }
     }
 }

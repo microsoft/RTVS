@@ -87,7 +87,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                 await base.LaunchAsync(launchOptions);
             }
 
-            _interactiveWorkflow.ActiveWindow?.Container.Show(false);
+            _interactiveWorkflow.ActiveWindow?.Container.Show(focus: false, immediate: false);
 
             bool transferFiles = await _properties.GetTransferProjectOnRunAsync();
             string remotePath = await _properties.GetRemoteProjectPathAsync();

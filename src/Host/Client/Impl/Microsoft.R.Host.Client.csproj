@@ -61,6 +61,7 @@
     <Compile Include="Host\NullRHostConnector.cs" />
     <Compile Include="Host\RemoteRHostConnector.cs" />
     <Compile Include="Host\RHostConnector.cs" />
+    <Compile Include="Definitions\PlotDeviceProperties.cs" />
     <Compile Include="Host\RHost.GetBlobRequest.cs" />
     <Compile Include="Host\RHost.CreateBlobRequest.cs" />
     <Compile Include="Host\RHost.Request.cs" />

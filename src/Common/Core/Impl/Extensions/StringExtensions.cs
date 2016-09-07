@@ -114,6 +114,7 @@ namespace Microsoft.Common.Core {
 
             return sb.ToString();
         }
+
         public static int SubstringToHex(this string s, int position, int count) {
             int mul = 1 << (4 * (count - 1));
             int result = 0;

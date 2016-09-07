@@ -109,7 +109,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 // the focus back here. 
                 _replLostFocus = false;
                 if (IsRProjectActive()) {
-                    ActiveWindow.Container.Show(true);
+                    ActiveWindow.Container.Show(focus: true, immediate: false);
                 }
 
                 // Reset the flag, so that further focus changes are not affected until the next debugger break occurs.

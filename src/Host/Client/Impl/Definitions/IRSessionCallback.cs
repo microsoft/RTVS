@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
@@ -35,7 +36,18 @@ namespace Microsoft.R.Host.Client {
         /// Set locator mode in the plot window
         /// </summary>
         /// <returns>Location where the user clicked.</returns>
-        Task<LocatorResult> Locator(CancellationToken ct);
+        Task<LocatorResult> Locator(Guid deviceId, CancellationToken ct);
+
+        /// <summary>
+        /// Device is being created, so create/assign a plot window for it.
+        /// </summary>
+        /// <returns>Properties for the plot device window, such as width, height and resolution.</returns>
+        Task<PlotDeviceProperties> PlotDeviceCreate(Guid deviceId, CancellationToken ct);
+
+        /// <summary>
+        /// Device is being destroyed, so recycle its plot window.
+        /// </summary>
+        Task PlotDeviceDestroy(Guid deviceId, CancellationToken ct);
 
         /// <summary>
         /// Requests user input from UI

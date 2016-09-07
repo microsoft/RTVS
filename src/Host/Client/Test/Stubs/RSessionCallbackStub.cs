@@ -14,6 +14,8 @@ namespace Microsoft.R.Host.Client.Test.Stubs {
         public IList<string> HelpUrlCalls { get; } = new List<string>();
         public IList<Tuple<PlotMessage, CancellationToken>> PlotCalls { get; } = new List<Tuple<PlotMessage, CancellationToken>>();
         public IList<CancellationToken> LocatorCalls { get; } = new List<CancellationToken>();
+        public IList<Tuple<Guid, CancellationToken>> PlotDeviceCreateCalls { get; } = new List<Tuple<Guid, CancellationToken>>();
+        public IList<Tuple<Guid, CancellationToken>> PlotDeviceDestroyCalls { get; } = new List<Tuple<Guid, CancellationToken>>();
         public IList<Tuple<string, int, CancellationToken>> ReadUserInputCalls { get; } = new List<Tuple<string, int, CancellationToken>>();
         public IList<string> CranUrlFromNameCalls { get; } = new List<string>();
         public IList<Tuple<string, string>> ViewObjectCalls { get; } = new List<Tuple<string, string>>();
@@ -23,7 +25,9 @@ namespace Microsoft.R.Host.Client.Test.Stubs {
 
         public Func<string, MessageButtons, Task<MessageButtons>> ShowMessageCallsHandler { get; set; } = (m, b) => Task.FromResult(MessageButtons.OK);
         public Func<string, int, CancellationToken, Task<string>> ReadUserInputHandler { get; set; } = (m, l, ct) => Task.FromResult("\n");
-        public Func<CancellationToken, Task<LocatorResult>> LocatorHandler { get; set; } = (ct) => Task.FromResult(LocatorResult.CreateNotClicked());
+        public Func<Guid, CancellationToken, Task<LocatorResult>> LocatorHandler { get; set; } = (deviceId, ct) => Task.FromResult(LocatorResult.CreateNotClicked());
+        public Func<Guid, CancellationToken, Task<PlotDeviceProperties>> PlotDeviceCreateHandler { get; set; } = (deviceId, ct) => Task.FromResult(PlotDeviceProperties.Default);
+        public Func<Guid, CancellationToken, Task> PlotDeviceDestroyHandler { get; set; } = (deviceId, ct) => Task.CompletedTask;
 
         public Func<string, string> CranUrlFromNameHandler { get; set; } = s => "https://cran.rstudio.com";
         public Func<string, string, Task> ViewObjectHandler { get; set; } = (x, t) => Task.CompletedTask;
@@ -51,9 +55,19 @@ namespace Microsoft.R.Host.Client.Test.Stubs {
             return Task.CompletedTask;
         }
 
-        public Task<LocatorResult> Locator(CancellationToken ct) {
+        public Task<LocatorResult> Locator(Guid deviceId, CancellationToken ct) {
             LocatorCalls.Add(ct);
-            return LocatorHandler != null ? LocatorHandler(ct) : Task.FromResult(LocatorResult.CreateNotClicked());
+            return LocatorHandler != null ? LocatorHandler(deviceId, ct) : Task.FromResult(LocatorResult.CreateNotClicked());
+        }
+
+        public Task<PlotDeviceProperties> PlotDeviceCreate(Guid deviceId, CancellationToken ct) {
+            PlotDeviceCreateCalls.Add(new Tuple<Guid, CancellationToken>(deviceId, ct));
+            return PlotDeviceCreateHandler != null ? PlotDeviceCreateHandler(deviceId, ct) : Task.FromResult(PlotDeviceProperties.Default);
+        }
+
+        public Task PlotDeviceDestroy(Guid deviceId, CancellationToken ct) {
+            PlotDeviceDestroyCalls.Add(new Tuple<Guid, CancellationToken>(deviceId, ct));
+            return PlotDeviceDestroyHandler != null ? PlotDeviceDestroyHandler(deviceId, ct) : Task.CompletedTask;
         }
 
         public Task<string> ReadUserInput(string prompt, int maximumLength, CancellationToken ct) {

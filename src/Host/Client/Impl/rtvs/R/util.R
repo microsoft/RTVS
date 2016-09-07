@@ -156,20 +156,26 @@ export_to_csv <- function(expr, sep, dec) {
 }
 
 # Helper to export current plot to image
-export_to_image <- function(device, width, height, resolution) {
+export_to_image <- function(device_id, plot_id, device, width, height, resolution) {
+    prev_device_num <- dev.cur()
+    graphics.ide.selectplot(device_id, plot_id, force_render=FALSE)
     filepath <- tempfile('plot_', fileext='.dat')
     on.exit(unlink(filepath))
     dev.copy(device=device,filename=filepath,width=width,height=height,res=resolution)
     dev.off()
+    dev.set(prev_device_num)
     readBin(filepath, 'raw', file.info(filepath)$size)
 }
 
 # Helper to export current plot to pdf
-export_to_pdf <- function(width, height) {
+export_to_pdf <- function(device_id, plot_id, width, height) {
+    prev_device_num <- dev.cur()
+    graphics.ide.selectplot(device_id, plot_id, force_render=FALSE)
     filepath <- tempfile('plot_',fileext='.pdf')
     on.exit(unlink(filepath))
     dev.copy(device=pdf,file=filepath,width=width,height=height)
     dev.off()
+    dev.set(prev_device_num)
     readBin(filepath, 'raw', file.info(filepath)$size)
 }
 

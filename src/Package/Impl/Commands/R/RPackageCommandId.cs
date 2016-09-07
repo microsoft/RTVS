@@ -4,6 +4,7 @@
 namespace Microsoft.VisualStudio.R.Package.Commands {
     public static class RPackageCommandId {
         public const int plotWindowToolBarId = 0x2000;
+        public const int plotHistoryWindowToolBarId = 0x2001;
         public const int helpWindowToolBarId = 0x2010;
         public const int historyWindowToolBarId = 0x2020;
         public const int variableWindowToolBarId = 0x2030;
@@ -57,6 +58,14 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public const int icmdCopyPlotAsBitmap = 716;
         public const int icmdCopyPlotAsMetafile = 717;
         public const int icmdEndLocator = 718;
+        public const int icmdShowPlotHistory = 719;
+        public const int icmdNewPlotWindow = 720;
+        public const int icmdActivatePlotWindow = 721;
+        public const int icmdPlotHistoryWindow = 722;
+        public const int icmdPlotHistoryZoomIn = 723;
+        public const int icmdPlotHistoryZoomOut = 724;
+        public const int icmdPlotHistoryAutoHide = 725;
+        public const int icmdPlotHistoryActivatePlot = 726;
 
         // Data
         public const int icmdImportDataset = 801;

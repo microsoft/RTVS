@@ -552,9 +552,19 @@ namespace Microsoft.R.Host.Client.Session {
             return callback != null ? callback.Plot(plot, ct) : Task.CompletedTask;
         }
 
-        Task<LocatorResult> IRCallbacks.Locator(CancellationToken ct) {
+        Task<LocatorResult> IRCallbacks.Locator(Guid deviceId, CancellationToken ct) {
             var callback = _callback;
-            return callback != null ? callback.Locator(ct) : Task.FromResult(LocatorResult.CreateNotClicked());
+            return callback != null ? callback.Locator(deviceId, ct) : Task.FromResult(LocatorResult.CreateNotClicked());
+        }
+
+        Task<PlotDeviceProperties> IRCallbacks.PlotDeviceCreate(Guid deviceId, CancellationToken ct) {
+            var callback = _callback;
+            return callback != null ? callback.PlotDeviceCreate(deviceId, ct) : Task.FromResult(PlotDeviceProperties.Default);
+        }
+
+        Task IRCallbacks.PlotDeviceDestroy(Guid deviceId, CancellationToken ct) {
+            var callback = _callback;
+            return callback != null ? callback.PlotDeviceDestroy(deviceId, ct) : Task.CompletedTask;
         }
 
         /// <summary>

@@ -117,7 +117,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
             if (_workflow.ActiveWindow == null) {
                 var window = await _workflow.GetOrCreateVisualComponent(_componentContainerFactory);
-                window.Container.Show(true);
+                window.Container.Show(focus: true, immediate: false);
             }
 
             try {

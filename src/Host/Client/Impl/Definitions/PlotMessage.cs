@@ -6,13 +6,19 @@ using System.IO;
 
 namespace Microsoft.R.Host.Client {
     public struct PlotMessage {
+        public Guid DeviceId { get; }
+        public Guid PlotId { get; }
         public string FilePath { get; }
+        public int DeviceNum { get; }
         public int ActivePlotIndex { get; }
         public int PlotCount { get; }
         public byte[] Data { get; }
 
-        public PlotMessage(string filePath, int activePlotIndex, int plotCount, byte[] data) {
+        public PlotMessage(Guid deviceId, Guid plotId, string filePath, int deviceNum, int activePlotIndex, int plotCount, byte[] data) {
+            DeviceId = deviceId;
+            PlotId = plotId;
             FilePath = filePath;
+            DeviceNum = deviceNum;
             ActivePlotIndex = activePlotIndex;
             PlotCount = plotCount;
             Data = data;

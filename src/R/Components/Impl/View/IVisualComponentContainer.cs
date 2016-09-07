@@ -16,7 +16,8 @@ namespace Microsoft.R.Components.View {
         string StatusText { get; set; }
         bool IsOnScreen { get; }
 
-        void Show(bool focus);
+        void Hide();
+        void Show(bool focus, bool immediate);
         void ShowContextMenu(CommandID commandId, Point position);
         void UpdateCommandStatus(bool immediate);
     }
