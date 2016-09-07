@@ -58,14 +58,24 @@ namespace Microsoft.R.Host.Broker.Security {
             IntPtr token;
             WindowsIdentity winIdentity = null;
             string profilePath = "";
+
+            _logger.LogInformation($"Attempting login for user: {context.Username}");
             if (NativeMethods.LogonUser(user.ToString(), domain.ToString(), context.Password, (int)LogonType.LOGON32_LOGON_NETWORK, (int)LogonProvider.LOGON32_PROVIDER_DEFAULT, out token)) {
+                _logger.LogInformation($"Login succeeded for user: {context.Username}");
                 winIdentity = new WindowsIdentity(token);
                 StringBuilder profileDir = new StringBuilder(NativeMethods.MAX_PATH);
                 uint size = (uint)profileDir.Capacity;
+
+                _logger.LogInformation($"Attempting profile creation for user: {context.Username}");
                 uint error = NativeMethods.CreateProfile(winIdentity.User.Value, user.ToString(), profileDir, size);
                 // 0x800700b7 - Profile already exists.
                 if (error != 0 && error != 0x800700b7) {
+                    _logger.LogError($"Profile creation failed for user [{context.Username}] with error: {error.ToString("X")}");
                     return null;
+                } else if (error == 0x800700b7) {
+                    _logger.LogInformation($"Profile already exists for user: {context.Username}. Continuing with existing profile.");
+                } else {
+                    _logger.LogInformation($"Profile successfully created for user: {context.Username}");
                 }
 
                 profileDir = new StringBuilder(NativeMethods.MAX_PATH * 2);
@@ -73,9 +83,12 @@ namespace Microsoft.R.Host.Broker.Security {
 
                 if (NativeMethods.GetUserProfileDirectory(token, profileDir, ref size)) {
                     profilePath = profileDir.ToString();
+                } else {
+                    _logger.LogError($"Failed to get profile for user: [{context.Username}] with error: {NativeMethods.GetLastError().ToString("X")}");
                 }
-                
+
             } else {
+                _logger.LogError($"Login FAILED for user [{context.Username}] with error: {NativeMethods.GetLastError().ToString("X")}");
                 return null;
             }
 

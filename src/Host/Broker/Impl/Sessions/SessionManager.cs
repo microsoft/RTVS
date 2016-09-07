@@ -17,16 +17,17 @@ namespace Microsoft.R.Host.Broker.Sessions {
     public class SessionManager {
         private readonly InterpreterManager _interpManager;
         private readonly LoggingOptions _loggingOptions;
-        private readonly ILogger _hostOutputLogger, _messageLogger;
+        private readonly ILogger _hostOutputLogger, _messageLogger, _sessionLogger;
 
         private readonly Dictionary<string, List<Session>> _sessions = new Dictionary<string, List<Session>>();
 
         [ImportingConstructor]
-        public SessionManager(InterpreterManager interpManager, IOptions<LoggingOptions> loggingOptions, ILogger<Process> hostOutputLogger, ILogger<MessagePipe> messageLogger) {
+        public SessionManager(InterpreterManager interpManager, IOptions<LoggingOptions> loggingOptions, ILogger<Process> hostOutputLogger, ILogger<MessagePipe> messageLogger, ILogger<Session> sessionLogger) {
             _interpManager = interpManager;
             _loggingOptions = loggingOptions.Value;
             _hostOutputLogger = hostOutputLogger;
             _messageLogger = messageLogger;
+            _sessionLogger = sessionLogger;
         }
 
         public IEnumerable<Session> GetSessions(IIdentity user) {
@@ -64,6 +65,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
             }
 
             session.StartHost(
+                _sessionLogger,
                 password,
                 profilePath,
                 _loggingOptions.LogHostOutput ? _hostOutputLogger : null,

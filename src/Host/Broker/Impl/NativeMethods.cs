@@ -232,5 +232,8 @@ namespace Microsoft.R.Host.Broker {
             IntPtr hToken,
             StringBuilder pszProfilePath,
             ref uint cchProfilePath);
+
+        [DllImport("kernel32.dll")]
+        public static extern uint GetLastError();
     }
 }

@@ -69,15 +69,17 @@ namespace Microsoft.R.Host.Broker.Sessions {
             CommandLineArguments = commandLineArguments;
         }
 
-        public void StartHost(SecureString password, string profilePath, ILogger outputLogger, ILogger messageLogger) {
+        public void StartHost(ILogger logger, SecureString password, string profilePath, ILogger outputLogger, ILogger messageLogger) {
             string brokerPath = Path.GetDirectoryName(typeof(Program).Assembly.GetAssemblyPath());
             string rhostExePath = Path.Combine(brokerPath, RHostExe);
             string arguments = $"--rhost-name \"{Id}\" {CommandLineArguments}";
             var username = new StringBuilder(NativeMethods.CREDUI_MAX_USERNAME_LENGTH + 1);
             var domain = new StringBuilder(NativeMethods.CREDUI_MAX_PASSWORD_LENGTH + 1);
 
-            if (NativeMethods.CredUIParseUserName(User.Name, username, username.Capacity, domain, domain.Capacity) != 0) {
-                throw new ArgumentException();
+            int error = 0;
+            if ((error = NativeMethods.CredUIParseUserName(User.Name, username, username.Capacity, domain, domain.Capacity)) != 0) {
+                logger.LogError($"Failed to parse username for user: {User.Name}");
+                throw new ArgumentException($"Failed to parse username for user: {User.Name}");
             }
 
             ProcessStartInfo psi = new ProcessStartInfo(rhostExePath) {
@@ -90,7 +92,9 @@ namespace Microsoft.R.Host.Broker.Sessions {
                 LoadUserProfile = true
             };
 
-            if (WindowsIdentity.GetCurrent().User != ((WindowsIdentity)User).User) {
+            var useridentity = User as WindowsIdentity;
+            if (useridentity != null && WindowsIdentity.GetCurrent().User != useridentity.User) {
+                logger.LogInformation($"Creating user environment variables for [{User.Name}] profile: {profilePath}");
                 // if broker and rhost are run as different users.
                 psi.EnvironmentVariables["USERNAME"] = username.ToString();
                 psi.EnvironmentVariables["HOMEDRIVE"] = profilePath.Substring(0, 2);
@@ -110,6 +114,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
             psi.WorkingDirectory = Path.GetDirectoryName(rhostExePath);
 
             if (password != null) {
+                logger.LogInformation($"Using user name and password to start process.");
                 psi.Domain = domain.ToString();
                 psi.UserName = username.ToString();
                 psi.Password = password;
@@ -129,6 +134,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
                 _pipe = null;
             };
 
+            logger.LogInformation($"Starting RHost process: {rhostExePath} {arguments}");
             _process.Start();
             _process.BeginErrorReadLine();
 
