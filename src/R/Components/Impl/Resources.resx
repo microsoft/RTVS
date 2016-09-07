@@ -313,16 +313,16 @@
     <value>Are you sure you wish to update '{0}' package? This action cannot be undone.</value>
   </data>
   <data name="ConnectionManager_LocalConnections" xml:space="preserve">
-    <value>Local R</value>
+    <value>Local</value>
   </data>
-  <data name="ConnectionManager_UserConnections" xml:space="preserve">
-    <value>Remote and custom</value>
+  <data name="ConnectionManager_RemoteConnections" xml:space="preserve">
+    <value>Remote</value>
   </data>
   <data name="ConnectionManager_LocalConnectionsTooltip" xml:space="preserve">
-    <value>Expand/Collapse local workspaces</value>
+    <value>Expand/Collapse list of local R installations</value>
   </data>
-  <data name="ConnectionManager_UserConnectionsTooltip" xml:space="preserve">
-    <value>Expand/Collapse user defined workspaces</value>
+  <data name="ConnectionManager_RemoteConnectionsTooltip" xml:space="preserve">
+    <value>Expand/Collapse list of remote workspaces</value>
   </data>
   <data name="ConnectionManager_ConnectTooltip" xml:space="preserve">
     <value>Connect to '{0}'.</value>
@@ -331,7 +331,7 @@
     <value>Connection name.</value>
   </data>
   <data name="ConnectionManager_Path" xml:space="preserve">
-    <value>Connection path. Either an URL (http://machine:port) or a local path.</value>
+    <value>Host URL or path to R installation</value>
   </data>
   <data name="ConnectionManager_RCommandLineArguments" xml:space="preserve">
     <value>R command line arguments.</value>
@@ -340,10 +340,10 @@
     <value>Add</value>
   </data>
   <data name="ConnectionManager_EditTooltip" xml:space="preserve">
-    <value>Edit the connection</value>
+    <value>Edit R interpreter information</value>
   </data>
   <data name="ConnectionManager_DeleteTooltip" xml:space="preserve">
-    <value>Delete the connection</value>
+    <value>Delete connection</value>
   </data>
   <data name="ConnectionManager_Save" xml:space="preserve">
     <value>Save</value>

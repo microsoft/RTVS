@@ -8,8 +8,6 @@ using Microsoft.R.Components.ConnectionManager.ViewModel;
 namespace Microsoft.R.Components.ConnectionManager.Implementation.View.DesignTime {
 #if DEBUG
     internal class DesignTimeConnectionViewModel : IConnectionViewModel {
-        public event PropertyChangedEventHandler PropertyChanged;
-
         public Uri Id { get; }
         public string Name { get; set; }
         public string Path { get; set; }
@@ -26,6 +24,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View.DesignTim
         public DateTime LastUsed => DateTime.Now;
         public void Reset() { }
         public void Dispose() { }
+#pragma warning disable 67
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 #endif
 }

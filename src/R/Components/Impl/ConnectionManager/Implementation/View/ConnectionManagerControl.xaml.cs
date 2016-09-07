@@ -40,8 +40,17 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
         }
 
         private void ButtonEdit_Click(object sender, RoutedEventArgs e) {
-            Model?.Edit(GetConnection(e));
-            ScrollEditedIntoView();
+            if (Model != null) {
+                var currentConnection = Model.EditedConnection;
+                if (Model.IsEditingNew || currentConnection != null) {
+                    Model.CancelEdit();
+                }
+                var connectionToEdit = GetConnection(e);
+                if(connectionToEdit != currentConnection) {
+                    Model.Edit(GetConnection(e));
+                    ScrollEditedIntoView();
+                }
+            }
         }
 
         private void ButtonDelete_Click(object sender, RoutedEventArgs e) {
@@ -57,8 +66,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
         private void ScrollEditedIntoView() {
             var model = Model;
             if (model != null && !model.IsEditingNew && model.EditedConnection != null) {
-                List.ScrollIntoView(model.EditedConnection);
-                List.SelectedItems.Add(model.EditedConnection);
+                var list = model.EditedConnection.IsRemote ? RemoteList : LocalList;
+                list.ScrollIntoView(model.EditedConnection);
+                list.SelectedItems.Add(model.EditedConnection);
             }
         }
 

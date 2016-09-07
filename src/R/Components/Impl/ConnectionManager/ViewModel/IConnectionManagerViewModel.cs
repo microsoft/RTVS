@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Microsoft.R.Components.ConnectionManager.ViewModel {
     public interface IConnectionManagerViewModel : INotifyPropertyChanged, IDisposable {
         ReadOnlyObservableCollection<IConnectionViewModel> LocalConnections { get; }
-        ReadOnlyObservableCollection<IConnectionViewModel> UserConnections { get; }
+        ReadOnlyObservableCollection<IConnectionViewModel> RemoteConnections { get; }
         IConnectionViewModel EditedConnection { get; }
         bool HasLocalConnections { get; }
         bool IsEditingNew { get; }
