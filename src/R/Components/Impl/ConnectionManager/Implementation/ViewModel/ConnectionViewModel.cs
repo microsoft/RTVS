@@ -24,6 +24,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private bool _isValid;
 
         public ConnectionViewModel() {
+            IsUserCreated = true;
             UpdateCalculated();
         }
 
