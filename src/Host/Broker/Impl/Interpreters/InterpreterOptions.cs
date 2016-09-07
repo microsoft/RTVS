@@ -3,6 +3,8 @@
 
 namespace Microsoft.R.Host.Broker.Interpreters {
     public class InterpreterOptions {
+        public string Name { get; set; }
+
         public string BasePath { get; set; }
     }
 }

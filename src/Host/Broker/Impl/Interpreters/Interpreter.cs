@@ -10,6 +10,8 @@ namespace Microsoft.R.Host.Broker.Interpreters {
 
         public string Id { get; }
 
+        public string Name { get; }
+
         public string Path { get; }
 
         public string BinPath { get; }
@@ -18,14 +20,16 @@ namespace Microsoft.R.Host.Broker.Interpreters {
 
         public InterpreterInfo Info => new InterpreterInfo {
             Id = Id,
+            Name = Name,
             Path = Path,
             BinPath = BinPath,
             Version = Version
         };
 
-        public Interpreter(InterpreterManager manager, string id, string path, string binPath, Version version) {
+        public Interpreter(InterpreterManager manager, string id, string name, string path, string binPath, Version version) {
             Manager = manager;
             Id = id;
+            Name = name;
             Path = path;
             BinPath = binPath;
             Version = version;

@@ -9,6 +9,8 @@ namespace Microsoft.R.Host.Protocol {
     public struct InterpreterInfo {
         public string Id { get; set; }
 
+        public string Name { get; set; }
+
         public string Path { get; set; }
 
         public string BinPath { get; set; }
