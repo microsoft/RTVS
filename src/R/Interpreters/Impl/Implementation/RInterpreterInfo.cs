@@ -55,7 +55,7 @@ namespace Microsoft.R.Interpreters {
             string rTermPath = Path.Combine(BinPath, "RTerm.exe");
             string rScriptPath = Path.Combine(BinPath, "RScript.exe");
             string rGuiPath = Path.Combine(BinPath, "RGui.exe");
-            Exception ex = null;
+            Exception exception = null;
 
             try {
                 if (fs.FileExists(rDllPath) && fs.FileExists(rTermPath) &&
@@ -73,11 +73,11 @@ namespace Microsoft.R.Interpreters {
                 } else {
                     coreShell?.ShowMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotFindRBinariesFormat, InstallPath), MessageButtons.OK);
                 }
-            } catch (IOException ioex) { ex = ioex; } catch (ArgumentException aex) { ex = aex; } catch (UnauthorizedAccessException uaex) { ex = uaex; }
+            } catch (Exception ex) when (ex is IOException || ex is ArgumentException || ex is UnauthorizedAccessException) { exception = ex; }
 
-            if (ex != null) {
+            if (exception != null) {
                 coreShell?.ShowErrorMessage(
-                    string.Format(CultureInfo.InvariantCulture, Resources.Error_ExceptionAccessingPath, InstallPath, ex.Message));
+                    string.Format(CultureInfo.InvariantCulture, Resources.Error_ExceptionAccessingPath, InstallPath, exception.Message));
             }
 
             return _isValid.Value;
