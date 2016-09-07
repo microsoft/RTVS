@@ -8,8 +8,6 @@ namespace Microsoft.Common.Core.Test.Registry {
     public sealed class RegistryMock : IRegistry {
         private readonly RegistryKeyMock[] _keys;
 
-        public RegistryMock(): this(new RegistryKeyMock[0]) { }
-
         public RegistryMock(RegistryKeyMock[] keys) {
             _keys = keys;
         }
