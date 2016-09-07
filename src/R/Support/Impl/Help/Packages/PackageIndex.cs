@@ -158,7 +158,7 @@ namespace Microsoft.R.Support.Help.Packages {
         }
 
         private async Task<IPackageInfo> TryAddNewPackageAsync(string packageName) {
-            if (_host.Session.IsHostRunning) {
+            try {
                 var packages = await GetPackagesAsync();
                 var package = packages.FirstOrDefault(p => p.Package.EqualsOrdinal(packageName));
                 if (package != null) {
@@ -168,7 +168,7 @@ namespace Microsoft.R.Support.Help.Packages {
                     _functionIndex.RegisterPackageFunctions(p);
                     return p;
                 }
-            }
+            } catch(RHostDisconnectedException) { }
             return null;
         }
 
