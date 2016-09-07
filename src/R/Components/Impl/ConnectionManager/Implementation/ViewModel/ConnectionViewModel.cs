@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Globalization;
 using System.Windows.Input;
 using Microsoft.Common.Core;
 using Microsoft.Common.Wpf;
@@ -98,6 +99,29 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         public bool IsConnected {
             get { return _isConnected; }
             set { SetProperty(ref _isConnected, value); }
+        }
+
+        /// <summary>
+        /// Tooltip when hovered over connection name
+        /// </summary>
+        public string Information {
+            get {
+                if (IsRemote) {
+                    Uri uri;
+                    Uri.TryCreate(Path, UriKind.Absolute, out uri);
+
+                    return string.Format(CultureInfo.InvariantCulture, Resources.ConnectionManager_InformationTooltipFormatRemote,
+                        IsActive ? Resources.ConnectionManager_Connected : Resources.ConnectionManager_Disconnected,
+                        uri != null ? uri.Host : Resources.ConnectionManager_Unknown,
+                        uri != null ? uri.Port.ToString() : Resources.ConnectionManager_Default,
+                        !string.IsNullOrWhiteSpace(RCommandLineArguments) ? RCommandLineArguments : Resources.ConnectionManager_None);
+                } else { 
+                    return string.Format(CultureInfo.InvariantCulture, Resources.ConnectionManager_InformationTooltipFormatLocal,
+                        IsActive ? Resources.ConnectionManager_Active : Resources.ConnectionManager_Inactive,
+                        Path,
+                        !string.IsNullOrWhiteSpace(RCommandLineArguments) ? RCommandLineArguments : Resources.ConnectionManager_None);
+                }
+            }
         }
 
         public DateTime LastUsed => _connection.LastUsed;

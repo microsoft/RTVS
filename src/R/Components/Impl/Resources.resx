@@ -289,10 +289,10 @@
     <value>Install {0} version {1}.</value>
   </data>
   <data name="PackageManager_UninstallButtonToolTip" xml:space="preserve">
-    <value>Uninstall this package.</value>
+    <value>Uninstall this package</value>
   </data>
   <data name="PackageManager_UpdateButtonToolTip" xml:space="preserve">
-    <value>Update {0} to version {1}.</value>
+    <value>Update {0} to version {1}</value>
   </data>
   <data name="PackageManager_EvalError" xml:space="preserve">
     <value>Error: {0}</value>
@@ -328,13 +328,13 @@
     <value>Connect to '{0}'.</value>
   </data>
   <data name="ConnectionManager_Name" xml:space="preserve">
-    <value>Connection name.</value>
+    <value>Entry name</value>
   </data>
   <data name="ConnectionManager_Path" xml:space="preserve">
     <value>Host URL or path to R installation</value>
   </data>
   <data name="ConnectionManager_RCommandLineArguments" xml:space="preserve">
-    <value>R command line arguments.</value>
+    <value>R command line arguments</value>
   </data>
   <data name="ConnectionManager_Add" xml:space="preserve">
     <value>Add</value>
@@ -421,7 +421,7 @@
     <value>Device {0}</value>
   </data>
   <data name="Error_InstallTimeout_Format" xml:space="preserve">
-    <value>Timeout installing package {0}</value>
+    <value>Timeout installing package {0}.</value>
   </data>
   <data name="ConfigurationError_Syntax" xml:space="preserve">
     <value>Syntax error</value>
@@ -446,5 +446,32 @@
   </data>
   <data name="ConnectionManager_EditRemoteTooltip" xml:space="preserve">
     <value>Edit remote connection information</value>
+  </data>
+  <data name="ConnectionManager_Active" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="ConnectionManager_Connected" xml:space="preserve">
+    <value>Connected</value>
+  </data>
+  <data name="ConnectionManager_Default" xml:space="preserve">
+    <value>default</value>
+  </data>
+  <data name="ConnectionManager_Disconnected" xml:space="preserve">
+    <value>Disconnected</value>
+  </data>
+  <data name="ConnectionManager_Inactive" xml:space="preserve">
+    <value>Inactive</value>
+  </data>
+  <data name="ConnectionManager_InformationTooltipFormatLocal" xml:space="preserve">
+    <value>{0}&#x0a;Path: {1}&#x0a;Arguments: {2}</value>
+  </data>
+  <data name="ConnectionManager_InformationTooltipFormatRemote" xml:space="preserve">
+    <value>{0}&#x0a;Host: {1}&#x0a;Port: {2}&#x0a;Arguments: {3}</value>
+  </data>
+  <data name="ConnectionManager_None" xml:space="preserve">
+    <value>none specified</value>
+  </data>
+  <data name="ConnectionManager_Unknown" xml:space="preserve">
+    <value>unknown</value>
   </data>
 </root>
