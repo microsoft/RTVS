@@ -1,7 +1,6 @@
 ﻿{
   "dependencies": {
     "MicroBuild.Core": "0.2.0",
-    "Microsoft.AspNet.WebApi.Core": "5.2.3",
     "Microsoft.AspNetCore.WebSockets.Protocol": "0.1.0",
     "Microsoft.Tpl.Dataflow": "4.5.24",
     "Newtonsoft.Json": "9.0.1"

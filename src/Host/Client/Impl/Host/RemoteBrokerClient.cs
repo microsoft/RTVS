@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using Microsoft.R.Host.Client.BrokerServices;
 using System;
 using System.Net;
 using System.Runtime.InteropServices;
@@ -74,6 +75,10 @@ namespace Microsoft.R.Host.Client.Host {
             CredUIConfirmCredentials(_authority, isValid);
             _ignoreSavedCredentials = !isValid;
             _credentialsValidated.Set();
+        }
+
+        public override string HandleUrl(string url, CancellationToken ct) {
+            return WebServer.CreateWebServer(url, HttpClient.BaseAddress.ToString(), ct);
         }
     }
 }

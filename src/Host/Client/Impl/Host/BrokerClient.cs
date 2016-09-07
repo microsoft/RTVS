@@ -195,12 +195,8 @@ namespace Microsoft.R.Host.Client.Host {
             return new RHost(name, callbacks, transport, cts);
         }
 
-        public string HandleUrl(string url, CancellationToken ct) {
-            if (IsRemote) {
-                return WebServer.CreateWebServer(url, HttpClient, ct);
-            } else {
-                return url;
-            }
+        public virtual string HandleUrl(string url, CancellationToken ct) {
+            return url;
         }
     }
 }
