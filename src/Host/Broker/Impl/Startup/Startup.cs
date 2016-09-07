@@ -25,6 +25,8 @@ namespace Microsoft.R.Host.Broker.Startup {
                 .Configure<SecurityOptions>(Program.Configuration.GetSection("security"))
                 .Configure<ROptions>(Program.Configuration.GetSection("R"));
 
+            services.AddSingleton<IFileSystem>(new FileSystem());
+
             services.AddSingleton<LifetimeManager>();
 
             services.AddSingleton<SecurityManager>();
@@ -50,7 +52,7 @@ namespace Microsoft.R.Host.Broker.Startup {
             SecurityManager securityManager
         ) {
             lifetimeManager.Initialize();
-            interpreterManager.Initialize(new FileSystem());
+            interpreterManager.Initialize();
 
             app.UseWebSockets(new WebSocketOptions {
                 ReplaceFeature = true,
