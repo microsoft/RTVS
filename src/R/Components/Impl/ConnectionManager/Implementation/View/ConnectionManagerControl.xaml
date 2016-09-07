@@ -51,8 +51,7 @@
 
                         <TextBox Grid.Row="0" Grid.Column="0" Style="{StaticResource InputTextBoxStyle}"
                                  Text="{Binding Path=Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                 controls:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_Name}" 
-                                 FontWeight="{Binding Path=IsConnected, Converter={x:Static rwpf:Converters.TrueIsBold}}"/>
+                                 controls:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_Name}"/>
 
                         <TextBox Grid.Row="1" Grid.Column="0" Style="{StaticResource InputTextBoxStyle}" 
                                  Text="{Binding Path=Path, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
