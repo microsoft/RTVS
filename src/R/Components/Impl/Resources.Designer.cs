@@ -124,6 +124,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Entry for the automatically detected local R cannot be deleted. It will be removed when this R version is uninstalled..
+        /// </summary>
+        public static string ConnectionManager_DeleteTooltipDisabled {
+            get {
+                return ResourceManager.GetString("ConnectionManager_DeleteTooltipDisabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Edited connection has unsaved changes. Do you want to save them?.
         /// </summary>
         public static string ConnectionManager_EditedConnectionHasChanges {
@@ -135,9 +144,18 @@ namespace Microsoft.R.Components {
         /// <summary>
         ///   Looks up a localized string similar to Edit R interpreter information.
         /// </summary>
-        public static string ConnectionManager_EditTooltip {
+        public static string ConnectionManager_EditLocalTooltip {
             get {
-                return ResourceManager.GetString("ConnectionManager_EditTooltip", resourceCulture);
+                return ResourceManager.GetString("ConnectionManager_EditLocalTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit remote connection information.
+        /// </summary>
+        public static string ConnectionManager_EditRemoteTooltip {
+            get {
+                return ResourceManager.GetString("ConnectionManager_EditRemoteTooltip", resourceCulture);
             }
         }
         

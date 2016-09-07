@@ -34,6 +34,31 @@
                 </Style.Triggers>
             </Style>
 
+            <Style x:Key="DeleteButtonStyle" TargetType="Button" BasedOn="{StaticResource ToolWindowButtonStyle}">
+                <Style.Triggers>
+                    <Trigger Property="IsEnabled" Value="True">
+                        <Setter Property="ToolTip" Value="{x:Static components:Resources.ConnectionManager_DeleteTooltip}" />
+                    </Trigger>
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter Property="ToolTip" Value="{x:Static components:Resources.ConnectionManager_DeleteTooltipDisabled}" />
+                    </Trigger>
+                </Style.Triggers>
+                <Setter Property="Opacity" Value="{Binding Path=IsUserCreated, Converter={x:Static rwpf:Converters.FalseIsGrayedOut}}" />
+                <Setter Property="IsEnabled" Value="{Binding Path=IsUserCreated}" />
+                <Setter Property="ToolTipService.ShowOnDisabled" Value="True" />
+            </Style>
+
+            <Style x:Key="EditButtonStyle" TargetType="Button" BasedOn="{StaticResource ToolWindowButtonStyle}">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Path=IsRemote}" Value="False">
+                        <Setter Property="ToolTip" Value="{x:Static components:Resources.ConnectionManager_EditLocalTooltip}" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Path=IsRemote}" Value="True">
+                        <Setter Property="ToolTip" Value="{x:Static components:Resources.ConnectionManager_EditRemoteTooltip}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
             <DataTemplate x:Key="EditConnectionDataTemplate" DataType="{x:Type viewModel:IConnectionViewModel}">
                 <AdornerDecorator>
                     <Grid Margin="0,6,0,8">
@@ -56,7 +81,7 @@
                         <TextBox Grid.Row="1" Grid.Column="0" Style="{StaticResource InputTextBoxStyle}" 
                                  Text="{Binding Path=Path, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                  controls:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_Path}" 
-                                 IsEnabled="{Binding Path=IsUserCreated}" />
+                                 IsReadOnly="{Binding Path=IsUserCreated}" />
 
                         <Button Grid.Row="1" Grid.Column="1" Margin="3,0,0,6" Padding="2,0,2,0" Content="..." 
                                 VerticalAlignment="Stretch" MinHeight="0" MinWidth="0" Click="ButtonPath_Click"
@@ -157,16 +182,12 @@
                         </Button>
 
                         <!-- edit/properties button -->
-                        <Button x:Name="ButtonEdit" Grid.Column="6" Style="{StaticResource ToolWindowButtonStyle}" Click="ButtonEdit_Click"
-                                ToolTip="{x:Static components:Resources.ConnectionManager_EditTooltip}">
+                        <Button x:Name="ButtonEdit" Grid.Column="6" Style="{StaticResource EditButtonStyle}" Click="ButtonEdit_Click">
                             <imaging:CrispImage  Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.Settings}" />
                         </Button>
 
                         <!-- delete button -->
-                        <Button x:Name="ButtonDelete" Grid.Column="7" Style="{StaticResource ToolWindowButtonStyle}" Click="ButtonDelete_Click"
-                                ToolTip="{x:Static components:Resources.ConnectionManager_DeleteTooltip}"
-                                Opacity="{Binding Path=IsUserCreated, Converter={x:Static rwpf:Converters.FalseIsGrayedOut}}"
-                                IsEnabled="{Binding Path=IsUserCreated}">
+                        <Button x:Name="ButtonDelete" Grid.Column="7" Style="{StaticResource DeleteButtonStyle}" Click="ButtonDelete_Click">
                             <Rectangle Fill="{StaticResource IconUninstall}" Width="16" Height="16" />
                         </Button>
 

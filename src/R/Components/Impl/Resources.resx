@@ -339,7 +339,7 @@
   <data name="ConnectionManager_Add" xml:space="preserve">
     <value>Add</value>
   </data>
-  <data name="ConnectionManager_EditTooltip" xml:space="preserve">
+  <data name="ConnectionManager_EditLocalTooltip" xml:space="preserve">
     <value>Edit R interpreter information</value>
   </data>
   <data name="ConnectionManager_DeleteTooltip" xml:space="preserve">
@@ -440,5 +440,11 @@
   </data>
   <data name="NoLocalR" xml:space="preserve">
     <value>Visual Studio is unable to find local R installation. Would you like to install Microsoft R Client (recommended)?{0}Click Yes to install latest Microsoft R Client. {1}Click No if you are planning to set up connection to a remote machine.</value>
+  </data>
+  <data name="ConnectionManager_DeleteTooltipDisabled" xml:space="preserve">
+    <value>Entry for the automatically detected local R cannot be deleted. It will be removed when this R version is uninstalled.</value>
+  </data>
+  <data name="ConnectionManager_EditRemoteTooltip" xml:space="preserve">
+    <value>Edit remote connection information</value>
   </data>
 </root>
