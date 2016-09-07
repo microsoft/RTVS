@@ -170,7 +170,10 @@ namespace Microsoft.R.Interpreters {
                 Version highest = versions[versions.Count - 1];
                 var name = string.Format(CultureInfo.InvariantCulture, "R-{0}.{1}.{2}", highest.Major, highest.Minor, highest.Build);
                 var path = Path.Combine(baseRFolder, name);
-                return new RInterpreterInfo(name, path);
+                var ri = new RInterpreterInfo(name, path);
+                if(ri.VerifyInstallation(supportedVersions)) {
+                    return ri;
+                }
             }
 
             return null;

@@ -40,7 +40,7 @@ namespace Microsoft.R.Interpreters {
         }
 
         public bool VerifyInstallation(ISupportedRVersionRange svr = null, IFileSystem fs = null, ICoreShell coreShell = null) {
-            if(_isValid.HasValue) {
+            if (_isValid.HasValue) {
                 return _isValid.Value;
             }
 
@@ -63,36 +63,28 @@ namespace Microsoft.R.Interpreters {
                     fs.FileExists(rGuiPath)) {
 
                     var fileVersion = GetRVersionFromBinary(fs, rDllPath);
-                    if (fileVersion == Version && (svr == null || svr.IsCompatibleVersion(Version))) {
-                        _isValid = true;
+                    _isValid = fileVersion == Version && svr.IsCompatibleVersion(Version);
+                    if (!_isValid.Value) {
+                        coreShell?.ShowMessage(
+                            string.Format(CultureInfo.InvariantCulture, Resources.Error_UnsupportedRVersion,
+                            Version.Major, Version.Minor, Version.Build, svr.MinMajorVersion, svr.MinMinorVersion, "*",
+                            svr.MaxMajorVersion, svr.MaxMinorVersion, "*"), MessageButtons.OK);
                     }
-
-                    coreShell?.ShowMessage(
-                        string.Format(CultureInfo.InvariantCulture, Resources.Error_UnsupportedRVersion,
-                        Version.Major, Version.Minor, Version.Build, svr.MinMajorVersion, svr.MinMinorVersion, "*",
-                        svr.MaxMajorVersion, svr.MaxMinorVersion, "*"), MessageButtons.OK);
-
                 } else {
                     coreShell?.ShowMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotFindRBinariesFormat, InstallPath), MessageButtons.OK);
                 }
-            } catch(IOException ioex) {
-                ex = ioex;
-            } catch (ArgumentException aex) {
-                ex = aex;
+            } catch (IOException ioex) { ex = ioex; } catch (ArgumentException aex) { ex = aex; } catch (UnauthorizedAccessException uaex) { ex = uaex; }
 
-            } catch(UnauthorizedAccessException uaex) {
-                ex = uaex;
-            }
-
-            if(ex != null) {
+            if (ex != null) {
                 coreShell?.ShowErrorMessage(
                     string.Format(CultureInfo.InvariantCulture, Resources.Error_ExceptionAccessingPath, InstallPath, ex.Message));
             }
+
             return _isValid.Value;
         }
 
         private Version GetRVersionFromBinary(IFileSystem fs, string basePath) {
-            string rDllPath = Path.Combine(BinPath, @"R.dll");
+            string rDllPath = Path.Combine(BinPath, "R.dll");
             IFileVersionInfo fvi = fs.GetVersionInfo(rDllPath);
             int minor, revision;
 
@@ -132,14 +124,13 @@ namespace Microsoft.R.Interpreters {
             Version v = null;
 
             string versionString = ExtractVersionString(Name);
-            if(string.IsNullOrEmpty(versionString)) {
+            if (string.IsNullOrEmpty(versionString)) {
                 // Try from file
                 try {
                     string rDllPath = Path.Combine(BinPath, @"R.dll");
                     v = GetRVersionFromBinary(fs, rDllPath);
-                } catch(IOException) { } catch(UnauthorizedAccessException) { }
-            }
-            else {
+                } catch (IOException) { } catch (UnauthorizedAccessException) { }
+            } else {
                 Version.TryParse(versionString, out v);
             }
 
