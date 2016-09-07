@@ -58,7 +58,7 @@ namespace Microsoft.R.Host.Broker.Security {
             IntPtr token;
             WindowsIdentity winIdentity = null;
             string profilePath = "";
-            if (NativeMethods.LogonUser(user.ToString(), domain.ToString(), context.Password, (int)LogonType.LOGON32_LOGON_INTERACTIVE, (int)LogonProvider.LOGON32_PROVIDER_DEFAULT, out token)) {
+            if (NativeMethods.LogonUser(user.ToString(), domain.ToString(), context.Password, (int)LogonType.LOGON32_LOGON_NETWORK, (int)LogonProvider.LOGON32_PROVIDER_DEFAULT, out token)) {
                 winIdentity = new WindowsIdentity(token);
                 StringBuilder profileDir = new StringBuilder(NativeMethods.MAX_PATH);
                 uint size = (uint)profileDir.Capacity;

@@ -80,37 +80,26 @@ namespace Microsoft.R.Host.Broker.Sessions {
                 throw new ArgumentException();
             }
 
-            ProcessStartInfo psi = null;
-            bool impersonate = WindowsIdentity.GetCurrent().User != ((WindowsIdentity)User).User;
-            if(impersonate) {
-                using (var impersonationContext = ((WindowsIdentity)User).Impersonate()) {
-                    psi = new ProcessStartInfo(rhostExePath) {
-                        UseShellExecute = false,
-                        CreateNoWindow = false,
-                        Arguments = arguments,
-                        RedirectStandardInput = true,
-                        RedirectStandardOutput = true,
-                        RedirectStandardError = true
-                    };
+            ProcessStartInfo psi = new ProcessStartInfo(rhostExePath) {
+                UseShellExecute = false,
+                CreateNoWindow = false,
+                Arguments = arguments,
+                RedirectStandardInput = true,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                LoadUserProfile = true
+            };
 
-                    psi.EnvironmentVariables["USERNAME"] = username.ToString();
-                    psi.EnvironmentVariables["HOMEDRIVE"] = profilePath.Substring(0, 2);
-                    psi.EnvironmentVariables["HOMEPATH"] = profilePath.Substring(2);
-                    psi.EnvironmentVariables["USERPROFILE"] = $"{psi.EnvironmentVariables["HOMEDRIVE"]}{psi.EnvironmentVariables["HOMEPATH"]}";
-                    psi.EnvironmentVariables["APPDATA"] = $"{psi.EnvironmentVariables["USERPROFILE"]}\\AppData\\Roaming";
-                    psi.EnvironmentVariables["LOCALAPPDATA"] = $"{psi.EnvironmentVariables["USERPROFILE"]}\\AppData\\Local";
-                    psi.EnvironmentVariables["TEMP"] = $"{psi.EnvironmentVariables["LOCALAPPDATA"]}\\Temp";
-                    psi.EnvironmentVariables["TMP"] = $"{psi.EnvironmentVariables["LOCALAPPDATA"]}\\Temp";
-                }
-            } else {
-                psi = new ProcessStartInfo(rhostExePath) {
-                    UseShellExecute = false,
-                    CreateNoWindow = false,
-                    Arguments = arguments,
-                    RedirectStandardInput = true,
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true
-                };
+            if (WindowsIdentity.GetCurrent().User != ((WindowsIdentity)User).User) {
+                // if broker and rhost are run as different users.
+                psi.EnvironmentVariables["USERNAME"] = username.ToString();
+                psi.EnvironmentVariables["HOMEDRIVE"] = profilePath.Substring(0, 2);
+                psi.EnvironmentVariables["HOMEPATH"] = profilePath.Substring(2);
+                psi.EnvironmentVariables["USERPROFILE"] = $"{psi.EnvironmentVariables["HOMEDRIVE"]}{psi.EnvironmentVariables["HOMEPATH"]}";
+                psi.EnvironmentVariables["APPDATA"] = $"{psi.EnvironmentVariables["USERPROFILE"]}\\AppData\\Roaming";
+                psi.EnvironmentVariables["LOCALAPPDATA"] = $"{psi.EnvironmentVariables["USERPROFILE"]}\\AppData\\Local";
+                psi.EnvironmentVariables["TEMP"] = $"{psi.EnvironmentVariables["LOCALAPPDATA"]}\\Temp";
+                psi.EnvironmentVariables["TMP"] = $"{psi.EnvironmentVariables["LOCALAPPDATA"]}\\Temp";
             }
 
             var shortHome = new StringBuilder(NativeMethods.MAX_PATH);
