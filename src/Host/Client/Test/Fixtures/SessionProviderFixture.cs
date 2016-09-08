@@ -17,7 +17,7 @@ namespace Microsoft.R.Host.Client.Test.Fixtures {
         }
 
         public async Task InitializeAsync() {
-            await SessionProvider.TrySwitchBroker(nameof(SessionProviderFixture));
+            await SessionProvider.TrySwitchBrokerAsync(nameof(SessionProviderFixture));
         }
 
         public Task DisposeAsync() {

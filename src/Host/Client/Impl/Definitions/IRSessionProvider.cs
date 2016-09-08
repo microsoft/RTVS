@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 namespace Microsoft.R.Host.Client {
     public interface IRSessionProvider : IDisposable {
         Uri BrokerUri { get; }
+        string BrokerName { get; }
 
         event EventHandler BrokerChanged;
 
@@ -26,10 +27,17 @@ namespace Microsoft.R.Host.Client {
         Task<IRSessionEvaluation> BeginEvaluationAsync(RHostStartupInfo startupInfo, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
+        /// Tests connection to the broker without changing current one.
+        /// </summary>
+        /// <param name="name">Name of the broker. Will be displayed in REPL.</param>
+        /// <param name="path">Either a local path to the R binary or a URL to the broker.</param>
+        Task<bool> TestBrokerConnectionAsync(string name, string path);
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="name">Name of the broker. Will be displayed in REPL.</param>
         /// <param name="path">Either a local path to the R binary or a URL to the broker.</param>
-        Task<bool> TrySwitchBroker(string name, string path = null);
+        Task<bool> TrySwitchBrokerAsync(string name, string path = null);
     }
 }

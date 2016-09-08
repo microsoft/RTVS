@@ -58,6 +58,8 @@
     <Compile Include="DataInspection\REvaluationResultProperties.cs" />
     <Compile Include="DataInspection\RPromiseInfo.cs" />
     <Compile Include="DataInspection\RSessionExtensions.cs" />
+    <Compile Include="Definitions\IRSessionProviderCallback.cs" />
+    <Compile Include="Host\NullRCallbacks.cs" />
     <Compile Include="Host\NullRHostConnector.cs" />
     <Compile Include="Host\RemoteRHostConnector.cs" />
     <Compile Include="Host\RHostConnector.cs" />
@@ -71,8 +73,6 @@
     <Compile Include="Definitions\IRBlob.cs" />
     <Compile Include="Definitions\Blob.cs" />
     <Compile Include="Host\IRHostConnector.cs" />
-    <Compile Include="Host\RHostBrokerConnector.cs" />
-    <Compile Include="Host\IRHostBrokerConnector.cs" />
     <Compile Include="Definitions\IRBlobService.cs" />
     <Compile Include="Definitions\PlotMessage.cs" />
     <Compile Include="Definitions\REnvironments.cs" />
@@ -120,6 +120,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Session\NullRSessionProviderCallback.cs" />
     <Compile Include="Session\RAfterRequestEventArgs.cs" />
     <Compile Include="Session\RBeforeRequestEventArgs.cs" />
     <Compile Include="Context\RContext.cs" />
@@ -241,6 +242,7 @@
     <EmbeddedResource Include="Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

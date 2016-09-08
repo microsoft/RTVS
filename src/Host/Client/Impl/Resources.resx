@@ -127,4 +127,22 @@ use another connection or install local R.</value>
 Try connecting to a remote machine in the Workspaces window or
 click Reset to restart local R interpreter.</value>
   </data>
+  <data name="RSessionProvider_StartSwitchingWorkspaceFormat" xml:space="preserve">
+    <value>Start switching to the '{0}': {1}</value>
+  </data>
+  <data name="RSessionProvider_StartConnectingToWorkspaceFormat" xml:space="preserve">
+    <value>Connecting sessions ({0}) to the new R Workspace...</value>
+  </data>
+  <data name="RSessionProvider_SwitchingRWorkspaceCompleted" xml:space="preserve">
+    <value>Switching R Workspace completed</value>
+  </data>
+  <data name="RSessionProvider_RestartingSessionsFormat" xml:space="preserve">
+    <value>Restarting sessions ({0})...</value>
+  </data>
+  <data name="RSessionProvider_SwitchingWorkspaceFailed" xml:space="preserve">
+    <value>Connecting to the new R Workspace failed, restoring connection to the '{0}': {1}</value>
+  </data>
+  <data name="RSessionProvider_RestartingSessionFailed" xml:space="preserve">
+    <value>Couldn't connect session to the '{0}': {1} because of the following error: {2}</value>
+  </data>
 </root>

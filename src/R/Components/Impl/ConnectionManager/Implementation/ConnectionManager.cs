@@ -14,6 +14,7 @@ using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager.Implementation.View;
 using Microsoft.R.Components.ConnectionManager.Implementation.ViewModel;
+using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.StatusBar;
@@ -53,26 +54,25 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 .Add(() => interactiveWorkflow.RSession.Disconnected -= RSessionOnDisconnected);
 
             _sessionProvider.BrokerChanged += BrokerChanged;
+
             // TODO: Temporary solution - need to separate RHost errors and network connection issues
             interactiveWorkflow.RSession.Connected += RSessionOnConnected;
             interactiveWorkflow.RSession.Disconnected += RSessionOnDisconnected;
-
-            _shell.Idle += OnIdle;
 
             // Get initial values
             var userConnections = CreateConnectionList();
             _userConnections = new ConcurrentDictionary<Uri, IConnection>(userConnections);
 
             UpdateRecentConnections();
-            SwitchBrokerToLastConnection();
+            CompleteInitializationAsync().DoNotWait();
         }
 
-        private void OnIdle(object sender, EventArgs e) {
-            _shell.Idle -= OnIdle;
-
+        private async Task CompleteInitializationAsync() {
+            await _shell.SwitchToMainThreadAsync();
             _disposableBag.Add(_statusBar.AddItem(new ConnectionStatusBar {
                 DataContext = _statusBarViewModel
             }));
+            await SwitchBrokerToLastConnection();
         }
 
         public void Dispose() {
@@ -114,29 +114,23 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         public async Task ConnectAsync(IConnectionInfo connection) {
-            var sessions = _sessionProvider.GetSessions().ToList();
-            if (sessions.Any()) {
-                await Task.WhenAll(sessions.Select(s => s.StopHostAsync()));
-            }
-
-            if (ActiveConnection != null && (!ActiveConnection.Path.EqualsIgnoreCase(connection.Path) || _sessionProvider.BrokerUri.IsLoopback)) {
-                SwitchBroker(connection);
-            }
-
-            if (sessions.Any()) {
-                await Task.WhenAll(sessions.Select(s => s.RestartHostAsync()));
+            if (ActiveConnection != null && (!ActiveConnection.Path.PathEquals(connection.Path) || string.IsNullOrEmpty(_sessionProvider.BrokerName))) {
+                await TrySwitchBrokerAsync(connection);
             }
         }
 
-        public void SwitchBroker(IConnectionInfo info) {
+        public Task<bool> TrySwitchBrokerAsync(IConnectionInfo info) {
             var connection = GetOrCreateConnection(info.Name, info.Path, info.RCommandLineArguments, info.IsUserCreated);
-            SwitchBroker(connection);
+            return TrySwitchBrokerAsync(connection);
         }
 
-        private void SwitchBroker(IConnection connection) {
-            ActiveConnection = connection;
-            SaveActiveConnectionToSettings();
-            _sessionProvider.TrySwitchBroker(connection.Name, connection.Path);
+        private async Task<bool> TrySwitchBrokerAsync(IConnection connection) {
+            var brokerSwitched = await _sessionProvider.TrySwitchBrokerAsync(connection.Name, connection.Path);
+            if (brokerSwitched) {
+                ActiveConnection = connection;
+                SaveActiveConnectionToSettings();
+            }
+            return brokerSwitched;
         }
 
         private IConnection CreateConnection(string name, string path, string rCommandLineArguments, bool isUserCreated) =>
@@ -228,23 +222,23 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             return false;
         }
 
-        private void SwitchBrokerToLastConnection() {
+        private Task SwitchBrokerToLastConnection() {
             var connectionInfo = _settings.LastActiveConnection;
             if (!string.IsNullOrEmpty(connectionInfo?.Path)) {
-                SwitchBroker(connectionInfo);
-                return;
+                return TrySwitchBrokerAsync(connectionInfo);
             }
 
             var connection = RecentConnections.FirstOrDefault();
             if (connectionInfo != null) {
-                SwitchBroker(connection);
-                return;
+                return TrySwitchBrokerAsync(connection);
             }
 
             var local = _userConnections.Values.FirstOrDefault(c => !c.IsRemote);
             if (local != null) {
-                SwitchBroker(local);
+                return TrySwitchBrokerAsync(local);
             }
+
+            return Task.CompletedTask;
         }
 
         private void BrokerChanged(object sender, EventArgs eventArgs) {

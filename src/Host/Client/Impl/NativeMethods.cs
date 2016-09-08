@@ -43,7 +43,7 @@ namespace Microsoft.R.Host.Client {
 
         [DllImport("credui", CharSet = CharSet.Auto)]
         public static extern int CredUIPromptForCredentials(
-            IntPtr pUiInfo,
+            ref CREDUI_INFO pUiInfo,
             string pszTargetName,
             IntPtr Reserved,
             int dwAuthError,
@@ -56,5 +56,14 @@ namespace Microsoft.R.Host.Client {
 
         [DllImport("credui", CharSet = CharSet.Auto)]
         public static extern int CredUIConfirmCredentials(string pszTargetName, bool bConfirm);
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+        public struct CREDUI_INFO {
+            public int cbSize;
+            public IntPtr hwndParent;
+            public string pszMessageText;
+            public string pszCaptionText;
+            public IntPtr hbmBanner;
+        }
     }
 }

@@ -31,7 +31,7 @@ namespace Microsoft.R.Interpreters {
 
         public RInstallation(IRegistry registry, IFileSystem fileSystem) {
             _registry = registry;
-            _fileSystem = fileSystem ?? new FileSystem();
+            _fileSystem = fileSystem;
         }
 
         /// <summary>

@@ -21,7 +21,6 @@ namespace Microsoft.R.Host.Client.Host {
         private static readonly bool ShowConsole = string.IsNullOrEmpty(Environment.GetEnvironmentVariable("RTVS_HOST_CONSOLE"));
         private static readonly NetworkCredential _credentials = new NetworkCredential("RTVS", Guid.NewGuid().ToString());
 
-        private readonly string _name;
         private readonly string _rhostDirectory;
         private readonly string _rHome;
         private readonly BinaryAsyncLock _connectLock = new BinaryAsyncLock();
@@ -31,18 +30,20 @@ namespace Microsoft.R.Host.Client.Host {
         public override Uri BrokerUri { get; }
 
         public LocalRHostConnector(string name, string rHome, string rhostDirectory = null)
-            : base(InterpreterId) {
+            : base(name, InterpreterId) {
 
-            _name = name;
             _rhostDirectory = rhostDirectory ?? Path.GetDirectoryName(typeof(RHost).Assembly.GetAssemblyPath());
             _rHome = rHome;
 
             BrokerUri = new Uri(rHome);
         }
 
-        protected override void UpdateCredentials() {}
+        public async override Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken()) {
+            await EnsureBrokerStartedAsync();
+            return await base.ConnectAsync(name, callbacks, rCommandLineArguments, timeout, cancellationToken);
+        }
 
-        protected override async Task ConnectToBrokerAsync() {
+        private async Task EnsureBrokerStartedAsync() {
             DisposableBag.ThrowIfDisposed();
             await TaskUtilities.SwitchToBackgroundThread();
 
@@ -77,7 +78,7 @@ namespace Microsoft.R.Host.Client.Host {
                             $" --logging:logHostOutput true" +
                             $" --logging:logPackets true" +
                             $" --server.urls http://127.0.0.1:0" + // :0 means first available ephemeral port
-                            $" --startup:name \"{_name}\"" +
+                            $" --startup:name \"{Name}\"" +
                             $" --startup:writeServerUrlsToPipe {pipeName}" +
                             $" --lifetime:parentProcessId {Process.GetCurrentProcess().Id}" +
                             $" --security:secret \"{_credentials.Password}\"" +
@@ -152,6 +153,8 @@ namespace Microsoft.R.Host.Client.Host {
 
             _brokerProcess?.Dispose();
         }
+
+        protected override void UpdateCredentials() { }
 
         protected override void OnCredentialsValidated(bool isValid) {
             if (!isValid) {

@@ -17,6 +17,7 @@ namespace Microsoft.R.Host.Client.Mocks {
 
         public bool IsRemote { get; private set; }
         public Uri BrokerUri { get; private set; }
+        public string BrokerName { get; private set; }
         public event EventHandler BrokerChanged;
 
         public IRSession GetOrCreate(Guid guid) {
@@ -35,8 +36,11 @@ namespace Microsoft.R.Host.Client.Mocks {
         public Task<IRSessionEvaluation> BeginEvaluationAsync(RHostStartupInfo startupInfo, CancellationToken cancellationToken = new CancellationToken()) 
             => new RSessionMock().BeginEvaluationAsync(cancellationToken);
 
-        public Task<bool> TrySwitchBroker(string name, string path = null) {
+        public Task<bool> TestBrokerConnectionAsync(string name, string path) => Task.FromResult(true);
+
+        public Task<bool> TrySwitchBrokerAsync(string name, string path = null) {
             BrokerUri = path != null ? new Uri(path) : new Uri(@"C:\");
+            BrokerName = "Test";
             IsRemote = !BrokerUri.IsFile;
             return Task.FromResult(true);
         }

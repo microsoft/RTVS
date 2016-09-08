@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -167,5 +168,11 @@ namespace Microsoft.Common.Core {
             byte[] hash = sha.ComputeHash(inputBytes);
             return BitConverter.ToString(hash);
         }
+
+        public static string FormatInvariant(this string format, object arg) =>
+            string.Format(CultureInfo.InvariantCulture, format, arg);
+
+        public static string FormatInvariant(this string format, params object[] args) =>
+            string.Format(CultureInfo.InvariantCulture, format, args);
     }
 }

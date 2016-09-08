@@ -115,17 +115,9 @@ namespace Microsoft.R.Components.Plots.Implementation {
             }
         }
 
-        public IRPlotDevice Device {
-            get {
-                return _viewModel.Device;
-            }
-        }
+        public IRPlotDevice Device => _viewModel.Device;
 
-        public IRPlot ActivePlot {
-            get {
-                return _viewModel.Device.ActivePlot;
-            }
-        }
+        public IRPlot ActivePlot => _viewModel.Device.ActivePlot;
 
         public PlotDeviceProperties GetDeviceProperties() {
             if (TestDeviceProperties.HasValue) {

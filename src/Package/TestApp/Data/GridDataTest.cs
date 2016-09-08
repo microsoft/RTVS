@@ -40,7 +40,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         }
 
         public async Task InitializeAsync() {
-            await _sessionProvider.TrySwitchBroker(GetType().Name);
+            await _sessionProvider.TrySwitchBrokerAsync(GetType().Name);
             await _session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name
             }, new RHostClientTestApp(), 50000);

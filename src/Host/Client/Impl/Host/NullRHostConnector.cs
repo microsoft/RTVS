@@ -12,6 +12,7 @@ namespace Microsoft.R.Host.Client.Host {
             new RHostDisconnectedException(Resources.NoConnectionsAvailable));
 
         public Uri BrokerUri { get; } = new Uri("http://localhost");
+        public string Name { get; } = string.Empty;
         public bool IsRemote { get; } = true;
 
         public Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken()) => Result;

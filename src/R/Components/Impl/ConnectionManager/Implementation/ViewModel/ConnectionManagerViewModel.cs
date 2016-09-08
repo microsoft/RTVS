@@ -163,7 +163,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public bool TryDelete(IConnectionViewModel connection) {
             _shell.AssertIsOnMainThread();
-            var result = _connectionManager.TryRemove(EditedConnection.Id);
+            var result = _connectionManager.TryRemove(connection.Id);
             UpdateConnections();
             return result;
         }

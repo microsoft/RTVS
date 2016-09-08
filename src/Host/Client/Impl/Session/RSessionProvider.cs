@@ -14,11 +14,24 @@ using Microsoft.R.Interpreters;
 
 namespace Microsoft.R.Host.Client.Session {
     public class RSessionProvider : IRSessionProvider, IRHostConnector {
+        private readonly IRSessionProviderCallback _callback;
         private readonly ConcurrentDictionary<Guid, RSession> _sessions = new ConcurrentDictionary<Guid, RSession>();
         private readonly DisposeToken _disposeToken = DisposeToken.Create<RSessionProvider>();
+        private readonly SemaphoreSlim _connectorSwitchLock = new SemaphoreSlim(1, 1);
+
+        private IRHostConnector _hostConnector;
         private int _sessionCounter;
 
-        private IRHostBrokerConnector BrokerConnector { get; } = new RHostBrokerConnector();
+        public bool IsRemote => _hostConnector.IsRemote;
+        public string Name => _hostConnector.Name;
+        public Uri BrokerUri => _hostConnector.BrokerUri;
+        public string BrokerName => _hostConnector.Name;
+        public event EventHandler BrokerChanged;
+
+        public RSessionProvider(IRSessionProviderCallback callback = null) {
+            _callback = callback ?? new NullRSessionProviderCallback();
+            _hostConnector = new NullRHostConnector();
+        }
 
         public IRSession GetOrCreate(Guid guid) {
             _disposeToken.ThrowIfDisposed();
@@ -61,13 +74,108 @@ namespace Microsoft.R.Host.Client.Session {
                 session.Dispose();
             }
 
-            BrokerConnector.Dispose();
+            _hostConnector.Dispose();
         }
 
         private void DisposeSession(Guid guid) {
             RSession session;
             _sessions.TryRemove(guid, out session);
         }
+
+        public async Task<bool> TestBrokerConnectionAsync(string name, string path) {
+            var сonnector = await CreateConnectorAsync(name, path);
+            if (сonnector == null) {
+                return false;
+            }
+
+            var callbacks = new NullRCallbacks();
+            try {
+                var rhost = await сonnector.ConnectAsync(nameof(TestBrokerConnectionAsync), callbacks);
+                var rhostRunTask = rhost.Run();
+                callbacks.SetReadConsoleInput("q()\n");
+                await rhostRunTask;
+                return true;
+            } catch (RHostDisconnectedException) {
+                return false;
+            }
+        }
+
+        public async Task<bool> TrySwitchBrokerAsync(string name, string path = null) {
+            await TaskUtilities.SwitchToBackgroundThread();
+
+            var newConnector = await CreateConnectorAsync(name, path);
+            if (newConnector == null) {
+                return false;
+            }
+
+            // Connector switching shouldn't be concurrent
+            try {
+                await _connectorSwitchLock.WaitAsync();
+
+                // First switch connector so that all new sessions are created for the new broker
+                var oldConnector = Interlocked.Exchange(ref _hostConnector, newConnector);
+                var switchingFromNull = oldConnector is NullRHostConnector;
+                if (!switchingFromNull) { 
+                    _callback.WriteConsole(Resources.RSessionProvider_StartSwitchingWorkspaceFormat.FormatInvariant(_hostConnector.Name, GetUriString(_hostConnector)));
+                }
+
+                var sessions = _sessions.Values.ToList();
+
+                if (sessions.Any()) {
+                    try {
+                        _callback.WriteConsole(Resources.RSessionProvider_StartConnectingToWorkspaceFormat.FormatInvariant(sessions.Count));
+                        await Task.WhenAll(sessions.Select(StartSwitchingBrokerAsync));
+                        _callback.WriteConsole(Resources.RSessionProvider_RestartingSessionsFormat.FormatInvariant(sessions.Count));
+                        await Task.WhenAll(sessions.Select(s => s.CompleteSwitchingBrokerAsync()));
+                    } catch (Exception) {
+                        _callback.WriteConsole(Resources.RSessionProvider_SwitchingWorkspaceFailed.FormatInvariant(oldConnector.Name, GetUriString(oldConnector)));
+                        Interlocked.Exchange(ref _hostConnector, oldConnector);
+                        foreach (var session in sessions) {
+                            session.CancelSwitchingBroker();
+                        }
+                        return false;
+                    }
+                }
+
+                if (!switchingFromNull) {
+                    _callback.WriteConsole(Resources.RSessionProvider_SwitchingRWorkspaceCompleted);
+                }
+                oldConnector.Dispose();
+            } finally {
+                _connectorSwitchLock.Release();
+            }
+
+            BrokerChanged?.Invoke(this, new EventArgs());
+            return true;
+        }
+
+        private async Task StartSwitchingBrokerAsync(RSession session) {
+            try {
+                await session.StartSwitchingBrokerAsync();
+            } catch (RHostDisconnectedException ex) {
+                _callback.WriteConsole(Resources.RSessionProvider_RestartingSessionFailed.FormatInvariant(_hostConnector.Name, _hostConnector.BrokerUri, ex.Message));
+                throw;
+            }
+        }
+
+        private async Task<IRHostConnector> CreateConnectorAsync(string name, string path) {
+            path = path ?? new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath;
+
+            Uri uri;
+            if (!Uri.TryCreate(path, UriKind.Absolute, out uri)) {
+                return null;
+            }
+
+            if (uri.IsFile) {
+                return new LocalRHostConnector(name, uri.LocalPath) as IRHostConnector;
+            }
+
+            var windowHandle = await _callback.GetApplicationWindowHandleAsync();
+            return new RemoteRHostConnector(name, uri, windowHandle);
+        }
+
+        public Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken())
+            => _hostConnector.ConnectAsync(name, callbacks, rCommandLineArguments, timeout, cancellationToken);
 
         private class IsolatedRSessionEvaluation : IRSessionEvaluation {
             private readonly IRSession _session;
@@ -91,31 +199,7 @@ namespace Microsoft.R.Host.Client.Session {
             }
         }
 
-        public bool IsRemote => BrokerConnector.IsRemote;
-        public Uri BrokerUri => BrokerConnector.BrokerUri;
-
-        public Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken())
-            => BrokerConnector.ConnectAsync(name, callbacks, rCommandLineArguments, timeout, cancellationToken);
-
-        public event EventHandler BrokerChanged {
-            add { BrokerConnector.BrokerChanged += value; }
-            remove { BrokerConnector.BrokerChanged -= value; }
-        }
-
-        public Task<bool> TrySwitchBroker(string name, string path = null) {
-            path = path ?? new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath;
-            Uri uri;
-            if (!Uri.TryCreate(path, UriKind.Absolute, out uri)) {
-                return Task.FromResult(false);
-            }
-
-            if (uri.IsFile) {
-                BrokerConnector.SwitchToLocalBroker(name, uri.LocalPath);
-            } else {
-                BrokerConnector.SwitchToRemoteBroker(uri);
-            }
-
-            return Task.FromResult(true);
-        }
+        private static string GetUriString(IRHostConnector connector)
+            => connector.BrokerUri.IsFile ? connector.BrokerUri.LocalPath : connector.BrokerUri.AbsoluteUri;
     }
 }

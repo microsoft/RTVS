@@ -30,7 +30,7 @@ namespace Microsoft.R.Host.Client.Test.RtvsPackage {
         }
 
         public async Task InitializeAsync() {
-            await _sessionProvider.TrySwitchBroker(nameof(BlobsTest));
+            await _sessionProvider.TrySwitchBrokerAsync(nameof(BlobsTest));
             await _session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name
             }, new RHostClientTestApp(), 50000);
