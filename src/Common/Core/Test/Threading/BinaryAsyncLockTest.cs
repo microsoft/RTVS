@@ -91,6 +91,24 @@ namespace Microsoft.Common.Core.Test.Threading {
         }
 
         [Test]
+        public async Task WaitAsync_ReleaseReset() {
+            var bal = new BinaryAsyncLock();
+            bal.Release();
+            bal.Reset();
+            var count = 0;
+            await ParallelTools.InvokeAsync(4, async i => {
+                var isSet = await bal.WaitAsync();
+                if (!isSet) {
+                    await Task.Delay(50);
+                    Interlocked.Increment(ref count);
+                    bal.Reset();
+                }
+            });
+
+            count.Should().Be(4);
+        }
+
+        [Test]
         public async Task WaitAsyncIfLocked_Reset_Unlocked() {
             var bal = new BinaryAsyncLock();
             var count = 0;

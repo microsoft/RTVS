@@ -69,6 +69,13 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
             session.HostStarted.Status.Should().Be(TaskStatus.WaitingForActivation);
             session.IsHostRunning.Should().BeFalse();
+
+            await session.StartHostAsync(new RHostStartupInfo {
+                Name = _testMethod.Name
+            }, null, 50000);
+
+            session.HostStarted.Status.Should().Be(TaskStatus.RanToCompletion);
+            session.IsHostRunning.Should().BeTrue();
         }
 
         [Test]

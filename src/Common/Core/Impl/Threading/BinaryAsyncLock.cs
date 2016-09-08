@@ -55,15 +55,15 @@ namespace Microsoft.Common.Core.Threading {
         public void Reset() {
             TaskCompletionSource<bool> tcs = null;
             lock (_queue) {
-                if (_queue.Count == 0) {
-                    return;
-                }
-
-                _queue.Dequeue();
                 if (_queue.Count > 0) {
-                    tcs = _queue.Peek();
+                    _queue.Dequeue();
+                    if (_queue.Count > 0) {
+                        tcs = _queue.Peek();
+                    }
                 }
+                _isCompleted = false;
             }
+
             tcs?.SetResult(false);
         }
 
@@ -80,10 +80,10 @@ namespace Microsoft.Common.Core.Threading {
                         tcs = _queue.Peek();
                     }
                 }
+                _isCompleted = false;
             }
 
             tcs?.SetResult(false);
-            _isCompleted = false;
             return true;
         }
 
