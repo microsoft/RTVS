@@ -289,10 +289,10 @@
     <value>Install {0} version {1}.</value>
   </data>
   <data name="PackageManager_UninstallButtonToolTip" xml:space="preserve">
-    <value>Uninstall this package.</value>
+    <value>Uninstall this package</value>
   </data>
   <data name="PackageManager_UpdateButtonToolTip" xml:space="preserve">
-    <value>Update {0} to version {1}.</value>
+    <value>Update {0} to version {1}</value>
   </data>
   <data name="PackageManager_EvalError" xml:space="preserve">
     <value>Error: {0}</value>
@@ -313,37 +313,37 @@
     <value>Are you sure you wish to update '{0}' package? This action cannot be undone.</value>
   </data>
   <data name="ConnectionManager_LocalConnections" xml:space="preserve">
-    <value>Local R</value>
+    <value>Local</value>
   </data>
-  <data name="ConnectionManager_UserConnections" xml:space="preserve">
-    <value>Remote and custom</value>
+  <data name="ConnectionManager_RemoteConnections" xml:space="preserve">
+    <value>Remote</value>
   </data>
   <data name="ConnectionManager_LocalConnectionsTooltip" xml:space="preserve">
-    <value>Expand/Collapse local workspaces</value>
+    <value>Expand/Collapse list of local R installations</value>
   </data>
-  <data name="ConnectionManager_UserConnectionsTooltip" xml:space="preserve">
-    <value>Expand/Collapse user defined workspaces</value>
+  <data name="ConnectionManager_RemoteConnectionsTooltip" xml:space="preserve">
+    <value>Expand/Collapse list of remote workspaces</value>
   </data>
   <data name="ConnectionManager_ConnectTooltip" xml:space="preserve">
     <value>Connect to '{0}'.</value>
   </data>
   <data name="ConnectionManager_Name" xml:space="preserve">
-    <value>Connection name.</value>
+    <value>Entry name</value>
   </data>
   <data name="ConnectionManager_Path" xml:space="preserve">
-    <value>Connection path. Either an URL (http://machine:port) or a local path.</value>
+    <value>Host URL or path to R installation</value>
   </data>
   <data name="ConnectionManager_RCommandLineArguments" xml:space="preserve">
-    <value>R command line arguments.</value>
+    <value>R command line arguments</value>
   </data>
   <data name="ConnectionManager_Add" xml:space="preserve">
     <value>Add</value>
   </data>
-  <data name="ConnectionManager_EditTooltip" xml:space="preserve">
-    <value>Edit the connection</value>
+  <data name="ConnectionManager_EditLocalTooltip" xml:space="preserve">
+    <value>Edit R interpreter information</value>
   </data>
   <data name="ConnectionManager_DeleteTooltip" xml:space="preserve">
-    <value>Delete the connection</value>
+    <value>Delete connection</value>
   </data>
   <data name="ConnectionManager_Save" xml:space="preserve">
     <value>Save</value>
@@ -421,7 +421,7 @@
     <value>Device {0}</value>
   </data>
   <data name="Error_InstallTimeout_Format" xml:space="preserve">
-    <value>Timeout installing package {0}</value>
+    <value>Timeout installing package {0}.</value>
   </data>
   <data name="ConfigurationError_Syntax" xml:space="preserve">
     <value>Syntax error</value>
@@ -440,5 +440,38 @@
   </data>
   <data name="NoLocalR" xml:space="preserve">
     <value>Visual Studio is unable to find local R installation. Would you like to install Microsoft R Client (recommended)?{0}Click Yes to install latest Microsoft R Client. {1}Click No if you are planning to set up connection to a remote machine.</value>
+  </data>
+  <data name="ConnectionManager_DeleteTooltipDisabled" xml:space="preserve">
+    <value>Entry for the automatically detected local R cannot be deleted. It will be removed when this R version is uninstalled.</value>
+  </data>
+  <data name="ConnectionManager_EditRemoteTooltip" xml:space="preserve">
+    <value>Edit remote connection information</value>
+  </data>
+  <data name="ConnectionManager_Active" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="ConnectionManager_Connected" xml:space="preserve">
+    <value>Connected</value>
+  </data>
+  <data name="ConnectionManager_Default" xml:space="preserve">
+    <value>default</value>
+  </data>
+  <data name="ConnectionManager_Disconnected" xml:space="preserve">
+    <value>Disconnected</value>
+  </data>
+  <data name="ConnectionManager_Inactive" xml:space="preserve">
+    <value>Inactive</value>
+  </data>
+  <data name="ConnectionManager_InformationTooltipFormatLocal" xml:space="preserve">
+    <value>{0}&#x0a;Path: {1}&#x0a;Arguments: {2}</value>
+  </data>
+  <data name="ConnectionManager_InformationTooltipFormatRemote" xml:space="preserve">
+    <value>{0}&#x0a;Host: {1}&#x0a;Port: {2}&#x0a;Arguments: {3}</value>
+  </data>
+  <data name="ConnectionManager_None" xml:space="preserve">
+    <value>none specified</value>
+  </data>
+  <data name="ConnectionManager_Unknown" xml:space="preserve">
+    <value>unknown</value>
   </data>
 </root>

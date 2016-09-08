@@ -40,20 +40,25 @@ namespace Microsoft.R.Interpreters {
         /// Selects highest from compatible versions, not just the highest.
         /// </summary>
         public IEnumerable<IRInterpreterInfo> GetCompatibleEngines(ISupportedRVersionRange svl = null) {
+            var list = new List<IRInterpreterInfo>();
+
             var mrc = GetMicrosoftRClientInfo();
+            if (mrc != null) {
+                list.Add(mrc);
+            }
+
             var engines = GetCompatibleEnginesFromRegistry(svl);
             engines = engines.Where(e => e.VerifyInstallation(svl, _fileSystem)).OrderBy(e => e.Version);
-            if(mrc != null) {
-                var list = new List<IRInterpreterInfo>() { mrc };
-                list.AddRange(engines);
-                return list;
-            } else if (!engines.Any()) {
+            list.AddRange(engines);
+
+            if (list.Count == 0) {
                 var e = TryFindRInProgramFiles(svl);
                 if (e != null) {
-                    return new List<IRInterpreterInfo>() { e };
+                    list.Add(e);
                 }
             }
-            return engines;
+
+            return list;
         }
 
         /// <summary>
@@ -170,7 +175,10 @@ namespace Microsoft.R.Interpreters {
                 Version highest = versions[versions.Count - 1];
                 var name = string.Format(CultureInfo.InvariantCulture, "R-{0}.{1}.{2}", highest.Major, highest.Minor, highest.Build);
                 var path = Path.Combine(baseRFolder, name);
-                return new RInterpreterInfo(name, path);
+                var ri = new RInterpreterInfo(name, path);
+                if (ri.VerifyInstallation(supportedVersions)) {
+                    return ri;
+                }
             }
 
             return null;

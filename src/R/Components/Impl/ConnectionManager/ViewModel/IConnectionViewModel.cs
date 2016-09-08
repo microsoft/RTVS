@@ -18,5 +18,6 @@ namespace Microsoft.R.Components.ConnectionManager.ViewModel {
         bool HasChanges { get; }
         
         void Reset();
+        string ConnectionTooltip { get; }
     }
 }

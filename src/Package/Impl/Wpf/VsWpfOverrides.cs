@@ -117,11 +117,8 @@ namespace Microsoft.VisualStudio.R.Package.Wpf {
         }
 
         private static void OverrideImageSources(IApplicationShell shell) {
-            IVsImageService2 imageService = shell.GetGlobalService<IVsImageService2>(typeof(SVsImageService));
-            ImageSources.Add = GetImage(imageService, KnownMonikers.Add);
-            ImageSources.ConnectArrow = GetImage(imageService, KnownMonikers.ConnectArrow);
-            ImageSources.Edit = GetImage(imageService, KnownMonikers.Edit);
-            ImageSources.Property = GetImage(imageService, KnownMonikers.Property);
+            var color = VSColorTheme.GetThemedColor(EnvironmentColors.ToolWindowBackgroundColorKey);
+            ImageSources.ImageBackground = new SolidColorBrush(Color.FromArgb(color.A, color.R, color.G, color.B));
         }
 
         private static void OverrideStyleKeys() {
