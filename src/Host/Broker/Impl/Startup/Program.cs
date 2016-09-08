@@ -48,7 +48,7 @@ namespace Microsoft.R.Host.Broker.Startup {
             _logger = _loggerFactory.CreateLogger<Program>();
 
             if (_startupOptions.Name != null) {
-                _logger.LogInformation($"Broker name '{_startupOptions.Name}' assigned");
+                _logger.LogInformation(Resources.Info_BrokerName, _startupOptions.Name);
             }
 
             CreateWebHost().Run();
@@ -75,10 +75,10 @@ namespace Microsoft.R.Host.Broker.Startup {
                     pipe = new NamedPipeClientStream(".", pipeName, PipeDirection.Out);
                     pipe.Connect(10000);
                 } catch (IOException ex) {
-                    _logger.LogCritical(0, ex, $"Requested to write server.urls to pipe '{pipeName}', but it is not a valid pipe handle.");
+                    _logger.LogCritical(0, ex, Resources.Critical_InvalidPipeHandle, pipeName);
                     throw;
                 } catch (TimeoutException ex) {
-                    _logger.LogCritical(0, ex, $"Requested to write server.urls to pipe '{pipeName}', but timed out while trying to connect to pipe.");
+                    _logger.LogCritical(0, ex, Resources.Critical_PipeConnectTimeOut, pipeName);
                     throw;
                 }
 
@@ -86,14 +86,14 @@ namespace Microsoft.R.Host.Broker.Startup {
                 applicationLifetime.ApplicationStarted.Register(() => Task.Run(() => {
                     using (pipe) {
                         string serverUriStr = JsonConvert.SerializeObject(serverAddresses.Addresses);
-                        _logger.LogTrace($"Writing server.urls to pipe '{pipeName}':{Environment.NewLine}{serverUriStr}");
+                        _logger.LogTrace(Resources.Trace_ServerUrlsToPipeBegin, pipeName, Environment.NewLine, serverUriStr);
 
                         var serverUriData = Encoding.UTF8.GetBytes(serverUriStr);
                         pipe.Write(serverUriData, 0, serverUriData.Length);
                         pipe.Flush();
                     }
 
-                    _logger.LogTrace($"Wrote server.urls to pipe '{pipeName}'.");
+                    _logger.LogTrace(Resources.Trace_ServerUrlsToPipeDone, pipeName);
                 }));
             }
 
@@ -107,7 +107,7 @@ namespace Microsoft.R.Host.Broker.Startup {
                 // Give cooperative cancellation 10 seconds to shut the process down gracefully,
                 // but if it didn't work, just terminate it.
                 await Task.Delay(10000);
-                _logger.LogCritical("Timed out waiting for graceful shutdown");
+                _logger.LogCritical(Resources.Critical_TimeOutShutdown);
                 Environment.Exit(1);
             });
         }

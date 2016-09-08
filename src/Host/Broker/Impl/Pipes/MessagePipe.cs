@@ -116,7 +116,7 @@ namespace Microsoft.R.Host.Broker.Pipes {
         /// </remarks>
         public IMessagePipeEnd ConnectHost(int pid) {
             if (Interlocked.CompareExchange(ref _hostEnd, new HostEnd(this), null) != null) {
-                throw new InvalidOperationException($"Pipe already has a host end");
+                throw new InvalidOperationException(Resources.Exception_PipeHasHostEnd);
             }
 
             _pid = pid;
@@ -133,7 +133,7 @@ namespace Microsoft.R.Host.Broker.Pipes {
         /// </remarks>
         public IOwnedMessagePipeEnd ConnectClient() {
             if (Interlocked.CompareExchange(ref _clientEnd, new ClientEnd(this), null) != null) {
-                throw new InvalidOperationException($"Pipe already has a client end");
+                throw new InvalidOperationException(Resources.Exception_PipeHasClientEnd);
             }
 
             return _clientEnd;

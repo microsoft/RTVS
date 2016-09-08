@@ -13,7 +13,7 @@ namespace Microsoft.R.Host.Broker.Pipes {
         public static int StartProcessAsUser(IIdentity user, string applicationName, string commandLine, string workingDirectory, out Stream stdin, out Stream stdout) {
             var winUser = user as WindowsIdentity;
             if (winUser == null) {
-                throw new ArgumentException($"Provided identity must be a {nameof(WindowsIdentity)}", "user");
+                throw new ArgumentException(string.Format(Resources.Exception_InvalidIdentityType, nameof(WindowsIdentity)), nameof(user));
             }
 
             bool impersonate = false;  //WindowsIdentity.GetCurrent().User != winUser.User;
