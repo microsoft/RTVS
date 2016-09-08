@@ -21,7 +21,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
         private const string RHostExe = "Microsoft.R.Host.exe";
 
         private static readonly byte[] _endMessage;
-
+        private readonly ILogger _sessionLogger;
         private Process _process;
         private volatile MessagePipe _pipe;
 
@@ -61,25 +61,27 @@ namespace Microsoft.R.Host.Broker.Sessions {
             }
         }
 
-        internal Session(SessionManager manager, IIdentity user, string id, Interpreter interpreter, string commandLineArguments) {
+        internal Session(SessionManager manager, IIdentity user, string id, Interpreter interpreter, string commandLineArguments, ILogger<Session> sessionLogger) {
             Manager = manager;
             Interpreter = interpreter;
             User = user;
             Id = id;
             CommandLineArguments = commandLineArguments;
+            _sessionLogger = sessionLogger;
         }
 
-        public void StartHost(ILogger logger, SecureString password, string profilePath, ILogger outputLogger, ILogger messageLogger) {
+        public void StartHost(SecureString password, string profilePath, ILogger outputLogger, ILogger messageLogger) {
             string brokerPath = Path.GetDirectoryName(typeof(Program).Assembly.GetAssemblyPath());
             string rhostExePath = Path.Combine(brokerPath, RHostExe);
             string arguments = $"--rhost-name \"{Id}\" {CommandLineArguments}";
             var username = new StringBuilder(NativeMethods.CREDUI_MAX_USERNAME_LENGTH + 1);
             var domain = new StringBuilder(NativeMethods.CREDUI_MAX_PASSWORD_LENGTH + 1);
 
-            int error = 0;
-            if ((error = NativeMethods.CredUIParseUserName(User.Name, username, username.Capacity, domain, domain.Capacity)) != 0) {
-                logger.LogError($"Failed to parse username for user: {User.Name}");
-                throw new ArgumentException($"Failed to parse username for user: {User.Name}");
+            uint error = NativeMethods.CredUIParseUserName(User.Name, username, username.Capacity, domain, domain.Capacity);
+            if (error != 0) {
+                var message = string.Format(Resources.Error_UserNameParse, User.Name, error);
+                _sessionLogger.LogError(message);
+                throw new ArgumentException(message);
             }
 
             ProcessStartInfo psi = new ProcessStartInfo(rhostExePath) {
@@ -94,16 +96,31 @@ namespace Microsoft.R.Host.Broker.Sessions {
 
             var useridentity = User as WindowsIdentity;
             if (useridentity != null && WindowsIdentity.GetCurrent().User != useridentity.User) {
-                logger.LogInformation($"Creating user environment variables for [{User.Name}] profile: {profilePath}");
+                _sessionLogger.LogTrace(string.Format(Resources.Trace_EnvironmentVariableCreationBegin, User.Name, profilePath));
                 // if broker and rhost are run as different users.
                 psi.EnvironmentVariables["USERNAME"] = username.ToString();
+                _sessionLogger.LogTrace(string.Format(Resources.Trace_EnvironmentVariable, "USERNAME", psi.EnvironmentVariables["USERNAME"]));
+
                 psi.EnvironmentVariables["HOMEDRIVE"] = profilePath.Substring(0, 2);
+                _sessionLogger.LogTrace(string.Format(Resources.Trace_EnvironmentVariable, "HOMEDRIVE", psi.EnvironmentVariables["HOMEDRIVE"]));
+
                 psi.EnvironmentVariables["HOMEPATH"] = profilePath.Substring(2);
+                _sessionLogger.LogTrace(string.Format(Resources.Trace_EnvironmentVariable, "HOMEPATH", psi.EnvironmentVariables["HOMEPATH"]));
+
                 psi.EnvironmentVariables["USERPROFILE"] = $"{psi.EnvironmentVariables["HOMEDRIVE"]}{psi.EnvironmentVariables["HOMEPATH"]}";
+                _sessionLogger.LogTrace(string.Format(Resources.Trace_EnvironmentVariable, "USERPROFILE", psi.EnvironmentVariables["USERPROFILE"]));
+
                 psi.EnvironmentVariables["APPDATA"] = $"{psi.EnvironmentVariables["USERPROFILE"]}\\AppData\\Roaming";
+                _sessionLogger.LogTrace(string.Format(Resources.Trace_EnvironmentVariable, "APPDATA", psi.EnvironmentVariables["APPDATA"]));
+
                 psi.EnvironmentVariables["LOCALAPPDATA"] = $"{psi.EnvironmentVariables["USERPROFILE"]}\\AppData\\Local";
+                _sessionLogger.LogTrace(string.Format(Resources.Trace_EnvironmentVariable, "LOCALAPPDATA", psi.EnvironmentVariables["LOCALAPPDATA"]));
+
                 psi.EnvironmentVariables["TEMP"] = $"{psi.EnvironmentVariables["LOCALAPPDATA"]}\\Temp";
+                _sessionLogger.LogTrace(string.Format(Resources.Trace_EnvironmentVariable, "TEMP", psi.EnvironmentVariables["TEMP"]));
+
                 psi.EnvironmentVariables["TMP"] = $"{psi.EnvironmentVariables["LOCALAPPDATA"]}\\Temp";
+                _sessionLogger.LogTrace(string.Format(Resources.Trace_EnvironmentVariable, "TMP", psi.EnvironmentVariables["TMP"]));
             }
 
             var shortHome = new StringBuilder(NativeMethods.MAX_PATH);
@@ -114,7 +131,6 @@ namespace Microsoft.R.Host.Broker.Sessions {
             psi.WorkingDirectory = Path.GetDirectoryName(rhostExePath);
 
             if (password != null) {
-                logger.LogInformation($"Using user name and password to start process.");
                 psi.Domain = domain.ToString();
                 psi.UserName = username.ToString();
                 psi.Password = password;
@@ -127,15 +143,17 @@ namespace Microsoft.R.Host.Broker.Sessions {
 
             _process.ErrorDataReceived += (sender, e) => {
                 var process = (Process)sender;
-                outputLogger?.LogTrace($"|{process.Id}|: {e.Data}");
+                outputLogger?.LogTrace(string.Format(Resources.Trace_ErrorDataReceived, process.Id, e.Data));
             };
 
             _process.Exited += delegate {
                 _pipe = null;
             };
 
-            logger.LogInformation($"Starting RHost process: {rhostExePath} {arguments}");
+            _sessionLogger.LogInformation(string.Format(Resources.Info_StartingRHost, Id, User.Name, rhostExePath, arguments));
             _process.Start();
+            _sessionLogger.LogInformation(string.Format(Resources.Info_StartedRHost, Id, User.Name));
+
             _process.BeginErrorReadLine();
 
             _pipe = new MessagePipe(messageLogger);
@@ -157,7 +175,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
 
         public IOwnedMessagePipeEnd ConnectClient() {
             if (_pipe == null) {
-                throw new InvalidOperationException("Host process not started");
+                throw new InvalidOperationException(string.Format(Resources.Error_RHostFailedToStart, Id));
             }
 
             return _pipe.ConnectClient();

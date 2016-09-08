@@ -2,16 +2,17 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Odachi.AspNetCore.Authentication.Basic;
+
 
 namespace Microsoft.R.Host.Broker.Security {
     public class SecurityManager {
@@ -51,7 +52,9 @@ namespace Microsoft.R.Host.Broker.Security {
             var user = new StringBuilder(NativeMethods.CREDUI_MAX_USERNAME_LENGTH + 1);
             var domain = new StringBuilder(NativeMethods.CREDUI_MAX_PASSWORD_LENGTH + 1);
 
-            if (NativeMethods.CredUIParseUserName(context.Username, user, user.Capacity, domain, domain.Capacity) != 0) {
+            uint error = NativeMethods.CredUIParseUserName(context.Username, user, user.Capacity, domain, domain.Capacity);
+            if (error != 0) {
+                _logger.LogError(string.Format(Resources.Error_UserNameParse, context.Username, error.ToString("X")));
                 return null;
             }
 
@@ -59,23 +62,23 @@ namespace Microsoft.R.Host.Broker.Security {
             WindowsIdentity winIdentity = null;
             string profilePath = "";
 
-            _logger.LogInformation($"Attempting login for user: {context.Username}");
+            _logger.LogTrace(string.Format(Resources.Trace_LogOnUserBegin, context.Username));
             if (NativeMethods.LogonUser(user.ToString(), domain.ToString(), context.Password, (int)LogonType.LOGON32_LOGON_NETWORK, (int)LogonProvider.LOGON32_PROVIDER_DEFAULT, out token)) {
-                _logger.LogInformation($"Login succeeded for user: {context.Username}");
+                _logger.LogTrace(string.Format(Resources.Trace_LogOnSuccess, context.Username));
                 winIdentity = new WindowsIdentity(token);
                 StringBuilder profileDir = new StringBuilder(NativeMethods.MAX_PATH);
                 uint size = (uint)profileDir.Capacity;
 
-                _logger.LogInformation($"Attempting profile creation for user: {context.Username}");
-                uint error = NativeMethods.CreateProfile(winIdentity.User.Value, user.ToString(), profileDir, size);
+                _logger.LogTrace(string.Format(Resources.Trace_UserProfileCreation, context.Username));
+                error = NativeMethods.CreateProfile(winIdentity.User.Value, user.ToString(), profileDir, size);
                 // 0x800700b7 - Profile already exists.
                 if (error != 0 && error != 0x800700b7) {
-                    _logger.LogError($"Profile creation failed for user [{context.Username}] with error: {error.ToString("X")}");
+                    _logger.LogError(string.Format(Resources.Error_ProfileCreationFailed, context.Username, error.ToString("X")));
                     return null;
                 } else if (error == 0x800700b7) {
-                    _logger.LogInformation($"Profile already exists for user: {context.Username}. Continuing with existing profile.");
+                    _logger.LogInformation(string.Format(Resources.Info_ProfileAlreadyExists, context.Username));
                 } else {
-                    _logger.LogInformation($"Profile successfully created for user: {context.Username}");
+                    _logger.LogInformation(string.Format(Resources.Info_ProfileCreated, context.Username));
                 }
 
                 profileDir = new StringBuilder(NativeMethods.MAX_PATH * 2);
@@ -83,12 +86,12 @@ namespace Microsoft.R.Host.Broker.Security {
 
                 if (NativeMethods.GetUserProfileDirectory(token, profileDir, ref size)) {
                     profilePath = profileDir.ToString();
+                    _logger.LogTrace(string.Format(Resources.Trace_UserProfileDirectory, context.Username, profilePath));
                 } else {
-                    _logger.LogError($"Failed to get profile for user: [{context.Username}] with error: {NativeMethods.GetLastError().ToString("X")}");
+                    _logger.LogError(string.Format(Resources.Error_GetUserProfileDirectory, context.Username, Marshal.GetLastWin32Error().ToString("X")));
                 }
-
             } else {
-                _logger.LogError($"Login FAILED for user [{context.Username}] with error: {NativeMethods.GetLastError().ToString("X")}");
+                _logger.LogError(string.Format(Resources.Error_LogOnFailed, context.Username, Marshal.GetLastWin32Error().ToString("X")));
                 return null;
             }
 

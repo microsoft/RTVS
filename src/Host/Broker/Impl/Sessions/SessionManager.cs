@@ -17,7 +17,8 @@ namespace Microsoft.R.Host.Broker.Sessions {
     public class SessionManager {
         private readonly InterpreterManager _interpManager;
         private readonly LoggingOptions _loggingOptions;
-        private readonly ILogger _hostOutputLogger, _messageLogger, _sessionLogger;
+        private readonly ILogger _hostOutputLogger, _messageLogger;
+        private readonly ILogger<Session> _sessionLogger;
 
         private readonly Dictionary<string, List<Session>> _sessions = new Dictionary<string, List<Session>>();
 
@@ -60,12 +61,11 @@ namespace Microsoft.R.Host.Broker.Sessions {
                     userSessions.Remove(oldSession);
                 }
 
-                session = new Session(this, user, id, interpreter, commandLineArguments);
+                session = new Session(this, user, id, interpreter, commandLineArguments, _sessionLogger);
                 userSessions.Add(session);
             }
 
             session.StartHost(
-                _sessionLogger,
                 password,
                 profilePath,
                 _loggingOptions.LogHostOutput ? _hostOutputLogger : null,
