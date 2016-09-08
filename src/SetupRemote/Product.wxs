@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?include Definitions.wxi ?>
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+     xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+
+  <Product Id="*"
+           Name="$(var.ProductName)"
+           Language="1033"
+           Version="$(var.MsiVersion)"
+           Manufacturer="Microsoft Corporation"
+           UpgradeCode="{15DD7544-D406-4329-BAE3-61014399DF93}">
+
+    <Package InstallerVersion="350" Compressed="yes" InstallScope="perMachine" Id="*"/>
+    <MajorUpgrade AllowDowngrades="no" RemoveFeatures="ALL"
+                  Schedule="afterInstallInitialize"
+                  DowngradeErrorMessage="A later version of $(var.ProductName) is already installed. Setup will now exit."/>
+
+    <MediaTemplate EmbedCab="yes" />
+
+    <?include Feature.wxi ?>
+  </Product>
+
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="ProductRootFolder" Name="R Remote Service for Visual Studio">
+          <Directory Id="INSTALLFOLDER" Name="$(var.VsVersion)">
+
+            <?ifdef LabBuild?>
+            <Directory Id="CHS_Satellites" Name="zh-cn" />
+            <Directory Id="CHT_Satellites" Name="zh-tw" />
+            <Directory Id="CSY_Satellites" Name="cs" />
+            <Directory Id="DEU_Satellites" Name="de" />
+            <Directory Id="ESN_Satellites" Name="es" />
+            <Directory Id="FRA_Satellites" Name="fr" />
+            <Directory Id="ITA_Satellites" Name="it" />
+            <Directory Id="JPN_Satellites" Name="ja" />
+            <Directory Id="KOR_Satellites" Name="ko" />
+            <Directory Id="PLK_Satellites" Name="pl" />
+            <Directory Id="PTB_Satellites" Name="pt" />
+            <Directory Id="RUS_Satellites" Name="ru" />
+            <Directory Id="TRK_Satellites" Name="tr" />
+            <?endif?>
+
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+  </Fragment>
+
+  <Fragment>
+    <?include Assemblies.wxi ?>
+
+    <!--<?ifdef LabBuild?>
+    <?include LocalizedResources.wxi ?>
+    <?endif?>-->
+  </Fragment>
+
+</Wix>
