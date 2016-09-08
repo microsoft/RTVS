@@ -46,7 +46,7 @@ namespace Microsoft.R.Host.Broker.Interpreters {
                 if (engines.Any()) {
                     foreach (var e in engines) {
                         var detected = new Interpreter(this, Guid.NewGuid().ToString(), e.Name, e.InstallPath, e.BinPath, e.Version);
-                        _logger.LogTrace(string.Format(Resources.Trace_DetectedR, detected.Version, detected.Path));
+                        _logger.LogTrace(Resources.Trace_DetectedR, detected.Version, detected.Path);
                         yield return detected;
                     }
                 } else {
@@ -66,7 +66,7 @@ namespace Microsoft.R.Host.Broker.Interpreters {
                     }
                 }
 
-                _logger.LogError(string.Format(Resources.Error_FailedRInstallationData, id, options.BasePath));
+                _logger.LogError(Resources.Error_FailedRInstallationData, id, options.BasePath);
             }
         }
     }

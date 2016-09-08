@@ -28,14 +28,14 @@ namespace Microsoft.R.Host.Broker.Lifetime {
                     process = Process.GetProcessById(pid);
                     process.EnableRaisingEvents = true;
                 } catch (ArgumentException) {
-                    _logger.LogCritical(string.Format(Resources.Critical_ParentProcessNotFound, pid));
+                    _logger.LogCritical(Resources.Critical_ParentProcessNotFound, pid);
                     Program.Exit();
                     return;
                 }
 
-                _logger.LogInformation(string.Format(Resources.Info_MonitoringParentProcess, pid));
+                _logger.LogInformation(Resources.Info_MonitoringParentProcess, pid);
                 process.Exited += delegate {
-                    _logger.LogInformation(string.Format(Resources.Info_ParentProcessExited, pid));
+                    _logger.LogInformation(Resources.Info_ParentProcessExited, pid);
                     Program.Exit();
                 };
             }

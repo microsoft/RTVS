@@ -54,7 +54,7 @@ namespace Microsoft.R.Host.Broker.Security {
 
             uint error = NativeMethods.CredUIParseUserName(context.Username, user, user.Capacity, domain, domain.Capacity);
             if (error != 0) {
-                _logger.LogError(string.Format(Resources.Error_UserNameParse, context.Username, error.ToString("X")));
+                _logger.LogError(Resources.Error_UserNameParse, context.Username, error.ToString("X"));
                 return null;
             }
 
@@ -62,23 +62,23 @@ namespace Microsoft.R.Host.Broker.Security {
             WindowsIdentity winIdentity = null;
             string profilePath = "";
 
-            _logger.LogTrace(string.Format(Resources.Trace_LogOnUserBegin, context.Username));
+            _logger.LogTrace(Resources.Trace_LogOnUserBegin, context.Username);
             if (NativeMethods.LogonUser(user.ToString(), domain.ToString(), context.Password, (int)LogonType.LOGON32_LOGON_NETWORK, (int)LogonProvider.LOGON32_PROVIDER_DEFAULT, out token)) {
-                _logger.LogTrace(string.Format(Resources.Trace_LogOnSuccess, context.Username));
+                _logger.LogTrace(Resources.Trace_LogOnSuccess, context.Username);
                 winIdentity = new WindowsIdentity(token);
                 StringBuilder profileDir = new StringBuilder(NativeMethods.MAX_PATH);
                 uint size = (uint)profileDir.Capacity;
 
-                _logger.LogTrace(string.Format(Resources.Trace_UserProfileCreation, context.Username));
+                _logger.LogTrace(Resources.Trace_UserProfileCreation, context.Username);
                 error = NativeMethods.CreateProfile(winIdentity.User.Value, user.ToString(), profileDir, size);
                 // 0x800700b7 - Profile already exists.
                 if (error != 0 && error != 0x800700b7) {
-                    _logger.LogError(string.Format(Resources.Error_ProfileCreationFailed, context.Username, error.ToString("X")));
+                    _logger.LogError(Resources.Error_ProfileCreationFailed, context.Username, error.ToString("X"));
                     return null;
                 } else if (error == 0x800700b7) {
-                    _logger.LogInformation(string.Format(Resources.Info_ProfileAlreadyExists, context.Username));
+                    _logger.LogInformation(Resources.Info_ProfileAlreadyExists, context.Username);
                 } else {
-                    _logger.LogInformation(string.Format(Resources.Info_ProfileCreated, context.Username));
+                    _logger.LogInformation(Resources.Info_ProfileCreated, context.Username);
                 }
 
                 profileDir = new StringBuilder(NativeMethods.MAX_PATH * 2);
@@ -86,12 +86,12 @@ namespace Microsoft.R.Host.Broker.Security {
 
                 if (NativeMethods.GetUserProfileDirectory(token, profileDir, ref size)) {
                     profilePath = profileDir.ToString();
-                    _logger.LogTrace(string.Format(Resources.Trace_UserProfileDirectory, context.Username, profilePath));
+                    _logger.LogTrace(Resources.Trace_UserProfileDirectory, context.Username, profilePath);
                 } else {
-                    _logger.LogError(string.Format(Resources.Error_GetUserProfileDirectory, context.Username, Marshal.GetLastWin32Error().ToString("X")));
+                    _logger.LogError(Resources.Error_GetUserProfileDirectory, context.Username, Marshal.GetLastWin32Error().ToString("X"));
                 }
             } else {
-                _logger.LogError(string.Format(Resources.Error_LogOnFailed, context.Username, Marshal.GetLastWin32Error().ToString("X")));
+                _logger.LogError(Resources.Error_LogOnFailed, context.Username, Marshal.GetLastWin32Error().ToString("X"));
                 return null;
             }
 

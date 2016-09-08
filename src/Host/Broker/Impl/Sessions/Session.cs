@@ -61,7 +61,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
             }
         }
 
-        internal Session(SessionManager manager, IIdentity user, string id, Interpreter interpreter, string commandLineArguments, ILogger<Session> sessionLogger) {
+        internal Session(SessionManager manager, IIdentity user, string id, Interpreter interpreter, string commandLineArguments, ILogger sessionLogger) {
             Manager = manager;
             Interpreter = interpreter;
             User = user;
@@ -79,9 +79,8 @@ namespace Microsoft.R.Host.Broker.Sessions {
 
             uint error = NativeMethods.CredUIParseUserName(User.Name, username, username.Capacity, domain, domain.Capacity);
             if (error != 0) {
-                var message = string.Format(Resources.Error_UserNameParse, User.Name, error);
-                _sessionLogger.LogError(message);
-                throw new ArgumentException(message);
+                _sessionLogger.LogError(Resources.Error_UserNameParse, User.Name, error);
+                throw new ArgumentException(string.Format(Resources.Error_UserNameParse, User.Name, error));
             }
 
             ProcessStartInfo psi = new ProcessStartInfo(rhostExePath) {
@@ -96,31 +95,31 @@ namespace Microsoft.R.Host.Broker.Sessions {
 
             var useridentity = User as WindowsIdentity;
             if (useridentity != null && WindowsIdentity.GetCurrent().User != useridentity.User) {
-                _sessionLogger.LogTrace(string.Format(Resources.Trace_EnvironmentVariableCreationBegin, User.Name, profilePath));
+                _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariableCreationBegin, User.Name, profilePath);
                 // if broker and rhost are run as different users.
                 psi.EnvironmentVariables["USERNAME"] = username.ToString();
-                _sessionLogger.LogTrace(string.Format(Resources.Trace_EnvironmentVariable, "USERNAME", psi.EnvironmentVariables["USERNAME"]));
+                _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "USERNAME", psi.EnvironmentVariables["USERNAME"]);
 
                 psi.EnvironmentVariables["HOMEDRIVE"] = profilePath.Substring(0, 2);
-                _sessionLogger.LogTrace(string.Format(Resources.Trace_EnvironmentVariable, "HOMEDRIVE", psi.EnvironmentVariables["HOMEDRIVE"]));
+                _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "HOMEDRIVE", psi.EnvironmentVariables["HOMEDRIVE"]);
 
                 psi.EnvironmentVariables["HOMEPATH"] = profilePath.Substring(2);
-                _sessionLogger.LogTrace(string.Format(Resources.Trace_EnvironmentVariable, "HOMEPATH", psi.EnvironmentVariables["HOMEPATH"]));
+                _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "HOMEPATH", psi.EnvironmentVariables["HOMEPATH"]);
 
                 psi.EnvironmentVariables["USERPROFILE"] = $"{psi.EnvironmentVariables["HOMEDRIVE"]}{psi.EnvironmentVariables["HOMEPATH"]}";
-                _sessionLogger.LogTrace(string.Format(Resources.Trace_EnvironmentVariable, "USERPROFILE", psi.EnvironmentVariables["USERPROFILE"]));
+                _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "USERPROFILE", psi.EnvironmentVariables["USERPROFILE"]);
 
                 psi.EnvironmentVariables["APPDATA"] = $"{psi.EnvironmentVariables["USERPROFILE"]}\\AppData\\Roaming";
-                _sessionLogger.LogTrace(string.Format(Resources.Trace_EnvironmentVariable, "APPDATA", psi.EnvironmentVariables["APPDATA"]));
+                _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "APPDATA", psi.EnvironmentVariables["APPDATA"]);
 
                 psi.EnvironmentVariables["LOCALAPPDATA"] = $"{psi.EnvironmentVariables["USERPROFILE"]}\\AppData\\Local";
-                _sessionLogger.LogTrace(string.Format(Resources.Trace_EnvironmentVariable, "LOCALAPPDATA", psi.EnvironmentVariables["LOCALAPPDATA"]));
+                _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "LOCALAPPDATA", psi.EnvironmentVariables["LOCALAPPDATA"]);
 
                 psi.EnvironmentVariables["TEMP"] = $"{psi.EnvironmentVariables["LOCALAPPDATA"]}\\Temp";
-                _sessionLogger.LogTrace(string.Format(Resources.Trace_EnvironmentVariable, "TEMP", psi.EnvironmentVariables["TEMP"]));
+                _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "TEMP", psi.EnvironmentVariables["TEMP"]);
 
                 psi.EnvironmentVariables["TMP"] = $"{psi.EnvironmentVariables["LOCALAPPDATA"]}\\Temp";
-                _sessionLogger.LogTrace(string.Format(Resources.Trace_EnvironmentVariable, "TMP", psi.EnvironmentVariables["TMP"]));
+                _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "TMP", psi.EnvironmentVariables["TMP"]);
             }
 
             var shortHome = new StringBuilder(NativeMethods.MAX_PATH);
@@ -143,16 +142,16 @@ namespace Microsoft.R.Host.Broker.Sessions {
 
             _process.ErrorDataReceived += (sender, e) => {
                 var process = (Process)sender;
-                outputLogger?.LogTrace(string.Format(Resources.Trace_ErrorDataReceived, process.Id, e.Data));
+                outputLogger?.LogTrace(Resources.Trace_ErrorDataReceived, process.Id, e.Data);
             };
 
             _process.Exited += delegate {
                 _pipe = null;
             };
 
-            _sessionLogger.LogInformation(string.Format(Resources.Info_StartingRHost, Id, User.Name, rhostExePath, arguments));
+            _sessionLogger.LogInformation(Resources.Info_StartingRHost, Id, User.Name, rhostExePath, arguments);
             _process.Start();
-            _sessionLogger.LogInformation(string.Format(Resources.Info_StartedRHost, Id, User.Name));
+            _sessionLogger.LogInformation(Resources.Info_StartedRHost, Id, User.Name);
 
             _process.BeginErrorReadLine();
 

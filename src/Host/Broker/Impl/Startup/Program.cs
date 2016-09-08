@@ -48,7 +48,7 @@ namespace Microsoft.R.Host.Broker.Startup {
             _logger = _loggerFactory.CreateLogger<Program>();
 
             if (_startupOptions.Name != null) {
-                _logger.LogInformation(string.Format(Resources.Info_BrokerName, _startupOptions.Name));
+                _logger.LogInformation(Resources.Info_BrokerName, _startupOptions.Name);
             }
 
             CreateWebHost().Run();
@@ -75,10 +75,10 @@ namespace Microsoft.R.Host.Broker.Startup {
                     pipe = new NamedPipeClientStream(".", pipeName, PipeDirection.Out);
                     pipe.Connect(10000);
                 } catch (IOException ex) {
-                    _logger.LogCritical(0, ex, string.Format(Resources.Critical_InvalidPipeHandle, pipeName));
+                    _logger.LogCritical(0, ex, Resources.Critical_InvalidPipeHandle, pipeName);
                     throw;
                 } catch (TimeoutException ex) {
-                    _logger.LogCritical(0, ex, string.Format(Resources.Critical_PipeConnectTimeOut, pipeName));
+                    _logger.LogCritical(0, ex, Resources.Critical_PipeConnectTimeOut, pipeName);
                     throw;
                 }
 
@@ -86,14 +86,14 @@ namespace Microsoft.R.Host.Broker.Startup {
                 applicationLifetime.ApplicationStarted.Register(() => Task.Run(() => {
                     using (pipe) {
                         string serverUriStr = JsonConvert.SerializeObject(serverAddresses.Addresses);
-                        _logger.LogTrace(string.Format(Resources.Trace_ServerUrlsToPipeBegin, pipeName, Environment.NewLine, serverUriStr));
+                        _logger.LogTrace(Resources.Trace_ServerUrlsToPipeBegin, pipeName, Environment.NewLine, serverUriStr);
 
                         var serverUriData = Encoding.UTF8.GetBytes(serverUriStr);
                         pipe.Write(serverUriData, 0, serverUriData.Length);
                         pipe.Flush();
                     }
 
-                    _logger.LogTrace(string.Format(Resources.Trace_ServerUrlsToPipeDone, pipeName));
+                    _logger.LogTrace(Resources.Trace_ServerUrlsToPipeDone, pipeName);
                 }));
             }
 
