@@ -5,13 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.R.Host.Client.Host;
 
 namespace Microsoft.R.Host.Client {
     public interface IRSessionProvider : IDisposable {
-        Uri BrokerUri { get; }
-        string BrokerName { get; }
-
         event EventHandler BrokerChanged;
+
+        IBrokerClient Broker { get; }
 
         IRSession GetOrCreate(Guid guid);
         IEnumerable<IRSession> GetSessions();

@@ -6,27 +6,22 @@ using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Common.Core;
 using static Microsoft.R.Host.Client.NativeMethods;
 
 namespace Microsoft.R.Host.Client.Host {
-    internal sealed class RemoteRHostConnector : RHostConnector {
+    internal sealed class RemoteBrokerClient : BrokerClient {
         private readonly IntPtr _applicationWindowHandle;
         private readonly NetworkCredential _credentials;
         private readonly AutoResetEvent _credentialsValidated = new AutoResetEvent(true);
         private readonly string _authority;
         private bool _ignoreSavedCredentials;
 
-        public override Uri BrokerUri { get; }
-
-        public RemoteRHostConnector(string name, Uri brokerUri, IntPtr applicationWindowHandle)
-            : base(name, brokerUri.Fragment) {
+        public RemoteBrokerClient(string name, Uri brokerUri, IntPtr applicationWindowHandle)
+            : base(name, brokerUri, brokerUri.Fragment) {
             _applicationWindowHandle = applicationWindowHandle;
 
             _credentials = new NetworkCredential();
             _authority = new UriBuilder { Scheme = brokerUri.Scheme, Host = brokerUri.Host, Port = brokerUri.Port }.ToString();
-            BrokerUri = brokerUri;
 
             CreateHttpClient(brokerUri, _credentials);
         }

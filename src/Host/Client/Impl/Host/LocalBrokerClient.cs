@@ -14,7 +14,7 @@ using Microsoft.Common.Core.Threading;
 using Newtonsoft.Json;
 
 namespace Microsoft.R.Host.Client.Host {
-    internal sealed class LocalRHostConnector : RHostConnector {
+    internal sealed class LocalBrokerClient : BrokerClient {
         private const string RHostBrokerExe = "Microsoft.R.Host.Broker.exe";
         private const string InterpreterId = "local";
 
@@ -27,15 +27,11 @@ namespace Microsoft.R.Host.Client.Host {
 
         private Process _brokerProcess;
 
-        public override Uri BrokerUri { get; }
-
-        public LocalRHostConnector(string name, string rHome, string rhostDirectory = null)
-            : base(name, InterpreterId) {
+        public LocalBrokerClient(string name, string rHome, string rhostDirectory = null)
+            : base(name, new Uri(rHome), InterpreterId) {
 
             _rhostDirectory = rhostDirectory ?? Path.GetDirectoryName(typeof(RHost).Assembly.GetAssemblyPath());
             _rHome = rHome;
-
-            BrokerUri = new Uri(rHome);
         }
 
         public async override Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken()) {

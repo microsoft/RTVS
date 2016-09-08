@@ -17,7 +17,7 @@ using Microsoft.R.Host.Client.BrokerServices;
 using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Client.Host {
-    internal abstract class RHostConnector : IRHostConnector {
+    internal abstract class BrokerClient : IBrokerClient {
         private static readonly TimeSpan HeartbeatTimeout =
 #if DEBUG
             // In debug mode, increase the timeout significantly, so that when the host is paused in debugger,
@@ -27,7 +27,7 @@ namespace Microsoft.R.Host.Client.Host {
             TimeSpan.FromSeconds(5);
 #endif
 
-        protected DisposableBag DisposableBag { get; } = DisposableBag.Create<RHostConnector>();
+        protected DisposableBag DisposableBag { get; } = DisposableBag.Create<BrokerClient>();
 
         private readonly LinesLog _log;
         private readonly string _interpreterId;
@@ -38,14 +38,15 @@ namespace Microsoft.R.Host.Client.Host {
 
         public string Name { get; }
 
-        public abstract Uri BrokerUri { get; }
+        public Uri Uri { get; }
 
-        public bool IsRemote => !BrokerUri.IsFile;
+        public bool IsRemote => !Uri.IsFile;
 
-        protected RHostConnector(string name, string interpreterId) {
+        protected BrokerClient(string name, Uri brokerUri, string interpreterId) {
             Name = name;
+            Uri = brokerUri;
             _interpreterId = interpreterId;
-            _log = new LinesLog(FileLogWriter.InTempFolder("Microsoft.R.Host.RHostConnector"));
+            _log = new LinesLog(FileLogWriter.InTempFolder(nameof(BrokerClient)));
         }
 
         protected void CreateHttpClient(Uri baseAddress, ICredentials credentials) {

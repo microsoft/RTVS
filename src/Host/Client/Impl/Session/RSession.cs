@@ -13,6 +13,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Tasks;
+using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.Host;
 using static System.FormattableString;
 using Task = System.Threading.Tasks.Task;
@@ -47,6 +48,7 @@ namespace Microsoft.R.Host.Client.Session {
         private Task _afterHostStartedTask;
         private TaskCompletionSourceEx<object> _initializationTcs;
         private RSessionRequestSource _currentRequestSource;
+        private readonly BinaryAsyncLock _initializationLock;
         private readonly Action _onDispose;
         private readonly CountdownDisposable _disableMutatingOnReadConsole;
         private readonly DisposeToken _disposeToken;
@@ -56,12 +58,12 @@ namespace Microsoft.R.Host.Client.Session {
         private volatile RHostStartupInfo _startupInfo;
 
         public int Id { get; }
-        internal IRHostConnector RHostConnector { get; }
+        internal IBrokerClient BrokerClient { get; }
         public string Prompt { get; private set; } = DefaultPrompt;
         public int MaxLength { get; private set; } = 0x1000;
         public bool IsHostRunning => _isHostRunning;
-        public Task HostStarted => _initializationTcs?.Task ?? Task.FromCanceled(new CancellationToken(true));
-        public bool IsRemote => RHostConnector.IsRemote;
+        public Task HostStarted => _initializationTcs.Task;
+        public bool IsRemote => BrokerClient.IsRemote;
 
         /// <summary>
         /// For testing purpose only
@@ -74,9 +76,9 @@ namespace Microsoft.R.Host.Client.Session {
             CanceledBeginInteractionTask = TaskUtilities.CreateCanceled<IRSessionInteraction>(new RHostDisconnectedException());
         }
 
-        public RSession(int id, IRHostConnector hostConnector, Action onDispose) {
+        public RSession(int id, IBrokerClient brokerClient, Action onDispose) {
             Id = id;
-            RHostConnector = hostConnector;
+            BrokerClient = brokerClient;
             _onDispose = onDispose;
             _disposeToken = DisposeToken.Create<RSession>();
             _disableMutatingOnReadConsole = new CountdownDisposable(() => {
@@ -88,6 +90,8 @@ namespace Microsoft.R.Host.Client.Session {
                 Task.Run(() => Mutated?.Invoke(this, EventArgs.Empty));
             });
 
+            _initializationLock = new BinaryAsyncLock();
+            _initializationTcs = new TaskCompletionSourceEx<object>();
             _afterHostStartedTask = TaskUtilities.CreateCanceled(new RHostDisconnectedException());
         }
 
@@ -196,44 +200,47 @@ namespace Microsoft.R.Host.Client.Session {
 
         public async Task EnsureHostStartedAsync(RHostStartupInfo startupInfo, IRSessionCallback callback, int timeout = 3000) {
             _disposeToken.ThrowIfDisposed();
-
-            var existingInitializationTcs = Interlocked.CompareExchange(ref _initializationTcs, new TaskCompletionSourceEx<object>(), null);
-            if (existingInitializationTcs == null) {
+            var isStarted = await _initializationLock.WaitAsync();
+            if (!isStarted) {
                 await StartHostAsyncBackground(startupInfo, callback, timeout);
-            } else {
-                await existingInitializationTcs.Task;
             }
         }
 
         public async Task StartHostAsync(RHostStartupInfo startupInfo, IRSessionCallback callback, int timeout = 3000) {
             _disposeToken.ThrowIfDisposed();
-
-            if (Interlocked.CompareExchange(ref _initializationTcs, new TaskCompletionSourceEx<object>(), null) != null) {
+            var isStartedTask = _initializationLock.WaitAsync();
+            if (isStartedTask.IsCompleted && !isStartedTask.Result) {
+                await StartHostAsyncBackground(startupInfo, callback, timeout);
+            } else {
                 throw new InvalidOperationException("Another instance of RHost is running for this RSession. Stop it before starting new one.");
             }
-
-            await StartHostAsyncBackground(startupInfo, callback, timeout);
         }
 
         private async Task StartHostAsyncBackground(RHostStartupInfo startupInfo, IRSessionCallback callback, int timeout) {
             await TaskUtilities.SwitchToBackgroundThread();
-            var host = await RHostConnector.ConnectAsync(startupInfo.Name, this, startupInfo.RHostCommandLineArguments, timeout);
-
-            await StartHostAsyncBackground(startupInfo, callback, host);
+            try {
+                var host = await BrokerClient.ConnectAsync(startupInfo.Name, this, startupInfo.RHostCommandLineArguments, timeout);
+                await StartHostAsyncBackground(startupInfo, callback, host);
+            } catch (RHostBinaryMissingException) {
+                _initializationLock.Reset();
+                throw;
+            }
         }
 
         private async Task StartHostAsyncBackground(RHostStartupInfo startupInfo, IRSessionCallback callback, RHost host) {
             await TaskUtilities.SwitchToBackgroundThread();
+
+            ResetInitializationTcs();
+
             _callback = callback;
             _startupInfo = startupInfo;
             ClearPendingRequests(new RHostDisconnectedException());
 
-            var initializationTask = _initializationTcs.Task;
             Interlocked.Exchange(ref _host, host);
             var hostRunTask = RunHost(startupInfo);
             Interlocked.Exchange(ref _hostRunTask, hostRunTask)?.DoNotWait();
 
-            await initializationTask;
+            await _initializationTcs.Task;
         }
 
         public async Task StartSwitchingBrokerAsync() {
@@ -243,7 +250,7 @@ namespace Microsoft.R.Host.Client.Session {
                 return;
             }
 
-            var hostToSwitch = await RHostConnector.ConnectAsync(_startupInfo.Name, this, _startupInfo.RHostCommandLineArguments);
+            var hostToSwitch = await BrokerClient.ConnectAsync(_startupInfo.Name, this, _startupInfo.RHostCommandLineArguments);
             if (Interlocked.CompareExchange(ref _hostToSwitch, hostToSwitch, null) != null) {
                 throw new InvalidOperationException("New switching shouldn't start until previous one is completed");
             }
@@ -258,9 +265,15 @@ namespace Microsoft.R.Host.Client.Session {
 
             // Get previously created RHost
             var hostToSwitch = Interlocked.Exchange(ref _hostToSwitch, null);
+            if (hostToSwitch == null) {
+                throw new InvalidOperationException($"{nameof(CompleteSwitchingBrokerAsync)} should be called only in pair with {nameof(StartSwitchingBrokerAsync)}");
+            }
 
-            // reset initialization
-            Interlocked.Exchange(ref _initializationTcs, new TaskCompletionSourceEx<object>());
+            // reset and acquire _initializationLock, but don't interrupt existing initialization
+            while (await _initializationLock.WaitAsync()) {
+                _initializationLock.Reset();
+            }
+
             var host = _host;
             var hostRunTask = _hostRunTask;
 
@@ -287,15 +300,25 @@ namespace Microsoft.R.Host.Client.Session {
 
         public async Task StopHostAsync() {
             _disposeToken.ThrowIfDisposed();
+            await TaskUtilities.SwitchToBackgroundThread();
 
-            if (_initializationTcs == null) {
+            var isCompleted = await _initializationLock.WaitIfLockedAsync();
+            
+            // Host wasn't started yet or host is already stopped - nothing to stop
+            if (!isCompleted) {
                 return;
             }
 
-            await TaskUtilities.SwitchToBackgroundThread();
+            ResetInitializationTcs();
 
-            var requestTask = BeginInteractionAsync(false);
-            await Task.WhenAny(requestTask, Task.Delay(200)).Unwrap();
+            Task<IRSessionInteraction> requestTask;
+            try {
+                requestTask = BeginInteractionAsync(false);
+                await Task.WhenAny(requestTask, Task.Delay(200)).Unwrap();
+            } catch (RHostDisconnectedException) {
+                // BeginInteractionAsync will fail with RHostDisconnectedException if RHost isn't running. Nothing to stop.
+                return;
+            }
 
             if (_hostRunTask.IsCompleted) {
                 requestTask
@@ -335,9 +358,7 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         private async Task RunHost(RHostStartupInfo startupInfo) {
-            TaskCompletionSourceEx<object> initializationTcs = null;
             try {
-                initializationTcs = _initializationTcs;
                 ScheduleAfterHostStarted(startupInfo);
                 await _host.Run();
             } catch (OperationCanceledException oce) {
@@ -347,7 +368,20 @@ namespace Microsoft.R.Host.Client.Session {
             } catch (Exception ex) {
                 _initializationTcs.TrySetException(ex);
             } finally {
-                Interlocked.CompareExchange(ref _initializationTcs, null, initializationTcs);
+                _initializationLock.Reset();
+            }
+        }
+
+        private void ResetInitializationTcs() {
+            while (true) {
+                var tcs = _initializationTcs;
+                if (!tcs.Task.IsCompleted) {
+                    return;   
+                }
+
+                if (Interlocked.CompareExchange(ref _initializationTcs, new TaskCompletionSourceEx<object>(), tcs) == tcs) {
+                    return;
+                }
             }
         }
 
@@ -398,6 +432,7 @@ namespace Microsoft.R.Host.Client.Session {
         Task IRCallbacks.Connected(string rVersion) {
             Prompt = DefaultPrompt;
             _isHostRunning = true;
+            _initializationLock.Release();
             _initializationTcs.SetResult(null);
             Connected?.Invoke(this, new RConnectedEventArgs(rVersion));
             Mutated?.Invoke(this, EventArgs.Empty);

@@ -10,7 +10,6 @@ namespace Microsoft.Common.Core.Threading {
         public Task WaitAsync() => _tcs.Task;
         public void Set() => _tcs.TrySetResult(true);
 
-
         public Task WaitAsync(CancellationToken cancellationToken) {
             if (cancellationToken.IsCancellationRequested) {
                 return Task.FromCanceled(cancellationToken);

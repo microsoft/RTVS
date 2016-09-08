@@ -59,10 +59,11 @@
     <Compile Include="DataInspection\RPromiseInfo.cs" />
     <Compile Include="DataInspection\RSessionExtensions.cs" />
     <Compile Include="Definitions\IRSessionProviderCallback.cs" />
+    <Compile Include="Host\BrokerClientProxy.cs" />
     <Compile Include="Host\NullRCallbacks.cs" />
-    <Compile Include="Host\NullRHostConnector.cs" />
-    <Compile Include="Host\RemoteRHostConnector.cs" />
-    <Compile Include="Host\RHostConnector.cs" />
+    <Compile Include="Host\NullBrokerClient.cs" />
+    <Compile Include="Host\RemoteBrokerClient.cs" />
+    <Compile Include="Host\BrokerClient.cs" />
     <Compile Include="Definitions\PlotDeviceProperties.cs" />
     <Compile Include="Host\RHost.GetBlobRequest.cs" />
     <Compile Include="Host\RHost.CreateBlobRequest.cs" />
@@ -72,7 +73,7 @@
     <Compile Include="Definitions\IRBlobInfo.cs" />
     <Compile Include="Definitions\IRBlob.cs" />
     <Compile Include="Definitions\Blob.cs" />
-    <Compile Include="Host\IRHostConnector.cs" />
+    <Compile Include="Host\IBrokerClient.cs" />
     <Compile Include="Definitions\IRBlobService.cs" />
     <Compile Include="Definitions\PlotMessage.cs" />
     <Compile Include="Definitions\REnvironments.cs" />
@@ -93,7 +94,7 @@
     <Compile Include="ExecutionTracing\RExecutionTracer.cs" />
     <Compile Include="ExecutionTracing\RSessionExtensions.cs" />
     <Compile Include="ExecutionTracing\RSourceLocation.cs" />
-    <Compile Include="Host\LocalRHostConnector.cs" />
+    <Compile Include="Host\LocalBrokerClient.cs" />
     <Compile Include="Extensions\DirectoryExtensions.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

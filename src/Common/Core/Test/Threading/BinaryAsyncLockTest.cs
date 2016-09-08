@@ -12,12 +12,13 @@ using Microsoft.UnitTests.Core.XUnit;
 namespace Microsoft.Common.Core.Test.Threading {
     public class BinaryAsyncLockTest {
         [Test]
-        public async Task Release() {
+        public async Task WaitAsync_Release() {
             var bal = new BinaryAsyncLock();
             var count = 0;
             await ParallelTools.InvokeAsync(4, async i => {
                 var isSet = await bal.WaitAsync();
                 if (!isSet) {
+                    await Task.Delay(50);
                     Interlocked.Increment(ref count);
                     bal.Release();
                 }
@@ -27,22 +28,82 @@ namespace Microsoft.Common.Core.Test.Threading {
         }
 
         [Test]
-        public async Task Reset() {
+        public async Task WaitAsync_Released() {
             var bal = new BinaryAsyncLock();
+            bal.Release();
             var count = 0;
             await ParallelTools.InvokeAsync(4, async i => {
-                try {
-                    var isSet = await bal.WaitAsync();
-                    if (!isSet) {
-                        await Task.Delay(50);
-                        bal.Reset();
-                    }
-                } catch (OperationCanceledException) {
+                var isSet = await bal.WaitAsync();
+                if (!isSet) {
+                    await Task.Delay(50);
                     Interlocked.Increment(ref count);
                 }
             });
 
-            count.Should().Be(3);
+            count.Should().Be(0);
+        }
+
+        [Test]
+        public async Task WaitAsyncIfLocked_Release_Unlocked() {
+            var bal = new BinaryAsyncLock();
+            var count = 0;
+            await ParallelTools.InvokeAsync(4, async i => {
+                var isSet = await bal.WaitIfLockedAsync();
+                if (!isSet) {
+                    await Task.Delay(50);
+                    Interlocked.Increment(ref count);
+                }
+            });
+
+            count.Should().Be(4);
+        }
+
+        [Test]
+        public async Task WaitAsyncIfLocked_Released() {
+            var bal = new BinaryAsyncLock();
+            bal.Release();
+            var count = 0;
+            await ParallelTools.InvokeAsync(4, async i => {
+                var isSet = await bal.WaitIfLockedAsync();
+                if (!isSet) {
+                    await Task.Delay(50);
+                    Interlocked.Increment(ref count);
+                }
+            });
+
+            count.Should().Be(0);
+        }
+
+        [Test]
+        public async Task WaitAsync_Reset() {
+            var bal = new BinaryAsyncLock();
+            var count = 0;
+            await ParallelTools.InvokeAsync(4, async i => {
+                var isSet = await bal.WaitAsync();
+                if (!isSet) {
+                    await Task.Delay(50);
+                    Interlocked.Increment(ref count);
+                    bal.Reset();
+                }
+            });
+
+            count.Should().Be(4);
+        }
+
+        [Test]
+        public async Task WaitAsyncIfLocked_Reset_Unlocked() {
+            var bal = new BinaryAsyncLock();
+            var count = 0;
+            await ParallelTools.InvokeAsync(4, async i => {
+                var isSet = await bal.WaitIfLockedAsync();
+                if (!isSet) {
+                    await Task.Delay(50);
+                    Interlocked.Increment(ref count);
+                    bal.Reset();
+                }
+            });
+
+            count.Should().Be(4);
         }
     }
 }

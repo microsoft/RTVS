@@ -114,7 +114,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         public async Task ConnectAsync(IConnectionInfo connection) {
-            if (ActiveConnection != null && (!ActiveConnection.Path.PathEquals(connection.Path) || string.IsNullOrEmpty(_sessionProvider.BrokerName))) {
+            if (ActiveConnection != null && (!ActiveConnection.Path.PathEquals(connection.Path) || string.IsNullOrEmpty(_sessionProvider.Broker.Name))) {
                 await TrySwitchBrokerAsync(connection);
             }
         }
@@ -256,11 +256,11 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         private void UpdateActiveConnection() {
-            if (ActiveConnection?.Id == _sessionProvider.BrokerUri) {
+            if (ActiveConnection?.Id == _sessionProvider.Broker.Uri) {
                 return;
             }
 
-            ActiveConnection = RecentConnections.FirstOrDefault(c => c.Id == _sessionProvider.BrokerUri);
+            ActiveConnection = RecentConnections.FirstOrDefault(c => c.Id == _sessionProvider.Broker.Uri);
             SaveActiveConnectionToSettings();
         }
 
