@@ -72,28 +72,29 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         private bool TryStartEditing(IConnectionViewModel connection) {
             _shell.AssertIsOnMainThread();
-            if (connection == EditedConnection) {
-                return false;
-            }
 
+            // When 'Edit' button is clicked second time, we close the panel.
+            // If panel has changes, offer save the changes. 
             if (EditedConnection != null && EditedConnection.HasChanges) {
                 var dialogResult = _shell.ShowMessage(Resources.ConnectionManager_EditedConnectionHasChanges, MessageButtons.YesNoCancel);
                 switch (dialogResult) {
                     case MessageButtons.Yes:
                         Save(EditedConnection);
                         break;
-                    case MessageButtons.No:
-                        CancelEdit();
-                        break;
-                    default:
+                    case MessageButtons.Cancel:
                         return false;
                 }
-            } else {
-                CancelEdit();
             }
 
-            EditedConnection = connection;
-            connection.IsEditing = true;
+            var wasEditingConnection = EditedConnection;
+            CancelEdit();
+
+            // If it is the same connection that was edited then we came here as a result 
+            // of a second click on the edit button. Don't start editing it again.
+            if (connection != wasEditingConnection) {
+                EditedConnection = connection;
+                connection.IsEditing = true;
+            }
             return true;
         }
 
@@ -101,7 +102,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             _shell.AssertIsOnMainThread();
             IsEditingNew = TryStartEditing(new ConnectionViewModel());
         }
-        
+
         public void CancelEdit() {
             _shell.AssertIsOnMainThread();
             EditedConnection?.Reset();
@@ -116,7 +117,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
             if (connection.Path != null && Uri.TryCreate(connection.Path, UriKind.Absolute, out latestLocalPathUri) && latestLocalPathUri.IsFile && !latestLocalPathUri.IsUnc) {
                 latestLocalPath = latestLocalPathUri.LocalPath;
-            } else { 
+            } else {
                 latestLocalPath = Environment.SystemDirectory;
 
                 try {
@@ -125,9 +126,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                         // Force 64-bit PF
                         latestLocalPath = Environment.GetEnvironmentVariable("ProgramW6432");
                     }
-                }
-                catch (ArgumentException) { }
-                catch (IOException) { }
+                } catch (ArgumentException) { } catch (IOException) { }
             }
 
             var path = _shell.ShowBrowseDirectoryDialog(latestLocalPath);
@@ -178,7 +177,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             UpdateConnections();
         }
 
-        private void UpdateConnections() { 
+        private void UpdateConnections() {
             var selectedId = EditedConnection?.Id;
 
             _localConnections.ReplaceWith(_connectionManager.RecentConnections.Where(c => !c.IsRemote).Select(c => new ConnectionViewModel(c) {

@@ -104,8 +104,10 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         /// <summary>
         /// Tooltip when hovered over connection name
         /// </summary>
-        public string Information {
+        public string ConnectionTooltip {
             get {
+                var cmdLineInfo = !string.IsNullOrWhiteSpace(RCommandLineArguments) ? RCommandLineArguments : Resources.ConnectionManager_None;
+
                 if (IsRemote) {
                     Uri uri;
                     Uri.TryCreate(Path, UriKind.Absolute, out uri);
@@ -113,13 +115,11 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                     return string.Format(CultureInfo.InvariantCulture, Resources.ConnectionManager_InformationTooltipFormatRemote,
                         IsActive ? Resources.ConnectionManager_Connected : Resources.ConnectionManager_Disconnected,
                         uri != null ? uri.Host : Resources.ConnectionManager_Unknown,
-                        uri != null ? uri.Port.ToString() : Resources.ConnectionManager_Default,
-                        !string.IsNullOrWhiteSpace(RCommandLineArguments) ? RCommandLineArguments : Resources.ConnectionManager_None);
+                        uri != null ? uri.Port.ToString() : Resources.ConnectionManager_Default, cmdLineInfo);
                 } else { 
                     return string.Format(CultureInfo.InvariantCulture, Resources.ConnectionManager_InformationTooltipFormatLocal,
                         IsActive ? Resources.ConnectionManager_Active : Resources.ConnectionManager_Inactive,
-                        Path,
-                        !string.IsNullOrWhiteSpace(RCommandLineArguments) ? RCommandLineArguments : Resources.ConnectionManager_None);
+                        Path, cmdLineInfo);
                 }
             }
         }

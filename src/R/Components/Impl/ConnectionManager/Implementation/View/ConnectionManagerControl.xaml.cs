@@ -40,17 +40,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
         }
 
         private void ButtonEdit_Click(object sender, RoutedEventArgs e) {
-            if (Model != null) {
-                var currentConnection = Model.EditedConnection;
-                if (Model.IsEditingNew || currentConnection != null) {
-                    Model.CancelEdit();
-                }
-                var connectionToEdit = GetConnection(e);
-                if(connectionToEdit != currentConnection) {
-                    Model.Edit(GetConnection(e));
-                    ScrollEditedIntoView();
-                }
-            }
+            Model?.Edit(GetConnection(e));
+            ScrollEditedIntoView(); ;
         }
 
         private void ButtonDelete_Click(object sender, RoutedEventArgs e) {
