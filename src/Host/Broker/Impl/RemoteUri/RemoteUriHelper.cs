@@ -8,53 +8,41 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Common.Core;
+using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Broker.RemoteUri {
     public class RemoteUriHelper {
         public static async Task HandlerAsync(HttpContext context) {
-            var url = context.Request.Headers["x-rtvs-url"];
+            var url = context.Request.Headers[CustomHttpHeaders.RTVSRequestedURL];
 
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
             request.Method = context.Request.Method;
-            request.UseDefaultCredentials = true;
             SetRequestHeaders(request, context.Request.Headers);
 
             if (context.Request.ContentLength > 0) {
-                Stream reqStream = await request.GetRequestStreamAsync();
-                await context.Request.Body.CopyToAsync(reqStream);
-                await reqStream.FlushAsync();
+                using (Stream reqStream = await request.GetRequestStreamAsync()) {
+                    await context.Request.Body.CopyToAsync(reqStream);
+                    await reqStream.FlushAsync();
+                }
             }
 
             HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
 
             SetResponseHeaders(response, context.Response);
 
-            Stream respStream = response.GetResponseStream();
-            await respStream.CopyToAsync(context.Response.Body);
-            await context.Response.Body.FlushAsync();
-        }
-
-        private static long GetLong(string value) {
-            long ret;
-            if (long.TryParse(value, out ret)) {
-                return ret;
+            using (Stream respStream = response.GetResponseStream()) {
+                await respStream.CopyToAsync(context.Response.Body);
+                await context.Response.Body.FlushAsync();
             }
-            return 0;
-        }
 
-        private static DateTime GetDateTime(string value) {
-            DateTime ret;
-            if (DateTime.TryParse(value, out ret)) {
-                return ret;
-            }
-            return new DateTime();
+            response.Close();
         }
 
         private static void SetRequestHeaders(HttpWebRequest request, IHeaderDictionary requestHeaders) {
             // copy headers to avoid messing with original request headers
             Dictionary<string, string> headers = new Dictionary<string, string>();
             foreach (var pair in requestHeaders) {
-                headers.Add(pair.Key, pair.Value);
+                headers.Add(pair.Key, string.Join(", ", pair.Value));
             }
 
             if (headers.ContainsKey("Accept")) {
@@ -72,7 +60,7 @@ namespace Microsoft.R.Host.Broker.RemoteUri {
             }
 
             if (headers.ContainsKey("Content-Length")) {
-                request.ContentLength = GetLong(headers["Content-Length"]);
+                request.ContentLength = headers["Content-Length"].ToLongOrDefault();
                 headers.Remove("Content-Length");
             }
 
@@ -87,7 +75,7 @@ namespace Microsoft.R.Host.Broker.RemoteUri {
             }
 
             if (headers.ContainsKey("Date")) {
-                request.Date = GetDateTime(headers["Date"]);
+                request.Date = headers["Date"].ToDateTimeOrDefault();
                 headers.Remove("Date");
             }
 
@@ -97,7 +85,7 @@ namespace Microsoft.R.Host.Broker.RemoteUri {
             }
 
             if (headers.ContainsKey("If-Modified-Since")) {
-                request.IfModifiedSince = GetDateTime(headers["If-Modified-Since"]);
+                request.IfModifiedSince = headers["If-Modified-Since"].ToDateTimeOrDefault();
                 headers.Remove("If-Modified-Since");
             }
 

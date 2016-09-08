@@ -2,15 +2,15 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Net.Http;
-using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Net;
-using System.Collections.Generic;
-using Microsoft.Common.Core;
-using System.Threading;
-using System.Collections.Specialized;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Common.Core;
+using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Client.BrokerServices {
     public class RemoteUriWebService : IRemoteUriWebService {
@@ -25,22 +25,24 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             SetRequestHeaders(request, context.Request.Headers, localBaseUrl, remoteBaseUrl);
 
             // Add RTVS headers
-            request.Headers.Add("x-rtvs-url", GetRemoteUrl(context.Request.Url, remoteBaseUrl));
+            request.Headers.Add(CustomHttpHeaders.RTVSRequestedURL, GetRemoteUrl(context.Request.Url, remoteBaseUrl));
 
             if(context.Request.InputStream.CanSeek && context.Request.InputStream.Length > 0) {
-                Stream reqStream = await request.GetRequestStreamAsync();
-                await context.Request.InputStream.CopyToAsync(reqStream);
-                await reqStream.FlushAsync();
+                using (Stream reqStream = await request.GetRequestStreamAsync()) {
+                    await context.Request.InputStream.CopyToAsync(reqStream);
+                    await reqStream.FlushAsync();
+                }
             }
             
             HttpWebResponse response =  (HttpWebResponse)await request.GetResponseAsync();
 
             SetResponseHeaders(response, context.Response, localBaseUrl, remoteBaseUrl);
-            Stream respStream = response.GetResponseStream();
-
-            await respStream.CopyToAsync(context.Response.OutputStream);
-            await context.Response.OutputStream.FlushAsync();
-            context.Response.OutputStream.Close();
+            using (Stream respStream = response.GetResponseStream()) {
+                await respStream.CopyToAsync(context.Response.OutputStream);
+                await context.Response.OutputStream.FlushAsync();
+                context.Response.OutputStream.Close();
+            }
+            response.Close();
         }
 
         private string GetRemoteUrl(Uri url, string remoteBase) {
@@ -49,22 +51,6 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             ub.Host = remote.Host;
             ub.Port = remote.Port;
             return ub.Uri.ToString();
-        }
-
-        private static long GetLong(string value) {
-            long ret;
-            if (long.TryParse(value, out ret)) {
-                return ret;
-            }
-            return 0;
-        }
-
-        private static DateTime GetDateTime(string value) {
-            DateTime ret;
-            if (DateTime.TryParse(value, out ret)) {
-                return ret;
-            }
-            return new DateTime();
         }
 
         private static string ReplaceAndGet(string value, string url1, string url2) {
@@ -93,7 +79,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             }
 
             if (headers.ContainsKey("Content-Length")) {
-                request.ContentLength = GetLong(headers["Content-Length"]);
+                request.ContentLength = headers["Content-Length"].ToLongOrDefault();
                 headers.Remove("Content-Length");
             }
 
@@ -108,7 +94,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             }
 
             if (headers.ContainsKey("Date")) {
-                request.Date = GetDateTime(headers["Date"]);
+                request.Date = headers["Date"].ToDateTimeOrDefault();
                 headers.Remove("Date");
             }
 
@@ -118,7 +104,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             }
 
             if (headers.ContainsKey("If-Modified-Since")) {
-                request.IfModifiedSince = GetDateTime(headers["If-Modified-Since"]);
+                request.IfModifiedSince = headers["If-Modified-Since"].ToDateTimeOrDefault();
                 headers.Remove("If-Modified-Since");
             }
 

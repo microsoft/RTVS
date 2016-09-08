@@ -55,8 +55,8 @@ namespace Microsoft.R.Host.Client.BrokerServices {
         }
 
         public static void Stop(int port) {
-            if (Servers.ContainsKey(port)) {
-                var server = Servers[port];
+            WebServer server;
+            if(Servers.TryGetValue(port, out server)) {
                 Servers.Remove(port);
                 server.Stop();
             }

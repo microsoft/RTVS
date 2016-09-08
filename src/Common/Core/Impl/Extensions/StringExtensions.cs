@@ -174,5 +174,17 @@ namespace Microsoft.Common.Core {
 
         public static string FormatInvariant(this string format, params object[] args) =>
             string.Format(CultureInfo.InvariantCulture, format, args);
+
+        public static long ToLongOrDefault(this string value) {
+            long ret;
+            long.TryParse(value, out ret);
+            return ret;
+        }
+
+        public static DateTime ToDateTimeOrDefault(this string value) {
+            DateTime ret;
+            DateTime.TryParse(value, out ret);
+            return ret;
+        }
     }
 }
