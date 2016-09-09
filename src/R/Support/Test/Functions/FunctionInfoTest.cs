@@ -5,9 +5,11 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Test.Utility;
 using Microsoft.UnitTests.Core.Mef;
+using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
 
@@ -21,6 +23,7 @@ namespace Microsoft.R.Support.Test.Functions {
 
         public FunctionInfoTest(RSupportMefCatalogFixture catalog) {
             _exportProvider = catalog.CreateExportProvider();
+            UIThreadHelper.Instance.Invoke(() => _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate());
             _packageIndex = _exportProvider.GetExportedValue<IPackageIndex>();
             _functionIndex = _exportProvider.GetExportedValue<IFunctionIndex>();
         }

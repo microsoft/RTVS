@@ -11,6 +11,7 @@ using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Test.Fakes.InteractiveWindow;
 using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.Mef;
+using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 using Xunit;
@@ -31,7 +32,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
             _exportProvider = catalog.CreateExportProvider();
             var workflowProvider = _exportProvider.GetExportedValue<TestRInteractiveWorkflowProvider>();
             workflowProvider.BrokerName = nameof(RPackageManagerViewModelTest);
-            _workflow = workflowProvider.GetOrCreate();
+            _workflow = UIThreadHelper.Instance.Invoke(() => workflowProvider.GetOrCreate());
             _testMethod = testMethod.MethodInfo;
             _testFiles = testFiles;
         }

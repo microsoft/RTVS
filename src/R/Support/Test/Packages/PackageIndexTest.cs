@@ -14,6 +14,7 @@ using Microsoft.R.Support.Help.Packages;
 using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Test.Utility;
 using Microsoft.UnitTests.Core.Mef;
+using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
 
@@ -29,6 +30,7 @@ namespace Microsoft.R.Support.Test.Packages {
             _exportProvider = catalogFixture.CreateExportProvider();
             _shell = _exportProvider.GetExportedValue<ICoreShell>();
             _workflowProvider = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
+            UIThreadHelper.Instance.Invoke(() => _workflowProvider.GetOrCreate());
         }
 
         public void Dispose() {
