@@ -77,12 +77,6 @@ namespace Microsoft.R.Host.Broker.Sessions {
             var username = new StringBuilder(NativeMethods.CREDUI_MAX_USERNAME_LENGTH + 1);
             var domain = new StringBuilder(NativeMethods.CREDUI_MAX_PASSWORD_LENGTH + 1);
 
-            uint error = NativeMethods.CredUIParseUserName(User.Name, username, username.Capacity, domain, domain.Capacity);
-            if (error != 0) {
-                _sessionLogger.LogError(Resources.Error_UserNameParse, User.Name, error);
-                throw new ArgumentException(string.Format(Resources.Error_UserNameParse, User.Name, error));
-            }
-
             ProcessStartInfo psi = new ProcessStartInfo(rhostExePath) {
                 UseShellExecute = false,
                 CreateNoWindow = false,
@@ -92,11 +86,21 @@ namespace Microsoft.R.Host.Broker.Sessions {
                 RedirectStandardError = true,
                 LoadUserProfile = true
             };
-
+            
             var useridentity = User as WindowsIdentity;
-            if (useridentity != null && WindowsIdentity.GetCurrent().User != useridentity.User) {
+            if (useridentity != null && WindowsIdentity.GetCurrent().User != useridentity.User && password != null) {
+                uint error = NativeMethods.CredUIParseUserName(User.Name, username, username.Capacity, domain, domain.Capacity);
+                if (error != 0) {
+                    _sessionLogger.LogError(Resources.Error_UserNameParse, User.Name, error);
+                    throw new ArgumentException(string.Format(Resources.Error_UserNameParse, User.Name, error));
+                }
+
+                psi.Domain = domain.ToString();
+                psi.UserName = username.ToString();
+                psi.Password = password;
+
                 _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariableCreationBegin, User.Name, profilePath);
-                // if broker and rhost are run as different users.
+                // if broker and rhost are run as different users recreate user environment variables.
                 psi.EnvironmentVariables["USERNAME"] = username.ToString();
                 _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "USERNAME", psi.EnvironmentVariables["USERNAME"]);
 
@@ -128,12 +132,6 @@ namespace Microsoft.R.Host.Broker.Sessions {
             psi.EnvironmentVariables["PATH"] = Interpreter.Info.BinPath + ";" + Environment.GetEnvironmentVariable("PATH");
 
             psi.WorkingDirectory = Path.GetDirectoryName(rhostExePath);
-
-            if (password != null) {
-                psi.Domain = domain.ToString();
-                psi.UserName = username.ToString();
-                psi.Password = password;
-            }
 
             _process = new Process {
                 StartInfo = psi,
