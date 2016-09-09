@@ -32,7 +32,7 @@ namespace Microsoft.R.ExecutionTracing.Test {
         }
 
         public async Task InitializeAsync() {
-            await _sessionProvider.TrySwitchBroker(nameof(SteppingTest));
+            await _sessionProvider.TrySwitchBrokerAsync(nameof(SteppingTest));
             await _session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name
             }, new RHostClientTestApp(), 50000);

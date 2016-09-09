@@ -167,6 +167,7 @@
     <Compile Include="Plots\Implementation\Commands\PlotDeviceRemoveCurrentCommand.cs" />
     <Compile Include="Plots\RPlotDeviceCommands.cs" />
     <Compile Include="Plots\Implementation\PlotClipboardData.cs" />
+	<Compile Include="InteractiveWorkflow\Implementation\RSessionProviderCallback.cs" />
     <Compile Include="Plots\Implementation\PlotMessageExtensions.cs" />
     <Compile Include="Controller\AsyncCommandController.cs" />
     <Compile Include="Plots\Implementation\RPlotHistoryVisualComponent.cs" />

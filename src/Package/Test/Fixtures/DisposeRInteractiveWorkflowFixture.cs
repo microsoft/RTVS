@@ -18,7 +18,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Fixtures {
         }
         
         public async Task InitializeAsync() {
-            await _workflow.RSessions.TrySwitchBroker(GetType().Name);
+            await _workflow.RSessions.TrySwitchBrokerAsync(GetType().Name);
         }
 
         public Task DisposeAsync() {

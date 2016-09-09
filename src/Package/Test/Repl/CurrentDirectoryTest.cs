@@ -15,6 +15,7 @@ using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Fixtures;
 using Microsoft.R.Support.Settings;
+using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.Repl.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -38,9 +39,9 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
             var plotsProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRPlotManagerProvider>();
             var activeTextViewTracker = new ActiveTextViewTrackerMock(string.Empty, string.Empty);
             var debuggerModeTracker = new TestDebuggerModeTracker();
-            _interactiveWorkflow = new RInteractiveWorkflow(
+            _interactiveWorkflow = UIThreadHelper.Instance.Invoke(() => new RInteractiveWorkflow(
                 _sessionProvider, connectionsProvider, historyProvider, packagesProvider, plotsProvider, activeTextViewTracker,
-                debuggerModeTracker, VsAppShell.Current, RToolsSettings.Current, null, () => { });
+                debuggerModeTracker, VsAppShell.Current, RToolsSettings.Current, null, () => { }));
         }
 
         public void Dispose() {

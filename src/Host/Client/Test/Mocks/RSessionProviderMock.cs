@@ -10,14 +10,13 @@ using Microsoft.R.Host.Client.Test.Mocks;
 
 namespace Microsoft.R.Host.Client.Mocks {
     public sealed class RSessionProviderMock : IRSessionProvider {
-        private Dictionary<Guid, IRSession> _sessions = new Dictionary<Guid, IRSession>();
+        private readonly Dictionary<Guid, IRSession> _sessions = new Dictionary<Guid, IRSession>();
 
         public void Dispose() { }
 
-
-        public bool IsRemote { get; private set; }
-        public Uri BrokerUri { get; private set; }
         public event EventHandler BrokerChanged;
+
+        public IBrokerClient Broker { get; } = new NullBrokerClient();
 
         public IRSession GetOrCreate(Guid guid) {
             IRSession session;
@@ -35,9 +34,9 @@ namespace Microsoft.R.Host.Client.Mocks {
         public Task<IRSessionEvaluation> BeginEvaluationAsync(RHostStartupInfo startupInfo, CancellationToken cancellationToken = new CancellationToken()) 
             => new RSessionMock().BeginEvaluationAsync(cancellationToken);
 
-        public Task<bool> TrySwitchBroker(string name, string path = null) {
-            BrokerUri = path != null ? new Uri(path) : new Uri(@"C:\");
-            IsRemote = !BrokerUri.IsFile;
+        public Task<bool> TestBrokerConnectionAsync(string name, string path) => Task.FromResult(true);
+
+        public Task<bool> TrySwitchBrokerAsync(string name, string path = null) {
             return Task.FromResult(true);
         }
     }

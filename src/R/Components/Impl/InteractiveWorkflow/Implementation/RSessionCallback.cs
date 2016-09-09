@@ -10,7 +10,6 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.Help;
 using Microsoft.R.Components.PackageManager;
-using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Settings.Mirrors;
 using Microsoft.R.Host.Client;
@@ -69,7 +68,6 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         }
 
         public async Task<LocatorResult> Locator(Guid deviceId, CancellationToken ct) {
-            var containerFactory = _coreShell.ExportProvider.GetExportedValue<IRPlotDeviceVisualComponentContainerFactory>();
             var provider = _coreShell.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
             var workflow = provider.GetOrCreate();
 
@@ -79,7 +77,6 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         }
 
         public async Task<PlotDeviceProperties> PlotDeviceCreate(Guid deviceId, CancellationToken ct) {
-            var containerFactory = _coreShell.ExportProvider.GetExportedValue<IRPlotDeviceVisualComponentContainerFactory>();
             var provider = _coreShell.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
             var workflow = provider.GetOrCreate();
 
@@ -89,7 +86,6 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         }
 
         public async Task PlotDeviceDestroy(Guid deviceId, CancellationToken ct) {
-            var containerFactory = _coreShell.ExportProvider.GetExportedValue<IRPlotDeviceVisualComponentContainerFactory>();
             var provider = _coreShell.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
             var workflow = provider.GetOrCreate();
 

@@ -97,16 +97,16 @@ namespace Microsoft.R.Interpreters.Test {
         public void IncompatibleVerson01() {
             var tr = new RegistryMock(SimulateRegistry02());
             var svl = new SupportedRVersionRange(3, 2, 3, 9);
-            var ri = new RInstallation(tr, null);
+            var fs = Substitute.For<IFileSystem>();
+            var ri = new RInstallation(tr, fs);
 
             ri.GetCompatibleEngines(svl).Should().BeEmpty();
 
             string dir = @"C:\Program Files\RRO\R-3.1.3";
-            var fs = Substitute.For<IFileSystem>();
             var fsi = Substitute.For<IFileSystemInfo>();
             fsi.Attributes.Returns(FileAttributes.Directory);
             fsi.FullName.Returns(dir);
-            fs.GetDirectoryInfo(@"C:\Program Files\RRO").EnumerateFileSystemInfos().Returns(new IFileSystemInfo[] { fsi });
+            fs.GetDirectoryInfo(@"C:\Program Files\RRO").EnumerateFileSystemInfos().Returns(new[] { fsi });
             
             ri = new RInstallation(tr, fs);
             var engines = ri.GetCompatibleEngines(svl);

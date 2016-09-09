@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 
 namespace Microsoft.R.Host.Client.Host {
-    internal sealed class NullRHostConnector : IRHostConnector {
+    internal sealed class NullBrokerClient : IBrokerClient {
         private static Task<RHost> Result { get; } = TaskUtilities.CreateCanceled<RHost>(
             new RHostDisconnectedException(Resources.NoConnectionsAvailable));
 
-        public Uri BrokerUri { get; } = new Uri("http://localhost");
+        public Uri Uri { get; } = new Uri("http://localhost");
+        public string Name { get; } = string.Empty;
         public bool IsRemote { get; } = true;
 
         public Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken()) => Result;

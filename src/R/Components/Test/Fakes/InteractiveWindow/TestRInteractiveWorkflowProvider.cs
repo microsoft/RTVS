@@ -15,7 +15,6 @@ using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Workspace;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.UnitTests.Core.Mef;
 
@@ -34,7 +33,6 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
         private readonly IRSettings _settings;
         private readonly IActiveWpfTextViewTracker _activeTextViewTracker;
         private readonly IDebuggerModeTracker _debuggerModeTracker;
-        private readonly IRHostBrokerConnector _brokerConnector;
         private readonly IWorkspaceServices _wss;
 
         private Lazy<IRInteractiveWorkflow> _instanceLazy;
@@ -82,7 +80,6 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
 
         private IRInteractiveWorkflow CreateRInteractiveWorkflow() {
             var sessionProvider = _sessionProvider ?? new RSessionProvider();
-            sessionProvider.TrySwitchBroker(BrokerName).Wait();
             return new RInteractiveWorkflow(sessionProvider
                 , _connectionManagerProvider
                 , _historyProvider

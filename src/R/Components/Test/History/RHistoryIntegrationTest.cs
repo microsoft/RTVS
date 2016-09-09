@@ -38,13 +38,13 @@ namespace Microsoft.R.Components.Test.History {
         }
 
         public void Dispose() {
-            (_exportProvider as IDisposable)?.Dispose();
+            _exportProvider?.Dispose();
         }
 
         [Test]
         [Category.History]
         public async Task InteractiveWindowIntegration01() {
-            var workflow = _workflowProvider.GetOrCreate();
+            var workflow = UIThreadHelper.Instance.Invoke(() => _workflowProvider.GetOrCreate());
             var history = workflow.History;
             var session = workflow.RSession;
             using (await UIThreadHelper.Instance.Invoke(() => workflow.GetOrCreateVisualComponent(_interactiveWindowComponentContainerFactory))) {

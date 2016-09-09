@@ -21,8 +21,7 @@ namespace Microsoft.R.Editor.Test.Completions {
 
         [Test]
         public async Task InstallPackageTest() {
-            var workflow = ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
-            using (var script = new RHostScript(workflow.RSessions)) {
+            using (var script = new RHostScript(Workflow.RSessions)) {
                 try {
                     await script.Session.ExecuteAsync("remove.packages('abc')", REvaluationKind.Mutating);
                 } catch (RException) { }

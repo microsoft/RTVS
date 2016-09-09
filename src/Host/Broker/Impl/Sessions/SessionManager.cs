@@ -17,16 +17,17 @@ namespace Microsoft.R.Host.Broker.Sessions {
     public class SessionManager {
         private readonly InterpreterManager _interpManager;
         private readonly LoggingOptions _loggingOptions;
-        private readonly ILogger _hostOutputLogger, _messageLogger;
+        private readonly ILogger _hostOutputLogger, _messageLogger, _sessionLogger;
 
         private readonly Dictionary<string, List<Session>> _sessions = new Dictionary<string, List<Session>>();
 
         [ImportingConstructor]
-        public SessionManager(InterpreterManager interpManager, IOptions<LoggingOptions> loggingOptions, ILogger<Process> hostOutputLogger, ILogger<MessagePipe> messageLogger) {
+        public SessionManager(InterpreterManager interpManager, IOptions<LoggingOptions> loggingOptions, ILogger<Process> hostOutputLogger, ILogger<MessagePipe> messageLogger, ILogger<Session> sessionLogger) {
             _interpManager = interpManager;
             _loggingOptions = loggingOptions.Value;
             _hostOutputLogger = hostOutputLogger;
             _messageLogger = messageLogger;
+            _sessionLogger = sessionLogger;
         }
 
         public IEnumerable<Session> GetSessions(IIdentity user) {
@@ -43,7 +44,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
             }
         }
 
-        public Session CreateSession(IIdentity user, string id, Interpreter interpreter, SecureString password, string commandLineArguments) {
+        public Session CreateSession(IIdentity user, string id, Interpreter interpreter, SecureString password, string profilePath, string commandLineArguments) {
             Session session;
 
             lock (_sessions) {
@@ -59,12 +60,13 @@ namespace Microsoft.R.Host.Broker.Sessions {
                     userSessions.Remove(oldSession);
                 }
 
-                session = new Session(this, user, id, interpreter, commandLineArguments);
+                session = new Session(this, user, id, interpreter, commandLineArguments, _sessionLogger);
                 userSessions.Add(session);
             }
 
             session.StartHost(
                 password,
+                profilePath,
                 _loggingOptions.LogHostOutput ? _hostOutputLogger : null,
                 _loggingOptions.LogPackets ? _messageLogger : null);
 

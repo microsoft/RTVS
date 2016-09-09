@@ -47,7 +47,7 @@ namespace Microsoft.R.Support.Help {
 
                 if (!Session.IsHostRunning) {
                     int timeout = _coreShell.IsUnitTestEnvironment ? 10000 : 3000;
-                    await Session.StartHostAsync(new RHostStartupInfo {
+                    await Session.EnsureHostStartedAsync(new RHostStartupInfo {
                         Name = "IntelliSense",
                         CranMirrorName = RToolsSettings.Current.CranMirror,
                         CodePage = RToolsSettings.Current.RCodePage

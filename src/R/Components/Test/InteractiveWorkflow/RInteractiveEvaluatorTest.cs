@@ -30,13 +30,13 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
         }
 
         public void Dispose() {
-            (_exportProvider as IDisposable)?.Dispose();
+            _exportProvider?.Dispose();
         }
 
         [Test]
         [Category.Interactive]
         public async Task EvaluatorTest01() {
-            var workflow = _workflowProvider.GetOrCreate();
+            var workflow = UIThreadHelper.Instance.Invoke(() => _workflowProvider.GetOrCreate());
             var session = workflow.RSession;
             using (await UIThreadHelper.Instance.Invoke(() => workflow.GetOrCreateVisualComponent(_interactiveWindowComponentContainerFactory))) {
                 workflow.ActiveWindow.Should().NotBeNull();
@@ -92,7 +92,7 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
         [Test]
         [Category.Interactive]
         public async Task EvaluatorTest02() {
-            var workflow = _workflowProvider.GetOrCreate();
+            var workflow = UIThreadHelper.Instance.Invoke(() => _workflowProvider.GetOrCreate());
             var session = workflow.RSession;
             using (await UIThreadHelper.Instance.Invoke(() => workflow.GetOrCreateVisualComponent(_interactiveWindowComponentContainerFactory))) {
                 workflow.ActiveWindow.Should().NotBeNull();

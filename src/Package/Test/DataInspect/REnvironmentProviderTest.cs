@@ -29,11 +29,11 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         public REnvironmentProviderTest(TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo;
             _sessionProvider = new RSessionProvider();
-            _sessionProvider.TrySwitchBroker(nameof(REnvironmentProviderTest));
             _session = _sessionProvider.GetOrCreate(Guid.NewGuid());
         }
 
         public async Task InitializeAsync() {
+            await _sessionProvider.TrySwitchBrokerAsync(nameof(REnvironmentProviderTest));
             await _session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name
             }, new RHostClientTestApp(), 50000);

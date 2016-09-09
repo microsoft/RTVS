@@ -31,7 +31,7 @@ namespace Microsoft.R.ExecutionTracing.Test {
         }
 
         public async Task InitializeAsync() {
-            await _sessionProvider.TrySwitchBroker(nameof(BreakpointsTest));
+            await _sessionProvider.TrySwitchBrokerAsync(nameof(BreakpointsTest));
             await _session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name
             }, new RHostClientTestApp(), 50000);
