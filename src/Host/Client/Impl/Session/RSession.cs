@@ -221,7 +221,7 @@ namespace Microsoft.R.Host.Client.Session {
             try {
                 var host = await BrokerClient.ConnectAsync(startupInfo.Name, this, startupInfo.RHostCommandLineArguments, timeout);
                 await StartHostAsyncBackground(startupInfo, callback, host);
-            } catch (RHostBinaryMissingException) {
+            } catch (Exception) {
                 _initializationLock.Reset();
                 throw;
             }

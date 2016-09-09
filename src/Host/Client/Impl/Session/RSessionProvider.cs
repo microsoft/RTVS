@@ -82,7 +82,7 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         public async Task<bool> TestBrokerConnectionAsync(string name, string path) {
-            var сonnector = await CreateConnectorAsync(name, path);
+            var сonnector = await CreateBrokerClientAsync(name, path);
             if (сonnector == null) {
                 return false;
             }
@@ -102,8 +102,8 @@ namespace Microsoft.R.Host.Client.Session {
         public async Task<bool> TrySwitchBrokerAsync(string name, string path = null) {
             await TaskUtilities.SwitchToBackgroundThread();
 
-            var newConnector = await CreateConnectorAsync(name, path);
-            if (newConnector == null) {
+            var brokerClient = await CreateBrokerClientAsync(name, path);
+            if (brokerClient == null) {
                 return false;
             }
 
@@ -113,7 +113,7 @@ namespace Microsoft.R.Host.Client.Session {
                 await _connectCde.WaitAsync();
 
                 // First switch connector so that all new sessions are created for the new broker
-                var oldBroker = _brokerProxy.Set(newConnector);
+                var oldBroker = _brokerProxy.Set(brokerClient);
                 var switchingFromNull = oldBroker is NullBrokerClient;
                 if (!switchingFromNull) {
                     _callback.WriteConsole(Resources.RSessionProvider_StartSwitchingWorkspaceFormat.FormatInvariant(_brokerProxy.Name, GetUriString(_brokerProxy)));
@@ -158,7 +158,7 @@ namespace Microsoft.R.Host.Client.Session {
             }
         }
 
-        private async Task<IBrokerClient> CreateConnectorAsync(string name, string path) {
+        private async Task<IBrokerClient> CreateBrokerClientAsync(string name, string path) {
             path = path ?? new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath;
 
             Uri uri;

@@ -222,23 +222,21 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             return false;
         }
 
-        private Task SwitchBrokerToLastConnection() {
+        private async Task SwitchBrokerToLastConnection() {
             var connectionInfo = _settings.LastActiveConnection;
-            if (!string.IsNullOrEmpty(connectionInfo?.Path)) {
-                return TrySwitchBrokerAsync(connectionInfo);
+            if (!string.IsNullOrEmpty(connectionInfo?.Path) && await TrySwitchBrokerAsync(connectionInfo)) {
+                return;
             }
 
             var connection = RecentConnections.FirstOrDefault();
-            if (connectionInfo != null) {
-                return TrySwitchBrokerAsync(connection);
+            if (connectionInfo != null && await TrySwitchBrokerAsync(connection)) {
+                return;
             }
 
             var local = _userConnections.Values.FirstOrDefault(c => !c.IsRemote);
             if (local != null) {
-                return TrySwitchBrokerAsync(local);
+                await TrySwitchBrokerAsync(local);
             }
-
-            return Task.CompletedTask;
         }
 
         private void BrokerChanged(object sender, EventArgs eventArgs) {
