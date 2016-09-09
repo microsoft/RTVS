@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Interpreters;
 
@@ -17,18 +18,18 @@ namespace Microsoft.R.Host.Client.Session {
         private readonly IRSessionProviderCallback _callback;
         private readonly ConcurrentDictionary<Guid, RSession> _sessions = new ConcurrentDictionary<Guid, RSession>();
         private readonly DisposeToken _disposeToken = DisposeToken.Create<RSessionProvider>();
-        private readonly SemaphoreSlim _connectorSwitchLock = new SemaphoreSlim(1, 1);
+        private readonly SemaphoreSlim _brokerSwitchLock = new SemaphoreSlim(1, 1);
+        private readonly AsyncCountdownEvent _connectCde = new AsyncCountdownEvent(0);
 
         private int _sessionCounter;
-        private readonly BrokerClientProxy _broker;
-
-        public IBrokerClient Broker => _broker;
+        private readonly BrokerClientProxy _brokerProxy;
+        public IBrokerClient Broker => _brokerProxy;
 
         public event EventHandler BrokerChanged;
 
         public RSessionProvider(IRSessionProviderCallback callback = null) {
             _callback = callback ?? new NullRSessionProviderCallback();
-            _broker = new BrokerClientProxy();
+            _brokerProxy = new BrokerClientProxy(_connectCde);
         }
 
         public IRSession GetOrCreate(Guid guid) {
@@ -108,13 +109,14 @@ namespace Microsoft.R.Host.Client.Session {
 
             // Connector switching shouldn't be concurrent
             try {
-                await _connectorSwitchLock.WaitAsync();
+                await _brokerSwitchLock.WaitAsync();
+                await _connectCde.WaitAsync();
 
                 // First switch connector so that all new sessions are created for the new broker
-                var oldBroker = _broker.Set(newConnector);
+                var oldBroker = _brokerProxy.Set(newConnector);
                 var switchingFromNull = oldBroker is NullBrokerClient;
-                if (!switchingFromNull) { 
-                    _callback.WriteConsole(Resources.RSessionProvider_StartSwitchingWorkspaceFormat.FormatInvariant(_broker.Name, GetUriString(_broker)));
+                if (!switchingFromNull) {
+                    _callback.WriteConsole(Resources.RSessionProvider_StartSwitchingWorkspaceFormat.FormatInvariant(_brokerProxy.Name, GetUriString(_brokerProxy)));
                 }
 
                 var sessions = _sessions.Values.ToList();
@@ -127,7 +129,7 @@ namespace Microsoft.R.Host.Client.Session {
                         await Task.WhenAll(sessions.Select(s => s.CompleteSwitchingBrokerAsync()));
                     } catch (Exception) {
                         _callback.WriteConsole(Resources.RSessionProvider_SwitchingWorkspaceFailed.FormatInvariant(oldBroker.Name, GetUriString(oldBroker)));
-                        _broker.Set(oldBroker);
+                        _brokerProxy.Set(oldBroker);
                         foreach (var session in sessions) {
                             session.CancelSwitchingBroker();
                         }
@@ -140,7 +142,7 @@ namespace Microsoft.R.Host.Client.Session {
                 }
                 oldBroker.Dispose();
             } finally {
-                _connectorSwitchLock.Release();
+                _brokerSwitchLock.Release();
             }
 
             BrokerChanged?.Invoke(this, new EventArgs());
@@ -151,7 +153,7 @@ namespace Microsoft.R.Host.Client.Session {
             try {
                 await session.StartSwitchingBrokerAsync();
             } catch (RHostDisconnectedException ex) {
-                _callback.WriteConsole(Resources.RSessionProvider_RestartingSessionFailed.FormatInvariant(_broker.Name, _broker.Uri, ex.Message));
+                _callback.WriteConsole(Resources.RSessionProvider_RestartingSessionFailed.FormatInvariant(_brokerProxy.Name, _brokerProxy.Uri, ex.Message));
                 throw;
             }
         }
@@ -171,9 +173,6 @@ namespace Microsoft.R.Host.Client.Session {
             var windowHandle = await _callback.GetApplicationWindowHandleAsync();
             return new RemoteBrokerClient(name, uri, windowHandle);
         }
-
-        public Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken())
-            => _broker.ConnectAsync(name, callbacks, rCommandLineArguments, timeout, cancellationToken);
 
         private class IsolatedRSessionEvaluation : IRSessionEvaluation {
             private readonly IRSession _session;

@@ -72,7 +72,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                         CurrentWindow.TextView.VisualElement.SizeChanged += VisualElement_SizeChanged;
                         CurrentWindow.OutputBuffer.Changed += OutputBuffer_Changed;
                     }
-                    await Session.StartHostAsync(startupInfo, new RSessionCallback(CurrentWindow, Session, _settings, _coreShell, new FileSystem()));
+                    await Session.EnsureHostStartedAsync(startupInfo, new RSessionCallback(CurrentWindow, Session, _settings, _coreShell, new FileSystem()));
                 }
                 return ExecutionResult.Success;
             } catch (RHostBinaryMissingException) {

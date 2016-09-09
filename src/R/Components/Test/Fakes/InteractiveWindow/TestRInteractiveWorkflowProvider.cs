@@ -80,7 +80,6 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
 
         private IRInteractiveWorkflow CreateRInteractiveWorkflow() {
             var sessionProvider = _sessionProvider ?? new RSessionProvider();
-            sessionProvider.TrySwitchBrokerAsync(BrokerName).Wait();
             return new RInteractiveWorkflow(sessionProvider
                 , _connectionManagerProvider
                 , _historyProvider

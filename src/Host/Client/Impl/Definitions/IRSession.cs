@@ -29,6 +29,7 @@ namespace Microsoft.R.Host.Client {
         Task<IRSessionEvaluation> BeginEvaluationAsync(CancellationToken cancellationToken = default(CancellationToken));
         Task CancelAllAsync();
         Task StartHostAsync(RHostStartupInfo startupInfo, IRSessionCallback callback, int timeout = 3000);
+        Task EnsureHostStartedAsync(RHostStartupInfo startupInfo, IRSessionCallback callback, int timeout = 3000);
         Task StopHostAsync();
 
         IDisposable DisableMutatedOnReadConsole();

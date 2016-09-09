@@ -4,13 +4,17 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Disposables;
+using Microsoft.Common.Core.Threading;
 
 namespace Microsoft.R.Host.Client.Host {
     internal sealed class BrokerClientProxy : IBrokerClient {
+        private readonly AsyncCountdownEvent _connectCde;
         private IBrokerClient _broker;
 
-        public BrokerClientProxy() {
+        public BrokerClientProxy(AsyncCountdownEvent connectCde) {
             _broker = new NullBrokerClient();
+            _connectCde = connectCde;
         }
 
         public IBrokerClient Set(IBrokerClient broker) {
@@ -26,7 +30,10 @@ namespace Microsoft.R.Host.Client.Host {
         public bool IsRemote => _broker.IsRemote;
         public Uri Uri => _broker.Uri;
 
-        public Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken())
-            => _broker.ConnectAsync(name, callbacks, rCommandLineArguments, timeout, cancellationToken);
+        public async Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken()) {
+            using (_connectCde.AddOneDisposable()) {
+                return await _broker.ConnectAsync(name, callbacks, rCommandLineArguments, timeout, cancellationToken);
+            }
+        }
     }
 }

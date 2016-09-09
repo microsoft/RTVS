@@ -9,7 +9,7 @@ namespace Microsoft.Common.Core.Disposables {
         private readonly Action _disposeAction;
         private int _count;
 
-        public int Count => this._count;
+        public int Count => _count;
 
         public CountdownDisposable(Action disposeAction = null) {
             this._disposeAction = disposeAction ?? (() => { });

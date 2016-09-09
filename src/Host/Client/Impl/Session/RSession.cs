@@ -245,6 +245,11 @@ namespace Microsoft.R.Host.Client.Session {
 
         public async Task StartSwitchingBrokerAsync() {
             _disposeToken.ThrowIfDisposed();
+            // reset and acquire _initializationLock, but don't interrupt existing initialization
+            while (await _initializationLock.WaitAsync()) {
+                _initializationLock.Reset();
+            }
+
             if (_startupInfo == null) {
                 // Session never started. Don't do anything
                 return;
@@ -258,8 +263,11 @@ namespace Microsoft.R.Host.Client.Session {
 
         public async Task CompleteSwitchingBrokerAsync() {
             _disposeToken.ThrowIfDisposed();
+
             if (_startupInfo == null) {
                 // Session never started. No need to restart it.
+                // Reset _initializationLock so that next awaiter can proceed.
+                _initializationLock.Reset();
                 return;
             }
 
@@ -267,11 +275,6 @@ namespace Microsoft.R.Host.Client.Session {
             var hostToSwitch = Interlocked.Exchange(ref _hostToSwitch, null);
             if (hostToSwitch == null) {
                 throw new InvalidOperationException($"{nameof(CompleteSwitchingBrokerAsync)} should be called only in pair with {nameof(StartSwitchingBrokerAsync)}");
-            }
-
-            // reset and acquire _initializationLock, but don't interrupt existing initialization
-            while (await _initializationLock.WaitAsync()) {
-                _initializationLock.Reset();
             }
 
             var host = _host;
