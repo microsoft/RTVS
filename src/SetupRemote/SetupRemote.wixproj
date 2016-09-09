@@ -23,7 +23,7 @@
     <ObjDirectory Condition="'$(ObjDirectory)' == ''">$(MSBuildThisFileDirectory)..\..\obj\</ObjDirectory>
     <BaseIntermediateOutputPath>$(ObjDirectory)</BaseIntermediateOutputPath>
     <BaseOutputPath>$(BinDirectory)</BaseOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\Setup\</IntermediateOutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\SetupRemote\</IntermediateOutputPath>
     <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
@@ -51,14 +51,6 @@
     <Content Include="RFile.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Host\Broker\Impl\Microsoft.R.Host.Broker.csproj">
-      <Name>Microsoft.R.Host.Broker</Name>
-      <Project>{2cc10e50-392e-4b5d-98e4-d38f0061d363}</Project>
-      <Private>True</Private>
-      <DoNotHarvest>True</DoNotHarvest>
-      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
-      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
-    </ProjectReference>
     <ProjectReference Include="..\SetupRHost\SetupRHost.wixproj">
       <Name>SetupRHost</Name>
       <Project>{a5265b92-029a-423e-9006-a7c1f52476ed}</Project>
