@@ -303,7 +303,7 @@ namespace Microsoft.R.Host.Client.Session {
 
         public void CancelSwitchingBroker() {
             _disposeToken.ThrowIfDisposed();
-
+            _initializationLock.Reset();
             var hostToSwitch = Interlocked.Exchange(ref _hostToSwitch, null);
             hostToSwitch?.Dispose();
         }

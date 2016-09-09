@@ -107,6 +107,11 @@ namespace Microsoft.R.Host.Client.Session {
                 return false;
             }
 
+            if (brokerClient.Name.EqualsOrdinal(_brokerProxy.Name) && brokerClient.Uri.AbsoluteUri.PathEquals(_brokerProxy.Uri.AbsoluteUri)) {
+                // Switching to the broker that is currently running is always successful
+                return true;
+            }
+
             // Connector switching shouldn't be concurrent
             try {
                 await _brokerSwitchLock.WaitAsync();
