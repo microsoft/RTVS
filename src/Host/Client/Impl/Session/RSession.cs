@@ -218,13 +218,20 @@ namespace Microsoft.R.Host.Client.Session {
 
         private async Task StartHostAsyncBackground(RHostStartupInfo startupInfo, IRSessionCallback callback, int timeout) {
             await TaskUtilities.SwitchToBackgroundThread();
+            RHost host;
             try {
-                var host = await BrokerClient.ConnectAsync(startupInfo.Name, this, startupInfo.RHostCommandLineArguments, timeout);
-                await StartHostAsyncBackground(startupInfo, callback, host);
-            } catch (Exception) {
+                host = await BrokerClient.ConnectAsync(startupInfo.Name, this, startupInfo.RHostCommandLineArguments, timeout);
+            } catch (OperationCanceledException ex) {
+                _initializationTcs.TrySetCanceled(ex);
+                _initializationLock.Reset();
+                throw;
+            } catch (Exception ex) {
+                _initializationTcs.TrySetException(ex);
                 _initializationLock.Reset();
                 throw;
             }
+
+            await StartHostAsyncBackground(startupInfo, callback, host);
         }
 
         private async Task StartHostAsyncBackground(RHostStartupInfo startupInfo, IRSessionCallback callback, RHost host) {
