@@ -17,6 +17,7 @@ using Microsoft.R.Components.Test.Fakes.InteractiveWindow;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.Mef;
+using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 using Xunit;
@@ -272,9 +273,9 @@ namespace Microsoft.R.Components.Test.PackageManager {
         }
 
         private async Task<IRInteractiveWorkflow> CreateWorkflowAsync() {
-            var workflow = _workflowProvider.GetOrCreate();
+            var workflow = UIThreadHelper.Instance.Invoke(() => _workflowProvider.GetOrCreate());
             var settings = _exportProvider.GetExportedValue<IRSettings>();
-            await workflow.RSessions.TrySwitchBroker(nameof(PackageManagerIntegrationTest));
+            await workflow.RSessions.TrySwitchBrokerAsync(nameof(PackageManagerIntegrationTest));
             await workflow.RSession.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name,
                 CranMirrorName = settings.CranMirror,

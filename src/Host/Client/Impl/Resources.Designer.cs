@@ -81,5 +81,59 @@ namespace Microsoft.R.Host.Client {
                 return ResourceManager.GetString("RHostDisconnected", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Couldn&apos;t connect session to the &apos;{0}&apos;: {1} because of the following error: {2}.
+        /// </summary>
+        internal static string RSessionProvider_RestartingSessionFailed {
+            get {
+                return ResourceManager.GetString("RSessionProvider_RestartingSessionFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Restarting sessions ({0})....
+        /// </summary>
+        internal static string RSessionProvider_RestartingSessionsFormat {
+            get {
+                return ResourceManager.GetString("RSessionProvider_RestartingSessionsFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connecting sessions ({0}) to the new R Workspace....
+        /// </summary>
+        internal static string RSessionProvider_StartConnectingToWorkspaceFormat {
+            get {
+                return ResourceManager.GetString("RSessionProvider_StartConnectingToWorkspaceFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start switching to the &apos;{0}&apos;: {1}.
+        /// </summary>
+        internal static string RSessionProvider_StartSwitchingWorkspaceFormat {
+            get {
+                return ResourceManager.GetString("RSessionProvider_StartSwitchingWorkspaceFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Switching R Workspace completed.
+        /// </summary>
+        internal static string RSessionProvider_SwitchingRWorkspaceCompleted {
+            get {
+                return ResourceManager.GetString("RSessionProvider_SwitchingRWorkspaceCompleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connecting to the new R Workspace failed, restoring connection to the &apos;{0}&apos;: {1}.
+        /// </summary>
+        internal static string RSessionProvider_SwitchingWorkspaceFailed {
+            get {
+                return ResourceManager.GetString("RSessionProvider_SwitchingWorkspaceFailed", resourceCulture);
+            }
+        }
     }
 }

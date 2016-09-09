@@ -41,7 +41,7 @@ namespace Microsoft.R.DataInspection.Test {
         }
 
         public async Task InitializeAsync() {
-            await _sessionProvider.TrySwitchBroker(nameof(ValuesTest));
+            await _sessionProvider.TrySwitchBrokerAsync(nameof(ValuesTest));
             await _session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name
             }, new RHostClientTestApp(), 50000);

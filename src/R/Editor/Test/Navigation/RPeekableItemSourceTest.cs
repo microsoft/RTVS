@@ -17,6 +17,7 @@ using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.R.Host.Client.Test.Fixtures;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.Mef;
+using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -82,7 +83,7 @@ x <- function(a) {
 
         [Test]
         public void PeekInternalFunction01() {
-            var workflow = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
+            var workflow = UIThreadHelper.Instance.Invoke(() => _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate());
             using (new RHostScript(workflow.RSessions)) {
                 string content = @"lm()";
                 RunInternalItemPeekTest(content, 0, 1, "lm");

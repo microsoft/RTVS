@@ -69,7 +69,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
         private IRInteractiveWorkflow CreateRInteractiveWorkflow() {
             var settings = RToolsSettings.Current;
-            var sessionProvider = new RSessionProvider();
+            var sessionProvider = new RSessionProvider(new RSessionProviderCallback( _shell, _instanceLazy));
             var workflow = new RInteractiveWorkflow(sessionProvider, _connectionsProvider, _historyProvider, _packagesProvider, 
                                                     _plotsProvider, _activeTextViewTracker, _debuggerModeTracker, 
                                                     _shell, settings, _wss, () => DisposeInstance(sessionProvider));

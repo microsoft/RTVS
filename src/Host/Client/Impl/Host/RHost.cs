@@ -30,16 +30,17 @@ namespace Microsoft.R.Host.Client {
         
         private readonly IMessageTransport _transport;
         private readonly CancellationTokenSource _cts;
-        private readonly IRCallbacks _callbacks;
         private readonly LinesLog _log;
         private readonly FileLogWriter _fileLogWriter;
+        private readonly ConcurrentDictionary<ulong, Request> _requests = new ConcurrentDictionary<ulong, Request>();
+
         private volatile Task _runTask;
         private volatile Task<REvaluationResult> _cancelEvaluationAfterRunTask;
         private volatile Task<ulong> _cancelCreateBlobAfterRunTask;
         private volatile Task<byte[]> _cancelGetBlobAfterRunTask;
         private int _rLoopDepth;
         private long _lastMessageId;
-        private readonly ConcurrentDictionary<ulong, Request> _requests = new ConcurrentDictionary<ulong, Request>();
+        private IRCallbacks _callbacks;
 
         private TaskCompletionSource<object> _cancelAllTcs;
         private CancellationTokenSource _cancelAllCts = new CancellationTokenSource();
@@ -541,7 +542,11 @@ namespace Microsoft.R.Host.Client {
                 _requests.Clear();
             }
         }
-        
+
+        public void DetachCallback() {
+            Interlocked.Exchange(ref _callbacks, new NullRCallbacks());
+        }
+
         internal Task GetRHostRunTask() => _runTask;
     }
 }

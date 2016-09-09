@@ -565,7 +565,7 @@ dev.off()
 
         private async Task ExecuteInSession(string[] inputs, IRSessionCallback app) {
             using (var sessionProvider = new RSessionProvider()) {
-                await sessionProvider.TrySwitchBroker(nameof(IdeGraphicsDeviceTest));
+                await sessionProvider.TrySwitchBrokerAsync(nameof(IdeGraphicsDeviceTest));
                 var session = sessionProvider.GetOrCreate(Guid.NewGuid());
                 await session.StartHostAsync(new RHostStartupInfo {
                     Name = _testMethod.Name
@@ -593,7 +593,7 @@ rtvs:::export_to_image(device_id, rtvs:::graphics.ide.getactiveplotid(device_id)
         private async Task<IEnumerable<string>> ExportToImageAsync(string[] inputs, string[] format, string[] paths, int widthInPixels, int heightInPixels, int resolution) {
             var app = new RHostClientTestApp { PlotHandler = OnPlot, PlotDeviceCreateHandler = OnDeviceCreate, PlotDeviceDestroyHandler = OnDeviceDestroy };
             using (var sessionProvider = new RSessionProvider()) {
-                await sessionProvider.TrySwitchBroker(nameof(IdeGraphicsDeviceTest));
+                await sessionProvider.TrySwitchBrokerAsync(nameof(IdeGraphicsDeviceTest));
                 var session = sessionProvider.GetOrCreate(Guid.NewGuid());
                 await session.StartHostAsync(new RHostStartupInfo {
                     Name = _testMethod.Name
@@ -622,7 +622,7 @@ rtvs:::export_to_image(device_id, rtvs:::graphics.ide.getactiveplotid(device_id)
         private async Task<IEnumerable<string>> ExportToPdfAsync(string[] inputs, string filePath, int width, int height) {
             var app = new RHostClientTestApp { PlotHandler = OnPlot, PlotDeviceCreateHandler = OnDeviceCreate, PlotDeviceDestroyHandler = OnDeviceDestroy };
             using (var sessionProvider = new RSessionProvider()) {
-                await sessionProvider.TrySwitchBroker(nameof(IdeGraphicsDeviceTest));
+                await sessionProvider.TrySwitchBrokerAsync(nameof(IdeGraphicsDeviceTest));
                 var session = sessionProvider.GetOrCreate(Guid.NewGuid());
                 await session.StartHostAsync(new RHostStartupInfo {
                     Name = _testMethod.Name

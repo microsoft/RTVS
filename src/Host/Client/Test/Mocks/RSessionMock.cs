@@ -87,6 +87,12 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
             return Task.CompletedTask;
         }
 
+        public Task EnsureHostStartedAsync(RHostStartupInfo startupInfo, IRSessionCallback callback, int timeout = 3000) {
+            IsHostRunning = true;
+            Connected?.Invoke(this, new RConnectedEventArgs(string.Empty));
+            return Task.CompletedTask;
+        }
+
         public Task RestartHostAsync() {
             IsHostRunning = false;
             Disconnected?.Invoke(this, EventArgs.Empty);

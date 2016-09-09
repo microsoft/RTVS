@@ -17,7 +17,7 @@ using Microsoft.R.Host.Client.BrokerServices;
 using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Client.Host {
-    internal abstract class RHostConnector : IRHostConnector {
+    internal abstract class BrokerClient : IBrokerClient {
         private static readonly TimeSpan HeartbeatTimeout =
 #if DEBUG
             // In debug mode, increase the timeout significantly, so that when the host is paused in debugger,
@@ -27,22 +27,26 @@ namespace Microsoft.R.Host.Client.Host {
             TimeSpan.FromSeconds(5);
 #endif
 
-        protected DisposableBag DisposableBag { get; } = DisposableBag.Create<RHostConnector>();
+        protected DisposableBag DisposableBag { get; } = DisposableBag.Create<BrokerClient>();
 
         private readonly LinesLog _log;
-        private string _interpreterId;
+        private readonly string _interpreterId;
 
         protected HttpClientHandler HttpClientHandler { get; private set; }
 
         protected HttpClient HttpClient { get; private set; }
 
-        public abstract Uri BrokerUri { get; }
+        public string Name { get; }
 
-        public bool IsRemote => !BrokerUri.IsFile;
+        public Uri Uri { get; }
 
-        protected RHostConnector(string interpreterId) {
+        public bool IsRemote => !Uri.IsFile;
+
+        protected BrokerClient(string name, Uri brokerUri, string interpreterId) {
+            Name = name;
+            Uri = brokerUri;
             _interpreterId = interpreterId;
-            _log = new LinesLog(FileLogWriter.InTempFolder("Microsoft.R.Host.BrokerConnector"));
+            _log = new LinesLog(FileLogWriter.InTempFolder(nameof(BrokerClient)));
         }
 
         protected void CreateHttpClient(Uri baseAddress, ICredentials credentials) {
@@ -83,8 +87,6 @@ namespace Microsoft.R.Host.Client.Host {
         /// <param name="isValid">Whether the credentials were accepted or rejected by the server.</param>
         protected abstract void OnCredentialsValidated(bool isValid);
 
-        protected abstract Task ConnectToBrokerAsync();
-
         public async Task PingAsync() {
             try {
                 (await HttpClient.PostAsync("/ping", new StringContent(""))).EnsureSuccessStatusCode();
@@ -104,12 +106,16 @@ namespace Microsoft.R.Host.Client.Host {
             }
         }
 
-        public async Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken()) {
+        public virtual async Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken()) {
             DisposableBag.ThrowIfDisposed();
             await TaskUtilities.SwitchToBackgroundThread();
 
-            await ConnectToBrokerAsync();
+            await CreateBrokerSessionAsync(name, rCommandLineArguments);
+            var webSocket = await ConnectToBrokerAsync(name, cancellationToken);
+            return CreateRHost(name, callbacks, webSocket);
+        }
 
+        private async Task CreateBrokerSessionAsync(string name, string rCommandLineArguments) {
             rCommandLineArguments = rCommandLineArguments ?? string.Empty;
             var sessions = new SessionsWebService(HttpClient);
 
@@ -135,10 +141,12 @@ namespace Microsoft.R.Host.Client.Host {
                     }
                 }
             }
+        }
 
+        private async Task<WebSocket> ConnectToBrokerAsync(string name, CancellationToken cancellationToken) {
             var wsClient = new WebSocketClient {
                 KeepAliveInterval = HeartbeatTimeout,
-                SubProtocols = { "Microsoft.R.Host" },
+                SubProtocols = {"Microsoft.R.Host"},
                 ConfigureRequest = request => {
                     UpdateCredentials();
                     request.AuthenticationLevel = AuthenticationLevel.MutualAuthRequested;
@@ -166,7 +174,8 @@ namespace Microsoft.R.Host.Client.Host {
                 } catch (UnauthorizedAccessException) {
                     isValidCredentials = false;
                     continue;
-                } catch (Exception ex) when (ex is InvalidOperationException || ex is WebException || ex is ProtocolViolationException) {
+                } catch (Exception ex)
+                    when (ex is InvalidOperationException || ex is WebException || ex is ProtocolViolationException) {
                     throw new RHostDisconnectedException("HTTP error while connecting to session pipe: " + ex.Message, ex);
                 } finally {
                     if (isValidCredentials != null) {
@@ -174,13 +183,14 @@ namespace Microsoft.R.Host.Client.Host {
                     }
                 }
             }
+            return socket;
+        }
 
+        private RHost CreateRHost(string name, IRCallbacks callbacks, WebSocket socket) {
             var transport = new WebSocketMessageTransport(socket);
 
             var cts = new CancellationTokenSource();
-            cts.Token.Register(() => {
-                _log.RHostProcessExited();
-            });
+            cts.Token.Register(() => { _log.RHostProcessExited(); });
 
             return new RHost(name, callbacks, transport, cts);
         }

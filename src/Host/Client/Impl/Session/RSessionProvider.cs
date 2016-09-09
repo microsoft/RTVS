@@ -9,20 +9,32 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Interpreters;
 
 namespace Microsoft.R.Host.Client.Session {
-    public class RSessionProvider : IRSessionProvider, IRHostConnector {
+    public class RSessionProvider : IRSessionProvider {
+        private readonly IRSessionProviderCallback _callback;
         private readonly ConcurrentDictionary<Guid, RSession> _sessions = new ConcurrentDictionary<Guid, RSession>();
         private readonly DisposeToken _disposeToken = DisposeToken.Create<RSessionProvider>();
-        private int _sessionCounter;
+        private readonly SemaphoreSlim _brokerSwitchLock = new SemaphoreSlim(1, 1);
+        private readonly AsyncCountdownEvent _connectCde = new AsyncCountdownEvent(0);
 
-        private IRHostBrokerConnector BrokerConnector { get; } = new RHostBrokerConnector();
+        private int _sessionCounter;
+        private readonly BrokerClientProxy _brokerProxy;
+        public IBrokerClient Broker => _brokerProxy;
+
+        public event EventHandler BrokerChanged;
+
+        public RSessionProvider(IRSessionProviderCallback callback = null) {
+            _callback = callback ?? new NullRSessionProviderCallback();
+            _brokerProxy = new BrokerClientProxy(_connectCde);
+        }
 
         public IRSession GetOrCreate(Guid guid) {
             _disposeToken.ThrowIfDisposed();
-            return _sessions.GetOrAdd(guid, id => new RSession(Interlocked.Increment(ref _sessionCounter), this, () => DisposeSession(guid)));
+            return _sessions.GetOrAdd(guid, id => new RSession(Interlocked.Increment(ref _sessionCounter), Broker, () => DisposeSession(guid)));
         }
 
         public IEnumerable<IRSession> GetSessions() {
@@ -61,12 +73,105 @@ namespace Microsoft.R.Host.Client.Session {
                 session.Dispose();
             }
 
-            BrokerConnector.Dispose();
+            Broker.Dispose();
         }
 
         private void DisposeSession(Guid guid) {
             RSession session;
             _sessions.TryRemove(guid, out session);
+        }
+
+        public async Task<bool> TestBrokerConnectionAsync(string name, string path) {
+            var сonnector = await CreateBrokerClientAsync(name, path);
+            if (сonnector == null) {
+                return false;
+            }
+
+            var callbacks = new NullRCallbacks();
+            try {
+                var rhost = await сonnector.ConnectAsync(nameof(TestBrokerConnectionAsync), callbacks);
+                var rhostRunTask = rhost.Run();
+                callbacks.SetReadConsoleInput("q()\n");
+                await rhostRunTask;
+                return true;
+            } catch (RHostDisconnectedException) {
+                return false;
+            }
+        }
+
+        public async Task<bool> TrySwitchBrokerAsync(string name, string path = null) {
+            await TaskUtilities.SwitchToBackgroundThread();
+
+            var brokerClient = await CreateBrokerClientAsync(name, path);
+            if (brokerClient == null) {
+                return false;
+            }
+
+            // Connector switching shouldn't be concurrent
+            try {
+                await _brokerSwitchLock.WaitAsync();
+                await _connectCde.WaitAsync();
+
+                // First switch connector so that all new sessions are created for the new broker
+                var oldBroker = _brokerProxy.Set(brokerClient);
+                var switchingFromNull = oldBroker is NullBrokerClient;
+                if (!switchingFromNull) {
+                    _callback.WriteConsole(Resources.RSessionProvider_StartSwitchingWorkspaceFormat.FormatInvariant(_brokerProxy.Name, GetUriString(_brokerProxy)));
+                }
+
+                var sessions = _sessions.Values.ToList();
+
+                if (sessions.Any()) {
+                    try {
+                        _callback.WriteConsole(Resources.RSessionProvider_StartConnectingToWorkspaceFormat.FormatInvariant(sessions.Count));
+                        await Task.WhenAll(sessions.Select(StartSwitchingBrokerAsync));
+                        _callback.WriteConsole(Resources.RSessionProvider_RestartingSessionsFormat.FormatInvariant(sessions.Count));
+                        await Task.WhenAll(sessions.Select(s => s.CompleteSwitchingBrokerAsync()));
+                    } catch (Exception) {
+                        _callback.WriteConsole(Resources.RSessionProvider_SwitchingWorkspaceFailed.FormatInvariant(oldBroker.Name, GetUriString(oldBroker)));
+                        _brokerProxy.Set(oldBroker);
+                        foreach (var session in sessions) {
+                            session.CancelSwitchingBroker();
+                        }
+                        return false;
+                    }
+                }
+
+                if (!switchingFromNull) {
+                    _callback.WriteConsole(Resources.RSessionProvider_SwitchingRWorkspaceCompleted);
+                }
+                oldBroker.Dispose();
+            } finally {
+                _brokerSwitchLock.Release();
+            }
+
+            BrokerChanged?.Invoke(this, new EventArgs());
+            return true;
+        }
+
+        private async Task StartSwitchingBrokerAsync(RSession session) {
+            try {
+                await session.StartSwitchingBrokerAsync();
+            } catch (RHostDisconnectedException ex) {
+                _callback.WriteConsole(Resources.RSessionProvider_RestartingSessionFailed.FormatInvariant(_brokerProxy.Name, _brokerProxy.Uri, ex.Message));
+                throw;
+            }
+        }
+
+        private async Task<IBrokerClient> CreateBrokerClientAsync(string name, string path) {
+            path = path ?? new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath;
+
+            Uri uri;
+            if (!Uri.TryCreate(path, UriKind.Absolute, out uri)) {
+                return null;
+            }
+
+            if (uri.IsFile) {
+                return new LocalBrokerClient(name, uri.LocalPath) as IBrokerClient;
+            }
+
+            var windowHandle = await _callback.GetApplicationWindowHandleAsync();
+            return new RemoteBrokerClient(name, uri, windowHandle);
         }
 
         private class IsolatedRSessionEvaluation : IRSessionEvaluation {
@@ -91,31 +196,7 @@ namespace Microsoft.R.Host.Client.Session {
             }
         }
 
-        public bool IsRemote => BrokerConnector.IsRemote;
-        public Uri BrokerUri => BrokerConnector.BrokerUri;
-
-        public Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken())
-            => BrokerConnector.ConnectAsync(name, callbacks, rCommandLineArguments, timeout, cancellationToken);
-
-        public event EventHandler BrokerChanged {
-            add { BrokerConnector.BrokerChanged += value; }
-            remove { BrokerConnector.BrokerChanged -= value; }
-        }
-
-        public Task<bool> TrySwitchBroker(string name, string path = null) {
-            path = path ?? new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath;
-            Uri uri;
-            if (!Uri.TryCreate(path, UriKind.Absolute, out uri)) {
-                return Task.FromResult(false);
-            }
-
-            if (uri.IsFile) {
-                BrokerConnector.SwitchToLocalBroker(name, uri.LocalPath);
-            } else {
-                BrokerConnector.SwitchToRemoteBroker(uri);
-            }
-
-            return Task.FromResult(true);
-        }
+        private static string GetUriString(IBrokerClient connector)
+            => connector.Uri.IsFile ? connector.Uri.LocalPath : connector.Uri.AbsoluteUri;
     }
 }
