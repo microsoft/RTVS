@@ -1135,5 +1135,16 @@ namespace Microsoft.R.Components {
                 return ResourceManager.GetString("Update", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Terminating R will immediately abort calculations and all workspace objects will be discarded. This action cannot be undone.
+        ///
+        ///Are you sure you want to terminate R session?.
+        /// </summary>
+        public static string Warning_TerminateR {
+            get {
+                return ResourceManager.GetString("Warning_TerminateR", resourceCulture);
+            }
+        }
     }
 }

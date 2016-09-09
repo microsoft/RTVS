@@ -89,6 +89,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new StopShinyAppCommand(interactiveWorkflow),
 
                 CreateRCmdSetCommand(RPackageCommandId.icmdInterruptR, new InterruptRCommand(interactiveWorkflow, debuggerModeTracker)),
+                CreateRCmdSetCommand(RPackageCommandId.icmdTerminateR, new TerminateRCommand(interactiveWorkflow, appShell)),
+
                 new ResetReplCommand(interactiveWorkflow),
                 
                 // Directory management
