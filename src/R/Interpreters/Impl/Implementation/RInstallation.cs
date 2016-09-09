@@ -20,7 +20,6 @@ namespace Microsoft.R.Interpreters {
     public sealed class RInstallation {
         private const string _rCoreRegKey = @"SOFTWARE\R-core\R";
         private const string _rServer = "R_SERVER";
-        private const string _installPathValueName = "InstallPath";
         private static readonly string[] rFolders = new string[] { "MRO", "RRO", "R" };
 
         private readonly IRegistry _registry;
@@ -42,7 +41,7 @@ namespace Microsoft.R.Interpreters {
         public IEnumerable<IRInterpreterInfo> GetCompatibleEngines(ISupportedRVersionRange svl = null) {
             var list = new List<IRInterpreterInfo>();
 
-            var mrc = GetMicrosoftRClientInfo();
+            var mrc = MicrosoftRClientInstallation.GetMicrosoftRClientInfo(_registry, _fileSystem);
             if (mrc != null) {
                 list.Add(mrc);
             }
@@ -83,7 +82,7 @@ namespace Microsoft.R.Interpreters {
                     using (var rKey = hklm.OpenSubKey(@"SOFTWARE\R-core\R")) {
                         foreach (var name in rKey.GetSubKeyNames()) {
                             using (var subKey = rKey.OpenSubKey(name)) {
-                                var path = subKey.GetValue(_installPathValueName) as string;
+                                var path = subKey.GetValue("InstallPath") as string;
                                 if (!string.IsNullOrEmpty(path)) {
                                     engines.Add(new RInterpreterInfo(Invariant($"R {name}"), path, _fileSystem));
                                 }
@@ -93,47 +92,6 @@ namespace Microsoft.R.Interpreters {
                 } catch (Exception) { }
             }
             return engines;
-        }
-
-        public IRInterpreterInfo GetMicrosoftRClientInfo() {
-            // First check that MRS is present on the machine.
-            bool mrsInstalled = false;
-            try {
-                using (var hklm = _registry.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64)) {
-                    using (var key = hklm.OpenSubKey(@"SOFTWARE\Microsoft\Microsoft SQL Server\130\sql_shared_mr")) {
-                        var path = (string)key?.GetValue("Path");
-                        if (!string.IsNullOrEmpty(path) && path.Contains(_rServer)) {
-                            mrsInstalled = true;
-                        }
-                    }
-                }
-            } catch (Exception) { }
-
-            // If yes, check 32-bit registry for R engine installed by the R Server.
-            // TODO: remove this when MRS starts writing 64-bit keys.
-            if (mrsInstalled) {
-                using (IRegistryKey hklm = _registry.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32)) {
-                    try {
-                        using (var key = hklm.OpenSubKey(@"SOFTWARE\R-core\R64")) {
-                            foreach (var keyName in key.GetSubKeyNames()) {
-                                using (var rsKey = key.OpenSubKey(keyName)) {
-                                    try {
-                                        var path = (string)rsKey?.GetValue(_installPathValueName);
-                                        if (!string.IsNullOrEmpty(path) && path.Contains(_rServer)) {
-                                            var info = new RInterpreterInfo(string.Empty, path);
-                                            if (info.VerifyInstallation(new SupportedRVersionRange(), _fileSystem)) {
-                                                return new RInterpreterInfo(Invariant($"Microsoft R Client ({info.Version.Major}.{info.Version.Minor}.{info.Version.Build})"), info.InstallPath);
-                                            }
-                                        }
-                                    } catch (Exception) { }
-                                }
-                            }
-                        }
-                    } catch (Exception) { }
-                }
-            }
-
-            return null;
         }
 
         private static Version GetRVersionFromFolderName(string folderName) {

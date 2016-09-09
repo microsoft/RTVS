@@ -13,7 +13,6 @@ using Microsoft.R.Editor.Settings;
 using Microsoft.R.Interpreters;
 using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Settings;
-using Microsoft.VisualStudio.R.Package.RClient;
 using Microsoft.VisualStudio.R.Package.Telemetry.Data;
 using Microsoft.VisualStudio.R.Package.Telemetry.Definitions;
 using Microsoft.VisualStudio.R.Package.Telemetry.Windows;
@@ -86,7 +85,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
                 TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RInstallPath, e.InstallPath);
             }
 
-            string rClientPath = MicrosoftRClient.GetRClientPath();
+            string rClientPath = MicrosoftRClientInstallation.GetRClientPath();
             if (rClientPath != null) {
                 TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RClientFound);
             }

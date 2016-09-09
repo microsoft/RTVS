@@ -12,6 +12,7 @@ using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Core.Test.Registry;
+using Microsoft.R.Interpreters;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.RClient;
 using Microsoft.VisualStudio.R.Package.Telemetry;
@@ -80,9 +81,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.RClient {
             var rClientInstallPath = @"C:\Program Files\Microsoft\R Client\";
             var rClientRPath = @"C:\Program Files\Microsoft\R Client\R_SERVER\";
             var tr = new RegistryMock(SimulateRegistryMsRClient(rClientInstallPath, rClientRPath));
-            MicrosoftRClient.Registry = tr;
 
-            MicrosoftRClient.GetRClientPath().Should().Be(rClientRPath);
+            MicrosoftRClientInstallation.GetRClientPath(tr).Should().Be(rClientRPath);
 
             var shell = Substitute.For<ICoreShell>();
             shell.ShowMessage(Arg.Any<string>(), Arg.Any<MessageButtons>()).Returns(MessageButtons.Yes);

@@ -62,7 +62,7 @@ namespace Microsoft.R.Interpreters {
                     fs.FileExists(rGuiPath)) {
 
                     var fileVersion = GetRVersionFromBinary(fs, rDllPath);
-                    _isValid = fileVersion == Version && svr.IsCompatibleVersion(Version);
+                    _isValid = IsSameVersion(fileVersion, Version) && svr.IsCompatibleVersion(Version);
                     if (!_isValid.Value) {
                         coreShell?.ShowMessage(
                             string.Format(CultureInfo.InvariantCulture, Resources.Error_UnsupportedRVersion,
@@ -78,6 +78,11 @@ namespace Microsoft.R.Interpreters {
             }
 
             return _isValid.Value;
+        }
+
+        private static bool IsSameVersion(Version v1, Version v2) {
+            // Compare 3.2.2.* is compatible with 3.2.2.803
+            return v1.Major == v2.Major && v1.Minor == v2.Minor && v1.Build == v2.Build;
         }
 
         private Version GetRVersionFromBinary(IFileSystem fs, string basePath) {
