@@ -101,7 +101,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             return RunTest(factorTestData);
         }
 
-        [Test]
+        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/2271")]
         [Category.Variable.Explorer]
         public Task FormulaTest() {
             return RunTest(VariableRHostScript.RVersion < new Version(3, 3) ? formulaTestData32 : formulaTestData33);

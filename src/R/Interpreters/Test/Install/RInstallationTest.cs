@@ -94,7 +94,7 @@ namespace Microsoft.R.Interpreters.Test {
         }
 
         [Test]
-        public void Simulate02() {
+        public void IncompatibleVerson01() {
             var tr = new RegistryMock(SimulateRegistry02());
             var svl = new SupportedRVersionRange(3, 2, 3, 9);
             var fs = Substitute.For<IFileSystem>();
@@ -114,7 +114,7 @@ namespace Microsoft.R.Interpreters.Test {
         }
 
         [Test]
-        public void Simulate03() {
+        public void IncompatibleVerson02() {
             var tr = new RegistryMock(SimulateRegistry02());
             var svl = new SupportedRVersionRange(3, 1, 3, 9);
 
@@ -149,7 +149,28 @@ namespace Microsoft.R.Interpreters.Test {
 
 
         [Test]
-        public void Simulate04() {
+        public void IncompatibleVersonInPF() {
+            var tr = new RegistryMock(SimulateRegistry02());
+            var svl = new SupportedRVersionRange(3, 1, 3, 9);
+
+            var root = @"C:\Program Files\R";
+            string dir = Path.Combine(root, "R-3.1.3");
+            var fs = Substitute.For<IFileSystem>();
+            fs.DirectoryExists(root).Returns(true);
+            fs.DirectoryExists(dir).Returns(true);
+
+            var fsi = Substitute.For<IFileSystemInfo>();
+            fsi.Attributes.Returns(FileAttributes.Directory);
+            fsi.FullName.Returns(dir);
+            fs.GetDirectoryInfo(root).EnumerateFileSystemInfos().Returns(new IFileSystemInfo[] { fsi });
+
+            var ri = new RInstallation(tr, fs);
+            var engines = ri.GetCompatibleEngines(svl);
+            engines.Should().BeEmpty();
+        }
+
+        [Test]
+        public void MissingBinaries() {
             var tr = new RegistryMock(SimulateRegistry02());
             var svl = new SupportedRVersionRange(3, 1, 3, 4);
 

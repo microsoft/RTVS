@@ -79,6 +79,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Active.
+        /// </summary>
+        public static string ConnectionManager_Active {
+            get {
+                return ResourceManager.GetString("ConnectionManager_Active", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add.
         /// </summary>
         public static string ConnectionManager_Add {
@@ -106,6 +115,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Connected.
+        /// </summary>
+        public static string ConnectionManager_Connected {
+            get {
+                return ResourceManager.GetString("ConnectionManager_Connected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Connect to &apos;{0}&apos;..
         /// </summary>
         public static string ConnectionManager_ConnectTooltip {
@@ -115,11 +133,38 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Delete the connection.
+        ///   Looks up a localized string similar to default.
+        /// </summary>
+        public static string ConnectionManager_Default {
+            get {
+                return ResourceManager.GetString("ConnectionManager_Default", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete connection.
         /// </summary>
         public static string ConnectionManager_DeleteTooltip {
             get {
                 return ResourceManager.GetString("ConnectionManager_DeleteTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Entry for the automatically detected local R cannot be deleted. It will be removed when this R version is uninstalled..
+        /// </summary>
+        public static string ConnectionManager_DeleteTooltipDisabled {
+            get {
+                return ResourceManager.GetString("ConnectionManager_DeleteTooltipDisabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Disconnected.
+        /// </summary>
+        public static string ConnectionManager_Disconnected {
+            get {
+                return ResourceManager.GetString("ConnectionManager_Disconnected", resourceCulture);
             }
         }
         
@@ -133,16 +178,57 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Edit the connection.
+        ///   Looks up a localized string similar to Edit R interpreter information.
         /// </summary>
-        public static string ConnectionManager_EditTooltip {
+        public static string ConnectionManager_EditLocalTooltip {
             get {
-                return ResourceManager.GetString("ConnectionManager_EditTooltip", resourceCulture);
+                return ResourceManager.GetString("ConnectionManager_EditLocalTooltip", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Local R.
+        ///   Looks up a localized string similar to Edit remote connection information.
+        /// </summary>
+        public static string ConnectionManager_EditRemoteTooltip {
+            get {
+                return ResourceManager.GetString("ConnectionManager_EditRemoteTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Inactive.
+        /// </summary>
+        public static string ConnectionManager_Inactive {
+            get {
+                return ResourceManager.GetString("ConnectionManager_Inactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}
+        ///Path: {1}
+        ///Arguments: {2}.
+        /// </summary>
+        public static string ConnectionManager_InformationTooltipFormatLocal {
+            get {
+                return ResourceManager.GetString("ConnectionManager_InformationTooltipFormatLocal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}
+        ///Host: {1}
+        ///Port: {2}
+        ///Arguments: {3}.
+        /// </summary>
+        public static string ConnectionManager_InformationTooltipFormatRemote {
+            get {
+                return ResourceManager.GetString("ConnectionManager_InformationTooltipFormatRemote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Local.
         /// </summary>
         public static string ConnectionManager_LocalConnections {
             get {
@@ -151,7 +237,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Expand/Collapse local workspaces.
+        ///   Looks up a localized string similar to Expand/Collapse list of local R installations.
         /// </summary>
         public static string ConnectionManager_LocalConnectionsTooltip {
             get {
@@ -160,7 +246,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Connection name..
+        ///   Looks up a localized string similar to Entry name.
         /// </summary>
         public static string ConnectionManager_Name {
             get {
@@ -169,7 +255,16 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Connection path. Either an URL (http://machine:port) or a local path..
+        ///   Looks up a localized string similar to none specified.
+        /// </summary>
+        public static string ConnectionManager_None {
+            get {
+                return ResourceManager.GetString("ConnectionManager_None", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Host URL or path to R installation.
         /// </summary>
         public static string ConnectionManager_Path {
             get {
@@ -178,11 +273,29 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R command line arguments..
+        ///   Looks up a localized string similar to R command line arguments.
         /// </summary>
         public static string ConnectionManager_RCommandLineArguments {
             get {
                 return ResourceManager.GetString("ConnectionManager_RCommandLineArguments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remote.
+        /// </summary>
+        public static string ConnectionManager_RemoteConnections {
+            get {
+                return ResourceManager.GetString("ConnectionManager_RemoteConnections", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Expand/Collapse list of remote workspaces.
+        /// </summary>
+        public static string ConnectionManager_RemoteConnectionsTooltip {
+            get {
+                return ResourceManager.GetString("ConnectionManager_RemoteConnectionsTooltip", resourceCulture);
             }
         }
         
@@ -232,20 +345,11 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Remote and custom.
+        ///   Looks up a localized string similar to unknown.
         /// </summary>
-        public static string ConnectionManager_UserConnections {
+        public static string ConnectionManager_Unknown {
             get {
-                return ResourceManager.GetString("ConnectionManager_UserConnections", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Expand/Collapse user defined workspaces.
-        /// </summary>
-        public static string ConnectionManager_UserConnectionsTooltip {
-            get {
-                return ResourceManager.GetString("ConnectionManager_UserConnectionsTooltip", resourceCulture);
+                return ResourceManager.GetString("ConnectionManager_Unknown", resourceCulture);
             }
         }
         
@@ -286,7 +390,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Timeout installing package {0}.
+        ///   Looks up a localized string similar to Timeout installing package {0}..
         /// </summary>
         public static string Error_InstallTimeout_Format {
             get {
@@ -799,7 +903,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Uninstall this package..
+        ///   Looks up a localized string similar to Uninstall this package.
         /// </summary>
         public static string PackageManager_UninstallButtonToolTip {
             get {
@@ -826,7 +930,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Update {0} to version {1}..
+        ///   Looks up a localized string similar to Update {0} to version {1}.
         /// </summary>
         public static string PackageManager_UpdateButtonToolTip {
             get {

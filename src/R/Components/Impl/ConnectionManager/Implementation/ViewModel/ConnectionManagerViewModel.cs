@@ -19,7 +19,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private readonly IConnectionManager _connectionManager;
         private readonly ICoreShell _shell;
         private readonly BatchObservableCollection<IConnectionViewModel> _localConnections;
-        private readonly BatchObservableCollection<IConnectionViewModel> _userConnections;
+        private readonly BatchObservableCollection<IConnectionViewModel> _remoteConnections;
         private readonly DisposableBag _disposableBag;
         private IConnectionViewModel _editedConnection;
         private bool _isEditingNew;
@@ -32,8 +32,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             _disposableBag = DisposableBag.Create<ConnectionManagerViewModel>()
                 .Add(() => connectionManager.ConnectionStateChanged -= ConnectionStateChanged);
 
-            _userConnections = new BatchObservableCollection<IConnectionViewModel>();
-            UserConnections = new ReadOnlyObservableCollection<IConnectionViewModel>(_userConnections);
+            _remoteConnections = new BatchObservableCollection<IConnectionViewModel>();
+            RemoteConnections = new ReadOnlyObservableCollection<IConnectionViewModel>(_remoteConnections);
 
             _localConnections = new BatchObservableCollection<IConnectionViewModel>();
             LocalConnections = new ReadOnlyObservableCollection<IConnectionViewModel>(_localConnections);
@@ -48,7 +48,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         }
 
         public ReadOnlyObservableCollection<IConnectionViewModel> LocalConnections { get; }
-        public ReadOnlyObservableCollection<IConnectionViewModel> UserConnections { get; }
+        public ReadOnlyObservableCollection<IConnectionViewModel> RemoteConnections { get; }
 
         public IConnectionViewModel EditedConnection {
             get { return _editedConnection; }
@@ -72,28 +72,29 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         private bool TryStartEditing(IConnectionViewModel connection) {
             _shell.AssertIsOnMainThread();
-            if (connection == EditedConnection) {
-                return false;
-            }
 
+            // When 'Edit' button is clicked second time, we close the panel.
+            // If panel has changes, offer save the changes. 
             if (EditedConnection != null && EditedConnection.HasChanges) {
                 var dialogResult = _shell.ShowMessage(Resources.ConnectionManager_EditedConnectionHasChanges, MessageButtons.YesNoCancel);
                 switch (dialogResult) {
                     case MessageButtons.Yes:
                         Save(EditedConnection);
                         break;
-                    case MessageButtons.No:
-                        CancelEdit();
-                        break;
-                    default:
+                    case MessageButtons.Cancel:
                         return false;
                 }
-            } else {
-                CancelEdit();
             }
 
-            EditedConnection = connection;
-            connection.IsEditing = true;
+            var wasEditingConnection = EditedConnection;
+            CancelEdit();
+
+            // If it is the same connection that was edited then we came here as a result 
+            // of a second click on the edit button. Don't start editing it again.
+            if (connection != wasEditingConnection) {
+                EditedConnection = connection;
+                connection.IsEditing = true;
+            }
             return true;
         }
 
@@ -101,7 +102,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             _shell.AssertIsOnMainThread();
             IsEditingNew = TryStartEditing(new ConnectionViewModel());
         }
-        
+
         public void CancelEdit() {
             _shell.AssertIsOnMainThread();
             EditedConnection?.Reset();
@@ -116,7 +117,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
             if (connection.Path != null && Uri.TryCreate(connection.Path, UriKind.Absolute, out latestLocalPathUri) && latestLocalPathUri.IsFile && !latestLocalPathUri.IsUnc) {
                 latestLocalPath = latestLocalPathUri.LocalPath;
-            } else { 
+            } else {
                 latestLocalPath = Environment.SystemDirectory;
 
                 try {
@@ -125,14 +126,16 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                         // Force 64-bit PF
                         latestLocalPath = Environment.GetEnvironmentVariable("ProgramW6432");
                     }
-                }
-                catch (ArgumentException) { }
-                catch (IOException) { }
+                } catch (ArgumentException) { } catch (IOException) { }
             }
 
             var path = _shell.ShowBrowseDirectoryDialog(latestLocalPath);
             if (path != null) {
-                connection.Path = path;
+                // Verify path
+                var ri = new RInterpreterInfo(string.Empty, path);
+                if (ri.VerifyInstallation(null, null, _shell)) {
+                    connection.Path = path;
+                }
             }
         }
 
@@ -174,20 +177,20 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             UpdateConnections();
         }
 
-        private void UpdateConnections() { 
+        private void UpdateConnections() {
             var selectedId = EditedConnection?.Id;
 
-            _localConnections.ReplaceWith(_connectionManager.RecentConnections.Where(c => !c.IsRemote && !c.IsUserCreated).Select(c => new ConnectionViewModel(c) {
+            _localConnections.ReplaceWith(_connectionManager.RecentConnections.Where(c => !c.IsRemote).Select(c => new ConnectionViewModel(c) {
                 IsActive = c == _connectionManager.ActiveConnection,
                 IsConnected = c == _connectionManager.ActiveConnection && IsConnected
             }).OrderBy(c => c.Name));
 
-            _userConnections.ReplaceWith(_connectionManager.RecentConnections.Where(c => c.IsUserCreated).Select(c => new ConnectionViewModel(c) {
+            _remoteConnections.ReplaceWith(_connectionManager.RecentConnections.Where(c => c.IsRemote).Select(c => new ConnectionViewModel(c) {
                 IsActive = c == _connectionManager.ActiveConnection,
                 IsConnected = c == _connectionManager.ActiveConnection && IsConnected
             }).OrderBy(c => c.Name));
 
-            var editedConnection = UserConnections.FirstOrDefault(i => i.Id == selectedId);
+            var editedConnection = RemoteConnections.FirstOrDefault(i => i.Id == selectedId);
             if (editedConnection != null) {
                 EditedConnection = editedConnection;
             }
@@ -198,7 +201,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private void ConnectionStateChanged(object sender, ConnectionEventArgs e) {
             _shell.DispatchOnUIThread(() => {
                 IsConnected = e.State;
-                foreach (var item in _userConnections.Union(_localConnections)) {
+                foreach (var item in _remoteConnections.Union(_localConnections)) {
                     item.IsConnected = e.State && item.IsActive;
                 }
             });

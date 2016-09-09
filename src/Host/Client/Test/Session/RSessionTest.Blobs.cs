@@ -51,7 +51,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
                 }
             }
 
-            [Test]
+            [Test (Skip = "https://github.com/Microsoft/RTVS/issues/2191")]
             public async Task CreateBlob_DisconnectedDuringCreate() {
                 var data = new byte[25 * 1024 * 1024]; // try to send a massive blob
 

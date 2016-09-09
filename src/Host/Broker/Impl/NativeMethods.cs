@@ -213,7 +213,7 @@ namespace Microsoft.R.Host.Broker {
             out IntPtr phToken);
 
         [DllImport("credui.dll", CharSet = CharSet.Unicode)]
-        public static extern int CredUIParseUserName(
+        public static extern uint CredUIParseUserName(
                 string userName,
                 StringBuilder user,
                 int userMaxChars,
@@ -232,5 +232,6 @@ namespace Microsoft.R.Host.Broker {
             IntPtr hToken,
             StringBuilder pszProfilePath,
             ref uint cchProfilePath);
+
     }
 }

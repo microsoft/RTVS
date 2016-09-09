@@ -28,14 +28,14 @@ namespace Microsoft.R.Host.Broker.Lifetime {
                     process = Process.GetProcessById(pid);
                     process.EnableRaisingEvents = true;
                 } catch (ArgumentException) {
-                    _logger.LogCritical($"Designated parent process {pid} not found");
+                    _logger.LogCritical(Resources.Critical_ParentProcessNotFound, pid);
                     Program.Exit();
                     return;
                 }
 
-                _logger.LogInformation($"Monitoring parent process {pid}");
+                _logger.LogInformation(Resources.Info_MonitoringParentProcess, pid);
                 process.Exited += delegate {
-                    _logger.LogInformation($"Parent process {pid} exited, shutting down.");
+                    _logger.LogInformation(Resources.Info_ParentProcessExited, pid);
                     Program.Exit();
                 };
             }
@@ -51,7 +51,7 @@ namespace Microsoft.R.Host.Broker.Lifetime {
             var cts = new CancellationTokenSource(_options.PingTimeout.Value);
             cts.Token.Register(() => {
                 if (_cts == cts) {
-                    _logger.LogCritical("Ping timed out, terminating");
+                    _logger.LogCritical(Resources.Critical_PingTimeOut);
                     Program.Exit();
                 }
             });
