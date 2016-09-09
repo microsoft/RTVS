@@ -35,5 +35,7 @@ namespace Microsoft.R.Host.Client.Host {
                 return await _broker.ConnectAsync(name, callbacks, rCommandLineArguments, timeout, cancellationToken);
             }
         }
+
+        public string HandleUrl(string url, CancellationToken ct) => _broker.HandleUrl(url, ct);
     }
 }

@@ -669,7 +669,7 @@ namespace Microsoft.R.Host.Client.Session {
         /// <param name="url"></param>
         /// <returns></returns>
         Task IRCallbacks.WebBrowser(string url) {
-            var newUrl = BrokerConnector.HandleUrl(url, CancellationToken.None);
+            var newUrl = BrokerClient.HandleUrl(url, CancellationToken.None);
             var callback = _callback;
             return callback != null ? callback.ShowHelp(newUrl) : Task.CompletedTask;
         }
