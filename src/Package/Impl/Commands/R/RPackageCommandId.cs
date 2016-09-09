@@ -18,6 +18,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public const int icmdImportRSettings = 405;
         public const int icmdReportIssue = 406;
         public const int icmdSurveyNews = 407;
+        public const int icmdSetupRemote = 408;
 
         // REPL
         public const int icmdSendToRepl = 501;
@@ -40,6 +41,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public const int icmdSourceRScriptWithEcho = 518;
         public const int icmdSetDirectoryToSourceCommand = 519;
         public const int icmdSetDirectoryToProjectCommand = 520;
+        public const int icmdTerminateR = 521;
 
         public const int icmdRexecuteReplCmd = 571;
         public const int icmdPasteReplCmd = 572;

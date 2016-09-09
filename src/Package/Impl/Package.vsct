@@ -1260,6 +1260,17 @@
         </Strings>
       </Button>
 
+      <!-- Setup remote R -->
+      <Button guid="guidRToolsCmdSet" id="icmdSetupRemote" priority="0x600" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="rClientGroup"/>
+        <Icon guid="ImageCatalogGuid" id="RemoteServiceBinding"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Set&amp;up Remote R...</ButtonText>
+          <CommandName>Setup Remote R</CommandName>
+        </Strings>
+      </Button>
+
       <!-- Check for Updates -->
       <Button guid="guidRToolsCmdSet" id="icmdCheckForUpdates" priority="0x0400" type="Button">
         <Parent guid="guidRToolsCmdSet" id="docsGroup"/>
@@ -2520,6 +2531,7 @@
       <IDSymbol name="icmdImportRSettings" value="405"/>
       <IDSymbol name="icmdReportIssue" value="406" />
       <IDSymbol name="icmdSurveyNews" value="407"/>
+      <IDSymbol name="icmdSetupRemote" value="408"/>
 
       <!-- REPL-->
       <IDSymbol name="icmdSendToRepl" value="501" />
@@ -2542,6 +2554,7 @@
       <IDSymbol name="icmdSourceRScriptWithEcho" value="518" />
       <IDSymbol name="icmdSetDirectoryToSourceCommand" value="519"/>
       <IDSymbol name="icmdSetDirectoryToProjectCommand" value="520"/>
+      <IDSymbol name="icmdTerminateR" value="521"/>
 
       <IDSymbol name="sessionSubMenuFileGroup" value="551"/>
       <IDSymbol name="sessionSubMenuRGroup" value="552"/>
