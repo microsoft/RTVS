@@ -81,21 +81,26 @@ namespace Microsoft.R.Host.Client.Session {
             _sessions.TryRemove(guid, out session);
         }
 
-        public async Task<bool> TestBrokerConnectionAsync(string name, string path) {
-            var сonnector = await CreateBrokerClientAsync(name, path);
-            if (сonnector == null) {
-                return false;
+        public async Task TestBrokerConnectionAsync(string name, string path) {
+            // Create random name to avoid collision with actual broker client
+            name = name + Guid.NewGuid().ToString("N");
+            var brokerClient = await CreateBrokerClientAsync(name, path);
+            if (brokerClient == null) {
+                throw new ArgumentException(nameof(path));
             }
 
-            var callbacks = new NullRCallbacks();
             try {
-                var rhost = await сonnector.ConnectAsync(nameof(TestBrokerConnectionAsync), callbacks);
-                var rhostRunTask = rhost.Run();
-                callbacks.SetReadConsoleInput("q()\n");
-                await rhostRunTask;
-                return true;
-            } catch (RHostDisconnectedException) {
-                return false;
+                var callbacks = new NullRCallbacks();
+                var rhost = await brokerClient.ConnectAsync(nameof(TestBrokerConnectionAsync), callbacks);
+                try {
+                    var rhostRunTask = rhost.Run();
+                    callbacks.SetReadConsoleInput("q()\n");
+                    await rhostRunTask;
+                } finally {
+                    rhost.Dispose();
+                }
+            } finally {
+                brokerClient.Dispose();
             }
         }
 

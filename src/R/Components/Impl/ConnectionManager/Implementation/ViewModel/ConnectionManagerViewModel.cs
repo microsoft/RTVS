@@ -12,6 +12,8 @@ using Microsoft.Common.Wpf;
 using Microsoft.Common.Wpf.Collections;
 using Microsoft.R.Components.ConnectionManager.ViewModel;
 using Microsoft.R.Components.Extensions;
+using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Interpreters;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
@@ -144,7 +146,21 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             TryStartEditing(connection);
         }
 
-        public Task TestConnectionAsync(IConnectionViewModel connection) => Task.CompletedTask;
+        public async Task TestConnectionAsync(IConnectionViewModel connection) {
+            _shell.AssertIsOnMainThread();
+            connection.IsTestingConnection = true;
+            try {
+                await _connectionManager.TestConnectionAsync(connection);
+                connection.IsTestConnectionSucceeded = true;
+            } catch (ArgumentException exception) {
+                connection.IsTestConnectionSucceeded = false;
+            } catch (RHostDisconnectedException exception) {
+                
+            } catch (RHostBinaryMissingException exception) {
+                
+            }
+            connection.IsTestingConnection = false;
+        }
 
         public void Save(IConnectionViewModel connectionViewModel) {
             _shell.AssertIsOnMainThread();

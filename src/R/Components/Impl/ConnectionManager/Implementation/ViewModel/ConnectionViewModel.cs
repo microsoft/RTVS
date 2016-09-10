@@ -3,7 +3,6 @@
 
 using System;
 using System.Globalization;
-using System.Windows.Input;
 using Microsoft.Common.Core;
 using Microsoft.Common.Wpf;
 using Microsoft.R.Components.ConnectionManager.ViewModel;
@@ -17,9 +16,12 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private string _rCommandLineArguments;
         private bool _isUserCreated;
         private string _saveButtonTooltip;
+        private string _testConnectionResult;
         private bool _isActive;
         private bool _isEditing;
         private bool _isConnected;
+        private bool _isTestingConnection;
+        private bool _isTestConnectionSucceeded;
         private bool _isRemote;
         private bool _hasChanges;
         private bool _isValid;
@@ -78,7 +80,11 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public bool IsEditing {
             get { return _isEditing; }
-            set { SetProperty(ref _isEditing, value); }
+            set {
+                if (SetProperty(ref _isEditing, value) && !value) {
+                    TestConnectionResult = null;
+                }
+            }
         }
 
         public bool IsRemote {
@@ -99,6 +105,21 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         public bool IsConnected {
             get { return _isConnected; }
             set { SetProperty(ref _isConnected, value); }
+        }
+
+        public bool IsTestingConnection {
+            get { return _isTestingConnection; }
+            set { SetProperty(ref _isTestingConnection, value); }
+        }
+
+        public bool IsTestConnectionSucceeded {
+            get { return _isTestConnectionSucceeded; }
+            set { SetProperty(ref _isTestConnectionSucceeded, value); }
+        }
+
+        public string TestConnectionResult {
+            get { return _testConnectionResult; }
+            set { SetProperty(ref _testConnectionResult, value); }
         }
 
         /// <summary>

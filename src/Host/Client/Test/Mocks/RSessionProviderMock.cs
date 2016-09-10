@@ -34,7 +34,7 @@ namespace Microsoft.R.Host.Client.Mocks {
         public Task<IRSessionEvaluation> BeginEvaluationAsync(RHostStartupInfo startupInfo, CancellationToken cancellationToken = new CancellationToken()) 
             => new RSessionMock().BeginEvaluationAsync(cancellationToken);
 
-        public Task<bool> TestBrokerConnectionAsync(string name, string path) => Task.FromResult(true);
+        public Task TestBrokerConnectionAsync(string name, string path) => Task.FromResult(true);
 
         public Task<bool> TrySwitchBrokerAsync(string name, string path = null) {
             return Task.FromResult(true);

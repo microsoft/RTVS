@@ -31,7 +31,7 @@ namespace Microsoft.R.Host.Client {
         /// </summary>
         /// <param name="name">Name of the broker. Will be displayed in REPL.</param>
         /// <param name="path">Either a local path to the R binary or a URL to the broker.</param>
-        Task<bool> TestBrokerConnectionAsync(string name, string path);
+        Task TestBrokerConnectionAsync(string name, string path);
 
         /// <summary>
         /// 
