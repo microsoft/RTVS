@@ -17,6 +17,8 @@ namespace Microsoft.R.Host.Client.Host {
 
         public bool IsRemote => _hostConnector.IsRemote;
 
+        public string HandleUrl(string url, CancellationToken ct) => _hostConnector.HandleUrl(url, ct);
+
         public event EventHandler BrokerChanged;
         public RHostBrokerConnector(ICoreShell coreShell = null) {
             _coreShell = coreShell;

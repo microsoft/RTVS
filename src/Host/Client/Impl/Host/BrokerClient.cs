@@ -194,5 +194,9 @@ namespace Microsoft.R.Host.Client.Host {
 
             return new RHost(name, callbacks, transport, cts);
         }
+
+        public virtual string HandleUrl(string url, CancellationToken ct) {
+            return url;
+        }
     }
 }

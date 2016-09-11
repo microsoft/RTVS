@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using System.IO;
 
 namespace Microsoft.R.Host.Client.BrokerServices {
     public class WebService {
@@ -46,6 +47,12 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             var response = EnsureSuccessStatusCode(await HttpClient.PutAsync(uri, content));
             var responseBody = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<TResponse>(responseBody);
+        }
+
+        public async Task<Stream> HttpPostAsync(Uri uri, Stream request) {
+            var content = new StreamContent(request);
+            var response = (await HttpClient.PostAsync(uri, content)).EnsureSuccessStatusCode();
+            return await response.Content.ReadAsStreamAsync();
         }
 
         public Task<TResponse> HttpPutAsync<TRequest, TResponse>(UriTemplate uriTemplate, TRequest request, params object[] args) =>
