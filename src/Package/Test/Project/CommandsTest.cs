@@ -24,6 +24,8 @@ using NSubstitute;
 using Xunit;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
+#else
+using Microsoft.VisualStudio.ProjectSystem;
 #endif
 using static Microsoft.UnitTests.Core.Threading.UIThreadTools;
 

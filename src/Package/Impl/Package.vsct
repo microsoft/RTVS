@@ -437,6 +437,10 @@
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
       </Group>
 
+      <Group guid="guidRToolsCmdSet" id="sessionSubMenuTerminateRGroup" priority="0x0330">
+        <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
+      </Group>
+
       <Group guid="guidRToolsCmdSet" id="sessionSubMenuDirectoryGroup" priority="0x0400">
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
       </Group>
@@ -641,6 +645,18 @@
           <ButtonText>Interrupt R</ButtonText>
           <MenuText>&amp;Interrupt R</MenuText>
           <CommandName>Interrupt R</CommandName>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdTerminateR" priority="0x0500" type="Button">
+        <Icon guid="ImageCatalogGuid" id="TerminateProcess"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Terminate R...</ButtonText>
+          <MenuText>&amp;Terminate R...</MenuText>
+          <CommandName>Terminate R</CommandName>
         </Strings>
       </Button>
 
@@ -1257,6 +1273,17 @@
         <Strings>
           <ButtonText>&amp;Microsoft R Products...</ButtonText>
           <CommandName>Microsoft R Products</CommandName>
+        </Strings>
+      </Button>
+
+      <!-- Setup remote R -->
+      <Button guid="guidRToolsCmdSet" id="icmdSetupRemote" priority="0x600" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="rClientGroup"/>
+        <Icon guid="ImageCatalogGuid" id="RemoteServiceBinding"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Set&amp;up Remote R...</ButtonText>
+          <CommandName>Setup Remote R</CommandName>
         </Strings>
       </Button>
 
@@ -2183,6 +2210,10 @@
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
     </CommandPlacement>
 
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdTerminateR" priority="0x0100">
+      <Parent guid="guidRToolsCmdSet" id="sessionSubMenuTerminateRGroup"/>
+    </CommandPlacement>
+
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdAttachDebugger" priority="0x0450">
       <Parent guid="guidRToolsCmdSet" id="sessionRDebugGroup"/>
     </CommandPlacement>
@@ -2520,6 +2551,7 @@
       <IDSymbol name="icmdImportRSettings" value="405"/>
       <IDSymbol name="icmdReportIssue" value="406" />
       <IDSymbol name="icmdSurveyNews" value="407"/>
+      <IDSymbol name="icmdSetupRemote" value="408"/>
 
       <!-- REPL-->
       <IDSymbol name="icmdSendToRepl" value="501" />
@@ -2542,6 +2574,7 @@
       <IDSymbol name="icmdSourceRScriptWithEcho" value="518" />
       <IDSymbol name="icmdSetDirectoryToSourceCommand" value="519"/>
       <IDSymbol name="icmdSetDirectoryToProjectCommand" value="520"/>
+      <IDSymbol name="icmdTerminateR" value="521"/>
 
       <IDSymbol name="sessionSubMenuFileGroup" value="551"/>
       <IDSymbol name="sessionSubMenuRGroup" value="552"/>
@@ -2551,6 +2584,7 @@
       <IDSymbol name="sessionToolbarDirectoryGroup" value="556"/>
       <IDSymbol name="sessionRDebugGroup" value="557"/>
       <IDSymbol name="sessionSubMenuResetGroup" value="558"/>
+      <IDSymbol name="sessionSubMenuTerminateRGroup" value="559"/>
 
       <IDSymbol name="interactiveWindowContextGroup" value="570"/>
       <IDSymbol name="icmdRexecuteReplCmd" value="571"/>

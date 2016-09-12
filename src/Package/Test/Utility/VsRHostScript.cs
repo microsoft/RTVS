@@ -5,7 +5,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Microsoft.Common.Core.Test.Script;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.VisualStudio.R.Package.Shell;

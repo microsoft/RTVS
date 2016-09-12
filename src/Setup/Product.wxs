@@ -135,7 +135,6 @@
                       </Directory>
 
                       <Directory Id="HiddenProfilesFolder" Name="Profiles" />
-                      
                       <Directory Id="SurveyNewsFolder" Name="SurveyNews" />
 
                       <Directory Id="SnippetsFolder" Name="Snippets">

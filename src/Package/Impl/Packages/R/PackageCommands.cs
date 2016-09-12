@@ -7,7 +7,6 @@ using System.ComponentModel.Design;
 using Microsoft.R.Components.ConnectionManager.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Commands;
-using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Plots.Commands;
 using Microsoft.R.Components.Sql;
 using Microsoft.VisualStudio.ProjectSystem;
@@ -57,6 +56,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new InstallRClientCommand(appShell),
                 new SwitchToRClientCommand(interactiveWorkflow.Connections, appShell),
                 new SurveyNewsCommand(),
+                new SetupRemoteCommand(),
 
                 new ReportIssueCommand(),
                 new SendSmileCommand(),
@@ -89,6 +89,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new StopShinyAppCommand(interactiveWorkflow),
 
                 CreateRCmdSetCommand(RPackageCommandId.icmdInterruptR, new InterruptRCommand(interactiveWorkflow, debuggerModeTracker)),
+                CreateRCmdSetCommand(RPackageCommandId.icmdTerminateR, new TerminateRCommand(interactiveWorkflow, appShell)),
+
                 new ResetReplCommand(interactiveWorkflow),
                 
                 // Directory management

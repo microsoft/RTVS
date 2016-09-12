@@ -14,7 +14,7 @@
     <WixBinDirectory Condition="'$(WixBinDirectory)' == ''">$(WixDirectory)bin\</WixBinDirectory>
     <WixBinSdkDirectory Condition="'$(WixBinSdkDirectory)' == ''">$(WixBinDirectory)sdk\</WixBinSdkDirectory>
     <DDWixDirectory Condition="'$(DDWixDirectory)' == ''">$(NugetDirectory)DDWixExt\14.0.22823.1\</DDWixDirectory>
-    
+
     <Configuration Condition=" '$(Configuration)'=='' ">Release</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">any cpu</Platform>
     <Year Condition="'$(Year)' == ''">$([System.DateTime]::Now.Year)</Year>
@@ -23,8 +23,9 @@
 
     <Solution Condition="'$(Solution)' == ''">$(SourceDirectory)\R.sln</Solution>
     <Setup Condition="'$(Setup)' == ''">$(SourceDirectory)Setup\Setup.wixproj</Setup>
+    <SetupRemote Condition="'$(SetupRemote)' == ''">$(SourceDirectory)SetupRemote\SetupRemote.wixproj</SetupRemote>
     <SetupBundle Condition="'$(SetupBundle)' == ''">$(SourceDirectory)SetupBundle\SetupBundle.wixproj</SetupBundle>
-   
+
     <WixTargetsPath Condition="'$(WixTargetsPath)' == ''">$(WixBinDirectory)wix.targets</WixTargetsPath>
     <WixCATargetsPath Condition="'$(WixCATargetsPath)' == ''">$(WixBinSdkDirectory)wix.ca.targets</WixCATargetsPath>
     <RHostMsi Condition="'$(RHostMsi)' == ''">RHost_$(Year)$(Date)$(Time).msi</RHostMsi>
@@ -49,8 +50,8 @@
 
   <Target Name="Reset">
     <ItemGroup>
-      <Bin Include="$(OutputDirectory)" />	
-      <Obj Include="$(IntermediateOutputDirectory)" />	
+      <Bin Include="$(OutputDirectory)" />
+      <Obj Include="$(IntermediateOutputDirectory)" />
     </ItemGroup>
     <CallTarget Targets="ResetNuget" />
     <RemoveDir Directories="%(Bin.FullPath);%(Obj.FullPath)" />
@@ -61,6 +62,7 @@
     <Message Text="SetupProperties: $(SetupProperties)" Importance="high" />
     <MSBuild Targets="Clean" Projects="$(Solution)" Properties="$(SolutionProperties)" BuildInParallel="true" />
     <MSBuild Targets="Clean" Projects="$(Setup)" Properties="$(SetupProperties)" />
+    <MSBuild Targets="Clean" Projects="$(SetupRemote)" Properties="$(SetupProperties)" />
   </Target>
 
   <Target Name="Build">
@@ -69,6 +71,7 @@
     <Message Text="SetupProperties: $(SetupProperties)" Importance="high" />
     <MSBuild Targets="Build" Projects="$(Solution)" Properties="$(SolutionProperties)" BuildInParallel="true" />
     <MSBuild Targets="Build" Projects="$(Setup)" Properties="$(SetupProperties)" />
+    <MSBuild Targets="Build" Projects="$(SetupRemote)" Properties="$(SetupProperties)" />
   </Target>
 
   <Target Name="Rebuild">
@@ -77,5 +80,6 @@
     <Message Text="SetupProperties: $(SetupProperties)" Importance="high" />
     <MSBuild Targets="Rebuild" Projects="$(Solution)" Properties="$(SolutionProperties)" BuildInParallel="true" />
     <MSBuild Targets="Rebuild" Projects="$(Setup)" Properties="$(SetupProperties)" />
+    <MSBuild Targets="Rebuild" Projects="$(SetupRemote)" Properties="$(SetupProperties)" />
   </Target>
 </Project>
