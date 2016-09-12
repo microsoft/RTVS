@@ -45,7 +45,9 @@
     <Compile Include="Composition\INamedExport.cs" />
     <Compile Include="Composition\NamedExportLocator.cs" />
     <Compile Include="Disposables\DisposableBag.cs" />
+    <Compile Include="Extensions\ArraySegmentExtensions.cs" />
     <Compile Include="Extensions\ClipboardExtensions.cs" />
+    <Compile Include="Extensions\StreamExtensions.cs" />
     <Compile Include="IO\KnownFolderGuids.cs" />
     <Compile Include="Logging\FileLogWriter.cs" />
     <Compile Include="Logging\GeneralLog.cs" />
@@ -59,6 +61,7 @@
     <Compile Include="Logging\StringLog.cs" />
     <Compile Include="Net\FileDownloader.cs" />
     <Compile Include="Net\IFileDownloader.cs" />
+    <Compile Include="Net\WebSocketHelper.cs" />
     <Compile Include="Tasks\TaskCompletionSourceEx.cs" />
     <Compile Include="Threading\AsyncCountdownEvent.cs" />
     <Compile Include="Threading\AsyncManualResetEvent.cs" />

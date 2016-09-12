@@ -22,45 +22,6 @@ namespace Microsoft.R.Host.Client.BrokerServices {
 
         private Uri PostUri { get; }
 
-        private async Task DoWebSocketReceiveSendAsync(WebSocket receiver, WebSocket sender, CancellationToken ct) {
-            if (receiver == null || receiver == null) {
-                return;
-            }
-
-            ArraySegment<byte> receiveBuffer = WebSocket.CreateServerBuffer(65335);
-            while (receiver.State == WebSocketState.Open && sender.State == WebSocketState.Open) {
-                if (ct.IsCancellationRequested) {
-                    Task.WhenAll(
-                        receiver.CloseAsync(WebSocketCloseStatus.NormalClosure, "Normal closure", CancellationToken.None),
-                        sender.CloseAsync(WebSocketCloseStatus.NormalClosure, "Normal closure", CancellationToken.None))
-                        .DoNotWait();
-                    return;
-                }
-
-                WebSocketReceiveResult result = await receiver.ReceiveAsync(receiveBuffer, ct);
-
-                byte[] data = null;
-                using (MemoryStream ms = new MemoryStream()) {
-                    await ms.WriteAsync(receiveBuffer.Array, receiveBuffer.Offset, result.Count);
-                    await ms.FlushAsync();
-                    data = ms.ToArray();
-                }
-
-                ArraySegment<byte> sendBuffer = new ArraySegment<byte>(data);
-                await sender.SendAsync(sendBuffer, result.MessageType, result.EndOfMessage, ct);
-
-                if (result.MessageType == WebSocketMessageType.Close) {
-                    await receiver.CloseAsync(WebSocketCloseStatus.NormalClosure, "Normal closure", ct);
-                }
-            }
-        }
-
-        private Task DoWebSocketWorkAsync(WebSocket localWebSocket, WebSocket remoteWebSocket, CancellationToken ct) {
-            return Task.WhenAll(
-                DoWebSocketReceiveSendAsync(localWebSocket, remoteWebSocket, ct),
-                DoWebSocketReceiveSendAsync(remoteWebSocket, localWebSocket, ct));
-        }
-
         public async Task GetResponseAsync(HttpListenerContext context, string localBaseUrl, string remoteBaseUrl, CancellationToken ct) {
             string postUri = null;
             if (context.Request.IsWebSocketRequest) {
@@ -82,8 +43,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
 
             if (context.Request.InputStream.CanSeek && context.Request.InputStream.Length > 0) {
                 using (Stream reqStream = await request.GetRequestStreamAsync()) {
-                    await context.Request.InputStream.CopyToAsync(reqStream);
-                    await reqStream.FlushAsync();
+                    await reqStream.CopyAndFlushAsync(context.Request.InputStream);
                 }
             }
 
@@ -94,13 +54,12 @@ namespace Microsoft.R.Host.Client.BrokerServices {
                 string subProtocol = response.Headers[Constants.Headers.SecWebSocketProtocol];
                 var remoteWebSocket = CommonWebSocket.CreateClientWebSocket(respStream, subProtocol, TimeSpan.FromMinutes(10), 65335, true);
                 var websocketContext = await context.AcceptWebSocketAsync(subProtocol, 65335, TimeSpan.FromMinutes(10));
-                await DoWebSocketWorkAsync(websocketContext.WebSocket, remoteWebSocket, ct);
+                await WebSocketHelper.SendReceiveAsync(websocketContext.WebSocket, remoteWebSocket, ct);
             } else {
                 SetResponseHeaders(response, context.Response, localBaseUrl, remoteBaseUrl);
-                using (Stream respStream = response.GetResponseStream()) {
-                    await respStream.CopyToAsync(context.Response.OutputStream);
-                    await context.Response.OutputStream.FlushAsync();
-                    context.Response.OutputStream.Close();
+                using (Stream respStream = response.GetResponseStream())
+                using (Stream outStream = context.Response.OutputStream) {
+                    await outStream.CopyAndFlushAsync(respStream);
                 }
                 response.Close();
             }
@@ -125,70 +84,82 @@ namespace Microsoft.R.Host.Client.BrokerServices {
                 headers.Add(key, requestHeaders[key]);
             }
 
-            if (headers.ContainsKey("Accept")) {
-                request.Accept = ReplaceAndGet(headers["Accept"], localBaseUrl, remoteBaseUrl);
+            string valueAccept;
+            if (headers.TryGetValue("Accept", out valueAccept)) {
+                request.Accept = ReplaceAndGet(valueAccept, localBaseUrl, remoteBaseUrl);
                 headers.Remove("Accept");
             }
 
-            if (headers.ContainsKey("Connection")) {
-                if (headers["Connection"].EqualsIgnoreCase("keep-alive")) {
+            string valueConnection;
+            if (headers.TryGetValue("Connection", out valueConnection)) {
+                if (valueConnection.EqualsIgnoreCase("keep-alive")) {
                     request.KeepAlive = true;
-                } else if (headers["Connection"].EqualsIgnoreCase("close")) {
+                } else if (valueConnection.EqualsIgnoreCase("close")) {
                     request.KeepAlive = false;
                 } else {
-                    request.Connection = headers["Connection"];
+                    request.Connection = valueConnection;
                 }
                 headers.Remove("Connection");
             }
 
-            if (headers.ContainsKey("Content-Length")) {
-                request.ContentLength = headers["Content-Length"].ToLongOrDefault();
+            string valueContentLength;
+            if (headers.TryGetValue("Content-Length", out valueContentLength)) {
+                request.ContentLength = valueContentLength.ToLongOrDefault();
                 headers.Remove("Content-Length");
             }
 
-            if (headers.ContainsKey("Content-Type")) {
-                request.ContentType = headers["Content-Type"];
+            string valueContentType;
+            if (headers.TryGetValue("Content-Type", out valueContentType)) {
+                request.ContentType = valueContentType;
                 headers.Remove("Content-Type");
             }
 
-            if (headers.ContainsKey("Expect")) {
-                request.Expect = headers["Expect"];
+            string valueExpect;
+            if (headers.TryGetValue("Expect", out valueExpect)) {
+                request.Expect = valueExpect;
                 headers.Remove("Expect");
             }
 
-            if (headers.ContainsKey("Date")) {
-                request.Date = headers["Date"].ToDateTimeOrDefault();
+            string valueDate;
+            if (headers.TryGetValue("Date", out valueDate)) {
+                request.Date = valueDate.ToDateTimeOrDefault();
                 headers.Remove("Date");
             }
 
-            if (headers.ContainsKey("Host")) {
-                request.Host = ReplaceAndGet(headers["Host"], localBaseUrl, remoteBaseUrl);
+            string valueHost;
+            if (headers.TryGetValue("Host", out valueHost)) {
+                request.Host = ReplaceAndGet(valueHost, localBaseUrl, remoteBaseUrl);
                 headers.Remove("Host");
             }
 
-            if (headers.ContainsKey("If-Modified-Since")) {
-                request.IfModifiedSince = headers["If-Modified-Since"].ToDateTimeOrDefault();
+            string valueIfModifiedSince;
+            if (headers.TryGetValue("If-Modified-Since", out valueIfModifiedSince)) {
+                request.IfModifiedSince = valueIfModifiedSince.ToDateTimeOrDefault();
                 headers.Remove("If-Modified-Since");
             }
 
-            if (headers.ContainsKey("Range")) {
+            string valueRange;
+            if (headers.TryGetValue("Range", out valueRange)) {
                 // TODO: AddRange
                 headers.Remove("Range");
             }
 
-            if (headers.ContainsKey("Referer")) {
-                request.Referer = ReplaceAndGet(headers["Referer"], localBaseUrl, remoteBaseUrl);
+            string valueReferer;
+            if (headers.TryGetValue("Referer", out valueReferer)) {
+                request.Referer = ReplaceAndGet(valueReferer, localBaseUrl, remoteBaseUrl);
                 headers.Remove("Referer");
             }
 
-            if (headers.ContainsKey("Transfer-Encoding")) {
+            string valueTransferEncoding;
+            if (headers.TryGetValue("Transfer-Encoding", out valueTransferEncoding)) {
                 request.SendChunked = true;
-                request.TransferEncoding = headers["Transfer-Encoding"];
+                request.TransferEncoding = valueTransferEncoding;
                 headers.Remove("Transfer-Encoding");
             }
 
-            if (headers.ContainsKey("User-Agent")) {
-                request.UserAgent = headers["User-Agent"];
+            string valueUserAgent;
+            if (headers.TryGetValue("User-Agent", out valueUserAgent)) {
+                request.UserAgent = valueUserAgent;
                 headers.Remove("User-Agent");
             }
 
