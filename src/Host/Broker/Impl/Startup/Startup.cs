@@ -4,11 +4,13 @@
 using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Common.Core.IO;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.R.Host.Broker.Interpreters;
 using Microsoft.R.Host.Broker.Lifetime;
 using Microsoft.R.Host.Broker.Logging;
+using Microsoft.R.Host.Broker.RemoteUri;
 using Microsoft.R.Host.Broker.Security;
 using Microsoft.R.Host.Broker.Sessions;
 using Odachi.AspNetCore.Authentication.Basic;
@@ -59,6 +61,10 @@ namespace Microsoft.R.Host.Broker.Startup {
                 KeepAliveInterval = TimeSpan.FromMilliseconds(1000000000),
                 ReceiveBufferSize = 0x10000
             });
+
+            var routeBuilder = new RouteBuilder(app, new RouteHandler(RemoteUriHelper.HandlerAsync));
+            routeBuilder.MapRoute("help_and_shiny", "remoteuri");
+            app.UseRouter(routeBuilder.Build());
 
             app.UseBasicAuthentication(options => {
                 options.Events = new BasicEvents { OnSignIn = securityManager.SignInAsync };

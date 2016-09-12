@@ -17,6 +17,8 @@ using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.Host;
 using static System.FormattableString;
 using Task = System.Threading.Tasks.Task;
+using Microsoft.R.Host.Client.BrokerServices;
+using System.Net.Http;
 
 namespace Microsoft.R.Host.Client.Session {
     internal sealed class RSession : IRSession, IRCallbacks {
@@ -303,7 +305,7 @@ namespace Microsoft.R.Host.Client.Session {
 
         public void CancelSwitchingBroker() {
             _disposeToken.ThrowIfDisposed();
-
+            _initializationLock.Reset();
             var hostToSwitch = Interlocked.Exchange(ref _hostToSwitch, null);
             hostToSwitch?.Dispose();
         }
@@ -667,8 +669,9 @@ namespace Microsoft.R.Host.Client.Session {
         /// <param name="url"></param>
         /// <returns></returns>
         Task IRCallbacks.WebBrowser(string url) {
+            var newUrl = BrokerClient.HandleUrl(url, CancellationToken.None);
             var callback = _callback;
-            return callback != null ? callback.ShowHelp(url) : Task.CompletedTask;
+            return callback != null ? callback.ShowHelp(newUrl) : Task.CompletedTask;
         }
 
         Task IRCallbacks.ViewLibrary() {
