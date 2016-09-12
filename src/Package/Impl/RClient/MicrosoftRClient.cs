@@ -18,7 +18,7 @@ namespace Microsoft.VisualStudio.R.Package.RClient {
             registry = registry ?? new RegistryImpl();
 
             var rClientPath = SqlRClientInstallation.GetRClientPath(registry);
-            if (!string.IsNullOrEmpty(rClientPath) && AskUserSwitchToRClient()) {
+            if (!string.IsNullOrEmpty(rClientPath) && AskUserSwitchToRClient(registry)) {
                 // Get R Client path
                 if (MessageButtons.Yes == coreShell.ShowMessage(Resources.Prompt_MsRClientJustInstalled, MessageButtons.YesNo)) {
                     return rClientPath;

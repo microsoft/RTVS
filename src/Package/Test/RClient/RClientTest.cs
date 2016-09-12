@@ -22,9 +22,9 @@ using Xunit;
 namespace Microsoft.VisualStudio.R.Package.Test.RClient {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
+    [Category.R.Install]
     public class RClientTest {
         [Test]
-        [Category.R.Install]
         public void InstallTelemetry() {
             var telemetryEvents = new List<string>();
             var telemetry = Substitute.For<ITelemetryService>();
@@ -76,7 +76,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.RClient {
         }
 
         [Test(ThreadType = ThreadType.UI)]
-        [Category.R.Install]
         public void MsRClient() {
             var rClientInstallPath = @"C:\Program Files\Microsoft\R Client\";
             var rClientRPath = @"C:\Program Files\Microsoft\R Client\R_SERVER\";
@@ -88,7 +87,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.RClient {
             shell.ShowMessage(Arg.Any<string>(), Arg.Any<MessageButtons>()).Returns(MessageButtons.Yes);
             shell.MainThread.Returns(Thread.CurrentThread);
 
-            MicrosoftRClient.CheckMicrosoftRClientInstall(shell);
+            MicrosoftRClient.CheckMicrosoftRClientInstall(shell, tr);
             shell.Received(1).ShowMessage(Arg.Any<string>(), Arg.Any<MessageButtons>());
 
             MicrosoftRClient.CheckMicrosoftRClientInstall(shell);

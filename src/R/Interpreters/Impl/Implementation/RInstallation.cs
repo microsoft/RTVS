@@ -51,9 +51,19 @@ namespace Microsoft.R.Interpreters {
             var engines = GetCompatibleEnginesFromRegistry(svl);
             engines = engines.Where(e => e.VerifyInstallation(svl, _fileSystem))
                              .OrderBy(e => e.Version);
-            
-            // Remove MRC if it is a dupe by path
-            engines = mrc != null ? engines.Where(e => !e.InstallPath.EqualsIgnoreCase(mrc.InstallPath)) : engines;
+
+            if (mrc == null) {
+                // If MRC didn't come with SQL, try finding one in the R engines
+                mrc = engines.FirstOrDefault(e => e.Name.Contains("Microsoft R"));
+                if (mrc != null) {
+                    list.Add(mrc);
+                }
+            }
+
+            if (mrc != null) { 
+                // Remove MRC and its duplicates
+                engines = engines.Where(e => !e.InstallPath.PathEquals(mrc.InstallPath));
+            }
 
             list.AddRange(engines);
             if (list.Count == 0) {
