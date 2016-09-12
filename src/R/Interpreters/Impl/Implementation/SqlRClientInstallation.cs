@@ -33,22 +33,9 @@ namespace Microsoft.R.Interpreters {
             registry = registry ?? new RegistryImpl();
             fileSystem = fileSystem ?? new FileSystem();
 
-            // First check that MRS is present on the machine.
-            bool mrsInstalled = false;
-            try {
-                using (var hklm = registry.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64)) {
-                    using (var key = hklm.OpenSubKey(@"SOFTWARE\Microsoft\Microsoft SQL Server\130\sql_shared_mr")) {
-                        var path = (string)key?.GetValue("Path");
-                        if (!string.IsNullOrEmpty(path) && path.Contains(_rServer)) {
-                            mrsInstalled = true;
-                        }
-                    }
-                }
-            } catch (Exception) { }
-
             // If yes, check 32-bit registry for R engine installed by the R Server.
             // TODO: remove this when MRS starts writing 64-bit keys.
-            if (mrsInstalled) {
+            if (IsMRCInstalledInSql(registry)) {
                 using (IRegistryKey hklm = registry.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32)) {
                     try {
                         using (var key = hklm.OpenSubKey(@"SOFTWARE\R-core\R64")) {
@@ -59,7 +46,7 @@ namespace Microsoft.R.Interpreters {
                                         if (!string.IsNullOrEmpty(path) && path.Contains(_rServer)) {
                                             var info = new RInterpreterInfo(string.Empty, path);
                                             if (info.VerifyInstallation(new SupportedRVersionRange(), fileSystem)) {
-                                                return new RInterpreterInfo(Invariant($"Microsoft R Client {info.Version.Major}.{info.Version.Minor}.{info.Version.Build}"), info.InstallPath);
+                                                return new RInterpreterInfo(Invariant($"Microsoft R Client (SQL) {info.Version.Major}.{info.Version.Minor}.{info.Version.Build}"), info.InstallPath);
                                             }
                                         }
                                     } catch (Exception) { }
@@ -71,6 +58,21 @@ namespace Microsoft.R.Interpreters {
             }
 
             return null;
+        }
+
+        private static bool IsMRCInstalledInSql(IRegistry registry = null) {
+            bool mrsInstalled = false;
+            try {
+                using (var hklm = registry.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64)) {
+                    using (var key = hklm.OpenSubKey(@"SOFTWARE\Microsoft\Microsoft SQL Server\130\sql_shared_mr")) {
+                        var path = (string)key?.GetValue("Path");
+                        if (!string.IsNullOrEmpty(path) && path.Contains(_rServer)) {
+                            mrsInstalled = true;
+                        }
+                    }
+                }
+            } catch (Exception) { }
+            return mrsInstalled;
         }
     }
 }
