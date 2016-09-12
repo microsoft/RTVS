@@ -6,22 +6,21 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Net;
+using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.WebSockets.Protocol;
 using Microsoft.Common.Core;
 using Microsoft.R.Host.Protocol;
-using Microsoft.AspNetCore.WebSockets.Protocol;
-using System.Net.WebSockets;
 
 namespace Microsoft.R.Host.Client.BrokerServices {
     public class RemoteUriWebService : IRemoteUriWebService {
         public RemoteUriWebService(string baseUri) {
-            PostUri = new Uri(new Uri(baseUri),"/remoteuri");
+            PostUri = new Uri(new Uri(baseUri), "/remoteuri");
         }
+
         private Uri PostUri { get; }
-        
-        private object _sendlock = new object();
 
         private async Task DoWebSocketReceiveSendAsync(WebSocket receiver, WebSocket sender, CancellationToken ct) {
             if (receiver == null || receiver == null) {
@@ -58,27 +57,28 @@ namespace Microsoft.R.Host.Client.BrokerServices {
 
         private Task DoWebSocketWorkAsync(WebSocket localWebSocket, WebSocket remoteWebSocket, CancellationToken ct) {
             return Task.WhenAll(
-                DoWebSocketReceiveSendAsync(localWebSocket, remoteWebSocket, ct), 
+                DoWebSocketReceiveSendAsync(localWebSocket, remoteWebSocket, ct),
                 DoWebSocketReceiveSendAsync(remoteWebSocket, localWebSocket, ct));
         }
 
         public async Task GetResponseAsync(HttpListenerContext context, string localBaseUrl, string remoteBaseUrl, CancellationToken ct) {
             string postUri = null;
             if (context.Request.IsWebSocketRequest) {
-                UriBuilder ub = new UriBuilder(PostUri) { Scheme = "ws"};
+                UriBuilder ub = new UriBuilder(PostUri) { Scheme = "ws" };
                 postUri = ub.Uri.ToString();
-            }else {
+            } else {
                 postUri = PostUri.ToString();
             }
 
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(postUri);
             request.Method = context.Request.HttpMethod;
 
-            // Add RTVS headers
-            request.Headers.Add(CustomHttpHeaders.RTVSRequestedURL, GetRemoteUrl(context.Request.Url, remoteBaseUrl));
             if (!context.Request.IsWebSocketRequest) {
                 SetRequestHeaders(request, context.Request.Headers, localBaseUrl, remoteBaseUrl);
             }
+
+            // Add RTVS headers
+            request.Headers.Add(CustomHttpHeaders.RTVSRequestedURL, GetRemoteUrl(context.Request.Url, remoteBaseUrl));
 
             if (context.Request.InputStream.CanSeek && context.Request.InputStream.Length > 0) {
                 using (Stream reqStream = await request.GetRequestStreamAsync()) {
@@ -86,14 +86,14 @@ namespace Microsoft.R.Host.Client.BrokerServices {
                     await reqStream.FlushAsync();
                 }
             }
-            
-            HttpWebResponse response =  (HttpWebResponse)await request.GetResponseAsync();
+
+            HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
 
             if (context.Request.IsWebSocketRequest) {
                 Stream respStream = response.GetResponseStream();
                 string subProtocol = response.Headers[Constants.Headers.SecWebSocketProtocol];
                 var remoteWebSocket = CommonWebSocket.CreateClientWebSocket(respStream, subProtocol, TimeSpan.FromMinutes(10), 65335, true);
-                var websocketContext =  await context.AcceptWebSocketAsync(subProtocol, 65335, TimeSpan.FromMinutes(10));
+                var websocketContext = await context.AcceptWebSocketAsync(subProtocol, 65335, TimeSpan.FromMinutes(10));
                 await DoWebSocketWorkAsync(websocketContext.WebSocket, remoteWebSocket, ct);
             } else {
                 SetResponseHeaders(response, context.Response, localBaseUrl, remoteBaseUrl);
@@ -121,7 +121,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
         private static void SetRequestHeaders(HttpWebRequest request, NameValueCollection requestHeaders, string localBaseUrl, string remoteBaseUrl) {
             // copy headers to avoid messing with original request headers
             Dictionary<string, string> headers = new Dictionary<string, string>();
-            foreach(string key in requestHeaders.AllKeys) {
+            foreach (string key in requestHeaders.AllKeys) {
                 headers.Add(key, requestHeaders[key]);
             }
 
@@ -135,6 +135,8 @@ namespace Microsoft.R.Host.Client.BrokerServices {
                     request.KeepAlive = true;
                 } else if (headers["Connection"].EqualsIgnoreCase("close")) {
                     request.KeepAlive = false;
+                } else {
+                    request.Connection = headers["Connection"];
                 }
                 headers.Remove("Connection");
             }
@@ -208,7 +210,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             if (!string.IsNullOrWhiteSpace(response.ContentEncoding)) {
                 httpListenerResponse.ContentEncoding = Encoding.GetEncoding(response.ContentEncoding);
             }
-            
+
             httpListenerResponse.StatusCode = (int)response.StatusCode;
 
             if (headers.ContainsKey("Content-Length")) {

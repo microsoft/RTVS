@@ -5,13 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Net.WebSockets;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Common.Core;
 using Microsoft.R.Host.Protocol;
-using Microsoft.AspNetCore.WebSockets.Protocol;
-using System.Net.WebSockets;
-using System.Threading;
 
 namespace Microsoft.R.Host.Broker.RemoteUri {
     public class RemoteUriHelper {
@@ -58,13 +57,12 @@ namespace Microsoft.R.Host.Broker.RemoteUri {
         public static async Task HandlerAsync(HttpContext context) {
             var url = context.Request.Headers[CustomHttpHeaders.RTVSRequestedURL];
 
-            HttpWebRequest request = request =(HttpWebRequest)WebRequest.Create(url);
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
             request.Method = context.Request.Method;
 
             ClientWebSocket clientWebsocket = null;
-            if (context.WebSockets.IsWebSocketRequest) 
-            {
-                UriBuilder ub = new UriBuilder(url) { Scheme = "ws"};
+            if (context.WebSockets.IsWebSocketRequest) {
+                UriBuilder ub = new UriBuilder(url) { Scheme = "ws" };
                 clientWebsocket = new ClientWebSocket();
                 await clientWebsocket.ConnectAsync(ub.Uri, CancellationToken.None);
                 var serverWebSocket = await context.WebSockets.AcceptWebSocketAsync(clientWebsocket.SubProtocol);
