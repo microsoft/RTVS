@@ -220,6 +220,9 @@ namespace Microsoft.R.Host.Client.Session {
 
         private async Task StartHostAsyncBackground(RHostStartupInfo startupInfo, IRSessionCallback callback, int timeout) {
             await TaskUtilities.SwitchToBackgroundThread();
+
+            _callback = callback;
+            _startupInfo = startupInfo;
             RHost host;
             try {
                 host = await BrokerClient.ConnectAsync(startupInfo.Name, this, startupInfo.RHostCommandLineArguments, timeout);
@@ -233,20 +236,17 @@ namespace Microsoft.R.Host.Client.Session {
                 throw;
             }
 
-            await StartHostAsyncBackground(startupInfo, callback, host);
+            await StartHostAsyncBackground(host);
         }
 
-        private async Task StartHostAsyncBackground(RHostStartupInfo startupInfo, IRSessionCallback callback, RHost host) {
+        private async Task StartHostAsyncBackground(RHost host) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             ResetInitializationTcs();
-
-            _callback = callback;
-            _startupInfo = startupInfo;
             ClearPendingRequests(new RHostDisconnectedException());
 
             Interlocked.Exchange(ref _host, host);
-            var hostRunTask = RunHost(startupInfo);
+            var hostRunTask = RunHost();
             Interlocked.Exchange(ref _hostRunTask, hostRunTask)?.DoNotWait();
 
             await _initializationTcs.Task;
@@ -289,17 +289,20 @@ namespace Microsoft.R.Host.Client.Session {
             var host = _host;
             var hostRunTask = _hostRunTask;
 
-            // Detach RHost from RSession
-            host.DetachCallback();
+            // host may be null if previous attempts to start it have failed
+            if (host != null) { 
+                // Detach RHost from RSession
+                host?.DetachCallback();
 
-            // Cancel all current requests
-            await CancelAllAsync();
+                // Cancel all current requests
+                await CancelAllAsync();
+            }
 
             // Start new RHost
-            await StartHostAsyncBackground(_startupInfo, _callback, hostToSwitch);
+            await StartHostAsyncBackground(hostToSwitch);
 
             // Don't send stop notification to broker - just dispose host and wait for old hostRunTask to exit;
-            host.Dispose();
+            host?.Dispose();
             await hostRunTask;
         }
 
@@ -369,9 +372,9 @@ namespace Microsoft.R.Host.Client.Session {
             return _disableMutatingOnReadConsole.Increment();
         }
 
-        private async Task RunHost(RHostStartupInfo startupInfo) {
+        private async Task RunHost() {
             try {
-                ScheduleAfterHostStarted(startupInfo);
+                ScheduleAfterHostStarted(_startupInfo);
                 await _host.Run();
             } catch (OperationCanceledException oce) {
                 _initializationTcs.TrySetCanceled(oce);
