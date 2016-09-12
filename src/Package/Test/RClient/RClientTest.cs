@@ -82,7 +82,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.RClient {
             var rClientRPath = @"C:\Program Files\Microsoft\R Client\R_SERVER\";
             var tr = new RegistryMock(SimulateRegistryMsRClient(rClientInstallPath, rClientRPath));
 
-            MicrosoftRClientInstallation.GetRClientPath(tr).Should().Be(rClientRPath);
+            SqlRClientInstallation.GetRClientPath(tr).Should().Be(rClientRPath);
 
             var shell = Substitute.For<ICoreShell>();
             shell.ShowMessage(Arg.Any<string>(), Arg.Any<MessageButtons>()).Returns(MessageButtons.Yes);

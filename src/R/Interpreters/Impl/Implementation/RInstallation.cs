@@ -42,15 +42,20 @@ namespace Microsoft.R.Interpreters {
         public IEnumerable<IRInterpreterInfo> GetCompatibleEngines(ISupportedRVersionRange svl = null) {
             var list = new List<IRInterpreterInfo>();
 
-            var mrc = MicrosoftRClientInstallation.GetMicrosoftRClientInfo(_registry, _fileSystem);
+            // Get MRC from SQL
+            var mrc = SqlRClientInstallation.GetMicrosoftRClientInfo(_registry, _fileSystem);
             if (mrc != null) {
                 list.Add(mrc);
             }
 
             var engines = GetCompatibleEnginesFromRegistry(svl);
-            engines = engines.Where(e => e.VerifyInstallation(svl, _fileSystem)).OrderBy(e => e.Version);
-            list.AddRange(engines);
+            engines = engines.Where(e => e.VerifyInstallation(svl, _fileSystem))
+                             .OrderBy(e => e.Version);
+            
+            // Remove MRC if it is a dupe by path
+            engines = mrc != null ? engines.Where(e => !e.InstallPath.EqualsIgnoreCase(mrc.InstallPath)) : engines;
 
+            list.AddRange(engines);
             if (list.Count == 0) {
                 var e = TryFindRInProgramFiles(svl);
                 if (e != null) {

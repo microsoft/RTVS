@@ -32,7 +32,7 @@ namespace Microsoft.VisualStudio.R.Package.StatusBar {
             var dte = _shell.GetGlobalService<EnvDTE.DTE>();
             EnvDTE.Window window;
             try {
-                window = dte.ActiveWindow != null ? dte.MainWindow : null;
+                window = dte.MainWindow;
             } catch (NullReferenceException) {
                 // Window isn't loaded yet
                 return null;

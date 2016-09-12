@@ -23,7 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         }
 
         protected override void Handle() {
-            var rClientPath = MicrosoftRClientInstallation.GetRClientPath();
+            var rClientPath = SqlRClientInstallation.GetRClientPath();
             if (string.IsNullOrEmpty(rClientPath)) {
                 if (_shell.ShowMessage(Resources.Prompt_RClientNotInstalled, MessageButtons.YesNo) == MessageButtons.Yes) {
                     var installer = _shell.ExportProvider.GetExportedValue<IMicrosoftRClientInstaller>();

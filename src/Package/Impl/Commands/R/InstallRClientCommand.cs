@@ -19,7 +19,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         }
 
         protected override void Handle() {
-            var path = MicrosoftRClientInstallation.GetRClientPath();
+            var path = SqlRClientInstallation.GetRClientPath();
             if (!string.IsNullOrEmpty(path)) {
                 _shell.ShowMessage(Resources.Message_RClientIsAlreadyInstalled, MessageButtons.OK);
             } else {

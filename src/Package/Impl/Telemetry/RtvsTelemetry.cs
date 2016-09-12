@@ -85,7 +85,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
                 TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RInstallPath, e.InstallPath);
             }
 
-            string rClientPath = MicrosoftRClientInstallation.GetRClientPath();
+            string rClientPath = SqlRClientInstallation.GetRClientPath();
             if (rClientPath != null) {
                 TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RClientFound);
             }
