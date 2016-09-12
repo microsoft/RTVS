@@ -17,6 +17,7 @@ using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
+using Microsoft.R.Host.Client.Session;
 using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 
@@ -175,7 +176,7 @@ namespace Microsoft.R.Support.Help.Packages {
         private async Task<IEnumerable<RPackage>> GetPackagesAsync() {
             try {
                 await _host.CreateSessionAsync();
-                var result = await _host.Session.EvaluateAsync<JArray>(Invariant($"rtvs:::packages.installed()"), REvaluationKind.Normal);
+                var result = await _host.Session.InstalledPackagesAsync();
                 return result.Select(p => p.ToObject<RPackage>());
             } catch (TaskCanceledException) { }
             return Enumerable.Empty<RPackage>();
