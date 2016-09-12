@@ -17,5 +17,15 @@ namespace Microsoft.Common.Core {
             }
             return data;
         }
+
+        public static async Task<byte[]> ToByteArrayAsync(this ArraySegment<byte> source) {
+            byte[] data = null;
+            using (MemoryStream ms = new MemoryStream()) {
+                await ms.WriteAsync(source.Array, source.Offset, source.Count);
+                await ms.FlushAsync();
+                data = ms.ToArray();
+            }
+            return data;
+        }
     }
 }
