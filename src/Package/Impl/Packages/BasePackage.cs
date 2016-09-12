@@ -9,6 +9,7 @@ using System.Linq;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.Languages.Editor.Tasks;
 using Microsoft.VisualStudio.CommandBars;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Shell;
 using Microsoft.VisualStudio.R.Package.Definitions;
@@ -57,20 +58,22 @@ namespace Microsoft.VisualStudio.R.Package.Packages {
                 RegisterEditorFactory(editorFactory);
             }
 
-            var menuCommandService = (IMenuCommandService)GetService(typeof(IMenuCommandService));
-            foreach (var commmand in CreateMenuCommands()) {
-                menuCommandService.AddCommand(commmand);
-            }
+            IdleTimeAction.Create(() => {
+                var menuCommandService = (IMenuCommandService)GetService(typeof(IMenuCommandService));
+                foreach (var commmand in CreateMenuCommands()) {
+                    menuCommandService.AddCommand(commmand);
+                }
 
-            var dte = VsAppShell.Current.GetGlobalService<DTE2>(typeof(DTE));
-            var cbs = (CommandBars.CommandBars)dte?.CommandBars;
-            Debug.Assert(cbs != null, "Unable to find R Toolbar");
+                var dte = VsAppShell.Current.GetGlobalService<DTE2>(typeof(DTE));
+                var cbs = (CommandBars.CommandBars)dte?.CommandBars;
+                Debug.Assert(cbs != null, "Unable to find R Toolbar");
 
-            var cb = cbs["R Toolbar"];
-            Debug.Assert(cb != null, "Unable to find R Toolbar");
-            if (cb != null) {
-                cb.Visible = true;
-            }
+                var cb = cbs["R Toolbar"];
+                Debug.Assert(cb != null, "Unable to find R Toolbar");
+                if (cb != null) {
+                    cb.Visible = true;
+                }
+            }, 20, this.GetType(), VsAppShell.Current);
         }
 
         protected void AdviseExportedWindowFrameEvents<T>() where T : IVsWindowFrameEvents {

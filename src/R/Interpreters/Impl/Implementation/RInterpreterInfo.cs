@@ -81,8 +81,8 @@ namespace Microsoft.R.Interpreters {
         }
 
         private static bool IsSameVersion(Version v1, Version v2) {
-            // Compare 3.2.2.* is compatible with 3.2.2.803
-            return v1.Major == v2.Major && v1.Minor == v2.Minor && v1.Build == v2.Build;
+            // Ignore build and revision
+            return v1.Major == v2.Major && v1.Minor == v2.Minor;
         }
 
         private Version GetRVersionFromBinary(IFileSystem fs, string basePath) {

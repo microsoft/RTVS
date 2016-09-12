@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
 using Microsoft.Win32;
@@ -65,7 +66,14 @@ namespace Microsoft.R.Interpreters {
         /// </summary>
         private IEnumerable<IRInterpreterInfo> GetCompatibleEnginesFromRegistry(ISupportedRVersionRange svr) {
             svr = svr ?? new SupportedRVersionRange();
-            return GetInstalledEnginesFromRegistry().Where(e => svr.IsCompatibleVersion(e.Version));
+            var engines = GetInstalledEnginesFromRegistry().Where(e => svr.IsCompatibleVersion(e.Version));
+            // Remove duplicates (MRC registers under multiple keys)
+            var mrc = engines.FirstOrDefault(e => e.Name.Contains("Microsoft"));
+            if(mrc != null) {
+                var dupes = engines.Where(e => e.InstallPath.EqualsIgnoreCase(mrc.InstallPath)).Except(new IRInterpreterInfo[] { mrc });
+                engines = engines.Except(dupes);
+            }
+            return engines;
         }
 
         /// <summary>
@@ -84,7 +92,9 @@ namespace Microsoft.R.Interpreters {
                             using (var subKey = rKey.OpenSubKey(name)) {
                                 var path = subKey.GetValue("InstallPath") as string;
                                 if (!string.IsNullOrEmpty(path)) {
-                                    engines.Add(new RInterpreterInfo(Invariant($"R {name}"), path, _fileSystem));
+                                    // Convert '3.2.2.803 Microsoft R Client' to Microsoft R Client (version)
+                                    // Convert '3.3.1' to 'R 3.3.1' for consistency
+                                    engines.Add(new RInterpreterInfo(NameFromKey(name), path, _fileSystem));
                                 }
                             }
                         }
@@ -92,6 +102,25 @@ namespace Microsoft.R.Interpreters {
                 } catch (Exception) { }
             }
             return engines;
+        }
+
+        private static string NameFromKey(string key) {
+            Version v;
+            if (Version.TryParse(key, out v)) {
+                return Invariant($"R {v}");
+            } else {
+                var index = key.IndexOfOrdinal("Microsoft R");
+                if (index == 0) {
+                    return key; // 'Microsoft R Open 'version'
+                }
+                if(index > 0) {
+                    // 3.2.2.803 Microsoft R [Open | Client]
+                    if(Version.TryParse(key.Substring(0, index).TrimEnd(), out v)) {
+                        return Invariant($"{key.Substring(index).TrimEnd()} {v}");
+                    }
+                }
+            }
+            return key; // fallback
         }
 
         private static Version GetRVersionFromFolderName(string folderName) {

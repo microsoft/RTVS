@@ -34,16 +34,22 @@ namespace Microsoft.R.Interpreters {
             registry = registry ?? new RegistryImpl();
             fileSystem = fileSystem ?? new FileSystem();
 
+            // First try and locate MRC installed with SQL
             var info = GetMRCInfoFromSQL(registry, fileSystem);
             if (info == null) {
+                // If not found, try one possibly registered under R-Core
                 info = GetMRCInfoFromRCore(registry, fileSystem);
             }
             return info;
         }
 
+        /// <summary>
+        /// Attempts to locate Microsoft R Client under HTLKM\Software\R\R-Core registry key.
+        /// MRC registry key has 'Microsoft R' string in it.
+        /// </summary>
         private static IRInterpreterInfo GetMRCInfoFromRCore(IRegistry registry, IFileSystem fileSystem) {
             var engines = new RInstallation().GetCompatibleEngines();
-            return engines.First();
+            return engines.Where(e => e.Name.Contains("Microsoft R")).FirstOrDefault();
         }
 
         private static IRInterpreterInfo GetMRCInfoFromSQL(IRegistry registry, IFileSystem fileSystem) {
