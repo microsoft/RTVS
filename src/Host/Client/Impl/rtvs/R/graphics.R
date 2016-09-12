@@ -48,7 +48,7 @@ graphics.ide.getactivedeviceid <- function() {
 }
 
 graphics.ide.setactivedeviceid <- function(device_id) {
-    device_num <- graphics.ide.getdevicenum(device_id)
+    device_num <- graphics.ide.getnullabledevicenum(device_id)
     if (!is.null(device_num)) {
         dev.set(device_num)
     }
@@ -59,6 +59,15 @@ graphics.ide.getdeviceid <- function(device_num) {
 }
 
 graphics.ide.getdevicenum <- function(device_id) {
+    # Device number is 1-based, if not found we return 0 so we can safely deserialize json as integer
+    device_num <- graphics.ide.getnullabledevicenum(device_id)
+    if (is.null(device_num)) {
+        device_num = 0
+    }
+    device_num
+}
+
+graphics.ide.getnullabledevicenum <- function(device_id) {
    invisible(external_embedded('ide_graphicsdevice_get_device_num', device_id))
 }
 
