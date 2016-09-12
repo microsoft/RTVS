@@ -292,7 +292,7 @@ namespace Microsoft.R.Host.Client.Session {
             // host may be null if previous attempts to start it have failed
             if (host != null) { 
                 // Detach RHost from RSession
-                host?.DetachCallback();
+                host.DetachCallback();
 
                 // Cancel all current requests
                 await CancelAllAsync();
