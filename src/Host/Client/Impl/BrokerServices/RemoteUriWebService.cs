@@ -11,6 +11,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.R.Host.Protocol;
+using Microsoft.AspNetCore.WebSockets.Protocol;
+using System.Net.WebSockets;
 
 namespace Microsoft.R.Host.Client.BrokerServices {
     public class RemoteUriWebService : IRemoteUriWebService {
@@ -18,16 +20,67 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             PostUri = new Uri(new Uri(baseUri),"/remoteuri");
         }
         private Uri PostUri { get; }
+        
+        private object _sendlock = new object();
+
+        private async Task DoWebSocketReceiveSendAsync(WebSocket receiver, WebSocket sender, CancellationToken ct) {
+            if (receiver == null || receiver == null) {
+                return;
+            }
+
+            ArraySegment<byte> receiveBuffer = WebSocket.CreateServerBuffer(65335);
+            while (receiver.State == WebSocketState.Open && sender.State == WebSocketState.Open) {
+                if (ct.IsCancellationRequested) {
+                    Task.WhenAll(
+                        receiver.CloseAsync(WebSocketCloseStatus.NormalClosure, "Normal closure", CancellationToken.None),
+                        sender.CloseAsync(WebSocketCloseStatus.NormalClosure, "Normal closure", CancellationToken.None))
+                        .DoNotWait();
+                    return;
+                }
+
+                WebSocketReceiveResult result = await receiver.ReceiveAsync(receiveBuffer, ct);
+
+                byte[] data = null;
+                using (MemoryStream ms = new MemoryStream()) {
+                    await ms.WriteAsync(receiveBuffer.Array, receiveBuffer.Offset, result.Count);
+                    await ms.FlushAsync();
+                    data = ms.ToArray();
+                }
+
+                ArraySegment<byte> sendBuffer = new ArraySegment<byte>(data);
+                await sender.SendAsync(sendBuffer, result.MessageType, result.EndOfMessage, ct);
+
+                if (result.MessageType == WebSocketMessageType.Close) {
+                    await receiver.CloseAsync(WebSocketCloseStatus.NormalClosure, "Normal closure", ct);
+                }
+            }
+        }
+
+        private Task DoWebSocketWorkAsync(WebSocket localWebSocket, WebSocket remoteWebSocket, CancellationToken ct) {
+            return Task.WhenAll(
+                DoWebSocketReceiveSendAsync(localWebSocket, remoteWebSocket, ct), 
+                DoWebSocketReceiveSendAsync(remoteWebSocket, localWebSocket, ct));
+        }
 
         public async Task GetResponseAsync(HttpListenerContext context, string localBaseUrl, string remoteBaseUrl, CancellationToken ct) {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(PostUri);
+            string postUri = null;
+            if (context.Request.IsWebSocketRequest) {
+                UriBuilder ub = new UriBuilder(PostUri) { Scheme = "ws"};
+                postUri = ub.Uri.ToString();
+            }else {
+                postUri = PostUri.ToString();
+            }
+
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(postUri);
             request.Method = context.Request.HttpMethod;
-            SetRequestHeaders(request, context.Request.Headers, localBaseUrl, remoteBaseUrl);
 
             // Add RTVS headers
             request.Headers.Add(CustomHttpHeaders.RTVSRequestedURL, GetRemoteUrl(context.Request.Url, remoteBaseUrl));
+            if (!context.Request.IsWebSocketRequest) {
+                SetRequestHeaders(request, context.Request.Headers, localBaseUrl, remoteBaseUrl);
+            }
 
-            if(context.Request.InputStream.CanSeek && context.Request.InputStream.Length > 0) {
+            if (context.Request.InputStream.CanSeek && context.Request.InputStream.Length > 0) {
                 using (Stream reqStream = await request.GetRequestStreamAsync()) {
                     await context.Request.InputStream.CopyToAsync(reqStream);
                     await reqStream.FlushAsync();
@@ -36,13 +89,21 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             
             HttpWebResponse response =  (HttpWebResponse)await request.GetResponseAsync();
 
-            SetResponseHeaders(response, context.Response, localBaseUrl, remoteBaseUrl);
-            using (Stream respStream = response.GetResponseStream()) {
-                await respStream.CopyToAsync(context.Response.OutputStream);
-                await context.Response.OutputStream.FlushAsync();
-                context.Response.OutputStream.Close();
+            if (context.Request.IsWebSocketRequest) {
+                Stream respStream = response.GetResponseStream();
+                string subProtocol = response.Headers[Constants.Headers.SecWebSocketProtocol];
+                var remoteWebSocket = CommonWebSocket.CreateClientWebSocket(respStream, subProtocol, TimeSpan.FromMinutes(10), 65335, true);
+                var websocketContext =  await context.AcceptWebSocketAsync(subProtocol, 65335, TimeSpan.FromMinutes(10));
+                await DoWebSocketWorkAsync(websocketContext.WebSocket, remoteWebSocket, ct);
+            } else {
+                SetResponseHeaders(response, context.Response, localBaseUrl, remoteBaseUrl);
+                using (Stream respStream = response.GetResponseStream()) {
+                    await respStream.CopyToAsync(context.Response.OutputStream);
+                    await context.Response.OutputStream.FlushAsync();
+                    context.Response.OutputStream.Close();
+                }
+                response.Close();
             }
-            response.Close();
         }
 
         private string GetRemoteUrl(Uri url, string remoteBase) {
