@@ -62,10 +62,6 @@ graphics.ide.getdevicenum <- function(device_id) {
     invisible(external_embedded('ide_graphicsdevice_get_device_num', device_id))
 }
 
-graphics.ide.getnullabledevicenum <- function(device_id) {
-    invisible(external_embedded('ide_graphicsdevice_get_device_num', device_id))
-}
-
 graphics.ide.getactiveplotid <- function(device_id) {
     invisible(external_embedded('ide_graphicsdevice_get_active_plot_id', device_id))
 }
