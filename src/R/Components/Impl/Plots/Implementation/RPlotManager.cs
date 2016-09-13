@@ -479,7 +479,8 @@ namespace Microsoft.R.Components.Plots.Implementation {
         }
 
         private async Task RefreshDeviceNum(IRPlotDevice device) {
-            device.DeviceNum = await InteractiveWorkflow.RSession.GetPlotDeviceNumAsync(device.DeviceId);
+            var num = await InteractiveWorkflow.RSession.GetPlotDeviceNumAsync(device.DeviceId);
+            device.DeviceNum = num ?? 0;
         }
 
         private void RSession_Disconnected(object sender, EventArgs e) {
