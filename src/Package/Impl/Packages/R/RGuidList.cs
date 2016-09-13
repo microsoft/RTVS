@@ -5,6 +5,7 @@ using System;
 
 namespace Microsoft.VisualStudio.R.Packages.R {
     public static class RGuidList {
+        public const string RtvsStartupPackageGuidString = "1E27AE60-1095-4A62-9DA5-37038BCBDD26";
         public const string RPackageGuidString = "6D7C5336-C0CA-4857-A7E7-2E964EA836BF";
         public const string REditorFactoryGuidString = "EE606CC0-077A-4FDE-91C3-24EC012C8389";
         public const string RProjEditorFactoryGuidString = "3B0A6D8B-C380-428A-93D8-45FD46E95581";
@@ -19,6 +20,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         public const string ReplWindowGuidString = "7026C640-8831-43A4-A93A-A56AA6BB9552";
 
         public static readonly Guid RPackageGuid = new Guid(RPackageGuidString);
+        public static readonly Guid RtvsStartupPackageGuid = new Guid(RtvsStartupPackageGuidString);
         public static readonly Guid REditorFactoryGuid = new Guid(REditorFactoryGuidString);
         public static readonly Guid RProjEditorFactoryGuid = new Guid(RProjEditorFactoryGuidString);
         public static readonly Guid RLanguageServiceGuid = new Guid(RLanguageServiceGuidString);

@@ -21,49 +21,32 @@ namespace Microsoft.VisualStudio.R.Package.StatusBar {
         private readonly IApplicationShell _shell;
         private ItemsControl _itemsControl;
         private Visual _visualRoot;
-        private EnvDTE.DTEEvents _dteEvents;
 
         [ImportingConstructor]
         public VsStatusBar(IApplicationShell shell) {
             _shell = shell;
         }
 
-        private Visual GetRootVisual() {
+        private void UpdateRootVisual() {
             var dte = _shell.GetGlobalService<EnvDTE.DTE>();
-            EnvDTE.Window window;
-            try {
-                window = dte.MainWindow;
-            } catch (NullReferenceException) {
-                // Window isn't loaded yet
-                return null;
-            }
-
+            var window = dte.MainWindow;
             var hwnd = window.HWnd;
             var hwndSource = HwndSource.FromHwnd(new IntPtr(hwnd));
-            return hwndSource?.RootVisual;
+            _visualRoot = hwndSource?.RootVisual;
+            EnsureItemsControlCreated();
         }
 
         public IDisposable AddItem(UIElement element) {
             _shell.AssertIsOnMainThread();
             EnsureItemsControlCreated();
+            TryAddItemsControlToVisualRoot();
 
             _itemsControl.Items.Insert(0, element);
             return Disposable.Create(() => _shell.DispatchOnUIThread(() => _itemsControl.Items.Remove(element)));
         }
 
         private void TryAddItemsControlToVisualRoot() {
-            if (_visualRoot == null) {
-                _visualRoot = GetRootVisual();
-            }
-
-            if (_visualRoot == null && _dteEvents == null) {
-                var dte = _shell.GetGlobalService<EnvDTE.DTE>();
-                if (dte == null) {
-                    return;
-                }
-
-                _dteEvents = dte.Events.DTEEvents;
-                _dteEvents.OnStartupComplete += OnStartupComplete;
+            if (_visualRoot == null && !RtvsStartupPackage.ExecuteOnStartupComplete(UpdateRootVisual)) {
                 return;
             }
 
@@ -83,7 +66,7 @@ namespace Microsoft.VisualStudio.R.Package.StatusBar {
             // It is possible that StatusBarControl isn't created yet.
             // In this case, we will add ItemsControl directly to the dock panel that holds the StatusBarControl
             // It should be the same panel that holds VsResizeGrip
-            var resizeGrip = GetRootVisual().FindFirstVisualChildBreadthFirst<ResizeGrip>();
+            var resizeGrip = _visualRoot.FindFirstVisualChildBreadthFirst<ResizeGrip>();
 
             var statusBarPanel = resizeGrip?.Parent as DockPanel;
             if (statusBarPanel == null) {
@@ -99,23 +82,12 @@ namespace Microsoft.VisualStudio.R.Package.StatusBar {
             }
         }
 
-        private void OnStartupComplete() {
-            _shell.DispatchOnUIThread(() => {
-                _dteEvents.OnStartupComplete -= OnStartupComplete;
-                _dteEvents = null;
-
-                EnsureItemsControlCreated();
-            });
-        }
-
         private void EnsureItemsControlCreated() {
             if (_itemsControl == null) {
                 var frameworkElementFactory = new FrameworkElementFactory(typeof(StackPanel));
                 frameworkElementFactory.SetValue(StackPanel.OrientationProperty, Orientation.Horizontal);
                 _itemsControl = new ItemsControl { ItemsPanel = new ItemsPanelTemplate(frameworkElementFactory) };
             }
-
-            TryAddItemsControlToVisualRoot();
         }
     }
 }
