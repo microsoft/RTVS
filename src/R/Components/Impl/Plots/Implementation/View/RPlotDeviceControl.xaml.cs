@@ -29,25 +29,30 @@ namespace Microsoft.R.Components.Plots.Implementation.View {
         }
 
         public PlotDeviceProperties GetPlotWindowProperties() {
-            int resolution = WpfUnitsConversion.GetResolution(Content as Visual);
-            return new PlotDeviceProperties((int)ActualWidth, (int)ActualHeight, resolution);
+            return GetPixelSizeAndResolution(new Size(ActualWidth, ActualHeight));
         }
 
         private void UserControl_SizeChanged(object sender, SizeChangedEventArgs e) {
-            var unadjustedPixelSize = WpfUnitsConversion.ToPixels(Content as Visual, e.NewSize);
-
-            // If the window gets below a certain minimum size, plot to the minimum size
-            int pixelWidth = Math.Max((int)unadjustedPixelSize.Width, MinPixelWidth);
-            int pixelHeight = Math.Max((int)unadjustedPixelSize.Height, MinPixelHeight);
-            int resolution = WpfUnitsConversion.GetResolution(Content as Visual);
+            var props = GetPixelSizeAndResolution(e.NewSize);
 
             // Throttle rendering of plot while user is resizing the window.
             // Plot rendering isn't fast enough to keep up with live resizing,
             // which is what happens with undocked VS tool windows.
             var model = Model;
             if (model != null) {
-                _resizeAction.Invoke(() => model.ResizePlotAsync(pixelWidth, pixelHeight, resolution));
+                _resizeAction.Invoke(() => model.ResizePlotAsync(props.Width, props.Height, props.Resolution));
             }
+        }
+
+        private PlotDeviceProperties GetPixelSizeAndResolution(Size wpfSize) {
+            var unadjustedPixelSize = WpfUnitsConversion.ToPixels(Content as Visual, wpfSize);
+
+            // If the window gets below a certain minimum size, plot to the minimum size
+            int pixelWidth = Math.Max((int)unadjustedPixelSize.Width, MinPixelWidth);
+            int pixelHeight = Math.Max((int)unadjustedPixelSize.Height, MinPixelHeight);
+            int resolution = WpfUnitsConversion.GetResolution(Content as Visual);
+
+            return new PlotDeviceProperties(pixelWidth, pixelHeight, resolution);
         }
 
         private void Image_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
