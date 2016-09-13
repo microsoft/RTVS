@@ -23,7 +23,7 @@ namespace Microsoft.R.Components.Test.Fakes.VisualComponentFactories {
             InteractiveWindowFactory = interactiveWindowFactory;
         }
 
-        public IInteractiveWindowVisualComponent Create(int instanceId, IInteractiveEvaluator evaluator) {
+        public IInteractiveWindowVisualComponent Create(int instanceId, IInteractiveEvaluator evaluator, IRInteractiveWorkflow workflow) {
             return GetOrCreate(instanceId, container => {
                 _window = InteractiveWindowFactory.CreateWindow(evaluator);
                 var contentType = _contentTypeRegistryService.GetContentType(RHistoryContentTypeDefinition.ContentType);

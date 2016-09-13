@@ -920,4 +920,7 @@ Additional information:
   <data name="SqlPublish_PublishDatabaseSuccess" xml:space="preserve">
     <value>Publishing complete. Connection {0}</value>
   </data>
+  <data name="Disconnected" xml:space="preserve">
+    <value>disconnected</value>
+  </data>
 </root>

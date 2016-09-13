@@ -11,7 +11,7 @@ using Microsoft.VisualStudio.Shell.Mocks;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Mocks {
     public class InteractiveWindowComponentContainerFactoryMock : IInteractiveWindowComponentContainerFactory {
-        public IInteractiveWindowVisualComponent Create(int instanceId, IInteractiveEvaluator evaluator) {
+        public IInteractiveWindowVisualComponent Create(int instanceId, IInteractiveEvaluator evaluator, IRInteractiveWorkflow workflow) {
             var tb = new TextBufferMock(string.Empty, RContentTypeDefinition.ContentType);
             var container = new VisualComponentContainerStub<RInteractiveWindowVisualComponent>();
             var component = new RInteractiveWindowVisualComponent(new InteractiveWindowMock(new WpfTextViewMock(tb), evaluator), container);

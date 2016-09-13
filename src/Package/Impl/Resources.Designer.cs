@@ -268,6 +268,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to disconnected.
+        /// </summary>
+        public static string Disconnected {
+            get {
+                return ResourceManager.GetString("Disconnected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Downloading Microsoft R Client setup application....
         /// </summary>
         public static string DownloadingRClientInstaller {
