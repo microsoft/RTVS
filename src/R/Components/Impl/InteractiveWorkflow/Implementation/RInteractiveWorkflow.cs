@@ -140,7 +140,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
             var evaluator = new RInteractiveEvaluator(RSession, History, Connections, Shell, _settings);
 
-            ActiveWindow = componentContainerFactory.Create(instanceId, evaluator, this);
+            ActiveWindow = componentContainerFactory.Create(instanceId, evaluator, RSessions);
             var interactiveWindow = ActiveWindow.InteractiveWindow;
             interactiveWindow.TextView.Closed += (_, __) => evaluator.Dispose();
             _operations.InteractiveWindow = interactiveWindow;

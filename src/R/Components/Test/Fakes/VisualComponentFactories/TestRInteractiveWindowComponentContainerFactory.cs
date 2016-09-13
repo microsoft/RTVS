@@ -5,6 +5,7 @@ using System.ComponentModel.Composition;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Implementation;
+using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.Text.Editor;
@@ -23,7 +24,7 @@ namespace Microsoft.R.Components.Test.Fakes.VisualComponentFactories {
             InteractiveWindowFactory = interactiveWindowFactory;
         }
 
-        public IInteractiveWindowVisualComponent Create(int instanceId, IInteractiveEvaluator evaluator, IRInteractiveWorkflow workflow) {
+        public IInteractiveWindowVisualComponent Create(int instanceId, IInteractiveEvaluator evaluator, IRSessionProvider sessionProvider) {
             return GetOrCreate(instanceId, container => {
                 _window = InteractiveWindowFactory.CreateWindow(evaluator);
                 var contentType = _contentTypeRegistryService.GetContentType(RHistoryContentTypeDefinition.ContentType);
@@ -31,7 +32,7 @@ namespace Microsoft.R.Components.Test.Fakes.VisualComponentFactories {
                 _window.CurrentLanguageBuffer?.ChangeContentType(contentType, null);
                 _window.TextView.Options.SetOptionValue(DefaultTextViewHostOptions.ChangeTrackingId, false);
 
-                return new RInteractiveWindowVisualComponent(_window, container);
+                return new RInteractiveWindowVisualComponent(_window, container, sessionProvider);
             }).Component;
         }
 

@@ -268,15 +268,6 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to disconnected.
-        /// </summary>
-        public static string Disconnected {
-            get {
-                return ResourceManager.GetString("Disconnected", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Downloading Microsoft R Client setup application....
         /// </summary>
         public static string DownloadingRClientInstaller {
@@ -1006,15 +997,6 @@ namespace Microsoft.VisualStudio.R.Package {
             get {
                 object obj = ResourceManager.GetObject("ReplWindowIcon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to R Interactive.
-        /// </summary>
-        public static string ReplWindowName {
-            get {
-                return ResourceManager.GetString("ReplWindowName", resourceCulture);
             }
         }
         

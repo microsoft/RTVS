@@ -5,16 +5,17 @@ using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Implementation;
 using Microsoft.R.Components.Test.Stubs.VisualComponents;
+using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.Shell.Mocks;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Mocks {
     public class InteractiveWindowComponentContainerFactoryMock : IInteractiveWindowComponentContainerFactory {
-        public IInteractiveWindowVisualComponent Create(int instanceId, IInteractiveEvaluator evaluator, IRInteractiveWorkflow workflow) {
+        public IInteractiveWindowVisualComponent Create(int instanceId, IInteractiveEvaluator evaluator, IRSessionProvider sessionProvider) {
             var tb = new TextBufferMock(string.Empty, RContentTypeDefinition.ContentType);
             var container = new VisualComponentContainerStub<RInteractiveWindowVisualComponent>();
-            var component = new RInteractiveWindowVisualComponent(new InteractiveWindowMock(new WpfTextViewMock(tb), evaluator), container);
+            var component = new RInteractiveWindowVisualComponent(new InteractiveWindowMock(new WpfTextViewMock(tb), evaluator), container, sessionProvider);
             container.Component = component;
             return component;
         }

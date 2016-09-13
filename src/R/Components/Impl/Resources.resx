@@ -484,4 +484,10 @@ Arguments: {3}</value>
 
 Are you sure you want to terminate R session?</value>
   </data>
+  <data name="Disconnected" xml:space="preserve">
+    <value>disconnected</value>
+  </data>
+  <data name="ReplWindowName" xml:space="preserve">
+    <value>R Interactive</value>
+  </data>
 </root>

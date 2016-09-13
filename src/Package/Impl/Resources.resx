@@ -201,9 +201,6 @@
   <data name="Settings_SpaceAfterKeyword_Description" xml:space="preserve">
     <value>Insert space after keyword and before opening brace such as in case of 'if', 'while', 'repeat'</value>
   </data>
-  <data name="ReplWindowName" xml:space="preserve">
-    <value>R Interactive</value>
-  </data>
   <data name="Settings_SyntaxCheckCategory" xml:space="preserve">
     <value>Syntax check</value>
   </data>
@@ -919,8 +916,5 @@ Additional information:
   </data>
   <data name="SqlPublish_PublishDatabaseSuccess" xml:space="preserve">
     <value>Publishing complete. Connection {0}</value>
-  </data>
-  <data name="Disconnected" xml:space="preserve">
-    <value>disconnected</value>
   </data>
 </root>
