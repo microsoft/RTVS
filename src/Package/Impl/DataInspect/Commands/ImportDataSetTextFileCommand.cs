@@ -17,6 +17,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Commands {
             _appShell = appShell;
         }
 
+        protected override void SetStatus() {
+            Enabled = RSession.IsHostRunning && !RSession.IsRemote;
+        }
+
         protected override void Handle() {
             base.Handle();
 

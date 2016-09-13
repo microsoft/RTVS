@@ -20,6 +20,7 @@ using Microsoft.VisualStudio.R.Package.ProjectSystem.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Test.FakeFactories;
 using Microsoft.VisualStudio.R.Package.Test.Utility;
+using Microsoft.VisualStudio.ProjectSystem;
 using NSubstitute;
 using Xunit;
 #if VS14

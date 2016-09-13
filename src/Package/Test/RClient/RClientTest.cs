@@ -12,6 +12,7 @@ using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Core.Test.Registry;
+using Microsoft.R.Interpreters;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.RClient;
 using Microsoft.VisualStudio.R.Package.Telemetry;
@@ -21,9 +22,9 @@ using Xunit;
 namespace Microsoft.VisualStudio.R.Package.Test.RClient {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
+    [Category.R.Install]
     public class RClientTest {
         [Test]
-        [Category.R.Install]
         public void InstallTelemetry() {
             var telemetryEvents = new List<string>();
             var telemetry = Substitute.For<ITelemetryService>();
@@ -75,20 +76,18 @@ namespace Microsoft.VisualStudio.R.Package.Test.RClient {
         }
 
         [Test(ThreadType = ThreadType.UI)]
-        [Category.R.Install]
         public void MsRClient() {
             var rClientInstallPath = @"C:\Program Files\Microsoft\R Client\";
             var rClientRPath = @"C:\Program Files\Microsoft\R Client\R_SERVER\";
             var tr = new RegistryMock(SimulateRegistryMsRClient(rClientInstallPath, rClientRPath));
-            MicrosoftRClient.Registry = tr;
 
-            MicrosoftRClient.GetRClientPath().Should().Be(rClientRPath);
+            SqlRClientInstallation.GetRClientPath(tr).Should().Be(rClientRPath);
 
             var shell = Substitute.For<ICoreShell>();
             shell.ShowMessage(Arg.Any<string>(), Arg.Any<MessageButtons>()).Returns(MessageButtons.Yes);
             shell.MainThread.Returns(Thread.CurrentThread);
 
-            MicrosoftRClient.CheckMicrosoftRClientInstall(shell);
+            MicrosoftRClient.CheckMicrosoftRClientInstall(shell, tr);
             shell.Received(1).ShowMessage(Arg.Any<string>(), Arg.Any<MessageButtons>());
 
             MicrosoftRClient.CheckMicrosoftRClientInstall(shell);

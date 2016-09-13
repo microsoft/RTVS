@@ -198,7 +198,8 @@
     <Compile Include="History\Commands\ToggleMultilineHistorySelectionCommand.cs" />
     <Compile Include="History\HistoryWindowPane.cs" />
     <Compile Include="Options\Attributes\SurveyNewsPolicyTypeConverter.cs" />
-    <Compile Include="Options\R\Tools\SurveyNewsCommand.cs" />
+    <Compile Include="Options\R\Commands\SetupRemoteCommand.cs" />
+    <Compile Include="Options\R\Commands\SurveyNewsCommand.cs" />
     <Compile Include="ToolWindows\PlotHistoryWindowPane.cs" />
     <Compile Include="ProjectSystem\Commands\CopyRemoteItemPathCommand.cs" />
     <Compile Include="ProjectSystem\Commands\SetAsStartUpRScriptCommand.cs" />
@@ -313,8 +314,8 @@
     <Compile Include="Options\Attributes\LocDefaultValueAttribute.cs" />
     <Compile Include="Options\Attributes\HelpBrowserTypeConverter.cs" />
     <Compile Include="Options\Attributes\YesNoAskTypeConverter.cs" />
-    <Compile Include="Options\R\Tools\GoToEditorOptionsCommand.cs" />
-    <Compile Include="Options\R\Tools\ImportRSettingsCommand.cs" />
+    <Compile Include="Options\R\Commands\GoToEditorOptionsCommand.cs" />
+    <Compile Include="Options\R\Commands\ImportRSettingsCommand.cs" />
     <Compile Include="Packages\Definitions\IPackage.cs" />
     <Compile Include="Commands\PackageCommand.cs" />
     <Compile Include="Packages\Attributes\LanguageEditorOptionsAttribute.cs" />
@@ -366,7 +367,7 @@
     <Compile Include="Commands\Markdown\MarkdownContextMenuId.cs" />
     <Compile Include="Commands\Markdown\VsMdCommandFactory.cs" />
     <Compile Include="Commands\Markdown\VsMarkdownTextViewConnectionListener.cs" />
-    <Compile Include="Options\R\Tools\GoToOptionsCommand.cs" />
+    <Compile Include="Options\R\Commands\GoToOptionsCommand.cs" />
     <Compile Include="Commands\R\RContextMenuId.cs" />
     <Compile Include="Commands\R\RPackageCommandId.cs" />
     <Compile Include="Commands\R\GoToFormattingOptionsCommand.cs" />
@@ -1013,7 +1014,8 @@
       <HintPath>$(LibDirectory)\Microsoft.Office.Interop.Outlook.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.ComponentModelHost, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.Build, Version=$(VisualStudioVersion).0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Condition="'$(VisualStudioVersion)'=='14.0'" Include="Microsoft.Build, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Condition="'$(VisualStudioVersion)'=='15.0'" Include="$(LibDirectory)\15.0\Microsoft.Build.dll" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />

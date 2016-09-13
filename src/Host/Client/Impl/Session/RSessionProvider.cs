@@ -202,7 +202,7 @@ namespace Microsoft.R.Host.Client.Session {
 
             public void Dispose() {
                 _evaluation.Dispose();
-                _session.StopHostAsync().DoNotWait();
+                _session.StopHostAsync().ContinueWith(t => _session.Dispose());
             }
         }
 

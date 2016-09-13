@@ -218,8 +218,11 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
         private bool IsValidLocalConnection(string name, string path) {
             try {
-                var info = new RInterpreterInfo(name, path);
-                return info.VerifyInstallation();
+                Uri uri;
+                if (Uri.TryCreate(path, UriKind.Absolute, out uri) && uri.IsFile) {
+                    var info = new RInterpreterInfo(name, path);
+                    return info.VerifyInstallation();
+                }
             } catch (Exception ex) when (!ex.IsCriticalException()) {
                 GeneralLog.Write(ex);
             }

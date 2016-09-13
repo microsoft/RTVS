@@ -35,10 +35,10 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
         private readonly IFileSystem _fs;
         private readonly ICoreShell _coreShell;
 
-        public PreviewCommand(ITextView textView, int id, 
-            IRInteractiveWorkflowProvider workflowProvider, 
-            ICoreShell coreShell, 
-            IProcessServices pss, 
+        public PreviewCommand(ITextView textView, int id,
+            IRInteractiveWorkflowProvider workflowProvider,
+            ICoreShell coreShell,
+            IProcessServices pss,
             IFileSystem fs)
             : base(textView, new CommandId[] { new CommandId(MdPackageCommandId.MdCmdSetGuid, id) }, false) {
             _workflowProvider = workflowProvider;
@@ -73,51 +73,47 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
             }
 
             IMarkdownFlavorPublishHandler flavorHandler = GetFlavorHandler(TextView.TextBuffer);
-            if (flavorHandler != null) {
-                var workflow = _workflowProvider.GetOrCreate();
-
-                var getPackagesTask = workflow.Packages.GetInstalledPackagesAsync();
-                getPackagesTask.Wait(5000);
-                if(!getPackagesTask.IsCompleted) {
-                    return CommandResult.Disabled;
-                }
-
-                var packages =  getPackagesTask.Result;
-           
-                if (!packages.Any(p => p.Package.EqualsIgnoreCase(flavorHandler.RequiredPackageName))) {
-                    _coreShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_PackageMissing, flavorHandler.RequiredPackageName));
-                    return CommandResult.Disabled;
-                }
-
-                if(!CheckPrerequisites()) {
-                    return CommandResult.Disabled;
-                }
-
-                // Save the file
-                var document = EditorExtensions.FindInProjectedBuffers<MdEditorDocument>(TextView.TextBuffer, MdContentTypeDefinition.ContentType);
-                var tb = document.TextBuffer;
-                if (!tb.CanBeSavedInCurrentEncoding()) {
-                    if (MessageButtons.No == _coreShell.ShowMessage(Resources.Warning_SaveInUtf8, MessageButtons.YesNo)) {
-                        return CommandResult.Executed;
-                    }
-                    tb.Save(new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
-                } else {
-                    tb.Save();
-                }
-
-               var inputFilePath = tb.GetFilePath();
-                _outputFilePath = Path.ChangeExtension(inputFilePath, FileExtension);
-
-                try {
-                    _fs.DeleteFile(_outputFilePath);
-                } catch (IOException ex) {
-                    _coreShell.ShowErrorMessage(ex.Message);
-                    return CommandResult.Executed;
-                }
-
-                var session = workflow.RSession;
-                _lastCommandTask = flavorHandler.PublishAsync(session, _coreShell, _fs, inputFilePath, _outputFilePath, Format, tb.GetEncoding()).ContinueWith(t => LaunchViewer());
+            if (flavorHandler == null) {
+                return CommandResult.Disabled;
             }
+
+            var workflow = _workflowProvider.GetOrCreate();
+            _lastCommandTask = Task.Run(async () => {
+                // Get list of installed packages and verify that all the required ones are installed
+                var packages = await workflow.Packages.GetInstalledPackagesAsync();
+                if (packages.Any(p => p.Package.EqualsIgnoreCase(flavorHandler.RequiredPackageName)) && CheckPrerequisites()) {
+                    // Text buffer operations should be performed in UI thread
+                    await _coreShell.SwitchToMainThreadAsync();
+                    
+                    // Save the file
+                    var document = EditorExtensions.FindInProjectedBuffers<MdEditorDocument>(TextView.TextBuffer, MdContentTypeDefinition.ContentType);
+                    var tb = document.TextBuffer;
+                    if (!tb.CanBeSavedInCurrentEncoding()) {
+                        if (MessageButtons.No == _coreShell.ShowMessage(Resources.Warning_SaveInUtf8, MessageButtons.YesNo)) {
+                            return;
+                        }
+                        tb.Save(new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+                    } else {
+                        tb.Save();
+                    }
+
+                    var inputFilePath = tb.GetFilePath();
+                    _outputFilePath = Path.ChangeExtension(inputFilePath, FileExtension);
+
+                    try {
+                        _fs.DeleteFile(_outputFilePath);
+                    } catch (IOException ex) {
+                        _coreShell.ShowErrorMessage(ex.Message);
+                        return;
+                    }
+
+                    var session = workflow.RSession;
+                    await flavorHandler.PublishAsync(session, _coreShell, _fs, inputFilePath, _outputFilePath, Format, tb.GetEncoding()).ContinueWith(t => LaunchViewer());
+                } else {
+                    _coreShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_PackageMissing, flavorHandler.RequiredPackageName));
+                }
+            });
+
             return CommandResult.Executed;
         }
 

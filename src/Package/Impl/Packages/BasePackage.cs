@@ -9,6 +9,7 @@ using System.Linq;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.Languages.Editor.Tasks;
 using Microsoft.VisualStudio.CommandBars;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Shell;
 using Microsoft.VisualStudio.R.Package.Definitions;

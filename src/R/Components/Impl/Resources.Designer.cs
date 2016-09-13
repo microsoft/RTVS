@@ -354,6 +354,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to disconnected.
+        /// </summary>
+        public static string Disconnected {
+            get {
+                return ResourceManager.GetString("Disconnected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Dismiss.
         /// </summary>
         public static string Dismiss {
@@ -1101,6 +1110,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to R Interactive.
+        /// </summary>
+        public static string ReplWindowName {
+            get {
+                return ResourceManager.GetString("ReplWindowName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to # File content was generated on {0}..
         /// </summary>
         public static string SettingsFileGeneratedStamp {
@@ -1133,6 +1151,17 @@ namespace Microsoft.R.Components {
         public static string Update {
             get {
                 return ResourceManager.GetString("Update", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Terminating R will immediately abort calculations and all workspace objects will be discarded. This action cannot be undone.
+        ///
+        ///Are you sure you want to terminate R session?.
+        /// </summary>
+        public static string Warning_TerminateR {
+            get {
+                return ResourceManager.GetString("Warning_TerminateR", resourceCulture);
             }
         }
     }

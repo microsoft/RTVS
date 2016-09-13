@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
 using Microsoft.Win32;
@@ -20,7 +21,6 @@ namespace Microsoft.R.Interpreters {
     public sealed class RInstallation {
         private const string _rCoreRegKey = @"SOFTWARE\R-core\R";
         private const string _rServer = "R_SERVER";
-        private const string _installPathValueName = "InstallPath";
         private static readonly string[] rFolders = new string[] { "MRO", "RRO", "R" };
 
         private readonly IRegistry _registry;
@@ -42,15 +42,30 @@ namespace Microsoft.R.Interpreters {
         public IEnumerable<IRInterpreterInfo> GetCompatibleEngines(ISupportedRVersionRange svl = null) {
             var list = new List<IRInterpreterInfo>();
 
-            var mrc = GetMicrosoftRClientInfo();
+            // Get MRC from SQL
+            var mrc = SqlRClientInstallation.GetMicrosoftRClientInfo(_registry, _fileSystem);
             if (mrc != null) {
                 list.Add(mrc);
             }
 
             var engines = GetCompatibleEnginesFromRegistry(svl);
-            engines = engines.Where(e => e.VerifyInstallation(svl, _fileSystem)).OrderBy(e => e.Version);
-            list.AddRange(engines);
+            engines = engines.Where(e => e.VerifyInstallation(svl, _fileSystem))
+                             .OrderBy(e => e.Version);
 
+            if (mrc == null) {
+                // If MRC didn't come with SQL, try finding one in the R engines
+                mrc = engines.FirstOrDefault(e => e.Name.Contains("Microsoft R"));
+                if (mrc != null) {
+                    list.Add(mrc);
+                }
+            }
+
+            if (mrc != null) { 
+                // Remove MRC and its duplicates
+                engines = engines.Where(e => !e.InstallPath.PathEquals(mrc.InstallPath));
+            }
+
+            list.AddRange(engines);
             if (list.Count == 0) {
                 var e = TryFindRInProgramFiles(svl);
                 if (e != null) {
@@ -66,7 +81,14 @@ namespace Microsoft.R.Interpreters {
         /// </summary>
         private IEnumerable<IRInterpreterInfo> GetCompatibleEnginesFromRegistry(ISupportedRVersionRange svr) {
             svr = svr ?? new SupportedRVersionRange();
-            return GetInstalledEnginesFromRegistry().Where(e => svr.IsCompatibleVersion(e.Version));
+            var engines = GetInstalledEnginesFromRegistry().Where(e => svr.IsCompatibleVersion(e.Version));
+            // Remove duplicates (MRC registers under multiple keys)
+            var mrc = engines.FirstOrDefault(e => e.Name.Contains("Microsoft"));
+            if(mrc != null) {
+                var dupes = engines.Where(e => e.InstallPath.EqualsIgnoreCase(mrc.InstallPath)).Except(new IRInterpreterInfo[] { mrc });
+                engines = engines.Except(dupes);
+            }
+            return engines;
         }
 
         /// <summary>
@@ -83,9 +105,11 @@ namespace Microsoft.R.Interpreters {
                     using (var rKey = hklm.OpenSubKey(@"SOFTWARE\R-core\R")) {
                         foreach (var name in rKey.GetSubKeyNames()) {
                             using (var subKey = rKey.OpenSubKey(name)) {
-                                var path = subKey.GetValue(_installPathValueName) as string;
+                                var path = subKey.GetValue("InstallPath") as string;
                                 if (!string.IsNullOrEmpty(path)) {
-                                    engines.Add(new RInterpreterInfo(Invariant($"R {name}"), path, _fileSystem));
+                                    // Convert '3.2.2.803 Microsoft R Client' to Microsoft R Client (version)
+                                    // Convert '3.3.1' to 'R 3.3.1' for consistency
+                                    engines.Add(new RInterpreterInfo(NameFromKey(name), path, _fileSystem));
                                 }
                             }
                         }
@@ -95,45 +119,23 @@ namespace Microsoft.R.Interpreters {
             return engines;
         }
 
-        public IRInterpreterInfo GetMicrosoftRClientInfo() {
-            // First check that MRS is present on the machine.
-            bool mrsInstalled = false;
-            try {
-                using (var hklm = _registry.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64)) {
-                    using (var key = hklm.OpenSubKey(@"SOFTWARE\Microsoft\Microsoft SQL Server\130\sql_shared_mr")) {
-                        var path = (string)key?.GetValue("Path");
-                        if (!string.IsNullOrEmpty(path) && path.Contains(_rServer)) {
-                            mrsInstalled = true;
-                        }
+        private static string NameFromKey(string key) {
+            Version v;
+            if (Version.TryParse(key, out v)) {
+                return Invariant($"R {v}");
+            } else {
+                var index = key.IndexOfOrdinal("Microsoft R");
+                if (index == 0) {
+                    return key; // 'Microsoft R Open 'version'
+                }
+                if(index > 0) {
+                    // 3.2.2.803 Microsoft R [Open | Client]
+                    if(Version.TryParse(key.Substring(0, index).TrimEnd(), out v)) {
+                        return Invariant($"{key.Substring(index).TrimEnd()} ({v})");
                     }
                 }
-            } catch (Exception) { }
-
-            // If yes, check 32-bit registry for R engine installed by the R Server.
-            // TODO: remove this when MRS starts writing 64-bit keys.
-            if (mrsInstalled) {
-                using (IRegistryKey hklm = _registry.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32)) {
-                    try {
-                        using (var key = hklm.OpenSubKey(@"SOFTWARE\R-core\R64")) {
-                            foreach (var keyName in key.GetSubKeyNames()) {
-                                using (var rsKey = key.OpenSubKey(keyName)) {
-                                    try {
-                                        var path = (string)rsKey?.GetValue(_installPathValueName);
-                                        if (!string.IsNullOrEmpty(path) && path.Contains(_rServer)) {
-                                            var info = new RInterpreterInfo(string.Empty, path);
-                                            if (info.VerifyInstallation(new SupportedRVersionRange(), _fileSystem)) {
-                                                return new RInterpreterInfo(Invariant($"Microsoft R Client ({info.Version.Major}.{info.Version.Minor}.{info.Version.Build})"), info.InstallPath);
-                                            }
-                                        }
-                                    } catch (Exception) { }
-                                }
-                            }
-                        }
-                    } catch (Exception) { }
-                }
             }
-
-            return null;
+            return key; // fallback
         }
 
         private static Version GetRVersionFromFolderName(string folderName) {

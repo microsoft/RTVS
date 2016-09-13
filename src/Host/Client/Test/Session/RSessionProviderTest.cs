@@ -4,6 +4,8 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
@@ -120,6 +122,22 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
                 switch1Task.Status.Should().Be(TaskStatus.RanToCompletion);
                 switch2Task.Status.Should().Be(TaskStatus.RanToCompletion);
+            }
+        }
+
+        [Test]
+        public async Task SwitchWhileEnsureHostStartedAsyncFailed() {
+            using (var sessionProvider = new RSessionProvider()) {
+                var guid = new Guid();
+                var session = sessionProvider.GetOrCreate(guid);
+                var startTask = session.EnsureHostStartedAsync(new RHostStartupInfo {
+                    Name = nameof(session)
+                }, null, 1000);
+                await Task.Yield();
+                await sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(SwitchWhileEnsureHostStartedAsyncFailed));
+
+                startTask.Status.Should().Be(TaskStatus.Canceled);
+                session.IsHostRunning.Should().BeTrue();
             }
         }
 

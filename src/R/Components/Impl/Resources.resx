@@ -463,15 +463,31 @@
     <value>Inactive</value>
   </data>
   <data name="ConnectionManager_InformationTooltipFormatLocal" xml:space="preserve">
-    <value>{0}&#x0a;Path: {1}&#x0a;Arguments: {2}</value>
+    <value>{0}
+Path: {1}
+Arguments: {2}</value>
   </data>
   <data name="ConnectionManager_InformationTooltipFormatRemote" xml:space="preserve">
-    <value>{0}&#x0a;Host: {1}&#x0a;Port: {2}&#x0a;Arguments: {3}</value>
+    <value>{0}
+Host: {1}
+Port: {2}
+Arguments: {3}</value>
   </data>
   <data name="ConnectionManager_None" xml:space="preserve">
     <value>none specified</value>
   </data>
   <data name="ConnectionManager_Unknown" xml:space="preserve">
     <value>unknown</value>
+  </data>
+  <data name="Warning_TerminateR" xml:space="preserve">
+    <value>Terminating R will immediately abort calculations and all workspace objects will be discarded. This action cannot be undone.
+
+Are you sure you want to terminate R session?</value>
+  </data>
+  <data name="Disconnected" xml:space="preserve">
+    <value>disconnected</value>
+  </data>
+  <data name="ReplWindowName" xml:space="preserve">
+    <value>R Interactive</value>
   </data>
 </root>
