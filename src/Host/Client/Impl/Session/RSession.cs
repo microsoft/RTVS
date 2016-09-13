@@ -287,7 +287,7 @@ namespace Microsoft.R.Host.Client.Session {
             }
 
             var host = _host;
-            var hostRunTask = _hostRunTask;
+            var hostRunTask = _hostRunTask ?? Task.CompletedTask;
 
             // host may be null if previous attempts to start it have failed
             if (host != null) { 
