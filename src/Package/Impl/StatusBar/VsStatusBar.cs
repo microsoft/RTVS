@@ -13,6 +13,7 @@ using Microsoft.Common.Wpf.Extensions;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.StatusBar;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 using StatusBarControl = System.Windows.Controls.Primitives.StatusBar;
 
 namespace Microsoft.VisualStudio.R.Package.StatusBar {
@@ -29,17 +30,11 @@ namespace Microsoft.VisualStudio.R.Package.StatusBar {
         }
 
         private Visual GetRootVisual() {
-            var dte = _shell.GetGlobalService<EnvDTE.DTE>();
-            EnvDTE.Window window;
-            try {
-                window = dte.MainWindow;
-            } catch (NullReferenceException) {
-                // Window isn't loaded yet
-                return null;
-            }
+            var shell = _shell.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+            IntPtr window;
+            shell.GetDialogOwnerHwnd(out window);
 
-            var hwnd = window.HWnd;
-            var hwndSource = HwndSource.FromHwnd(new IntPtr(hwnd));
+            var hwndSource = HwndSource.FromHwnd(window);
             return hwndSource?.RootVisual;
         }
 
@@ -94,7 +89,7 @@ namespace Microsoft.VisualStudio.R.Package.StatusBar {
             var resizeGripIndex = statusBarPanel.Children.IndexOf(resizeGrip);
             if (resizeGripIndex == statusBarPanel.Children.Count - 1) {
                 statusBarPanel.Children.Add(_itemsControl);
-            } else { 
+            } else {
                 statusBarPanel.Children.Insert(resizeGripIndex + 1, _itemsControl);
             }
         }

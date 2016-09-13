@@ -64,12 +64,6 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             _userConnections = new ConcurrentDictionary<Uri, IConnection>(userConnections);
 
             UpdateRecentConnections();
-
-            _shell.Idle += OnIdle;
-        }
-
-        private void OnIdle(object sender, EventArgs e) {
-            _shell.Idle -= OnIdle;
             CompleteInitializationAsync().DoNotWait();
         }
 
