@@ -21,7 +21,6 @@ using Microsoft.Markdown.Editor.Flavor;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.VisualStudio.R.Package.Publishing.Definitions;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
