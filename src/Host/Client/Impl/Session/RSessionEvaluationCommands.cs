@@ -100,9 +100,9 @@ grDevices::deviceIsInteractive('ide')
             await evaluation.ExecuteAsync($"rtvs:::graphics.ide.setactivedeviceid({deviceId.ToString().ToRStringLiteral()})");
         }
 
-        public static Task<int> GetPlotDeviceNumAsync(this IRExpressionEvaluator evaluation, Guid deviceId) {
+        public static Task<int?> GetPlotDeviceNumAsync(this IRExpressionEvaluator evaluation, Guid deviceId) {
             Debug.Assert(deviceId != Guid.Empty);
-            return evaluation.EvaluateAsync<int>($"rtvs:::graphics.ide.getdevicenum({deviceId.ToString().ToRStringLiteral()})", REvaluationKind.Normal);
+            return evaluation.EvaluateAsync<int?>($"rtvs:::graphics.ide.getdevicenum({deviceId.ToString().ToRStringLiteral()})", REvaluationKind.Normal);
         }
 
         public static async Task NewPlotDeviceAsync(this IRExpressionEvaluator evaluation) {
