@@ -2486,6 +2486,7 @@
 
   <Symbols>
     <!-- Package GUID -->
+    <GuidSymbol name="RtvsStartupPackage" value="{1E27AE60-1095-4A62-9DA5-37038BCBDD26}" />
     <GuidSymbol name="RToolsPackage" value="{6D7C5336-C0CA-4857-A7E7-2E964EA836BF}" />
     <GuidSymbol name="guidCpsProjectFactory" value="{DA7A21FA-8162-4350-AD77-A8D1B671F3ED}" />
     <GuidSymbol name="MarkdownPackage" value="{C765E811-8EE4-4040-84FC-F4DCBC12E6C4}" />

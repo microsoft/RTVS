@@ -52,6 +52,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         public static void EnsureInitialized() {
             ThreadHelper.ThrowIfNotOnUIThread();
+            EnsurePackageLoaded(RGuidList.RtvsStartupPackageGuid);
             var instance = GetInstance();
             if (instance.MainThread == null) {
                 instance.Initialize();
