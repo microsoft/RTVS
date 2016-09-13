@@ -1001,15 +1001,6 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R Interactive.
-        /// </summary>
-        public static string ReplWindowName {
-            get {
-                return ResourceManager.GetString("ReplWindowName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Please briefly describe what you were doing that led to the issue, if applicable:
         ///
         ///...

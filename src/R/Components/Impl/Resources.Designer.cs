@@ -354,6 +354,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to disconnected.
+        /// </summary>
+        public static string Disconnected {
+            get {
+                return ResourceManager.GetString("Disconnected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Dismiss.
         /// </summary>
         public static string Dismiss {
@@ -1097,6 +1106,15 @@ namespace Microsoft.R.Components {
         public static string Ready {
             get {
                 return ResourceManager.GetString("Ready", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R Interactive.
+        /// </summary>
+        public static string ReplWindowName {
+            get {
+                return ResourceManager.GetString("ReplWindowName", resourceCulture);
             }
         }
         

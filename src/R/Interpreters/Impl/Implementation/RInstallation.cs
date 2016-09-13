@@ -131,7 +131,7 @@ namespace Microsoft.R.Interpreters {
                 if(index > 0) {
                     // 3.2.2.803 Microsoft R [Open | Client]
                     if(Version.TryParse(key.Substring(0, index).TrimEnd(), out v)) {
-                        return Invariant($"{key.Substring(index).TrimEnd()} {v}");
+                        return Invariant($"{key.Substring(index).TrimEnd()} ({v})");
                     }
                 }
             }
