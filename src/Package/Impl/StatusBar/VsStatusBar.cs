@@ -51,6 +51,10 @@ namespace Microsoft.VisualStudio.R.Package.StatusBar {
                 _visualRoot = GetRootVisual();
             }
 
+            if (_visualRoot == null) {
+                return false;
+            }
+
             var statusBarControl = _visualRoot.FindFirstVisualChildBreadthFirst<StatusBarControl>();
             if (statusBarControl != null) {
                 var item = new StatusBarItem {
