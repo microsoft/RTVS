@@ -3,6 +3,7 @@
 
 using System;
 using System.ComponentModel.Composition;
+using Microsoft.Common.Core;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -69,7 +70,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             string title;
             if (broker != null) {
                 title = broker.IsRemote
-                    ? Invariant($"{Resources.ReplWindowName} - {broker.Name} ({broker.Uri})")
+                    ? Invariant($"{Resources.ReplWindowName} - {broker.Name} ({broker.Uri.ToString().TrimTrailingSlash()})")
                     : Invariant($"{Resources.ReplWindowName} - {broker.Name}");
             } else {
                 title = Resources.Disconnected;
