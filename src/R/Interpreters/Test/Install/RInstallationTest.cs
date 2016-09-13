@@ -202,6 +202,32 @@ namespace Microsoft.R.Interpreters.Test {
             coreShell.Received().ShowMessage(Arg.Any<string>(), MessageButtons.OK);
         }
 
+        [Test]
+        public void Duplicates() {
+            var tr = new RegistryMock(SimulateDuplicates());
+            var svl = new SupportedRVersionRange(3, 2, 3, 4);
+
+            string dir = @"C:\Program Files\Microsoft\R Client\R_SERVER";
+            var fs = Substitute.For<IFileSystem>();
+            var fsi = Substitute.For<IFileSystemInfo>();
+            fsi.Attributes.Returns(FileAttributes.Directory);
+            fsi.FullName.Returns(dir);
+            fs.GetDirectoryInfo(@"C:\Program Files\Microsoft\R Client\R_SERVER").EnumerateFileSystemInfos().Returns(new IFileSystemInfo[] { fsi });
+
+            var fvi = SimulateFileVersion(3, 22);
+            fs.GetVersionInfo(Path.Combine(dir, @"bin\x64", "R.dll")).Returns(fvi);
+
+            PretendRFilesAvailable(fs, dir);
+            var ri = new RInstallation(tr, fs);
+
+            var engines = ri.GetCompatibleEngines(svl);
+            engines.Should().HaveCount(1);
+
+            var e = engines.First();
+            e.Name.Should().Contain("Microsoft R");
+            e = new RInterpreterInfo(e.Name, e.InstallPath, fs);
+        }
+
         private IFileVersionInfo SimulateFileVersion(int major, int minor) {
             var fvi = Substitute.For<IFileVersionInfo>();
             fvi.FileMajorPart.Returns(major);
@@ -219,6 +245,26 @@ namespace Microsoft.R.Interpreters.Test {
                                  new RegistryKeyMock[0],
                                  new string[] {"InstallPath"},
                                  new string[] { @"C:\Program Files\R\R-3.1.3" }),
+                     }),
+            };
+        }
+
+        private RegistryKeyMock[] SimulateDuplicates() {
+            return new RegistryKeyMock[] {
+                new RegistryKeyMock(
+                     @"SOFTWARE\R-core\R",
+                     new RegistryKeyMock[] {
+                            new RegistryKeyMock(
+                                 @"SOFTWARE\R-core\R\3.2.2.803",
+                                 new RegistryKeyMock[0],
+                                 new string[] {"InstallPath"},
+                                 new string[] { @"C:\Program Files\Microsoft\R Client\R_SERVER\" }),
+
+                            new RegistryKeyMock(
+                                 @"SOFTWARE\R-core\R\3.2.2.803 Microsoft R Client",
+                                 new RegistryKeyMock[0],
+                                 new string[] {"InstallPath"},
+                                 new string[] { @"C:\Program Files\Microsoft\R Client\R_SERVER" }),
                      }),
             };
         }

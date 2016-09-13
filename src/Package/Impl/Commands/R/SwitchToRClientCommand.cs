@@ -5,7 +5,6 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Interpreters;
-using Microsoft.VisualStudio.R.Package.RClient;
 using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Commands {
@@ -24,7 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         }
 
         protected override void Handle() {
-            var rClientPath = MicrosoftRClient.GetRClientPath();
+            var rClientPath = SqlRClientInstallation.GetRClientPath();
             if (string.IsNullOrEmpty(rClientPath)) {
                 if (_shell.ShowMessage(Resources.Prompt_RClientNotInstalled, MessageButtons.YesNo) == MessageButtons.Yes) {
                     var installer = _shell.ExportProvider.GetExportedValue<IMicrosoftRClientInstaller>();

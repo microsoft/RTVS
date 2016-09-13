@@ -3,7 +3,6 @@
 
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Interpreters;
-using Microsoft.VisualStudio.R.Package.RClient;
 using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Commands {
@@ -20,7 +19,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         }
 
         protected override void Handle() {
-            var path = MicrosoftRClient.GetRClientPath();
+            var path = SqlRClientInstallation.GetRClientPath();
             if (!string.IsNullOrEmpty(path)) {
                 _shell.ShowMessage(Resources.Message_RClientIsAlreadyInstalled, MessageButtons.OK);
             } else {
