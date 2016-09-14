@@ -11,23 +11,19 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Logging;
-using Microsoft.Common.Core.Settings;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager.Implementation.View;
 using Microsoft.R.Components.ConnectionManager.Implementation.ViewModel;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.StatusBar;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Interpreters;
-using Newtonsoft.Json;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation {
     internal class ConnectionManager : IConnectionManager {
-        private const string LastActiveConnectionSettingName = "LastActiveConnection";
-        private const string ConnectionsSettingsName = "Connections";
-
-        private readonly IWritableSettingsStorage _settings;
+        private readonly IRSettings _settings;
         private readonly ICoreShell _shell;
         private readonly IStatusBar _statusBar;
         private readonly IRSessionProvider _sessionProvider;
@@ -43,7 +39,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         public event EventHandler RecentConnectionsChanged;
         public event EventHandler<ConnectionEventArgs> ConnectionStateChanged;
 
-        public ConnectionManager(IStatusBar statusBar, IWritableSettingsStorage settings, IRInteractiveWorkflow interactiveWorkflow) {
+        public ConnectionManager(IStatusBar statusBar, IRSettings settings, IRInteractiveWorkflow interactiveWorkflow) {
             _statusBar = statusBar;
             _sessionProvider = interactiveWorkflow.RSessions;
             _settings = settings;
@@ -155,20 +151,14 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             return newConnection;
         }
 
-        private Dictionary<Uri, IConnection> GetConnectionsFromSettings() {
-            var s = _settings.GetString(ConnectionsSettingsName, null);
-            var connections = s != null ? JsonConvert.DeserializeObject<ConnectionInfo[]>(s) : new ConnectionInfo[0];
-
-            return connections.Select(c => CreateConnection(c.Name, c.Path, c.RCommandLineArguments, c.IsUserCreated))
-                              .ToDictionary(k => k.Id);
-        }
+        private Dictionary<Uri, IConnection> GetConnectionsFromSettings() => _settings.Connections
+            .Select(c => CreateConnection(c.Name, c.Path, c.RCommandLineArguments, c.IsUserCreated))
+            .ToDictionary(k => k.Id);
 
         private void SaveConnectionsToSettings() {
-            var connections = RecentConnections
+            _settings.Connections = RecentConnections
                 .Select(c => new ConnectionInfo { Name = c.Name, Path = c.Path, RCommandLineArguments = c.RCommandLineArguments, IsUserCreated = c.IsUserCreated })
                 .ToArray();
-            var s = JsonConvert.SerializeObject(connections);
-            _settings.SetString(ConnectionsSettingsName, s);
         }
 
         private void UpdateRecentConnections() {
@@ -198,9 +188,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             }
 
             // Verify that most recently used connection is still valid
-            var last = GetLastConnectionInfo();
+            var last = _settings.LastActiveConnection;
             if (last != null && !IsRemoteConnection(last.Path) && !IsValidLocalConnection(last.Name, last.Path)) {
-                SaveLastConnectionInfo(last);
+                _settings.LastActiveConnection = null;
             }
 
             if (connections.Count == 0) {
@@ -243,8 +233,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         private async Task SwitchBrokerToLastConnection() {
-            var connectionInfo = GetLastConnectionInfo();
-
+            var connectionInfo = _settings.LastActiveConnection;
             if (!string.IsNullOrEmpty(connectionInfo?.Path) && await TrySwitchBrokerAsync(connectionInfo)) {
                 return;
             }
@@ -284,24 +273,13 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         private void SaveActiveConnectionToSettings() {
-
-            var connection = ActiveConnection == null
+            _settings.LastActiveConnection = ActiveConnection == null
                 ? null
                 : new ConnectionInfo {
                     Name = ActiveConnection.Name,
                     Path = ActiveConnection.Path,
                     RCommandLineArguments = ActiveConnection.RCommandLineArguments
                 };
-
-            _settings.SetString(LastActiveConnectionSettingName, connection != null ? JsonConvert.SerializeObject(connection) : null);
-        }
-
-        private IConnectionInfo GetLastConnectionInfo() {
-            var s = _settings.GetString(LastActiveConnectionSettingName, null);
-            return s != null ? JsonConvert.DeserializeObject<ConnectionInfo>(s) : null;
-        }
-        private void SaveLastConnectionInfo(IConnectionInfo connection) {
-            _settings.SetString(LastActiveConnectionSettingName, connection != null ? JsonConvert.SerializeObject(connection) : null);
         }
     }
 }

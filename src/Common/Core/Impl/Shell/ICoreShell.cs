@@ -4,7 +4,6 @@
 using System;
 using System.ComponentModel.Design;
 using System.Threading;
-using Microsoft.Common.Core.Settings;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Core.Threading;
 
@@ -117,10 +116,5 @@ namespace Microsoft.Common.Core.Shell {
         bool IsUnitTestEnvironment { get; }
 
         IntPtr ApplicationWindowHandle { get; }
-
-        /// <summary>
-        /// Persistent storage for any settings application may need to keep between sessions.
-        /// </summary>
-        IWritableSettingsStorage SettingsStorage { get; }
     }
 }

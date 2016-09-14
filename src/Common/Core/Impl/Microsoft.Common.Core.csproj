@@ -62,7 +62,6 @@
     <Compile Include="Net\FileDownloader.cs" />
     <Compile Include="Net\IFileDownloader.cs" />
     <Compile Include="Net\WebSocketHelper.cs" />
-    <Compile Include="Shell\ISettingsStorage.cs" />
     <Compile Include="Tasks\TaskCompletionSourceEx.cs" />
     <Compile Include="Threading\AsyncCountdownEvent.cs" />
     <Compile Include="Threading\AsyncManualResetEvent.cs" />

@@ -44,17 +44,16 @@
     </WixExtension>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="InstallFolder.wxi" />
     <Compile Include="Product.wxs" />
+    <Content Include="Assemblies.wxi" />
     <Content Include="Feature.wxi" />
     <Content Include="Definitions.wxi" />
     <Content Include="RFile.ico" />
-    <Content Include="RtvsPackage.wxi" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SetupRHostRemote\SetupRHostRemote.wixproj">
-      <Name>SetupRHostRemote</Name>
-      <Project>{4aa5ce64-5be2-414c-8ad9-e3110e490dc4}</Project>
+    <ProjectReference Include="..\SetupRHost\SetupRHost.wixproj">
+      <Name>SetupRHost</Name>
+      <Project>{a5265b92-029a-423e-9006-a7c1f52476ed}</Project>
       <Private>True</Private>
       <DoNotHarvest>True</DoNotHarvest>
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
@@ -65,12 +64,6 @@
     <FilesToSign Include="$(OutputPath)$(OutputName).msi">
       <Authenticode>Microsoft400</Authenticode>
     </FilesToSign>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="..\" />
-    <Folder Include="..\..\" />
-    <Folder Include="..\..\bin\" />
-    <Folder Include="..\..\bin\Debug\" />
   </ItemGroup>
   <Import Project="$(WixTargetsPath)" />
   <Import Project="$(NuGetPackageRoot)\MicroBuild.Core\0.2.0\build\MicroBuild.Core.targets" Condition="Exists('$(NuGetPackageRoot)\MicroBuild.Core\0.2.0\build\MicroBuild.Core.targets')" />

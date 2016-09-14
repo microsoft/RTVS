@@ -4,9 +4,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.Common.Core.Settings;
+using Microsoft.Languages.Core.Settings;
 
-namespace Microsoft.Languages.Editor.Application.Packages {
+namespace Microsoft.Languages.Editor.Application.Packages
+{
     [ExcludeFromCodeCoverage]
     internal class SettingsStorage : IWritableSettingsStorage
     {

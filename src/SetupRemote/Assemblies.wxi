@@ -1,32 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Include>
   <DirectoryRef Id="INSTALLFOLDER">
-    <Component Id="ProductAssemblies" Guid="{37B3AC0F-F90A-441F-A2FE-2991AF6C2E03}">
-      <File Source="$(var.BinDir)\extension.vsixmanifest" />
+    <Component Id="ProductAssemblies" Guid="{9C717F8F-4A97-4FA5-8031-5A180467754D}" Win64="yes">
       <File Source="$(var.BinDir)\Microsoft.Languages.Core.dll" />
-      <File Source="$(var.BinDir)\Microsoft.Languages.Editor.dll" />
-      <File Source="$(var.BinDir)\Microsoft.Markdown.Editor.dll" />
       <File Source="$(var.BinDir)\Microsoft.R.Common.Core.dll" />
-      <File Source="$(var.BinDir)\Microsoft.R.Common.Wpf.dll" />
-      <File Source="$(var.BinDir)\Microsoft.R.Wpf.dll" />
       <File Source="$(var.BinDir)\Microsoft.R.Core.dll" />
-      <File Source="$(var.BinDir)\Microsoft.R.Components.dll" />
-      <File Source="$(var.BinDir)\Microsoft.R.Debugger.dll" />
-      <File Source="$(var.BinDir)\Microsoft.R.Editor.dll" />
-      <File Source="$(var.BinDir)\Microsoft.R.Host.Client.dll" />
       <File Source="$(var.BinDir)\Microsoft.R.Host.Protocol.dll" />
       <File Source="$(var.BinDir)\Microsoft.R.Host.Broker.exe" />
-      <File Source="$(var.BinDir)\Microsoft.R.Support.dll" />
       <File Source="$(var.BinDir)\Microsoft.R.Interpreters.dll" />
-      <File Source="$(var.BinDir)\Microsoft.Data.ConnectionUI.dll" />
-      <File Source="$(var.BinDir)\Microsoft.Data.ConnectionUI.Dialog.dll" />
-      <File Source="$(var.BinDir)\Microsoft.SqlServer.Dac.dll" />
-      <File Source="$(var.BinDir)\Microsoft.SqlServer.Dac.Extensions.dll" />
-      <File Source="$(var.BinDir)\Microsoft.SqlServer.TransactSql.ScriptDom.dll" />
-      <File Source="$(var.BinDir)\Microsoft.SqlServer.Types.dll" />
-      <File Source="$(var.BinDir)\Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.dll" />
-      <File Source="$(var.BinDir)\Microsoft.VisualStudio.R.Package.dll" />
-      <File Source="$(var.BinDir)\Microsoft.VisualStudio.R.Package.pkgdef" />
       <File Source="$(var.BinDir)\Newtonsoft.Json.dll" />
       <File Source="$(var.BinDir)\Microsoft.AspNetCore.Antiforgery.dll" />
       <File Source="$(var.BinDir)\Microsoft.AspNetCore.Authorization.dll" />
@@ -136,30 +117,18 @@
       <File Source="$(var.BinDir)\System.Xml.XPath.XDocument.dll" />
       <File Source="$(var.BinDir)\libuv.dll" />
       <File Source="$(var.BinDir)\Images\RFile.ico" />
-      <File Source="$(var.BinDir)\vstheme.pkgdef" />
       <File Source="$(var.BinDir)\zip.dll" />
       <File Source="$(var.BinDir)\$(var.ZlibName).dll" />
     </Component>
     <?ifdef Debug?>
-    <Component Id="ProductAssembliesDebugData" Guid="{320E46DF-665F-492C-A0D6-9CE7DE21036D}">
-      <File Source="$(var.BinDir)\Microsoft.VisualStudio.R.Package.pdb" />
-      <File Source="$(var.BinDir)\Microsoft.Markdown.Editor.pdb" />
-      <File Source="$(var.BinDir)\Microsoft.R.Debugger.pdb" />
-      <File Source="$(var.BinDir)\Microsoft.R.Editor.pdb" />
-      <File Source="$(var.BinDir)\Microsoft.R.Core.pdb" />
-      <File Source="$(var.BinDir)\Microsoft.R.Support.pdb" />
-      <File Source="$(var.BinDir)\Microsoft.R.Interpreters.pdb" />
-      <File Source="$(var.BinDir)\Microsoft.R.Common.Core.pdb" />
-      <File Source="$(var.BinDir)\Microsoft.R.Common.Wpf.pdb" />
-      <File Source="$(var.BinDir)\Microsoft.R.Wpf.pdb" />
-      <File Source="$(var.BinDir)\Microsoft.R.Components.pdb" />
-      <File Source="$(var.BinDir)\Microsoft.Languages.Editor.pdb" />
-      <File Source="$(var.BinDir)\Microsoft.Languages.Core.pdb" />
-      <File Source="$(var.BinDir)\Microsoft.R.Host.Client.pdb" />
-      <File Source="$(var.BinDir)\Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.pdb" />
-      <File Source="$(var.BinDir)\Microsoft.R.Host.pdb" />
+    <Component Id="ProductAssembliesDebugData" Guid="{2DC6C031-734F-47F3-B6DE-06C42164F804}">
       <File Source="$(var.BinDir)\Microsoft.R.Host.Protocol.pdb" />
       <File Source="$(var.BinDir)\Microsoft.R.Host.Broker.pdb" />
+      <File Source="$(var.BinDir)\Microsoft.R.Core.pdb" />
+      <File Source="$(var.BinDir)\Microsoft.R.Interpreters.pdb" />
+      <File Source="$(var.BinDir)\Microsoft.R.Common.Core.pdb" />
+      <File Source="$(var.BinDir)\Microsoft.Languages.Core.pdb" />
+      <File Source="$(var.BinDir)\Microsoft.R.Host.pdb" />
     </Component>
     <?endif?>
   </DirectoryRef>
