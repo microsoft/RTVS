@@ -2,12 +2,12 @@
 <Include>
   <DirectoryRef Id="INSTALLFOLDER">
     <Directory Id="RtvsPackageFolder" Name="rtvs">
-      <Component Id="RtvsPackageMetadata" Guid="{FCCB16FB-CBA7-4D96-A53E-5E4834851BE1}">
-        <?include RtvsPackageFiles1.wxi?>
+      <Component Id="RtvsPackageMetadata" Guid="{015ABC6A-29A5-4B35-BEE8-2F59F35E0B3E}" Win64="yes">
+        <?include "$(var.SourceDir)\Setup\RtvsPackageFiles1.wxi"?>
       </Component>
       <Directory Id="RtvsPackageRFolder" Name="R">
-        <Component Id="RtvsPackageR" Guid="{FF41B7CB-7071-47AB-9A0B-612000EA7B83}">
-          <?include RtvsPackageFiles2.wxi?>
+        <Component Id="RtvsPackageR" Guid="{AB070FEA-804A-46BA-B9D7-625B0CE6EB4C}" Win64="yes">
+          <?include "$(var.SourceDir)\Setup\RtvsPackageFiles2.wxi"?>
         </Component>
       </Directory>
     </Directory>

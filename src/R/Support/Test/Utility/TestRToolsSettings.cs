@@ -118,7 +118,7 @@ namespace Microsoft.R.Support.Test.Utility {
             set { }
         }
 
-        public BrowserType ShinyBrowserType {
+        public BrowserType HtmlBrowserType {
             get { return BrowserType.Internal; }
             set { }
         }

@@ -16,9 +16,6 @@
     <ComponentRef Id="MSBuildTargets" />
     
     <ComponentRef Id="ProductAssemblies" />
-    <?ifdef Debug?>
-    <ComponentRef Id="ProductAssembliesDebugData" />
-    <?endif?>
     <ComponentRef Id="FileNewTemplates" />
     <ComponentRef Id="SqlRItemTemplates" />
     <ComponentRef Id="SqlRItems" />
