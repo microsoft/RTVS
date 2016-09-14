@@ -169,10 +169,11 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         }
 
         private static IDisposable SaveSettings() {
-            var page = (RToolsOptionsPage)RPackage.Current.GetDialogPage(typeof(RToolsOptionsPage));
-            return page != null && !page.IsLoadingFromStorage
-                ? Disposable.Create(() => page.SaveSettings())
-                : Disposable.Empty;
+            //var page = (RToolsOptionsPage)RPackage.Current.GetDialogPage(typeof(RToolsOptionsPage));
+            //return page != null && !page.IsLoadingFromStorage
+            //    ? Disposable.Create(() => page.SaveSettings())
+            //    : Disposable.Empty;
+            return Disposable.Empty;
         }
 
         private static IEnumerable<IRSession> GetRSessions() {

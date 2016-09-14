@@ -9,15 +9,20 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Settings;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Wpf.Threading;
+using Microsoft.R.Components.ContentTypes;
 using Microsoft.UnitTests.Core.Threading;
+using Microsoft.VisualStudio.Utilities;
+using NSubstitute;
 
 namespace Microsoft.R.Components.Test.Fakes.Shell {
     [ExcludeFromCodeCoverage]
     public class TestCoreShell : ICoreShell, IMainThread {
         private readonly CompositionContainer _container;
+        private IWritableSettingsStorage _settingStorage;
 
         public TestCoreShell(CompositionContainer container) {
             _container = container;
@@ -79,6 +84,8 @@ namespace Microsoft.R.Components.Test.Fakes.Shell {
         public bool IsUnitTestEnvironment => true;
 
         public IntPtr ApplicationWindowHandle { get; }
+
+        public IWritableSettingsStorage SettingsStorage => Substitute.For<IWritableSettingsStorage>();
 
         #region IMainThread
         public int ThreadId => MainThread.ManagedThreadId;

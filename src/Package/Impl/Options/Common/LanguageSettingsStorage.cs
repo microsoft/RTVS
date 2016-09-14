@@ -4,8 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Microsoft.Common.Core.Settings;
 using Microsoft.Languages.Core.Formatting;
-using Microsoft.Languages.Core.Settings;
 using Microsoft.Languages.Editor.Settings;
 using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;

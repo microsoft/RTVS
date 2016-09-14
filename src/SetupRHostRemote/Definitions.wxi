@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+  <?define ProductName ="Microsoft R Remote Host" ?>
+  <?define BinDir="$(var.OutDir)" ?>
+  <?define SourceDir=".." ?>
+  
+  <?ifdef Debug?>
+  <?define ZlibName="zlibd"?>
+  <?else?>
+  <?define ZlibName="zlib"?>
+  <?endif?>
+</Include>

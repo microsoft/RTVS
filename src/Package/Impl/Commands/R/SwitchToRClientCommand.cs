@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.Linq;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager;
@@ -38,8 +39,10 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
                 return;
             }
 
-            connection = _connectionManager.GetOrAddConnection("Microsoft R Client", rClientPath, string.Empty, isUserCreated:false);
-            _connectionManager.ConnectAsync(connection).DoNotWait();
+            var mrc = _connectionManager.RecentConnections.FirstOrDefault(c => c.Name.Contains("Microsoft R Client"));
+            if (mrc != null) {
+                _connectionManager.ConnectAsync(connection).DoNotWait();
+            }
         }
     }
 }

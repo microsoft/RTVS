@@ -4,7 +4,7 @@
 
 using System.Threading;
 
-namespace Microsoft.Languages.Editor.Host {
+namespace Microsoft.Common.Core.Shell {
     public interface IIdleTimeService {
         void DoIdle();
     }

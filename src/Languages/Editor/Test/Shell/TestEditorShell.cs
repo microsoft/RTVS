@@ -6,6 +6,7 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
+using Microsoft.Common.Core.Settings;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.Languages.Editor.Shell;
@@ -14,6 +15,7 @@ using Microsoft.R.Components.Controller;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using NSubstitute;
 
 namespace Microsoft.Languages.Editor.Test.Shell {
     [ExcludeFromCodeCoverage]
@@ -56,6 +58,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
         public bool IsUnitTestEnvironment { get; set; } = true;
         public ITelemetryService TelemetryService { get; }
         public IntPtr ApplicationWindowHandle { get; }
+        public IWritableSettingsStorage SettingsStorage => Substitute.For<IWritableSettingsStorage>();
         #endregion
 
         #region IEditorShell

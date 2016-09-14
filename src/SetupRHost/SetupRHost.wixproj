@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Product.wxs" />
+    <Content Include="Files.wxi" />
     <Content Include="Definitions.wxi" />
     <Content Include="project.json" />
   </ItemGroup>
@@ -52,6 +53,12 @@
     <FilesToSign Include="$(OutputPath)$(OutputName).msi">
       <Authenticode>Microsoft400</Authenticode>
     </FilesToSign>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="..\" />
+    <Folder Include="..\..\" />
+    <Folder Include="..\..\bin\" />
+    <Folder Include="..\..\bin\Debug\" />
   </ItemGroup>
   <Import Project="$(WixTargetsPath)" />
   <Import Project="$(NuGetPackageRoot)\MicroBuild.Core\0.2.0\build\MicroBuild.Core.targets" Condition="Exists('$(NuGetPackageRoot)\MicroBuild.Core\0.2.0\build\MicroBuild.Core.targets')" />

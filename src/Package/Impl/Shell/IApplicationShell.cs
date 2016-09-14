@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using Microsoft.Languages.Core.Settings;
 using Microsoft.Languages.Editor.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
@@ -21,11 +20,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// <param name="type">Service type if different from T, such as typeof(SVSUiShell)</param>
         /// <returns>Service instance of null if not found.</returns>
         T GetGlobalService<T>(Type type = null) where T : class;
-
-        /// <summary>
-        /// Persistent storage for any settings application may need to keep between sessions.
-        /// </summary>
-        IWritableSettingsStorage SettingsStorage { get; }
 
         string BrowseForFileOpen(IntPtr owner, string filter, string initialPath = null, string title = null);
 
