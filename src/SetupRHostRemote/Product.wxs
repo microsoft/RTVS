@@ -22,7 +22,7 @@
     </Feature>
   </Product>
 
-  <!-- Install folder is fdefined by the main remote setup (broker binaries) -->
+  <!-- Install folder is defined by the main remote setup (broker binaries) -->
   <Fragment>
     <?include "$(var.SourceDir)\SetupRemote\InstallFolder.wxi"?>
     <DirectoryRef Id="INSTALLFOLDER">
