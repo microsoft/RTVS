@@ -47,10 +47,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
         [Category.R.Package]
         public void ShinyBrowser() {
             var externalSettings = Substitute.For<IRToolsSettings>();
-            externalSettings.ShinyBrowserType.Returns(BrowserType.External);
+            externalSettings.HtmlBrowserType.Returns(BrowserType.External);
 
             var internalSettings = Substitute.For<IRToolsSettings>();
-            internalSettings.ShinyBrowserType.Returns(BrowserType.Internal);
+            internalSettings.HtmlBrowserType.Returns(BrowserType.Internal);
 
             RunBrowserTest(WebBrowserRole.Shiny, RGuidList.ShinyWindowGuid, Resources.ShinyWindowTitle, externalSettings, internalSettings);
         }

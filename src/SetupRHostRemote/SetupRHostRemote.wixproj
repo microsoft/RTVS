@@ -7,9 +7,9 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>3.7</ProductVersion>
-    <ProjectGuid>{a5265b92-029a-423e-9006-a7c1f52476ed}</ProjectGuid>
+    <ProjectGuid>{4AA5CE64-5BE2-414C-8AD9-E3110E490DC4}</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
-    <OutputName Condition=" '$(OutputName)' == '' ">RHost</OutputName>
+    <OutputName Condition=" '$(OutputName)' == '' ">RHost.Remote</OutputName>
     <OutputType>Package</OutputType>
     <SccProjectName>SAK</SccProjectName>
     <SccProvider>SAK</SccProvider>
@@ -45,7 +45,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Product.wxs" />
-    <Content Include="Files.wxi" />
     <Content Include="Definitions.wxi" />
     <Content Include="project.json" />
   </ItemGroup>
