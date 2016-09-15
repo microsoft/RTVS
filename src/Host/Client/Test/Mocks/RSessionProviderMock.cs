@@ -39,5 +39,7 @@ namespace Microsoft.R.Host.Client.Mocks {
         public Task<bool> TrySwitchBrokerAsync(string name, string path = null) {
             return Task.FromResult(true);
         }
+
+        public void DisplayBrokerInformation() { }
     }
 }

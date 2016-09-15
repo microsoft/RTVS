@@ -15,6 +15,7 @@ using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Logging;
 using Microsoft.R.Host.Client.BrokerServices;
 using Microsoft.R.Host.Protocol;
+using Newtonsoft.Json;
 
 namespace Microsoft.R.Host.Client.Host {
     internal abstract class BrokerClient : IBrokerClient {
@@ -31,6 +32,7 @@ namespace Microsoft.R.Host.Client.Host {
 
         private readonly LinesLog _log;
         private readonly string _interpreterId;
+        private AboutHost _aboutHost;
 
         protected HttpClientHandler HttpClientHandler { get; private set; }
 
@@ -41,6 +43,8 @@ namespace Microsoft.R.Host.Client.Host {
         public Uri Uri { get; }
 
         public bool IsRemote => !Uri.IsFile;
+
+        public AboutHost AboutHost => _aboutHost ?? AboutHost.Empty;
 
         protected BrokerClient(string name, Uri brokerUri, string interpreterId) {
             Name = name;
@@ -112,7 +116,9 @@ namespace Microsoft.R.Host.Client.Host {
 
             await CreateBrokerSessionAsync(name, rCommandLineArguments);
             var webSocket = await ConnectToBrokerAsync(name, cancellationToken);
-            return CreateRHost(name, callbacks, webSocket);
+            var host = CreateRHost(name, callbacks, webSocket);
+            await GetHostInformationAsync();
+            return host;
         }
 
         private async Task CreateBrokerSessionAsync(string name, string rCommandLineArguments) {
@@ -193,6 +199,11 @@ namespace Microsoft.R.Host.Client.Host {
             cts.Token.Register(() => { _log.RHostProcessExited(); });
 
             return new RHost(name, callbacks, transport, cts);
+        }
+
+        private async Task GetHostInformationAsync() {
+            var s = await HttpClient.GetStringAsync("/about");
+            _aboutHost = !string.IsNullOrEmpty(s) ? JsonConvert.DeserializeObject<AboutHost>(s) : AboutHost.Empty;
         }
 
         public virtual string HandleUrl(string url, CancellationToken ct) {

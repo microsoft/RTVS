@@ -5,6 +5,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Client.Host {
     internal sealed class NullBrokerClient : IBrokerClient {
@@ -14,6 +15,7 @@ namespace Microsoft.R.Host.Client.Host {
         public Uri Uri { get; } = new Uri("http://localhost");
         public string Name { get; } = string.Empty;
         public bool IsRemote { get; } = true;
+        public AboutHost AboutHost => AboutHost.Empty;
 
         public Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken()) => Result;
 

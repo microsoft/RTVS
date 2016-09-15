@@ -114,7 +114,11 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         public async Task ConnectAsync(IConnectionInfo connection) {
-            if (ActiveConnection != null && (!ActiveConnection.Path.PathEquals(connection.Path) || string.IsNullOrEmpty(_sessionProvider.Broker.Name))) {
+            var doSwitch = ActiveConnection == null;
+            if (!doSwitch && ActiveConnection != null) {
+                doSwitch = !ActiveConnection.Path.PathEquals(connection.Path) || string.IsNullOrEmpty(_sessionProvider.Broker.Name);
+            }
+            if(doSwitch) { 
                 await TrySwitchBrokerAsync(connection);
             }
         }

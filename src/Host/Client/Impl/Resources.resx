@@ -145,4 +145,43 @@ click Reset to restart local R interpreter.</value>
   <data name="RSessionProvider_RestartingSessionFailed" xml:space="preserve">
     <value>Couldn't connect session to the '{0}': {1} because of the following error: {2}</value>
   </data>
+  <data name="Bits32" xml:space="preserve">
+    <value>32 bit</value>
+  </data>
+  <data name="Bits64" xml:space="preserve">
+    <value>64 bit</value>
+  </data>
+  <data name="OperatingSystem" xml:space="preserve">
+    <value>Operating System: {0}</value>
+  </data>
+  <data name="PlatformBits" xml:space="preserve">
+    <value>Platform: {0}</value>
+  </data>
+  <data name="ProcessBits" xml:space="preserve">
+    <value>R Process: {0}</value>
+  </data>
+  <data name="ProcessorCount" xml:space="preserve">
+    <value>CPU Count: {0}</value>
+  </data>
+  <data name="RServices_Information" xml:space="preserve">
+    <value>R Services Information:</value>
+  </data>
+  <data name="TotalVirtualMemory" xml:space="preserve">
+    <value>Total Virtual Memory: {0} MB</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Version: {0}</value>
+  </data>
+  <data name="FreePhysicalMemory" xml:space="preserve">
+    <value>Free Physical Memory: {0} MB</value>
+  </data>
+  <data name="FreeVirtualMemory" xml:space="preserve">
+    <value>Free Virtual Memory: {0} MB</value>
+  </data>
+  <data name="TotalPhysicalMemory" xml:space="preserve">
+    <value>Total Physical Memory: {0} MB</value>
+  </data>
+  <data name="InstalledInterpreters" xml:space="preserve">
+    <value>Installed R:</value>
+  </data>
 </root>

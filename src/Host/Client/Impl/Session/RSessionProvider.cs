@@ -145,6 +145,7 @@ namespace Microsoft.R.Host.Client.Session {
                 if (!switchingFromNull) {
                     _callback.WriteConsole(Resources.RSessionProvider_SwitchingRWorkspaceCompleted);
                 }
+                DisplayBrokerInformation();
                 oldBroker.Dispose();
             } finally {
                 _brokerSwitchLock.Release();
@@ -152,6 +153,26 @@ namespace Microsoft.R.Host.Client.Session {
 
             BrokerChanged?.Invoke(this, new EventArgs());
             return true;
+        }
+
+        public void DisplayBrokerInformation() {
+            var a = _brokerProxy.AboutHost;
+
+            _callback.WriteConsole(Resources.RServices_Information);
+            _callback.WriteConsole("\t" + Resources.Version.FormatInvariant(a.Version));
+            _callback.WriteConsole("\t" + Resources.OperatingSystem.FormatInvariant(a.OS.VersionString));
+            _callback.WriteConsole("\t" + Resources.PlatformBits.FormatInvariant(a.Is64BitOperatingSystem ? Resources.Bits64 : Resources.Bits32));
+            _callback.WriteConsole("\t" + Resources.ProcessBits.FormatInvariant(a.Is64BitProcess ? Resources.Bits64 : Resources.Bits32));
+            _callback.WriteConsole("\t" + Resources.ProcessorCount.FormatInvariant(a.ProcessorCount));
+            _callback.WriteConsole("\t" + Resources.TotalPhysicalMemory.FormatInvariant(a.TotalPhysicalMemory));
+            _callback.WriteConsole("\t" + Resources.FreePhysicalMemory.FormatInvariant(a.FreePhysicalMemory));
+            _callback.WriteConsole("\t" + Resources.TotalVirtualMemory.FormatInvariant(a.TotalVirtualMemory));
+            _callback.WriteConsole("\t" + Resources.FreeVirtualMemory.FormatInvariant(a.FreeVirtualMemory));
+
+            _callback.WriteConsole(Resources.InstalledInterpreters);
+            foreach (var name in a.Interpreters) {
+                _callback.WriteConsole("\t" + name);
+            }
         }
 
         private async Task StartSwitchingBrokerAsync(RSession session) {

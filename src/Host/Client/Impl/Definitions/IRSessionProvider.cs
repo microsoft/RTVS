@@ -39,5 +39,10 @@ namespace Microsoft.R.Host.Client {
         /// <param name="name">Name of the broker. Will be displayed in REPL.</param>
         /// <param name="path">Either a local path to the R binary or a URL to the broker.</param>
         Task<bool> TrySwitchBrokerAsync(string name, string path = null);
+
+        /// <summary>
+        /// Displays broker machine and process information
+        /// </summary>
+        void DisplayBrokerInformation();
     }
 }

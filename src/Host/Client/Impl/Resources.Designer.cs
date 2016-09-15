@@ -61,6 +61,51 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 32 bit.
+        /// </summary>
+        internal static string Bits32 {
+            get {
+                return ResourceManager.GetString("Bits32", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 64 bit.
+        /// </summary>
+        internal static string Bits64 {
+            get {
+                return ResourceManager.GetString("Bits64", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Free Physical Memory: {0} MB.
+        /// </summary>
+        internal static string FreePhysicalMemory {
+            get {
+                return ResourceManager.GetString("FreePhysicalMemory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Free Virtual Memory: {0} MB.
+        /// </summary>
+        internal static string FreeVirtualMemory {
+            get {
+                return ResourceManager.GetString("FreeVirtualMemory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Installed R:.
+        /// </summary>
+        internal static string InstalledInterpreters {
+            get {
+                return ResourceManager.GetString("InstalledInterpreters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There is no local R detected and no remote connection established.
         ///You can try re-connecting to the remote machine, 
         ///use another connection or install local R..
@@ -72,6 +117,42 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Operating System: {0}.
+        /// </summary>
+        internal static string OperatingSystem {
+            get {
+                return ResourceManager.GetString("OperatingSystem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Platform: {0}.
+        /// </summary>
+        internal static string PlatformBits {
+            get {
+                return ResourceManager.GetString("PlatformBits", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R Process: {0}.
+        /// </summary>
+        internal static string ProcessBits {
+            get {
+                return ResourceManager.GetString("ProcessBits", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CPU Count: {0}.
+        /// </summary>
+        internal static string ProcessorCount {
+            get {
+                return ResourceManager.GetString("ProcessorCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Interactive Window is disconnected from R Session.
         ///Try connecting to a remote machine in the Workspaces window or
         ///click Reset to restart local R interpreter..
@@ -79,6 +160,15 @@ namespace Microsoft.R.Host.Client {
         internal static string RHostDisconnected {
             get {
                 return ResourceManager.GetString("RHostDisconnected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R Services Information:.
+        /// </summary>
+        internal static string RServices_Information {
+            get {
+                return ResourceManager.GetString("RServices_Information", resourceCulture);
             }
         }
         
@@ -133,6 +223,33 @@ namespace Microsoft.R.Host.Client {
         internal static string RSessionProvider_SwitchingWorkspaceFailed {
             get {
                 return ResourceManager.GetString("RSessionProvider_SwitchingWorkspaceFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total Physical Memory: {0} MB.
+        /// </summary>
+        internal static string TotalPhysicalMemory {
+            get {
+                return ResourceManager.GetString("TotalPhysicalMemory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total Virtual Memory: {0} MB.
+        /// </summary>
+        internal static string TotalVirtualMemory {
+            get {
+                return ResourceManager.GetString("TotalVirtualMemory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Version: {0}.
+        /// </summary>
+        internal static string Version {
+            get {
+                return ResourceManager.GetString("Version", resourceCulture);
             }
         }
     }
