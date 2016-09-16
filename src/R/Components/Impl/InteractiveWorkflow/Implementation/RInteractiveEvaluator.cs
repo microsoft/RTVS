@@ -209,7 +209,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         private void SessionOnAfterRequest(object sender, RAfterRequestEventArgs e) {
             if (_evaluatorRequest.Count == 0 && e.AddToHistory && e.IsVisible) {
                 _coreShell.DispatchOnUIThread(() => {
-                    if (CurrentWindow == null) {
+                    if (CurrentWindow == null || CurrentWindow.IsResetting) {
                         return;
                     }
 
