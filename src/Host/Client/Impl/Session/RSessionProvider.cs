@@ -25,6 +25,8 @@ namespace Microsoft.R.Host.Client.Session {
         private readonly BrokerClientProxy _brokerProxy;
         public IBrokerClient Broker => _brokerProxy;
 
+        public event EventHandler BrokerChanging;
+        public event EventHandler BrokerChangeFailed;
         public event EventHandler BrokerChanged;
 
         public RSessionProvider(IRSessionProviderCallback callback = null) {
@@ -127,6 +129,8 @@ namespace Microsoft.R.Host.Client.Session {
                 var sessions = _sessions.Values.ToList();
 
                 if (sessions.Any()) {
+                    BrokerChanging?.Invoke(this, EventArgs.Empty);
+
                     try {
                         _callback.WriteConsole(Resources.RSessionProvider_StartConnectingToWorkspaceFormat.FormatInvariant(sessions.Count));
                         await Task.WhenAll(sessions.Select(StartSwitchingBrokerAsync));
@@ -138,6 +142,7 @@ namespace Microsoft.R.Host.Client.Session {
                         foreach (var session in sessions) {
                             session.CancelSwitchingBroker();
                         }
+                        BrokerChangeFailed?.Invoke(this, EventArgs.Empty);
                         return false;
                     }
                 }
