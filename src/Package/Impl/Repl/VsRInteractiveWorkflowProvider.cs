@@ -74,10 +74,17 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                                                     _plotsProvider, _activeTextViewTracker, _debuggerModeTracker, 
                                                     _shell, settings, _wss, () => DisposeInstance(sessionProvider));
             _disposableBag.Add(workflow);
+
+            sessionProvider.BrokerChanging += OnBrokerChanging;
             return workflow;
         }
 
+        private void OnBrokerChanging(object sender, EventArgs e) {
+            _instanceLazy.Value?.ActiveWindow?.Container?.Show(focus: true, immediate: false);
+        }
+
         private void DisposeInstance(IRSessionProvider sessionProvider) {
+            sessionProvider.BrokerChanging -= OnBrokerChanging;
             sessionProvider.Dispose();
             _instanceLazy = null;
         }

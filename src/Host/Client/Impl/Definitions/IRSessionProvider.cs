@@ -9,6 +9,8 @@ using Microsoft.R.Host.Client.Host;
 
 namespace Microsoft.R.Host.Client {
     public interface IRSessionProvider : IDisposable {
+        event EventHandler BrokerChanging;
+        event EventHandler BrokerChangeFailed;
         event EventHandler BrokerChanged;
 
         IBrokerClient Broker { get; }
