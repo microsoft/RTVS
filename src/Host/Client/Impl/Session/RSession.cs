@@ -157,18 +157,29 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
 
-        public Task<ulong> CreateBlobAsync(byte[] data, CancellationToken ct = default(CancellationToken)) =>
-            DoBlobServiceAsync(_host?.CreateBlobAsync(data, ct));
-        
+        public Task<ulong> CreateBlobAsync(CancellationToken ct = default(CancellationToken)) =>
+            DoBlobServiceAsync(_host?.CreateBlobAsync(ct));
 
-        public Task<byte[]> GetBlobAsync(ulong blobId, CancellationToken ct = default(CancellationToken)) =>
-            DoBlobServiceAsync(_host?.GetBlobAsync(blobId, ct));
-        
         public Task DestroyBlobsAsync(IEnumerable<ulong> blobIds, CancellationToken ct = default(CancellationToken)) => 
             DoBlobServiceAsync(new Lazy<Task<long>>(async () => {
                 await _host.DestroyBlobsAsync(blobIds, ct);
                 return 0;
             }).Value);
+
+        public Task<byte[]> BlobReadAllAsync(ulong blobId, CancellationToken ct = default(CancellationToken)) =>
+            DoBlobServiceAsync(_host?.BlobReadAllAsync(blobId, ct));
+
+        public Task<byte[]> BlobReadAsync(ulong blobId, long position, long count, CancellationToken ct = default(CancellationToken)) =>
+            DoBlobServiceAsync(_host?.BlobReadAsync(blobId, position, count, ct));
+
+        public Task<long> BlobWriteAsync(ulong blobId, byte[] data, CancellationToken ct = default(CancellationToken)) =>
+            DoBlobServiceAsync(_host?.BlobWriteAsync(blobId, data, ct));
+
+        public Task<long> GetBlobSizeAsync(ulong blobId, CancellationToken ct = default(CancellationToken)) =>
+            DoBlobServiceAsync(_host?.GetBlobSizeAsync(blobId, ct));
+
+        public Task<long> SetBlobSizeAsync(ulong blobId, long size, CancellationToken ct = default(CancellationToken)) =>
+            DoBlobServiceAsync(_host?.SetBlobSizeAsync(blobId, size, ct));
         
         private async Task<T> DoBlobServiceAsync<T>(Task<T> work) {
             if (!IsHostRunning) {

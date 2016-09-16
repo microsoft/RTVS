@@ -31,6 +31,9 @@ namespace Microsoft.Common.Core.IO {
         
         public void FileWriteAllBytes(string path, byte[] bytes) => File.WriteAllBytes(path, bytes);
 
+        public Stream CreateFile(string path) => File.Create(path);
+        public Stream FileOpenRead(string path) => File.OpenRead(path);
+
         public bool DirectoryExists(string path) => Directory.Exists(path);
 
         public FileAttributes GetFileAttributes(string path) => File.GetAttributes(path);

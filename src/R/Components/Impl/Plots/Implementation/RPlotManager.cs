@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.Common.Core.IO;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
@@ -20,6 +21,7 @@ using Microsoft.R.Host.Client.Session;
 namespace Microsoft.R.Components.Plots.Implementation {
     internal class RPlotManager : IRPlotManager {
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
+        private readonly IFileSystem _fileSystem;
         private readonly DisposableBag _disposableBag;
         private readonly List<IRPlotDevice> _devices = new List<IRPlotDevice>();
         private readonly Dictionary<int, IRPlotDeviceVisualComponent> _visualComponents = new Dictionary<int, IRPlotDeviceVisualComponent>();
@@ -30,8 +32,9 @@ namespace Microsoft.R.Components.Plots.Implementation {
         public event EventHandler<RPlotDeviceEventArgs> DeviceAdded;
         public event EventHandler<RPlotDeviceEventArgs> DeviceRemoved;
 
-        public RPlotManager(IRSettings settings, IRInteractiveWorkflow interactiveWorkflow, Action dispose) {
+        public RPlotManager(IRSettings settings, IRInteractiveWorkflow interactiveWorkflow, Action dispose, IFileSystem fileSystem) {
             _interactiveWorkflow = interactiveWorkflow;
+            _fileSystem = fileSystem;
 
             _disposableBag = DisposableBag.Create<RPlotManager>(dispose)
                 .Add(() => interactiveWorkflow.RSession.Disconnected += RSession_Disconnected)
@@ -340,10 +343,12 @@ namespace Microsoft.R.Components.Plots.Implementation {
             }
         }
 
-        private async Task ExportAsync(string outputFilePath, Task<byte[]> exportTask) {
+        private async Task ExportAsync(string outputFilePath, Task<ulong> exportTask) {
             try {
                 var result = await exportTask;
-                File.WriteAllBytes(outputFilePath, result);
+                using(DataTransferSession dts = new DataTransferSession(InteractiveWorkflow.RSession, _fileSystem)) {
+                    await dts.FetchFileAsync(new RBlobInfo(result), outputFilePath);
+                }
             } catch (IOException ex) {
                 throw new RPlotManagerException(ex.Message, ex);
             } catch (RException ex) {

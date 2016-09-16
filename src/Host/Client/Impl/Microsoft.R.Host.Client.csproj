@@ -44,6 +44,7 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="BrokerServices\BrokerApiErrorException.cs" />
+    <Compile Include="Blobs\RBlobStream.cs" />
     <Compile Include="BrokerServices\IRemoteUriWebService.cs" />
     <Compile Include="BrokerServices\ISessionsWebService.cs" />
     <Compile Include="BrokerServices\RemoteUriWebService.cs" />
@@ -62,24 +63,25 @@
     <Compile Include="DataInspection\REvaluationResultProperties.cs" />
     <Compile Include="DataInspection\RPromiseInfo.cs" />
     <Compile Include="DataInspection\RSessionExtensions.cs" />
+    <Compile Include="Definitions\IRBlobInfo.cs" />
     <Compile Include="Definitions\IRSessionProviderCallback.cs" />
     <Compile Include="Definitions\IRSessionSwitchBrokerTransaction.cs" />
+    <Compile Include="Host\RHost.BlobWriteRequest.cs" />
+    <Compile Include="Host\RHost.BlobReadRequest.cs" />
     <Compile Include="Host\BrokerClientProxy.cs" />
+    <Compile Include="Host\RHost.GetBlobSizeRequest.cs" />
     <Compile Include="Host\NullRCallbacks.cs" />
     <Compile Include="Host\NullBrokerClient.cs" />
     <Compile Include="Host\RemoteBrokerClient.cs" />
     <Compile Include="Host\BrokerClient.cs" />
     <Compile Include="Definitions\PlotDeviceProperties.cs" />
-    <Compile Include="Host\RHost.GetBlobRequest.cs" />
     <Compile Include="Host\RHost.CreateBlobRequest.cs" />
     <Compile Include="Host\RHost.Request.cs" />
     <Compile Include="Definitions\REvaluationResult.FieldNames.cs" />
-    <Compile Include="Definitions\FileTransferSession.cs" />
-    <Compile Include="Definitions\IRBlobInfo.cs" />
-    <Compile Include="Definitions\IRBlob.cs" />
-    <Compile Include="Definitions\Blob.cs" />
+    <Compile Include="Blobs\DataTransferSession.cs" />
+    <Compile Include="Blobs\RBlobInfo.cs" />
     <Compile Include="Host\IBrokerClient.cs" />
-    <Compile Include="Definitions\IRBlobService.cs" />
+    <Compile Include="Blobs\IRBlobService.cs" />
     <Compile Include="Definitions\PlotMessage.cs" />
     <Compile Include="Definitions\REnvironments.cs" />
     <Compile Include="DataInspection\RValueFlags.cs" />

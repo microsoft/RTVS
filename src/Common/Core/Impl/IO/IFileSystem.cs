@@ -26,6 +26,9 @@ namespace Microsoft.Common.Core.IO {
         byte[] FileReadAllBytes(string path);
         void FileWriteAllBytes(string path, byte[] bytes);
 
+        Stream CreateFile(string path);
+        Stream FileOpenRead(string path);
+        
         IFileVersionInfo GetVersionInfo(string path);
         void DeleteFile(string path);
         void DeleteDirectory(string path, bool recursive);

@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.Extensions;
@@ -12,7 +13,6 @@ using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Workspace;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Host;
 using Microsoft.VisualStudio.R.Package.Repl;
 
 namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
@@ -66,7 +66,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
             History = historyProvider.CreateRHistory(this);
             Packages = packagesProvider.CreateRPackageManager(settings, this);
-            Plots = plotsProvider.CreatePlotManager(settings, this);
+            Plots = plotsProvider.CreatePlotManager(settings, this, new FileSystem());
             _operations = new RInteractiveWorkflowOperations(this, _debuggerModeTracker, Shell);
 
             _activeTextViewTracker.LastActiveTextViewChanged += LastActiveTextViewChanged;
