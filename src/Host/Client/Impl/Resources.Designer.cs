@@ -119,7 +119,7 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Starting R Session has failed, please restart it manually..
+        ///   Looks up a localized string similar to Starting R Session has failed, please restart it manually. Restoring connection to the &apos;{0}&apos;: {1}.
         /// </summary>
         internal static string RSessionProvider_StartingSessionAfterSwitchingFailed {
             get {

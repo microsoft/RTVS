@@ -146,7 +146,7 @@ click Reset to restart local R interpreter.</value>
     <value>Connection to the new R Workspace has been canceled, restoring connection to the '{0}': {1}</value>
   </data>
   <data name="RSessionProvider_StartingSessionAfterSwitchingFailed" xml:space="preserve">
-    <value>Starting R Session has failed, please restart it manually.</value>
+    <value>Starting R Session has failed, please restart it manually. Restoring connection to the '{0}': {1}</value>
   </data>
   <data name="RSessionProvider_StartingSessionAfterSwitchingCanceled" xml:space="preserve">
     <value>Starting R Session has been canceled, please restart it manually.</value>

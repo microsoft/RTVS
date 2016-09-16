@@ -261,14 +261,15 @@ namespace Microsoft.R.Host.Client.Session {
             try {
                 _callback.WriteConsole(Resources.RSessionProvider_RestartingSessionsFormat.FormatInvariant(transactions.Count));
                 await Task.WhenAll(transactions.Select(t => t.CompleteSwitchingBrokerAsync()));
-            } catch (RHostDisconnectedException) {
-                _callback.WriteConsole(Resources.RSessionProvider_StartingSessionAfterSwitchingFailed);
-                throw;
-            } catch (OperationCanceledException) {
+            } catch (OperationCanceledException ex) when (!(ex is RHostDisconnectedException)) {
                 _callback.WriteConsole(Resources.RSessionProvider_StartingSessionAfterSwitchingCanceled);
-                throw;
-            } finally {
                 oldBroker.Dispose();
+                throw;
+            } catch (Exception) {
+                _callback.WriteConsole(Resources.RSessionProvider_StartingSessionAfterSwitchingFailed.FormatInvariant(oldBroker.Name, GetUriString(oldBroker)));
+                var newBroker = _brokerProxy.Set(oldBroker);
+                newBroker.Dispose();
+                throw;
             }
         }
 
