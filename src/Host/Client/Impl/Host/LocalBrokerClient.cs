@@ -18,7 +18,7 @@ namespace Microsoft.R.Host.Client.Host {
         private const string RHostBrokerExe = "Microsoft.R.Host.Broker.exe";
         private const string InterpreterId = "local";
 
-        private static readonly bool ShowConsole = string.IsNullOrEmpty(Environment.GetEnvironmentVariable("RTVS_HOST_CONSOLE"));
+        private static readonly bool ShowConsole;
         private static readonly NetworkCredential _credentials = new NetworkCredential("RTVS", Guid.NewGuid().ToString());
 
         private readonly string _rhostDirectory;
@@ -26,6 +26,17 @@ namespace Microsoft.R.Host.Client.Host {
         private readonly BinaryAsyncLock _connectLock = new BinaryAsyncLock();
 
         private Process _brokerProcess;
+
+        static LocalBrokerClient() {
+            // Allow "true" and non-zero integer to enable, otherwise disable.
+            string rtvsShowConsole = Environment.GetEnvironmentVariable("RTVS_SHOW_CONSOLE");
+            if (!bool.TryParse(rtvsShowConsole, out ShowConsole)) {
+                int n;
+                if (int.TryParse(rtvsShowConsole, out n) && n != 0) {
+                    ShowConsole = true;
+                }
+            }
+        }
 
         public LocalBrokerClient(string name, string rHome, string rhostDirectory = null)
             : base(name, new Uri(rHome), InterpreterId) {

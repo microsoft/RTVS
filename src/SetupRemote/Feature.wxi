@@ -10,9 +10,7 @@
 
    
     <ComponentRef Id="ProductAssemblies" />
-    <?ifdef Debug?>
-    <ComponentRef Id="ProductAssembliesDebugData" />
-    <?endif?>
+    <ComponentGroupRef Id="RtvsPackage" />
     <!--<ComponentRef Id="RegistryEntries" />-->
   </Feature>
 </Include>

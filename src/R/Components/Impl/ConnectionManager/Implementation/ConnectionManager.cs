@@ -188,7 +188,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
             // Verify that most recently used connection is still valid
             var last = _settings.LastActiveConnection;
-            if (last != null && !IsValidLocalConnection(last.Name, last.Path)) {
+            if (last != null && !IsRemoteConnection(last.Path) && !IsValidLocalConnection(last.Name, last.Path)) {
                 _settings.LastActiveConnection = null;
             }
 
@@ -213,11 +213,18 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
         private bool IsValidLocalConnection(string name, string path) {
             try {
+                var info = new RInterpreterInfo(name, path);
+                return info.VerifyInstallation();
+            } catch (Exception ex) when (!ex.IsCriticalException()) {
+                GeneralLog.Write(ex);
+            }
+            return false;
+        }
+
+        private bool IsRemoteConnection(string path) {
+            try {
                 Uri uri;
-                if (Uri.TryCreate(path, UriKind.Absolute, out uri) && uri.IsFile) {
-                    var info = new RInterpreterInfo(name, path);
-                    return info.VerifyInstallation();
-                }
+                return Uri.TryCreate(path, UriKind.Absolute, out uri) && !uri.IsFile;
             } catch (Exception ex) when (!ex.IsCriticalException()) {
                 GeneralLog.Write(ex);
             }
