@@ -50,7 +50,7 @@ namespace Microsoft.R.Host.Broker.Interpreters {
                         yield return detected;
                     }
                 } else {
-                    _logger.LogWarning(Resources.Warning_NoRInterpreters);
+                    _logger.LogWarning(Resources.Error_NoRInterpreters);
                 }
             }
 

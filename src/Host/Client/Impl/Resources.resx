@@ -144,7 +144,8 @@ click Reset to restart local R interpreter.</value>
 {1}</value>
   </data>
   <data name="RSessionProvider_RestartingSessionFailed" xml:space="preserve">
-    <value>Couldn't connect session to the '{0}': {1} because of the following error:
+    <value>Couldn't connect session to the '{0}',
+path {1} because of the following error:
 {2}</value>
   </data>
   <data name="Bits32" xml:space="preserve">
@@ -185,5 +186,17 @@ click Reset to restart local R interpreter.</value>
   </data>
   <data name="InstalledInterpreters" xml:space="preserve">
     <value>Installed R:</value>
+  </data>
+  <data name="Error_HostNotResponsing" xml:space="preserve">
+    <value>Host did did not respond to ping. The machine may be down or the network has been disconnected. HTTP message: {0}</value>
+  </data>
+  <data name="Error_InterpreterNotFound" xml:space="preserve">
+    <value>Specified R interpreter was not found</value>
+  </data>
+  <data name="Error_NoRInterpreters" xml:space="preserve">
+    <value>No R Interpreters installed</value>
+  </data>
+  <data name="HttpErrorCreatingSession" xml:space="preserve">
+    <value>HTTP error while creating session: {0}</value>
   </data>
 </root>

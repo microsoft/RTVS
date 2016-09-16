@@ -4,7 +4,6 @@
 using System;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
     internal abstract class DebuggerWrappedCommand: DebuggerCommand {
@@ -18,9 +17,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
         }
 
         protected override void Handle() {
-            IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-            object o = null;
-            shell.PostExecCommand(ref _shellGroup, _shellCmdId, 0, ref o);
+            VsAppShell.Current.PostCommand(_shellGroup, (int)_shellCmdId);
         }
     }
 }

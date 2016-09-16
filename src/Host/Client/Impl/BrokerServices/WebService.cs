@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.IO;
+using Microsoft.R.Host.Client.Host;
 
 namespace Microsoft.R.Host.Client.BrokerServices {
     public class WebService {
@@ -23,7 +24,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
                 throw new UnauthorizedAccessException();
             }
 
-            return response.EnsureSuccessStatusCode();
+            throw new RHostDisconnectedException((int)response.StatusCode, response.ReasonPhrase);
         }
 
         public async Task<TResponse> HttpGetAsync<TResponse>(Uri uri) =>
@@ -46,7 +47,11 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             var content = new StringContent(requestBody, Encoding.UTF8, "application/json");
             var response = EnsureSuccessStatusCode(await HttpClient.PutAsync(uri, content));
             var responseBody = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<TResponse>(responseBody);
+            try {
+                return JsonConvert.DeserializeObject<TResponse>(responseBody);
+            } catch(JsonSerializationException ex) {
+                throw new ProtocolViolationException(ex.Message);
+            }
         }
 
         public async Task<Stream> HttpPostAsync(Uri uri, Stream request) {

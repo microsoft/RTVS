@@ -95,7 +95,7 @@ namespace Microsoft.R.Host.Client.Host {
             try {
                 (await HttpClient.PostAsync("/ping", new StringContent(""))).EnsureSuccessStatusCode();
             } catch (HttpRequestException ex) {
-                throw new RHostDisconnectedException("Broker did not respond to ping", ex);
+                throw new RHostDisconnectedException(Resources.Error_HostNotResponsing.FormatInvariant(ex.Message), ex);
             }
         }
 
@@ -139,8 +139,6 @@ namespace Microsoft.R.Host.Client.Host {
                 } catch (UnauthorizedAccessException) {
                     isValidCredentials = false;
                     continue;
-                } catch (HttpRequestException ex) {
-                    throw new RHostDisconnectedException("HTTP error while creating session: " + ex.Message, ex);
                 } finally {
                     if (isValidCredentials != null) {
                         OnCredentialsValidated(isValidCredentials.Value);
@@ -152,7 +150,7 @@ namespace Microsoft.R.Host.Client.Host {
         private async Task<WebSocket> ConnectToBrokerAsync(string name, CancellationToken cancellationToken) {
             var wsClient = new WebSocketClient {
                 KeepAliveInterval = HeartbeatTimeout,
-                SubProtocols = {"Microsoft.R.Host"},
+                SubProtocols = { "Microsoft.R.Host" },
                 ConfigureRequest = request => {
                     UpdateCredentials();
                     request.AuthenticationLevel = AuthenticationLevel.MutualAuthRequested;
@@ -182,7 +180,7 @@ namespace Microsoft.R.Host.Client.Host {
                     continue;
                 } catch (Exception ex)
                     when (ex is InvalidOperationException || ex is WebException || ex is ProtocolViolationException) {
-                    throw new RHostDisconnectedException("HTTP error while connecting to session pipe: " + ex.Message, ex);
+                    throw new RHostDisconnectedException(512, ex);
                 } finally {
                     if (isValidCredentials != null) {
                         OnCredentialsValidated(isValidCredentials.Value);

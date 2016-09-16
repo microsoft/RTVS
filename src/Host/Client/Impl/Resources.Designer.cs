@@ -79,6 +79,33 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Host did did not respond to ping. The machine may be down or the network has been disconnected. HTTP message: {0}.
+        /// </summary>
+        internal static string Error_HostNotResponsing {
+            get {
+                return ResourceManager.GetString("Error_HostNotResponsing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Specified R interpreter was not found.
+        /// </summary>
+        internal static string Error_InterpreterNotFound {
+            get {
+                return ResourceManager.GetString("Error_InterpreterNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No R Interpreters installed.
+        /// </summary>
+        internal static string Error_NoRInterpreters {
+            get {
+                return ResourceManager.GetString("Error_NoRInterpreters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Free Physical Memory: {0} MB.
         /// </summary>
         internal static string FreePhysicalMemory {
@@ -93,6 +120,15 @@ namespace Microsoft.R.Host.Client {
         internal static string FreeVirtualMemory {
             get {
                 return ResourceManager.GetString("FreeVirtualMemory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to HTTP error while creating session: {0}.
+        /// </summary>
+        internal static string HttpErrorCreatingSession {
+            get {
+                return ResourceManager.GetString("HttpErrorCreatingSession", resourceCulture);
             }
         }
         
@@ -173,7 +209,8 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Couldn&apos;t connect session to the &apos;{0}&apos;: {1} because of the following error:
+        ///   Looks up a localized string similar to Couldn&apos;t connect session to the &apos;{0}&apos;,
+        ///path {1} because of the following error:
         ///{2}.
         /// </summary>
         internal static string RSessionProvider_RestartingSessionFailed {
