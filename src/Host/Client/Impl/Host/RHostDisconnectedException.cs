@@ -4,7 +4,6 @@
 using System;
 using System.Runtime.Serialization;
 using System.Threading;
-using Microsoft.Common.Core;
 using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Client.Host {

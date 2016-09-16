@@ -30,7 +30,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
         [HttpPut("{id}")]
         public Task<IActionResult> PutAsync(string id, [FromBody] SessionCreateRequest request) {
             if (!_interpManager.Interpreters.Any()) {
-                return Task.FromResult(CustomResult.Create(CustomHttpError.NoRInterpreters));
+                return Task.FromResult(CustomErrorResult.Create(CustomHttpError.NoRInterpreters));
             }
 
             SecureString securePassword = null;
@@ -48,7 +48,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
             if (!string.IsNullOrEmpty(request.InterpreterId)) {
                 interp = _interpManager.Interpreters.FirstOrDefault(ip => ip.Id == request.InterpreterId);
                 if (interp == null) {
-                    return Task.FromResult(CustomResult.Create(CustomHttpError.InterpreterNotFound));
+                    return Task.FromResult(CustomErrorResult.Create(CustomHttpError.InterpreterNotFound));
                 }
             } else {
                 interp = _interpManager.Interpreters.First();
@@ -66,15 +66,6 @@ namespace Microsoft.R.Host.Broker.Sessions {
             }
 
             return new WebSocketPipeAction(session);
-        }
-
-        class CustomResult : ObjectResult {
-            public static IActionResult Create(CustomHttpError error) {
-                return new CustomResult((int)error) as IActionResult;
-            }
-            private CustomResult(int code) : base(code) {
-                StatusCode = code;
-            }
         }
     }
 }
