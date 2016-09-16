@@ -34,6 +34,10 @@ namespace Microsoft.VisualStudio.R.Package.StatusBar {
             IntPtr window;
             shell.GetDialogOwnerHwnd(out window);
 
+            if (window == IntPtr.Zero) {
+                return null;
+            }
+
             var hwndSource = HwndSource.FromHwnd(window);
             return hwndSource?.RootVisual;
         }

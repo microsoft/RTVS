@@ -401,8 +401,9 @@ namespace Microsoft.R.Host.Client.Session {
             return Task.CompletedTask;
         }
 
-        Task IRCallbacks.Disconnected() {
+        async Task IRCallbacks.Disconnected() {
             _isHostRunning = false;
+            var lockToken = await _initializationLock.ResetAsync();
             Disconnected?.Invoke(this, EventArgs.Empty);
 
             var currentRequest = Interlocked.Exchange(ref _currentRequestSource, null);
@@ -410,8 +411,7 @@ namespace Microsoft.R.Host.Client.Session {
             currentRequest?.TryCancel(exception);
 
             ClearPendingRequests(exception);
-
-            return Task.CompletedTask;
+            lockToken.Reset();
         }
 
         private void ClearPendingRequests(OperationCanceledException exception) {
