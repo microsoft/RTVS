@@ -202,8 +202,10 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         private async Task GetHostInformationAsync() {
-            var s = await HttpClient.GetStringAsync("/about");
-            _aboutHost = !string.IsNullOrEmpty(s) ? JsonConvert.DeserializeObject<AboutHost>(s) : AboutHost.Empty;
+            if (_aboutHost == null) {
+                var s = await HttpClient.GetStringAsync("/about");
+                _aboutHost = !string.IsNullOrEmpty(s) ? JsonConvert.DeserializeObject<AboutHost>(s) : AboutHost.Empty;
+            }
         }
 
         public virtual string HandleUrl(string url, CancellationToken ct) {
