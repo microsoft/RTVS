@@ -14,11 +14,9 @@ namespace Microsoft.R.Host.Client.Mocks {
 
         public void Dispose() { }
 
-        public event EventHandler BrokerChanging;
-        public event EventHandler BrokerChangeFailed;
-        public event EventHandler BrokerChanged;
-
+#pragma warning disable 67
         public IBrokerClient Broker { get; } = new NullBrokerClient();
+#pragma warning restore
 
         public IRSession GetOrCreate(Guid guid) {
             IRSession session;
@@ -43,5 +41,10 @@ namespace Microsoft.R.Host.Client.Mocks {
         }
 
         public void DisplayBrokerInformation() { }
+
+#pragma warning disable 67
+        public event EventHandler BrokerChanging;
+        public event EventHandler BrokerChangeFailed;
+        public event EventHandler BrokerChanged;
     }
 }

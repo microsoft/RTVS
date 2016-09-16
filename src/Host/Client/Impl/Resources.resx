@@ -140,10 +140,12 @@ click Reset to restart local R interpreter.</value>
     <value>Restarting sessions ({0})...</value>
   </data>
   <data name="RSessionProvider_SwitchingWorkspaceFailed" xml:space="preserve">
-    <value>Connecting to the new R Workspace failed, restoring connection to the '{0}': {1}</value>
+    <value>Connecting to the new R Workspace failed, restoring connection to '{0}':
+{1}</value>
   </data>
   <data name="RSessionProvider_RestartingSessionFailed" xml:space="preserve">
-    <value>Couldn't connect session to the '{0}': {1} because of the following error: {2}</value>
+    <value>Couldn't connect session to the '{0}': {1} because of the following error:
+{2}</value>
   </data>
   <data name="Bits32" xml:space="preserve">
     <value>32 bit</value>

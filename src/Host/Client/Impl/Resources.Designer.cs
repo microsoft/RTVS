@@ -173,7 +173,8 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Couldn&apos;t connect session to the &apos;{0}&apos;: {1} because of the following error: {2}.
+        ///   Looks up a localized string similar to Couldn&apos;t connect session to the &apos;{0}&apos;: {1} because of the following error:
+        ///{2}.
         /// </summary>
         internal static string RSessionProvider_RestartingSessionFailed {
             get {
@@ -218,7 +219,8 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Connecting to the new R Workspace failed, restoring connection to the &apos;{0}&apos;: {1}.
+        ///   Looks up a localized string similar to Connecting to the new R Workspace failed, restoring connection to &apos;{0}&apos;:
+        ///{1}.
         /// </summary>
         internal static string RSessionProvider_SwitchingWorkspaceFailed {
             get {
