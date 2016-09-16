@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.R.Host.Protocol;
 
@@ -15,12 +16,12 @@ namespace Microsoft.R.Host.Client.BrokerServices {
 
         private static readonly Uri getUri = new Uri("/sessions", UriKind.Relative);
 
-        public Task<IEnumerable<SessionInfo>> GetAsync() =>
-            HttpGetAsync<IEnumerable<SessionInfo>>(getUri);
+        public Task<IEnumerable<SessionInfo>> GetAsync(CancellationToken cancellationToken = default(CancellationToken)) =>
+            HttpGetAsync<IEnumerable<SessionInfo>>(getUri, cancellationToken);
 
         private static readonly UriTemplate putUri = new UriTemplate("/sessions/{name}");
 
-        public Task<SessionInfo> PutAsync(string id, SessionCreateRequest request) =>
-            HttpPutAsync<SessionCreateRequest, SessionInfo>(putUri, request, id);
+        public Task<SessionInfo> PutAsync(string id, SessionCreateRequest request, CancellationToken cancellationToken = default(CancellationToken)) =>
+            HttpPutAsync<SessionCreateRequest, SessionInfo>(putUri, request, cancellationToken, id);
     }
 }

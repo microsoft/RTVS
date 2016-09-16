@@ -327,6 +327,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Switching connection from &quot;{0}&quot; to &quot;{1}&quot;.
+        /// </summary>
+        public static string ConnectionManager_SwitchConnectionProgressBarMessage {
+            get {
+                return ResourceManager.GetString("ConnectionManager_SwitchConnectionProgressBarMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Test Connection.
         /// </summary>
         public static string ConnectionManager_TestConnection {

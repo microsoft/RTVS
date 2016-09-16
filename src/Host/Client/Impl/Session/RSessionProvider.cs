@@ -245,7 +245,7 @@ namespace Microsoft.R.Host.Client.Session {
                 _callback.WriteConsole(Resources.RSessionProvider_StartConnectingToWorkspaceFormat.FormatInvariant(transactions.Count));
                 await Task.WhenAll(transactions.Select(ConnectToNewBrokerAsync));
             } catch(Exception ex) {
-                if (ex is OperationCanceledException) {
+                if (ex is OperationCanceledException && !(ex is RHostDisconnectedException)) {
                     _callback.WriteConsole(Resources.RSessionProvider_SwitchingWorkspaceCanceled.FormatInvariant(oldBroker.Name, GetUriString(oldBroker)));
                 } else {
                     _callback.WriteConsole(Resources.RSessionProvider_SwitchingWorkspaceFailed.FormatInvariant(oldBroker.Name, GetUriString(oldBroker)));
@@ -261,11 +261,11 @@ namespace Microsoft.R.Host.Client.Session {
             try {
                 _callback.WriteConsole(Resources.RSessionProvider_RestartingSessionsFormat.FormatInvariant(transactions.Count));
                 await Task.WhenAll(transactions.Select(t => t.CompleteSwitchingBrokerAsync()));
+            } catch (RHostDisconnectedException) {
+                _callback.WriteConsole(Resources.RSessionProvider_StartingSessionAfterSwitchingFailed);
+                throw;
             } catch (OperationCanceledException) {
                 _callback.WriteConsole(Resources.RSessionProvider_StartingSessionAfterSwitchingCanceled);
-                throw;
-            } catch (Exception) {
-                _callback.WriteConsole(Resources.RSessionProvider_StartingSessionAfterSwitchingFailed);
                 throw;
             } finally {
                 oldBroker.Dispose();

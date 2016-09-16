@@ -251,7 +251,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         private void BrokerStateChanged(object sender, BrokerStateChangedEventArgs eventArgs) {
             IsConnected = eventArgs.IsConnected;
             UpdateActiveConnection();
-            ConnectionStateChanged?.Invoke(this, new ConnectionEventArgs(true, ActiveConnection));
+            ConnectionStateChanged?.Invoke(this, new ConnectionEventArgs(IsConnected, ActiveConnection));
         }
 
         private void UpdateActiveConnection() {

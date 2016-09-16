@@ -34,7 +34,7 @@ namespace Microsoft.R.Host.Client.Host {
             _rHome = rHome;
         }
 
-        public async override Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken()) {
+        public override async Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken()) {
             await EnsureBrokerStartedAsync();
             return await base.ConnectAsync(name, callbacks, rCommandLineArguments, timeout, cancellationToken);
         }
@@ -47,9 +47,10 @@ namespace Microsoft.R.Host.Client.Host {
             try {
                 if (!lockToken.IsSet) {
                     await ConnectToBrokerWorker(lockToken);
+                    lockToken.Set();
                 }
             } finally {
-                lockToken.Set();
+                lockToken.Reset();
             }
         }
 

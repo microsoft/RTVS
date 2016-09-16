@@ -473,6 +473,9 @@ Host: {1}
 Port: {2}
 Arguments: {3}</value>
   </data>
+  <data name="ConnectionManager_SwitchConnectionProgressBarMessage" xml:space="preserve">
+    <value>Switching connection from "{0}" to "{1}"</value>
+  </data>
   <data name="ConnectionManager_None" xml:space="preserve">
     <value>none specified</value>
   </data>

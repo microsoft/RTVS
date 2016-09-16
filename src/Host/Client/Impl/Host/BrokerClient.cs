@@ -110,12 +110,12 @@ namespace Microsoft.R.Host.Client.Host {
             DisposableBag.ThrowIfDisposed();
             await TaskUtilities.SwitchToBackgroundThread();
 
-            await CreateBrokerSessionAsync(name, rCommandLineArguments);
+            await CreateBrokerSessionAsync(name, rCommandLineArguments, cancellationToken);
             var webSocket = await ConnectToBrokerAsync(name, cancellationToken);
             return CreateRHost(name, callbacks, webSocket);
         }
 
-        private async Task CreateBrokerSessionAsync(string name, string rCommandLineArguments) {
+        private async Task CreateBrokerSessionAsync(string name, string rCommandLineArguments, CancellationToken cancellationToken) {
             rCommandLineArguments = rCommandLineArguments ?? string.Empty;
             var sessions = new SessionsWebService(HttpClient);
 
@@ -128,7 +128,7 @@ namespace Microsoft.R.Host.Client.Host {
                     await sessions.PutAsync(name, new SessionCreateRequest {
                         InterpreterId = _interpreterId,
                         CommandLineArguments = rCommandLineArguments,
-                    });
+                    }, cancellationToken);
                     break;
                 } catch (UnauthorizedAccessException) {
                     isValidCredentials = false;

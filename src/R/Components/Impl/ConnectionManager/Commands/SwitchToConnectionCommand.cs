@@ -3,35 +3,36 @@
 
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
 
 namespace Microsoft.R.Components.ConnectionManager.Commands {
     public class SwitchToConnectionCommand : IAsyncCommandRange {
-        private readonly IConnectionManager _connnectionManager;
+        private readonly IConnectionManager _connectionManager;
         private readonly ICoreShell _shell;
         private ReadOnlyCollection<IConnection> _recentConnections;
 
         public SwitchToConnectionCommand(IRInteractiveWorkflow workflow) {
-            _connnectionManager = workflow.Connections;
+            _connectionManager = workflow.Connections;
             _shell = workflow.Shell;
         }
 
         public CommandStatus GetStatus(int index) {
-            _recentConnections = _connnectionManager.RecentConnections;
+            _recentConnections = _connectionManager.RecentConnections;
             if (index >= _recentConnections.Count) {
                 return CommandStatus.SupportedAndInvisible;
             }
 
-            return _recentConnections[index] == _connnectionManager.ActiveConnection 
+            return _recentConnections[index] == _connectionManager.ActiveConnection 
                 ? CommandStatus.SupportedAndEnabled | CommandStatus.Latched
                 : CommandStatus.SupportedAndEnabled;
         }
 
         public string GetText(int index) {
             if (_recentConnections == null) {
-                _recentConnections = _connnectionManager.RecentConnections;
+                _recentConnections = _connectionManager.RecentConnections;
             }
 
             return _recentConnections[index].Name;
@@ -39,12 +40,15 @@ namespace Microsoft.R.Components.ConnectionManager.Commands {
 
         public async Task<CommandResult> InvokeAsync(int index) {
             if (_recentConnections == null) {
-                _recentConnections = _connnectionManager.RecentConnections;
+                _recentConnections = _connectionManager.RecentConnections;
             }
 
             if (index < _recentConnections.Count) {
                 var connection = _recentConnections[index];
-                await _connnectionManager.ConnectAsync(connection);
+                var progressBarMessage = Resources.ConnectionManager_SwitchConnectionProgressBarMessage.FormatInvariant(_connectionManager.ActiveConnection.Name, connection.Name);
+                using (var progressBarSession = _shell.ShowProgressBar(progressBarMessage)) {
+                    await _connectionManager.ConnectAsync(connection, progressBarSession.UserCancellationToken);
+                }
             }
             return CommandResult.Executed;
         }
