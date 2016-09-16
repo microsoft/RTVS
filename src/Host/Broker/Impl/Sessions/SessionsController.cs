@@ -55,7 +55,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
             }
 
             var session = _sessionManager.CreateSession(User.Identity, id, interp, securePassword, profilePath, request.CommandLineArguments);
-            return Task.FromResult(new ObjectResult(session.Info) as IActionResult);
+            return Task.FromResult<IActionResult>(new ObjectResult(session.Info));
         }
 
         [HttpGet("{id}/pipe")]

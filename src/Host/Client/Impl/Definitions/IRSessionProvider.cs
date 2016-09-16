@@ -45,6 +45,6 @@ namespace Microsoft.R.Host.Client {
         /// <summary>
         /// Displays broker machine and process information
         /// </summary>
-        void DisplayBrokerInformation();
+        void PrintBrokerInformation();
     }
 }

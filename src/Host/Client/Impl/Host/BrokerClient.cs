@@ -180,7 +180,7 @@ namespace Microsoft.R.Host.Client.Host {
                     continue;
                 } catch (Exception ex)
                     when (ex is InvalidOperationException || ex is WebException || ex is ProtocolViolationException) {
-                    throw new RHostDisconnectedException(512, ex);
+                    throw new RHostDisconnectedException(Resources.HttpErrorCreatingSession.FormatInvariant(ex.Message));
                 } finally {
                     if (isValidCredentials != null) {
                         OnCredentialsValidated(isValidCredentials.Value);

@@ -36,10 +36,10 @@ namespace Microsoft.R.Host.Broker.About {
             var query = new SelectQuery(@"Select * from Win32_OperatingSystem");
             using (var search = new ManagementObjectSearcher(query)) {
                 foreach (var mo in search.Get()) {
-                    a.TotalVirtualMemory = GetValue(mo, "TotalVirtualMemorySize");
-                    a.FreeVirtualMemory = GetValue(mo, "FreeVirtualMemory");
-                    a.TotalPhysicalMemory = GetValue(mo, "TotalVisibleMemorySize");
-                    a.FreePhysicalMemory = GetValue(mo, "FreePhysicalMemory");
+                    a.TotalVirtualMemory = GetSizeInGB(mo, "TotalVirtualMemorySize");
+                    a.FreeVirtualMemory = GetSizeInGB(mo, "FreeVirtualMemory");
+                    a.TotalPhysicalMemory = GetSizeInGB(mo, "TotalVisibleMemorySize");
+                    a.FreePhysicalMemory = GetSizeInGB(mo, "FreePhysicalMemory");
                     break;
                 }
             }
@@ -48,7 +48,7 @@ namespace Microsoft.R.Host.Broker.About {
             return a;
         }
 
-        private long GetValue(ManagementBaseObject mo, string name) {
+        private long GetSizeInGB(ManagementBaseObject mo, string name) {
             int result;
             var x = mo[name].ToString();
             return Int32.TryParse(x, out result) ? result / 1024 : 0;

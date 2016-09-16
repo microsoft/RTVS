@@ -40,7 +40,7 @@ namespace Microsoft.R.Host.Client.Mocks {
             return Task.FromResult(true);
         }
 
-        public void DisplayBrokerInformation() { }
+        public void PrintBrokerInformation() { }
 
 #pragma warning disable 67
         public event EventHandler BrokerChanging;

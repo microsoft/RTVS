@@ -28,7 +28,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
         }
 
         public Task<CommandResult> InvokeAsync() {
-            _interactiveWorkflow.RSessions.DisplayBrokerInformation();
+            _interactiveWorkflow.RSessions.PrintBrokerInformation();
             return Task.FromResult(CommandResult.Executed);
         }
     }

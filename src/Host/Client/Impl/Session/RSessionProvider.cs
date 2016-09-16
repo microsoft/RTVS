@@ -150,7 +150,7 @@ namespace Microsoft.R.Host.Client.Session {
                 if (!switchingFromNull) {
                     _callback.WriteConsole(Resources.RSessionProvider_SwitchingRWorkspaceCompleted);
                 }
-                DisplayBrokerInformation();
+                PrintBrokerInformation();
                 oldBroker.Dispose();
             } finally {
                 _brokerSwitchLock.Release();
@@ -160,7 +160,7 @@ namespace Microsoft.R.Host.Client.Session {
             return true;
         }
 
-        public void DisplayBrokerInformation() {
+        public void PrintBrokerInformation() {
             var a = _brokerProxy.AboutHost;
 
             _callback.WriteConsole(Resources.RServices_Information);
