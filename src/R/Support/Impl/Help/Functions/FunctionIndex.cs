@@ -51,9 +51,9 @@ namespace Microsoft.R.Support.Help.Functions {
 
         public async Task BuildIndexAsync(IPackageIndex packageIndex = null) {
             packageIndex = packageIndex ?? _coreShell.ExportProvider.GetExportedValue<IPackageIndex>();
-            var ready = await _buildIndexLock.WaitAsync();
+            var lockToken = await _buildIndexLock.WaitAsync();
             try {
-                if (!ready) {
+                if (!lockToken.IsSet) {
                     // First populate index for popular packages that are commonly preloaded
                     foreach (var pi in packageIndex.Packages) {
                         foreach (var f in pi.Functions) {
@@ -66,7 +66,7 @@ namespace Microsoft.R.Support.Help.Functions {
                     }
                 }
             } finally {
-                _buildIndexLock.Release();
+                lockToken.Set();
             }
         }
 

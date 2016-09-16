@@ -139,7 +139,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
         }
 
         public void Dispose() {
-            if (_disposableBag.TryMarkDisposed()) {
+            if (_disposableBag.TryDispose()) {
                 VisualComponent?.Dispose();
             }
         }

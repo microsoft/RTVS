@@ -15,6 +15,8 @@ namespace Microsoft.R.Host.Client.Host {
         public string Name { get; } = string.Empty;
         public bool IsRemote { get; } = true;
 
+        public Task PingAsync() => Result;
+
         public Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken()) => Result;
 
         public void Dispose() { }

@@ -65,7 +65,7 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         public void Dispose() {
-            DisposableBag.TryMarkDisposed();
+            DisposableBag.TryDispose();
         }
 
         /// <summary>

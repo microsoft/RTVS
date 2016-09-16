@@ -369,7 +369,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         
         public async Task SwitchToAvailablePackagesAsync() {
             if (await SetTabAsync(SelectedTab.AvailablePackages)) {
-                if (!_availableLock.IsCompleted) {
+                if (!_availableLock.IsSet) {
                     await EnsureAvailablePackagesLoadedAsync();
                 }
                 await ReplaceItemsAsync(SelectedTab.AvailablePackages);
@@ -377,15 +377,15 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         }
 
         private async Task EnsureAvailablePackagesLoadedAsync() {
-            var availablePackagesLoaded = await _availableLock.WaitAsync();
+            var lockToken = await _availableLock.WaitAsync();
             try {
-                if (!availablePackagesLoaded) {
+                if (!lockToken.IsSet) {
                     await LoadAvailablePackagesAsync();
                 }
             } catch (RPackageManagerException ex) {
                 _coreShell.DispatchOnUIThread(() => AddErrorMessage(ex.Message));
             } finally {
-                _availableLock.Release();
+                lockToken.Set();
             }
         }
 
@@ -433,16 +433,15 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         }
 
         private async Task ReloadInstalledAndLoadedPackagesAsync() {
-            _installedAndLoadedLock.ResetIfNotWaiting();
-            var areLoaded = await _installedAndLoadedLock.WaitAsync();
+            var lockToken = await _installedAndLoadedLock.ResetAsync();
             try {
-                if (!areLoaded) {
+                if (!lockToken.IsSet) {
                     await LoadInstalledAndLoadedPackagesAsync();
                 }
             } catch (RPackageManagerException ex) {
                 _coreShell.DispatchOnUIThread(() => AddErrorMessage(ex.Message));
             } finally {
-                _installedAndLoadedLock.Release();
+                lockToken.Set();
             }
         }
 
@@ -454,7 +453,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             await Task.WhenAll(markUninstalledAndUnloadedTask, getInstalledPackagesTask);
 
             var installedPackages = getInstalledPackagesTask.Result;
-            if (!_availableLock.IsCompleted) {
+            if (!_availableLock.IsSet) {
                 var vmInstalledPackages = installedPackages
                     .Select(package => RPackageViewModel.CreateInstalled(package, this))
                     .OrderBy(p => p.Name)
@@ -553,7 +552,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
 
         public async Task SwitchToLoadedPackagesAsync() {
             if (await SetTabAsync(SelectedTab.LoadedPackages)) {
-                if (!_installedAndLoadedLock.IsCompleted) {
+                if (!_installedAndLoadedLock.IsSet) {
                     await ReloadInstalledAndLoadedPackagesAsync();
                 }
                 await ReplaceItemsAsync(SelectedTab.LoadedPackages);

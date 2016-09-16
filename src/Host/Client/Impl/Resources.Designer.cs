@@ -110,6 +110,24 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Starting R Session has been canceled, please restart it manually..
+        /// </summary>
+        internal static string RSessionProvider_StartingSessionAfterSwitchingCanceled {
+            get {
+                return ResourceManager.GetString("RSessionProvider_StartingSessionAfterSwitchingCanceled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Starting R Session has failed, please restart it manually..
+        /// </summary>
+        internal static string RSessionProvider_StartingSessionAfterSwitchingFailed {
+            get {
+                return ResourceManager.GetString("RSessionProvider_StartingSessionAfterSwitchingFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Start switching to the &apos;{0}&apos;: {1}.
         /// </summary>
         internal static string RSessionProvider_StartSwitchingWorkspaceFormat {
@@ -128,7 +146,16 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Connecting to the new R Workspace failed, restoring connection to the &apos;{0}&apos;: {1}.
+        ///   Looks up a localized string similar to Connection to the new R Workspace has been canceled, restoring connection to the &apos;{0}&apos;: {1}.
+        /// </summary>
+        internal static string RSessionProvider_SwitchingWorkspaceCanceled {
+            get {
+                return ResourceManager.GetString("RSessionProvider_SwitchingWorkspaceCanceled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connecting to the new R Workspace has failed, restoring connection to the &apos;{0}&apos;: {1}.
         /// </summary>
         internal static string RSessionProvider_SwitchingWorkspaceFailed {
             get {

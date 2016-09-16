@@ -58,9 +58,13 @@ namespace Microsoft.R.Support.Help.Packages {
         public IEnumerable<IPackageInfo> Packages => _packages.Values;
 
         public async Task BuildIndexAsync() {
-            var ready = await _buildIndexLock.WaitAsync();
+            var lockToken = await _buildIndexLock.WaitAsync();
+            await BuildIndexAsync(lockToken);
+        }
+
+        private async Task BuildIndexAsync(IBinaryAsyncLockToken lockToken) {
             try {
-                if (!ready) {
+                if (!lockToken.IsSet) {
                     var startTotalTime = DateTime.Now;
 
                     await TaskUtilities.SwitchToBackgroundThread();
@@ -85,10 +89,10 @@ namespace Microsoft.R.Support.Help.Packages {
                     await _functionIndex.BuildIndexAsync(this);
                     Debug.WriteLine("R function index total: {0} ms", (DateTime.Now - startTotalTime).TotalMilliseconds);
                 }
-            } catch (RHostDisconnectedException ex) { 
+            } catch (RHostDisconnectedException ex) {
                 Debug.WriteLine(ex.Message);
             } finally {
-                _buildIndexLock.Release();
+                lockToken.Set();
             }
         }
 
@@ -117,7 +121,7 @@ namespace Microsoft.R.Support.Help.Packages {
         }
 
         public void WriteToDisk() {
-            if (_buildIndexLock.IsCompleted) {
+            if (_buildIndexLock.IsSet) {
                 foreach (var pi in _packages.Values) {
                     pi.WriteToDisk();
                 }
@@ -193,19 +197,18 @@ namespace Microsoft.R.Support.Help.Packages {
 
         private void ScheduleIdleTimeRebuild() {
             IdleTimeAction.Cancel(typeof(PackageIndex));
-            IdleTimeAction.Create(() => RebuildIndex(), 100, typeof(PackageIndex), _shell);
+            IdleTimeAction.Create(() => RebuildIndexAsync().DoNotWait(), 100, typeof(PackageIndex), _shell);
         }
 
-        private void RebuildIndex() {
-            if(!_buildIndexLock.IsCompleted) {
+        private async Task RebuildIndexAsync() {
+            if(!_buildIndexLock.IsSet) {
                 // Stull building, try again later
                 ScheduleIdleTimeRebuild();
                 return;
             }
 
-            _buildIndexLock.Reset();
-            _packages.Clear();
-            BuildIndexAsync().DoNotWait();
+            var lockToken = await _buildIndexLock.ResetAsync();
+            await BuildIndexAsync(lockToken);
         }
     }
 }

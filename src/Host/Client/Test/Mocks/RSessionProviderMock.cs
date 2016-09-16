@@ -15,7 +15,9 @@ namespace Microsoft.R.Host.Client.Mocks {
         public void Dispose() { }
 
         public event EventHandler BrokerChanged;
+        public event EventHandler<BrokerStateChangedEventArgs> BrokerStateChanged;
 
+        public bool IsConnected { get; } = true;
         public IBrokerClient Broker { get; } = new NullBrokerClient();
 
         public IRSession GetOrCreate(Guid guid) {
@@ -34,9 +36,9 @@ namespace Microsoft.R.Host.Client.Mocks {
         public Task<IRSessionEvaluation> BeginEvaluationAsync(RHostStartupInfo startupInfo, CancellationToken cancellationToken = new CancellationToken()) 
             => new RSessionMock().BeginEvaluationAsync(cancellationToken);
 
-        public Task TestBrokerConnectionAsync(string name, string path) => Task.FromResult(true);
+        public Task TestBrokerConnectionAsync(string name, string path, CancellationToken cancellationToken = default(CancellationToken)) => Task.FromResult(true);
 
-        public Task<bool> TrySwitchBrokerAsync(string name, string path = null) {
+        public Task<bool> TrySwitchBrokerAsync(string name, string path = null, CancellationToken cancellationToken = default(CancellationToken)) {
             return Task.FromResult(true);
         }
     }

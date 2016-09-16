@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Wpf;
@@ -46,7 +47,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         }
 
         public void Dispose() {
-            _disposableBag.TryMarkDisposed();
+            _disposableBag.TryDispose();
         }
 
         public ReadOnlyObservableCollection<IConnectionViewModel> LocalConnections { get; }
@@ -149,17 +150,23 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         public async Task TestConnectionAsync(IConnectionViewModel connection) {
             _shell.AssertIsOnMainThread();
             connection.IsTestingConnection = true;
+            connection.IsTestConnectionSucceeded = false;
+
             try {
                 await _connectionManager.TestConnectionAsync(connection);
                 connection.IsTestConnectionSucceeded = true;
-            } catch (ArgumentException exception) {
-                connection.IsTestConnectionSucceeded = false;
+                connection.TestConnectionResult = "Connection test passed!";
+            } catch (ArgumentException) {
+                connection.TestConnectionResult = "Connection path is invalid.";
             } catch (RHostDisconnectedException exception) {
-                
-            } catch (RHostBinaryMissingException exception) {
-                
+                connection.TestConnectionResult = "Connection test failed:{0}".FormatInvariant(exception.Message);
+            } catch (RHostBinaryMissingException) {
+                connection.TestConnectionResult = "Microsoft.R.Host.exe is missing.";
+            } catch (OperationCanceledException) {
+                connection.TestConnectionResult = "Connection test canceled.";
+            } finally {
+                connection.IsTestingConnection = false;
             }
-            connection.IsTestingConnection = false;
         }
 
         public void Save(IConnectionViewModel connectionViewModel) {

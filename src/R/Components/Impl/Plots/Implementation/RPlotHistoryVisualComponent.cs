@@ -51,7 +51,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
         }
 
         public void Dispose() {
-            _disposableBag.TryMarkDisposed();
+            _disposableBag.TryDispose();
         }
 
         public ICommandTarget Controller { get; }

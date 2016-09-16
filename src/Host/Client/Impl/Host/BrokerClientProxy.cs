@@ -30,6 +30,8 @@ namespace Microsoft.R.Host.Client.Host {
         public bool IsRemote => _broker.IsRemote;
         public Uri Uri => _broker.Uri;
 
+        public Task PingAsync() => _broker.PingAsync();
+
         public async Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken()) {
             using (_connectCde.AddOneDisposable()) {
                 return await _broker.ConnectAsync(name, callbacks, rCommandLineArguments, timeout, cancellationToken);

@@ -59,7 +59,7 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
             return Task.FromResult(_inter);
         }
 
-        public Task CancelAllAsync() {
+        public Task CancelAllAsync(CancellationToken сancellationToken = default(CancellationToken)) {
             if (Evaluation != null) {
                 AfterRequest?.Invoke(this, new RAfterRequestEventArgs(Evaluation.Contexts, Prompt, string.Empty, addToHistory: true, isVisible: true));
                 Evaluation = null;

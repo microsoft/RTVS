@@ -24,6 +24,8 @@ namespace Microsoft.Common.Core.Threading {
 
         public Task WaitAsync() => _mre.WaitAsync();
 
+        public Task WaitAsync(CancellationToken cancellationToken) => _mre.WaitAsync(cancellationToken);
+
         public void Signal() {
             if (_count <= 0) {
                 throw new InvalidOperationException();

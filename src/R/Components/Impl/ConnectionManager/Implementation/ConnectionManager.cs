@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
@@ -49,15 +50,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
             _disposableBag = DisposableBag.Create<ConnectionManager>()
                 .Add(_statusBarViewModel)
-                .Add(() => _sessionProvider.BrokerChanged -= BrokerChanged)
-                .Add(() => interactiveWorkflow.RSession.Connected -= RSessionOnConnected)
-                .Add(() => interactiveWorkflow.RSession.Disconnected -= RSessionOnDisconnected);
+                .Add(() => _sessionProvider.BrokerStateChanged -= BrokerStateChanged);
 
-            _sessionProvider.BrokerChanged += BrokerChanged;
-
-            // TODO: Temporary solution - need to separate RHost errors and network connection issues
-            interactiveWorkflow.RSession.Connected += RSessionOnConnected;
-            interactiveWorkflow.RSession.Disconnected += RSessionOnDisconnected;
+            _sessionProvider.BrokerStateChanged += BrokerStateChanged;
 
             // Get initial values
             var userConnections = CreateConnectionList();
@@ -76,7 +71,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         public void Dispose() {
-            _disposableBag.TryMarkDisposed();
+            _disposableBag.TryDispose();
         }
 
         public IConnectionManagerVisualComponent GetOrCreateVisualComponent(IConnectionManagerVisualComponentContainerFactory visualComponentContainerFactory, int instanceId = 0) {
@@ -113,23 +108,23 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             return isRemoved;
         }
 
-        public Task TestConnectionAsync(IConnectionInfo connection) {
-            return _sessionProvider.TestBrokerConnectionAsync(connection.Name, connection.Path);
+        public Task TestConnectionAsync(IConnectionInfo connection, CancellationToken cancellationToken = default(CancellationToken)) {
+            return _sessionProvider.TestBrokerConnectionAsync(connection.Name, connection.Path, cancellationToken);
         }
 
-        public async Task ConnectAsync(IConnectionInfo connection) {
-            if (ActiveConnection != null && (!ActiveConnection.Path.PathEquals(connection.Path) || string.IsNullOrEmpty(_sessionProvider.Broker.Name))) {
-                await TrySwitchBrokerAsync(connection);
+        public async Task ConnectAsync(IConnectionInfo connection, CancellationToken cancellationToken = default(CancellationToken)) {
+            if (ActiveConnection == null || !ActiveConnection.Path.PathEquals(connection.Path) || string.IsNullOrEmpty(_sessionProvider.Broker.Name)) {
+                await TrySwitchBrokerAsync(connection, cancellationToken);
             }
         }
 
-        public Task<bool> TrySwitchBrokerAsync(IConnectionInfo info) {
+        private Task<bool> TrySwitchBrokerAsync(IConnectionInfo info, CancellationToken cancellationToken = default(CancellationToken)) {
             var connection = GetOrCreateConnection(info.Name, info.Path, info.RCommandLineArguments, info.IsUserCreated);
-            return TrySwitchBrokerAsync(connection);
+            return TrySwitchBrokerAsync(connection, cancellationToken);
         }
 
-        private async Task<bool> TrySwitchBrokerAsync(IConnection connection) {
-            var brokerSwitched = await _sessionProvider.TrySwitchBrokerAsync(connection.Name, connection.Path);
+        private async Task<bool> TrySwitchBrokerAsync(IConnection connection, CancellationToken cancellationToken = default(CancellationToken)) {
+            var brokerSwitched = await _sessionProvider.TrySwitchBrokerAsync(connection.Name, connection.Path, cancellationToken);
             if (brokerSwitched) {
                 ActiveConnection = connection;
                 SaveActiveConnectionToSettings();
@@ -231,12 +226,19 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
         private async Task SwitchBrokerToLastConnection() {
             var connectionInfo = _settings.LastActiveConnection;
+            if (connectionInfo != null) {
+                var c = GetOrCreateConnection(connectionInfo.Name, connectionInfo.Path, connectionInfo.RCommandLineArguments, connectionInfo.IsUserCreated);
+                if (c.IsRemote) {
+                    return; // Do not restore remote connections automatically
+                }
+            }
+
             if (!string.IsNullOrEmpty(connectionInfo?.Path) && await TrySwitchBrokerAsync(connectionInfo)) {
                 return;
             }
 
-            var connection = RecentConnections.FirstOrDefault();
-            if (connectionInfo != null && await TrySwitchBrokerAsync(connection)) {
+            var connection = RecentConnections.FirstOrDefault(c => !c.IsRemote);
+            if (connection != null && await TrySwitchBrokerAsync(connection)) {
                 return;
             }
 
@@ -246,18 +248,10 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             }
         }
 
-        private void BrokerChanged(object sender, EventArgs eventArgs) {
+        private void BrokerStateChanged(object sender, BrokerStateChangedEventArgs eventArgs) {
+            IsConnected = eventArgs.IsConnected;
             UpdateActiveConnection();
-        }
-
-        private void RSessionOnConnected(object sender, RConnectedEventArgs e) {
-            IsConnected = true;
             ConnectionStateChanged?.Invoke(this, new ConnectionEventArgs(true, ActiveConnection));
-        }
-
-        private void RSessionOnDisconnected(object sender, EventArgs e) {
-            IsConnected = false;
-            ConnectionStateChanged?.Invoke(this, new ConnectionEventArgs(false, ActiveConnection));
         }
 
         private void UpdateActiveConnection() {

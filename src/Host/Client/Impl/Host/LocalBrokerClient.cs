@@ -43,18 +43,17 @@ namespace Microsoft.R.Host.Client.Host {
             DisposableBag.ThrowIfDisposed();
             await TaskUtilities.SwitchToBackgroundThread();
 
+            var lockToken = await _connectLock.WaitAsync();
             try {
-                if (!await _connectLock.WaitAsync()) {
-                    if (_brokerProcess == null) {
-                        await ConnectToBrokerWorker();
-                    }
+                if (!lockToken.IsSet) {
+                    await ConnectToBrokerWorker(lockToken);
                 }
             } finally {
-                _connectLock.Release();
+                lockToken.Set();
             }
         }
 
-        private async Task ConnectToBrokerWorker() {
+        private async Task ConnectToBrokerWorker(IBinaryAsyncLockToken lockToken) {
             Trace.Assert(_brokerProcess == null);
 
             string rhostBrokerExe = Path.Combine(_rhostDirectory, RHostBrokerExe);
@@ -93,7 +92,7 @@ namespace Microsoft.R.Host.Client.Host {
                     process.Exited += delegate {
                         cts.Cancel();
                         _brokerProcess = null;
-                        _connectLock.Reset();
+                        _connectLock.TryReset();
                     };
 
                     await serverUriPipe.WaitForConnectionAsync(cts.Token);

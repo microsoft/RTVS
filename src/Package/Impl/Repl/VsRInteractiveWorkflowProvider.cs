@@ -55,7 +55,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         public void Dispose() {
-            _disposableBag.TryMarkDisposed();
+            _disposableBag.TryDispose();
         }
 
         public IRInteractiveWorkflow GetOrCreate() {
