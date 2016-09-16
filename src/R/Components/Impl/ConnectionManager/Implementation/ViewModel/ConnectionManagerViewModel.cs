@@ -206,15 +206,15 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private void UpdateConnections() {
             var selectedId = EditedConnection?.Id;
 
-            _localConnections.ReplaceWith(_connectionManager.RecentConnections.Where(c => !c.IsRemote).Select(c => new ConnectionViewModel(c) {
-                IsActive = c == _connectionManager.ActiveConnection,
-                IsConnected = c == _connectionManager.ActiveConnection && IsConnected
-            }).OrderBy(c => c.Name));
+            _localConnections.ReplaceWith(_connectionManager.RecentConnections
+                .Where(c => !c.IsRemote)
+                .Select(CreateConnectionViewModel)
+                .OrderBy(c => c.Name));
 
-            _remoteConnections.ReplaceWith(_connectionManager.RecentConnections.Where(c => c.IsRemote).Select(c => new ConnectionViewModel(c) {
-                IsActive = c == _connectionManager.ActiveConnection,
-                IsConnected = c == _connectionManager.ActiveConnection && IsConnected
-            }).OrderBy(c => c.Name));
+            _remoteConnections.ReplaceWith(_connectionManager.RecentConnections
+                .Where(c => c.IsRemote)
+                .Select(CreateConnectionViewModel)
+                .OrderBy(c => c.Name));
 
             var editedConnection = RemoteConnections.FirstOrDefault(i => i.Id == selectedId);
             if (editedConnection != null) {
@@ -224,12 +224,18 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             HasLocalConnections = _localConnections.Count > 0;
         }
 
+        private ConnectionViewModel CreateConnectionViewModel(IConnection connection) {
+            var isActive = connection == _connectionManager.ActiveConnection;
+            return new ConnectionViewModel(connection) {
+                IsActive = isActive,
+                IsConnected = isActive && IsConnected
+            };
+        }
+
         private void ConnectionStateChanged(object sender, ConnectionEventArgs e) {
             _shell.DispatchOnUIThread(() => {
                 IsConnected = e.State;
-                foreach (var item in _remoteConnections.Union(_localConnections)) {
-                    item.IsConnected = e.State && item.IsActive;
-                }
+                UpdateConnections();
             });
         }
     }
