@@ -14,6 +14,8 @@ namespace Microsoft.R.Host.Client.Mocks {
 
         public void Dispose() { }
 
+        public event EventHandler BrokerChanging;
+        public event EventHandler BrokerChangeFailed;
         public event EventHandler BrokerChanged;
 
         public IBrokerClient Broker { get; } = new NullBrokerClient();
