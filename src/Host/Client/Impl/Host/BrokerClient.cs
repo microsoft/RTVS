@@ -117,7 +117,7 @@ namespace Microsoft.R.Host.Client.Host {
             await CreateBrokerSessionAsync(name, rCommandLineArguments);
             var webSocket = await ConnectToBrokerAsync(name, cancellationToken);
             var host = CreateRHost(name, callbacks, webSocket);
-            await GetHostInformationAsync();
+            await GetHostInformationAsync(cancellationToken);
             return host;
         }
 
@@ -199,9 +199,10 @@ namespace Microsoft.R.Host.Client.Host {
             return new RHost(name, callbacks, transport, cts);
         }
 
-        private async Task GetHostInformationAsync() {
+        private async Task GetHostInformationAsync(CancellationToken cancellationToken) {
             if (_aboutHost == null) {
-                var s = await HttpClient.GetStringAsync("/about");
+                var response = await HttpClient.GetAsync("/about", cancellationToken);
+                var s = await response.Content.ReadAsStringAsync();
                 _aboutHost = !string.IsNullOrEmpty(s) ? JsonConvert.DeserializeObject<AboutHost>(s) : AboutHost.Empty;
             }
         }

@@ -7,7 +7,6 @@ using System.IO.Pipes;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.Configuration;
@@ -31,8 +30,6 @@ namespace Microsoft.R.Host.Broker.Startup {
         }
 
         public static void Main(string[] args) {
-            MessageBox.Show("Attach");
-
             var configBuilder = new ConfigurationBuilder().AddCommandLine(args);
             Configuration = configBuilder.Build();
 

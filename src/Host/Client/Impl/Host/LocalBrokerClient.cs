@@ -100,7 +100,7 @@ namespace Microsoft.R.Host.Client.Host {
                     process = Process.Start(psi);
                     process.EnableRaisingEvents = true;
 
-                    var cts = new CancellationTokenSource(100000);
+                    var cts = new CancellationTokenSource(10000);
                     process.Exited += delegate {
                         cts.Cancel();
                         _brokerProcess = null;

@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.R.Host.Broker.Interpreters;
 using Microsoft.R.Host.Broker.Security;
 using Microsoft.R.Host.Protocol;
-using Microsoft.R.Interpreters;
 
 namespace Microsoft.R.Host.Broker.About {
     [Authorize(Policy = Policies.RUser)]
@@ -44,7 +43,7 @@ namespace Microsoft.R.Host.Broker.About {
                 }
             }
 
-            a.Interpreters = new RInstallation().GetCompatibleEngines().Select(e => e.Name).ToArray();
+            a.Interpreters = _interpManager.Interpreters.Select(x => x.Name).ToArray();
             return a;
         }
 
