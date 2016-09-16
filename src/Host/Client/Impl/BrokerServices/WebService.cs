@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.IO;
 using Microsoft.R.Host.Client.Host;
+using Microsoft.R.Host.Protocol;
+using System.Collections.Generic;
 
 namespace Microsoft.R.Host.Client.BrokerServices {
     public class WebService {
@@ -24,7 +26,20 @@ namespace Microsoft.R.Host.Client.BrokerServices {
                 throw new UnauthorizedAccessException();
             }
 
-            throw new RHostDisconnectedException((int)response.StatusCode, response.ReasonPhrase);
+            IEnumerable<string> values;
+            if(response.Headers.TryGetValues(CustomHttpHeaders.RTVSApiError, out values)) {
+                var s = values.FirstOrDefault();
+                if (s != null) {
+                    BrokerApiError apiError;
+                    if (Enum.TryParse(s, out apiError)) {
+                        throw new RHostDisconnectedException(apiError);
+                    } else {
+                        throw new ProtocolViolationException("Unknown broker API error");
+                    }
+                }
+            }
+
+            return response.EnsureSuccessStatusCode();
         }
 
         public async Task<TResponse> HttpGetAsync<TResponse>(Uri uri) =>

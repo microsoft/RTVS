@@ -30,7 +30,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
         [HttpPut("{id}")]
         public Task<IActionResult> PutAsync(string id, [FromBody] SessionCreateRequest request) {
             if (!_interpManager.Interpreters.Any()) {
-                return Task.FromResult(CustomErrorResult.Create(CustomHttpError.NoRInterpreters));
+                return Task.FromResult<IActionResult>(new ApiErrorResult(HttpContext.Response, BrokerApiError.NoRInterpreters));
             }
 
             SecureString securePassword = null;
@@ -48,7 +48,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
             if (!string.IsNullOrEmpty(request.InterpreterId)) {
                 interp = _interpManager.Interpreters.FirstOrDefault(ip => ip.Id == request.InterpreterId);
                 if (interp == null) {
-                    return Task.FromResult(CustomErrorResult.Create(CustomHttpError.InterpreterNotFound));
+                    return Task.FromResult<IActionResult>(new ApiErrorResult(HttpContext.Response, BrokerApiError.InterpreterNotFound));
                 }
             } else {
                 interp = _interpManager.Interpreters.First();

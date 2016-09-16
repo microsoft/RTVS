@@ -2,8 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 namespace Microsoft.R.Host.Protocol {
-    public enum CustomHttpError {
-        NoRInterpreters = 512,
+    public enum BrokerApiError {
+        NoRInterpreters = 1,
         InterpreterNotFound,
     }
 }

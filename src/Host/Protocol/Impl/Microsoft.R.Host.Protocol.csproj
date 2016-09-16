@@ -43,7 +43,7 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AboutHost.cs" />
-    <Compile Include="CustomHttpError.cs" />
+    <Compile Include="BrokerApiError.cs" />
     <Compile Include="CustomHttpHeaders.cs" />
     <Compile Include="InterpreterInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
