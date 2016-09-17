@@ -32,7 +32,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
                 if (s != null) {
                     BrokerApiError apiError;
                     if (Enum.TryParse(s, out apiError)) {
-                        throw new RHostDisconnectedException(apiError);
+                        throw new BrokerApiErrorException(apiError);
                     } else {
                         throw new ProtocolViolationException("Unknown broker API error");
                     }
