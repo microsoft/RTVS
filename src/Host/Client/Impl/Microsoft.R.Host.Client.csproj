@@ -43,6 +43,7 @@
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="BrokerServices\BrokerApiErrorException.cs" />
     <Compile Include="BrokerServices\IRemoteUriWebService.cs" />
     <Compile Include="BrokerServices\ISessionsWebService.cs" />
     <Compile Include="BrokerServices\RemoteUriWebService.cs" />

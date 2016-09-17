@@ -114,7 +114,11 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         public async Task ConnectAsync(IConnectionInfo connection) {
-            if (ActiveConnection != null && (!ActiveConnection.Path.PathEquals(connection.Path) || string.IsNullOrEmpty(_sessionProvider.Broker.Name))) {
+            var doSwitch = ActiveConnection == null;
+            if (!doSwitch && ActiveConnection != null) {
+                doSwitch = !ActiveConnection.Path.PathEquals(connection.Path) || string.IsNullOrEmpty(_sessionProvider.Broker.Name);
+            }
+            if(doSwitch) { 
                 await TrySwitchBrokerAsync(connection);
             }
         }
@@ -234,12 +238,19 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
         private async Task SwitchBrokerToLastConnection() {
             var connectionInfo = _settings.LastActiveConnection;
+            if(connectionInfo != null) {
+                var c = GetOrCreateConnection(connectionInfo.Name, connectionInfo.Path, connectionInfo.RCommandLineArguments, connectionInfo.IsUserCreated);
+                if(c.IsRemote) {
+                    return; // Do not restore remote connections automatically
+                }
+            }
+
             if (!string.IsNullOrEmpty(connectionInfo?.Path) && await TrySwitchBrokerAsync(connectionInfo)) {
                 return;
             }
 
-            var connection = RecentConnections.FirstOrDefault();
-            if (connectionInfo != null && await TrySwitchBrokerAsync(connection)) {
+            var connection = RecentConnections.FirstOrDefault(c => !c.IsRemote);
+            if (connection != null && await TrySwitchBrokerAsync(connection)) {
                 return;
             }
 

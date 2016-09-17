@@ -26,5 +26,11 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             }
             return null;
         }
+
+        public static void PostCommand(this IApplicationShell appShell, Guid guid, int id) {
+            var uiShell = appShell.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+            var o = new object();
+            uiShell.PostExecCommand(ref guid, (uint)id, 0, ref o);
+        }
     }
 }

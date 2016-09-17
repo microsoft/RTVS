@@ -4,12 +4,15 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Client.Host {
     public interface IBrokerClient : IDisposable {
         string Name { get; }
         bool IsRemote { get; }
         Uri Uri { get; }
+        AboutHost AboutHost { get; }
+
         Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = default(CancellationToken));
         string HandleUrl(string url, CancellationToken ct);
     }

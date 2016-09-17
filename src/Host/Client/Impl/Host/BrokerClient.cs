@@ -15,6 +15,7 @@ using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Logging;
 using Microsoft.R.Host.Client.BrokerServices;
 using Microsoft.R.Host.Protocol;
+using Newtonsoft.Json;
 
 namespace Microsoft.R.Host.Client.Host {
     internal abstract class BrokerClient : IBrokerClient {
@@ -31,6 +32,7 @@ namespace Microsoft.R.Host.Client.Host {
 
         private readonly LinesLog _log;
         private readonly string _interpreterId;
+        private AboutHost _aboutHost;
 
         protected HttpClientHandler HttpClientHandler { get; private set; }
 
@@ -41,6 +43,8 @@ namespace Microsoft.R.Host.Client.Host {
         public Uri Uri { get; }
 
         public bool IsRemote => !Uri.IsFile;
+
+        public AboutHost AboutHost => _aboutHost ?? AboutHost.Empty;
 
         protected BrokerClient(string name, Uri brokerUri, string interpreterId) {
             Name = name;
@@ -91,7 +95,7 @@ namespace Microsoft.R.Host.Client.Host {
             try {
                 (await HttpClient.PostAsync("/ping", new StringContent(""))).EnsureSuccessStatusCode();
             } catch (HttpRequestException ex) {
-                throw new RHostDisconnectedException("Broker did not respond to ping", ex);
+                throw new RHostDisconnectedException(Resources.Error_HostNotResponsing.FormatInvariant(ex.Message), ex);
             }
         }
 
@@ -112,7 +116,9 @@ namespace Microsoft.R.Host.Client.Host {
 
             await CreateBrokerSessionAsync(name, rCommandLineArguments);
             var webSocket = await ConnectToBrokerAsync(name, cancellationToken);
-            return CreateRHost(name, callbacks, webSocket);
+            var host = CreateRHost(name, callbacks, webSocket);
+            await GetHostInformationAsync(cancellationToken);
+            return host;
         }
 
         private async Task CreateBrokerSessionAsync(string name, string rCommandLineArguments) {
@@ -133,8 +139,8 @@ namespace Microsoft.R.Host.Client.Host {
                 } catch (UnauthorizedAccessException) {
                     isValidCredentials = false;
                     continue;
-                } catch (HttpRequestException ex) {
-                    throw new RHostDisconnectedException("HTTP error while creating session: " + ex.Message, ex);
+                } catch (BrokerApiErrorException apiex) {
+                    throw new RHostDisconnectedException(apiex);
                 } finally {
                     if (isValidCredentials != null) {
                         OnCredentialsValidated(isValidCredentials.Value);
@@ -146,7 +152,7 @@ namespace Microsoft.R.Host.Client.Host {
         private async Task<WebSocket> ConnectToBrokerAsync(string name, CancellationToken cancellationToken) {
             var wsClient = new WebSocketClient {
                 KeepAliveInterval = HeartbeatTimeout,
-                SubProtocols = {"Microsoft.R.Host"},
+                SubProtocols = { "Microsoft.R.Host" },
                 ConfigureRequest = request => {
                     UpdateCredentials();
                     request.AuthenticationLevel = AuthenticationLevel.MutualAuthRequested;
@@ -176,7 +182,7 @@ namespace Microsoft.R.Host.Client.Host {
                     continue;
                 } catch (Exception ex)
                     when (ex is InvalidOperationException || ex is WebException || ex is ProtocolViolationException) {
-                    throw new RHostDisconnectedException("HTTP error while connecting to session pipe: " + ex.Message, ex);
+                    throw new RHostDisconnectedException(Resources.HttpErrorCreatingSession.FormatInvariant(ex.Message));
                 } finally {
                     if (isValidCredentials != null) {
                         OnCredentialsValidated(isValidCredentials.Value);
@@ -193,6 +199,14 @@ namespace Microsoft.R.Host.Client.Host {
             cts.Token.Register(() => { _log.RHostProcessExited(); });
 
             return new RHost(name, callbacks, transport, cts);
+        }
+
+        private async Task GetHostInformationAsync(CancellationToken cancellationToken) {
+            if (_aboutHost == null) {
+                var response = await HttpClient.GetAsync("/about", cancellationToken);
+                var s = await response.Content.ReadAsStringAsync();
+                _aboutHost = !string.IsNullOrEmpty(s) ? JsonConvert.DeserializeObject<AboutHost>(s) : AboutHost.Empty;
+            }
         }
 
         public virtual string HandleUrl(string url, CancellationToken ct) {

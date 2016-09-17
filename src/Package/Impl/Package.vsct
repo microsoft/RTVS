@@ -449,6 +449,10 @@
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
       </Group>
 
+      <Group guid="guidRToolsCmdSet" id="sessionSubMenuInformationGroup" priority="0x0600">
+        <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
+      </Group>
+
       <!-- REPL context menu groups -->
       <Group guid="guidRToolsCmdSet" id="interactiveWindowContextGroup" priority="0x0250">
         <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveContextMenu"/>
@@ -649,6 +653,7 @@
       </Button>
 
       <Button guid="guidRToolsCmdSet" id="icmdTerminateR" priority="0x0500" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="sessionSubMenuTerminateRGroup"/>
         <Icon guid="ImageCatalogGuid" id="TerminateProcess"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
@@ -657,6 +662,19 @@
           <ButtonText>Terminate R...</ButtonText>
           <MenuText>&amp;Terminate R...</MenuText>
           <CommandName>Terminate R</CommandName>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdSessionInformation" priority="0x0500" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="sessionSubMenuInformationGroup"/>
+        <Icon guid="ImageCatalogGuid" id="StatusInformationOutline"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Host information...</ButtonText>
+          <MenuText>Host &amp;information...</MenuText>
+          <CommandName>Host information</CommandName>
         </Strings>
       </Button>
 
@@ -2210,10 +2228,6 @@
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
     </CommandPlacement>
 
-    <CommandPlacement guid="guidRToolsCmdSet" id="icmdTerminateR" priority="0x0100">
-      <Parent guid="guidRToolsCmdSet" id="sessionSubMenuTerminateRGroup"/>
-    </CommandPlacement>
-
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdAttachDebugger" priority="0x0450">
       <Parent guid="guidRToolsCmdSet" id="sessionRDebugGroup"/>
     </CommandPlacement>
@@ -2575,6 +2589,7 @@
       <IDSymbol name="icmdSetDirectoryToSourceCommand" value="519"/>
       <IDSymbol name="icmdSetDirectoryToProjectCommand" value="520"/>
       <IDSymbol name="icmdTerminateR" value="521"/>
+      <IDSymbol name="icmdSessionInformation" value="522"/>
 
       <IDSymbol name="sessionSubMenuFileGroup" value="551"/>
       <IDSymbol name="sessionSubMenuRGroup" value="552"/>
@@ -2585,6 +2600,7 @@
       <IDSymbol name="sessionRDebugGroup" value="557"/>
       <IDSymbol name="sessionSubMenuResetGroup" value="558"/>
       <IDSymbol name="sessionSubMenuTerminateRGroup" value="559"/>
+      <IDSymbol name="sessionSubMenuInformationGroup" value="560"/>
 
       <IDSymbol name="interactiveWindowContextGroup" value="570"/>
       <IDSymbol name="icmdRexecuteReplCmd" value="571"/>

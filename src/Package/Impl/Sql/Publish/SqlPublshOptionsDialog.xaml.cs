@@ -14,7 +14,6 @@ using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
-using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
     /// <summary>
@@ -71,10 +70,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             var dte = _appShell.GetGlobalService<DTE>(typeof(DTE));
             dte.ExecuteCommand("File.SaveAll");
 
-            var uiShell = _appShell.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-            var guid = RGuidList.RCmdSetGuid;
-            var o = new object();
-            uiShell.PostExecCommand(ref guid, RPackageCommandId.icmdPublishSProc, 0, ref o);
+            _appShell.PostCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdPublishSProc);
             Close();
         }
 

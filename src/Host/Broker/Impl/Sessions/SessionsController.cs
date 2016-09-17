@@ -28,7 +28,11 @@ namespace Microsoft.R.Host.Broker.Sessions {
         public Task<IEnumerable<SessionInfo>> GetAsync() => Task.FromResult(_sessionManager.GetSessions(User.Identity).Select(s => s.Info));
 
         [HttpPut("{id}")]
-        public Task<SessionInfo> PutAsync(string id, [FromBody] SessionCreateRequest request) {
+        public Task<IActionResult> PutAsync(string id, [FromBody] SessionCreateRequest request) {
+            if (!_interpManager.Interpreters.Any()) {
+                return Task.FromResult<IActionResult>(new ApiErrorResult(HttpContext.Response, BrokerApiError.NoRInterpreters));
+            }
+
             SecureString securePassword = null;
             string password = User.FindFirst(Claims.Password)?.Value;
             if (password != null) {
@@ -40,12 +44,18 @@ namespace Microsoft.R.Host.Broker.Sessions {
 
             string profilePath = User.FindFirst(Claims.RUserProfileDir)?.Value;
 
-            var interp = string.IsNullOrEmpty(request.InterpreterId)
-                ? _interpManager.Interpreters.First()
-                : _interpManager.Interpreters.First(ip => ip.Id == request.InterpreterId);
+            Interpreter interp;
+            if (!string.IsNullOrEmpty(request.InterpreterId)) {
+                interp = _interpManager.Interpreters.FirstOrDefault(ip => ip.Id == request.InterpreterId);
+                if (interp == null) {
+                    return Task.FromResult<IActionResult>(new ApiErrorResult(HttpContext.Response, BrokerApiError.InterpreterNotFound));
+                }
+            } else {
+                interp = _interpManager.Interpreters.First();
+            }
 
             var session = _sessionManager.CreateSession(User.Identity, id, interp, securePassword, profilePath, request.CommandLineArguments);
-            return Task.FromResult(session.Info);
+            return Task.FromResult<IActionResult>(new ObjectResult(session.Info));
         }
 
         [HttpGet("{id}/pipe")]
