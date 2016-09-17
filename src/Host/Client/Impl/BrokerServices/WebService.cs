@@ -2,16 +2,15 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using System.IO;
-using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Protocol;
-using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Microsoft.R.Host.Client.BrokerServices {
     public class WebService {
