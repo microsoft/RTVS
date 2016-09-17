@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Threading;
+using Microsoft.R.Host.Client.BrokerServices;
 using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Client.Host {
@@ -23,20 +24,20 @@ namespace Microsoft.R.Host.Client.Host {
 
         public RHostDisconnectedException(string message, Exception innerException, CancellationToken token) : base(message, innerException, token) {}
 
-        public RHostDisconnectedException(BrokerApiError error) : base(FromBrokerApiError(error)) { }
+        public RHostDisconnectedException(BrokerApiErrorException ex) : base(FromBrokerApiException(ex), ex) { }
 
         protected RHostDisconnectedException(SerializationInfo info, StreamingContext context) : base (info, context) {}
 
-        private static string FromBrokerApiError(BrokerApiError error) {
-            switch (error) {
+        private static string FromBrokerApiException(BrokerApiErrorException ex) {
+            switch (ex.ApiError) {
                 case BrokerApiError.NoRInterpreters:
                     return Resources.Error_NoRInterpreters;
                 case BrokerApiError.InterpreterNotFound:
                     return Resources.Error_InterpreterNotFound;
             }
 
-            Debug.Fail("No localized resources for broker API error" + error.ToString());
-            return error.ToString();
+            Debug.Fail("No localized resources for broker API error" + ex.ApiError.ToString());
+            return ex.ApiError.ToString();
         }
     }
 }

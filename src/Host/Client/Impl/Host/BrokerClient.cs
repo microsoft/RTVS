@@ -140,7 +140,7 @@ namespace Microsoft.R.Host.Client.Host {
                     isValidCredentials = false;
                     continue;
                 } catch (BrokerApiErrorException apiex) {
-                    throw new RHostDisconnectedException(apiex.ApiError);
+                    throw new RHostDisconnectedException(apiex);
                 } finally {
                     if (isValidCredentials != null) {
                         OnCredentialsValidated(isValidCredentials.Value);
