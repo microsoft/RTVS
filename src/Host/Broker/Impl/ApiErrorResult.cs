@@ -8,7 +8,7 @@ using Microsoft.R.Host.Protocol;
 namespace Microsoft.R.Host.Broker {
     internal sealed class ApiErrorResult : ObjectResult {
         public ApiErrorResult(HttpResponse response, BrokerApiError error) : base(error) {
-            StatusCode = StatusCodes.Status500InternalServerError;
+            StatusCode = StatusCodes.Status412PreconditionFailed;
             response.Headers.Add(CustomHttpHeaders.RTVSApiError, new Extensions.Primitives.StringValues(error.ToString()));
         }
     }
