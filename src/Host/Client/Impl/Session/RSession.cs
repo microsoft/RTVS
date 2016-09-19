@@ -172,8 +172,8 @@ namespace Microsoft.R.Host.Client.Session {
         public Task<byte[]> BlobReadAsync(ulong blobId, long position, long count, CancellationToken ct = default(CancellationToken)) =>
             DoBlobServiceAsync(_host?.BlobReadAsync(blobId, position, count, ct));
 
-        public Task<long> BlobWriteAsync(ulong blobId, byte[] data, CancellationToken ct = default(CancellationToken)) =>
-            DoBlobServiceAsync(_host?.BlobWriteAsync(blobId, data, ct));
+        public Task<long> BlobWriteAsync(ulong blobId, byte[] data, long position, CancellationToken ct = default(CancellationToken)) =>
+            DoBlobServiceAsync(_host?.BlobWriteAsync(blobId, data, position, ct));
 
         public Task<long> GetBlobSizeAsync(ulong blobId, CancellationToken ct = default(CancellationToken)) =>
             DoBlobServiceAsync(_host?.GetBlobSizeAsync(blobId, ct));

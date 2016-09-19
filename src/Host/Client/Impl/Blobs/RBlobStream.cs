@@ -14,7 +14,7 @@ namespace Microsoft.R.Host.Client {
         private bool _isDisposed;
 
         public override bool CanRead { get; } = true;
-        public override bool CanSeek { get; } = false;
+        public override bool CanSeek { get; } = true;
 
         private bool _canWrite;
         public override bool CanWrite {
@@ -57,8 +57,30 @@ namespace Microsoft.R.Host.Client {
             _position += bytes.Length;
             return bytes.Length;
         }
+
         public override long Seek(long offset, SeekOrigin origin) {
-            throw new NotImplementedException();
+            long temp = _position;
+            switch (origin) {
+                case SeekOrigin.Begin:
+                    temp = offset;
+                    break;
+                case SeekOrigin.Current:
+                    temp = _position + offset;
+                    break;
+                case SeekOrigin.End:
+                    temp = _length - offset;
+                    break;
+            }
+
+            // make sure position satisfies 0 <= position <= _length
+            if (temp < 0) {
+                temp = 0;
+            } else if (temp > _length) {
+                temp = _length;
+            }
+
+            _position = temp;
+            return _position;
         }
 
         public override void SetLength(long value) {
@@ -75,7 +97,7 @@ namespace Microsoft.R.Host.Client {
                 bytesToSend = buffer;
             }
 
-            _length = _blobService.BlobWriteAsync(_blob.Id, bytesToSend).GetAwaiter().GetResult();
+            _length = _blobService.BlobWriteAsync(_blob.Id, bytesToSend, _position).GetAwaiter().GetResult();
             _position += count;
         }
 

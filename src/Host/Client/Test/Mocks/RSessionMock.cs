@@ -36,7 +36,7 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
         public Task<byte[]> BlobReadAsync(ulong blobId, long position, long count, CancellationToken cancellationToken = default(CancellationToken)) =>
             Task.FromResult(new byte[0]);
 
-        public Task<long> BlobWriteAsync(ulong blobId, byte[] data, CancellationToken cancellationToken = default(CancellationToken)) =>
+        public Task<long> BlobWriteAsync(ulong blobId, byte[] data, long position, CancellationToken cancellationToken = default(CancellationToken)) =>
             Task.FromResult(0L);
 
         public Task<long> GetBlobSizeAsync(ulong blobId, CancellationToken cancellationToken = default(CancellationToken)) =>

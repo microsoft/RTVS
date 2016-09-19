@@ -10,7 +10,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
     [Export(typeof(IRPlotManagerProvider))]
     internal class RPlotManagerProvider : IRPlotManagerProvider {
         public IRPlotManager CreatePlotManager(IRSettings settings, IRInteractiveWorkflow interactiveWorkflow, IFileSystem fileSystem) {
-            return new RPlotManager(settings, interactiveWorkflow, () => { }, fileSystem);
+            return new RPlotManager(settings, interactiveWorkflow, fileSystem);
         }
     }
 }

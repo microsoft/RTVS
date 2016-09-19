@@ -16,8 +16,8 @@ namespace Microsoft.R.Host.Client {
             /// <summary>
             /// Appends data to the end of the blob
             /// </summary>
-            public static async Task<BlobWriteRequest> WriteAsync(RHost host, ulong blobId, byte[] data, CancellationToken cancellationToken) {
-                var message = host.CreateRequestMessage("?WriteBlob", new JArray { blobId }, data);
+            public static async Task<BlobWriteRequest> WriteAsync(RHost host, ulong blobId, byte[] data, long position, CancellationToken cancellationToken) {
+                var message = host.CreateRequestMessage("?WriteBlob", new JArray { blobId, position }, data);
                 var request = new BlobWriteRequest(host, message, cancellationToken);
                 await host.SendAsync(message, cancellationToken);
                 return request;

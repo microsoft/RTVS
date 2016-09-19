@@ -270,7 +270,7 @@ namespace Microsoft.R.Host.Client {
             return await request.Task;
         }
 
-        public Task<long> BlobWriteAsync(ulong blobId, byte[] data, CancellationToken cancellationToken = default(CancellationToken)) {
+        public Task<long> BlobWriteAsync(ulong blobId, byte[] data, long position, CancellationToken cancellationToken = default(CancellationToken)) {
             if (_cancelBlobWriteAfterRunTask == null || _cancelBlobWriteAfterRunTask.IsCompleted) {
                 return RhostDisconnectedBlobWriteResult;
             }
@@ -279,12 +279,12 @@ namespace Microsoft.R.Host.Client {
                 return Task.FromCanceled<long>(cancellationToken);
             }
 
-            return Task.WhenAny(BlobWriteAsyncWorker(blobId, data, cancellationToken), _cancelBlobWriteAfterRunTask).Unwrap();
+            return Task.WhenAny(BlobWriteAsyncWorker(blobId, data, position, cancellationToken), _cancelBlobWriteAfterRunTask).Unwrap();
         }
 
-        private async Task<long> BlobWriteAsyncWorker(ulong blobId, byte[] data, CancellationToken ct = default(CancellationToken)) {
+        private async Task<long> BlobWriteAsyncWorker(ulong blobId, byte[] data, long position, CancellationToken ct = default(CancellationToken)) {
             await TaskUtilities.SwitchToBackgroundThread();
-            var request = await BlobWriteRequest.WriteAsync(this, blobId, data, ct);
+            var request = await BlobWriteRequest.WriteAsync(this, blobId, data, position, ct);
             return await request.Task;
         }
 

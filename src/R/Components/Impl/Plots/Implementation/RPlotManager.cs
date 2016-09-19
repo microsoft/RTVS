@@ -32,11 +32,11 @@ namespace Microsoft.R.Components.Plots.Implementation {
         public event EventHandler<RPlotDeviceEventArgs> DeviceAdded;
         public event EventHandler<RPlotDeviceEventArgs> DeviceRemoved;
 
-        public RPlotManager(IRSettings settings, IRInteractiveWorkflow interactiveWorkflow, Action dispose, IFileSystem fileSystem) {
+        public RPlotManager(IRSettings settings, IRInteractiveWorkflow interactiveWorkflow, IFileSystem fileSystem) {
             _interactiveWorkflow = interactiveWorkflow;
             _fileSystem = fileSystem;
 
-            _disposableBag = DisposableBag.Create<RPlotManager>(dispose)
+            _disposableBag = DisposableBag.Create<RPlotManager>()
                 .Add(() => interactiveWorkflow.RSession.Disconnected += RSession_Disconnected)
                 .Add(() => interactiveWorkflow.RSession.Mutated -= RSession_Mutated);
 
