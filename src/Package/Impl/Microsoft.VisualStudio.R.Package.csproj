@@ -212,6 +212,7 @@
     <Compile Include="ProjectSystem\Constants.cs" />
     <Compile Include="ProjectSystem\Definitions\IProjectSystemServices.cs" />
     <Compile Include="ProjectSystem\ProjectItemDependencyProvider.cs" />
+    <Compile Include="ProjectSystem\ProjectSettingsFiles.cs" />
     <Compile Include="ProjectSystem\ProjectSystemServices.cs" />
     <Compile Include="ProjectSystem\ProjectTreePropertiesProvider.cs" />
     <Compile Include="ProjectSystem\PropertyPages\Run\RunPageControl.xaml.cs">
@@ -222,7 +223,6 @@
     <Compile Include="ProjectSystem\PropertyPages\Run\RunPropertyPage.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ProjectSystem\ProjectSettings.cs" />
     <Compile Include="ProjectSystem\PropertyPages\Settings\SettingsPageControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -269,22 +269,33 @@
     <Compile Include="Sql\Commands\ManageDsnCommand.cs" />
     <Compile Include="Sql\Commands\AddDsnCommand.cs" />
     <Compile Include="Sql\Commands\ConfigurationSettingCommand.cs" />
+    <Compile Include="Sql\Commands\PublishSProcOptionsCommand.cs" />
     <Compile Include="Sql\ConnectionStringEditor.cs" />
     <Compile Include="Sql\Commands\AddDbConnectionCommand.cs" />
     <Compile Include="Sql\DragDrop\DataObject.cs" />
     <Compile Include="Sql\DragDrop\DropHandler.cs" />
     <Compile Include="Sql\DragDrop\DropHandlerProvider.cs" />
+    <Compile Include="Sql\Extensions\ProjectExtensions.cs" />
     <Compile Include="Sql\NativeMethods.cs" />
+    <Compile Include="Sql\Publish\DacPacBuilder.cs" />
+    <Compile Include="Sql\Publish\DacPackageServices.cs" />
+    <Compile Include="Sql\Publish\Definitions\IDacPacBuilder.cs" />
+    <Compile Include="Sql\Publish\Definitions\IDacPackageServices.cs" />
+    <Compile Include="Sql\Publish\PublishTargetType.cs" />
     <Compile Include="Sql\Publish\RCodePlacement.cs" />
-    <Compile Include="Sql\Publish\SProcGenerator.cs" />
     <Compile Include="Sql\Extensions\SqlQuoteType.cs" />
-    <Compile Include="Sql\Publish\SqlSProcPublishSettings.cs" />
-    <Compile Include="Sql\Publish\SqlPublishDialogViewModel.cs" />
-    <Compile Include="Sql\Publish\SqlPublshDialog.xaml.cs">
-      <DependentUpon>SqlPublshDialog.xaml</DependentUpon>
+    <Compile Include="Sql\Publish\SProcMap.cs" />
+    <Compile Include="Sql\Publish\SProcProjectFilesGenerator.cs" />
+    <Compile Include="Sql\Publish\SProcPublisher.cs" />
+    <Compile Include="Sql\Publish\SProcScriptGenerator.cs" />
+    <Compile Include="Sql\Publish\SqlPublishOptionsDialogViewModel.cs" />
+    <Compile Include="Sql\Publish\SqlPublshOptionsDialog.xaml.cs">
+      <DependentUpon>SqlPublshOptionsDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Sql\Publish\SqlSProcPublishSettings.cs" />
     <Compile Include="Sql\Extensions\SqlStringExtensions.cs" />
     <Compile Include="Sql\Extensions\SProcFileExtensions.cs" />
+    <Compile Include="Sql\Publish\SqlTelemetryEvents.cs" />
     <Compile Include="Utilities\IdeUtilities.cs" />
     <Compile Include="Windows\ToolWindowPaneFactory.cs" />
     <Compile Include="History\VsRHistoryVisualComponentContainerFactory.cs" />
@@ -1076,10 +1087,6 @@
       <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
     </ProjectReference>
-    <ProjectReference Include="..\..\R\Interpreters\Impl\Microsoft.R.Interpreters.csproj">
-      <Project>{8445A4FB-4443-432C-94E8-1408559B7F58}</Project>
-      <Name>Microsoft.R.Interpreters</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\R\Support\Impl\Microsoft.R.Support.csproj">
       <Project>{c1957d47-b0b4-42e0-bc08-0d5e96e47fe4}</Project>
       <Name>Microsoft.R.Support</Name>
@@ -1334,9 +1341,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Sql\Publish\SqlPublshDialog.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="Sql\Publish\SqlPublshOptionsDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Wpf\Controls.xaml">
       <Generator>MSBuild:Compile</Generator>

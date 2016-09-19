@@ -73,6 +73,7 @@
     <Compile Include="ExecutionTracing\RExecutionTracer.cs" />
     <Compile Include="ExecutionTracing\RSessionExtensions.cs" />
     <Compile Include="ExecutionTracing\RSourceLocation.cs" />
+    <Compile Include="Extensions\DirectoryExtensions.cs" />
     <Compile Include="Install\IMicrosoftRClientInstaller.cs" />
     <Compile Include="Install\ISupportedRVersionRange.cs" />
     <Compile Include="Install\RInstallation.cs" />

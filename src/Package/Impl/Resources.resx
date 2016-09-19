@@ -899,4 +899,79 @@ Additional information:
   <data name="SqlPublishDialog_NoQuote" xml:space="preserve">
     <value>None</value>
   </data>
+  <data name="SqlPublishDialog_BracketQuote1" xml:space="preserve">
+    <value>Square brackets</value>
+  </data>
+  <data name="SqlPublishDialog_DoubleQuote1" xml:space="preserve">
+    <value>Double quote</value>
+  </data>
+  <data name="SqlPublishDialog_HeaderFile1" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="SqlPublishDialog_HeaderSProc1" xml:space="preserve">
+    <value>Stored Procedure</value>
+  </data>
+  <data name="SqlPublishDialog_HeaderVariable1" xml:space="preserve">
+    <value>Variable</value>
+  </data>
+  <data name="SqlPublishDialog_NoDatabaseConnections" xml:space="preserve">
+    <value>&lt;No database connections&gt;</value>
+  </data>
+  <data name="SqlPublishDialog_NoDatabaseProjects" xml:space="preserve">
+    <value>&lt;No database projects&gt;</value>
+  </data>
+  <data name="SqlPublishDialog_NoQuote1" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="SqlPublishDialog_NoSProcFiles1" xml:space="preserve">
+    <value>The selected project does not contain any R Script with SQL files.</value>
+  </data>
+  <data name="SqlPublishDialog_PublishButton" xml:space="preserve">
+    <value>Publish</value>
+  </data>
+  <data name="SqlPublishDialog_QuoteType1" xml:space="preserve">
+    <value>Quote type:</value>
+  </data>
+  <data name="SqlPublishDialog_RCodeInline1" xml:space="preserve">
+    <value>In stored procedure @script parameter</value>
+  </data>
+  <data name="SqlPublishDialog_RCodeInTable1" xml:space="preserve">
+    <value>In a separate table</value>
+  </data>
+  <data name="SqlPublishDialog_RCodePlacement1" xml:space="preserve">
+    <value>R code placement:</value>
+  </data>
+  <data name="SqlPublishDialog_TableName1" xml:space="preserve">
+    <value>Table name:</value>
+  </data>
+  <data name="SqlPublishDialog_Target" xml:space="preserve">
+    <value>Target:</value>
+  </data>
+  <data name="SqlPublishDialog_TargetType" xml:space="preserve">
+    <value>Publish to:</value>
+  </data>
+  <data name="SqlPublishDialog_TargetTypeDacpac" xml:space="preserve">
+    <value>DACPAC</value>
+  </data>
+  <data name="SqlPublishDialog_TargetTypeDatabase" xml:space="preserve">
+    <value>Database</value>
+  </data>
+  <data name="SqlPublishDialog_TargetTypeProject" xml:space="preserve">
+    <value>Project</value>
+  </data>
+  <data name="SqlPublishDialog_Title1" xml:space="preserve">
+    <value>R Code to SQL Publishing Options</value>
+  </data>
+  <data name="SqlPublishDialog_UnableToBuildDacPac" xml:space="preserve">
+    <value>Unable to package SQL stored procedure(s). Exception: {0}.</value>
+  </data>
+  <data name="SqlPublish_PublishDacpacSuccess" xml:space="preserve">
+    <value>Publishing complete. DACPAC: {0}</value>
+  </data>
+  <data name="SqlPublish_PublishDatabaseSuccess" xml:space="preserve">
+    <value>Publishing complete. Connection {0}</value>
+  </data>
+  <data name="SqlPublish_PublishError" xml:space="preserve">
+    <value>Publishing failed. Exception: {0}</value>
+  </data>
 </root>

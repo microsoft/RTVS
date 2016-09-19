@@ -5,8 +5,8 @@ using System;
 using System.IO;
 using System.Text;
 using System.Windows;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.DragDrop;
-using Microsoft.R.Host.Client.Extensions;
 using static System.FormattableString;
 
 namespace Microsoft.R.Editor.DragDrop {
@@ -24,7 +24,7 @@ namespace Microsoft.R.Editor.DragDrop {
             bool first = true;
             foreach (var item in dataObject.GetProjectItems()) {
 
-                var relative = item.FileName.MakeRRelativePath(projectFolder);
+                var relative = item.FileName.MakeRelativePath(projectFolder);
                 var ext = Path.GetExtension(item.FileName).ToLowerInvariant();
                 switch (ext) {
                     case ".r":

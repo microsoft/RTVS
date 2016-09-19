@@ -12,6 +12,7 @@ namespace Microsoft.Common.Core.Telemetry {
         // Keep these sorted
         Build,
         Configuration,
+        DataGrid,
         Debugger,
         Editor,
         History,
@@ -20,7 +21,7 @@ namespace Microsoft.Common.Core.Telemetry {
         Plotting,
         Project,
         Repl,
+        SQL,
         VariableExplorer,
-        DataGrid,
     }
 }

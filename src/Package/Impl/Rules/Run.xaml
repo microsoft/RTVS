@@ -28,4 +28,22 @@
             <DataSource Persistence="ProjectFile" HasConfigurationCondition="True"/>
         </StringProperty.DataSource>
     </StringProperty>
+
+    <StringProperty Name="RemoteProjectPath" DisplayName="Remote Project Path" Description="Destination where the project will be transfered to." Visible="True" >
+        <StringProperty.DataSource>
+            <DataSource Persistence="ProjectFile" HasConfigurationCondition="True"/>
+        </StringProperty.DataSource>
+    </StringProperty>
+
+    <StringProperty Name="TransferFilesFilter" DisplayName="Files to transfer" Description="Filter files that shoudl be sent to RHost when transfer is enabled." Visible="True">
+        <StringProperty.DataSource>
+            <DataSource Persistence="ProjectFile" HasConfigurationCondition="True"/>
+        </StringProperty.DataSource>
+    </StringProperty>
+
+    <BoolProperty Name="TransferProjectOnRun" DisplayName="Transfer project on Run" Description="Transfers project to RHost when project is run." Visible="True">
+        <BoolProperty.DataSource>
+            <DataSource Persistence="ProjectFile" HasConfigurationCondition="True"/>
+        </BoolProperty.DataSource>
+    </BoolProperty>
 </Rule>

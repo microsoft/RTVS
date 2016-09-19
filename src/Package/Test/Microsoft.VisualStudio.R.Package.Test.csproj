@@ -165,10 +165,6 @@
       <Project>{9066522E-780E-4409-B410-2525E6A621FC}</Project>
       <Name>Microsoft.R.Editor.Test</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\R\Interpreters\Impl\Microsoft.R.Interpreters.csproj">
-      <Project>{8445A4FB-4443-432C-94E8-1408559B7F58}</Project>
-      <Name>Microsoft.R.Interpreters</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\R\Support\Impl\Microsoft.R.Support.csproj">
       <Project>{c1957d47-b0b4-42e0-bc08-0d5e96e47fe4}</Project>
       <Name>Microsoft.R.Support</Name>
@@ -194,6 +190,7 @@
     <Compile Include="AssertionExtensions.cs" />
     <Compile Include="Assertions\MenuCommandAssertions.cs" />
     <Compile Include="Browsers\WebBrowserServicesTest.cs" />
+    <Compile Include="Fixtures\ProjectTestFilesFixture.cs" />
     <Compile Include="Project\SettingsTest.cs" />
     <Compile Include="Project\ProjectSystem\PropertyPages\ProjectSettingsControlTest.cs" />
     <Compile Include="Project\ProjectSystem\PropertyPages\ProjectSettingsViewModelTest.cs" />
@@ -236,7 +233,6 @@
     <Compile Include="SurveyNews\SurveyNewsServiceTest.cs" />
     <Compile Include="SurveyNews\SurveyNewsTestFilesFixture.cs" />
     <Compile Include="Telemetry\TelemetryTest.cs" />
-    <Compile Include="ProjectTestFilesFixture.cs" />
     <Compile Include="Utilities\CollectionUtilitiesTest.cs" />
     <Compile Include="Utility\VsRHostScript.cs" />
     <Compile Include="Utility\TestInstanceFactory.cs" />

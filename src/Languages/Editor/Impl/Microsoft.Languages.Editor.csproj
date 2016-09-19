@@ -54,6 +54,11 @@
     <Compile Include="ContainedLanguage\Definitions\IContainedLanguageHost.cs" />
     <Compile Include="ContainedLanguage\Definitions\IContainedLanguageHostProvider.cs" />
     <Compile Include="Diagnostics\IntegerSwitch.cs" />
+    <Compile Include="DragDrop\DataObjectExtensions.cs" />
+    <Compile Include="DragDrop\DataObjectFlags.cs" />
+    <Compile Include="DragDrop\DataObjectFormats.cs" />
+    <Compile Include="DragDrop\DropFileType.cs" />
+    <Compile Include="DragDrop\ProjectDataObjectReader.cs" />
     <Compile Include="EditorFactory\EditorExtensions.cs" />
     <Compile Include="EditorFactory\ProjectionEditorInstance.cs" />
     <Compile Include="EditorFactory\EditorInstance.cs" />

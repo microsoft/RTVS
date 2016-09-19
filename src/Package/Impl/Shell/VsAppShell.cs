@@ -406,8 +406,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 if (_settingStorage == null) {
                     var ctrs = ExportProvider.GetExportedValue<IContentTypeRegistryService>();
                     var contentType = ctrs.GetContentType(RContentTypeDefinition.ContentType);
-                    _settingStorage = ComponentLocatorForOrderedContentType<IWritableSettingsStorage>
-                                            .FindFirstOrderedComponent(CompositionService, contentType);
+                    _settingStorage = ComponentLocatorForOrderedContentType<IWritableSettingsStorage>.FindFirstOrderedComponent(contentType);
                 }
                 return _settingStorage;
             }

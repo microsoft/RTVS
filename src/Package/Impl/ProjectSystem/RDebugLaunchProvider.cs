@@ -4,18 +4,12 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.IO;
-using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Debugger;
 using Microsoft.R.Debugger.PortSupplier;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Extensions;
-using Microsoft.R.Host.Client.Host;
 using Microsoft.VisualStudio.ProjectSystem;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Debuggers;
@@ -26,7 +20,6 @@ using Microsoft.VisualStudio.ProjectSystem.VS.Debuggers;
 using Microsoft.VisualStudio.ProjectSystem.Debug;
 using Microsoft.VisualStudio.ProjectSystem.VS.Debug;
 #endif
-using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     // ExportDebugger must match rule name in ..\Rules\Debugger.xaml.
@@ -35,20 +28,15 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     internal class RDebugLaunchProvider : DebugLaunchProviderBase {
         private readonly ProjectProperties _properties;
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
-        private readonly IProjectSystemServices _pss;
 
         [ImportingConstructor]
-        public RDebugLaunchProvider(ConfiguredProject configuredProject, IRInteractiveWorkflowProvider interactiveWorkflowProvider, IProjectSystemServices pss)
+        public RDebugLaunchProvider(ConfiguredProject configuredProject, IRInteractiveWorkflowProvider interactiveWorkflowProvider)
             : base(configuredProject) {
             _properties = configuredProject.Services.ExportProvider.GetExportedValue<ProjectProperties>();
             _interactiveWorkflow = interactiveWorkflowProvider.GetOrCreate();
-            _pss = pss;
         }
 
-        internal IFileSystem FileSystem { get; set; } = new FileSystem();
-
         private IRSession Session => _interactiveWorkflow.RSession;
-        private TextWriter ProgressOutputWriter => _interactiveWorkflow.ActiveWindow.InteractiveWindow.OutputWriter;
 
         public override Task<bool> CanLaunchAsync(DebugLaunchOptions launchOptions) {
             return Task.FromResult(true);
@@ -87,107 +75,18 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                 await base.LaunchAsync(launchOptions);
             }
 
-            _interactiveWorkflow.ActiveWindow?.Container.Show(focus: false, immediate: false);
+            _interactiveWorkflow.ActiveWindow?.Container.Show(false);
 
-            bool transferFiles = await _properties.GetTransferProjectOnRunAsync();
-            string remotePath = await _properties.GetRemoteProjectPathAsync();
-            string filterString = await _properties.GetFileFilterAsync();
+            string startupFile = await _properties.GetStartupFileAsync();
 
-            var activeProject = _pss.GetActiveProject();
-            if (transferFiles && Session.IsRemote && activeProject != null) {
-                await SendProjectAsync(activeProject, remotePath, filterString);
-            }
-
-            // user must set the path for local or remote cases
-            var startupFile = await GetStartupFileAsync(transferFiles, activeProject);
-
-            if (string.IsNullOrWhiteSpace(startupFile)) {
+            if (string.IsNullOrEmpty(startupFile)) {
                 _interactiveWorkflow.ActiveWindow?.InteractiveWindow.WriteErrorLine(Resources.Launch_NoStartupFile);
                 return;
             }
-            await SourceFileAsync(transferFiles, startupFile, $"{Resources.Launch_StartupFileDoesNotExist} {startupFile}");
 
-            var settingsFile = await _properties.GetSettingsFileAsync();
-            if (!string.IsNullOrWhiteSpace(settingsFile)) {
-                if (activeProject != null) {
-                    var dirPath = Path.GetDirectoryName(activeProject.FullName);
-                    settingsFile = settingsFile.MakeAbsolutePathFromRRelative(dirPath);
-                    if (FileSystem.FileExists(settingsFile)) {
-                        if (Session.IsRemote) {
-                            var remoteSettingsPath = GetRemoteSettingsFile(settingsFile, dirPath, remotePath);
-                            await SourceFileAsync(transferFiles, remoteSettingsPath, $"{Resources.Launch_SettingsFileDoesNotExist} {settingsFile}");
-                        } else {
-                            await SourceFileAsync(transferFiles, settingsFile, $"{Resources.Launch_SettingsFileDoesNotExist} {settingsFile}");
-                        }
-                    }
-                }
-            }
+            _interactiveWorkflow.Operations.SourceFileAsync(startupFile, echo: false)
+                .SilenceException<Exception>()
+                .DoNotWait();
         }
-
-        private async Task SourceFileAsync(bool transferFiles, string file, string errorMessage) {
-            bool fileExists = false;
-            if (transferFiles && Session.IsRemote) {
-                try {
-                    fileExists = await Session.EvaluateAsync<bool>($"file.exists({file.ToRPath().ToRStringLiteral()})", REvaluationKind.Normal);
-                } catch (RHostDisconnectedException) {
-                    ProgressOutputWriter.WriteLine("Unable to verify if file exists on remote host.");
-                }
-            } else {
-                fileExists = FileSystem.FileExists(file);
-            }
-
-            if (!fileExists) {
-                _interactiveWorkflow.ActiveWindow?.InteractiveWindow.WriteErrorLine(errorMessage);
-                return;
-            }
-
-            ProgressOutputWriter.WriteLine($"Sourcing: {file}");
-            await _interactiveWorkflow.Operations.SourceFileAsync(file, echo: false).SilenceException<Exception>();
-        }
-
-        private async Task SendProjectAsync(EnvDTE.Project project, string remotePath, string filterString) {
-            ProgressOutputWriter.WriteLine("Preparing to transfer project.");
-
-            var projectDir = Path.GetDirectoryName(project.FullName);
-            var projectName = Path.GetFileNameWithoutExtension(project.FullName);
-
-            string[] filterSplitter = { ";" };
-            Matcher matcher = new Matcher(StringComparison.InvariantCultureIgnoreCase);
-            matcher.AddIncludePatterns(filterString.Split(filterSplitter, StringSplitOptions.RemoveEmptyEntries));
-
-            ProgressOutputWriter.WriteLine($"Remote destination: {remotePath}");
-            ProgressOutputWriter.WriteLine($"File filter applied: {filterString}");
-            ProgressOutputWriter.WriteLine("Compressing project files for transfer: ");
-
-            var compressedFilePath = FileSystem.CompressDirectory(projectDir, matcher, new Progress<string>((p) => {
-                ProgressOutputWriter.WriteLine($"Compressing: {p}");
-            }), CancellationToken.None);
-            
-            using (var fts = new FileTransferSession(Session, FileSystem)) {
-                ProgressOutputWriter.Write("Transferring project to remote host...");
-                var remoteFile = await fts.SendFileAsync(compressedFilePath);
-                await Session.EvaluateAsync<string>($"rtvs:::save_to_project_folder({remoteFile.Id}, {projectName.ToRStringLiteral()}, '{remotePath.ToRPath()}')", REvaluationKind.Normal);
-            }
-
-            ProgressOutputWriter.WriteLine(" done.");
-        }
-
-        private async Task<string> GetStartupFileAsync(bool transferFiles, EnvDTE.Project project) {
-            if (transferFiles && Session.IsRemote) { // remote
-                var projectName = Path.GetFileNameWithoutExtension(project.FullName);
-                var remotePath = (await _properties.GetRemoteProjectPathAsync()).ToRPath();
-                var startUpFile = (await _properties.GetStartupFileAsync()).ToRPath();
-                return remotePath + projectName + "/" + startUpFile;
-            } else { // local
-                var projDir = Path.GetDirectoryName(project.FullName);
-                var startUpFile = await _properties.GetStartupFileAsync();
-                return Path.Combine(projDir, startUpFile);
-            }
-        }
-
-        private string GetRemoteSettingsFile(string localSettingsPath, string localProjectPath, string remoteProjectPath) {
-            return remoteProjectPath + localSettingsPath.Remove(0, localSettingsPath.Length);
-        }
-
     }
 }
