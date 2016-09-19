@@ -27,16 +27,16 @@ namespace Microsoft.R.Editor.Completion {
             if (completion1 == null || completion2 == null)
                 return -1;
 
-            int value = String.Compare(completion1.DisplayText, completion2.DisplayText, StringComparison.Ordinal);
+            int value = String.Compare(completion1.DisplayText, completion2.DisplayText, StringComparison.OrdinalIgnoreCase);
             if (0 == value)
-                value = String.Compare(completion1.IconAutomationText, completion2.IconAutomationText, StringComparison.Ordinal);
+                value = String.Compare(completion1.IconAutomationText, completion2.IconAutomationText, StringComparison.OrdinalIgnoreCase);
 
             return value;
         }
 
         #region IComparable<RCompletion>
         public int CompareTo(RCompletion other) {
-            return string.Compare(this.DisplayText, other.DisplayText, StringComparison.Ordinal);
+            return string.Compare(this.DisplayText, other.DisplayText, StringComparison.OrdinalIgnoreCase);
         }
         #endregion
     }

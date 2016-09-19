@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
@@ -52,7 +53,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
             // Add names of arguments that  are not yet specified to the completion
             // list with '=' sign so user can tell them from function names.
             IEnumerable<string> declaredArguments = funcCall.Arguments.Where(x => x is NamedArgument).Select(x => ((NamedArgument)x).Name);
-            var possibleArguments = arguments.Where(x => !x.Key.EqualsOrdinal("...") && !declaredArguments.Contains(x.Key));
+            var possibleArguments = arguments.Where(x => !x.Key.EqualsOrdinal("...") && !declaredArguments.Contains(x.Key, StringComparer.OrdinalIgnoreCase));
 
             foreach (var arg in possibleArguments) {
                 string displayText = arg.Key + " =";
