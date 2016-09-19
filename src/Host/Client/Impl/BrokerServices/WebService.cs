@@ -42,9 +42,10 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             return response.EnsureSuccessStatusCode();
         }
 
-        public async Task<TResponse> HttpGetAsync<TResponse>(Uri uri, CancellationToken cancellationToken = default(CancellationToken)) =>
-            // TODO: HttpClient.GetStringAsync doesn't have an overriden version with cancellationToken. Need a workaround
-            JsonConvert.DeserializeObject<TResponse>(await HttpClient.GetStringAsync(uri));
+        public async Task<TResponse> HttpGetAsync<TResponse>(Uri uri, CancellationToken cancellationToken = default(CancellationToken)) {
+            var resonse = await HttpClient.GetAsync(uri, cancellationToken);
+            return JsonConvert.DeserializeObject<TResponse>(await resonse.Content.ReadAsStringAsync());
+        }
 
         public Task<TResponse> HttpGetAsync<TResponse>(UriTemplate uriTemplate, CancellationToken cancellationToken = default(CancellationToken), params object[] args) =>
            HttpGetAsync<TResponse>(MakeUri(uriTemplate, args), cancellationToken);
