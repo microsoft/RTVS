@@ -1539,6 +1539,16 @@
         </Strings>
       </Button>
 
+      <Button guid="guidRToolsCmdSet" id="icmdPublishSProcOptions" priority="0x0200" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="dataSubMenuSProcGroup"/>
+        <Icon guid="ImageCatalogGuid" id="DatabaseSettings"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <ButtonText>P&amp;ublish With Options...</ButtonText>
+        </Strings>
+      </Button>
+
     </Buttons>
   </Commands>
 
@@ -2236,7 +2246,8 @@
       <IDSymbol name="icmdAddDsn" value="810" />
       <IDSymbol name="icmdManageDsn" value="811" />
       <IDSymbol name="icmdPublishSProc" value="812" />
-      
+      <IDSymbol name="icmdPublishSProcOptions" value="813" />
+
       <!-- Window management-->
       <IDSymbol name="icmdShowReplWindow" value="901" />
       <IDSymbol name="icmdShowPlotWindow" value="902" />
