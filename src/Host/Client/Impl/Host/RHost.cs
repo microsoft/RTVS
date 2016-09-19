@@ -23,12 +23,9 @@ using Microsoft.R.Host.Protocol;
 namespace Microsoft.R.Host.Client {
     public sealed partial class RHost : IDisposable, IRExpressionEvaluator, IRBlobService {
         private static readonly Task<REvaluationResult> RhostDisconnectedEvaluationResult = TaskUtilities.CreateCanceled<REvaluationResult>(new RHostDisconnectedException());
-        private static readonly Task<ulong> RhostDisconnectedCreateBlobResult = TaskUtilities.CreateCanceled<ulong>(new RHostDisconnectedException());
-        private static readonly Task<byte[]> RhostDisconnectedBlobReadAllResult = TaskUtilities.CreateCanceled<byte[]>(new RHostDisconnectedException());
-        private static readonly Task<byte[]> RhostDisconnectedBlobReadResult = TaskUtilities.CreateCanceled<byte[]>(new RHostDisconnectedException());
-        private static readonly Task<long> RhostDisconnectedBlobWriteResult = TaskUtilities.CreateCanceled<long>(new RHostDisconnectedException());
-        private static readonly Task<long> RhostDisconnectedGetBlobSizeResult = TaskUtilities.CreateCanceled<long>(new RHostDisconnectedException());
-        private static readonly Task<long> RhostDisconnectedSetBlobSizeResult = TaskUtilities.CreateCanceled<long>(new RHostDisconnectedException());
+        private static readonly Task<ulong> RhostDisconnectedULongResult = TaskUtilities.CreateCanceled<ulong>(new RHostDisconnectedException());
+        private static readonly Task<byte[]> RhostDisconnectedByteArrayResult = TaskUtilities.CreateCanceled<byte[]>(new RHostDisconnectedException());
+        private static readonly Task<long> RhostDisconnectedLongResult = TaskUtilities.CreateCanceled<long>(new RHostDisconnectedException());
 
         public static IRContext TopLevelContext { get; } = new RContext(RContextType.TopLevel);
         
@@ -41,11 +38,8 @@ namespace Microsoft.R.Host.Client {
         private volatile Task _runTask;
         private volatile Task<REvaluationResult> _cancelEvaluationAfterRunTask;
         private volatile Task<ulong> _cancelCreateBlobAfterRunTask;
-        private volatile Task<byte[]> _cancelBlobReadAllAfterRunTask;
         private volatile Task<byte[]> _cancelBlobReadAfterRunTask;
-        private volatile Task<long> _cancelBlobWriteAfterRunTask;
-        private volatile Task<long> _cancelGetBlobSizeAfterRunTask;
-        private volatile Task<long> _cancelSetBlobSizeAfterRunTask;
+        private volatile Task<long> _cancelBlobWriteOrSizeAfterRunTask;
 
         private int _rLoopDepth;
         private long _lastMessageId;
@@ -208,7 +202,7 @@ namespace Microsoft.R.Host.Client {
 
         public Task<ulong> CreateBlobAsync(CancellationToken cancellationToken) {
             if (_cancelCreateBlobAfterRunTask == null || _cancelCreateBlobAfterRunTask.IsCompleted) {
-                return RhostDisconnectedCreateBlobResult;
+                return RhostDisconnectedULongResult;
             }
 
             if (cancellationToken.IsCancellationRequested) {
@@ -235,15 +229,15 @@ namespace Microsoft.R.Host.Client {
         }
 
         public Task<byte[]> BlobReadAllAsync(ulong blobId, CancellationToken cancellationToken = default(CancellationToken)) {
-            if (_cancelBlobReadAllAfterRunTask == null || _cancelBlobReadAllAfterRunTask.IsCompleted) {
-                return RhostDisconnectedBlobReadAllResult;
+            if (_cancelBlobReadAfterRunTask == null || _cancelBlobReadAfterRunTask.IsCompleted) {
+                return RhostDisconnectedByteArrayResult;
             }
 
             if (cancellationToken.IsCancellationRequested) {
                 return Task.FromCanceled<byte[]>(cancellationToken);
             }
 
-            return Task.WhenAny(BlobReadAllAsyncWorker(blobId, cancellationToken), _cancelBlobReadAllAfterRunTask).Unwrap();
+            return Task.WhenAny(BlobReadAllAsyncWorker(blobId, cancellationToken), _cancelBlobReadAfterRunTask).Unwrap();
         }
 
         private async Task<byte[]> BlobReadAllAsyncWorker(ulong blobId, CancellationToken ct = default(CancellationToken)) {
@@ -254,7 +248,7 @@ namespace Microsoft.R.Host.Client {
 
         public Task<byte[]> BlobReadAsync(ulong blobId, long position, long count, CancellationToken cancellationToken = default(CancellationToken)) {
             if (_cancelBlobReadAfterRunTask == null || _cancelBlobReadAfterRunTask.IsCompleted) {
-                return RhostDisconnectedBlobReadResult;
+                return RhostDisconnectedByteArrayResult;
             }
 
             if (cancellationToken.IsCancellationRequested) {
@@ -271,15 +265,15 @@ namespace Microsoft.R.Host.Client {
         }
 
         public Task<long> BlobWriteAsync(ulong blobId, byte[] data, long position, CancellationToken cancellationToken = default(CancellationToken)) {
-            if (_cancelBlobWriteAfterRunTask == null || _cancelBlobWriteAfterRunTask.IsCompleted) {
-                return RhostDisconnectedBlobWriteResult;
+            if (_cancelBlobWriteOrSizeAfterRunTask == null || _cancelBlobWriteOrSizeAfterRunTask.IsCompleted) {
+                return RhostDisconnectedLongResult;
             }
 
             if (cancellationToken.IsCancellationRequested) {
                 return Task.FromCanceled<long>(cancellationToken);
             }
 
-            return Task.WhenAny(BlobWriteAsyncWorker(blobId, data, position, cancellationToken), _cancelBlobWriteAfterRunTask).Unwrap();
+            return Task.WhenAny(BlobWriteAsyncWorker(blobId, data, position, cancellationToken), _cancelBlobWriteOrSizeAfterRunTask).Unwrap();
         }
 
         private async Task<long> BlobWriteAsyncWorker(ulong blobId, byte[] data, long position, CancellationToken ct = default(CancellationToken)) {
@@ -289,15 +283,15 @@ namespace Microsoft.R.Host.Client {
         }
 
         public Task<long> GetBlobSizeAsync(ulong blobId, CancellationToken cancellationToken = default(CancellationToken)) {
-            if (_cancelGetBlobSizeAfterRunTask == null || _cancelGetBlobSizeAfterRunTask.IsCompleted) {
-                return RhostDisconnectedGetBlobSizeResult;
+            if (_cancelBlobWriteOrSizeAfterRunTask == null || _cancelBlobWriteOrSizeAfterRunTask.IsCompleted) {
+                return RhostDisconnectedLongResult;
             }
 
             if (cancellationToken.IsCancellationRequested) {
                 return Task.FromCanceled<long>(cancellationToken);
             }
 
-            return Task.WhenAny(GetBlobSizeAsyncWorker(blobId, cancellationToken), _cancelGetBlobSizeAfterRunTask).Unwrap();
+            return Task.WhenAny(GetBlobSizeAsyncWorker(blobId, cancellationToken), _cancelBlobWriteOrSizeAfterRunTask).Unwrap();
         }
 
         private async Task<long> GetBlobSizeAsyncWorker(ulong blobId, CancellationToken ct = default(CancellationToken)) {
@@ -307,15 +301,15 @@ namespace Microsoft.R.Host.Client {
         }
 
         public Task<long> SetBlobSizeAsync(ulong blobId, long size, CancellationToken cancellationToken = default(CancellationToken)) {
-            if (_cancelSetBlobSizeAfterRunTask == null || _cancelSetBlobSizeAfterRunTask.IsCompleted) {
-                return RhostDisconnectedSetBlobSizeResult;
+            if (_cancelBlobWriteOrSizeAfterRunTask == null || _cancelBlobWriteOrSizeAfterRunTask.IsCompleted) {
+                return RhostDisconnectedLongResult;
             }
 
             if (cancellationToken.IsCancellationRequested) {
                 return Task.FromCanceled<long>(cancellationToken);
             }
 
-            return Task.WhenAny(SetBlobSizeAsyncWorker(blobId, size, cancellationToken), _cancelSetBlobSizeAfterRunTask).Unwrap();
+            return Task.WhenAny(SetBlobSizeAsyncWorker(blobId, size, cancellationToken), _cancelBlobWriteOrSizeAfterRunTask).Unwrap();
         }
 
         private async Task<long> SetBlobSizeAsyncWorker(ulong blobId, long size, CancellationToken ct = default(CancellationToken)) {
@@ -571,12 +565,9 @@ namespace Microsoft.R.Host.Client {
 
             // Create cancellation tasks before proceeding with anything else, to avoid race conditions in usage of those tasks.
             _cancelEvaluationAfterRunTask = _runTask.ContinueWith(t => RhostDisconnectedEvaluationResult).Unwrap();
-            _cancelCreateBlobAfterRunTask = _runTask.ContinueWith(t => RhostDisconnectedCreateBlobResult).Unwrap();
-            _cancelBlobReadAllAfterRunTask = _runTask.ContinueWith(t => RhostDisconnectedBlobReadAllResult).Unwrap();
-            _cancelBlobReadAfterRunTask = _runTask.ContinueWith(t => RhostDisconnectedBlobReadResult).Unwrap();
-            _cancelBlobWriteAfterRunTask = _runTask.ContinueWith(t => RhostDisconnectedBlobWriteResult).Unwrap();
-            _cancelGetBlobSizeAfterRunTask = _runTask.ContinueWith(t => RhostDisconnectedGetBlobSizeResult).Unwrap();
-            _cancelSetBlobSizeAfterRunTask = _runTask.ContinueWith(t => RhostDisconnectedSetBlobSizeResult).Unwrap();
+            _cancelCreateBlobAfterRunTask = _runTask.ContinueWith(t => RhostDisconnectedULongResult).Unwrap();
+            _cancelBlobReadAfterRunTask = _runTask.ContinueWith(t => RhostDisconnectedByteArrayResult).Unwrap();
+            _cancelBlobWriteOrSizeAfterRunTask = _runTask.ContinueWith(t => RhostDisconnectedLongResult).Unwrap();
 
             try {
                 var message = await ReceiveMessageAsync(ct);

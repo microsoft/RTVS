@@ -94,7 +94,7 @@ namespace Microsoft.R.Host.Client.Test.RtvsPackage {
         }
         
         [Test]
-        public async Task CreateGetDestroyCopyToBlob() {
+        public async Task CreateCopyToDestroyBlob() {
             using (MemoryStream ms = new MemoryStream())
             using (BinaryWriter writer = new BinaryWriter(ms)) {
                 // write ~7MB of data
@@ -113,9 +113,36 @@ namespace Microsoft.R.Host.Client.Test.RtvsPackage {
 
                 using (RBlobStream blobStream = await RBlobStream.OpenAsync(blob, _session))
                 using (MemoryStream ms2 = new MemoryStream()) {
-                    await blobStream.CopyToAsync(ms2);
+                    await blobStream.CopyToAsync(ms2, 1024 * 1024);
                     await ms2.FlushAsync();
                     ms.ToArray().Should().Equal(ms2.ToArray());
+                }
+            }
+        }
+        [Test]
+        public async Task CreateWriteWithSeekBlob() {
+            IRBlobInfo blob = null;
+            using (RBlobStream blobStream = await RBlobStream.CreateAsync(_session))
+            using (BinaryWriter writer = new BinaryWriter(blobStream)) {
+                // write {1, 2, 3}
+                writer.Write((long)1);
+                writer.Write((long)2);
+                writer.Write((long)3);
+
+                // go back to position 2
+                blobStream.Seek(sizeof(long), SeekOrigin.Begin);
+
+                // change data to {1, 4, 3}
+                writer.Write((long)4);
+                blob = blobStream.GetBlobInfo();
+            }
+
+            using (RBlobStream blobStream = await RBlobStream.OpenAsync(blob, _session))
+            using (BinaryReader reader = new BinaryReader(blobStream)) {
+                long[] expectedData = { 1, 4, 3 };
+                
+                for(int i = 0; i < expectedData.Length; ++i) {
+                    reader.ReadInt64().Should().Be(expectedData[i]);
                 }
             }
         }

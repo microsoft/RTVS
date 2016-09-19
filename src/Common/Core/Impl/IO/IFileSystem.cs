@@ -27,7 +27,7 @@ namespace Microsoft.Common.Core.IO {
         void FileWriteAllBytes(string path, byte[] bytes);
 
         Stream CreateFile(string path);
-        Stream FileOpenRead(string path);
+        Stream FileOpen(string path, FileMode mode);
         
         IFileVersionInfo GetVersionInfo(string path);
         void DeleteFile(string path);

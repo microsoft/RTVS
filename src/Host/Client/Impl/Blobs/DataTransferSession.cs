@@ -53,7 +53,7 @@ namespace Microsoft.R.Host.Client {
         public async Task<IRBlobInfo> SendFileAsync(string filePath, bool doCleanUp = true) {
             IRBlobInfo blob = null;
             using (RBlobStream blobStream = await RBlobStream.CreateAsync(_blobService))
-            using (Stream fileStream = _fs.FileOpenRead(filePath)){
+            using (Stream fileStream = _fs.FileOpen(filePath, FileMode.Open)){
                 await fileStream.CopyToAsync(blobStream);
                 blob = blobStream.GetBlobInfo();
             }

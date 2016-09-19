@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -74,10 +75,10 @@ namespace Microsoft.R.Host.Client.Test.Session {
                 Func<Task> f = async () => {
                     while (true) {
                         var blob = await _session.CreateBlobAsync(ct: cts.Token);
-                        await _session.BlobWriteAsync(blob, data, ct: cts.Token);
+                        await _session.BlobWriteAsync(blob, data, -1, ct: cts.Token);
                     }
                 };
-                var assertion = f.ShouldThrowAsync<TaskCanceledException>();
+                var assertion = f.ShouldThrowAsync<OperationCanceledException>();
                 cts.CancelAfter(1);
                 await assertion;
             }
@@ -92,17 +93,23 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
             [Test]
             public async Task GetBlob_DisconnectedDuringGet() {
-                var data = new byte[10 * 1024 * 1024];
+                var data = new byte[1024 * 1024];
 
                 IRBlobInfo blob = null;
                 using (DataTransferSession dts = new DataTransferSession(_session, null)) {
                     blob = await dts.SendBytesAsync(data, false);
                 }
 
-                Func<Task> f = () => _session.BlobReadAllAsync(blob.Id);
-                await Task.Delay(100);
-                await _session.StopHostAsync();
-                await f.ShouldThrowAsync<RHostDisconnectedException>();
+                using (RBlobStream blobStream = await RBlobStream.OpenAsync(blob, _session)) {
+                    Func<Task> f = async () => {
+                        using (MemoryStream ms = new MemoryStream()) {
+                            await blobStream.CopyToAsync(ms, 1024);
+                        }
+                    };
+                    await Task.Delay(100);
+                    await _session.StopHostAsync();
+                    await f.ShouldThrowAsync<RHostDisconnectedException>();
+                }
             }
 
             [Test]
