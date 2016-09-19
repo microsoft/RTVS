@@ -2,15 +2,19 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
+using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
+using Xunit;
 
 namespace Microsoft.R.Host.Client.Test.Session {
+    [Category.R.Session]
     public class RSessionProviderTest {
         [Test]
         public void Lifecycle() {
@@ -70,8 +74,8 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
                 await Task.WhenAll(switchTask, startHost1Task, startHost2Task);
 
-                startHost1Task.Status.Should().Be(TaskStatus.RanToCompletion);
-                startHost2Task.Status.Should().Be(TaskStatus.RanToCompletion);
+                startHost1Task.Should().BeRanToCompletion();
+                startHost2Task.Should().BeRanToCompletion();
 
                 await Task.WhenAll(session1.HostStarted, session2.HostStarted);
             }
@@ -101,7 +105,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
                 startHostTask.Status.Should().Be(TaskStatus.RanToCompletion);
 
                 await session.HostStarted;
-                session.HostStarted.Status.Should().Be(TaskStatus.RanToCompletion);
+                session.HostStarted.Should().BeRanToCompletion();
             }
         }
 
@@ -120,8 +124,10 @@ namespace Microsoft.R.Host.Client.Test.Session {
                 var switch2Task = sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(SwitchToTheSameBroker) + "2");
                 await Task.WhenAll(switch1Task, switch2Task);
 
-                switch1Task.Status.Should().Be(TaskStatus.RanToCompletion);
-                switch2Task.Status.Should().Be(TaskStatus.RanToCompletion);
+                switch1Task.Should().BeRanToCompletion();
+                switch1Task.Result.Should().BeFalse();
+                switch2Task.Should().BeRanToCompletion();
+                switch2Task.Result.Should().BeTrue();
             }
         }
 
@@ -136,7 +142,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
                 await Task.Yield();
                 await sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(SwitchWhileEnsureHostStartedAsyncFailed));
 
-                startTask.Status.Should().Be(TaskStatus.Canceled);
+                startTask.Should().BeCanceled();
                 session.IsHostRunning.Should().BeTrue();
             }
         }
@@ -157,6 +163,31 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
                 switch1Task.Status.Should().Be(TaskStatus.RanToCompletion);
                 switch2Task.Status.Should().Be(TaskStatus.RanToCompletion);
+            }
+        }
+
+        [InlineData(0)]
+        [InlineData(10)]
+        [InlineData(50)]
+        [InlineData(100)]
+        [InlineData(200)]
+        [InlineData(400)]
+        [InlineData(600)]
+        [InlineData(800)]
+        [CompositeTest]
+        public async Task SwitchBrokerWithCancellation(int timeout) {
+            using (var sessionProvider = new RSessionProvider()) {
+                var guid = new Guid();
+                var session = sessionProvider.GetOrCreate(guid);
+                await sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(SwitchBrokerWithCancellation));
+                await session.EnsureHostStartedAsync(new RHostStartupInfo {
+                    Name = nameof(session)
+                }, null, 1000);
+
+                var result = await sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(SwitchBrokerWithCancellation) + "1",
+                    cancellationToken: new CancellationTokenSource(timeout).Token);
+
+                result.Should().BeFalse();
             }
         }
     }

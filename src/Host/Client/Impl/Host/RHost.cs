@@ -266,7 +266,7 @@ namespace Microsoft.R.Host.Client {
         /// <summary>
         /// Cancels any ongoing evaluations or interaction processing.
         /// </summary>
-        public async Task CancelAllAsync() {
+        public async Task CancelAllAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             if (_runTask == null) {
                 // Nothing to cancel.
                 return;
@@ -285,7 +285,7 @@ namespace Microsoft.R.Host.Client {
                 _cancelAllCts.Cancel();
 
                 try {
-                    await NotifyAsync("!/", _cts.Token, null);
+                    await NotifyAsync("!/", CancellationTokenSource.CreateLinkedTokenSource(_cts.Token, cancellationToken).Token, null);
                 } catch (OperationCanceledException) {
                     return;
                 } catch (MessageTransportException) {

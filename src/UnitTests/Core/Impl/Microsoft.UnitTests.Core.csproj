@@ -49,6 +49,8 @@
     <Compile Include="FluentAssertions\FluentAssertionExtensions.cs" />
     <Compile Include="FluentAssertions\GivenSelectorExtensions.cs" />
     <Compile Include="FluentAssertions\ObjectAssertionsExtensions.cs" />
+    <Compile Include="FluentAssertions\TaskAssertions.cs" />
+    <Compile Include="FluentAssertions\TaskAssertionsExtensions.cs" />
     <Compile Include="Mef\CatalogFactory.cs" />
     <Compile Include="Mef\PartMetadataAttributeNames.cs" />
     <Compile Include="NSubstitute\SubstituteExtensions.cs" />

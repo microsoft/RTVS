@@ -150,7 +150,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
         }
 
         public void Dispose() {
-            _disposableBag.TryMarkDisposed();
+            _disposableBag.TryDispose();
         }
 
         private void Control_ContextMenuRequested(object sender, System.Windows.Input.MouseButtonEventArgs e) {

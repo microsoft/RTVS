@@ -45,7 +45,7 @@ namespace Microsoft.R.Host.Client.Host {
             _rHome = rHome;
         }
 
-        public async override Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken()) {
+        public override async Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken()) {
             await EnsureBrokerStartedAsync();
             return await base.ConnectAsync(name, callbacks, rCommandLineArguments, timeout, cancellationToken);
         }
@@ -54,18 +54,18 @@ namespace Microsoft.R.Host.Client.Host {
             DisposableBag.ThrowIfDisposed();
             await TaskUtilities.SwitchToBackgroundThread();
 
+            var lockToken = await _connectLock.WaitAsync();
             try {
-                if (!await _connectLock.WaitAsync()) {
-                    if (_brokerProcess == null) {
-                        await ConnectToBrokerWorker();
-                    }
+                if (!lockToken.IsSet) {
+                    await ConnectToBrokerWorker(lockToken);
+                    lockToken.Set();
                 }
             } finally {
-                _connectLock.Release();
+                lockToken.Reset();
             }
         }
 
-        private async Task ConnectToBrokerWorker() {
+        private async Task ConnectToBrokerWorker(IBinaryAsyncLockToken lockToken) {
             Trace.Assert(_brokerProcess == null);
 
             string rhostBrokerExe = Path.Combine(_rhostDirectory, RHostBrokerExe);
@@ -105,7 +105,7 @@ namespace Microsoft.R.Host.Client.Host {
                     process.Exited += delegate {
                         cts.Cancel();
                         _brokerProcess = null;
-                        _connectLock.Reset();
+                        _connectLock.TryReset();
                     };
 
                     await serverUriPipe.WaitForConnectionAsync(cts.Token);

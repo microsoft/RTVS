@@ -18,9 +18,25 @@ namespace Microsoft.Common.Core.Threading {
                 return Task.FromCanceled(cancellationToken);
             }
 
-            var cancellationTcs = new TaskCompletionSource<bool>();
-            var registration = cancellationToken.Register(CancelTcs, cancellationTcs);
-            return Task.WhenAny(_tcs.Task.ContinueWith(UnsubscribeCancellationTcs, registration, TaskContinuationOptions.ExecuteSynchronously), cancellationTcs.Task);
+            var tcs = new TaskCompletionSource<bool>();
+            cancellationToken.Register(CancelTcs, tcs);
+            _tcs.Task.ContinueWith(WaitContinuation, tcs, TaskContinuationOptions.ExecuteSynchronously);
+            return tcs.Task;
+        }
+
+        private void WaitContinuation(Task<bool> task, object state) {
+            var tcs = (TaskCompletionSource<bool>) state;
+            switch (task.Status) {
+                case TaskStatus.Faulted:
+                    tcs.TrySetException(task.Exception);
+                    break;
+                case TaskStatus.Canceled:
+                    tcs.TrySetCanceled();
+                    break;
+                case TaskStatus.RanToCompletion:
+                    tcs.TrySetResult(task.Result);
+                    break;
+            }
         }
 
         public AsyncManualResetEvent() {
@@ -38,11 +54,6 @@ namespace Microsoft.Common.Core.Threading {
                     return;
                 }
             }
-        }
-
-        private static void UnsubscribeCancellationTcs(Task<bool> task, object arg2) {
-            var registration = (CancellationTokenRegistration) arg2;
-            registration.Dispose();
         }
 
         private static void CancelTcs(object obj) {

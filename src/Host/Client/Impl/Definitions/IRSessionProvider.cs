@@ -12,7 +12,9 @@ namespace Microsoft.R.Host.Client {
         event EventHandler BrokerChanging;
         event EventHandler BrokerChangeFailed;
         event EventHandler BrokerChanged;
+        event EventHandler<BrokerStateChangedEventArgs> BrokerStateChanged;
 
+        bool IsConnected { get; }
         IBrokerClient Broker { get; }
 
         IRSession GetOrCreate(Guid guid);
@@ -33,14 +35,16 @@ namespace Microsoft.R.Host.Client {
         /// </summary>
         /// <param name="name">Name of the broker. Will be displayed in REPL.</param>
         /// <param name="path">Either a local path to the R binary or a URL to the broker.</param>
-        Task<bool> TestBrokerConnectionAsync(string name, string path);
+        /// <param name="cancellationToken"></param>
+        Task TestBrokerConnectionAsync(string name, string path, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="name">Name of the broker. Will be displayed in REPL.</param>
         /// <param name="path">Either a local path to the R binary or a URL to the broker.</param>
-        Task<bool> TrySwitchBrokerAsync(string name, string path = null);
+        /// <param name="cancellationToken"></param>
+        Task<bool> TrySwitchBrokerAsync(string name, string path = null, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Displays broker machine and process information

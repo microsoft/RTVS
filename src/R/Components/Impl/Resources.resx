@@ -357,6 +357,25 @@
   <data name="ConnectionManager_TestConnection" xml:space="preserve">
     <value>Test Connection</value>
   </data>
+  <data name="ConnectionManager_TestingConnection" xml:space="preserve">
+    <value>Testing connection...</value>
+  </data>
+  <data name="ConnectionManager_TestConnectionPassed" xml:space="preserve">
+    <value>Connection test passed!</value>
+  </data>
+  <data name="ConnectionManager_TestConnectionFailed_PathIsInvalid" xml:space="preserve">
+    <value>Connection path is invalid.</value>
+  </data>
+  <data name="ConnectionManager_TestConnectionFailed_RHostIsMissing" xml:space="preserve">
+    <value>Microsoft.R.Host.exe is missing.</value>
+  </data>
+  <data name="ConnectionManager_TestConnectionCanceled" xml:space="preserve">
+    <value>Connection test canceled.</value>
+  </data>
+  <data name="ConnectionManager_TestConnectionFailed_Format" xml:space="preserve">
+    <value>Connection test failed:
+{0}</value>
+  </data>
   <data name="ConnectionManager_TestConnectionTooltip" xml:space="preserve">
     <value>Test connection to the R interperter. Authentication credentials may be required.</value>
   </data>
@@ -470,8 +489,14 @@ Arguments: {2}</value>
   <data name="ConnectionManager_InformationTooltipFormatRemote" xml:space="preserve">
     <value>{0}
 Host: {1}
-Port: {2}
 Arguments: {3}</value>
+Port: {2}
+  </data>
+  <data name="ConnectionManager_SwitchConnectionProgressBarMessage" xml:space="preserve">
+    <value>Switching connection "{0}" to "{1}"</value>
+  </data>
+  <data name="ConnectionManager_ConnectionToProgressBarMessage" xml:space="preserve">
+    <value>Connecting to "{0}"</value>
   </data>
   <data name="ConnectionManager_None" xml:space="preserve">
     <value>none specified</value>

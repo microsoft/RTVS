@@ -96,7 +96,7 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
         }
 
         public void Dispose() {
-            _disposableBag.TryMarkDisposed();
+            _disposableBag.TryDispose();
         }
 
         private void AddOrUpdate(IRPlot plot, BitmapImage plotImage) {

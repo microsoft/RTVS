@@ -48,6 +48,8 @@ namespace Microsoft.R.Components.Test.Fakes.Shell {
             LastShownContextMenu = commandId;
         }
 
+        public ProgressBarSession ShowProgressBar(string waitMessage, int delayToShowDialigMs = 0) => new ProgressBarSession();
+
         public MessageButtons ShowMessage(string message, MessageButtons buttons) {
             LastShownMessage = message;
             if (buttons == MessageButtons.YesNo || buttons == MessageButtons.YesNoCancel) {

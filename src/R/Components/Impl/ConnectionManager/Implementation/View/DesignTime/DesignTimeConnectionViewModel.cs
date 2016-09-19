@@ -3,6 +3,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Threading;
 using Microsoft.R.Components.ConnectionManager.ViewModel;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation.View.DesignTime {
@@ -16,6 +17,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View.DesignTim
         public bool IsActive { get; set; }
         public bool IsEditing { get; set; }
         public bool IsConnected { get; set; }
+        public CancellationTokenSource TestingConnectionCts { get; set; }
+        public bool IsTestConnectionSucceeded { get; set; }
+        public string TestConnectionFailedText { get; set; }
         public bool IsRemote { get; set; }
 
         public string SaveButtonTooltip => string.Empty;

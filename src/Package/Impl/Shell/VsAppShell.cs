@@ -213,6 +213,13 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             }
         }
 
+        public ProgressBarSession ShowProgressBar(string waitMessage, int delayToShowDialigMs = 0) {
+            var dialogFactory = GetGlobalService<IVsThreadedWaitDialogFactory>(typeof(SVsThreadedWaitDialogFactory));
+            var initialProgress = new ThreadedWaitDialogProgressData(waitMessage, isCancelable: true);
+            var vsProgressBarSession = dialogFactory.StartWaitDialog(null, initialProgress, TimeSpan.FromMilliseconds(delayToShowDialigMs));
+            return new ProgressBarSession(vsProgressBarSession, vsProgressBarSession.UserCancellationToken);
+        }
+
         /// <summary>
         /// Displays question in a host-specific UI
         /// </summary>

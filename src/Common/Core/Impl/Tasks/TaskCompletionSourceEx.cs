@@ -80,41 +80,6 @@ namespace Microsoft.Common.Core.Tasks {
             }
         }
 
-        //private static readonly Func<Task<TResult>, object, TResult> ContinuationDelegate = Continuation;
-
-        //private readonly TaskCompletionSource<TResult> _tcs = new TaskCompletionSource<TResult>();
-        //private OperationCanceledException _exception;
-
-        //public Task<TResult> Task { get; }
-
-        //public TaskCompletionSourceEx() {
-        //    Task = _tcs.Task.ContinueWith(ContinuationDelegate, this, TaskContinuationOptions.ExecuteSynchronously);
-        //}
-
-        //public bool TrySetResult(TResult result) => _tcs.TrySetResult(result);
-
-        //public bool TrySetCanceled(OperationCanceledException exception, CancellationToken cancellationToken = default(CancellationToken)) {
-        //    exception = exception ?? new TaskCanceledException(Task);
-        //    Interlocked.CompareExchange(ref _exception, exception, null);
-        //    return _tcs.TrySetCanceled(cancellationToken);
-        //}
-
-        //public bool TrySetException(OperationCanceledException exception) {
-        //    return _tcs.TrySetException(exception);
-        //}
-
-        //private static TResult Continuation(Task<TResult> task, object state) {
-        //    switch (task.Status) {
-        //        case TaskStatus.Canceled:
-        //            var tcsex = (TaskCompletionSourceEx<TResult>)state;
-        //            throw tcsex._exception;
-        //        case TaskStatus.Faulted:
-        //            throw task.Exception;
-        //        default:
-        //            return task.Result;
-        //    }
-        //}
-
         public void SetResult(TResult result) {
             if (!TrySetResult(result)) {
                 throw new InvalidOperationException("Task already completed");

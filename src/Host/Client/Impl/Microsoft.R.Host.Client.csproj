@@ -63,6 +63,7 @@
     <Compile Include="DataInspection\RPromiseInfo.cs" />
     <Compile Include="DataInspection\RSessionExtensions.cs" />
     <Compile Include="Definitions\IRSessionProviderCallback.cs" />
+    <Compile Include="Definitions\IRSessionSwitchBrokerTransaction.cs" />
     <Compile Include="Host\BrokerClientProxy.cs" />
     <Compile Include="Host\NullRCallbacks.cs" />
     <Compile Include="Host\NullBrokerClient.cs" />
@@ -125,6 +126,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Session\BrokerStateChangedEventArgs.cs" />
     <Compile Include="Session\NullRSessionProviderCallback.cs" />
     <Compile Include="Session\RAfterRequestEventArgs.cs" />
     <Compile Include="Session\RBeforeRequestEventArgs.cs" />

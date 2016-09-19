@@ -56,6 +56,12 @@ namespace Microsoft.Common.Core.Shell {
         void ShowContextMenu(CommandID commandId, int x, int y, object commandTarget = null);
 
         /// <summary>
+        /// Shows progress bar that blocks hosting shell
+        /// </summary>
+        /// <returns></returns>
+        ProgressBarSession ShowProgressBar(string waitMessage, int delayToShowDialigMs = 0);
+
+        /// <summary>
         /// Displays message with specified buttons in a host-specific UI
         /// </summary>
         MessageButtons ShowMessage(string message, MessageButtons buttons);

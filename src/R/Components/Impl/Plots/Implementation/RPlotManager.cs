@@ -53,7 +53,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
         public IRPlotDevice ActiveDevice { get; private set; }
 
         public void Dispose() {
-            _disposableBag.TryMarkDisposed();
+            _disposableBag.TryDispose();
 
             var visualComponents = _visualComponents.Values.ToArray();
             foreach (var visualComponent in visualComponents) {

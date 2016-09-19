@@ -3,7 +3,7 @@
 
 using System;
 using System.Globalization;
-using System.Windows.Input;
+using System.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Common.Wpf;
 using Microsoft.R.Components.ConnectionManager.ViewModel;
@@ -17,9 +17,12 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private string _rCommandLineArguments;
         private bool _isUserCreated;
         private string _saveButtonTooltip;
+        private string _testConnectionResult;
         private bool _isActive;
         private bool _isEditing;
         private bool _isConnected;
+        private CancellationTokenSource _testingConnectionCts;
+        private bool _isTestConnectionSucceeded;
         private bool _isRemote;
         private bool _hasChanges;
         private bool _isValid;
@@ -101,6 +104,21 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             set { SetProperty(ref _isConnected, value); }
         }
 
+        public CancellationTokenSource TestingConnectionCts {
+            get { return _testingConnectionCts; }
+            set { SetProperty(ref _testingConnectionCts, value); }
+        }
+
+        public bool IsTestConnectionSucceeded {
+            get { return _isTestConnectionSucceeded; }
+            set { SetProperty(ref _isTestConnectionSucceeded, value); }
+        }
+
+        public string TestConnectionFailedText {
+            get { return _testConnectionResult; }
+            set { SetProperty(ref _testConnectionResult, value); }
+        }
+
         /// <summary>
         /// Tooltip when hovered over connection name
         /// </summary>
@@ -130,9 +148,13 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             Name = _connection?.Name;
             Path = _connection?.Path;
             RCommandLineArguments = _connection?.RCommandLineArguments;
-            IsUserCreated = _connection != null ? _connection.IsUserCreated : false;
+            IsUserCreated = _connection?.IsUserCreated ?? false;
             IsRemote = _connection?.IsRemote ?? false;
             IsEditing = false;
+            IsTestConnectionSucceeded = false;
+            TestConnectionFailedText = null;
+            TestingConnectionCts?.Cancel();
+            TestingConnectionCts = null;
         }
 
         private void UpdateCalculated() {
