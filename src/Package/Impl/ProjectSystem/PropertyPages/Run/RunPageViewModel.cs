@@ -12,9 +12,6 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
         private string _startupFile;
         private string _commandLineArgs;
         private bool? _resetReplOnRun;
-        private bool? _transferProjectOnRun;
-        private string _transferFilesFilter;
-        private string _remoteProjectPath;
         private IEnumerable<string> _rFilePaths;
         private string _projectName;
 
@@ -37,21 +34,6 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
             set { OnPropertyChanged(ref _resetReplOnRun, value); }
         }
 
-        public string RemoteProjectPath {
-            get { return _remoteProjectPath; }
-            set { OnPropertyChanged(ref _remoteProjectPath, value); }
-        }
-
-        public string TransferFilesFilter {
-            get { return _transferFilesFilter; }
-            set { OnPropertyChanged(ref _transferFilesFilter, value); }
-        }
-
-        public bool? TransferProjectOnRun {
-            get { return _transferProjectOnRun; }
-            set { OnPropertyChanged(ref _transferProjectOnRun, value); }
-        }
-
         public IEnumerable<string> RFilePaths {
             get { return _rFilePaths; }
             private set { OnPropertyChanged(ref _rFilePaths, value); }
@@ -72,15 +54,6 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
             CommandLineArgs = await GetPropertyValueForSelectedConfigurationsAsync(
                 async (props) => await props.GetCommandLineArgsAsync());
 
-            RemoteProjectPath = await GetPropertyValueForSelectedConfigurationsAsync(
-                async (props) => await props.GetRemoteProjectPathAsync());
-
-            TransferFilesFilter = await GetPropertyValueForSelectedConfigurationsAsync(
-                async (props) => await props.GetFileFilterAsync());
-
-            TransferProjectOnRun = await GetPropertyValueForSelectedConfigurationsAsync(
-                async (props) => await props.GetTransferProjectOnRunAsync());
-
             RFilePaths = _configuredProjectsProperties.Length > 0 ? _configuredProjectsProperties[0].GetRFilePaths() : new List<string>();
             ProjectName = _configuredProjectsProperties.Length > 0 ? _configuredProjectsProperties[0].GetProjectName() : "<project>";
         }
@@ -100,18 +73,6 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
 
                     if (CommandLineArgs != DifferentStringOptions) {
                         await props.SetCommandLineArgsAsync(CommandLineArgs);
-                    }
-
-                    if(RemoteProjectPath != DifferentStringOptions) {
-                        await props.SetRemoteProjectPathAsync(RemoteProjectPath);
-                    }
-
-                    if (TransferFilesFilter != DifferentStringOptions) {
-                        await props.SetFileFilterAsync(TransferFilesFilter);
-                    }
-
-                    if (TransferProjectOnRun.HasValue) {
-                        await props.SetTransferProjectOnRunAsync(TransferProjectOnRun.Value);
                     }
                 }
 

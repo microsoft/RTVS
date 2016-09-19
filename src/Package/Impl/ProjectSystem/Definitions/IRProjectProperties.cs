@@ -60,50 +60,6 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         Task SetSettingsFileAsync(string rFilePath);
 
         /// <summary>
-        /// Gets the destination path for a project on the remote host.
-        /// </summary>
-        /// <remarks>
-        /// Default destination is ~/RTVSProjects/.
-        /// </remarks>
-        Task<string> GetRemoteProjectPathAsync();
-
-        /// <summary>
-        /// Sets the destination path for a project on the remote host.
-        /// </summary>
-        /// <remarks>
-        /// Default destination is ~/RTVSProjects/.
-        /// </remarks>
-        Task SetRemoteProjectPathAsync(string remoteProjectPath);
-
-        /// <summary>
-        /// Gets the filter string that selects files to be sent to remote host.
-        /// </summary>
-        /// <remarks>
-        /// Default filter string is ".r;.rmd;.rsettings". This selects all R script files, R markdown, 
-        /// and R Settings files.
-        /// </remarks>
-        Task<string> GetFileFilterAsync();
-
-        /// <summary>
-        /// Sets the filter string that selects files to be sent to remote host.
-        /// </summary>
-        /// <remarks>
-        /// Default filter string is ".r;.rmd;.rsettings". This selects all R script files, R markdown, 
-        /// and R Settings files.
-        /// </remarks>
-        Task SetFileFilterAsync(string fileTransferFilter);
-
-        /// <summary>
-        /// Defines if project has to be transfered to remote host during run.
-        /// </summary>
-        Task<bool> GetTransferProjectOnRunAsync();
-
-        /// <summary>
-        /// Defines if project has to be transfered to remote host during run.
-        /// </summary>
-        Task SetTransferProjectOnRunAsync(bool val);
-
-        /// <summary>
         /// Gets all the R script files in the current project.
         /// </summary>
         IEnumerable<string> GetRFilePaths();

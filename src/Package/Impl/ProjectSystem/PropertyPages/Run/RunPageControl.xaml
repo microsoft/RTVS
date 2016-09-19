@@ -5,109 +5,70 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages"
-             xmlns:c="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d"
              d:DesignHeight="200" d:DesignWidth="600">
-    <local:PropertyPageControl.Resources>
-        <ResourceDictionary>
-            <c:Double x:Key="gridMinColumnWidth">130</c:Double>
-            <Style TargetType="Label">
-                <Setter Property="Margin" Value="4"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-                <Setter Property="VerticalContentAlignment" Value="Center"/>
-            </Style>
-            <Style TargetType="TextBlock">
-                <Setter Property="Margin" Value="4"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-            </Style>
-            <Style TargetType="TextBox">
-                <Setter Property="Margin" Value="4"/>
-                <Setter Property="MinHeight" Value="23"/>
-                <Setter Property="TextWrapping" Value="NoWrap"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-                <Setter Property="VerticalContentAlignment" Value="Center"/>
-            </Style>
-            <Style TargetType="CheckBox">
-                <Setter Property="Margin" Value="9 7 9 7"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-            </Style>
-            <Style TargetType="ComboBox">
-                <Setter Property="Margin" Value="4"/>
-                <Setter Property="MinHeight" Value="23"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-                <Setter Property="VerticalContentAlignment" Value="Center"/>
-            </Style>
-        </ResourceDictionary>
-    </local:PropertyPageControl.Resources>
-    <StackPanel HorizontalAlignment="Stretch" Orientation="Vertical">
-        <Grid HorizontalAlignment="Stretch">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition MinWidth="{StaticResource gridMinColumnWidth}" Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
-            <Label Grid.Column="0" x:Uid="StartupFileLabel" Content="Startup file" Target="{Binding ElementName=txtStartupFile}" />
-            <TextBlock Grid.Column="1" Text=":"/>
-            <ComboBox Grid.Column="2" SelectedItem="{Binding Path=StartupFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding Path=RFilePaths}"/>
-        </Grid>
-
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="350"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Label
+            Grid.Row="0"
+            Grid.Column="0"
+            Margin="4"
+            x:Uid="StartupFileLabel"
+            VerticalAlignment="Center"
+            VerticalContentAlignment="Center"
+            Content="Startup file"
+            Target="{Binding ElementName=txtStartupFile}">
+        </Label>
+        <TextBox 
+            Grid.Row="0"
+            Grid.Column="1"
+            x:Name="txtStartupFile"
+            Margin="4"
+            TextWrapping="NoWrap"
+            VerticalAlignment="Center"
+            VerticalContentAlignment="Center"
+            MinHeight="23"
+            Text="{Binding Path=StartupFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+        </TextBox>
+        <!-- Temporarily hiding command line args, as F5/CTRL-F5 doesn't support them yet
+        <Label
+            Grid.Row="1"
+            Grid.Column="0"
+            Margin="4"
+            x:Uid="CommandLineArgsLabel"
+            VerticalAlignment="Center"
+            VerticalContentAlignment="Center"
+            Content="Command line arguments"
+            Target="{Binding ElementName=txtCommandLineArgs}">
+        </Label>
+        <TextBox 
+            Grid.Row="1"
+            Grid.Column="1"
+            x:Name="txtCommandLineArgs" 
+            Margin="4" 
+            TextWrapping="NoWrap"
+            VerticalAlignment="Center"
+            VerticalContentAlignment="Center"
+            MinHeight="23"
+            Text="{Binding Path=CommandLineArgs, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+        </TextBox>
+        -->
         <CheckBox 
+            Grid.Row="2"
+            Grid.ColumnSpan="2"
             x:Name="chkResetReplOnRun" 
             x:Uid="chkResetReplOnRun"
+            Margin="9 7 9 7" 
+            VerticalContentAlignment="Center"
             Content="_Reset R Interactive on run"
             IsChecked="{Binding Path=ResetReplOnRun, Mode=TwoWay}"/>
-        
-        <Separator/>
-        
-        <Grid HorizontalAlignment="Stretch">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition MinWidth="{StaticResource gridMinColumnWidth}" Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <Label Grid.Column="0" x:Uid="RemoteProjectPathLabel" Content="Remote Project Path" Target="{Binding ElementName=txtRemoteProjectPath}" />
-            <TextBlock Grid.Column="1" Text=":" />
-            <TextBox Grid.Column="2" x:Name="txtRemoteProjectPath" Text="{Binding Path=RemoteProjectPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-            <TextBlock Grid.Row="1" Grid.Column="2" >
-                <Run Text="{Binding ElementName=txtRemoteProjectPath, Path=Text, UpdateSourceTrigger=PropertyChanged}"/>
-                <Run Text="{Binding Path=ProjectName}"/>
-            </TextBlock>
-        </Grid>
-
-        <Separator/>
-
-        <CheckBox 
-            x:Name="chkTransferFilesOnRun" 
-            x:Uid="chkTransferFilesOnRun"
-            Content="_Transfer files on run"
-            IsChecked="{Binding Path=TransferProjectOnRun, Mode=TwoWay}"/>
-
-        <Grid HorizontalAlignment="Stretch" IsEnabled="{Binding ElementName=chkTransferFilesOnRun, Path=IsChecked}">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition MinWidth="{StaticResource gridMinColumnWidth}" Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
-            <Label Grid.Column="0" x:Uid="TransferFilesFilterLabel" Content="Files to transfer" Target="{Binding ElementName=txtTransferFilesFilter}" />
-            <Label Grid.Column="1" Content=":" />
-            <TextBox Grid.Column="2" x:Name="txtTransferFilesFilter" Text="{Binding Path=TransferFilesFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-        </Grid>
-        <!-- Temporarily hiding command line args, as F5/CTRL-F5 doesn't support them yet
-        <Grid HorizontalAlignment="Stretch">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition MinWidth="{StaticResource gridMinColumnWidth}" Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
-            <Label Grid.Column="0" x:Uid="CommandLineArgsLabel" Content="Remote Project Path" Target="{Binding ElementName=txtCommandLineArgs}" />
-            <Label Grid.Column="1" Content=":" />
-            <TextBox Grid.Column="2" x:Name="txtCommandLineArgs" Text="{Binding Path=CommandLineArgs, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-            </TextBox>
-        </Grid>
-        -->
-    </StackPanel>
+    </Grid>
 </local:PropertyPageControl>
