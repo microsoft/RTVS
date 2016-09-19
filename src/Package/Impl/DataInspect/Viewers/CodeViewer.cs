@@ -61,9 +61,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
                     FileViewer.ViewFile(tempFile, functionName);
                     try {
                         File.Delete(tempFile);
-                    } catch (IOException) { } catch (AccessViolationException) { }
+                    } catch (IOException) { } catch (UnauthorizedAccessException) { }
 
-                } catch (IOException) { } catch (AccessViolationException) { }
+                } catch (IOException) { } catch (UnauthorizedAccessException) { }
             }
         }
         #endregion

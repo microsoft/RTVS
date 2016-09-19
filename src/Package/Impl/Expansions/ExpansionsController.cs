@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.Common.Core;
+using Microsoft.Languages.Editor.Extensions;
 using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -35,7 +36,8 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
                 if (!_expansionClient.IsEditingExpansion()) {
                     switch ((VSConstants.VSStd2KCmdID)id) {
                         case VSConstants.VSStd2KCmdID.TAB:
-                            return ShouldIgnoreStatementCompletionCommand() ? CommandStatus.NotSupported : CommandStatus.SupportedAndEnabled;
+                            return _expansionClient.TextView.IsStatementCompletionWindowActive() ?
+                                 CommandStatus.NotSupported : CommandStatus.SupportedAndEnabled;
 
                         case VSConstants.VSStd2KCmdID.INSERTSNIPPET:
                         case VSConstants.VSStd2KCmdID.SURROUNDWITH:
