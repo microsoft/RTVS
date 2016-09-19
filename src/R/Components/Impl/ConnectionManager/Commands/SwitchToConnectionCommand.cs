@@ -45,7 +45,9 @@ namespace Microsoft.R.Components.ConnectionManager.Commands {
 
             if (index < _recentConnections.Count) {
                 var connection = _recentConnections[index];
-                var progressBarMessage = Resources.ConnectionManager_SwitchConnectionProgressBarMessage.FormatInvariant(_connectionManager.ActiveConnection.Name, connection.Name);
+                var progressBarMessage = _connectionManager.ActiveConnection != null
+                    ? Resources.ConnectionManager_SwitchConnectionProgressBarMessage.FormatInvariant(_connectionManager.ActiveConnection.Name, connection.Name)
+                    : Resources.ConnectionManager_ConnectionToProgressBarMessage.FormatInvariant(connection.Name);
                 using (var progressBarSession = _shell.ShowProgressBar(progressBarMessage)) {
                     await _connectionManager.ConnectAsync(connection, progressBarSession.UserCancellationToken);
                 }

@@ -5,6 +5,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
@@ -147,25 +148,42 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             TryStartEditing(connection);
         }
 
+        public void CancelTestConnection(IConnectionViewModel connection) {
+            _shell.AssertIsOnMainThread();
+            connection.TestingConnectionCts?.Cancel();
+            connection.TestingConnectionCts = null;
+            connection.IsTestConnectionSucceeded = false;
+            connection.TestConnectionFailedText = null;
+        }
+
         public async Task TestConnectionAsync(IConnectionViewModel connection) {
             _shell.AssertIsOnMainThread();
-            connection.IsTestingConnection = true;
-            connection.IsTestConnectionSucceeded = false;
+            CancelTestConnection(connection);
+
+            connection.TestingConnectionCts = new CancellationTokenSource();
 
             try {
-                await _connectionManager.TestConnectionAsync(connection);
+                await _connectionManager.TestConnectionAsync(connection, connection.TestingConnectionCts.Token);
                 connection.IsTestConnectionSucceeded = true;
-                connection.TestConnectionResult = "Connection test passed!";
             } catch (ArgumentException) {
-                connection.TestConnectionResult = "Connection path is invalid.";
+                if (connection.TestingConnectionCts != null) {
+                    connection.TestConnectionFailedText = Resources.ConnectionManager_TestConnectionFailed_PathIsInvalid;
+                }
             } catch (RHostDisconnectedException exception) {
-                connection.TestConnectionResult = "Connection test failed:{0}".FormatInvariant(exception.Message);
+                if (connection.TestingConnectionCts != null) {
+                    connection.TestConnectionFailedText = Resources.ConnectionManager_TestConnectionFailed_Format.FormatInvariant(exception.Message);
+                }
             } catch (RHostBinaryMissingException) {
-                connection.TestConnectionResult = "Microsoft.R.Host.exe is missing.";
+                if (connection.TestingConnectionCts != null) {
+                    connection.TestConnectionFailedText = Resources.ConnectionManager_TestConnectionFailed_RHostIsMissing;
+                }
             } catch (OperationCanceledException) {
-                connection.TestConnectionResult = "Connection test canceled.";
+                if (connection.TestingConnectionCts != null) {
+                    connection.TestConnectionFailedText = Resources.ConnectionManager_TestConnectionCanceled;
+                }
             } finally {
-                connection.IsTestingConnection = false;
+                connection.TestingConnectionCts?.Dispose();
+                connection.TestingConnectionCts = null;
             }
         }
 
@@ -196,7 +214,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public async Task ConnectAsync(IConnectionViewModel connection) {
             _shell.AssertIsOnMainThread();
-            var progressBarMessage = Resources.ConnectionManager_SwitchConnectionProgressBarMessage.FormatInvariant(_connectionManager.ActiveConnection.Name, connection.Name);
+            var progressBarMessage = _connectionManager.ActiveConnection != null
+                ? Resources.ConnectionManager_SwitchConnectionProgressBarMessage.FormatInvariant(_connectionManager.ActiveConnection.Name, connection.Name)
+                : Resources.ConnectionManager_ConnectionToProgressBarMessage.FormatInvariant(connection.Name);
             using (var progressBarSession = _shell.ShowProgressBar(progressBarMessage)) {
                 await _connectionManager.ConnectAsync(connection, progressBarSession.UserCancellationToken);
             }

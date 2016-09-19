@@ -167,7 +167,7 @@
     <Compile Include="Plots\Implementation\Commands\PlotDeviceRemoveCurrentCommand.cs" />
     <Compile Include="Plots\RPlotDeviceCommands.cs" />
     <Compile Include="Plots\Implementation\PlotClipboardData.cs" />
-	<Compile Include="InteractiveWorkflow\Implementation\RSessionProviderCallback.cs" />
+    <Compile Include="InteractiveWorkflow\Implementation\RSessionProviderCallback.cs" />
     <Compile Include="Plots\Implementation\PlotMessageExtensions.cs" />
     <Compile Include="Controller\AsyncCommandController.cs" />
     <Compile Include="Plots\Implementation\RPlotHistoryVisualComponent.cs" />
@@ -222,9 +222,6 @@
       <DependentUpon>PackageManagerResources.xaml</DependentUpon>
     </Compile>
     <Compile Include="PackageManager\Implementation\ViewModel\RPackageManagerViewModel.cs" />
-    <Compile Include="PackageManager\Implementation\View\Spinner.xaml.cs">
-      <DependentUpon>Spinner.xaml</DependentUpon>
-    </Compile>
     <Compile Include="PackageManager\IRPackageManager.cs" />
     <Compile Include="PackageManager\IRPackageManagerProvider.cs" />
     <Compile Include="PackageManager\IRPackageManagerVisualComponent.cs" />
@@ -341,10 +338,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="PackageManager\Implementation\View\PackageManagerResources.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="PackageManager\Implementation\View\Spinner.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

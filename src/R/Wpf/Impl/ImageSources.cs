@@ -5,6 +5,6 @@ using System.Windows.Media;
 
 namespace Microsoft.R.Wpf {
     public static class ImageSources {
-        public static Brush ImageBackground { get; set; }
+        public static Brush ImageBackground { get; set; } = System.Windows.Media.Brushes.Black;
     }
 }

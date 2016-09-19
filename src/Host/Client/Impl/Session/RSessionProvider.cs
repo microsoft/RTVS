@@ -125,8 +125,9 @@ namespace Microsoft.R.Host.Client.Session {
             }
         }
 
-        public async Task TestBrokerConnectionAsync(string name, string path,
-            CancellationToken cancellationToken = default(CancellationToken)) {
+        public async Task TestBrokerConnectionAsync(string name, string path, CancellationToken cancellationToken = default(CancellationToken)) {
+            await TaskUtilities.SwitchToBackgroundThread();
+
             // Create random name to avoid collision with actual broker client
             name = name + Guid.NewGuid().ToString("N");
             var brokerClient = await CreateBrokerClientAsync(name, path);

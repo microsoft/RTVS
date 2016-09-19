@@ -3,6 +3,7 @@
 
 using System;
 using System.Globalization;
+using System.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Common.Wpf;
 using Microsoft.R.Components.ConnectionManager.ViewModel;
@@ -20,7 +21,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private bool _isActive;
         private bool _isEditing;
         private bool _isConnected;
-        private bool _isTestingConnection;
+        private CancellationTokenSource _testingConnectionCts;
         private bool _isTestConnectionSucceeded;
         private bool _isRemote;
         private bool _hasChanges;
@@ -80,11 +81,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public bool IsEditing {
             get { return _isEditing; }
-            set {
-                if (SetProperty(ref _isEditing, value) && !value) {
-                    TestConnectionResult = null;
-                }
-            }
+            set { SetProperty(ref _isEditing, value); }
         }
 
         public bool IsRemote {
@@ -107,9 +104,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             set { SetProperty(ref _isConnected, value); }
         }
 
-        public bool IsTestingConnection {
-            get { return _isTestingConnection; }
-            set { SetProperty(ref _isTestingConnection, value); }
+        public CancellationTokenSource TestingConnectionCts {
+            get { return _testingConnectionCts; }
+            set { SetProperty(ref _testingConnectionCts, value); }
         }
 
         public bool IsTestConnectionSucceeded {
@@ -117,7 +114,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             set { SetProperty(ref _isTestConnectionSucceeded, value); }
         }
 
-        public string TestConnectionResult {
+        public string TestConnectionFailedText {
             get { return _testConnectionResult; }
             set { SetProperty(ref _testConnectionResult, value); }
         }
@@ -151,9 +148,13 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             Name = _connection?.Name;
             Path = _connection?.Path;
             RCommandLineArguments = _connection?.RCommandLineArguments;
-            IsUserCreated = _connection != null ? _connection.IsUserCreated : false;
+            IsUserCreated = _connection?.IsUserCreated ?? false;
             IsRemote = _connection?.IsRemote ?? false;
             IsEditing = false;
+            IsTestConnectionSucceeded = false;
+            TestConnectionFailedText = null;
+            TestingConnectionCts?.Cancel();
+            TestingConnectionCts = null;
         }
 
         private void UpdateCalculated() {
