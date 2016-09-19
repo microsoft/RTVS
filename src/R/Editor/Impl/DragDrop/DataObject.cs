@@ -5,8 +5,8 @@ using System;
 using System.IO;
 using System.Text;
 using System.Windows;
-using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.DragDrop;
+using Microsoft.R.Host.Client.Extensions;
 using static System.FormattableString;
 
 namespace Microsoft.R.Editor.DragDrop {
@@ -24,7 +24,7 @@ namespace Microsoft.R.Editor.DragDrop {
             bool first = true;
             foreach (var item in dataObject.GetProjectItems()) {
 
-                var relative = item.FileName.MakeRelativePath(projectFolder);
+                var relative = item.FileName.MakeRRelativePath(projectFolder);
                 var ext = Path.GetExtension(item.FileName).ToLowerInvariant();
                 switch (ext) {
                     case ".r":
@@ -40,7 +40,7 @@ namespace Microsoft.R.Editor.DragDrop {
                         if ((keystates & DragDropKeyStates.ControlKey) != 0) {
                             sb.Append(Invariant($"'{GetFileContent(item.FileName)}'"));
                         } else {
-                            sb.Append(Invariant($"iconv(readLines('{relative}', encoding = 'UTF-8', warn = FALSE), from = 'UTF-8', to = 'ASCII', sub = '')"));
+                            sb.Append(Invariant($@"iconv(paste(readLines('{relative}', encoding = 'UTF-8', warn = FALSE), collapse='\n'), from = 'UTF-8', to = 'ASCII', sub = '')"));
                         }
                         break;
                     default:
