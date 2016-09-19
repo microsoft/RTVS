@@ -24,7 +24,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View.DesignTim
             new DesignTimeConnectionViewModel { IsActive = true, IsRemote = true, IsConnected = true, Name = "Public Remote", Path = @"https:\\public\FreeRHost" },
         });
 
+#pragma warning disable 67
         public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore
 
         public IConnectionViewModel EditedConnection => RemoteConnections[0];
         public bool HasLocalConnections => false;

@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Threading;
+using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Client.Host {
     internal sealed class BrokerClientProxy : IBrokerClient {
@@ -29,6 +30,7 @@ namespace Microsoft.R.Host.Client.Host {
         public string Name => _broker.Name;
         public bool IsRemote => _broker.IsRemote;
         public Uri Uri => _broker.Uri;
+        public AboutHost AboutHost => _broker.AboutHost;
 
         public Task PingAsync() => _broker.PingAsync();
 

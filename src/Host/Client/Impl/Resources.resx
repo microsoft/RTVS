@@ -140,7 +140,8 @@ click Reset to restart local R interpreter.</value>
     <value>Restarting sessions ({0})...</value>
   </data>
   <data name="RSessionProvider_SwitchingWorkspaceFailed" xml:space="preserve">
-    <value>Connecting to the new R Workspace has failed, restoring connection to the '{0}': {1}</value>
+    <value>Connecting to the new R Workspace failed, restoring connection to 
+'{0}' : {1}</value>
   </data>
   <data name="RSessionProvider_SwitchingWorkspaceCanceled" xml:space="preserve">
     <value>Connection to the new R Workspace has been canceled, restoring connection to the '{0}': {1}</value>
@@ -152,6 +153,59 @@ click Reset to restart local R interpreter.</value>
     <value>Starting R Session has been canceled, please restart it manually.</value>
   </data>
   <data name="RSessionProvider_RestartingSessionFailed" xml:space="preserve">
-    <value>Couldn't connect session to the '{0}': {1} because of the following error: {2}</value>
+    <value>Couldn't connect session to 
+'{0}' : {1} 
+because of the following error: {2}</value>
+  </data>
+  <data name="Bits32" xml:space="preserve">
+    <value>32 bit</value>
+  </data>
+  <data name="Bits64" xml:space="preserve">
+    <value>64 bit</value>
+  </data>
+  <data name="OperatingSystem" xml:space="preserve">
+    <value>Operating System: {0}</value>
+  </data>
+  <data name="PlatformBits" xml:space="preserve">
+    <value>Platform: {0}</value>
+  </data>
+  <data name="ProcessBits" xml:space="preserve">
+    <value>R Process: {0}</value>
+  </data>
+  <data name="ProcessorCount" xml:space="preserve">
+    <value>CPU Count: {0}</value>
+  </data>
+  <data name="RServices_Information" xml:space="preserve">
+    <value>R Services Information:</value>
+  </data>
+  <data name="TotalVirtualMemory" xml:space="preserve">
+    <value>Total Virtual Memory: {0} MB</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Version: {0}</value>
+  </data>
+  <data name="FreePhysicalMemory" xml:space="preserve">
+    <value>Free Physical Memory: {0} MB</value>
+  </data>
+  <data name="FreeVirtualMemory" xml:space="preserve">
+    <value>Free Virtual Memory: {0} MB</value>
+  </data>
+  <data name="TotalPhysicalMemory" xml:space="preserve">
+    <value>Total Physical Memory: {0} MB</value>
+  </data>
+  <data name="InstalledInterpreters" xml:space="preserve">
+    <value>Installed R:</value>
+  </data>
+  <data name="Error_HostNotResponsing" xml:space="preserve">
+    <value>Host did did not respond to ping. The machine may be down or the network has been disconnected. HTTP message: {0}</value>
+  </data>
+  <data name="Error_InterpreterNotFound" xml:space="preserve">
+    <value>Specified R interpreter was not found</value>
+  </data>
+  <data name="Error_NoRInterpreters" xml:space="preserve">
+    <value>No R Interpreters installed</value>
+  </data>
+  <data name="HttpErrorCreatingSession" xml:space="preserve">
+    <value>HTTP error while creating session: {0}</value>
   </data>
 </root>

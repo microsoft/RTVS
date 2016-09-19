@@ -225,10 +225,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0}
-        ///Host: {1}
-        ///Port: {2}
-        ///Arguments: {3}.
+        ///   Looks up a localized string similar to Port: {2}.
         /// </summary>
         public static string ConnectionManager_InformationTooltipFormatRemote {
             get {
@@ -336,7 +333,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Switching connection from &quot;{0}&quot; to &quot;{1}&quot;.
+        ///   Looks up a localized string similar to Switching connection &quot;{0}&quot; to &quot;{1}&quot;.
         /// </summary>
         public static string ConnectionManager_SwitchConnectionProgressBarMessage {
             get {

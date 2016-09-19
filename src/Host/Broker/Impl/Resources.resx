@@ -141,11 +141,17 @@
   <data name="Error_LogOnFailed" xml:space="preserve">
     <value>Log on failed for user: {0}</value>
   </data>
+  <data name="Error_NoRInterpreters" xml:space="preserve">
+    <value>No compatible R interpreters found</value>
+  </data>
   <data name="Error_ProfileCreationFailed" xml:space="preserve">
     <value>Profile creation failed for user {0} with WIN32 error code 0x{1}</value>
   </data>
   <data name="Error_RHostFailedToStart" xml:space="preserve">
     <value>RHost {0} process failed to start</value>
+  </data>
+  <data name="Error_SpecifiedRInterpreterNotFound" xml:space="preserve">
+    <value>Specified R interpreter does not exist</value>
   </data>
   <data name="Error_UserNameParse" xml:space="preserve">
     <value>User name parsing failed for user {0} with WIN32 error code 0x{1}</value>
@@ -212,8 +218,5 @@
   </data>
   <data name="Trace_UserProfileDirectory" xml:space="preserve">
     <value>User {0} profile directory: {1}</value>
-  </data>
-  <data name="Warning_NoRInterpreters" xml:space="preserve">
-    <value>No R interpreters auto-detected</value>
   </data>
 </root>

@@ -233,9 +233,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
         private async Task SwitchBrokerToLastConnection() {
             var connectionInfo = _settings.LastActiveConnection;
-            if (connectionInfo != null) {
+            if(connectionInfo != null) {
                 var c = GetOrCreateConnection(connectionInfo.Name, connectionInfo.Path, connectionInfo.RCommandLineArguments, connectionInfo.IsUserCreated);
-                if (c.IsRemote) {
+                if(c.IsRemote) {
                     return; // Do not restore remote connections automatically
                 }
             }

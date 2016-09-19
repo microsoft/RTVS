@@ -14,9 +14,6 @@ namespace Microsoft.R.Host.Client.Mocks {
 
         public void Dispose() { }
 
-        public event EventHandler BrokerChanged;
-        public event EventHandler<BrokerStateChangedEventArgs> BrokerStateChanged;
-
         public bool IsConnected { get; } = true;
         public IBrokerClient Broker { get; } = new NullBrokerClient();
 
@@ -41,5 +38,14 @@ namespace Microsoft.R.Host.Client.Mocks {
         public Task<bool> TrySwitchBrokerAsync(string name, string path = null, CancellationToken cancellationToken = default(CancellationToken)) {
             return Task.FromResult(true);
         }
+
+        public void PrintBrokerInformation() { }
+
+#pragma warning disable 67
+        public event EventHandler BrokerChanging;
+        public event EventHandler BrokerChangeFailed;
+        public event EventHandler BrokerChanged;
+        public event EventHandler<BrokerStateChangedEventArgs> BrokerStateChanged;
+#pragma warning restore
     }
 }

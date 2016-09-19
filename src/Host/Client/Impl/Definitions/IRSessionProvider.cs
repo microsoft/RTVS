@@ -9,6 +9,8 @@ using Microsoft.R.Host.Client.Host;
 
 namespace Microsoft.R.Host.Client {
     public interface IRSessionProvider : IDisposable {
+        event EventHandler BrokerChanging;
+        event EventHandler BrokerChangeFailed;
         event EventHandler BrokerChanged;
         event EventHandler<BrokerStateChangedEventArgs> BrokerStateChanged;
 
@@ -43,5 +45,10 @@ namespace Microsoft.R.Host.Client {
         /// <param name="path">Either a local path to the R binary or a URL to the broker.</param>
         /// <param name="cancellationToken"></param>
         Task<bool> TrySwitchBrokerAsync(string name, string path = null, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Displays broker machine and process information
+        /// </summary>
+        void PrintBrokerInformation();
     }
 }

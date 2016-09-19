@@ -90,6 +90,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
                 CreateRCmdSetCommand(RPackageCommandId.icmdInterruptR, new InterruptRCommand(interactiveWorkflow, debuggerModeTracker)),
                 CreateRCmdSetCommand(RPackageCommandId.icmdTerminateR, new TerminateRCommand(interactiveWorkflow, appShell)),
+                CreateRCmdSetCommand(RPackageCommandId.icmdSessionInformation, new SessionInformationCommand(interactiveWorkflow)),
 
                 new ResetReplCommand(interactiveWorkflow),
                 

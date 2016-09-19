@@ -29,6 +29,8 @@ namespace Microsoft.R.Host.Client.Session {
 
         public IBrokerClient Broker => _brokerProxy;
 
+        public event EventHandler BrokerChanging;
+        public event EventHandler BrokerChangeFailed;
         public event EventHandler BrokerChanged;
         public event EventHandler<BrokerStateChangedEventArgs> BrokerStateChanged;
 
@@ -176,6 +178,7 @@ namespace Microsoft.R.Host.Client.Session {
             try {
                 // First switch connector so that all new sessions are created for the new broker
                 var oldBroker = _brokerProxy.Set(brokerClient);
+                BrokerChanging?.Invoke(this, EventArgs.Empty);
                 var switchingFromNull = oldBroker is NullBrokerClient;
                 if (!switchingFromNull) {
                     _callback.WriteConsole(Resources.RSessionProvider_StartSwitchingWorkspaceFormat.FormatInvariant(_brokerProxy.Name, GetUriString(_brokerProxy)));
@@ -185,6 +188,7 @@ namespace Microsoft.R.Host.Client.Session {
                 if (sessions.Any()) {
                     var sessionsSwitched = await TrySwitchSessionsAsync(sessions, oldBroker, cancellationToken);
                     if (!sessionsSwitched) {
+                        BrokerChangeFailed?.Invoke(this, EventArgs.Empty);
                         return false;
                     }
                 }
@@ -192,6 +196,7 @@ namespace Microsoft.R.Host.Client.Session {
                 if (!switchingFromNull) {
                     _callback.WriteConsole(Resources.RSessionProvider_SwitchingRWorkspaceCompleted);
                 }
+                PrintBrokerInformation();
             } finally {
                 lockToken.Reset();
             }
@@ -230,6 +235,26 @@ namespace Microsoft.R.Host.Client.Session {
             }
 
             return true;
+        }
+
+        public void PrintBrokerInformation() {
+            var a = _brokerProxy.AboutHost;
+
+            _callback.WriteConsole(Resources.RServices_Information);
+            _callback.WriteConsole("\t" + Resources.Version.FormatInvariant(a.Version));
+            _callback.WriteConsole("\t" + Resources.OperatingSystem.FormatInvariant(a.OS.VersionString));
+            _callback.WriteConsole("\t" + Resources.PlatformBits.FormatInvariant(a.Is64BitOperatingSystem ? Resources.Bits64 : Resources.Bits32));
+            _callback.WriteConsole("\t" + Resources.ProcessBits.FormatInvariant(a.Is64BitProcess ? Resources.Bits64 : Resources.Bits32));
+            _callback.WriteConsole("\t" + Resources.ProcessorCount.FormatInvariant(a.ProcessorCount));
+            _callback.WriteConsole("\t" + Resources.TotalPhysicalMemory.FormatInvariant(a.TotalPhysicalMemory));
+            _callback.WriteConsole("\t" + Resources.FreePhysicalMemory.FormatInvariant(a.FreePhysicalMemory));
+            _callback.WriteConsole("\t" + Resources.TotalVirtualMemory.FormatInvariant(a.TotalVirtualMemory));
+            _callback.WriteConsole("\t" + Resources.FreeVirtualMemory.FormatInvariant(a.FreeVirtualMemory));
+
+            _callback.WriteConsole(Resources.InstalledInterpreters);
+            foreach (var name in a.Interpreters) {
+                _callback.WriteConsole("\t" + name);
+            }
         }
 
         private async Task ConnectToNewBrokerAsync(IRSessionSwitchBrokerTransaction transaction) {

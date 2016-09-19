@@ -2,14 +2,16 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.R.Host.Protocol;
+using Newtonsoft.Json;
 
 namespace Microsoft.R.Host.Client.BrokerServices {
     public class WebService {
@@ -22,6 +24,19 @@ namespace Microsoft.R.Host.Client.BrokerServices {
         private static HttpResponseMessage EnsureSuccessStatusCode(HttpResponseMessage response) {
             if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden) {
                 throw new UnauthorizedAccessException();
+            }
+
+            IEnumerable<string> values;
+            if(response.Headers.TryGetValues(CustomHttpHeaders.RTVSApiError, out values)) {
+                var s = values.FirstOrDefault();
+                if (s != null) {
+                    BrokerApiError apiError;
+                    if (Enum.TryParse(s, out apiError)) {
+                        throw new BrokerApiErrorException(apiError);
+                    } else {
+                        throw new ProtocolViolationException("Unknown broker API error");
+                    }
+                }
             }
 
             return response.EnsureSuccessStatusCode();
@@ -48,7 +63,11 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             var content = new StringContent(requestBody, Encoding.UTF8, "application/json");
             var response = EnsureSuccessStatusCode(await HttpClient.PutAsync(uri, content, cancellationToken));
             var responseBody = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<TResponse>(responseBody);
+            try {
+                return JsonConvert.DeserializeObject<TResponse>(responseBody);
+            } catch(JsonSerializationException ex) {
+                throw new ProtocolViolationException(ex.Message);
+            }
         }
 
         public async Task<Stream> HttpPostAsync(Uri uri, Stream request) {

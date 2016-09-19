@@ -90,6 +90,7 @@ namespace Microsoft.R.Host.Client.Host {
                             $" --lifetime:parentProcessId {Process.GetCurrentProcess().Id}" +
                             $" --security:secret \"{_credentials.Password}\"" +
                             $" --R:autoDetect false" +
+                            $" --R:interpreters:{InterpreterId}:name \"{Name}\"" +
                             $" --R:interpreters:{InterpreterId}:basePath \"{_rHome.TrimTrailingSlash()}\""
                     };
 

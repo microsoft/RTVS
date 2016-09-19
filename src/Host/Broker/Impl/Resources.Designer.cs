@@ -133,6 +133,15 @@ namespace Microsoft.R.Host.Broker {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No compatible R interpreters found.
+        /// </summary>
+        internal static string Error_NoRInterpreters {
+            get {
+                return ResourceManager.GetString("Error_NoRInterpreters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Profile creation failed for user {0} with WIN32 error code 0x{1}.
         /// </summary>
         internal static string Error_ProfileCreationFailed {
@@ -147,6 +156,15 @@ namespace Microsoft.R.Host.Broker {
         internal static string Error_RHostFailedToStart {
             get {
                 return ResourceManager.GetString("Error_RHostFailedToStart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Specified R interpreter does not exist.
+        /// </summary>
+        internal static string Error_SpecifiedRInterpreterNotFound {
+            get {
+                return ResourceManager.GetString("Error_SpecifiedRInterpreterNotFound", resourceCulture);
             }
         }
         
@@ -345,15 +363,6 @@ namespace Microsoft.R.Host.Broker {
         internal static string Trace_UserProfileDirectory {
             get {
                 return ResourceManager.GetString("Trace_UserProfileDirectory", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to No R interpreters auto-detected.
-        /// </summary>
-        internal static string Warning_NoRInterpreters {
-            get {
-                return ResourceManager.GetString("Warning_NoRInterpreters", resourceCulture);
             }
         }
     }
