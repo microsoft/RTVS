@@ -11,6 +11,7 @@ using Microsoft.R.Components.InteractiveWorkflow.Implementation;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Settings;
+using Microsoft.R.Components.Workspace;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Install;
 using Microsoft.VisualStudio.InteractiveWindow;
@@ -98,8 +99,9 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 // i.e. user worked in the REPL and not in the editor. Pull 
                 // the focus back here. 
                 _replLostFocus = false;
-                ActiveWindow.Container.Show(true);
-
+                if (IsRProjectActive()) {
+                    ActiveWindow.Container.Show(true);
+                }
                 // Reset the flag, so that further focus changes are not affected until the next debugger break occurs.
                 _debuggerJustEnteredBreakMode = false;
             }
@@ -107,6 +109,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
         private void RSessionDisconnected(object o, EventArgs eventArgs) {
             Operations.ClearPendingInputs();
+        }
+
+        private bool IsRProjectActive() {
+            var wss = Shell.ExportProvider.GetExportedValue<IWorkspaceServices>();
+            return wss.IsRProjectActive;
         }
 
         public async Task<IInteractiveWindowVisualComponent> GetOrCreateVisualComponent(IInteractiveWindowComponentContainerFactory componentContainerFactory, int instanceId = 0) {
@@ -124,7 +131,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             var svl = new SupportedRVersionRange();
             var evaluator = RInstallation.VerifyRIsInstalled(Shell, svl, _settings.RBasePath)
                 ? new RInteractiveEvaluator(RSession, History, Shell, _settings)
-                : (IInteractiveEvaluator) new NullInteractiveEvaluator();
+                : (IInteractiveEvaluator)new NullInteractiveEvaluator();
 
             ActiveWindow = componentContainerFactory.Create(instanceId, evaluator);
             var interactiveWindow = ActiveWindow.InteractiveWindow;
