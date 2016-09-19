@@ -2001,38 +2001,11 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Square brackets.
-        /// </summary>
-        public static string SqlPublishDialog_BracketQuote1 {
-            get {
-                return ResourceManager.GetString("SqlPublishDialog_BracketQuote1", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Double quote.
         /// </summary>
         public static string SqlPublishDialog_DoubleQuote {
             get {
                 return ResourceManager.GetString("SqlPublishDialog_DoubleQuote", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Double quote.
-        /// </summary>
-        public static string SqlPublishDialog_DoubleQuote1 {
-            get {
-                return ResourceManager.GetString("SqlPublishDialog_DoubleQuote1", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Generate stored procedures.
-        /// </summary>
-        public static string SqlPublishDialog_GenerateStoredProcedures {
-            get {
-                return ResourceManager.GetString("SqlPublishDialog_GenerateStoredProcedures", resourceCulture);
             }
         }
         
@@ -2046,15 +2019,6 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to File.
-        /// </summary>
-        public static string SqlPublishDialog_HeaderFile1 {
-            get {
-                return ResourceManager.GetString("SqlPublishDialog_HeaderFile1", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Stored Procedure.
         /// </summary>
         public static string SqlPublishDialog_HeaderSProc {
@@ -2064,29 +2028,11 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Stored Procedure.
-        /// </summary>
-        public static string SqlPublishDialog_HeaderSProc1 {
-            get {
-                return ResourceManager.GetString("SqlPublishDialog_HeaderSProc1", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Variable.
         /// </summary>
         public static string SqlPublishDialog_HeaderVariable {
             get {
                 return ResourceManager.GetString("SqlPublishDialog_HeaderVariable", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Variable.
-        /// </summary>
-        public static string SqlPublishDialog_HeaderVariable1 {
-            get {
-                return ResourceManager.GetString("SqlPublishDialog_HeaderVariable1", resourceCulture);
             }
         }
         
@@ -2109,15 +2055,6 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to find database project in the Solution. Please create a database project which will receive SQL files with the R code..
-        /// </summary>
-        public static string SqlPublishDialog_NoDbProject {
-            get {
-                return ResourceManager.GetString("SqlPublishDialog_NoDbProject", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to None.
         /// </summary>
         public static string SqlPublishDialog_NoQuote {
@@ -2127,29 +2064,11 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to None.
-        /// </summary>
-        public static string SqlPublishDialog_NoQuote1 {
-            get {
-                return ResourceManager.GetString("SqlPublishDialog_NoQuote1", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The selected project does not contain any R Script with SQL files..
         /// </summary>
         public static string SqlPublishDialog_NoSProcFiles {
             get {
                 return ResourceManager.GetString("SqlPublishDialog_NoSProcFiles", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The selected project does not contain any R Script with SQL files..
-        /// </summary>
-        public static string SqlPublishDialog_NoSProcFiles1 {
-            get {
-                return ResourceManager.GetString("SqlPublishDialog_NoSProcFiles1", resourceCulture);
             }
         }
         
@@ -2172,29 +2091,11 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Quote type:.
-        /// </summary>
-        public static string SqlPublishDialog_QuoteType1 {
-            get {
-                return ResourceManager.GetString("SqlPublishDialog_QuoteType1", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to In stored procedure @script parameter.
         /// </summary>
         public static string SqlPublishDialog_RCodeInline {
             get {
                 return ResourceManager.GetString("SqlPublishDialog_RCodeInline", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to In stored procedure @script parameter.
-        /// </summary>
-        public static string SqlPublishDialog_RCodeInline1 {
-            get {
-                return ResourceManager.GetString("SqlPublishDialog_RCodeInline1", resourceCulture);
             }
         }
         
@@ -2208,29 +2109,11 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to In a separate table.
-        /// </summary>
-        public static string SqlPublishDialog_RCodeInTable1 {
-            get {
-                return ResourceManager.GetString("SqlPublishDialog_RCodeInTable1", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to R code placement:.
         /// </summary>
         public static string SqlPublishDialog_RCodePlacement {
             get {
                 return ResourceManager.GetString("SqlPublishDialog_RCodePlacement", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to R code placement:.
-        /// </summary>
-        public static string SqlPublishDialog_RCodePlacement1 {
-            get {
-                return ResourceManager.GetString("SqlPublishDialog_RCodePlacement1", resourceCulture);
             }
         }
         
@@ -2244,29 +2127,11 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Table name:.
-        /// </summary>
-        public static string SqlPublishDialog_TableName1 {
-            get {
-                return ResourceManager.GetString("SqlPublishDialog_TableName1", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Target:.
         /// </summary>
         public static string SqlPublishDialog_Target {
             get {
                 return ResourceManager.GetString("SqlPublishDialog_Target", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Target project:.
-        /// </summary>
-        public static string SqlPublishDialog_TargetProject {
-            get {
-                return ResourceManager.GetString("SqlPublishDialog_TargetProject", resourceCulture);
             }
         }
         
@@ -2307,20 +2172,11 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Publish R Code to SQL.
+        ///   Looks up a localized string similar to R Code to SQL Publishing Options.
         /// </summary>
         public static string SqlPublishDialog_Title {
             get {
                 return ResourceManager.GetString("SqlPublishDialog_Title", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to R Code to SQL Publishing Options.
-        /// </summary>
-        public static string SqlPublishDialog_Title1 {
-            get {
-                return ResourceManager.GetString("SqlPublishDialog_Title1", resourceCulture);
             }
         }
         

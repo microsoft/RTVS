@@ -29,7 +29,11 @@
     <PropertyPageSchema Include="$(MSBuildThisFileDirectory)\Run.xaml;">
       <Context>Project</Context>
     </PropertyPageSchema>
-
+    
+    <PropertyPageSchema Include="$(MSBuildThisFileDirectory)\Settings.xaml">
+      <Context>Settings</Context>
+    </PropertyPageSchema>
+    
     <PropertyPageSchema Include="$(MSBuildThisFileDirectory)\General.BrowseObject.xaml;">
       <Context>BrowseObject</Context>
     </PropertyPageSchema>

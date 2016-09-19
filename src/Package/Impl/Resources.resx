@@ -845,9 +845,6 @@ Additional information:
   <data name="Yes" xml:space="preserve">
     <value>Yes</value>
   </data>
-  <data name="SqlPublishDialog_GenerateStoredProcedures" xml:space="preserve">
-    <value>Generate stored procedures</value>
-  </data>
   <data name="SqlPublishDialog_HeaderFile" xml:space="preserve">
     <value>File</value>
   </data>
@@ -860,14 +857,11 @@ Additional information:
   <data name="SqlPublishDialog_TableName" xml:space="preserve">
     <value>Table name:</value>
   </data>
-  <data name="SqlPublishDialog_TargetProject" xml:space="preserve">
-    <value>Target project:</value>
-  </data>
   <data name="Error_UnableToReadSqlPublishSettings" xml:space="preserve">
     <value>Unable to read SQL publishing settings from {0}. Exception: {1}</value>
   </data>
   <data name="SqlPublishDialog_Title" xml:space="preserve">
-    <value>Publish R Code to SQL</value>
+    <value>R Code to SQL Publishing Options</value>
   </data>
   <data name="Error_UnableGenerateSqlFiles" xml:space="preserve">
     <value>Unable to create SQL files. Exception: {0}</value>
@@ -880,9 +874,6 @@ Additional information:
   </data>
   <data name="SqlPublishDialog_RCodePlacement" xml:space="preserve">
     <value>R code placement:</value>
-  </data>
-  <data name="SqlPublishDialog_NoDbProject" xml:space="preserve">
-    <value>Unable to find database project in the Solution. Please create a database project which will receive SQL files with the R code.</value>
   </data>
   <data name="SqlPublishDialog_NoSProcFiles" xml:space="preserve">
     <value>The selected project does not contain any R Script with SQL files.</value>
@@ -899,50 +890,14 @@ Additional information:
   <data name="SqlPublishDialog_NoQuote" xml:space="preserve">
     <value>None</value>
   </data>
-  <data name="SqlPublishDialog_BracketQuote1" xml:space="preserve">
-    <value>Square brackets</value>
-  </data>
-  <data name="SqlPublishDialog_DoubleQuote1" xml:space="preserve">
-    <value>Double quote</value>
-  </data>
-  <data name="SqlPublishDialog_HeaderFile1" xml:space="preserve">
-    <value>File</value>
-  </data>
-  <data name="SqlPublishDialog_HeaderSProc1" xml:space="preserve">
-    <value>Stored Procedure</value>
-  </data>
-  <data name="SqlPublishDialog_HeaderVariable1" xml:space="preserve">
-    <value>Variable</value>
-  </data>
   <data name="SqlPublishDialog_NoDatabaseConnections" xml:space="preserve">
     <value>&lt;No database connections&gt;</value>
   </data>
   <data name="SqlPublishDialog_NoDatabaseProjects" xml:space="preserve">
     <value>&lt;No database projects&gt;</value>
   </data>
-  <data name="SqlPublishDialog_NoQuote1" xml:space="preserve">
-    <value>None</value>
-  </data>
-  <data name="SqlPublishDialog_NoSProcFiles1" xml:space="preserve">
-    <value>The selected project does not contain any R Script with SQL files.</value>
-  </data>
   <data name="SqlPublishDialog_PublishButton" xml:space="preserve">
     <value>Publish</value>
-  </data>
-  <data name="SqlPublishDialog_QuoteType1" xml:space="preserve">
-    <value>Quote type:</value>
-  </data>
-  <data name="SqlPublishDialog_RCodeInline1" xml:space="preserve">
-    <value>In stored procedure @script parameter</value>
-  </data>
-  <data name="SqlPublishDialog_RCodeInTable1" xml:space="preserve">
-    <value>In a separate table</value>
-  </data>
-  <data name="SqlPublishDialog_RCodePlacement1" xml:space="preserve">
-    <value>R code placement:</value>
-  </data>
-  <data name="SqlPublishDialog_TableName1" xml:space="preserve">
-    <value>Table name:</value>
   </data>
   <data name="SqlPublishDialog_Target" xml:space="preserve">
     <value>Target:</value>
@@ -958,9 +913,6 @@ Additional information:
   </data>
   <data name="SqlPublishDialog_TargetTypeProject" xml:space="preserve">
     <value>Project</value>
-  </data>
-  <data name="SqlPublishDialog_Title1" xml:space="preserve">
-    <value>R Code to SQL Publishing Options</value>
   </data>
   <data name="SqlPublishDialog_UnableToBuildDacPac" xml:space="preserve">
     <value>Unable to package SQL stored procedure(s). Exception: {0}.</value>
