@@ -7,6 +7,7 @@ using System.ComponentModel.Design;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Commands;
 using Microsoft.R.Components.Plots.Implementation.Commands;
+using Microsoft.R.Components.Sql;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Browsers;
 using Microsoft.VisualStudio.R.Package.Commands;
@@ -19,6 +20,7 @@ using Microsoft.VisualStudio.R.Package.Options.R.Tools;
 using Microsoft.VisualStudio.R.Package.PackageManager;
 using Microsoft.VisualStudio.R.Package.Plots.Commands;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
+using Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Repl.Commands;
 using Microsoft.VisualStudio.R.Package.Repl.Debugger;
@@ -26,6 +28,7 @@ using Microsoft.VisualStudio.R.Package.Repl.Shiny;
 using Microsoft.VisualStudio.R.Package.Repl.Workspace;
 using Microsoft.VisualStudio.R.Package.RPackages.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Package.Sql;
 using Microsoft.VisualStudio.R.Package.Windows;
 using Microsoft.VisualStudio.Utilities;
 
@@ -43,6 +46,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             var contentTypeRegistryService = exportProvider.GetExportedValue<IContentTypeRegistryService>();
             var pss = exportProvider.GetExportedValue<IProjectSystemServices>();
             var wbs = exportProvider.GetExportedValue<IWebBrowserServices>();
+            var pcsp = exportProvider.GetExportedValue<IProjectConfigurationSettingsProvider>();
+            var dbcs = exportProvider.GetExportedValue<IDbConnectionService>();
 
             return new List<MenuCommand> {
                 new GoToOptionsCommand(),
@@ -97,6 +102,9 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new ImportDataSetTextFileCommand(appShell, interactiveWorkflow.RSession),
                 new ImportDataSetUrlCommand(interactiveWorkflow.RSession),
                 new DeleteAllVariablesCommand(interactiveWorkflow.RSession),
+                new AddDbConnectionCommand(dbcs, pss, pcsp, interactiveWorkflow),
+                new AddDsnCommand(appShell, interactiveWorkflow),
+                new ManageDsnCommand(appShell, interactiveWorkflow),
 
                 new InstallPackagesCommand(),
                 new CheckForPackageUpdatesCommand(),
