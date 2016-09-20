@@ -15,7 +15,6 @@ using Microsoft.VisualStudio.InteractiveWindow.Shell;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Package.Registration;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Shell;
 using Microsoft.VisualStudio.R.Package;
-using Microsoft.VisualStudio.R.Package.Browsers;
 using Microsoft.VisualStudio.R.Package.DataInspect;
 using Microsoft.VisualStudio.R.Package.DataInspect.Office;
 using Microsoft.VisualStudio.R.Package.Definitions;
@@ -29,6 +28,7 @@ using Microsoft.VisualStudio.R.Package.PackageManager;
 using Microsoft.VisualStudio.R.Package.Packages;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages;
+using Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings;
 using Microsoft.VisualStudio.R.Package.RClient;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -61,6 +61,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     [ProvideOptionPage(typeof(RToolsOptionsPage), "R Tools", "Advanced", 20116, 20136, true)]
     //[ProvideOptionPage(typeof(PackageSourceOptionsPage), "R Tools", "Package Sources", 20116, 20135, true)]
     [ProvideObject(typeof(RunPropertyPage))]
+    [ProvideObject(typeof(SettingsPropertyPage))]
     [ProvideInteractiveWindow(RGuidList.ReplInteractiveWindowProviderGuidString, Style = VsDockStyle.Tabbed, Orientation = ToolWindowOrientation.Bottom, Window = ToolWindowGuids80.Outputwindow, DocumentLikeTool = true)]
     [ProvideToolWindow(typeof(PlotDeviceWindowPane), MultiInstances = true, Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer, Transient = true)]
     [ProvideToolWindow(typeof(PlotHistoryWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.Toolbox)]

@@ -166,7 +166,7 @@
     <value>Reformat code as you type</value>
   </data>
   <data name="SaveAsFilterR" xml:space="preserve">
-    <value>R Language Files (*.r)|*.r|</value>
+    <value>R Language Files (*.R)|*.R|</value>
   </data>
   <data name="Settings_IntellisenseCategory" xml:space="preserve">
     <value>IntelliSense</value>
@@ -407,8 +407,8 @@
   <data name="No" xml:space="preserve">
     <value>No</value>
   </data>
-  <data name="Yes" xml:space="preserve">
-    <value>Yes</value>
+  <data name="ConnectionStringDescription" xml:space="preserve">
+    <value>Database connection string</value>
   </data>
   <data name="SaveWorkspaceOnProjectUnload" xml:space="preserve">
     <value>Save current workspace image to {0}?</value>
@@ -676,7 +676,7 @@ Additional information:
   <data name="PropertyPageDifferentOptions" xml:space="preserve">
     <value>&lt;different options&gt;</value>
   </data>
-  <data name="RunPropertyPageTitle" xml:space="preserve">
+  <data name="ProjectProperties_RunPageTitle" xml:space="preserve">
     <value>Run</value>
   </data>
   <data name="Settings_DefaultValue" xml:space="preserve">
@@ -805,5 +805,128 @@ Additional information:
   </data>
   <data name="Settings_MarkdownCategory" xml:space="preserve">
     <value>Markdown</value>
+  </data>
+  <data name="ProjectProperties_SettingsPageTitle" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="Error_UnableToReadSettings" xml:space="preserve">
+    <value>Unable to load settings. Exception {0}</value>
+  </data>
+  <data name="Error_UnableToSaveSettings" xml:space="preserve">
+    <value>Unable to write to settings file {0}. Exception: {1}</value>
+  </data>
+  <data name="NoSettingFiles" xml:space="preserve">
+    <value>&lt;No *setting.R files found&gt;</value>
+  </data>
+  <data name="SettingsPage_Explanation" xml:space="preserve">
+    <value>R project settings come from Settings.R or *.Settings.R files that are located inside the project.{0}If there is no settings file, you can add variables and save the page. Default Settings.R will be created for you. You can also add settings file to the project via File | Add New Item.{0}Settings are stored as R code and the file can be sourced before running other modules thus pre-populating environment with the predefined settings.</value>
+  </data>
+  <data name="SettingsPage_VariableNameLabel" xml:space="preserve">
+    <value>&amp;Name:</value>
+  </data>
+  <data name="SettingsPage_VariableTypeLabel" xml:space="preserve">
+    <value>&amp;Type:</value>
+  </data>
+  <data name="SettingsPage_VariableType_Expression" xml:space="preserve">
+    <value>Expression</value>
+  </data>
+  <data name="SettingsPage_VariableType_String" xml:space="preserve">
+    <value>String</value>
+  </data>
+  <data name="SettingsPage_VariableValueLabel" xml:space="preserve">
+    <value>&amp;Value:</value>
+  </data>
+  <data name="SettingsPage_SavePrompt" xml:space="preserve">
+    <value>The selected settings have changed. Do you want to save the file?</value>
+  </data>
+  <data name="Launch_SettingsFileDoesNotExist" xml:space="preserve">
+    <value>The specified settings file does not exist:</value>
+  </data>
+  <data name="Launch_StartupFileDoesNotExist" xml:space="preserve">
+    <value>The specified startup file does not exist:</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="SqlPublishDialog_HeaderFile" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="SqlPublishDialog_HeaderSProc" xml:space="preserve">
+    <value>Stored Procedure</value>
+  </data>
+  <data name="SqlPublishDialog_HeaderVariable" xml:space="preserve">
+    <value>Variable</value>
+  </data>
+  <data name="SqlPublishDialog_TableName" xml:space="preserve">
+    <value>Table name:</value>
+  </data>
+  <data name="Error_UnableToReadSqlPublishSettings" xml:space="preserve">
+    <value>Unable to read SQL publishing settings from {0}. Exception: {1}</value>
+  </data>
+  <data name="SqlPublishDialog_Title" xml:space="preserve">
+    <value>R Code to SQL Publishing Options</value>
+  </data>
+  <data name="Error_UnableGenerateSqlFiles" xml:space="preserve">
+    <value>Unable to create SQL files. Exception: {0}</value>
+  </data>
+  <data name="SqlPublishDialog_RCodeInline" xml:space="preserve">
+    <value>In stored procedure @script parameter</value>
+  </data>
+  <data name="SqlPublishDialog_RCodeInTable" xml:space="preserve">
+    <value>In a separate table</value>
+  </data>
+  <data name="SqlPublishDialog_RCodePlacement" xml:space="preserve">
+    <value>R code placement:</value>
+  </data>
+  <data name="SqlPublishDialog_NoSProcFiles" xml:space="preserve">
+    <value>The selected project does not contain any R Script with SQL files.</value>
+  </data>
+  <data name="SqlPublishDialog_BracketQuote" xml:space="preserve">
+    <value>Square brackets</value>
+  </data>
+  <data name="SqlPublishDialog_DoubleQuote" xml:space="preserve">
+    <value>Double quote</value>
+  </data>
+  <data name="SqlPublishDialog_QuoteType" xml:space="preserve">
+    <value>Quote type:</value>
+  </data>
+  <data name="SqlPublishDialog_NoQuote" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="SqlPublishDialog_NoDatabaseConnections" xml:space="preserve">
+    <value>&lt;No database connections&gt;</value>
+  </data>
+  <data name="SqlPublishDialog_NoDatabaseProjects" xml:space="preserve">
+    <value>&lt;No database projects&gt;</value>
+  </data>
+  <data name="SqlPublishDialog_PublishButton" xml:space="preserve">
+    <value>Publish</value>
+  </data>
+  <data name="SqlPublishDialog_Target" xml:space="preserve">
+    <value>Target:</value>
+  </data>
+  <data name="SqlPublishDialog_TargetType" xml:space="preserve">
+    <value>Publish to:</value>
+  </data>
+  <data name="SqlPublishDialog_TargetTypeDacpac" xml:space="preserve">
+    <value>DACPAC</value>
+  </data>
+  <data name="SqlPublishDialog_TargetTypeDatabase" xml:space="preserve">
+    <value>Database</value>
+  </data>
+  <data name="SqlPublishDialog_TargetTypeProject" xml:space="preserve">
+    <value>Project</value>
+  </data>
+  <data name="SqlPublishDialog_UnableToBuildDacPac" xml:space="preserve">
+    <value>Unable to package SQL stored procedure(s). Exception: {0}.</value>
+  </data>
+  <data name="SqlPublish_PublishDacpacSuccess" xml:space="preserve">
+    <value>Publishing complete. DACPAC: {0}</value>
+  </data>
+  <data name="SqlPublish_PublishDatabaseSuccess" xml:space="preserve">
+    <value>Publishing complete. Connection {0}</value>
+  </data>
+  <data name="SqlPublish_PublishError" xml:space="preserve">
+    <value>Publishing failed. Exception: {0}</value>
   </data>
 </root>

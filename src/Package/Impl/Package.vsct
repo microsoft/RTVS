@@ -367,6 +367,12 @@
       <Group guid="guidRToolsCmdSet" id="dataSubMenuEditGroup" priority="0x0200">
         <Parent guid="guidRToolsCmdSet" id="dataSubMenu"/>
       </Group>
+      <Group guid="guidRToolsCmdSet" id="dataSubMenuDatabaseGroup" priority="0x0300">
+        <Parent guid="guidRToolsCmdSet" id="dataSubMenu"/>
+      </Group>
+      <Group guid="guidRToolsCmdSet" id="dataSubMenuSProcGroup" priority="0x0400">
+        <Parent guid="guidRToolsCmdSet" id="dataSubMenu"/>
+      </Group>
 
       <!-- Directory flyout -->
       <Group guid="guidRToolsCmdSet" id="directorySubMenuGroup" priority="0x0100">
@@ -1644,6 +1650,56 @@
         </Strings>
       </Button>
 
+      <Button guid="guidRToolsCmdSet" id="icmdAddDatabaseConnection" priority="0x0100" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="dataSubMenuDatabaseGroup"/>
+        <Icon guid="ImageCatalogGuid" id="ConnectToDatabase"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <ButtonText>Add &amp;Database Connection...</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdAddDsn" priority="0x0200" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="dataSubMenuDatabaseGroup"/>
+        <Icon guid="ImageCatalogGuid" id="AddDataSource"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <ButtonText>Add Data So&amp;urce...</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdManageDsn" priority="0x0300" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="dataSubMenuDatabaseGroup"/>
+        <Icon guid="ImageCatalogGuid" id="ConfigureDatabaseWizard"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <ButtonText>&amp;Manage Data Sources...</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdPublishSProc" priority="0x0100" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="dataSubMenuSProcGroup"/>
+        <Icon guid="ImageCatalogGuid" id="DACApplications"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <ButtonText>&amp;Publish Stored Procedures...</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdPublishSProcOptions" priority="0x0200" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="dataSubMenuSProcGroup"/>
+        <Icon guid="ImageCatalogGuid" id="DatabaseSettings"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <ButtonText>P&amp;ublish With Options...</ButtonText>
+        </Strings>
+      </Button>
+
     </Buttons>
   </Commands>
 
@@ -2133,6 +2189,9 @@
     <CommandPlacement guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup" priority="0x0000">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_PROJNODE"/>
     </CommandPlacement>
+    <CommandPlacement guid="guidRToolsCmdSet" id="dataSubMenuSProcGroup" priority="0x0100">
+      <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_PROJNODE"/>
+    </CommandPlacement>
 
     <CommandPlacement guid="guidRToolsCmdSet" id="projectAddItemContextMenuGroup" priority="0x0000">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ITEMNODE"/>
@@ -2275,15 +2334,15 @@
     <KeyBinding guid="guidMdToolsCmdSet" id="cmdidRunRChunk" editor="RmdEditor" key1="C" mod1="CONTROL ALT" />
     <KeyBinding guid="guidMdToolsCmdSet" id="cmdidRunRChunk" editor="REditor" key1="C" mod1="CONTROL ALT" />
 
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdSearchWebForCurrent" editor="guidRToolsCmdSet" key1="VK_F1"/>
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdSearchWebForCurrent" editor="REditor" key1="VK_F1" />
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdSearchWebForCurrent" editor="RmdEditor" key1="VK_F1" />
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdSearchWebForCurrent" editor="InteractiveWindow" key1="VK_F1" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSearchWebForCurrent" editor="guidRToolsCmdSet" key1="VK_F1" mod1="Control"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSearchWebForCurrent" editor="REditor" key1="VK_F1" mod1="Control" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSearchWebForCurrent" editor="RmdEditor" key1="VK_F1" mod1="Control" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSearchWebForCurrent" editor="InteractiveWindow" key1="VK_F1" mod1="Control" />
 
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdHelpOnCurrent" editor="guidRToolsCmdSet" key1="VK_F1" mod1="Control"/>
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdHelpOnCurrent" editor="REditor" key1="VK_F1"  mod1="Control"/>
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdHelpOnCurrent" editor="RmdEditor" key1="VK_F1"  mod1="Control"/>
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdHelpOnCurrent" editor="InteractiveWindow" key1="VK_F1" mod1="Control"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdHelpOnCurrent" editor="guidRToolsCmdSet" key1="VK_F1" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdHelpOnCurrent" editor="REditor" key1="VK_F1" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdHelpOnCurrent" editor="RmdEditor" key1="VK_F1" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdHelpOnCurrent" editor="InteractiveWindow" key1="VK_F1" />
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdCopyValue" editor="Global" key1="VK_RETURN" mod1="CONTROL SHIFT" />
   </KeyBindings>
@@ -2446,6 +2505,11 @@
       <IDSymbol name="icmdShowDetails" value="806" />
       <IDSymbol name="icmdOpenInCsvApp" value="807" />
       <IDSymbol name="icmdCopyValue" value="808" />
+      <IDSymbol name="icmdAddDatabaseConnection" value="809" />
+      <IDSymbol name="icmdAddDsn" value="810" />
+      <IDSymbol name="icmdManageDsn" value="811" />
+      <IDSymbol name="icmdPublishSProc" value="812" />
+      <IDSymbol name="icmdPublishSProcOptions" value="813" />
 
       <!-- Window management-->
       <IDSymbol name="icmdShowReplWindow" value="901" />
@@ -2560,6 +2624,8 @@
       <IDSymbol name="dataSubMenuGroup" value="0x2340"/>
       <IDSymbol name="dataSubMenuEditGroup" value="0x2341"/>
       <IDSymbol name="dataSubMenuImportGroup" value="0x2342"/>
+      <IDSymbol name="dataSubMenuDatabaseGroup" value="0x2343"/>
+      <IDSymbol name="dataSubMenuSProcGroup" value="0x2344"/>
       <IDSymbol name="publishPreviewSubMenuGroup" value="0x2360"/>
       <IDSymbol name="publishPublishSubMenuGroup" value="0x2370"/>
       <IDSymbol name="feedbackSubMenu" value="0x2380"/>

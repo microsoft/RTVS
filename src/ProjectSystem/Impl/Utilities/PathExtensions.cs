@@ -8,10 +8,16 @@ using Microsoft.VisualStudio.ProjectSystem.Utilities;
 
 namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Utilities {
     public static class PathExtensions {
+        /// <summary>
+        /// Converts path to file to a relative 8.3 path. Returns null if file 
+        /// does not exist since OS can only perform 8.3 conversion to existing files.
+        /// </summary>
         public static string ToShortRelativePath(this IFileSystem fileSystem, string path, string rootFolder) {
+            // ToShortPath will return null if files does not exist since conversion 
+            // to 8.3 path can only be performed to files that exist.
             var shortPath = fileSystem.ToShortPath(path);
             var rootShortPath = fileSystem.ToShortPath(rootFolder);
-            return PathHelper.MakeRelative(rootShortPath, shortPath);
+            return !string.IsNullOrEmpty(shortPath) ? PathHelper.MakeRelative(rootShortPath, shortPath) : null;
         }
     }
 }

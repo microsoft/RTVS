@@ -1,5 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <Import Project="..\..\R.Settings.targets" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -14,8 +16,6 @@
     <FileUpgradeFlags>
     </FileUpgradeFlags>
   </PropertyGroup>
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <Import Project="..\..\R.Settings.targets" />
   <PropertyGroup>
     <BaseIntermediateOutputPath>$(ObjDirectory)</BaseIntermediateOutputPath>
     <BaseOutputPath>$(BinDirectory)</BaseOutputPath>
@@ -65,6 +65,7 @@
     <Compile Include="Commands\CommandAsyncToOleMenuCommandShimFactory.cs" />
     <Compile Include="Commands\OleControllerChain.cs" />
     <Compile Include="Commands\R\SwitchToRClientCommand.cs" />
+    <Compile Include="Commands\SessionCommand.cs" />
     <Compile Include="DataInspect\Commands\DeleteAllVariablesCommand.cs" />
     <Compile Include="DataInspect\Commands\SessionCommand.cs" />
     <Compile Include="DataInspect\DataImport\EnterUrl.xaml.cs">
@@ -153,7 +154,6 @@
     <Compile Include="Commands\RHistory\VsRHistoryCommandFactory.cs" />
     <Compile Include="Commands\RHistory\VsRHistoryTextViewConnectionListener.cs" />
     <Compile Include="Commands\ShowToolWindowCommand.cs" />
-    <Compile Include="DataInspect\BindableBase.cs" />
     <Compile Include="DataInspect\Commands\ShowVariableWindowCommand.cs" />
     <Compile Include="DataInspect\DataSource\Range.cs" />
     <Compile Include="DataInspect\VariableViewModel.cs" />
@@ -209,47 +209,97 @@
     <Compile Include="Plots\PlotHistoryWindowPane.cs" />
     <Compile Include="Plots\VsRPlotDeviceVisualComponent.cs" />
     <Compile Include="Plots\VsRPlotHistoryVisualComponent.cs" />
+    <Compile Include="ProjectSystem\Configuration\IProjectConfigurationSettingsAccess.cs" />
+    <Compile Include="ProjectSystem\Configuration\IProjectConfigurationSettingsProvider.cs" />
+    <Compile Include="ProjectSystem\Configuration\ProjectConfigurationSettingsProvider.cs" />
     <Compile Include="ProjectSystem\Constants.cs" />
     <Compile Include="ProjectSystem\Definitions\IProjectSystemServices.cs" />
+    <Compile Include="ProjectSystem\ProjectItemDependencyProvider.cs" />
+    <Compile Include="ProjectSystem\ProjectSettingsFiles.cs" />
     <Compile Include="ProjectSystem\ProjectSystemServices.cs" />
     <Compile Include="ProjectSystem\ProjectTreePropertiesProvider.cs" />
+    <Compile Include="ProjectSystem\PropertyPages\Run\RunPageControl.xaml.cs">
+      <DependentUpon>RunPageControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ProjectSystem\PropertyPages\Run\RunPageMetadata.cs" />
+    <Compile Include="ProjectSystem\PropertyPages\Run\RunPageViewModel.cs" />
+    <Compile Include="ProjectSystem\PropertyPages\Run\RunPropertyPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ProjectSystem\PropertyPages\Settings\SettingsPageControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ProjectSystem\PropertyPages\Settings\SettingsPageControl.Designer.cs">
+      <DependentUpon>SettingsPageControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ProjectSystem\PropertyPages\Settings\SettingsPageMetadata.cs" />
+    <Compile Include="ProjectSystem\PropertyPages\Settings\SettingsPageViewModel.cs" />
+    <Compile Include="ProjectSystem\PropertyPages\Settings\SettingsPropertyPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ProjectSystem\PropertyPages\Wpf\PropertyPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ProjectSystem\PropertyPages\Wpf\PropertyPageControl.cs" />
+    <Compile Include="ProjectSystem\PropertyPages\Wpf\PropertyPageElementHost.cs" />
+    <Compile Include="ProjectSystem\PropertyPages\Wpf\PropertyPageViewModel.cs" />
+    <Compile Include="ProjectSystem\PropertyPages\Wpf\WpfBasedPropertyPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ProjectSystem\PropertyPages\Wpf\WpfBasedPropertyPage.Designer.cs">
+      <DependentUpon>WpfBasedPropertyPage.cs</DependentUpon>
+    </Compile>
     <Compile Include="ProjectSystem\RProjectCapabilityProvider.cs" />
     <Compile Include="ProjectSystem\ConfiguredRProjectExportProvider.cs" />
-    <Compile Include="ProjectSystem\Exports.cs" />
     <Compile Include="ProjectSystem\Definitions\IConfiguredRProjectExportProvider.cs" />
     <Compile Include="ProjectSystem\Definitions\IRProjectProperties.cs" />
     <Compile Include="ProjectSystem\Definitions\IVsHierarchyExtensions.cs" />
     <Compile Include="ProjectSystem\ProjectProperties.cs" />
-    <Compile Include="ProjectSystem\PropertyPages\PropertyPage.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="ProjectSystem\PropertyPages\PropertyPageControl.cs" />
-    <Compile Include="ProjectSystem\PropertyPages\PropertyPageElementHost.cs" />
     <Compile Include="ProjectSystem\PropertyPages\PropertyPageProvider.cs" />
-    <Compile Include="ProjectSystem\PropertyPages\PropertyPageViewModel.cs" />
-    <Compile Include="ProjectSystem\PropertyPages\RunPageControl.xaml.cs">
-      <DependentUpon>RunPageControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ProjectSystem\PropertyPages\RunPageMetadata.cs" />
-    <Compile Include="ProjectSystem\PropertyPages\RunPageViewModel.cs" />
-    <Compile Include="ProjectSystem\PropertyPages\RunPropertyPage.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="ProjectSystem\PropertyPages\WpfBasedPropertyPage.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="ProjectSystem\PropertyPages\WpfBasedPropertyPage.Designer.cs">
-      <DependentUpon>WpfBasedPropertyPage.cs</DependentUpon>
-    </Compile>
     <Compile Include="ProjectSystem\RDebugLaunchProvider.cs" />
+    <Compile Include="ProjectSystem\WorkspaceServices.cs" />
     <Compile Include="RClient\MicrosoftRClient.cs" />
     <Compile Include="RClient\MicrosoftRClientInstaller.cs" />
     <Compile Include="Repl\Commands\SetDirectoryToProjectCommand.cs" />
     <Compile Include="Repl\Commands\SetDirectoryToSourceCommand.cs" />
     <Compile Include="Repl\Commands\WorkingDirectoryCommand.cs" />
+    <Compile Include="Repl\Editor\KeyProcessor.cs" />
+    <Compile Include="Repl\Editor\KeyProcessorProvider.cs" />
     <Compile Include="Repl\Shiny\StopShinyAppCommand.cs" />
     <Compile Include="Repl\Shiny\RunShinyAppCommand.cs" />
-    <Compile Include="Rules\Run.cs" />
+    <Compile Include="Shell\AppShellExtensions.cs" />
+    <Compile Include="Sql\Commands\PublishSProcCommand.cs" />
+    <Compile Include="Sql\Commands\ManageDsnCommand.cs" />
+    <Compile Include="Sql\Commands\AddDsnCommand.cs" />
+    <Compile Include="Sql\Commands\ConfigurationSettingCommand.cs" />
+    <Compile Include="Sql\Commands\PublishSProcOptionsCommand.cs" />
+    <Compile Include="Sql\ConnectionStringEditor.cs" />
+    <Compile Include="Sql\Commands\AddDbConnectionCommand.cs" />
+    <Compile Include="Sql\DragDrop\DataObject.cs" />
+    <Compile Include="Sql\DragDrop\DropHandler.cs" />
+    <Compile Include="Sql\DragDrop\DropHandlerProvider.cs" />
+    <Compile Include="Sql\Extensions\ProjectExtensions.cs" />
+    <Compile Include="Sql\NativeMethods.cs" />
+    <Compile Include="Sql\Publish\DacPacBuilder.cs" />
+    <Compile Include="Sql\Publish\DacPackageServices.cs" />
+    <Compile Include="Sql\Publish\Definitions\IDacPacBuilder.cs" />
+    <Compile Include="Sql\Publish\Definitions\IDacPackageServices.cs" />
+    <Compile Include="Sql\Publish\PublishTargetType.cs" />
+    <Compile Include="Sql\Publish\RCodePlacement.cs" />
+    <Compile Include="Sql\Extensions\SqlQuoteType.cs" />
+    <Compile Include="Sql\Publish\SProcMap.cs" />
+    <Compile Include="Sql\Publish\SProcProjectFilesGenerator.cs" />
+    <Compile Include="Sql\Publish\SProcPublisher.cs" />
+    <Compile Include="Sql\Publish\SProcScriptGenerator.cs" />
+    <Compile Include="Sql\Publish\SqlPublishOptionsDialogViewModel.cs" />
+    <Compile Include="Sql\Publish\SqlPublshOptionsDialog.xaml.cs">
+      <DependentUpon>SqlPublshOptionsDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Sql\Publish\SqlSProcPublishSettings.cs" />
+    <Compile Include="Sql\Extensions\SqlStringExtensions.cs" />
+    <Compile Include="Sql\Extensions\SProcFileExtensions.cs" />
+    <Compile Include="Sql\Publish\SqlTelemetryEvents.cs" />
+    <Compile Include="Utilities\IdeUtilities.cs" />
     <Compile Include="Windows\ToolWindowPaneFactory.cs" />
     <Compile Include="History\VsRHistoryVisualComponentContainerFactory.cs" />
     <Compile Include="Imaging\ImagesProvider.cs" />
@@ -397,7 +447,6 @@
     <Compile Include="Search\VsSearchControl.cs" />
     <Compile Include="Search\VsSearchControlProvider.cs" />
     <Compile Include="Search\VsSearchTask.cs" />
-    <Compile Include="Shell\AppEventsSource.cs" />
     <Compile Include="Shell\VisualComponentToolWindow.cs" />
     <Compile Include="Shell\VisualComponentToolWindowAdapter.cs" />
     <Compile Include="Shell\VsAppShell.cs" />
@@ -469,6 +518,7 @@
     <Compile Include="Wpf\WpfHelper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Images\SqlRScript.ico" />
     <Content Include="Profiles\15.0\R.vssettings">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -480,6 +530,25 @@
     <Content Include="Profiles\15.0\RStudioKeyboard.vssettings">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="Resources\DatabaseProject.ico" />
+    <None Include="Resources\DatabaseProject1.ico" />
+    <VSTemplate Include="Templates\ItemTemplates\SqlSProc\SqlSProc.vstemplate">
+      <SubType>Designer</SubType>
+    </VSTemplate>
+    <VSTemplate Include="Templates\ItemTemplates\RSettings\rsettings.vstemplate">
+      <SubType>Designer</SubType>
+    </VSTemplate>
+    <VSTemplate Include="Templates\ItemTemplates\SqlQuery\SqlQuery.vstemplate">
+      <SubType>Designer</SubType>
+    </VSTemplate>
+    <None Include="Templates\ItemTemplates\SqlSProc\SqlSProc.R" />
+    <None Include="Templates\ItemTemplates\SqlQuery\SqlQuery.sql" />
+    <None Include="Templates\ItemTemplates\SqlSProc\SqlSProc.Template.sql" />
+    <None Include="Templates\ItemTemplates\SqlSProc\SqlSProc.Query.sql" />
+    <Content Include="Templates\NewItem\SqlQuery.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Templates\Sql\Create Procedure R.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -902,6 +971,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="ProjectSystem\PropertyPages\Settings\SettingsPageControl.resx">
+      <DependentUpon>SettingsPageControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -947,6 +1019,7 @@
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Windows.Forms" />
@@ -1073,7 +1146,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Templates\ItemTemplates\RScript\RFile.ico" />
     <Content Include="Templates\NewItem\markdown.rmd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -1107,6 +1179,11 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Templates\Sql\R Script.vsdir">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <None Include="Templates\ItemTemplates\RSettings\Settings.R" />
+    <Content Include="Templates\NewItem\SqlRScript.R">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -1262,18 +1339,24 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Content>
-    <Page Include="ProjectSystem\PropertyPages\RunPageControl.xaml">
+    <Page Include="ProjectSystem\PropertyPages\Run\RunPageControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <EmbeddedResource Include="Rules\Run.xaml">
+    <Page Include="Sql\Publish\SqlPublshOptionsDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
+    </Page>
     <Page Include="Wpf\Controls.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <XamlPropertyRule Include="Rules\Run.xaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </XamlPropertyRule>
+    <XamlPropertyRule Include="Rules\Settings.xaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </XamlPropertyRule>
   </ItemGroup>
   <ItemGroup>
     <FilesToSign Include="$(OutputPath)\$(AssemblyName).dll">
@@ -1288,6 +1371,8 @@
     <ItemGroup>
       <VSIXSourceItem Include="$(OutputPath)\Newtonsoft.Json.dll" />
       <VSIXSourceItem Include="$(OutputPath)\websocket-sharp.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Microsoft.Data.ConnectionUI.Dialog.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Microsoft.Data.ConnectionUI.dll" />
       <VSIXSourceItem Include="$(OutputPath)\ItemTemplates\**\*.*">
         <VSIXSubPath>ItemTemplates</VSIXSubPath>
       </VSIXSourceItem>
@@ -1307,6 +1392,38 @@
     <!-- Define constant to use in the [InstalledProductRegistration] attribute -->
     <WriteLinesToFile File="$(MSBuildProjectDirectory)\RtvsProductInfo.cs" Overwrite="true" Lines="// Generated version file. Do not modify or check in.;&#xD;&#xA;                              namespace Microsoft.VisualStudio.R.Package {;&#xD;&#xA;                              %20%20%20%20static partial class RtvsProductInfo {;&#xD;&#xA;                              %20%20%20%20%20%20%20%20public const string VersionString = &quot;$(MajorVersion).$(MinorVersion).$(Build).$(Revision)&quot;%3B;&#xD;&#xA;                              %20%20%20%20};&#xD;&#xA;                              };">
     </WriteLinesToFile>
+  </Target>
+  <!-- CPS XAML rule handling -->
+  <PropertyGroup>
+    <MarkupCompilePass1DependsOn>
+      GenerateRuleSourceFromXaml;
+      $(MarkupCompilePass1DependsOn)
+    </MarkupCompilePass1DependsOn>
+  </PropertyGroup>
+  <Target Name="GenerateRulePrep">
+    <ItemGroup>
+      <_XamlPropertyRuleSource Include="@(XamlPropertyRule->'$(IntermediateOutputPath)%(FileName)$(DefaultLanguageSourceExtension)')" />
+      <Compile Include="@(_XamlPropertyRuleSource)">
+        <ExcludeFromStyleCop>true</ExcludeFromStyleCop>
+      </Compile>
+      <_GeneratedCodeFiles Include="@(_XamlPropertyRuleSource)">
+        <ExcludeFromStyleCop>true</ExcludeFromStyleCop>
+      </_GeneratedCodeFiles>
+      <Clean Include="@(_XamlPropertyRuleSource)" />
+    </ItemGroup>
+  </Target>
+  <!-- The target needs to run so the task can populate the output items correctly. 
+    The task does an up to date check on the files themselves
+   -->
+  <!--<PropertyGroup Condition="'$(NuGetPackageRoot)' == ''">
+    <NuGetPackageRoot>$(UserProfile)\.nuget\packages\</NuGetPackageRoot>
+  </PropertyGroup>-->
+  <UsingTask Condition="'$(VisualStudioVersion)'=='14.0'" TaskName="XamlRuleToCode" AssemblyFile="$(NuGetPackageRoot)\Microsoft.VisualStudio.ProjectSystem.SDK.Tools\14.0.50617-pre\build\net451\Microsoft.VisualStudio.ProjectSystem.Sdk.Tasks.dll" />
+  <UsingTask Condition="'$(VisualStudioVersion)'=='15.0'" TaskName="XamlRuleToCode" AssemblyFile="$(NuGetPackageRoot)\Microsoft.VisualStudio.ProjectSystem.SDK.Tools\15.0.183-pre\build\net451\Microsoft.VisualStudio.ProjectSystem.Sdk.Tasks.dll" />
+  <Target Name="GenerateRuleSourceFromXaml" DependsOnTargets="GenerateRulePrep" Condition="'@(XamlPropertyRule)' != ''">
+    <XamlRuleToCode CreateFallbackRule="%(XamlPropertyRule.CreateFallbackRule)" NamespaceName="%(XamlPropertyRule.Namespace)" RuleMissingError="%(XamlPropertyRule.RuleMissingError)" PropertyMissingError="%(XamlPropertyRule.PropertyMissingError)" Inputs="@(XamlPropertyRule)" OutputDirectory="%(XamlPropertyRule.OutputPath)" DataAccess="%(XamlPropertyRule.DataAccess)" RuleBaseTypes="%(XamlPropertyRule.RuleBaseTypes)" RuleNamePrefix="%(XamlPropertyRule.RuleNamePrefix)" RuleInjectionClassName="%(XamlPropertyRule.RuleInjectionClassName)" RuleInjection="%(XamlPropertyRule.RuleInjection)" RuleInjectionContextName="%(XamlPropertyRule.RuleInjectionCatalog)" RuleInjectionItemTypePropertyName="%(XamlPropertyRule.RuleInjectionItemTypePropertyName)" RuleInjectionItemNamePropertyName="%(XamlPropertyRule.RuleInjectionItemNamePropertyName)" ProjectPropertiesContext="%(XamlPropertyRule.ProjectPropertiesContext)" IPropertyPagesCatalogTypeName="%(XamlPropertyRule.IPropertyPagesCatalogTypeName)" IRuleTypeName="%(XamlPropertyRule.IRuleTypeName)" ConfiguredProjectTypeName="%(XamlPropertyRule.ConfiguredProjectTypeName)" IEvaluatedPropertyTypeName="%(XamlPropertyRule.IEvaluatedPropertyTypeName)" IProjectPropertiesContextTypeName="%(XamlPropertyRule.IProjectPropertiesContextTypeName)">
+      <Output TaskParameter="ResourcesToEmbed" ItemName="EmbeddedResource" />
+    </XamlRuleToCode>
   </Target>
   <Import Project="$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\14.2.25201\tools\vssdk\Microsoft.VsSDK.targets" Condition="'$(VisualStudioVersion)'=='14.0' AND Exists('$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\14.2.25201\tools\vssdk\Microsoft.VsSDK.targets')" />
   <Import Project="$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\15.0.25201-Dev15Preview2\tools\vssdk\Microsoft.VsSDK.targets" Condition="'$(VisualStudioVersion)'=='15.0' AND Exists('$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\15.0.25201-Dev15Preview2\tools\vssdk\Microsoft.VsSDK.targets')" />

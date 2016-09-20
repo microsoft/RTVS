@@ -16,6 +16,7 @@ using Microsoft.R.Host.Client;
 using Microsoft.R.StackTracing;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.VisualStudio.Utilities;
+using static System.FormattableString;
 using static Microsoft.R.DataInspection.REvaluationResultProperties;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
@@ -66,9 +67,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 string[] parts = variableName.Split(_selectors);
 
                 if ((parts.Length == 0 || parts[0].Length == 0) && variableName.Length > 0) {
-                        // Something odd like $$ or $@ so we got empty parts
-                        // and yet variable name is not empty. Don't show anything.
-                        return new INamedItemInfo[0];
+                    // Something odd like $$ or $@ so we got empty parts
+                    // and yet variable name is not empty. Don't show anything.
+                    return new INamedItemInfo[0];
                 }
 
                 if (parts.Length == 0 || parts[0].Length == 0 || variableName.IndexOfAny(_selectors) < 0) {
@@ -85,16 +86,20 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 var sessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
                 var session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
                 IReadOnlyList<IREvaluationResultInfo> infoList = null;
-                try {
-                    infoList = session.DescribeChildrenAsync(REnvironments.GlobalEnv, 
-                               variableName, 
-                               REvaluationResultProperties.HasChildrenProperty | REvaluationResultProperties.AccessorKindProperty,
-                               null, _maxResults).WaitTimeout(_maxWaitTime);
-                } catch(TimeoutException) { }
+                Task.Run(async () => {
+                    try {
+                        var exists = await session.EvaluateAsync<bool>(Invariant($"exists('{variableName}')"), REvaluationKind.Normal);
+                        if (exists) {
+                            infoList = await session.DescribeChildrenAsync(REnvironments.GlobalEnv,
+                                                variableName, HasChildrenProperty | AccessorKindProperty,
+                                                null, _maxResults);
+                        }
+                    } catch (Exception) { }
+                }).Wait(_maxWaitTime);
 
                 if (infoList != null) {
                     return infoList
-                                .Where(m => m is IRValueInfo && 
+                                .Where(m => m is IRValueInfo &&
                                                (((IRValueInfo)m).AccessorKind == RChildAccessorKind.At ||
                                                 ((IRValueInfo)m).AccessorKind == RChildAccessorKind.Dollar))
                                 .Take(maxCount)
@@ -110,7 +115,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private static string TrimToTrailingSelector(string name) {
             int i = name.Length - 1;
             for (; i >= 0; i--) {
-                if(_selectors.Contains(name[i])) {
+                if (_selectors.Contains(name[i])) {
                     return name.Substring(0, i);
                 }
             }

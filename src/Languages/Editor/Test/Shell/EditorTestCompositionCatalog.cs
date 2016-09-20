@@ -235,7 +235,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
 
                 bool first = true;
 
-                if (part.ExportDefinitions.FirstOrDefault() != null) {
+                if (part.ExportDefinitions.Any()) {
                     parts.AppendLine("\t --- EXPORTS --");
                     exports.AppendLine("\t --- EXPORTS --");
 
@@ -259,7 +259,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
                     }
                 }
 
-                if (part.ImportDefinitions.FirstOrDefault() != null) {
+                if (part.ImportDefinitions.Any()) {
                     parts.AppendLine("\t --- IMPORTS ---");
 
                     foreach (ImportDefinition importDefinition in part.ImportDefinitions) {

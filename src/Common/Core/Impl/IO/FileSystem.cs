@@ -20,12 +20,28 @@ namespace Microsoft.Common.Core.IO {
             return File.Exists(path);
         }
 
+        public string ReadAllText(string path) {
+            return File.ReadAllText(path);
+        }
+
+        public void WriteAllText(string path, string content) {
+            File.WriteAllText(path, content);
+        }
+
         public IEnumerable<string> FileReadAllLines(string path) {
             return File.ReadLines(path);
         }
 
         public void FileWriteAllLines(string path, IEnumerable<string> contents) {
             File.WriteAllLines(path, contents);
+        }
+
+        public byte[] FileReadAllBytes(string path) {
+            return File.ReadAllBytes(path);
+        }
+
+        public void FileWriteAllBytes(string path, byte[] bytes) {
+            File.WriteAllBytes(path, bytes);
         }
 
         public bool DirectoryExists(string path) {
@@ -55,6 +71,14 @@ namespace Microsoft.Common.Core.IO {
 
         public void DeleteFile(string path) {
             File.Delete(path);
+        }
+
+        public string[] GetFileSystemEntries(string path, string searchPattern, SearchOption options) {
+            return Directory.GetFileSystemEntries(path, searchPattern, options);
+        }
+
+        public void CreateDirectory(string path) {
+            Directory.CreateDirectory(path);
         }
 
         private static class NativeMethods {

@@ -12,6 +12,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Commands {
             base(session, RGuidList.RCmdSetGuid, RPackageCommandId.icmdImportDatasetUrl) {
         }
 
+        protected override void SetStatus() {
+            Enabled = RSession.IsHostRunning;
+        }
+
         protected override void Handle() {
             base.Handle();
 

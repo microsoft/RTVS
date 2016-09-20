@@ -70,6 +70,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Syntax error.
+        /// </summary>
+        public static string ConfigurationError_Syntax {
+            get {
+                return ResourceManager.GetString("ConfigurationError_Syntax", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Dismiss.
         /// </summary>
         public static string Dismiss {
@@ -93,6 +102,15 @@ namespace Microsoft.R.Components {
         public static string DoNotShowThisAgain {
             get {
                 return ResourceManager.GetString("DoNotShowThisAgain", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The connection string appears to be in incorrect format. Would you like to re-created it?.
+        /// </summary>
+        public static string Error_ConnectionStringFormat {
+            get {
+                return ResourceManager.GetString("Error_ConnectionStringFormat", resourceCulture);
             }
         }
         
@@ -732,6 +750,24 @@ namespace Microsoft.R.Components {
         public static string Ready {
             get {
                 return ResourceManager.GetString("Ready", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to # File content was generated on {0}..
+        /// </summary>
+        public static string SettingsFileGeneratedStamp {
+            get {
+                return ResourceManager.GetString("SettingsFileGeneratedStamp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to # Application settings file..
+        /// </summary>
+        public static string SettingsFileHeader {
+            get {
+                return ResourceManager.GetString("SettingsFileHeader", resourceCulture);
             }
         }
         

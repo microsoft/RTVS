@@ -2,7 +2,7 @@
 <VSTemplate Version="3.0.0" Type="Item" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">
   <TemplateData>
     <Name>R Markdown</Name>
-    <Description>R Markdown</Description>
+    <Description Package="{6D7C5336-C0CA-4857-A7E7-2E964EA836BF}" ID="3012" />
     <Icon>RmdFile.ico</Icon>
     <TemplateID>Microsoft.RTools.EmptyRMD</TemplateID>
     <ProjectType>R</ProjectType>

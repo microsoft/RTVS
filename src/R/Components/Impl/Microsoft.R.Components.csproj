@@ -33,6 +33,7 @@
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
@@ -52,6 +53,23 @@
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Application\Configuration\ConfigurationSetting.cs" />
+    <Compile Include="Application\Configuration\ConfigurationSettingAttributeNames.cs" />
+    <Compile Include="Application\Configuration\ConfigurationSettingCollection.cs" />
+    <Compile Include="Application\Configuration\ConfigurationSettingCollectionExtensions.cs" />
+    <Compile Include="Application\Configuration\Definitions\ConfigurationSettingValueType.cs" />
+    <Compile Include="Application\Configuration\Definitions\IConfigurationSetting.cs" />
+    <Compile Include="Application\Configuration\Definitions\IConfigurationSettingCollection.cs" />
+    <Compile Include="Application\Configuration\Definitions\IConfigurationSettingsReader.cs" />
+    <Compile Include="Application\Configuration\Definitions\IConfigurationSettingsWriter.cs" />
+    <Compile Include="Application\Configuration\Definitions\IConfigurationSettingUIEditorProvider.cs" />
+    <Compile Include="Application\Configuration\Editors\SettingPropertyDescriptor.cs" />
+    <Compile Include="Application\Configuration\Editors\SettingsTypeDescriptor.cs" />
+    <Compile Include="Application\Configuration\IO\ConfigurationSettingsReader.cs" />
+    <Compile Include="Application\Configuration\IO\ConfigurationSettingsWriter.cs" />
+    <Compile Include="Application\Configuration\ObservableNameValue.cs" />
+    <Compile Include="Application\Configuration\Parser\ConfigurationError.cs" />
+    <Compile Include="Application\Configuration\Parser\ConfigurationParser.cs" />
     <Compile Include="ContentTypes\RContentTypeDefinition.cs" />
     <Compile Include="Controller\AsyncCommandController.cs" />
     <Compile Include="Controller\CommandResult.cs" />
@@ -218,12 +236,16 @@
     <Compile Include="Settings\IRSettings.cs" />
     <Compile Include="Settings\Mirrors\CranMirrorEntry.cs" />
     <Compile Include="Settings\Mirrors\CranMirrorList.cs" />
+    <Compile Include="Sql\ConnectionStringConverter.cs" />
+    <Compile Include="Sql\DbConnectionService.cs" />
+    <Compile Include="Sql\IDbConnectionService.cs" />
     <Compile Include="TextBuffer\ITextBufferListener.cs" />
     <Compile Include="TextBuffer\TextBufferListenerEventArgs.cs" />
     <Compile Include="TextBuffer\TextBufferListenerEvents.cs" />
     <Compile Include="View\IVisualComponent.cs" />
     <Compile Include="View\IVisualComponentContainer.cs" />
     <Compile Include="View\IVisualComponentContainerFactory.cs" />
+    <Compile Include="Workspace\IWorkspaceServices.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">

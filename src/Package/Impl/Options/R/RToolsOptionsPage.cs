@@ -75,7 +75,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [LocCategory("Settings_HistoryCategory")]
         [CustomLocDisplayName("Settings_MultilineHistorySelection")]
         [LocDescription("Settings_MultilineHistorySelection_Description")]
-        [DefaultValue(false)]
+        [DefaultValue(true)]
         public bool MultilineHistorySelection {
             get { return RToolsSettings.Current.MultilineHistorySelection; }
             set { RToolsSettings.Current.MultilineHistorySelection = value; }

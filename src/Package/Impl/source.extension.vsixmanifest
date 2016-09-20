@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="Microsoft.RTVS" Version="0.4" Language="en-US" Publisher="Microsoft" />
+    <Identity Id="Microsoft.RTVS" Version="0.5" Language="en-US" Publisher="Microsoft" />
     <DisplayName>R Tools for Visual Studio</DisplayName>
     <Description xml:space="preserve">R Tools for Visual Studio</Description>
   </Metadata>
@@ -20,6 +20,8 @@
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Wpf.dll" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.dll" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.VisualStudio.ImageCatalog.dll" />
+    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.Data.ConnectionUI.dll" />
+    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.Data.ConnectionUI.Dialog.dll" />
     <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Debugger.dll" />
     <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Host.Client.dll" />
     <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Common.Core.dll" />

@@ -1,23 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Include>
   <!--<?foreach Lcid in $(var.LcidList)?>-->
-    <!--<DirectoryRef Id="ItemTemplatesInstallFolder_$(var.Lcid)">-->
-      <DirectoryRef Id="ItemTemplatesInstallFolder">
-        <Component Id="ItemTemplates_$(var.Lcid)" Guid="{A34A0987-D8B9-4407-ABB6-E71A21985242}">
-        <File Id="ItemTemplates_datasetrd_$(var.Lcid)" Source="$(var.ItemTemplatesDir)\$(var.Lcid)\datasetrd.zip" />
-        <File Id="ItemTemplates_emptymd_$(var.Lcid)" Source="$(var.ItemTemplatesDir)\$(var.Lcid)\emptymd.zip" />
-        <File Id="ItemTemplates_emptyrd_$(var.Lcid)" Source="$(var.ItemTemplatesDir)\$(var.Lcid)\emptyrd.zip" />
-        <File Id="ItemTemplates_emptyrmd_$(var.Lcid)" Source="$(var.ItemTemplatesDir)\$(var.Lcid)\emptyrmd.zip" />
-        <File Id="ItemTemplates_functionrd_$(var.Lcid)" Source="$(var.ItemTemplatesDir)\$(var.Lcid)\functionrd.zip" />
-        <File Id="ItemTemplates_rscript_$(var.Lcid)" Source="$(var.ItemTemplatesDir)\$(var.Lcid)\rscript.zip" />
-        <File Id="ItemTemplates_TextFile_$(var.Lcid)" Source="$(var.ItemTemplatesDir)\$(var.Lcid)\TextFile.zip" />
-        <File Id="ItemTemplates_WebHtmlPage_$(var.Lcid)" Source="$(var.ItemTemplatesDir)\$(var.Lcid)\WebHtmlPage.zip" />
-        <File Id="ItemTemplates_WebStyleSheet_$(var.Lcid)" Source="$(var.ItemTemplatesDir)\$(var.Lcid)\WebStyleSheet.zip" />
-        <File Id="ItemTemplates_XMLFile_$(var.Lcid)" Source="$(var.ItemTemplatesDir)\$(var.Lcid)\XMLFile.zip" />
-        <File Id="ItemTemplates_XMLSchema_$(var.Lcid)" Source="$(var.ItemTemplatesDir)\$(var.Lcid)\XMLSchema.zip" />
-        <File Id="ItemTemplates_XSLTFile_$(var.Lcid)" Source="$(var.ItemTemplatesDir)\$(var.Lcid)\XSLTFile.zip" />
-      </Component>
-    </DirectoryRef>
+  <!--<DirectoryRef Id="ItemTemplatesInstallFolder_$(var.Lcid)">-->
+  <DirectoryRef Id="ItemTemplatesInstallFolder">
+    <Component Id="ItemTemplates_$(var.Lcid)" Guid="{A34A0987-D8B9-4407-ABB6-E71A21985242}">
+      <File Id="ItemTemplates_datasetrd_$(var.Lcid)" Source="$(var.ItemTemplatesDir)\$(var.Lcid)\datasetrd.zip" />
+      <File Id="ItemTemplates_emptymd_$(var.Lcid)" Source="$(var.ItemTemplatesDir)\$(var.Lcid)\emptymd.zip" />
+      <File Id="ItemTemplates_emptyrd_$(var.Lcid)" Source="$(var.ItemTemplatesDir)\$(var.Lcid)\emptyrd.zip" />
+      <File Id="ItemTemplates_emptyrmd_$(var.Lcid)" Source="$(var.ItemTemplatesDir)\$(var.Lcid)\emptyrmd.zip" />
+      <File Id="ItemTemplates_functionrd_$(var.Lcid)" Source="$(var.ItemTemplatesDir)\$(var.Lcid)\functionrd.zip" />
+      <File Id="ItemTemplates_rscript_$(var.Lcid)" Source="$(var.ItemTemplatesDir)\$(var.Lcid)\rscript.zip" />
+      <File Id="ItemTemplates_sqlquery_$(var.Lcid)" Source="$(var.ItemTemplatesDir)\$(var.Lcid)\sqlquery.zip" />
+      <File Id="ItemTemplates_SqlSProc_$(var.Lcid)" Source="$(var.ItemTemplatesDir)\$(var.Lcid)\SqlSProc.zip" />
+      <File Id="ItemTemplates_TextFile_$(var.Lcid)" Source="$(var.ItemTemplatesDir)\$(var.Lcid)\TextFile.zip" />
+      <File Id="ItemTemplates_WebHtmlPage_$(var.Lcid)" Source="$(var.ItemTemplatesDir)\$(var.Lcid)\WebHtmlPage.zip" />
+      <File Id="ItemTemplates_WebStyleSheet_$(var.Lcid)" Source="$(var.ItemTemplatesDir)\$(var.Lcid)\WebStyleSheet.zip" />
+      <File Id="ItemTemplates_XMLFile_$(var.Lcid)" Source="$(var.ItemTemplatesDir)\$(var.Lcid)\XMLFile.zip" />
+      <File Id="ItemTemplates_XMLSchema_$(var.Lcid)" Source="$(var.ItemTemplatesDir)\$(var.Lcid)\XMLSchema.zip" />
+      <File Id="ItemTemplates_XSLTFile_$(var.Lcid)" Source="$(var.ItemTemplatesDir)\$(var.Lcid)\XSLTFile.zip" />
+    </Component>
+  </DirectoryRef>
   <!--<?endforeach?>-->
 </Include>
 

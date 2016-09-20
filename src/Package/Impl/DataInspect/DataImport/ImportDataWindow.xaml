@@ -10,7 +10,7 @@
                  mc:Ignorable="d" MinHeight="500" MinWidth="728" x:Name="Self"
                  ShowInTaskbar="False" WindowStyle="SingleBorderWindow"
                  Background="{DynamicResource {x:Static wpf:Brushes.BackgroundBrushKey}}"
-                 Foreground="{DynamicResource {x:Static wpf:Brushes.UIText}}"
+                 Foreground="{DynamicResource {x:Static wpf:Brushes.UITextKey}}"
                  Title="{x:Static pkg:Resources.ImportData_Title}">
     <ui:DialogWindow.Resources>
         <ResourceDictionary>
@@ -41,7 +41,7 @@
             </Grid.ColumnDefinitions>
             <TextBox Grid.Column="0" x:Name="FilePathBox" MinHeight="20" VerticalContentAlignment="Center" 
                      Background="{DynamicResource {x:Static wpf:Brushes.BackgroundBrushKey}}" 
-                     Foreground="{DynamicResource {x:Static wpf:Brushes.UIText}}" 
+                     Foreground="{DynamicResource {x:Static wpf:Brushes.UITextKey}}" 
                      IsReadOnly="True"/>
             <Button Grid.Column="2" x:Name="FileOpenButton" Padding="0" Content="..." Click="FileOpenButton_Click" VerticalAlignment="Center"
                     Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" MinHeight="22" MinWidth="22" 
@@ -51,7 +51,7 @@
             <RadioButton Grid.Column="6" x:Name="TabFrame" GroupName="Tabs" Template="{StaticResource TabHeaderToggleButton}" Content="Data Frame" IsChecked="True" />
         </Grid>
 
-        <Border Grid.Row="1" Margin="12,12,12,0" BorderThickness="0,1,1,1" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" VerticalAlignment="Stretch">
+        <Border Grid.Row="1" Margin="12,12,12,0" BorderThickness="0,1,1,1" BorderBrush="{DynamicResource {x:Static wpf:Brushes.ActiveBorderKey}}" VerticalAlignment="Stretch">
             <Grid Margin="0,-0.333,0,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="30*" MinWidth="210" />
@@ -148,7 +148,7 @@
                 </Grid>
 
                 <GridSplitter Grid.Column="1" Width="4" HorizontalAlignment="Center" VerticalAlignment="Stretch" BorderThickness="1,0"
-                              Background="{DynamicResource {x:Static wpf:Brushes.SplitterBackgroundKey}}" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
+                              Background="{DynamicResource {x:Static wpf:Brushes.SplitterBackgroundKey}}" BorderBrush="{DynamicResource {x:Static wpf:Brushes.ActiveBorderKey}}" />
 
                 <!-- right side -->
                 <Grid Grid.Column="2">
@@ -224,7 +224,7 @@
             <TextBlock Grid.Column="0" x:Name="ProgressBarText" 
                        HorizontalAlignment="Center" VerticalAlignment="Center"
                        Background="Transparent"
-                       Foreground="{DynamicResource {x:Static wpf:Brushes.UIText}}"/>
+                       Foreground="{DynamicResource {x:Static wpf:Brushes.UITextKey}}"/>
             <Button Grid.Column="1" x:Name="RunButton" MinWidth="86" MinHeight="24" Margin="0,12" 
                     Content="{x:Static components:Resources.Ok}" Click="RunButton_Click" 
                     PreviewKeyUp="RunButton_PreviewKeyUp"

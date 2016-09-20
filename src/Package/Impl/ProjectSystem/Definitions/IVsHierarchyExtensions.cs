@@ -3,14 +3,15 @@
 
 using Microsoft.R.Components.Extensions;
 using Microsoft.VisualStudio.ProjectSystem;
+using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
+using System.Linq;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 #endif
 #if VS15
 using Microsoft.VisualStudio.ProjectSystem.Properties;
 #endif
-using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     internal static class IVsHierarchyExtensions {
@@ -30,16 +31,27 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         /// Convenient way to get to the UnconfiguredProject from the hierarchy
         /// </summary>
         public static UnconfiguredProject GetUnconfiguredProject(this IVsHierarchy hierarchy) {
-            VsAppShell.Current.AssertIsOnMainThread();
-            IVsBrowseObjectContext context = hierarchy as IVsBrowseObjectContext;
-            if (context == null) {
-                EnvDTE.Project dteProject = hierarchy.GetDTEProject();
-                if (dteProject != null) {
-                    context = dteProject.Object as IVsBrowseObjectContext;
-                }
-            }
+            return hierarchy.GetBrowseObjectContext()?.UnconfiguredProject;
+        }
 
-            return context?.UnconfiguredProject;
+        /// <summary>
+        /// Convenient way to get to the ConfiguredProject from the hierarchy
+        /// </summary>
+        public static ConfiguredProject GetConfiguredProject(this IVsHierarchy hierarchy) {
+            return hierarchy.GetBrowseObjectContext()?.UnconfiguredProject?.LoadedConfiguredProjects?.FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Convenient way to get to the UnconfiguredProject from the hierarchy
+        /// </summary>
+        public static IVsBrowseObjectContext GetBrowseObjectContext(this IVsHierarchy hierarchy) {
+            VsAppShell.Current.AssertIsOnMainThread();
+            var context = hierarchy as IVsBrowseObjectContext;
+            if (context == null) {
+                var dteProject = hierarchy.GetDTEProject();
+                context = dteProject?.Object as IVsBrowseObjectContext;
+            }
+            return context;
         }
     }
 }

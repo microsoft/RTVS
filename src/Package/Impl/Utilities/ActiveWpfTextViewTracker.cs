@@ -10,6 +10,7 @@ using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.Utilities {
@@ -79,16 +80,14 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         }
 
         private IWpfTextView GetWpfTextView(IVsWindowFrame frame) {
-            if (frame == null) {
-                return null;
+            IVsTextView textView = null;
+            if (frame != null) {
+                try {
+                    textView = VsShellUtilities.GetTextView(frame);
+                    // IDE occasionally throws 'not implemented' on close
+                } catch (NotImplementedException) { }
             }
-
-            var textView = VsShellUtilities.GetTextView(frame);
-            if (textView == null) {
-                return null;
-            }
-
-            return _editorAdaptersFactory.GetWpfTextView(textView);
+            return textView != null ? _editorAdaptersFactory.GetWpfTextView(textView) : null;
         }
     }
 }

@@ -23,22 +23,25 @@ namespace Microsoft.VisualStudio.R.Package.Wpf {
         private static void OverrideBrushes() {
             Brushes.ActiveBorderKey = VsBrushes.ActiveBorderKey;
             Brushes.BorderBrushKey = VsBrushes.BrandedUIBorderKey;
+            Brushes.ButtonFaceBrushKey = VsBrushes.ButtonFaceKey;
+            Brushes.ButtonTextBrushKey = VsBrushes.ButtonTextKey;
             Brushes.ComboBoxBorderKey = VsBrushes.ComboBoxBorderKey;
             Brushes.ControlLinkTextHoverKey = VsBrushes.ControlLinkTextHoverKey;
             Brushes.ControlLinkTextKey = VsBrushes.ControlLinkTextKey;
-            Brushes.DetailPaneBackground = VsBrushes.BrandedUIBackgroundKey;
-            Brushes.HeaderBackground = VsBrushes.BrandedUIBackgroundKey;
+            Brushes.DetailPaneBackgroundKey = VsBrushes.BrandedUIBackgroundKey;
+            Brushes.GrayTextBrushKey = VsBrushes.GrayTextKey;
+            Brushes.HeaderBackgroundKey = VsBrushes.BrandedUIBackgroundKey;
             Brushes.InfoBackgroundKey = VsBrushes.InfoBackgroundKey;
             Brushes.InfoTextKey = VsBrushes.InfoTextKey;
-            Brushes.LegalMessageBackground = VsBrushes.BrandedUIBackgroundKey;
-            Brushes.ListPaneBackground = VsBrushes.BrandedUIBackgroundKey;
+            Brushes.LegalMessageBackgroundKey = VsBrushes.BrandedUIBackgroundKey;
+            Brushes.ListPaneBackgroundKey = VsBrushes.BrandedUIBackgroundKey;
             Brushes.SplitterBackgroundKey = VsBrushes.CommandShelfBackgroundGradientKey;
             Brushes.ToolWindowBorderKey = VsBrushes.ToolWindowBorderKey;
             Brushes.ToolWindowButtonDownBorderKey = VsBrushes.ToolWindowButtonDownBorderKey;
             Brushes.ToolWindowButtonDownKey = VsBrushes.ToolWindowButtonDownKey;
             Brushes.ToolWindowButtonHoverActiveBorderKey = VsBrushes.ToolWindowButtonHoverActiveBorderKey;
             Brushes.ToolWindowButtonHoverActiveKey = VsBrushes.ToolWindowButtonHoverActiveKey;
-            Brushes.UIText = VsBrushes.BrandedUITextKey;
+            Brushes.UITextKey = VsBrushes.BrandedUITextKey;
             Brushes.WindowTextKey = VsBrushes.WindowTextKey;
             Brushes.WindowKey = VsBrushes.WindowKey;
 
@@ -53,14 +56,20 @@ namespace Microsoft.VisualStudio.R.Package.Wpf {
             Brushes.IndicatorFillBrushKey = ProgressBarColors.IndicatorFillBrushKey;
 
             var colorResources = GetColorResources();
-            Brushes.BackgroundBrushKey = colorResources["BackgroundBrushKey"];
-            Brushes.ContentMouseOverBrushKey = colorResources["ContentMouseOverBrushKey"];
-            Brushes.ContentMouseOverTextBrushKey = colorResources["ContentMouseOverTextBrushKey"];
-            Brushes.ContentInactiveSelectedBrushKey = colorResources["ContentInactiveSelectedBrushKey"];
-            Brushes.ContentInactiveSelectedTextBrushKey = colorResources["ContentInactiveSelectedTextBrushKey"];
-            Brushes.ContentSelectedBrushKey = colorResources["ContentSelectedBrushKey"];
-            Brushes.ContentSelectedTextBrushKey = colorResources["ContentSelectedTextBrushKey"];
-            Brushes.ContentBrushKey = colorResources["ContentBrushKey"];
+            Brushes.BackgroundBrushKey = colorResources.TryGetThemeKey("BackgroundBrushKey");
+            Brushes.ContentMouseOverBrushKey = colorResources.TryGetThemeKey("ContentMouseOverBrushKey");
+            Brushes.ContentMouseOverTextBrushKey = colorResources.TryGetThemeKey("ContentMouseOverTextBrushKey");
+            Brushes.ContentInactiveSelectedBrushKey = colorResources.TryGetThemeKey("ContentInactiveSelectedBrushKey");
+            Brushes.ContentInactiveSelectedTextBrushKey = colorResources.TryGetThemeKey("ContentInactiveSelectedTextBrushKey");
+            Brushes.ContentSelectedBrushKey = colorResources.TryGetThemeKey("ContentSelectedBrushKey");
+            Brushes.ContentSelectedTextBrushKey = colorResources.TryGetThemeKey("ContentSelectedTextBrushKey");
+            Brushes.ContentBrushKey = colorResources.TryGetThemeKey("ContentBrushKey");
+        }
+
+        private static object TryGetThemeKey(this IDictionary<string, ThemeResourceKey> dict, string name) {
+            ThemeResourceKey k;
+            dict.TryGetValue(name, out k);
+            return k;
         }
 
         private static void OverrideStyleKeys() {
@@ -68,6 +77,8 @@ namespace Microsoft.VisualStudio.R.Package.Wpf {
             StyleKeys.ThemedComboStyleKey = new ComponentResourceKey(comboBoxType, "ThemedComboBoxStyle");
             StyleKeys.ScrollBarStyleKey = VsResourceKeys.ScrollBarStyleKey;
             StyleKeys.ScrollViewerStyleKey = VsResourceKeys.ScrollViewerStyleKey;
+            StyleKeys.ButtonStyleKey = VsResourceKeys.ButtonStyleKey;
+            StyleKeys.TextBoxStyleKey = VsResourceKeys.TextBoxStyleKey;
         }
 
         private static IDictionary<string, ThemeResourceKey> GetColorResources() {

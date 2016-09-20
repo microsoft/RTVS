@@ -136,14 +136,21 @@ namespace Microsoft.R.Editor.Completion {
                     return typedChar == '(' || typedChar == '\t' || (char.IsWhiteSpace(typedChar) && completionSet.SelectionStatus.IsUnique);
                 }
 
+                if (typedChar == '=') {
+                    var rset = completionSet as RCompletionSet;
+                    rset?.Filter(typedChar);
+                    rset?.SelectBestMatch();
+                }
+
+
                 switch (typedChar) {
+                    case '=':
                     case '<':
                     case '>':
                     case '+':
                     case '-':
                     case '*':
                     case '^':
-                    case '=':
                     case '%':
                     case '|':
                     case '&':
@@ -165,7 +172,7 @@ namespace Microsoft.R.Editor.Completion {
                     return false;
                 }
 
-                if(CharExtensions.IsLineBreak(typedChar)) {
+                if (CharExtensions.IsLineBreak(typedChar)) {
                     // Complete on Enter but only if selection does not exactly match
                     // applicable span. for example, if span is X and selection is X123
                     // then we do complete. However, if selection is X then text is already
@@ -349,10 +356,10 @@ namespace Microsoft.R.Editor.Completion {
 
         public override bool IsMuteCharacter(char typedCharacter) {
             if (typedCharacter == '=') {
-                bool equalsCompletion = CompletionSession.SelectedCompletionSet
-                                                         .SelectionStatus.Completion
+                bool? equalsCompletion = CompletionSession.SelectedCompletionSet?
+                                                         .SelectionStatus?.Completion
                                                          .InsertionText.TrimEnd().EndsWith("=", StringComparison.Ordinal);
-                if (equalsCompletion) {
+                if (equalsCompletion.HasValue && equalsCompletion.Value) {
                     return true;
                 }
             }

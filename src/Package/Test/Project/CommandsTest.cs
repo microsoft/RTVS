@@ -9,17 +9,18 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using FluentAssertions;
 using Microsoft.Common.Core.OS;
+using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.History;
-using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager;
-using Microsoft.R.Host.Client;
+using Microsoft.R.Components.Test.Fakes.InteractiveWindow;
+using Microsoft.R.Host.Client.Session;
 using Microsoft.UnitTests.Core.XUnit;
-using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Test.FakeFactories;
 using Microsoft.VisualStudio.R.Package.Test.Utility;
+using Microsoft.VisualStudio.ProjectSystem;
 using NSubstitute;
 using Xunit;
 #if VS14
@@ -30,14 +31,19 @@ using static Microsoft.UnitTests.Core.Threading.UIThreadTools;
 namespace Microsoft.VisualStudio.R.Package.Test.Repl {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
-    public class ProjectCommandsTest {
-        private readonly IRInteractiveWorkflowProvider _interactiveWorkflowProvider;
+    public class ProjectCommandsTest : IDisposable {
+        private readonly TestRInteractiveWorkflowProvider _interactiveWorkflowProvider;
 
         public ProjectCommandsTest() {
-            var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+            var sessionProvider = new RSessionProvider();
+            var connectionsProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IConnectionManagerProvider>();
             var historyProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRHistoryProvider>();
             var packagesProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRPackageManagerProvider>();
-            _interactiveWorkflowProvider = TestRInteractiveWorkflowProviderFactory.Create(sessionProvider, historyProvider, packagesProvider);
+            _interactiveWorkflowProvider = TestRInteractiveWorkflowProviderFactory.Create(nameof(ProjectCommandsTest), sessionProvider, connectionsProvider, historyProvider, packagesProvider);
+        }
+
+        public void Dispose() {
+            _interactiveWorkflowProvider.Dispose();
         }
 
         [Test]

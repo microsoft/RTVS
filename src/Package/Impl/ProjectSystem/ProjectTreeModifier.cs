@@ -3,14 +3,16 @@
 #if VS14
 using System.ComponentModel.Composition;
 using System.IO;
+using Microsoft.Common.Core;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
 using Microsoft.VisualStudio.ProjectSystem.Utilities.Designers;
+using Microsoft.VisualStudio.R.Package.Sql;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     [Export(typeof(IProjectTreeModifier))]
-    [AppliesTo(Constants.RtvsProjectCapability)]
+    [AppliesTo(ProjectConstants.RtvsProjectCapability)]
     internal sealed class ProjectTreeModifier : IProjectTreeModifier {
         public IProjectTree ApplyModifications(IProjectTree tree, IProjectTreeProvider projectTreeProvider) {
             if (tree != null) {
@@ -22,9 +24,12 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                         tree = tree.SetIcon(ProjectIconProvider.RFileNodeImage.ToProjectSystemType());
                     } else if (ext == ".rdata" || ext == ".rhistory") {
                         tree = tree.SetIcon(ProjectIconProvider.RDataFileNodeImage.ToProjectSystemType());
-                    }
-                    if (ext == ".md" || ext == ".rmd") {
+                    } else if (ext == ".md" || ext == ".rmd") {
                         tree = tree.SetIcon(KnownMonikers.MarkdownFile.ToProjectSystemType());
+                    } else if (tree.FilePath.EndsWithIgnoreCase(SProcFileExtensions.QueryFileExtension)) {
+                        tree = tree.SetIcon(KnownMonikers.DatabaseColumn.ToProjectSystemType());
+                    } else if (tree.FilePath.EndsWithIgnoreCase(SProcFileExtensions.SProcFileExtension)) {
+                        tree = tree.SetIcon(KnownMonikers.DatabaseStoredProcedures.ToProjectSystemType());
                     }
                 }
             }

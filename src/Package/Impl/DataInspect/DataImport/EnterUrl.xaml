@@ -10,7 +10,7 @@
                  ShowInTaskbar="False" WindowStyle="SingleBorderWindow"
                  mc:Ignorable="d" d:DesignWidth="500" MinWidth="700" MaxWidth="700" MinHeight="120" MaxHeight="120"
                  Background="{DynamicResource {x:Static wpf:Brushes.BackgroundBrushKey}}" 
-                 Foreground="{DynamicResource {x:Static wpf:Brushes.UIText}}"
+                 Foreground="{DynamicResource {x:Static wpf:Brushes.UITextKey}}"
                  Title="{x:Static pkg:Resources.ImportData_EnterUrlTitle}"
                  FocusManager.FocusedElement="{Binding ElementName=UrlTextBox}">
     <ui:DialogWindow.Resources>
@@ -32,9 +32,7 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <TextBlock Grid.Column="0" Text="URL:" VerticalAlignment="Center" />
-            <TextBox Grid.Column="2" x:Name="UrlTextBox" MinHeight="20" VerticalContentAlignment="Center" 
-                     Background="{DynamicResource {x:Static wpf:Brushes.WindowKey}}" 
-                     Foreground="{DynamicResource {x:Static wpf:Brushes.WindowTextKey}}"/>
+            <TextBox Grid.Column="2" x:Name="UrlTextBox" MinHeight="20" VerticalContentAlignment="Center" />
             <ProgressBar Grid.Column="2" x:Name="DownloadProgressBar" Visibility="Collapsed" Minimum="0" Maximum="100" />
         </Grid>
 
@@ -48,7 +46,8 @@
             </Grid.ColumnDefinitions>
             <Border x:Name="ErrorBlock" Grid.Row="0" Visibility="Collapsed" VerticalAlignment="Stretch" 
                     Background="{DynamicResource {x:Static wpf:Brushes.InfoBackgroundKey}}">
-                <TextBlock x:Name="ErrorText" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="6,0" />
+                <TextBlock x:Name="ErrorText" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="6,0" 
+                           Foreground="{DynamicResource {x:Static wpf:Brushes.InfoTextKey}}"/>
             </Border>
 
             <Button Grid.Column="2" x:Name="OkButton" MinWidth="86" MinHeight="24" 
