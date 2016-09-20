@@ -7,6 +7,7 @@ using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Extensions;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Projection;
 using Microsoft.VisualStudio.Utilities;
 
@@ -151,18 +152,31 @@ namespace Microsoft.Languages.Editor.Projection {
             return spans;
         }
 
-        private void SaveCaretPosition() {
+        private ITextCaret GetCaret() {
             var document = ServiceManager.GetService<IEditorDocument>(DiskBuffer);
             var textView = document?.TextBuffer.GetFirstView();
-            _savedCaretPosition = textView?.Caret.Position.BufferPosition.Position;
+            return textView?.Caret;
+        }
+
+        private int? GetCaretPosition() {
+            return GetCaret()?.Position.BufferPosition.Position;
+        }
+
+        private void SaveCaretPosition() {
+            _savedCaretPosition = GetCaretPosition();
         }
 
         private void RestoreCaretPosition() {
             if (_savedCaretPosition.HasValue) {
-                var document = ServiceManager.GetService<IEditorDocument>(DiskBuffer);
-                var textView = document?.TextBuffer.GetFirstView();
-                textView?.Caret.MoveTo(new SnapshotPoint(textView.TextBuffer.CurrentSnapshot, _savedCaretPosition.Value));
-                _savedCaretPosition = null;
+                var caretPosition = GetCaretPosition();
+                if (caretPosition.HasValue && caretPosition.Value != _savedCaretPosition.Value) {
+                    var document = ServiceManager.GetService<IEditorDocument>(DiskBuffer);
+                    var textView = document?.TextBuffer.GetFirstView();
+                    if (textView != null) {
+                        textView.Caret.MoveTo(new SnapshotPoint(textView.TextBuffer.CurrentSnapshot, _savedCaretPosition.Value));
+                    }
+                    _savedCaretPosition = null;
+                }
             }
         }
     }
