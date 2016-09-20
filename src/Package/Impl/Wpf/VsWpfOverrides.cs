@@ -22,7 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.Wpf {
 
         private static void OverrideBrushes() {
             Brushes.ActiveBorderKey = VsBrushes.ActiveBorderKey;
-            Brushes.BorderBrush = VsBrushes.BrandedUIBorderKey;
+            Brushes.BorderBrushKey = VsBrushes.BrandedUIBorderKey;
             Brushes.ComboBoxBorderKey = VsBrushes.ComboBoxBorderKey;
             Brushes.ControlLinkTextHoverKey = VsBrushes.ControlLinkTextHoverKey;
             Brushes.ControlLinkTextKey = VsBrushes.ControlLinkTextKey;

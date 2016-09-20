@@ -1,0 +1,94 @@
+﻿<UserControl x:Class="Microsoft.R.Components.Plots.Implementation.View.RPlotHistoryControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:Microsoft.R.Components.Plots.Implementation.View"
+             xmlns:vm="clr-namespace:Microsoft.R.Components.Plots.ViewModel"
+             xmlns:wpf="clr-namespace:Microsoft.Common.Wpf;assembly=Microsoft.R.Common.Wpf"
+             xmlns:rwpf="clr-namespace:Microsoft.R.Wpf;assembly=Microsoft.R.Wpf"
+             wpf:LambdaProperties.ImportedNamespaces="Microsoft.R.Components.Plots.ViewModel"
+             xmlns:designTime="clr-namespace:Microsoft.R.Components.Plots.Implementation.View.DesignTime"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance Type=designTime:DesignTimeRPlotHistoryViewModel, IsDesignTimeCreatable=True}"
+             d:DesignHeight="2000" d:DesignWidth="600"
+             Background="{DynamicResource {x:Static rwpf:Brushes.WindowKey}}"
+             Foreground="{DynamicResource {x:Static rwpf:Brushes.WindowTextKey}}">
+    <UserControl.Resources>
+        <CollectionViewSource x:Key="plotsByDevice" Source="{Binding Entries}">
+            <CollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription PropertyName="DeviceName" />
+            </CollectionViewSource.GroupDescriptions>
+        </CollectionViewSource>
+    </UserControl.Resources>
+    <Grid>
+        <TextBlock Visibility="{Binding Path=ShowWatermark, Converter={x:Static rwpf:Converters.FalseIsHidden}}"
+                   Background="{DynamicResource {x:Static rwpf:Brushes.WindowKey}}"
+                   Foreground="{DynamicResource {x:Static rwpf:Brushes.WindowTextKey}}"
+                   TextAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center"
+                   TextWrapping="Wrap">
+            <Run>Plot history is empty</Run>
+            <LineBreak/>
+            <LineBreak/>
+            <Run>Run plotting command in R Interactive Window</Run>
+        </TextBlock>
+
+        <ListView x:Name="HistoryListView"
+                  Visibility="{Binding Path=ShowWatermark, Converter={x:Static rwpf:Converters.TrueIsHidden}}"
+                  ItemsSource="{Binding Source={StaticResource plotsByDevice}}"
+                  SelectedItem="{Binding SelectedPlot}"
+                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                  Background="{DynamicResource {x:Static rwpf:Brushes.WindowKey}}"
+                  Foreground="{DynamicResource {x:Static rwpf:Brushes.WindowTextKey}}"
+                  SelectionMode="Single"
+                  BorderThickness="0"
+                  MouseMove="HistoryListView_MouseMove"
+                  PreviewMouseDown="HistoryListView_PreviewMouseDown"
+                  MouseRightButtonUp="HistoryListView_MouseRightButtonUp">
+            <ListView.GroupStyle>
+                <GroupStyle>
+                    <GroupStyle.ContainerStyle>
+                        <Style TargetType="{x:Type GroupItem}">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type GroupItem}">
+                                        <StackPanel>
+                                            <Expander Header="{Binding Name}"
+                                                      IsExpanded="True"
+                                                      Background="{DynamicResource {x:Static rwpf:Brushes.WindowKey}}"
+                                                      Foreground="{DynamicResource {x:Static rwpf:Brushes.WindowTextKey}}">
+                                                <ItemsPresenter Margin="4"/>
+                                            </Expander>
+                                            <Separator Margin="8 4 8 8"
+                                                       Foreground="{DynamicResource {x:Static rwpf:Brushes.BorderBrushKey}}"/>
+                                        </StackPanel>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </GroupStyle.ContainerStyle>
+                </GroupStyle>
+            </ListView.GroupStyle>
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel/>
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Image Margin="4"
+                           Source="{Binding PlotImage}"
+                           Width="{Binding Path=DataContext.ThumbnailSize, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListView}}}"
+                           Height="{Binding Path=DataContext.ThumbnailSize, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListView}}}"
+                           Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality"/>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <EventSetter Event="MouseDoubleClick" Handler="item_MouseDoubleClick"/>
+                    <EventSetter Event="KeyUp" Handler="item_KeyUp"/>
+                </Style>
+            </ListView.ItemContainerStyle>
+        </ListView>
+    </Grid>
+</UserControl>

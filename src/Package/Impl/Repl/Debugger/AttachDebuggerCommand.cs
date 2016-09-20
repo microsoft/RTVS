@@ -59,7 +59,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
 
             // If we have successfully attached, VS has switched to debugging UI context, which hides
             // the REPL window. Show it again and give it focus.
-            _interactiveWorkflow.ActiveWindow?.Container.Show(true);
+            _interactiveWorkflow.ActiveWindow?.Container.Show(true, immediate: false);
         }
     }
 }

@@ -19,8 +19,10 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         public T Component { get; set; }
 
-        public bool IsOnScreen {
-            get {
+        public bool IsOnScreen
+        {
+            get
+            {
                 if (VsWindowFrame == null) {
                     return false;
                 }
@@ -40,14 +42,16 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         public string StatusText
         {
-            get {
+            get
+            {
                 VsAppShell.Current.AssertIsOnMainThread();
                 string text = string.Empty;
                 var statusBar = VsAppShell.Current.GetGlobalService<IVsStatusbar>(typeof(SVsStatusbar));
                 ErrorHandler.ThrowOnFailure(statusBar.GetText(out text));
                 return text;
             }
-            set {
+            set
+            {
                 VsAppShell.Current.AssertIsOnMainThread();
                 var statusBar = VsAppShell.Current.GetGlobalService<IVsStatusbar>(typeof(SVsStatusbar));
                 statusBar.SetText(value);
@@ -63,24 +67,44 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         public void UpdateCommandStatus(bool immediate) {
             VsAppShell.Current.DispatchOnUIThread(() => {
-                var shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof (SVsUIShell));
+                var shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
                 shell.UpdateCommandUI(immediate ? 1 : 0);
             });
         }
 
-        public void Show(bool focus) {
+        public void Hide() {
             if (VsWindowFrame == null) {
                 return;
             }
 
             VsAppShell.Current.DispatchOnUIThread(() => {
+                ErrorHandler.ThrowOnFailure(VsWindowFrame.Hide());
+            });
+        }
+
+        public void Show(bool focus, bool immediate) {
+            if (VsWindowFrame == null) {
+                return;
+            }
+
+            if (immediate) {
+                VsAppShell.Current.AssertIsOnMainThread();
                 if (focus) {
                     ErrorHandler.ThrowOnFailure(VsWindowFrame.Show());
                     Component.Control?.Focus();
                 } else {
                     ErrorHandler.ThrowOnFailure(VsWindowFrame.ShowNoActivate());
                 }
-            });
+            } else {
+                VsAppShell.Current.DispatchOnUIThread(() => {
+                    if (focus) {
+                        ErrorHandler.ThrowOnFailure(VsWindowFrame.Show());
+                        Component.Control?.Focus();
+                    } else {
+                        ErrorHandler.ThrowOnFailure(VsWindowFrame.ShowNoActivate());
+                    }
+                });
+            }
         }
     }
 }

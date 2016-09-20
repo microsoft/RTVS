@@ -21,13 +21,13 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
             var interactiveWorkflow = _interactiveWorkflowProvider.GetOrCreate();
             var window = interactiveWorkflow.ActiveWindow;
             if (window != null) {
-                window.Container.Show(true);
+                window.Container.Show(true, immediate: false);
                  return;
             }
 
             interactiveWorkflow
                 .GetOrCreateVisualComponent(_componentContainerFactory)
-                .ContinueOnRanToCompletion(w => w.Container.Show(true));
+                .ContinueOnRanToCompletion(w => w.Container.Show(true, immediate: false));
         }
     }
 }

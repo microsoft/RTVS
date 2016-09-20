@@ -7,7 +7,7 @@ namespace Microsoft.R.Wpf {
     public static class Brushes {
         public static object ActiveBorderKey { get; set; } = SystemColors.ActiveBorderBrushKey;
         public static object BackgroundBrushKey { get; set; } = SystemColors.WindowBrushKey;
-        public static object BorderBrush { get; set; } = SystemColors.InactiveBorderBrushKey;
+        public static object BorderBrushKey { get; set; } = SystemColors.InactiveBorderBrushKey;
         public static object ComboBoxBorderKey { get; set; } = SystemColors.InactiveBorderBrushKey;
         public static object ContentBrushKey { get; set; } = SystemColors.WindowBrushKey;
         public static object ContentInactiveSelectedBrushKey { get; set; } = SystemColors.ControlTextBrushKey;
@@ -40,7 +40,7 @@ namespace Microsoft.R.Wpf {
         public static object ToolWindowButtonHoverActiveKey { get; set; } = SystemColors.WindowBrushKey;
         public static object UIText { get; set; } = SystemColors.ControlTextBrushKey;
         public static object WindowTextKey { get; set; } = SystemColors.WindowTextBrushKey;
-        public static object WindowKey { get; set; } = SystemColors.WindowColorKey;
+        public static object WindowKey { get; set; } = SystemColors.WindowBrushKey;
 
     }
 }

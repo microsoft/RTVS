@@ -873,6 +873,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to R Plot History.
+        /// </summary>
+        public static string PlotHistoryWindowCaption {
+            get {
+                return ResourceManager.GetString("PlotHistoryWindowCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R Plot.
         /// </summary>
         public static string PlotWindowCaption {
