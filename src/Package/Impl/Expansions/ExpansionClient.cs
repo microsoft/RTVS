@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Text;
+using Microsoft.Languages.Editor.Extensions;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Editor;
 using Microsoft.R.Editor.Document;
@@ -96,19 +97,25 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
         }
 
         public int GoToNextExpansionField() {
-            int hr = Session.GoToNextExpansionField(0);
-            if (VSConstants.S_OK != hr) {
-                var index = _currentFieldIndex < _markerCount - 1 ? _currentFieldIndex + 1 : 0;
-                hr = PositionCaretInField(index);
+            int hr = VSConstants.E_FAIL;
+            if (!TextView.IsStatementCompletionWindowActive()) {
+                hr = Session.GoToNextExpansionField(0);
+                if (VSConstants.S_OK != hr) {
+                    var index = _currentFieldIndex < _markerCount - 1 ? _currentFieldIndex + 1 : 0;
+                    hr = PositionCaretInField(index);
+                }
             }
             return hr;
         }
 
         public int GoToPreviousExpansionField() {
-            int hr = Session.GoToPreviousExpansionField();
-            if (VSConstants.S_OK != hr) {
-                var index = _currentFieldIndex > 0 ? _currentFieldIndex - 1 : _markerCount - 1;
-                hr = PositionCaretInField(index);
+            int hr = VSConstants.E_FAIL;
+            if (!TextView.IsStatementCompletionWindowActive()) {
+                hr = Session.GoToPreviousExpansionField();
+                if (VSConstants.S_OK != hr) {
+                    var index = _currentFieldIndex > 0 ? _currentFieldIndex - 1 : _markerCount - 1;
+                    hr = PositionCaretInField(index);
+                }
             }
             return hr;
         }

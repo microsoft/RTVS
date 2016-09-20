@@ -23,9 +23,9 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
         private void EnsurePaneVisible() {
             if (_pane == null) {
                 // TODO: consider using IVsOutputWindow3.CreatePane2 and colorize the output
-                IVsOutputWindow outputWindow = VsAppShell.Current.GetGlobalService<IVsOutputWindow>(typeof(SVsOutputWindow));
-                outputWindow.GetPane(ref _paneGuid, out _pane);
-                if (_pane == null) {
+                IVsOutputWindow outputWindow = VsAppShell.Current?.GetGlobalService<IVsOutputWindow>(typeof(SVsOutputWindow));
+                outputWindow?.GetPane(ref _paneGuid, out _pane);
+                if (_pane == null && outputWindow != null) {
                     outputWindow.CreatePane(ref _paneGuid, _windowName, fInitVisible: 1, fClearWithSolution: 1);
                     outputWindow.GetPane(ref _paneGuid, out _pane);
 
@@ -33,17 +33,17 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
                 }
             }
 
-            _pane.Activate();
+            _pane?.Activate();
 
-            DTE dte = VsAppShell.Current.GetGlobalService<DTE>();
-            Window window = dte.Windows.Item(EnvDTE.Constants.vsWindowKindOutput);
+            DTE dte = VsAppShell.Current?.GetGlobalService<DTE>();
+            Window window = dte?.Windows.Item(EnvDTE.Constants.vsWindowKindOutput);
             window?.Activate();
         }
 
         public Task WriteAsync(MessageCategory category, string message) {
 
             EnsurePaneVisible();
-            _pane.OutputStringThreadSafe(message);
+            _pane?.OutputStringThreadSafe(message);
 
             return Task.CompletedTask;
         }

@@ -89,6 +89,9 @@
     <Compile Include="Documentation\RoxygenBlock.cs" />
     <Compile Include="Document\Definitions\IREditorDocument.cs" />
     <Compile Include="Document\RDocumentFactory.cs" />
+    <Compile Include="DragDrop\DataObject.cs" />
+    <Compile Include="DragDrop\DropHandler.cs" />
+    <Compile Include="DragDrop\DropHandlerProvider.cs" />
     <Compile Include="EditorFactory\REditorInstance.cs" />
     <Compile Include="EditorFactory\REditorInstanceFactory.cs" />
     <Compile Include="Extensions\DocumentExtensions.cs" />

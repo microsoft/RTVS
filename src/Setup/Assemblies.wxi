@@ -15,6 +15,12 @@
       <File Source="$(var.BinDir)\Microsoft.R.Editor.dll" />
       <File Source="$(var.BinDir)\Microsoft.R.Host.Client.dll" />
       <File Source="$(var.BinDir)\Microsoft.R.Support.dll" />
+      <File Source="$(var.BinDir)\Microsoft.Data.ConnectionUI.dll" />
+      <File Source="$(var.BinDir)\Microsoft.Data.ConnectionUI.Dialog.dll" />
+      <File Source="$(var.BinDir)\Microsoft.SqlServer.Dac.dll" />
+      <File Source="$(var.BinDir)\Microsoft.SqlServer.Dac.Extensions.dll" />
+      <File Source="$(var.BinDir)\Microsoft.SqlServer.TransactSql.ScriptDom.dll" />
+      <File Source="$(var.BinDir)\Microsoft.SqlServer.Types.dll" />
       <File Source="$(var.BinDir)\Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.dll" />
       <File Source="$(var.BinDir)\Microsoft.VisualStudio.R.Package.dll" />
       <File Source="$(var.BinDir)\Microsoft.VisualStudio.R.Package.pkgdef" />

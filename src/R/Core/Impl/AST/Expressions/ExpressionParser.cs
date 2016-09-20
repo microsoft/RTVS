@@ -362,7 +362,7 @@ namespace Microsoft.R.Core.AST.Expressions {
                     FunctionCall functionCall = new FunctionCall();
                     functionCall.Parse(context, null);
 
-                    errorType =  HandleOperatorPrecedence(context, functionCall);
+                    errorType = HandleOperatorPrecedence(context, functionCall);
                     return OperationType.Function;
                 }
             }
@@ -504,11 +504,11 @@ namespace Microsoft.R.Core.AST.Expressions {
                     // on the stack has lower precedence than the current one.
                     // Example: in 'a+b*c*d+e' before pushing last + on the stack
                     // we need to make subtree out of b*c*d.
-                    if (associativity == Associativity.Left && 
+                    if (associativity == Associativity.Left &&
                         nextOperatorNode.Precedence < currentOperator.Precedence) {
                         break;
                     }
-                 }
+                }
             } while (_operators.Count > 1 && errorType == ParseErrorType.None);
 
             return errorType;
@@ -551,11 +551,15 @@ namespace Microsoft.R.Core.AST.Expressions {
                     return ParseErrorType.LeftOperandExpected;
                 }
 
-                operatorNode.LeftOperand = leftOperand;
-                operatorNode.RightOperand = rightOperand;
+                if (leftOperand.End <= operatorNode.Start && rightOperand.Start >= operatorNode.End) {
+                    operatorNode.LeftOperand = leftOperand;
+                    operatorNode.RightOperand = rightOperand;
 
-                operatorNode.AppendChild(leftOperand);
-                operatorNode.AppendChild(rightOperand);
+                    operatorNode.AppendChild(leftOperand);
+                    operatorNode.AppendChild(rightOperand);
+                } else {
+                    return ParseErrorType.UnexpectedToken;
+                }
             }
 
             _operands.Push(operatorNode);

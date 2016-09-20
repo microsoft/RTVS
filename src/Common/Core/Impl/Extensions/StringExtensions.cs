@@ -24,6 +24,9 @@ namespace Microsoft.Common.Core {
         public static bool EndsWithOrdinal(this string s, string suffix) {
             return s.EndsWith(suffix, StringComparison.Ordinal);
         }
+        public static bool EndsWith(this string s, char ch) {
+            return s.Length > 0 && s[s.Length - 1] == ch;
+        }
         public static int IndexOfIgnoreCase(this string s, string searchFor) {
             return s.IndexOf(searchFor, StringComparison.OrdinalIgnoreCase);
         }
@@ -41,6 +44,19 @@ namespace Microsoft.Common.Core {
         }
         public static bool ContainsIgnoreCase(this string s, string prefix) {
             return s.IndexOf(prefix, StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
+        public static string TrimQuotes(this string s) {
+            if (s.Length > 0) {
+                char quote = s[0];
+                if (quote == '\'' || quote == '\"') {
+                    if (s.Length > 1 && s[s.Length - 1] == quote) {
+                        return s.Substring(1, s.Length - 2);
+                    }
+                    return s.Substring(1);
+                }
+            }
+            return s;
         }
 
         public static string Replace(this string s, string oldValue, string newValue, int start, int length) {

@@ -1,6 +1,7 @@
 ﻿{
   "dependencies": {
     "MicroBuild.Core": "0.2.0",
+    "DataConnectionDialog": "1.2.0",
     "Microsoft.VisualStudio.CoreUtility": "14.2.25123",
     "Microsoft.VisualStudio.Text.Data": "14.2.25123",
     "Microsoft.VisualStudio.Text.Logic": "14.2.25123",

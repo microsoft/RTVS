@@ -12,6 +12,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Logging;
+using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Utilities;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
 #endif
@@ -195,7 +196,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
 
         private void EmptyQueue() {
             IFileSystemChange change;
-            while (_queue.TryDequeue(out change)) {}
+            while (_queue.TryDequeue(out change)) { }
         }
 
         private IFileSystemWatcher CreateFileSystemWatcher(NotifyFilters notifyFilter) {
@@ -207,19 +208,17 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
             return watcher;
         }
 
-        private static bool IsFileAllowed(string rootDirectory, string fullPath, IFileSystem fileSystem, IMsBuildFileSystemFilter filter, out string relativePath) {
-            if (!fullPath.StartsWithIgnoreCase(rootDirectory)) {
-                relativePath = null;
-                return false;
+        private static bool IsFileAllowed(string rootDirectory, string fullPath, IFileSystem fileSystem, IMsBuildFileSystemFilter filter, out string relativePath, out string shortRelativePath) {
+            relativePath = null;
+            shortRelativePath = null;
+            if (fullPath.StartsWithIgnoreCase(rootDirectory)) {
+                relativePath = PathHelper.MakeRelative(rootDirectory, fullPath);
+                try {
+                    shortRelativePath = fileSystem.ToShortRelativePath(fullPath, rootDirectory);
+                    return !string.IsNullOrEmpty(shortRelativePath) && filter.IsFileAllowed(relativePath, fileSystem.GetFileAttributes(fullPath));
+                } catch (IOException) { } catch (UnauthorizedAccessException) { } // File isn't allowed if it isn't accessible
             }
-
-            relativePath = PathHelper.MakeRelative(rootDirectory, fullPath);
-            try {
-                return filter.IsFileAllowed(relativePath, fileSystem.GetFileAttributes(fullPath));
-            } catch (IOException) {
-                // File isn't allowed if it isn't accessable
-                return false;
-            }
+            return false;
         }
 
         private interface IFileSystemChange {

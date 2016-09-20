@@ -77,7 +77,15 @@ namespace Microsoft.R.Editor.Signatures {
             functionCall = astRoot.GetSpecificNodeFromPosition<FunctionCall>(p, (x) => {
                 var fc = x as FunctionCall;
                 // Take into account incompleted argument lists line in 'func(a|'
-                return fc != null && (fc.Arguments.Contains(p) || (fc.CloseBrace == null && fc.Arguments.End == p));
+                if (fc != null && fc.OpenBrace.End <= p) {
+                    if (fc.CloseBrace != null) {
+                        return p <= fc.CloseBrace.Start; // between ( and )
+                    } else {
+                        // Take into account incomplete argument lists line in 'func(a|'
+                        return fc.Arguments.End == p;
+                    }
+                }
+                return false;
             });
 
             if (functionCall == null && position > 0) {

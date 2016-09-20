@@ -118,7 +118,9 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project {
         private async Task<ProjectItem> GetMsBuildItemByProjectItem(IProjectItem projectItem) {
             using (var access = await _projectLockService.ReadLockAsync()) {
                 var project = await access.GetProjectAsync(_configuredProject);
-                return project.GetItemsByEvaluatedInclude(projectItem.EvaluatedInclude).FirstOrDefault(pi => StringComparer.OrdinalIgnoreCase.Equals(pi.ItemType, projectItem.ItemType));
+                var item =  project.GetItemsByEvaluatedInclude(projectItem.EvaluatedInclude)
+                    .FirstOrDefault(pi => StringComparer.OrdinalIgnoreCase.Equals(pi.ItemType, projectItem.ItemType));
+                return item;
             }
         }
     }

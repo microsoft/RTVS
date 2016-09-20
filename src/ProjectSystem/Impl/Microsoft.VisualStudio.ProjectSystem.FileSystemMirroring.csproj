@@ -61,6 +61,7 @@
     <Compile Include="Project\FileSystemMirroringProject.cs" />
     <Compile Include="Project\FileSystemMirroringProjectUtilities.cs" />
     <Compile Include="Project\FileSystemMirroringProjectSourceItemProviderExtensionBase.cs" />
+    <Compile Include="Project\IProjectItemDependencyProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shell\IVsProjectGenerator.cs" />
     <Compile Include="Shell\IVsRegisterProjectGenerators.cs" />

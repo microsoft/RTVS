@@ -178,6 +178,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Database connection string.
+        /// </summary>
+        public static string ConnectionStringDescription {
+            get {
+                return ResourceManager.GetString("ConnectionStringDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Converting....
         /// </summary>
         public static string Converting {
@@ -377,6 +386,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to create SQL files. Exception: {0}.
+        /// </summary>
+        public static string Error_UnableGenerateSqlFiles {
+            get {
+                return ResourceManager.GetString("Error_UnableGenerateSqlFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot delete variable(s). Exception {0}.
         /// </summary>
         public static string Error_UnableToDeleteVariable {
@@ -400,6 +418,33 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Error_UnableToDownloadRClient_Timeout {
             get {
                 return ResourceManager.GetString("Error_UnableToDownloadRClient_Timeout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to load settings. Exception {0}.
+        /// </summary>
+        public static string Error_UnableToReadSettings {
+            get {
+                return ResourceManager.GetString("Error_UnableToReadSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to read SQL publishing settings from {0}. Exception: {1}.
+        /// </summary>
+        public static string Error_UnableToReadSqlPublishSettings {
+            get {
+                return ResourceManager.GetString("Error_UnableToReadSqlPublishSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to write to settings file {0}. Exception: {1}.
+        /// </summary>
+        public static string Error_UnableToSaveSettings {
+            get {
+                return ResourceManager.GetString("Error_UnableToSaveSettings", resourceCulture);
             }
         }
         
@@ -656,6 +701,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The specified settings file does not exist:.
+        /// </summary>
+        public static string Launch_SettingsFileDoesNotExist {
+            get {
+                return ResourceManager.GetString("Launch_SettingsFileDoesNotExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The specified startup file does not exist:.
+        /// </summary>
+        public static string Launch_StartupFileDoesNotExist {
+            get {
+                return ResourceManager.GetString("Launch_StartupFileDoesNotExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Load History.
         /// </summary>
         public static string LoadHistoryTitle {
@@ -783,6 +846,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;No *setting.R files found&gt;.
+        /// </summary>
+        public static string NoSettingFiles {
+            get {
+                return ResourceManager.GetString("NoSettingFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Off.
         /// </summary>
         public static string Off {
@@ -878,6 +950,24 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string PlotWindowCaption {
             get {
                 return ResourceManager.GetString("PlotWindowCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Run.
+        /// </summary>
+        public static string ProjectProperties_RunPageTitle {
+            get {
+                return ResourceManager.GetString("ProjectProperties_RunPageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Settings.
+        /// </summary>
+        public static string ProjectProperties_SettingsPageTitle {
+            get {
+                return ResourceManager.GetString("ProjectProperties_SettingsPageTitle", resourceCulture);
             }
         }
         
@@ -995,15 +1085,6 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Run.
-        /// </summary>
-        public static string RunPropertyPageTitle {
-            get {
-                return ResourceManager.GetString("RunPropertyPageTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Markdown Files (*.md;*.rmd;*.markdown)|*.md;*.rmd;*.markdown|.
         /// </summary>
         public static string SaveAsFilterMD {
@@ -1013,7 +1094,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R Language Files (*.r)|*.r|.
+        ///   Looks up a localized string similar to R Language Files (*.R)|*.R|.
         /// </summary>
         public static string SaveAsFilterR {
             get {
@@ -1803,6 +1884,69 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to R project settings come from Settings.R or *.Settings.R files that are located inside the project.{0}If there is no settings file, you can add variables and save the page. Default Settings.R will be created for you. You can also add settings file to the project via File | Add New Item.{0}Settings are stored as R code and the file can be sourced before running other modules thus pre-populating environment with the predefined settings..
+        /// </summary>
+        public static string SettingsPage_Explanation {
+            get {
+                return ResourceManager.GetString("SettingsPage_Explanation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The selected settings have changed. Do you want to save the file?.
+        /// </summary>
+        public static string SettingsPage_SavePrompt {
+            get {
+                return ResourceManager.GetString("SettingsPage_SavePrompt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;Name:.
+        /// </summary>
+        public static string SettingsPage_VariableNameLabel {
+            get {
+                return ResourceManager.GetString("SettingsPage_VariableNameLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Expression.
+        /// </summary>
+        public static string SettingsPage_VariableType_Expression {
+            get {
+                return ResourceManager.GetString("SettingsPage_VariableType_Expression", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to String.
+        /// </summary>
+        public static string SettingsPage_VariableType_String {
+            get {
+                return ResourceManager.GetString("SettingsPage_VariableType_String", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;Type:.
+        /// </summary>
+        public static string SettingsPage_VariableTypeLabel {
+            get {
+                return ResourceManager.GetString("SettingsPage_VariableTypeLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;Value:.
+        /// </summary>
+        public static string SettingsPage_VariableValueLabel {
+            get {
+                return ResourceManager.GetString("SettingsPage_VariableValueLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R Shiny.
         /// </summary>
         public static string ShinyWindowTitle {
@@ -1817,6 +1961,231 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string ShowDetailCommandTooltip {
             get {
                 return ResourceManager.GetString("ShowDetailCommandTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publishing complete. DACPAC: {0}.
+        /// </summary>
+        public static string SqlPublish_PublishDacpacSuccess {
+            get {
+                return ResourceManager.GetString("SqlPublish_PublishDacpacSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publishing complete. Connection {0}.
+        /// </summary>
+        public static string SqlPublish_PublishDatabaseSuccess {
+            get {
+                return ResourceManager.GetString("SqlPublish_PublishDatabaseSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publishing failed. Exception: {0}.
+        /// </summary>
+        public static string SqlPublish_PublishError {
+            get {
+                return ResourceManager.GetString("SqlPublish_PublishError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Square brackets.
+        /// </summary>
+        public static string SqlPublishDialog_BracketQuote {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_BracketQuote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Double quote.
+        /// </summary>
+        public static string SqlPublishDialog_DoubleQuote {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_DoubleQuote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File.
+        /// </summary>
+        public static string SqlPublishDialog_HeaderFile {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_HeaderFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stored Procedure.
+        /// </summary>
+        public static string SqlPublishDialog_HeaderSProc {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_HeaderSProc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Variable.
+        /// </summary>
+        public static string SqlPublishDialog_HeaderVariable {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_HeaderVariable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;No database connections&gt;.
+        /// </summary>
+        public static string SqlPublishDialog_NoDatabaseConnections {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_NoDatabaseConnections", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;No database projects&gt;.
+        /// </summary>
+        public static string SqlPublishDialog_NoDatabaseProjects {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_NoDatabaseProjects", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to None.
+        /// </summary>
+        public static string SqlPublishDialog_NoQuote {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_NoQuote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The selected project does not contain any R Script with SQL files..
+        /// </summary>
+        public static string SqlPublishDialog_NoSProcFiles {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_NoSProcFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publish.
+        /// </summary>
+        public static string SqlPublishDialog_PublishButton {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_PublishButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Quote type:.
+        /// </summary>
+        public static string SqlPublishDialog_QuoteType {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_QuoteType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to In stored procedure @script parameter.
+        /// </summary>
+        public static string SqlPublishDialog_RCodeInline {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_RCodeInline", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to In a separate table.
+        /// </summary>
+        public static string SqlPublishDialog_RCodeInTable {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_RCodeInTable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R code placement:.
+        /// </summary>
+        public static string SqlPublishDialog_RCodePlacement {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_RCodePlacement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Table name:.
+        /// </summary>
+        public static string SqlPublishDialog_TableName {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_TableName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Target:.
+        /// </summary>
+        public static string SqlPublishDialog_Target {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_Target", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publish to:.
+        /// </summary>
+        public static string SqlPublishDialog_TargetType {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_TargetType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DACPAC.
+        /// </summary>
+        public static string SqlPublishDialog_TargetTypeDacpac {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_TargetTypeDacpac", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Database.
+        /// </summary>
+        public static string SqlPublishDialog_TargetTypeDatabase {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_TargetTypeDatabase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Project.
+        /// </summary>
+        public static string SqlPublishDialog_TargetTypeProject {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_TargetTypeProject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R Code to SQL Publishing Options.
+        /// </summary>
+        public static string SqlPublishDialog_Title {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to package SQL stored procedure(s). Exception: {0}..
+        /// </summary>
+        public static string SqlPublishDialog_UnableToBuildDacPac {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_UnableToBuildDacPac", resourceCulture);
             }
         }
         

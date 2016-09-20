@@ -34,11 +34,15 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Composition\INamedExport.cs" />
+    <Compile Include="Composition\NamedExportLocator.cs" />
+    <Compile Include="Extensions\ClipboardExtensions.cs" />
     <Compile Include="Logging\FileLogWriter.cs" />
     <Compile Include="Logging\GeneralLog.cs" />
     <Compile Include="Logging\IActionLinesLog.cs" />

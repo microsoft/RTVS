@@ -9,6 +9,7 @@ using Microsoft.Common.Core.OS;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring;
 using Microsoft.VisualStudio.R.Package.Commands;
+using Microsoft.Common.Core;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
@@ -16,7 +17,7 @@ using Microsoft.VisualStudio.ProjectSystem.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     [ExportCommandGroup("AD87578C-B324-44DC-A12A-B01A6ED5C6E3")]
-    [AppliesTo(Constants.RtvsProjectCapability)]
+    [AppliesTo(ProjectConstants.RtvsProjectCapability)]
     internal sealed class OpenContainingFolderCommand : ICommandGroupHandler {
         private readonly UnconfiguredProject _unconfiguredProject;
 
@@ -36,9 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
             if (commandId == RPackageCommandId.icmdOpenContainingFolder) {
                 var path = nodes.GetSelectedFolderPath(_unconfiguredProject);
                 if (!string.IsNullOrEmpty(path)) {
-                    if (path.EndsWith("\\", StringComparison.Ordinal)) {
-                        path = path.Substring(0, path.Length - 1);
-                    }
+                    path = path.TrimTrailingSlash();
                     ProcessServices.Current.Start(Path.GetDirectoryName(path));
                 }
                 return true;

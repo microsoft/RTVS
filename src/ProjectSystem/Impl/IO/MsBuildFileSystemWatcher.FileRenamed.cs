@@ -30,17 +30,18 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
 
             public void Apply() {
                 string newRelativePath;
+                string newShortRelativePath;
                 if (!_oldFullPath.StartsWithIgnoreCase(_rootDirectory)) {
-                    if (IsFileAllowed(_rootDirectory, _fullPath, _fileSystem, _fileSystemFilter, out newRelativePath)) {
-                        _entries.AddFile(newRelativePath, _fileSystem.ToShortRelativePath(_fullPath, _rootDirectory));
+                    if (IsFileAllowed(_rootDirectory, _fullPath, _fileSystem, _fileSystemFilter, out newRelativePath, out newShortRelativePath)) {
+                        _entries.AddFile(newRelativePath, newShortRelativePath);
                     }
 
                     return;
                 }
 
                 var oldRelativePath = PathHelper.MakeRelative(_rootDirectory, _oldFullPath);
-                if (IsFileAllowed(_rootDirectory, _fullPath, _fileSystem, _fileSystemFilter, out newRelativePath)) {
-                    _entries.RenameFile(oldRelativePath, newRelativePath, _fileSystem.ToShortRelativePath(_fullPath, _rootDirectory));
+                if (IsFileAllowed(_rootDirectory, _fullPath, _fileSystem, _fileSystemFilter, out newRelativePath, out newShortRelativePath)) {
+                    _entries.RenameFile(oldRelativePath, newRelativePath, newShortRelativePath);
                 } else {
                     _entries.DeleteFile(oldRelativePath);
                 }

@@ -15,7 +15,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     [Export(typeof(IConfiguredRProjectExportProvider))]
-    [AppliesTo(Constants.RtvsProjectCapability)]
+    [AppliesTo(ProjectConstants.RtvsProjectCapability)]
     internal class ConfiguredRProjectExportProvider : IConfiguredRProjectExportProvider {
         public async Task<T> GetExportAsync<T>(UnconfiguredProject unconfigProject, string configurationName) {
             configurationName = configurationName.Replace("Any CPU", "AnyCPU");

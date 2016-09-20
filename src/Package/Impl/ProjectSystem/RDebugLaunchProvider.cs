@@ -24,7 +24,7 @@ using Microsoft.VisualStudio.ProjectSystem.VS.Debug;
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     // ExportDebugger must match rule name in ..\Rules\Debugger.xaml.
     [ExportDebugger("RDebugger")]
-    [AppliesTo(Constants.RtvsProjectCapability)]
+    [AppliesTo(ProjectConstants.RtvsProjectCapability)]
     internal class RDebugLaunchProvider : DebugLaunchProviderBase {
         private readonly ProjectProperties _properties;
         private readonly IRInteractiveWorkflow _interactiveWorkflow;

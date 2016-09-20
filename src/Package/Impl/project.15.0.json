@@ -1,6 +1,8 @@
 ﻿{
   "dependencies": {
     "MicroBuild.Core": "0.2.0",
+    "DataConnectionDialog": "1.2.0",
+    "Microsoft.SqlServer.DacFx.x86": "130.3370.2",
     "Microsoft.VisualStudio.ImageCatalog": "14.2.25123",
     "Microsoft.VisualStudio.ProjectSystem": "15.0.183-pre",
     "Microsoft.VisualStudio.SDK.EmbedInteropTypes": "14.1.2",

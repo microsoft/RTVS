@@ -61,6 +61,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
                     if (CurrentWindow != null) {
                         CurrentWindow.TextView.VisualElement.SizeChanged += VisualElement_SizeChanged;
+                        CurrentWindow.OutputBuffer.Changed += OutputBuffer_Changed;
                     }
                     await Session.StartHostAsync(startupInfo, new RSessionCallback(CurrentWindow, Session, _settings, _coreShell));
                 }
@@ -203,10 +204,43 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             });
         }
 
-        private void Write(string message) {
-            if (CurrentWindow != null) {
-                _coreShell.DispatchOnUIThread(() => CurrentWindow.Write(message));
+        /// <summary>
+        /// Workaround for interactive window that does not currently support
+        /// 'carriage return' i.e. writing into the same line
+        /// </summary>
+        private string _lastMessage;
+        private int _lastPosition = -1;
+        private void OutputBuffer_Changed(object sender, TextContentChangedEventArgs e) {
+            if (_lastMessage != null) {
+                // Writing messages in the same line (via simulated CR)
+                var m = _lastMessage; // Make sure it is null so we don't re-enter.
+                _lastMessage = null;
+                // Replace last written placeholder with the actual message
+                CurrentWindow.OutputBuffer.Replace(new Span(_lastPosition, 1), m);
             }
+        }
+
+        private void Write(string message) {
+            _coreShell.DispatchOnUIThread(() => {
+                if (CurrentWindow != null) {
+                    // If message starts with CR we remember current output buffer
+                    // length so we can continue writing lines into the same spot.
+                    // See txtProgressBar in R.
+                    if (message.Length > 1 && message[0] == '\r' && message[1] != '\n') {
+                        // Store the message and the initial position. All subsequent 
+                        // messages that start with CR. Will be written into the same place.
+                        _lastMessage = message.Substring(1);
+                        _lastPosition = _lastPosition < 0 ? CurrentWindow.OutputBuffer.CurrentSnapshot.Length : _lastPosition;
+                        message = "|"; // replacement placeholder so we can receive 'buffer changed' event
+                    } else {
+                        // Reset everything since the message is not of CR-type.
+                        _lastMessage = null;
+                        _lastPosition = -1;
+                    }
+                    CurrentWindow.Write(message);
+                    CurrentWindow.FlushOutput(); // Must flush so we do get 'buffer changed' immediately.
+                }
+            });
         }
 
         private void WriteError(string message) {

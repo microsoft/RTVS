@@ -8,6 +8,7 @@ using System.IO;
 using Microsoft.Common.Core.OS;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring;
+using Microsoft.Common.Core;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 #endif
@@ -33,9 +34,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
                     if (File.Exists(path)) {
                         path = Path.GetDirectoryName(path);
                     }
-                    if (path.EndsWith("\\", StringComparison.Ordinal)) {
-                        path = path.Substring(0, path.Length - 1);
-                    }
+
+                    path = path.TrimTrailingSlash();
                     var psi = new ProcessStartInfo();
                     SetFlags(psi, path);
                     ProcessServices.Current.Start(psi);
