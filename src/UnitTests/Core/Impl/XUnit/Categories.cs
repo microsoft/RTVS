@@ -62,6 +62,11 @@ namespace Microsoft.UnitTests.Core.XUnit {
         }
 
         [ExcludeFromCodeCoverage]
+        public class ConfigurationAttribute : CategoryAttribute {
+            public ConfigurationAttribute() : base("Configuration") { }
+        }
+
+        [ExcludeFromCodeCoverage]
         public class SurveyNewsAttribute : CategoryAttribute {
             public SurveyNewsAttribute() : base("SurveyNews") { }
         }
@@ -228,6 +233,11 @@ namespace Microsoft.UnitTests.Core.XUnit {
         [ExcludeFromCodeCoverage]
         public class ReplAttribute : CategoryAttribute {
             public ReplAttribute() : base("Repl") { }
+        }
+
+        [ExcludeFromCodeCoverage]
+        public class SqlAttribute : CategoryAttribute {
+            public SqlAttribute() : base("SQL") { }
         }
 
         [ExcludeFromCodeCoverage]

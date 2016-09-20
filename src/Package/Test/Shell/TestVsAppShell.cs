@@ -73,7 +73,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
                     var ctrs = ExportProvider.GetExportedValue<IContentTypeRegistryService>();
                     var contentType = ctrs.GetContentType(RContentTypeDefinition.ContentType);
                     _settingStorage = ComponentLocatorForOrderedContentType<IWritableSettingsStorage>
-                                            .FindFirstOrderedComponent(CompositionService, contentType);
+                                            .FindFirstOrderedComponent(contentType);
                 }
                 return _settingStorage;
             }

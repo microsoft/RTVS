@@ -2,13 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Diagnostics.CodeAnalysis;
-using System.Threading;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Mocks;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
@@ -63,7 +59,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
             workflow.RSession.Returns(session);
 
             var pss = Substitute.For<IProjectSystemServices>();
-            pss.GetSelectedProject().Returns((IVsProject)null);
+            pss.GetSelectedProject<IVsProject>().Returns((IVsProject)null);
             pss.GetActiveProject().Returns((EnvDTE.Project)null);
 
             var cmd = new SetDirectoryToProjectCommand(workflow, pss);
@@ -81,7 +77,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
                 });
 
             pss = Substitute.For<IProjectSystemServices>();
-            pss.GetSelectedProject().Returns(proj);
+            pss.GetSelectedProject<IVsProject>().Returns(proj);
 
             var proj2 = Substitute.For<EnvDTE.Project>();
             pss.GetActiveProject().Returns(proj2);

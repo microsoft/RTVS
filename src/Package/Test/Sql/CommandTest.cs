@@ -124,7 +124,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
 
             var cmd = new PublishSProcCommand(_appShell, _pss);
             cmd.TryHandleCommand(null, RPackageCommandId.icmdPublishSProc, false, 0, IntPtr.Zero, IntPtr.Zero).Should().BeTrue();
-            _appShell.Received().ShowErrorMessage(Resources.SqlPublishDialog_NoDbProject);
+            //_appShell.Received().ShowErrorMessage(Resources.SqlPublishDialog_NoDbProject);
         }
 
         [Test(ThreadType.UI)]

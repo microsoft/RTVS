@@ -43,6 +43,7 @@
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
@@ -225,10 +226,12 @@
     <Compile Include="Shell\TestVsAppShell.cs" />
     <Compile Include="Mocks\InteractiveWindowComponentContainerFactoryMock.cs" />
     <Compile Include="Sql\ExtensionsTest.cs" />
+    <Compile Include="Sql\PublishOptionsDialogModelTest.cs" />
+    <Compile Include="Sql\PublishOptionsDialogTest.cs" />
     <Compile Include="Sql\SProcGeneratorTest.cs" />
     <Compile Include="Sql\SettingsTest.cs" />
-    <Compile Include="Sql\PublishDialogTest.cs" />
     <Compile Include="Sql\CommandTest.cs" />
+    <Compile Include="Sql\SProcPublisherTest.cs" />
     <Compile Include="SurveyNews\SurveyNewsFeedClientTest.cs" />
     <Compile Include="SurveyNews\SurveyNewsServiceTest.cs" />
     <Compile Include="SurveyNews\SurveyNewsTestFilesFixture.cs" />

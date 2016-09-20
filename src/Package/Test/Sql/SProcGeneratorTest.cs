@@ -37,8 +37,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
         [Test]
         public void GenerateEmpty() {
             var fs = new FileSystem();
-            var g = new SProcGenerator(_coreShell, _pss, fs);
-            var settings = new SqlSProcPublishSettings(new string[0], fs);
+            var g = new SProcProjectFilesGenerator(_pss, fs);
+            var settings = new SqlSProcPublishSettings();
             g.Generate(settings, _project);
         }
 
@@ -49,8 +49,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
         [InlineData("sqlcode2.r", RCodePlacement.Table, SqlQuoteType.Quote, "a b")]
         public void Generate(string rFile, RCodePlacement codePlacement, SqlQuoteType quoteType, string sprocName) {
             var fs = new FileSystem();
-            var settings = new SqlSProcPublishSettings(new string[] { Path.Combine(_files.DestinationPath, rFile) }, fs);
-            var g = new SProcGenerator(_coreShell, _pss, fs);
+            var settings = new SqlSProcPublishSettings();
+            var g = new SProcProjectFilesGenerator(_pss, fs);
 
             var targetProjItem = Substitute.For<EnvDTE.ProjectItem>();
             var targetProjItems = Substitute.For<EnvDTE.ProjectItems>();
@@ -60,6 +60,13 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             rootProjItems.Item("R").Returns((EnvDTE.ProjectItem)null);
             rootProjItems.AddFolder("R").Returns(targetProjItem);
             _project.ProjectItems.Returns(rootProjItems);
+
+            var templateFile = Path.Combine(_files.DestinationPath, Path.GetFileNameWithoutExtension(rFile) + SProcFileExtensions.SProcFileExtension);
+
+            _pss.GetProjectFiles(_project).Returns(new string[] {
+                Path.Combine(_files.DestinationPath, rFile),
+                Path.Combine(_files.DestinationPath, Path.GetFileNameWithoutExtension(rFile) + SProcFileExtensions.QueryFileExtension),
+                templateFile });
 
             settings.CodePlacement = codePlacement;
             settings.QuoteType = quoteType;
@@ -73,8 +80,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
 
             targetProjItem.ProjectItems.Received().AddFromFile(sprocFile);
             if (codePlacement == RCodePlacement.Table) {
-                targetProjItem.ProjectItems.Received().AddFromFile(Path.Combine(targetFolder, SProcGenerator.PostDeploymentScriptName));
-                targetProjItem.ProjectItems.Received().AddFromFile(Path.Combine(targetFolder, SProcGenerator.CreateRCodeTableScriptName));
+                targetProjItem.ProjectItems.Received().AddFromFile(Path.Combine(targetFolder, SProcProjectFilesGenerator.PostDeploymentScriptName));
+                targetProjItem.ProjectItems.Received().AddFromFile(Path.Combine(targetFolder, SProcProjectFilesGenerator.CreateRCodeTableScriptName));
             }
 
             var mode = codePlacement == RCodePlacement.Inline ? "inline" : "table";
