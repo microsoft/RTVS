@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
@@ -21,11 +22,11 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
     public class SignatureTest {
         [Test]
         [Category.Interactive]
-        public void R_SignatureParametersMatch() {
+        public async Task R_SignatureParametersMatch() {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 FunctionRdDataProvider.HostStartTimeout = 10000;
                 using (new RHostScript(EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>())) {
-                    PrepareFunctionIndex();
+                    await PrepareFunctionIndex();
                     FunctionIndexUtility.GetFunctionInfoAsync("lm").Wait(3000);
 
                     script.Type("x <- lm(");
@@ -57,12 +58,12 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
 
         [Test]
         [Category.Interactive]
-        public void R_SignatureSessionNavigation() {
+        public async Task R_SignatureSessionNavigation() {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 FunctionRdDataProvider.HostStartTimeout = 10000;
                 using (new RHostScript(EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>())) {
-                    PrepareFunctionIndex();
-                    FunctionIndexUtility.GetFunctionInfoAsync("lm").Wait(3000);
+                    await PrepareFunctionIndex();
+                    var info = await FunctionIndexUtility.GetFunctionInfoAsync("lm");
 
                     script.Type("x <- lm(subset = a, sing");
                     script.DoIdle(1000);
@@ -92,13 +93,13 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
 
         [Test]
         [Category.Interactive]
-        public void R_EqualsCompletion01() {
+        public async Task R_EqualsCompletion01() {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
-                PrepareFunctionIndex();
-                FunctionIndexUtility.GetFunctionInfoAsync("addmargins").Wait(3000);
+                await PrepareFunctionIndex();
+                var info = await FunctionIndexUtility.GetFunctionInfoAsync("addmargins");
 
                 script.DoIdle(100);
-                script.Type("addmargins(FU");
+                script.Type("addmargins(Fu");
                 script.DoIdle(300);
                 script.Type("=");
                 script.DoIdle(300);
@@ -110,9 +111,9 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
             }
         }
 
-        private void PrepareFunctionIndex() {
+        private Task PrepareFunctionIndex() {
             FunctionIndex.Initialize();
-            FunctionIndex.BuildIndexAsync().Wait();
+            return FunctionIndex.BuildIndexAsync();
         }
     }
 }

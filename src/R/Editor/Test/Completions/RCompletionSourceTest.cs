@@ -32,7 +32,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         [Test]
         public void BaseFunctions02() {
             List<CompletionSet> completionSets = new List<CompletionSet>();
-            GetCompletions("f", 1, completionSets, new TextRange(0, 1));
+            GetCompletions("FAC", 3, completionSets, new TextRange(0, 3));
 
             completionSets.Should().ContainSingle();
             completionSets[0].Filter();
@@ -55,7 +55,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         [Test]
         public void Packages01() {
             List<CompletionSet> completionSets = new List<CompletionSet>();
-            GetCompletions("library(", 8, completionSets);
+            GetCompletions("librAry(", 8, completionSets);
 
             completionSets.Should().ContainSingle();
 
@@ -141,18 +141,6 @@ namespace Microsoft.R.Editor.Test.Completions {
                 completionSets.Should().NotBeEmpty();
                 completionSets[0].Completions.Should().NotBeEmpty();
             }
-        }
-
-        [Test]
-        public void CaseSentivity() {
-            List<CompletionSet> completionSets = new List<CompletionSet>();
-            GetCompletions("x <- T", 6, completionSets);
-
-            completionSets.Should().ContainSingle();
-            completionSets[0].Filter();
-
-            completionSets[0].Completions.Should().NotBeEmpty()
-                .And.OnlyContain(c => c.DisplayText[0] == 'T');
         }
 
         [Test]

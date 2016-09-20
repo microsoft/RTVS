@@ -81,13 +81,6 @@ namespace Microsoft.R.Support.RD.Parser {
                             sigInfo.Arguments.Add(new ArgumentInfo(name));
                         }
                     }
-                    // Relocate ..., if any, to the end
-                    var ellipsisArgument = sigInfo.Arguments.FirstOrDefault(x => x.IsEllipsis);
-                    if (ellipsisArgument != null) {
-                        int index = sigInfo.Arguments.IndexOf(ellipsisArgument);
-                        sigInfo.Arguments.RemoveAt(index);
-                        sigInfo.Arguments.Add(ellipsisArgument);
-                    }
 
                     // Add description if it is not there yet
                     foreach (var arg in sigInfo.Arguments.Where(x => string.IsNullOrEmpty(x.Description))) {

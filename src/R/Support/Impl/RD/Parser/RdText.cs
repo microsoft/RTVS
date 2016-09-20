@@ -16,7 +16,7 @@ namespace Microsoft.R.Support.RD.Parser {
                 context.Tokens.Position = endTokenIndex;
             }
 
-            return text;
+            return text.Trim();
         }
 
         public static string FromTokens(RdParseContext context, int startTokenIndex, int endTokenIndex) {
