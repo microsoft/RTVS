@@ -144,13 +144,13 @@ namespace Microsoft.R.Editor.Completion {
 
 
                 switch (typedChar) {
+                    case '=':
                     case '<':
                     case '>':
                     case '+':
                     case '-':
                     case '*':
                     case '^':
-                    case '=':
                     case '%':
                     case '|':
                     case '&':
