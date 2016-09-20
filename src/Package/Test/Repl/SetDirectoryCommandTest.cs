@@ -2,13 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Diagnostics.CodeAnalysis;
-using System.Threading;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Mocks;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
