@@ -22,7 +22,11 @@ namespace Microsoft.R.Components.Test.Fakes.VisualComponentFactories {
 
         public bool IsOnScreen => Visibility == Visibility.Visible;
 
-        public void Show(bool focus) {
+        public void Hide() {
+            Visibility = Visibility.Hidden;
+        }
+
+        public void Show(bool focus, bool immediate) {
             Visibility = Visibility.Visible;
         }
 

@@ -71,6 +71,7 @@
     <Compile Include="Application\Configuration\Parser\ConfigurationError.cs" />
     <Compile Include="Application\Configuration\Parser\ConfigurationParser.cs" />
     <Compile Include="ContentTypes\RContentTypeDefinition.cs" />
+    <Compile Include="Controller\AsyncCommandController.cs" />
     <Compile Include="Controller\CommandResult.cs" />
     <Compile Include="Controller\CommandStatus.cs" />
     <Compile Include="Controller\IAsyncCommand.cs" />
@@ -100,19 +101,6 @@
     <Compile Include="History\IRHistoryVisualComponentContainerFactory.cs" />
     <Compile Include="History\RHistoryCommandIds.cs" />
     <Compile Include="ContentTypes\RHistoryContentTypeDefinition.cs" />
-    <Compile Include="Plots\Implementation\Commands\EndLocatorCommand.cs" />
-    <Compile Include="Plots\Implementation\Commands\CopyPlotAsMetafileCommand.cs" />
-    <Compile Include="Plots\Implementation\Commands\CopyPlotAsBitmapCommand.cs" />
-    <Compile Include="Plots\Implementation\Commands\ExportPlotAsPdfCommand.cs" />
-    <Compile Include="Plots\Implementation\Commands\ExportPlotAsImageCommand.cs" />
-    <Compile Include="Plots\Implementation\Commands\RemoveAllPlotsCommand.cs" />
-    <Compile Include="Plots\Implementation\Commands\NextPlotCommand.cs" />
-    <Compile Include="Plots\Implementation\Commands\PlotCommand.cs" />
-    <Compile Include="Plots\Implementation\Commands\PreviousPlotCommand.cs" />
-    <Compile Include="Plots\Implementation\Commands\RemoveCurrentPlotCommand.cs" />
-    <Compile Include="Plots\Implementation\Commands\PlotCommands.cs" />
-    <Compile Include="Plots\Implementation\PlotMessageExtensions.cs" />
-    <Compile Include="Plots\IRPlotCommands.cs" />
     <Compile Include="InteractiveWorkflow\IActiveWpfTextViewTracker.cs" />
     <Compile Include="InteractiveWorkflow\IDebuggerModeTracker.cs" />
     <Compile Include="InteractiveWorkflow\IInteractiveWindowComponentContainerFactory.cs" />
@@ -167,21 +155,67 @@
     <Compile Include="PackageManager\IRPackageManagerVisualComponentContainerFactory.cs" />
     <Compile Include="PackageManager\ViewModel\IRPackageManagerViewModel.cs" />
     <Compile Include="PackageManager\Model\RPackageVersion.cs" />
+    <Compile Include="Plots\Commands\PlotDeviceNewCommand.cs" />
+    <Compile Include="Plots\Implementation\Commands\InteractiveWorkflowAsyncCommand.cs" />
+    <Compile Include="Plots\Implementation\Commands\PlotDeviceActivateCommand.cs" />
+    <Compile Include="Plots\Implementation\Commands\PlotDeviceCommand.cs" />
+    <Compile Include="Plots\Implementation\Commands\PlotDeviceCopyAsBitmapCommand.cs" />
+    <Compile Include="Plots\Implementation\Commands\PlotDeviceCopyAsMetafileCommand.cs" />
+    <Compile Include="Plots\Implementation\Commands\PlotDeviceCutCopyCommand.cs" />
+    <Compile Include="Plots\Implementation\Commands\PlotDeviceEndLocatorCommand.cs" />
+    <Compile Include="Plots\Implementation\Commands\PlotDeviceExportAsImageCommand.cs" />
+    <Compile Include="Plots\Implementation\Commands\PlotDeviceExportAsPdfCommand.cs" />
+    <Compile Include="Plots\Implementation\Commands\PlotDeviceMoveNextCommand.cs" />
+    <Compile Include="Plots\Implementation\Commands\PlotDeviceMovePreviousCommand.cs" />
+    <Compile Include="Plots\Implementation\Commands\PlotDevicePasteCommand.cs" />
+    <Compile Include="Plots\Implementation\Commands\PlotDeviceRemoveAllCommand.cs" />
+    <Compile Include="Plots\Implementation\Commands\PlotDeviceRemoveCurrentCommand.cs" />
+    <Compile Include="Plots\Implementation\Commands\PlotHistoryActivateCommand.cs" />
+    <Compile Include="Plots\Implementation\Commands\PlotHistoryAutoHideCommand.cs" />
+    <Compile Include="Plots\Implementation\Commands\PlotHistoryCommand.cs" />
+    <Compile Include="Plots\Implementation\Commands\PlotHistoryCutCopyCommand.cs" />
+    <Compile Include="Plots\Implementation\Commands\PlotHistoryRemoveCommand.cs" />
+    <Compile Include="Plots\Implementation\Commands\PlotHistoryZoomInCommand.cs" />
+    <Compile Include="Plots\Implementation\Commands\PlotHistoryZoomOutCommand.cs" />
     <Compile Include="Plots\Implementation\NonScaledImage.cs" />
+    <Compile Include="Plots\Implementation\PlotClipboardData.cs" />
+    <Compile Include="Plots\Implementation\PlotMessageExtensions.cs" />
+    <Compile Include="Plots\Implementation\RPlot.cs" />
+    <Compile Include="Plots\Implementation\RPlotDevice.cs" />
+    <Compile Include="Plots\Implementation\RPlotDeviceVisualComponent.cs" />
+    <Compile Include="Plots\Implementation\RPlotHistoryVisualComponent.cs" />
     <Compile Include="Plots\Implementation\RPlotManager.cs" />
     <Compile Include="Plots\Implementation\RPlotManagerProvider.cs" />
-    <Compile Include="Plots\Implementation\RPlotManagerVisualComponent.cs" />
-    <Compile Include="Plots\Implementation\ViewModel\RPlotManagerViewModel.cs" />
-    <Compile Include="Plots\Implementation\View\RPlotManagerControl.xaml.cs">
-      <DependentUpon>RPlotManagerControl.xaml</DependentUpon>
+    <Compile Include="Plots\Implementation\ViewModel\RPlotDeviceViewModel.cs" />
+    <Compile Include="Plots\Implementation\ViewModel\RPlotHistoryEntryViewModel.cs" />
+    <Compile Include="Plots\Implementation\ViewModel\RPlotHistoryViewModel.cs" />
+    <Compile Include="Plots\Implementation\View\DesignTime\DesignTimeRPlotHistoryEntryViewModel.cs" />
+    <Compile Include="Plots\Implementation\View\DesignTime\DesignTimeRPlotHistoryViewModel.cs" />
+    <Compile Include="Plots\Implementation\View\DragSurface.cs" />
+    <Compile Include="Plots\Implementation\View\RPlotDeviceControl.xaml.cs">
+      <DependentUpon>RPlotDeviceControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Plots\Implementation\View\RPlotHistoryControl.xaml.cs">
+      <DependentUpon>RPlotHistoryControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Plots\Implementation\WpfUnitsConversion.cs" />
+    <Compile Include="Plots\IRPlot.cs" />
+    <Compile Include="Plots\IRPlotDevice.cs" />
+    <Compile Include="Plots\IRPlotDeviceVisualComponent.cs" />
+    <Compile Include="Plots\IRPlotDeviceVisualComponentContainerFactory.cs" />
+    <Compile Include="Plots\IRPlotHistoryVisualComponent.cs" />
+    <Compile Include="Plots\IRPlotHistoryVisualComponentContainerFactory.cs" />
     <Compile Include="Plots\IRPlotManager.cs" />
     <Compile Include="Plots\IRPlotManagerProvider.cs" />
-    <Compile Include="Plots\IRPlotManagerVisualComponent.cs" />
-    <Compile Include="Plots\IRPlotManagerVisualComponentContainerFactory.cs" />
+    <Compile Include="Plots\RPlotCommandIds.cs" />
+    <Compile Include="Plots\RPlotDeviceCommands.cs" />
+    <Compile Include="Plots\RPlotDeviceEventArgs.cs" />
+    <Compile Include="Plots\RPlotEventArgs.cs" />
+    <Compile Include="Plots\RPlotHistoryCommands.cs" />
     <Compile Include="Plots\RPlotManagerException.cs" />
-    <Compile Include="Plots\ViewModel\IRPlotManagerViewModel.cs" />
+    <Compile Include="Plots\ViewModel\IRPlotDeviceViewModel.cs" />
+    <Compile Include="Plots\ViewModel\IRPlotHistoryEntryViewModel.cs" />
+    <Compile Include="Plots\ViewModel\IRPlotHistoryViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources.Designer.cs">
       <DependentUpon>Resources.resx</DependentUpon>
@@ -270,9 +304,13 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Plots\Implementation\View\RPlotManagerControl.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="Plots\Implementation\View\RPlotDeviceControl.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Plots\Implementation\View\RPlotHistoryControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>

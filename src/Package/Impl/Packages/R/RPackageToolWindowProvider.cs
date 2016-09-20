@@ -14,7 +14,7 @@ using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Help;
 using Microsoft.VisualStudio.R.Package.History;
 using Microsoft.VisualStudio.R.Package.PackageManager;
-using Microsoft.VisualStudio.R.Package.Plots;
+using Microsoft.VisualStudio.R.Package.ToolWindows;
 using Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.VisualStudio.R.Packages.R {
@@ -31,7 +31,9 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         [Import]
         private Lazy<IHelpVisualComponentContainerFactory> HelpVisualComponentContainerFactory { get; set; }
         [Import]
-        private Lazy<IRPlotManagerVisualComponentContainerFactory> PlotManagerVisualComponentContainerFactory { get; set; }
+        private Lazy<IRPlotDeviceVisualComponentContainerFactory> PlotDeviceVisualComponentContainerFactory { get; set; }
+        [Import]
+        private Lazy<IRPlotHistoryVisualComponentContainerFactory> PlotHistoryVisualComponentContainerFactory { get; set; }
 
         public bool TryCreateToolWindow(Guid toolWindowType, int id) {
             if (toolWindowType == RGuidList.ReplInteractiveWindowProviderGuid) {
@@ -49,8 +51,13 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 return true;
             }
 
-            if (toolWindowType == PlotManagerWindowPane.WindowGuid) {
-                CreatePlotToolWindow(id);
+            if (toolWindowType == PlotDeviceWindowPane.WindowGuid) {
+                CreatePlotDeviceToolWindow(id);
+                return true;
+            }
+
+            if (toolWindowType == PlotHistoryWindowPane.WindowGuid) {
+                CreatePlotHistoryToolWindow(id);
                 return true;
             }
 
@@ -79,8 +86,12 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 return CreatePackageManagerToolWindow(id).Container;
             }
 
-            if (toolWindowType == PlotManagerWindowPane.WindowGuid) {
-                return CreatePlotToolWindow(id).Container;
+            if (toolWindowType == PlotDeviceWindowPane.WindowGuid) {
+                return CreatePlotDeviceToolWindow(id).Container;
+            }
+
+            if (toolWindowType == PlotHistoryWindowPane.WindowGuid) {
+                return CreatePlotHistoryToolWindow(id).Container;
             }
 
             if (toolWindowType == HelpWindowPane.WindowGuid) {
@@ -105,9 +116,14 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             return workflow.Packages.GetOrCreateVisualComponent(PackageManagerComponentContainerFactory.Value, id);
         }
 
-        private IRPlotManagerVisualComponent CreatePlotToolWindow(int id) {
+        private IRPlotDeviceVisualComponent CreatePlotDeviceToolWindow(int id) {
             var workflow = WorkflowProvider.Value.GetOrCreate();
-            return workflow.Plots.GetOrCreateVisualComponent(PlotManagerVisualComponentContainerFactory.Value, id);
+            return workflow.Plots.GetOrCreateVisualComponent(PlotDeviceVisualComponentContainerFactory.Value, id);
+        }
+
+        private IRPlotHistoryVisualComponent CreatePlotHistoryToolWindow(int id) {
+            var workflow = WorkflowProvider.Value.GetOrCreate();
+            return workflow.Plots.GetOrCreateVisualComponent(PlotHistoryVisualComponentContainerFactory.Value, id);
         }
 
         private IHelpVisualComponent CreateHelpToolWindow(int id) {

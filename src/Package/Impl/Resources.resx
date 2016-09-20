@@ -255,6 +255,9 @@
   <data name="PlotWindowCaption" xml:space="preserve">
     <value>R Plot</value>
   </data>
+  <data name="PlotHistoryWindowCaption" xml:space="preserve">
+    <value>R Plot History</value>
+  </data>
   <data name="MicrosoftRHostStarting" xml:space="preserve">
     <value>Starting R Session...</value>
   </data>

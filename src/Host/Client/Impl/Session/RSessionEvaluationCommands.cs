@@ -4,6 +4,8 @@
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using static System.FormattableString;
+using System;
+using System.Diagnostics;
 
 namespace Microsoft.R.Host.Client.Session {
     public static class RSessionEvaluationCommands {
@@ -37,7 +39,8 @@ namespace Microsoft.R.Host.Client.Session {
             return evaluation.ExecuteAsync($"save.image(file='{path.Replace('\\', '/')}')\n", REvaluationKind.Normal);
         }
 
-        public static Task SetVsGraphicsDeviceAsync(this IRExpressionEvaluator evaluation) {
+        public static Task SetVsGraphicsDeviceAsync(this IRExpressionEvaluator evaluation)
+        {
             var script = @"
 attach(as.environment(list(ide = function() { rtvs:::graphics.ide.new() })), name='rtvs::graphics::ide')
 options(device='ide')
@@ -46,29 +49,80 @@ grDevices::deviceIsInteractive('ide')
             return evaluation.ExecuteAsync(script);
         }
 
-        public static Task ResizePlotAsync(this IRExpressionEvaluator evaluation, int width, int height, int resolution) {
-            var script = Invariant($"rtvs:::graphics.ide.resize({width}, {height}, {resolution})\n");
+        public static Task ResizePlotAsync(this IRExpressionEvaluator evaluation, Guid deviceId, int width, int height, int resolution)
+        {
+            Debug.Assert(deviceId != Guid.Empty);
+            var script = $"rtvs:::graphics.ide.resize({deviceId.ToString().ToRStringLiteral()}, {width}, {height}, {resolution})\n";
             return evaluation.ExecuteAsync(script);
         }
 
-        public static Task NextPlotAsync(this IRExpressionEvaluator evaluation) {
-            var script = "rtvs:::graphics.ide.nextplot()\n";
+        public static Task NextPlotAsync(this IRExpressionEvaluator evaluation, Guid deviceId)
+        {
+            Debug.Assert(deviceId != Guid.Empty);
+            var script = $"rtvs:::graphics.ide.nextplot({deviceId.ToString().ToRStringLiteral()})\n";
             return evaluation.ExecuteAsync(script);
         }
 
-        public static Task PreviousPlotAsync(this IRExpressionEvaluator evaluation) {
-            var script = "rtvs:::graphics.ide.previousplot()\n";
+        public static Task PreviousPlotAsync(this IRExpressionEvaluator evaluation, Guid deviceId)
+        {
+            Debug.Assert(deviceId != Guid.Empty);
+            var script = $"rtvs:::graphics.ide.previousplot({deviceId.ToString().ToRStringLiteral()})\n";
             return evaluation.ExecuteAsync(script);
         }
 
-        public static Task ClearPlotHistoryAsync(this IRExpressionEvaluator evaluation) {
-            var script = "rtvs:::graphics.ide.clearplots()\n";
+        public static Task ClearPlotHistoryAsync(this IRExpressionEvaluator evaluation, Guid deviceId)
+        {
+            Debug.Assert(deviceId != Guid.Empty);
+            var script = $"rtvs:::graphics.ide.clearplots({deviceId.ToString().ToRStringLiteral()})\n";
             return evaluation.ExecuteAsync(script);
         }
 
-        public static Task RemoveCurrentPlotAsync(this IRExpressionEvaluator evaluation) {
-            var script = "rtvs:::graphics.ide.removeplot()\n";
+        public static Task RemoveCurrentPlotAsync(this IRExpressionEvaluator evaluation, Guid deviceId, Guid plotId)
+        {
+            Debug.Assert(deviceId != Guid.Empty);
+            Debug.Assert(plotId != Guid.Empty);
+            var script = $"rtvs:::graphics.ide.removeplot({deviceId.ToString().ToRStringLiteral()}, {plotId.ToString().ToRStringLiteral()})\n";
             return evaluation.ExecuteAsync(script);
+        }
+
+        public static Task CopyPlotAsync(this IRExpressionEvaluator evaluation, Guid sourceDeviceId, Guid sourcePlotId, Guid targetDeviceId)
+        {
+            Debug.Assert(sourceDeviceId != Guid.Empty);
+            Debug.Assert(sourcePlotId != Guid.Empty);
+            Debug.Assert(targetDeviceId != Guid.Empty);
+            var script = $"rtvs:::graphics.ide.copyplot({sourceDeviceId.ToString().ToRStringLiteral()}, {sourcePlotId.ToString().ToRStringLiteral()}, {targetDeviceId.ToString().ToRStringLiteral()})\n";
+            return evaluation.ExecuteAsync(script);
+        }
+
+        public static Task SelectPlotAsync(this IRExpressionEvaluator evaluation, Guid deviceId, Guid plotId)
+        {
+            Debug.Assert(deviceId != Guid.Empty);
+            Debug.Assert(plotId != Guid.Empty);
+            var script = $"rtvs:::graphics.ide.selectplot({deviceId.ToString().ToRStringLiteral()}, {plotId.ToString().ToRStringLiteral()})\n";
+            return evaluation.ExecuteAsync(script);
+        }
+
+        public static async Task ActivatePlotDeviceAsync(this IRExpressionEvaluator evaluation, Guid deviceId)
+        {
+            Debug.Assert(deviceId != Guid.Empty);
+            await evaluation.ExecuteAsync($"rtvs:::graphics.ide.setactivedeviceid({deviceId.ToString().ToRStringLiteral()})");
+        }
+
+        public static Task<int?> GetPlotDeviceNumAsync(this IRExpressionEvaluator evaluation, Guid deviceId)
+        {
+            Debug.Assert(deviceId != Guid.Empty);
+            return evaluation.EvaluateAsync<int?>($"rtvs:::graphics.ide.getdevicenum({deviceId.ToString().ToRStringLiteral()})", REvaluationKind.Normal);
+        }
+
+        public static async Task NewPlotDeviceAsync(this IRExpressionEvaluator evaluation)
+        {
+            await evaluation.ExecuteAsync($"ide()");
+        }
+
+        public static async Task<Guid> GetActivePlotDeviceAsync(this IRExpressionEvaluator evaluation)
+        {
+            var id = await evaluation.EvaluateAsync<string>("rtvs:::graphics.ide.getactivedeviceid()", REvaluationKind.Normal);
+            return id != null ? Guid.Parse(id) : Guid.Empty;
         }
 
         public static Task InstallPackageAsync(this IRSessionInteraction interaction, string name) {
@@ -126,18 +180,21 @@ grDevices::deviceIsInteractive('ide')
             return evaluation.EvaluateAsync<JArray>(script, REvaluationKind.Normal);
         }
 
-        public static Task ExportToBitmapAsync(this IRExpressionEvaluator evaluation, string deviceName, string outputFilePath, int widthInPixels, int heightInPixels, int resolution) {
-            string script = Invariant($"rtvs:::graphics.ide.exportimage({outputFilePath.ToRPath().ToRStringLiteral()}, {deviceName}, {widthInPixels}, {heightInPixels}, {resolution})");
+        public static Task ExportPlotToBitmapAsync(this IRExpressionEvaluator evaluation, Guid deviceId, Guid plotId, string deviceName, string outputFilePath, int widthInPixels, int heightInPixels, int resolution)
+        {
+            string script = $"rtvs:::graphics.ide.exportimage({deviceId.ToString().ToRStringLiteral()}, {plotId.ToString().ToRStringLiteral()}, {outputFilePath.ToRPath().ToRStringLiteral()}, {deviceName}, {widthInPixels}, {heightInPixels}, {resolution})";
+            return evaluation.ExecuteAsync(script);
+        }
+
+        public static Task ExportPlotToMetafileAsync(this IRExpressionEvaluator evaluation, Guid deviceId, Guid plotId, string outputFilePath, double widthInInches, double heightInInches, int resolution)
+        {
+            string script = $"rtvs:::graphics.ide.exportimage({deviceId.ToString().ToRStringLiteral()}, {plotId.ToString().ToRStringLiteral()}, {outputFilePath.ToRPath().ToRStringLiteral()}, win.metafile, {widthInInches}, {heightInInches}, {resolution})";
             return evaluation.ExecuteAsync(script, REvaluationKind.Normal);
         }
 
-        public static Task ExportToMetafileAsync(this IRExpressionEvaluator evaluation, string outputFilePath, double widthInInches, double heightInInches, int resolution) {
-            string script = Invariant($"rtvs:::graphics.ide.exportimage({outputFilePath.ToRPath().ToRStringLiteral()}, win.metafile, {widthInInches}, {heightInInches}, {resolution})");
-            return evaluation.ExecuteAsync(script, REvaluationKind.Normal);
-        }
-
-        public static Task ExportToPdfAsync(this IRExpressionEvaluator evaluation, string outputFilePath, double widthInInches, double heightInInches) {
-            string script = Invariant($"rtvs:::graphics.ide.exportpdf({outputFilePath.ToRPath().ToRStringLiteral()}, {widthInInches}, {heightInInches})");
+        public static Task ExportToPdfAsync(this IRExpressionEvaluator evaluation, Guid deviceId, Guid plotId, string outputFilePath, double widthInInches, double heightInInches)
+        {
+            string script = $"rtvs:::graphics.ide.exportpdf({deviceId.ToString().ToRStringLiteral()}, {plotId.ToString().ToRStringLiteral()}, {outputFilePath.ToRPath().ToRStringLiteral()}, {widthInInches}, {heightInInches})";
             return evaluation.ExecuteAsync(script, REvaluationKind.Normal);
         }
 

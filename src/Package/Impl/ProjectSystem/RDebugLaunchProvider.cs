@@ -75,7 +75,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                 await base.LaunchAsync(launchOptions);
             }
 
-            _interactiveWorkflow.ActiveWindow?.Container.Show(false);
+            _interactiveWorkflow.ActiveWindow?.Container.Show(false, immediate: false);
 
             string startupFile = await _properties.GetStartupFileAsync();
 

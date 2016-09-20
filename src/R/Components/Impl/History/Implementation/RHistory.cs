@@ -146,7 +146,7 @@ namespace Microsoft.R.Components.History.Implementation {
             }
 
             var selectedText = GetSelectedText();
-            _interactiveWorkflow.ActiveWindow.Container.Show(true);
+            _interactiveWorkflow.ActiveWindow.Container.Show(true, immediate: false);
             _interactiveWorkflow.Operations.ReplaceCurrentExpression(selectedText);
             _interactiveWorkflow.Operations.PositionCaretAtPrompt();
         }

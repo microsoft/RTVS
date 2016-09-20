@@ -419,16 +419,29 @@ namespace Microsoft.R.Host.Client {
                             case "Plot":
                                 await _callbacks.Plot(
                                     new PlotMessage(
-                                        message.GetString(0, "xaml_file_path"),
-                                        message.GetInt32(1, "active_plot_index"),
-                                        message.GetInt32(2, "plot_count")),
+                                        Guid.Parse(message.GetString(0, "device_id")),
+                                        Guid.Parse(message.GetString(1, "plot_id")),
+                                        message.GetString(2, "file_path"),
+                                        message.GetInt32(3, "device_num"),
+                                        message.GetInt32(4, "active_plot_index"),
+                                        message.GetInt32(5, "plot_count")),
                                     ct);
                                 break;
 
                             case "Locator":
-                                var locatorResult = await _callbacks.Locator(ct);
+                                var locatorResult = await _callbacks.Locator(Guid.Parse(message.GetString(0, "device_id")), ct);
                                 ct.ThrowIfCancellationRequested();
                                 await RespondAsync(message, ct, locatorResult.Clicked, locatorResult.X, locatorResult.Y);
+                                break;
+
+                            case "PlotDeviceCreate":
+                                var plotDeviceResult = await _callbacks.PlotDeviceCreate(Guid.Parse(message.GetString(0, "device_id")), ct);
+                                ct.ThrowIfCancellationRequested();
+                                await RespondAsync(message, ct, plotDeviceResult.Width, plotDeviceResult.Height, plotDeviceResult.Resolution);
+                                break;
+
+                            case "PlotDeviceDestroy":
+                                await _callbacks.PlotDeviceDestroy(Guid.Parse(message.GetString(0, "device_id")), ct);
                                 break;
 
                             case "open_url":

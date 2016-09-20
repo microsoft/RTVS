@@ -49,7 +49,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 Process.Start(url);
             } else {
                 var container = _coreShell.ExportProvider.GetExportedValue<IHelpVisualComponentContainerFactory>().GetOrCreate();
-                container.Show(false);
+                container.Show(false, immediate: false);
                 container.Component.Navigate(url);
             }
         }
@@ -57,26 +57,43 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         /// <summary>
         /// Displays R plot in the host app-provided window
         /// </summary>
-        public async Task Plot(PlotMessage plot, CancellationToken ct) {
-            var containerFactory = _coreShell.ExportProvider.GetExportedValue<IRPlotManagerVisualComponentContainerFactory>();
+        public async Task Plot(PlotMessage plot, CancellationToken ct)
+        {
             var provider = _coreShell.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
             var workflow = provider.GetOrCreate();
 
             await _coreShell.SwitchToMainThreadAsync();
-            workflow.Plots.GetOrCreateVisualComponent(containerFactory, 0).Container.Show(false);
-
             await workflow.Plots.LoadPlotAsync(plot);
         }
 
-        public async Task<LocatorResult> Locator(CancellationToken ct) {
-            var containerFactory = _coreShell.ExportProvider.GetExportedValue<IRPlotManagerVisualComponentContainerFactory>();
+        public async Task<LocatorResult> Locator(Guid deviceId, CancellationToken ct)
+        {
             var provider = _coreShell.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
             var workflow = provider.GetOrCreate();
 
             await _coreShell.SwitchToMainThreadAsync();
-            workflow.Plots.GetOrCreateVisualComponent(containerFactory, 0).Container.Show(false);
 
-            return await workflow.Plots.StartLocatorModeAsync(ct);
+            return await workflow.Plots.StartLocatorModeAsync(deviceId, ct);
+        }
+
+        public async Task<PlotDeviceProperties> PlotDeviceCreate(Guid deviceId, CancellationToken ct)
+        {
+            var provider = _coreShell.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
+            var workflow = provider.GetOrCreate();
+
+            await _coreShell.SwitchToMainThreadAsync();
+
+            return await workflow.Plots.DeviceCreatedAsync(deviceId);
+        }
+
+        public async Task PlotDeviceDestroy(Guid deviceId, CancellationToken ct)
+        {
+            var provider = _coreShell.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
+            var workflow = provider.GetOrCreate();
+
+            await _coreShell.SwitchToMainThreadAsync();
+
+            await workflow.Plots.DeviceDestroyedAsync(deviceId);
         }
 
         public Task<string> ReadUserInput(string prompt, int maximumLength, CancellationToken ct) {
@@ -106,7 +123,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             var workflow = provider.GetOrCreate();
 
             await _coreShell.SwitchToMainThreadAsync();
-            workflow.Packages.GetOrCreateVisualComponent(containerFactory, 0).Container.Show(true);
+            workflow.Packages.GetOrCreateVisualComponent(containerFactory, 0).Container.Show(true, immediate: false);
         }
 
         public Task ViewFile(string fileName, string tabName, bool deleteFile) {

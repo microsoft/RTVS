@@ -36,8 +36,12 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             _adapter = new VisualComponentToolWindowAdapter<T>(this);
         }
 
-        public void Show(bool focus) {
-            _adapter?.Show(focus);
+        public void Hide() {
+            _adapter?.Hide();
+        }
+
+        public void Show(bool focus, bool immediate) {
+            _adapter?.Show(focus, immediate);
         }
 
         public void ShowContextMenu(CommandID commandId, Point position) {
