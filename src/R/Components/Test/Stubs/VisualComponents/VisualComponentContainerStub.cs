@@ -11,7 +11,9 @@ namespace Microsoft.R.Components.Test.Stubs.VisualComponents {
         public string CaptionText { get; set; }
         public string StatusText { get; set; }
         public bool IsOnScreen { get; set; }
-        public void Show(bool focus) {
+        public void Hide() {
+        }
+        public void Show(bool focus, bool immediate) {
             IsOnScreen = IsOnScreen | focus;
         }
 

@@ -22,6 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
             Supported = status.HasFlag(CommandStatus.Supported);
             Enabled = status.HasFlag(CommandStatus.Enabled);
             Visible = !status.HasFlag(CommandStatus.Invisible);
+            Checked = status.HasFlag(CommandStatus.Latched);
         }
 
         protected override void Handle(object inArg, out object outArg) {

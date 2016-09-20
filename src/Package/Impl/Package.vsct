@@ -68,6 +68,19 @@
         </Strings>
       </Menu>
 
+      <!-- Plot history window toolbar -->
+      <Menu guid="guidRToolsCmdSet" id="plotHistoryWindowToolBarId" type="ToolWindowToolbar" priority="0x100">
+        <Parent guid="guidRToolsCmdSet" id="0" />
+        <CommandFlag>DefaultDocked</CommandFlag>
+        <CommandFlag>NoToolbarClose</CommandFlag>
+        <CommandFlag>AlwaysCreate</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <Strings>
+          <ButtonText>Plot History Window</ButtonText>
+          <CommandName>Plot History Window</CommandName>
+        </Strings>
+      </Menu>
+
       <!-- Help window toolbar -->
       <Menu guid="guidRToolsCmdSet" id="helpWindowToolBarId" type="ToolWindowToolbar" priority="0x100">
         <Parent guid="guidRToolsCmdSet" id="0" />
@@ -115,6 +128,28 @@
         </Strings>
       </Menu>
       <!-- End Variable Explorer context menu -->
+
+      <!-- Plot History context menu -->
+      <Menu guid="guidRToolsCmdSet" id="plotHistoryContextMenu" type="Context">
+        <CommandFlag>DontCache</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Plot History Context</ButtonText>
+        </Strings>
+      </Menu>
+      <!-- End Plot History context menu -->
+
+      <!-- Plot Device context menu -->
+      <Menu guid="guidRToolsCmdSet" id="plotDeviceContextMenu" type="Context">
+        <CommandFlag>DontCache</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Plot Device Context</ButtonText>
+        </Strings>
+      </Menu>
+      <!-- End Plot History context menu -->
 
       <!-- Top Level 'R Tools' menu -->
       <Menu guid="guidRToolsCmdSet" id="TopLevelMenu" priority="0x1000" type="Menu">
@@ -260,6 +295,32 @@
 
       <Group guid="guidRToolsCmdSet" id="veCommandGroup" priority="0x0200">
         <Parent guid="guidRToolsCmdSet" id="variableExplorerContextMenu"/>
+      </Group>
+
+      <!-- Plot History groups -->
+      <Group guid="guidRToolsCmdSet" id="plotHistoryActivateGroup" priority="0x0100">
+        <Parent guid="guidRToolsCmdSet" id="plotHistoryContextMenu"/>
+      </Group>
+
+      <Group guid="guidRToolsCmdSet" id="plotHistoryCutCopyPasteGroup" priority="0x0200">
+        <Parent guid="guidRToolsCmdSet" id="plotHistoryContextMenu"/>
+      </Group>
+
+      <Group guid="guidRToolsCmdSet" id="plotHistoryRemoveGroup" priority="0x0300">
+        <Parent guid="guidRToolsCmdSet" id="plotHistoryContextMenu"/>
+      </Group>
+
+      <!-- Plot Device groups -->
+      <Group guid="guidRToolsCmdSet" id="plotDeviceActivateGroup" priority="0x0100">
+        <Parent guid="guidRToolsCmdSet" id="plotDeviceContextMenu"/>
+      </Group>
+
+      <Group guid="guidRToolsCmdSet" id="plotDeviceCutCopyPasteGroup" priority="0x0200">
+        <Parent guid="guidRToolsCmdSet" id="plotDeviceContextMenu"/>
+      </Group>
+
+      <Group guid="guidRToolsCmdSet" id="plotDeviceRemoveGroup" priority="0x0300">
+        <Parent guid="guidRToolsCmdSet" id="plotDeviceContextMenu"/>
       </Group>
 
       <!-- R debugger Autos/Locals/Watch context menu group -->
@@ -412,7 +473,27 @@
 
       <Group guid="guidRToolsCmdSet" id="rEditorDocumentationGroup" priority="0x0000" />
 
+      <!-- Plot history toolbar -->
+      <Group guid="guidRToolsCmdSet" id="plotHistoryToolbarActivateGroup" priority="0x0100">
+        <Parent guid="guidRToolsCmdSet" id="plotHistoryWindowToolBarId"/>
+      </Group>
+
+      <Group guid="guidRToolsCmdSet" id="plotHistoryToolbarZoomGroup" priority="0x0200">
+        <Parent guid="guidRToolsCmdSet" id="plotHistoryWindowToolBarId"/>
+      </Group>
+
+      <Group guid="guidRToolsCmdSet" id="plotHistoryToolbarHideGroup" priority="0x0300">
+        <Parent guid="guidRToolsCmdSet" id="plotHistoryWindowToolBarId"/>
+      </Group>
+
+      <Group guid="guidRToolsCmdSet" id="plotHistoryToolbarMgmtGroup" priority="0x0400">
+        <Parent guid="guidRToolsCmdSet" id="plotHistoryWindowToolBarId"/>
+      </Group>
+
       <!-- Plot toolbar -->
+      <Group guid="guidRToolsCmdSet" id="plotToolbarDevGroup" priority="0x0050">
+        <Parent guid="guidRToolsCmdSet" id="plotWindowToolBarId"/>
+      </Group>
       <Group guid="guidRToolsCmdSet" id="plotToolbarNavGroup" priority="0x0100">
         <Parent guid="guidRToolsCmdSet" id="plotWindowToolBarId"/>
       </Group>
@@ -725,6 +806,36 @@
       <!-- End Packages flyout -->
 
       <!-- Plots flyout -->
+      <Button guid="guidRToolsCmdSet" id="icmdPlotHistoryWindow" priority="0x0055" type="Button">
+        <Icon guid="ImageCatalogGuid" id="ChartFilter"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Plot History Window</ButtonText>
+          <MenuText>Plot &amp;History Window</MenuText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdNewPlotWindow" priority="0x0020" type="Button">
+        <Icon guid="ImageCatalogGuid" id="NewToolWindow"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>New Plot Window</ButtonText>
+          <MenuText>&amp;New Plot Window</MenuText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdActivatePlotWindow" priority="0x0030" type="Button">
+        <Icon guid="ImageCatalogGuid" id="Select"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Activate Plot Window</ButtonText>
+          <MenuText>&amp;Activate Plot Window</MenuText>
+        </Strings>
+      </Button>
+
       <Button guid="guidRToolsCmdSet" id="icmdPrevPlot" priority="0x0100" type="Button">
         <Icon guid="ImageCatalogGuid" id="Previous"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
@@ -810,6 +921,46 @@
         <Strings>
           <ButtonText>End Locator</ButtonText>
           <MenuText>&amp;End Locator</MenuText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdPlotHistoryZoomIn" priority="0x0100" type="Button">
+        <Icon guid="ImageCatalogGuid" id="ZoomIn"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Zoom In</ButtonText>
+          <MenuText>Zoom &amp;In</MenuText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdPlotHistoryZoomOut" priority="0x0200" type="Button">
+        <Icon guid="ImageCatalogGuid" id="ZoomOut"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Zoom Out</ButtonText>
+          <MenuText>Zoom &amp;Out</MenuText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdPlotHistoryAutoHide" priority="0x0300" type="Button">
+        <Icon guid="ImageCatalogGuid" id="Collapse"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Auto Hide</ButtonText>
+          <MenuText>&amp;Auto Hide</MenuText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdPlotHistoryActivatePlot" priority="0x0400" type="Button">
+        <Icon guid="ImageCatalogGuid" id="Select"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Activate Plot</ButtonText>
+          <MenuText>Activate &amp;Plot</MenuText>
         </Strings>
       </Button>
 
@@ -1667,6 +1818,43 @@
       <Parent guid="guidRToolsCmdSet" id="veEditGroup"/>
     </CommandPlacement>
 
+    <!-- Plot history context menu -->
+    <CommandPlacement guid="guidVSStd97" id="cmdidCut" priority="0x0100">
+      <Parent guid="guidRToolsCmdSet" id="plotHistoryCutCopyPasteGroup"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidVSStd97" id="cmdidCopy" priority="0x0200">
+      <Parent guid="guidRToolsCmdSet" id="plotHistoryCutCopyPasteGroup"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidVSStd97" id="cmdidDelete" priority="0x100">
+      <Parent guid="guidRToolsCmdSet" id="plotHistoryRemoveGroup"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdPlotHistoryActivatePlot" priority="0x100">
+      <Parent guid="guidRToolsCmdSet" id="plotHistoryActivateGroup"/>
+    </CommandPlacement>
+
+    <!-- Plot device context menu -->
+    <CommandPlacement guid="guidVSStd97" id="cmdidCut" priority="0x0100">
+      <Parent guid="guidRToolsCmdSet" id="plotDeviceCutCopyPasteGroup"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidVSStd97" id="cmdidCopy" priority="0x0200">
+      <Parent guid="guidRToolsCmdSet" id="plotDeviceCutCopyPasteGroup"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidVSStd97" id="cmdidPaste" priority="0x0300">
+      <Parent guid="guidRToolsCmdSet" id="plotDeviceCutCopyPasteGroup"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdRemovePlot" priority="0x100">
+      <Parent guid="guidRToolsCmdSet" id="plotDeviceRemoveGroup"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdClearPlots" priority="0x200">
+      <Parent guid="guidRToolsCmdSet" id="plotDeviceRemoveGroup"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdNewPlotWindow" priority="0x100">
+      <Parent guid="guidRToolsCmdSet" id="plotDeviceActivateGroup"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdActivatePlotWindow" priority="0x200">
+      <Parent guid="guidRToolsCmdSet" id="plotDeviceActivateGroup"/>
+    </CommandPlacement>
+
     <!-- R code editor context menu -->
     <!-- Clipboard group -->
     <CommandPlacement guid="guidSHLMainMenu" id="IDG_VS_EDIT_CUTCOPY" priority="0x0100">
@@ -1760,13 +1948,29 @@
       <Parent guid="guidRToolsCmdSet" id="windowsSubMenuGroup2"/>
     </CommandPlacement>
 
-    <CommandPlacement guid="guidRToolsCmdSet" id="icmdPrevPlot" priority="0x0100">
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdNewPlotWindow" priority="0x0020">
+      <Parent guid="guidRToolsCmdSet" id="plotSubMenuNavGroup"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdActivatePlotWindow" priority="0x0030">
+      <Parent guid="guidRToolsCmdSet" id="plotSubMenuNavGroup"/>
+    </CommandPlacement>
+
+    <!--<CommandPlacement guid="guidRToolsCmdSet" id="icmdShowPlotHistory" priority="0x0050">
+      <Parent guid="guidRToolsCmdSet" id="plotSubMenuNavGroup"/>
+    </CommandPlacement>-->
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdPlotHistoryWindow" priority="0x0050">
+      <Parent guid="guidRToolsCmdSet" id="plotSubMenuNavGroup"/>
+    </CommandPlacement>
+
+    <!--<CommandPlacement guid="guidRToolsCmdSet" id="icmdPrevPlot" priority="0x0100">
       <Parent guid="guidRToolsCmdSet" id="plotSubMenuNavGroup"/>
     </CommandPlacement>
 
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdNextPlot" priority="0x0200">
       <Parent guid="guidRToolsCmdSet" id="plotSubMenuNavGroup"/>
-    </CommandPlacement>
+    </CommandPlacement>-->
 
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdExportPlotAsImage" priority="0x0100">
       <Parent guid="guidRToolsCmdSet" id="plotSubMenuFileGroup"/>
@@ -1796,7 +2000,48 @@
       <Parent guid="guidRToolsCmdSet" id="plotSubMenuLocatorGroup"/>
     </CommandPlacement>
 
+    <!-- Plot history window toolbar -->
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdPlotHistoryZoomIn" priority="0x0100">
+      <Parent guid="guidRToolsCmdSet" id="plotHistoryToolbarZoomGroup"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdPlotHistoryZoomOut" priority="0x0200">
+      <Parent guid="guidRToolsCmdSet" id="plotHistoryToolbarZoomGroup"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdPlotHistoryAutoHide" priority="0x0100">
+      <Parent guid="guidRToolsCmdSet" id="plotHistoryToolbarHideGroup"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdPlotHistoryActivatePlot" priority="0x0100">
+      <Parent guid="guidRToolsCmdSet" id="plotHistoryToolbarActivateGroup"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidVSStd97" id="cmdidDelete" priority="0x300">
+      <Parent guid="guidRToolsCmdSet" id="plotHistoryToolbarMgmtGroup"/>
+    </CommandPlacement>
+
+    <!--<CommandPlacement guid="guidRToolsCmdSet" id="icmdRemovePlot" priority="0x0100">
+      <Parent guid="guidRToolsCmdSet" id="plotHistoryToolbarMgmtGroup"/>
+    </CommandPlacement>-->
+
     <!-- Plot window toolbar -->
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdNewPlotWindow" priority="0x0020">
+      <Parent guid="guidRToolsCmdSet" id="plotToolbarDevGroup"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdActivatePlotWindow" priority="0x0030">
+      <Parent guid="guidRToolsCmdSet" id="plotToolbarDevGroup"/>
+    </CommandPlacement>
+
+    <!--<CommandPlacement guid="guidRToolsCmdSet" id="icmdShowPlotHistory" priority="0x0050">
+      <Parent guid="guidRToolsCmdSet" id="plotToolbarNavGroup"/>
+    </CommandPlacement>-->
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdPlotHistoryWindow" priority="0x0050">
+      <Parent guid="guidRToolsCmdSet" id="plotToolbarNavGroup"/>
+    </CommandPlacement>
+
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdPrevPlot" priority="0x0100">
       <Parent guid="guidRToolsCmdSet" id="plotToolbarNavGroup"/>
     </CommandPlacement>
@@ -2151,6 +2396,10 @@
       <!-- R debugger Autos/Locals/Watch context menu. -->
       <IDSymbol name="debuggerRContextMenu" value="103" />
       <IDSymbol name="variableExplorerContextMenu" value="104"/>
+      <!-- R Plot History context menu. -->
+      <IDSymbol name="plotHistoryContextMenu" value="106"/>
+      <!-- R Plot Device context menu. -->
+      <IDSymbol name="plotDeviceContextMenu" value="107"/>
 
       <!-- R code editor context menu formatting group: ECMD_FORMATSELECTION, icmdGoToFormattingOptions -->
       <IDSymbol name="groupRContextFormat" value="120" />
@@ -2161,6 +2410,12 @@
       <IDSymbol name="groupRContextDebugger" value="125"/>
       <IDSymbol name="veCommandGroup" value="126"/>
       <IDSymbol name="veEditGroup" value="127"/>
+      <IDSymbol name="plotHistoryCutCopyPasteGroup" value="128"/>
+      <IDSymbol name="plotHistoryRemoveGroup" value="129"/>
+      <IDSymbol name="plotHistoryActivateGroup" value="130"/>
+      <IDSymbol name="plotDeviceCutCopyPasteGroup" value="131"/>
+      <IDSymbol name="plotDeviceRemoveGroup" value="132"/>
+      <IDSymbol name="plotDeviceActivateGroup" value="133"/>
 
       <!-- RTVS Command IDs -->
       <!-- General -->
@@ -2226,6 +2481,14 @@
       <IDSymbol name="icmdCopyPlotAsBitmap" value="716" />
       <IDSymbol name="icmdCopyPlotAsMetafile" value="717" />
       <IDSymbol name="icmdEndLocator" value="718" />
+      <!--<IDSymbol name="icmdShowPlotHistory" value="719" />-->
+      <IDSymbol name="icmdNewPlotWindow" value="720" />
+      <IDSymbol name="icmdActivatePlotWindow" value="721" />
+      <IDSymbol name="icmdPlotHistoryWindow" value="722" />
+      <IDSymbol name="icmdPlotHistoryZoomIn" value="723" />
+      <IDSymbol name="icmdPlotHistoryZoomOut" value="724" />
+      <IDSymbol name="icmdPlotHistoryAutoHide" value="725" />
+      <IDSymbol name="icmdPlotHistoryActivatePlot" value="726" />
 
       <IDSymbol name="plotSubMenu" value="750"/>
       <IDSymbol name="plotSubMenuFileGroup" value="751"/>
@@ -2279,7 +2542,13 @@
       <IDSymbol name="plotToolbarCopyGroup" value="0x1200" />
       <IDSymbol name="plotToolbarNavGroup" value="0x1400" />
       <IDSymbol name="plotToolbarClearGroup" value="0x1500" />
+      <IDSymbol name="plotToolbarDevGroup" value="0x1600" />
+      <IDSymbol name="plotHistoryToolbarZoomGroup" value="0x1601" />
+      <IDSymbol name="plotHistoryToolbarHideGroup" value="0x1602" />
+      <IDSymbol name="plotHistoryToolbarMgmtGroup" value="0x1603" />
+      <IDSymbol name="plotHistoryToolbarActivateGroup" value="0x1604" />
       <IDSymbol name="plotWindowToolBarId" value="0x2000" />
+      <IDSymbol name="plotHistoryWindowToolBarId" value="0x2001" />
       <IDSymbol name="helpWindowToolBarId" value="0x2010"/>
       <IDSymbol name="helpWindowNavGroup" value="0x2011"/>
       <IDSymbol name="helpWindowGeneralGroup" value="0x2012"/>

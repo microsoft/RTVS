@@ -54,6 +54,7 @@
     <Compile Include="DataInspection\REvaluationResultProperties.cs" />
     <Compile Include="DataInspection\RPromiseInfo.cs" />
     <Compile Include="DataInspection\RSessionExtensions.cs" />
+    <Compile Include="Definitions\PlotDeviceProperties.cs" />
     <Compile Include="Definitions\PlotMessage.cs" />
     <Compile Include="Definitions\REnvironments.cs" />
     <Compile Include="DataInspection\RValueFlags.cs" />

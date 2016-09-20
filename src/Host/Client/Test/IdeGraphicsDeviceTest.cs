@@ -33,6 +33,8 @@ namespace Microsoft.R.Host.Client.Test {
         public List<string> PlotFilePaths { get; } = new List<string>();
         public List<PlotMessage> OriginalPlotMessages { get; } = new List<PlotMessage>();
 
+        private PlotDeviceProperties DefaultDeviceProperties = new PlotDeviceProperties(DefaultWidth, DefaultHeight, 96);
+
         public IdeGraphicsDeviceTest(GraphicsDeviceTestFilesFixture files, TestMethodFixture testMethod) {
             _files = files;
             _testMethod = testMethod.MethodInfo;
@@ -145,8 +147,9 @@ plot(cars)
         [Test]
         [Category.Plots]
         public async Task SetInitialSize() {
+            DefaultDeviceProperties = new PlotDeviceProperties(600, 600, 96);
+
             var code = @"
-rtvs:::graphics.ide.resize(600, 600, 96)
 plot(0:10)
 ";
             var inputs = Batch(code);
@@ -163,7 +166,7 @@ plot(0:10)
         public async Task ResizeNonInteractive() {
             var code = @"
 plot(0:10)
-rtvs:::graphics.ide.resize(600, 600, 96)
+rtvs:::graphics.ide.resize(rtvs:::graphics.ide.getactivedeviceid(), 600, 600, 96)
 ";
             var inputs = Batch(code);
             var actualPlotFilePaths = await GraphicsTestAsync(inputs);
@@ -179,7 +182,7 @@ rtvs:::graphics.ide.resize(600, 600, 96)
         public async Task ResizeInteractive() {
             var code = @"
 plot(0:10)
-rtvs:::graphics.ide.resize(600, 600, 96)
+rtvs:::graphics.ide.resize(rtvs:::graphics.ide.getactivedeviceid(), 600, 600, 96)
 ";
             var inputs = Interactive(code);
             var actualPlotFilePaths = (await GraphicsTestAsync(inputs)).ToArray();
@@ -199,7 +202,7 @@ rtvs:::graphics.ide.resize(600, 600, 96)
             //https://github.com/Microsoft/RTVS/issues/1568
             var code = @"
 plot(0:10)
-rtvs:::graphics.ide.resize(600, 600, 96)
+rtvs:::graphics.ide.resize(rtvs:::graphics.ide.getactivedeviceid(), 600, 600, 96)
 ";
             var tmpFilesBefore = Directory.GetFiles(Path.GetTempPath(), "rhost-ide-plot-*.png");
             var inputs = Interactive(code);
@@ -219,10 +222,11 @@ rtvs:::graphics.ide.resize(600, 600, 96)
 
             var code = string.Format(@"
 plot(0:10)
-rtvs:::graphics.ide.exportimage({0}, bmp, {4}, {5}, {6})
-rtvs:::graphics.ide.exportimage({1}, png, {4}, {5}, {6})
-rtvs:::graphics.ide.exportimage({2}, jpeg, {4}, {5}, {6})
-rtvs:::graphics.ide.exportimage({3}, tiff, {4}, {5}, {6})
+device_id <- rtvs:::graphics.ide.getactivedeviceid()
+rtvs:::graphics.ide.exportimage(device_id, rtvs:::graphics.ide.getactiveplotid(device_id), {0}, bmp, {4}, {5}, {6})
+rtvs:::graphics.ide.exportimage(device_id, rtvs:::graphics.ide.getactiveplotid(device_id), {1}, png, {4}, {5}, {6})
+rtvs:::graphics.ide.exportimage(device_id, rtvs:::graphics.ide.getactiveplotid(device_id), {2}, jpeg, {4}, {5}, {6})
+rtvs:::graphics.ide.exportimage(device_id, rtvs:::graphics.ide.getactiveplotid(device_id), {3}, tiff, {4}, {5}, {6})
 ",
                 QuotedRPath(exportedBmpFilePath),
                 QuotedRPath(exportedPngFilePath),
@@ -266,8 +270,9 @@ rtvs:::graphics.ide.exportimage({3}, tiff, {4}, {5}, {6})
             var code = string.Format(@"
 plot(0:10)
 plot(10:20)
-rtvs:::graphics.ide.previousplot()
-rtvs:::graphics.ide.exportimage({0}, bmp, {1}, {2}, {3})
+device_id <- rtvs:::graphics.ide.getactivedeviceid()
+rtvs:::graphics.ide.previousplot(device_id)
+rtvs:::graphics.ide.exportimage(device_id, rtvs:::graphics.ide.getactiveplotid(device_id), {0}, bmp, {1}, {2}, {3})
 ",
                 QuotedRPath(actualExportedBmpFilePath),
                 DefaultWidth,
@@ -289,7 +294,8 @@ rtvs:::graphics.ide.exportimage({0}, bmp, {1}, {2}, {3})
 
             var code = string.Format(@"
 plot(0:10)
-rtvs:::graphics.ide.exportpdf({0}, {1}, {2})
+device_id <- rtvs:::graphics.ide.getactivedeviceid()
+rtvs:::graphics.ide.exportpdf(device_id, rtvs:::graphics.ide.getactiveplotid(device_id), {0}, {1}, {2})
 ",
                 QuotedRPath(exportedFilePath),
                 7,
@@ -327,7 +333,7 @@ plot(0:1)
 plot(1:2)
 plot(2:3)
 plot(3:4)
-rtvs:::graphics.ide.resize(600, 600, 96)
+rtvs:::graphics.ide.resize(rtvs:::graphics.ide.getactivedeviceid(), 600, 600, 96)
 ";
             var inputs = Interactive(code);
             var actualPlotPaths = (await GraphicsTestAsync(inputs)).ToArray();
@@ -354,7 +360,7 @@ plot(1:2)
 plot(2:3)
 plot(3:4)
 ",
-"rtvs:::graphics.ide.resize(600, 600, 96)",
+"rtvs:::graphics.ide.resize(rtvs:::graphics.ide.getactivedeviceid(), 600, 600, 96)",
             };
             var actualPlotPaths = (await GraphicsTestAsync(inputs)).ToArray();
             var expectedPlotPaths = new string[] { expected1Path, expected2Path };
@@ -367,7 +373,7 @@ plot(3:4)
             var code = @"
 plot(0:10)
 plot(5:15)
-rtvs:::graphics.ide.previousplot()
+rtvs:::graphics.ide.previousplot(rtvs:::graphics.ide.getactivedeviceid())
 ";
 
             var inputs = Interactive(code);
@@ -388,7 +394,7 @@ rtvs:::graphics.ide.previousplot()
             var code = @"
 plot(0:10)
 plot(0:15)
-rtvs:::graphics.ide.clearplots()
+rtvs:::graphics.ide.clearplots(rtvs:::graphics.ide.getactivedeviceid())
 ";
 
             var inputs = Interactive(code);
@@ -406,9 +412,10 @@ rtvs:::graphics.ide.clearplots()
 plot(0:10)
 plot(0:20)
 plot(0:30)
-rtvs:::graphics.ide.previousplot()
-rtvs:::graphics.ide.previousplot()
-rtvs:::graphics.ide.removeplot()
+device_id <- rtvs:::graphics.ide.getactivedeviceid()
+rtvs:::graphics.ide.previousplot(device_id)
+rtvs:::graphics.ide.previousplot(device_id)
+rtvs:::graphics.ide.removeplot(device_id, rtvs:::graphics.ide.getactiveplotid(device_id))
 ";
 
             var inputs = Interactive(code);
@@ -426,7 +433,8 @@ rtvs:::graphics.ide.removeplot()
 plot(0:10)
 plot(0:20)
 plot(0:30)
-rtvs:::graphics.ide.removeplot()
+device_id <- rtvs:::graphics.ide.getactivedeviceid()
+rtvs:::graphics.ide.removeplot(device_id, rtvs:::graphics.ide.getactiveplotid(device_id))
 ";
 
             var inputs = Interactive(code);
@@ -444,8 +452,9 @@ rtvs:::graphics.ide.removeplot()
 plot(0:10)
 plot(0:20)
 plot(0:30)
-rtvs:::graphics.ide.previousplot()
-rtvs:::graphics.ide.removeplot()
+device_id <- rtvs:::graphics.ide.getactivedeviceid()
+rtvs:::graphics.ide.previousplot(device_id)
+rtvs:::graphics.ide.removeplot(device_id, rtvs:::graphics.ide.getactiveplotid(device_id))
 ";
 
             var inputs = Interactive(code);
@@ -461,7 +470,8 @@ rtvs:::graphics.ide.removeplot()
         public async Task RemovePlotSingle() {
             var code = @"
 plot(0:10)
-rtvs:::graphics.ide.removeplot()
+device_id <- rtvs:::graphics.ide.getactivedeviceid()
+rtvs:::graphics.ide.removeplot(device_id, rtvs:::graphics.ide.getactiveplotid(device_id))
 ";
 
             var inputs = Interactive(code);
@@ -483,8 +493,9 @@ rtvs:::graphics.ide.removeplot()
             var code = @"
 plot(0:10)
 plot(5:15)
-rtvs:::graphics.ide.resize(600, 600, 96)
-rtvs:::graphics.ide.previousplot()
+device_id <- rtvs:::graphics.ide.getactivedeviceid()
+rtvs:::graphics.ide.resize(device_id, 600, 600, 96)
+rtvs:::graphics.ide.previousplot(device_id)
 ";
 
             var inputs = Interactive(code);
@@ -561,7 +572,7 @@ dev.off()
         }
 
         private async Task<IEnumerable<string>> GraphicsTestAsync(string[] inputs, Func<LocatorResult> locatorHandler = null) {
-            await ExecuteInSession(inputs, new RHostClientTestApp { PlotHandler = OnPlot, LocatorHandler = locatorHandler });
+            await ExecuteInSession(inputs, new RHostClientTestApp { PlotHandler = OnPlot, LocatorHandler = locatorHandler, PlotDeviceCreateHandler = OnDeviceCreate, PlotDeviceDestroyHandler = OnDeviceDestroy });
 
             // Ensure that all plot files created by the graphics device have been deleted
             foreach (var plot in OriginalPlotMessages) {
@@ -599,6 +610,13 @@ dev.off()
 
         private static string[] Batch(string code) {
             return new[] { code };
+        }
+
+        private PlotDeviceProperties OnDeviceCreate(Guid deviceId) {
+            return DefaultDeviceProperties;
+        }
+
+        private void OnDeviceDestroy(Guid deviceId) {
         }
 
         private void OnPlot(PlotMessage plot) {

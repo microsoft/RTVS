@@ -145,9 +145,21 @@ namespace Microsoft.R.Host.Client {
             }
         }
 
-        public async Task<LocatorResult> Locator(CancellationToken ct) {
-            await Console.Error.WriteLineAsync("Locator called.");
+        public async Task<LocatorResult> Locator(Guid deviceId, CancellationToken ct)
+        {
+            await Console.Error.WriteLineAsync(Invariant($"Locator called for {deviceId}."));
             return LocatorResult.CreateNotClicked();
+        }
+
+        public async Task<PlotDeviceProperties> PlotDeviceCreate(Guid deviceId, CancellationToken ct)
+        {
+            await Console.Error.WriteLineAsync(Invariant($"PlotDeviceCreate called for {deviceId}."));
+            return PlotDeviceProperties.Default;
+        }
+
+        public async Task PlotDeviceDestroy(Guid deviceId, CancellationToken ct)
+        {
+            await Console.Error.WriteLineAsync(Invariant($"PlotDeviceDestroy called for {deviceId}."));
         }
     }
 }

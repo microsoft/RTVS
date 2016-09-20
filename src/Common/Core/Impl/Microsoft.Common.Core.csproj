@@ -43,6 +43,7 @@
     <Compile Include="Composition\INamedExport.cs" />
     <Compile Include="Composition\NamedExportLocator.cs" />
     <Compile Include="Extensions\ClipboardExtensions.cs" />
+    <Compile Include="Disposables\DisposableBag.cs" />
     <Compile Include="Logging\FileLogWriter.cs" />
     <Compile Include="Logging\GeneralLog.cs" />
     <Compile Include="Logging\IActionLinesLog.cs" />

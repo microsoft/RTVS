@@ -57,7 +57,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             RSession = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
             History = historyProvider.CreateRHistory(this);
             Packages = packagesProvider.CreateRPackageManager(sessionProvider, settings, this);
-            Plots = plotsProvider.CreatePlotManager(sessionProvider, settings, this);
+            Plots = plotsProvider.CreatePlotManager(settings, this);
             _operations = new RInteractiveWorkflowOperations(this, _debuggerModeTracker, Shell);
 
             _activeTextViewTracker.LastActiveTextViewChanged += LastActiveTextViewChanged;
@@ -100,8 +100,9 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 // the focus back here. 
                 _replLostFocus = false;
                 if (IsRProjectActive()) {
-                    ActiveWindow.Container.Show(true);
+                    ActiveWindow.Container.Show(true, immediate: false);
                 }
+
                 // Reset the flag, so that further focus changes are not affected until the next debugger break occurs.
                 _debuggerJustEnteredBreakMode = false;
             }

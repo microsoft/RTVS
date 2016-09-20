@@ -62,6 +62,7 @@
     </Compile>
     <Compile Include="Browsers\WebBrowserRole.cs" />
     <Compile Include="Commands\CommandAsyncToOleMenuCommandShim.cs" />
+    <Compile Include="Commands\CommandAsyncToOleMenuCommandShimFactory.cs" />
     <Compile Include="Commands\OleControllerChain.cs" />
     <Compile Include="Commands\R\SwitchToRClientCommand.cs" />
     <Compile Include="Commands\SessionCommand.cs" />
@@ -204,8 +205,10 @@
     <Compile Include="PackageManager\PackageManagerWindowPane.cs" />
     <Compile Include="Packages\Attributes\ProvideCodeExpansionPathAttribute.cs" />
     <Compile Include="Packages\Attributes\ProvideCodeExpansionsAttribute.cs" />
-    <Compile Include="Plots\PlotManagerWindowPane.cs" />
-    <Compile Include="Plots\VsRPlotManagerVisualComponent.cs" />
+    <Compile Include="Plots\PlotDeviceWindowPane.cs" />
+    <Compile Include="Plots\PlotHistoryWindowPane.cs" />
+    <Compile Include="Plots\VsRPlotDeviceVisualComponent.cs" />
+    <Compile Include="Plots\VsRPlotHistoryVisualComponent.cs" />
     <Compile Include="ProjectSystem\Configuration\IProjectConfigurationSettingsAccess.cs" />
     <Compile Include="ProjectSystem\Configuration\IProjectConfigurationSettingsProvider.cs" />
     <Compile Include="ProjectSystem\Configuration\ProjectConfigurationSettingsProvider.cs" />
@@ -379,7 +382,6 @@
     <Compile Include="Editors\IObjectInstanceFactory.cs" />
     <Compile Include="Logging\OutputWindowLog.cs" />
     <Compile Include="Packages\R\PackageCommands.cs" />
-    <Compile Include="Plots\Commands\ShowPlotWindowsCommand.cs" />
     <Compile Include="Publishing\Definitions\IMarkdownFlavorPublishHandler.cs" />
     <Compile Include="Publishing\Handlers\RmdPublishHandler.cs" />
     <Compile Include="Publishing\Commands\PreviewCommand.cs" />
