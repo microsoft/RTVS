@@ -34,16 +34,18 @@ namespace Microsoft.UnitTests.Core.FluentAssertions {
             return new ExceptionAssertions<TException>(typedExceptions);
         }
 
-        private Task<List<Exception>> InvokeAction() => _asyncAction().ContinueWith(t => {
-            switch (t.Status) {
+        private Task<List<Exception>> InvokeAction() => _asyncAction().ContinueWith(GetExceptions);
+
+        public static List<Exception> GetExceptions(Task task) {
+            switch (task.Status) {
                 case TaskStatus.Canceled:
-                    return GetCanceledException(t);
+                    return GetCanceledException(task);
                 case TaskStatus.Faulted:
-                    return new List<Exception>(t.Exception.Flatten().InnerExceptions);
+                    return new List<Exception>(task.Exception.Flatten().InnerExceptions);
                 default:
                     return new List<Exception>();
             }
-        });
+        }
 
         private static List<Exception> GetCanceledException(Task task) {
             var exceptions = new List<Exception>();

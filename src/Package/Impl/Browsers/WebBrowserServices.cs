@@ -107,7 +107,7 @@ namespace Microsoft.VisualStudio.R.Package.Browsers {
                 case WebBrowserRole.Help:
                     return Settings.WebHelpSearchBrowserType == BrowserType.External;
                 case WebBrowserRole.Shiny:
-                    return Settings.ShinyBrowserType == BrowserType.External;
+                    return Settings.HtmlBrowserType == BrowserType.External;
                 case WebBrowserRole.Markdown:
                     return Settings.MarkdownBrowserType == BrowserType.External;
             }

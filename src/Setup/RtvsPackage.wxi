@@ -3,31 +3,18 @@
   <DirectoryRef Id="INSTALLFOLDER">
     <Directory Id="RtvsPackageFolder" Name="rtvs">
       <Component Id="RtvsPackageMetadata" Guid="{FCCB16FB-CBA7-4D96-A53E-5E4834851BE1}">
-        <File Source="$(var.BinDir)\rtvs\DESCRIPTION" />
-        <File Source="$(var.BinDir)\rtvs\NAMESPACE" />
+        <?include RtvsPackageFiles1.wxi?>
       </Component>
       <Directory Id="RtvsPackageRFolder" Name="R">
         <Component Id="RtvsPackageR" Guid="{FF41B7CB-7071-47AB-9A0B-612000EA7B83}">
-          <File Source="$(var.BinDir)\rtvs\R\rtvs" />
-          <File Source="$(var.BinDir)\rtvs\R\breakpoints.R" />
-          <File Source="$(var.BinDir)\rtvs\R\completions.R" />
-          <File Source="$(var.BinDir)\rtvs\R\eval.R" />
-          <File Source="$(var.BinDir)\rtvs\R\graphics.R" />
-          <File Source="$(var.BinDir)\rtvs\R\grid.R" />
-          <File Source="$(var.BinDir)\rtvs\R\help.R" />
-          <File Source="$(var.BinDir)\rtvs\R\mirror.R" />
-          <File Source="$(var.BinDir)\rtvs\R\overrides.R" />
-          <File Source="$(var.BinDir)\rtvs\R\packages.R" />
-          <File Source="$(var.BinDir)\rtvs\R\repr.R" />
-          <File Source="$(var.BinDir)\rtvs\R\traceback.R" />
-          <File Source="$(var.BinDir)\rtvs\R\util.R" />
+          <?include RtvsPackageFiles2.wxi?>
         </Component>
       </Directory>
     </Directory>
   </DirectoryRef>
 
   <ComponentGroup Id="RtvsPackage">
-    <ComponentRef Id="RtvsPackageMetadata"/>
+    <ComponentRef Id="RtvsPackageMetadata" />
     <ComponentRef Id="RtvsPackageR"/>
   </ComponentGroup>
 </Include>

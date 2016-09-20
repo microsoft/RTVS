@@ -124,6 +124,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Connecting to &quot;{0}&quot;.
+        /// </summary>
+        public static string ConnectionManager_ConnectionToProgressBarMessage {
+            get {
+                return ResourceManager.GetString("ConnectionManager_ConnectionToProgressBarMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Connect to &apos;{0}&apos;..
         /// </summary>
         public static string ConnectionManager_ConnectTooltip {
@@ -216,10 +225,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0}
-        ///Host: {1}
-        ///Port: {2}
-        ///Arguments: {3}.
+        ///   Looks up a localized string similar to Port: {2}.
         /// </summary>
         public static string ConnectionManager_InformationTooltipFormatRemote {
             get {
@@ -327,6 +333,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Switching connection &quot;{0}&quot; to &quot;{1}&quot;.
+        /// </summary>
+        public static string ConnectionManager_SwitchConnectionProgressBarMessage {
+            get {
+                return ResourceManager.GetString("ConnectionManager_SwitchConnectionProgressBarMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Test Connection.
         /// </summary>
         public static string ConnectionManager_TestConnection {
@@ -336,11 +351,66 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Connection test canceled..
+        /// </summary>
+        public static string ConnectionManager_TestConnectionCanceled {
+            get {
+                return ResourceManager.GetString("ConnectionManager_TestConnectionCanceled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connection test failed:
+        ///{0}.
+        /// </summary>
+        public static string ConnectionManager_TestConnectionFailed_Format {
+            get {
+                return ResourceManager.GetString("ConnectionManager_TestConnectionFailed_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connection path is invalid..
+        /// </summary>
+        public static string ConnectionManager_TestConnectionFailed_PathIsInvalid {
+            get {
+                return ResourceManager.GetString("ConnectionManager_TestConnectionFailed_PathIsInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Microsoft.R.Host.exe is missing..
+        /// </summary>
+        public static string ConnectionManager_TestConnectionFailed_RHostIsMissing {
+            get {
+                return ResourceManager.GetString("ConnectionManager_TestConnectionFailed_RHostIsMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connection test passed!.
+        /// </summary>
+        public static string ConnectionManager_TestConnectionPassed {
+            get {
+                return ResourceManager.GetString("ConnectionManager_TestConnectionPassed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Test connection to the R interperter. Authentication credentials may be required..
         /// </summary>
         public static string ConnectionManager_TestConnectionTooltip {
             get {
                 return ResourceManager.GetString("ConnectionManager_TestConnectionTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Testing connection....
+        /// </summary>
+        public static string ConnectionManager_TestingConnection {
+            get {
+                return ResourceManager.GetString("ConnectionManager_TestingConnection", resourceCulture);
             }
         }
         

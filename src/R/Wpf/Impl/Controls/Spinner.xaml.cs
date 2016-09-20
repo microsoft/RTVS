@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace Microsoft.R.Components.PackageManager.Implementation.View {
+namespace Microsoft.R.Wpf.Controls {
     /// <summary>
     /// Interaction logic for Spinner.xaml
     /// </summary>

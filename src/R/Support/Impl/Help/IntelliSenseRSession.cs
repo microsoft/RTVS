@@ -39,7 +39,7 @@ namespace Microsoft.R.Support.Help {
         }
 
         public async Task CreateSessionAsync() {
-            await _lock.WaitAsync();
+            var token = await _lock.ResetAsync();
             try {
                 if (Session == null) {
                     Session = _sessionProvider.GetOrCreate(SessionId);
@@ -54,7 +54,7 @@ namespace Microsoft.R.Support.Help {
                     }, null, timeout);
                 }
             } finally {
-                _lock.Release();
+                token.Set();
             }
         }
     }

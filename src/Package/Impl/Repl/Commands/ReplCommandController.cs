@@ -16,7 +16,6 @@ using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Expansions;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
-using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
@@ -152,19 +151,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         }
 
         private void HandleCancel(RCompletionController controller) {
-            IVsUIShell uiShell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-            Guid gmdSet = RGuidList.RCmdSetGuid;
-            object o = new object();
             // Post interrupt command which knows if it can interrupt R or not
-            uiShell.PostExecCommand(ref gmdSet, RPackageCommandId.icmdInterruptR, 0, ref o);
+            VsAppShell.Current.PostCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdInterruptR);
         }
 
         private void HandleF1Help(RCompletionController controller) {
-            IVsUIShell uiShell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-            Guid gmdSet = RGuidList.RCmdSetGuid;
-            object o = new object();
-            // Post interrupt command which knows if it can interrupt R or not
-            uiShell.PostExecCommand(ref gmdSet, RPackageCommandId.icmdHelpOnCurrent, 0, ref o);
+            VsAppShell.Current.PostCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpOnCurrent);
         }
 
         /// <summary>

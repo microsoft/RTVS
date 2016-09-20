@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.R.Components.ConnectionManager {
@@ -24,6 +25,7 @@ namespace Microsoft.R.Components.ConnectionManager {
         IConnection GetOrAddConnection(string name, string path, string rCommandLineArguments, bool isUserCreated);
         bool TryRemove(Uri id);
 
-        Task ConnectAsync(IConnectionInfo ci);
+        Task ConnectAsync(IConnectionInfo connection, CancellationToken cancellationToken = default(CancellationToken));
+        Task TestConnectionAsync(IConnectionInfo connection, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

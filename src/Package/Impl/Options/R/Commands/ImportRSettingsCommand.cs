@@ -11,7 +11,6 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
-using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
     public sealed class ImportRSettingsCommand : MenuCommand {
@@ -20,7 +19,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
 
         public static void OnCommand(object sender, EventArgs args) {
             if (MessageButtons.Yes == VsAppShell.Current.ShowMessage(Resources.Warning_SettingsReset, MessageButtons.YesNo)) {
-                IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
                 Guid group = VSConstants.CMDSETID.StandardCommandSet2K_guid;
 
                 string asmDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetAssemblyPath());
@@ -32,12 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
                 }
 
                 object arguments = string.Format(CultureInfo.InvariantCulture, "-import:\"{0}\"", settingsFilePath1);
-                shell.PostExecCommand(ref group, (uint)VSConstants.VSStd2KCmdID.ManageUserSettings, 0, ref arguments);
-
-                //if (MessageButtons.Yes == VsAppShell.Current.ShowMessage(Resources.Warning_RStudioKeyboardShortcuts, MessageButtons.YesNo)) {
-                //    arguments = string.Format(CultureInfo.InvariantCulture, "-import:\"{0}\"", settingsFilePath2);
-                //    shell.PostExecCommand(ref group, (uint)VSConstants.VSStd2KCmdID.ManageUserSettings, 0, ref arguments);
-                //}
+                VsAppShell.Current.PostCommand(group, (int)VSConstants.VSStd2KCmdID.ManageUserSettings);
             }
         }
     }

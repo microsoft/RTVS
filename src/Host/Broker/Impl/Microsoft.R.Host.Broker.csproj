@@ -69,12 +69,15 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="About\AboutController.cs" />
+    <Compile Include="ApiErrorResult.cs" />
     <Compile Include="Interpreters\Interpreter.cs" />
     <Compile Include="Interpreters\InterpreterManager.cs" />
     <Compile Include="Lifetime\LifetimeOptions.cs" />

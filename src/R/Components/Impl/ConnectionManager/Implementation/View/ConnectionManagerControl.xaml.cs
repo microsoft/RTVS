@@ -52,6 +52,10 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
             Model?.TestConnectionAsync(GetConnection(e)).DoNotWait();
         }
 
+        private void ButtonCancelTestConnection_Click(object sender, RoutedEventArgs e) {
+            Model?.CancelTestConnection(GetConnection(e));
+        }
+
         private static IConnectionViewModel GetConnection(RoutedEventArgs e) => ((FrameworkElement)e.Source).DataContext as IConnectionViewModel;
 
         private void ScrollEditedIntoView() {

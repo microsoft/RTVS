@@ -4,5 +4,6 @@
 namespace Microsoft.R.Host.Protocol {
     public class CustomHttpHeaders {
         public const string RTVSRequestedURL = "RTVS-Requested-URL";
+        public const string RTVSApiError = "RTVS-Broker-API-Error";
     }
 }

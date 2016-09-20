@@ -3,6 +3,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Threading;
 
 namespace Microsoft.R.Components.ConnectionManager.ViewModel {
     public interface IConnectionViewModel : IConnectionInfo, INotifyPropertyChanged {
@@ -11,6 +12,9 @@ namespace Microsoft.R.Components.ConnectionManager.ViewModel {
         bool IsActive { get; set; }
         bool IsEditing { get; set; }
         bool IsConnected { get; set; }
+        CancellationTokenSource TestingConnectionCts { get; set; }
+        bool IsTestConnectionSucceeded { get; set; }
+        string TestConnectionFailedText { get; set; }
 
         string SaveButtonTooltip { get; }
         bool IsRemote { get; }

@@ -161,7 +161,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
             public async Task EvaluateAsync_CanceledDuringEvaluation() {
                 var cts = new CancellationTokenSource();
                 Func<Task> f = () => _session.EvaluateAsync("while(TRUE) {}", ct: cts.Token);
-                var assertion = f.ShouldThrowAsync<TaskCanceledException>();
+                var assertion = f.ShouldThrowAsync<OperationCanceledException>();
                 cts.CancelAfter(100);
                 await assertion;
             } 

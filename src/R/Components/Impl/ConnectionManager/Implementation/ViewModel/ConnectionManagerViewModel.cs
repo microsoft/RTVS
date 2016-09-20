@@ -1,17 +1,21 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Wpf;
 using Microsoft.Common.Wpf.Collections;
 using Microsoft.R.Components.ConnectionManager.ViewModel;
 using Microsoft.R.Components.Extensions;
+using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Interpreters;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
@@ -44,7 +48,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         }
 
         public void Dispose() {
-            _disposableBag.TryMarkDisposed();
+            _disposableBag.TryDispose();
         }
 
         public ReadOnlyObservableCollection<IConnectionViewModel> LocalConnections { get; }
@@ -144,7 +148,44 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             TryStartEditing(connection);
         }
 
-        public Task TestConnectionAsync(IConnectionViewModel connection) => Task.CompletedTask;
+        public void CancelTestConnection(IConnectionViewModel connection) {
+            _shell.AssertIsOnMainThread();
+            connection.TestingConnectionCts?.Cancel();
+            connection.TestingConnectionCts = null;
+            connection.IsTestConnectionSucceeded = false;
+            connection.TestConnectionFailedText = null;
+        }
+
+        public async Task TestConnectionAsync(IConnectionViewModel connection) {
+            _shell.AssertIsOnMainThread();
+            CancelTestConnection(connection);
+
+            connection.TestingConnectionCts = new CancellationTokenSource();
+
+            try {
+                await _connectionManager.TestConnectionAsync(connection, connection.TestingConnectionCts.Token);
+                connection.IsTestConnectionSucceeded = true;
+            } catch (ArgumentException) {
+                if (connection.TestingConnectionCts != null) {
+                    connection.TestConnectionFailedText = Resources.ConnectionManager_TestConnectionFailed_PathIsInvalid;
+                }
+            } catch (RHostDisconnectedException exception) {
+                if (connection.TestingConnectionCts != null) {
+                    connection.TestConnectionFailedText = Resources.ConnectionManager_TestConnectionFailed_Format.FormatInvariant(exception.Message);
+                }
+            } catch (RHostBinaryMissingException) {
+                if (connection.TestingConnectionCts != null) {
+                    connection.TestConnectionFailedText = Resources.ConnectionManager_TestConnectionFailed_RHostIsMissing;
+                }
+            } catch (OperationCanceledException) {
+                if (connection.TestingConnectionCts != null) {
+                    connection.TestConnectionFailedText = Resources.ConnectionManager_TestConnectionCanceled;
+                }
+            } finally {
+                connection.TestingConnectionCts?.Dispose();
+                connection.TestingConnectionCts = null;
+            }
+        }
 
         public void Save(IConnectionViewModel connectionViewModel) {
             _shell.AssertIsOnMainThread();
@@ -173,22 +214,27 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public async Task ConnectAsync(IConnectionViewModel connection) {
             _shell.AssertIsOnMainThread();
-            await _connectionManager.ConnectAsync(connection);
+            var progressBarMessage = _connectionManager.ActiveConnection != null
+                ? Resources.ConnectionManager_SwitchConnectionProgressBarMessage.FormatInvariant(_connectionManager.ActiveConnection.Name, connection.Name)
+                : Resources.ConnectionManager_ConnectionToProgressBarMessage.FormatInvariant(connection.Name);
+            using (var progressBarSession = _shell.ShowProgressBar(progressBarMessage)) {
+                await _connectionManager.ConnectAsync(connection, progressBarSession.UserCancellationToken);
+            }
             UpdateConnections();
         }
 
         private void UpdateConnections() {
             var selectedId = EditedConnection?.Id;
 
-            _localConnections.ReplaceWith(_connectionManager.RecentConnections.Where(c => !c.IsRemote).Select(c => new ConnectionViewModel(c) {
-                IsActive = c == _connectionManager.ActiveConnection,
-                IsConnected = c == _connectionManager.ActiveConnection && IsConnected
-            }).OrderBy(c => c.Name));
+            _localConnections.ReplaceWith(_connectionManager.RecentConnections
+                .Where(c => !c.IsRemote)
+                .Select(CreateConnectionViewModel)
+                .OrderBy(c => c.Name));
 
-            _remoteConnections.ReplaceWith(_connectionManager.RecentConnections.Where(c => c.IsRemote).Select(c => new ConnectionViewModel(c) {
-                IsActive = c == _connectionManager.ActiveConnection,
-                IsConnected = c == _connectionManager.ActiveConnection && IsConnected
-            }).OrderBy(c => c.Name));
+            _remoteConnections.ReplaceWith(_connectionManager.RecentConnections
+                .Where(c => c.IsRemote)
+                .Select(CreateConnectionViewModel)
+                .OrderBy(c => c.Name));
 
             var editedConnection = RemoteConnections.FirstOrDefault(i => i.Id == selectedId);
             if (editedConnection != null) {
@@ -198,12 +244,18 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             HasLocalConnections = _localConnections.Count > 0;
         }
 
+        private ConnectionViewModel CreateConnectionViewModel(IConnection connection) {
+            var isActive = connection == _connectionManager.ActiveConnection;
+            return new ConnectionViewModel(connection) {
+                IsActive = isActive,
+                IsConnected = isActive && IsConnected
+            };
+        }
+
         private void ConnectionStateChanged(object sender, ConnectionEventArgs e) {
             _shell.DispatchOnUIThread(() => {
                 IsConnected = e.State;
-                foreach (var item in _remoteConnections.Union(_localConnections)) {
-                    item.IsConnected = e.State && item.IsActive;
-                }
+                UpdateConnections();
             });
         }
     }

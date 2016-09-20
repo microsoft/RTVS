@@ -29,7 +29,7 @@ namespace Microsoft.Common.Core.Disposables {
         }
 
         public void ThrowIfDisposed() => _token.ThrowIfDisposed();
-        public bool TryMarkDisposed() {
+        public bool TryDispose() {
             var disposed = _token.TryMarkDisposed();
             if (disposed) {
                 foreach (var disposable in _disposables) {

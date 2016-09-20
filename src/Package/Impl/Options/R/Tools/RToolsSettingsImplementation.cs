@@ -120,7 +120,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         public bool EvaluateActiveBindings { get; set; } = true;
         public string WebHelpSearchString { get; set; } = "R site:stackoverflow.com";
         public BrowserType WebHelpSearchBrowserType { get; set; } = BrowserType.Internal;
-        public BrowserType ShinyBrowserType { get; set; } = BrowserType.Internal;
+        public BrowserType HtmlBrowserType { get; set; } = BrowserType.Internal;
         public BrowserType MarkdownBrowserType { get; set; } = BrowserType.External;
 
         public RToolsSettingsImplementation() {

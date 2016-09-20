@@ -74,7 +74,7 @@
             </Style>
 
             <DataTemplate x:Key="NameCellTemplate">
-                <Grid VerticalAlignment="Center" ToolTip="{Binding Model.Content.Value}">
+                <Grid VerticalAlignment="Center">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="Auto"/>
@@ -88,14 +88,25 @@
                               Style="{StaticResource ExpanderToggleStyle}"
                               ClickMode="Press" IsChecked="{Binding IsExpanded, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <imaging:CrispImage Grid.Column="2" Width="16" Height="16" Opacity="0.5"
-                                        Moniker="{Binding Model.Content.DebugEvaluation, Converter={wpf:Lambda '(IREvaluationResultInfo info) => GetVariableIcon(info)'}}" />
-                    <TextBlock Grid.Column="3" Text="{Binding Model.Content.Name}" VerticalAlignment="Center" Margin="6,0,0,0" />
+                                        Moniker="{Binding Model.Content.DebugEvaluation, Converter={wpf:Lambda '(IREvaluationResultInfo info) => GetVariableIcon(info)'}}">
+                        <imaging:CrispImage.ToolTip>
+                            <TextBlock>
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="{}{0} ({1})">
+                                        <Binding Path="Model.Content.TypeName"/>
+                                        <Binding Path="Model.Content.Class"/>
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                        </imaging:CrispImage.ToolTip>
+                    </imaging:CrispImage>
+                    <TextBlock Grid.Column="3" Text="{Binding Model.Content.Name}" ToolTip="{Binding Model.Content.Name}" VerticalAlignment="Center" Margin="6,0,0,0" />
                 </Grid>
             </DataTemplate>
-            
+
             <DataTemplate x:Key="ValueCellTemplate">
                 <Grid Height="{Binding Path=RowHeight, ElementName=RootTreeGrid, Converter={x:Static rwpf:Converters.Scale155}}"
-                      VerticalAlignment="Center"  ToolTip="{Binding Model.Content.Value}">
+                      VerticalAlignment="Center" ToolTip="{Binding Model.Content.Value}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
@@ -137,16 +148,6 @@
                         </Button>
                     </StackPanel>
                 </Grid>
-            </DataTemplate>
-
-            <DataTemplate x:Key="ClassCellTemplate">
-                <TextBlock Text="{Binding Model.Content.Class}" ToolTip="{Binding Model.Content.Value}"
-                           VerticalAlignment="Center" Padding="2,0,0,0"/>
-            </DataTemplate>
-
-            <DataTemplate x:Key="TypeNameCellTemplate">
-                <TextBlock Text="{Binding Model.Content.TypeName}" ToolTip="{Binding Model.Content.Value}"
-                           VerticalAlignment="Center" Padding="2,0,0,0"/>
             </DataTemplate>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -205,8 +206,6 @@
                                         Width="2*" 
                                         CanUserSort="True" SortMemberPath="DummyValue" />
                 <DataGridTemplateColumn x:Name="ValueColumn" Header="{x:Static pkg:Resources.VariableExplorer_ValueHeader}" CellTemplate="{StaticResource ValueCellTemplate}" Width="3*" CanUserSort="False" />
-                <DataGridTemplateColumn x:Name="ClassColumn" Header="{x:Static pkg:Resources.VariableExplorer_ClassHeader}" CellTemplate="{StaticResource ClassCellTemplate}" Width="*" CanUserSort="False" />
-                <DataGridTemplateColumn x:Name="TypeColumn" Header="{x:Static pkg:Resources.VariableExplorer_TypeHeader}" CellTemplate="{StaticResource TypeNameCellTemplate}" Width="*" CanUserSort="False" />
             </DataGrid.Columns>
         </local:TreeGrid>
     </Grid>

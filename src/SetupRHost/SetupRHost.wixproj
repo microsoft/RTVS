@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Product.wxs" />
+    <Content Include="Files.wxi" />
     <Content Include="Definitions.wxi" />
     <Content Include="project.json" />
   </ItemGroup>

@@ -29,7 +29,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         }
 
         public void Dispose() {
-            _disposableBag.TryMarkDisposed();
+            _disposableBag.TryDispose();
         }
 
         public bool IsConnected {

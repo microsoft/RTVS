@@ -24,7 +24,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View.DesignTim
             new DesignTimeConnectionViewModel { IsActive = true, IsRemote = true, IsConnected = true, Name = "Public Remote", Path = @"https:\\public\FreeRHost" },
         });
 
+#pragma warning disable 67
         public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore
 
         public IConnectionViewModel EditedConnection => RemoteConnections[0];
         public bool HasLocalConnections => false;
@@ -36,6 +38,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View.DesignTim
         public void BrowseLocalPath(IConnectionViewModel connection) { }
         public void Edit(IConnectionViewModel connection) { }
         public Task TestConnectionAsync(IConnectionViewModel connection) => Task.CompletedTask;
+        public void CancelTestConnection(IConnectionViewModel connection) { }
         public void Save(IConnectionViewModel connectionViewModel) { }
         public bool TryDelete(IConnectionViewModel connection) => false;
         public Task ConnectAsync(IConnectionViewModel connection) => Task.CompletedTask;

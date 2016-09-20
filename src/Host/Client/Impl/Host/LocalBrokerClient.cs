@@ -18,7 +18,7 @@ namespace Microsoft.R.Host.Client.Host {
         private const string RHostBrokerExe = "Microsoft.R.Host.Broker.exe";
         private const string InterpreterId = "local";
 
-        private static readonly bool ShowConsole = string.IsNullOrEmpty(Environment.GetEnvironmentVariable("RTVS_HOST_CONSOLE"));
+        private static readonly bool ShowConsole;
         private static readonly NetworkCredential _credentials = new NetworkCredential("RTVS", Guid.NewGuid().ToString());
 
         private readonly string _rhostDirectory;
@@ -27,6 +27,17 @@ namespace Microsoft.R.Host.Client.Host {
 
         private Process _brokerProcess;
 
+        static LocalBrokerClient() {
+            // Allow "true" and non-zero integer to enable, otherwise disable.
+            string rtvsShowConsole = Environment.GetEnvironmentVariable("RTVS_SHOW_CONSOLE");
+            if (!bool.TryParse(rtvsShowConsole, out ShowConsole)) {
+                int n;
+                if (int.TryParse(rtvsShowConsole, out n) && n != 0) {
+                    ShowConsole = true;
+                }
+            }
+        }
+
         public LocalBrokerClient(string name, string rHome, string rhostDirectory = null)
             : base(name, new Uri(rHome), InterpreterId) {
 
@@ -34,7 +45,7 @@ namespace Microsoft.R.Host.Client.Host {
             _rHome = rHome;
         }
 
-        public async override Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken()) {
+        public override async Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken()) {
             await EnsureBrokerStartedAsync();
             return await base.ConnectAsync(name, callbacks, rCommandLineArguments, timeout, cancellationToken);
         }
@@ -43,18 +54,18 @@ namespace Microsoft.R.Host.Client.Host {
             DisposableBag.ThrowIfDisposed();
             await TaskUtilities.SwitchToBackgroundThread();
 
+            var lockToken = await _connectLock.WaitAsync();
             try {
-                if (!await _connectLock.WaitAsync()) {
-                    if (_brokerProcess == null) {
-                        await ConnectToBrokerWorker();
-                    }
+                if (!lockToken.IsSet) {
+                    await ConnectToBrokerWorker(lockToken);
+                    lockToken.Set();
                 }
             } finally {
-                _connectLock.Release();
+                lockToken.Reset();
             }
         }
 
-        private async Task ConnectToBrokerWorker() {
+        private async Task ConnectToBrokerWorker(IBinaryAsyncLockToken lockToken) {
             Trace.Assert(_brokerProcess == null);
 
             string rhostBrokerExe = Path.Combine(_rhostDirectory, RHostBrokerExe);
@@ -79,6 +90,7 @@ namespace Microsoft.R.Host.Client.Host {
                             $" --lifetime:parentProcessId {Process.GetCurrentProcess().Id}" +
                             $" --security:secret \"{_credentials.Password}\"" +
                             $" --R:autoDetect false" +
+                            $" --R:interpreters:{InterpreterId}:name \"{Name}\"" +
                             $" --R:interpreters:{InterpreterId}:basePath \"{_rHome.TrimTrailingSlash()}\""
                     };
 
@@ -93,7 +105,7 @@ namespace Microsoft.R.Host.Client.Host {
                     process.Exited += delegate {
                         cts.Cancel();
                         _brokerProcess = null;
-                        _connectLock.Reset();
+                        _connectLock.TryReset();
                     };
 
                     await serverUriPipe.WaitForConnectionAsync(cts.Token);

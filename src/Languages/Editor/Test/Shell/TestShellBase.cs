@@ -27,6 +27,8 @@ namespace Microsoft.Languages.Editor.Test.Shell {
 
         public void ShowContextMenu(CommandID commandId, int x, int y, object commandTaget = null) { }
 
+        public ProgressBarSession ShowProgressBar(string waitMessage, int delayToShowDialigMs = 0) => new ProgressBarSession();
+
         public string SaveFileIfDirty(string fullPath) => fullPath;
 
         public string ShowOpenFileDialog(string filter, string initialPath = null, string title = null) => null;
