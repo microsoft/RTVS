@@ -86,8 +86,7 @@ namespace Microsoft.R.Editor {
                         span = textView.Selection.SelectedSpans[0];
                         // Make sure span is reasonable (single line and only contains one item)
                         if (span.Length > 0) {
-                            line = position.Snapshot.GetLineFromPosition(span.Start + 1);
-                            caretPosition = Math.Min(position.Position, line.Start + (line.Length - line.GetText().TrimStart().Length + 1));
+                            return textView.TextBuffer.CurrentSnapshot.GetText(span);
                         }
                     }
                     line = line ?? position.GetContainingLine();
@@ -122,12 +121,28 @@ namespace Microsoft.R.Editor {
 
         public static string GetItemAtPosition(ITextSnapshotLine line, int position, Func<RTokenType, bool> tokenTypeCheck, out Span span) {
             string lineText = line.GetText();
+            var offset = 0;
+            var positionInTokens = position - line.Start;
             var tokenizer = new RTokenizer();
             var tokens = tokenizer.Tokenize(lineText);
-            var tokenIndex = tokens.GetItemContaining(position - line.Start);
-            if (tokenIndex >= 0 && tokenTypeCheck(tokens[tokenIndex].TokenType)) {
-                span = new Span(tokens[tokenIndex].Start + line.Start, tokens[tokenIndex].Length);
-                return lineText.Substring(tokens[tokenIndex].Start, tokens[tokenIndex].Length);
+            var tokenIndex = tokens.GetItemContaining(positionInTokens);
+            if (tokenIndex >= 0) {
+                var token = tokens[tokenIndex];
+                if (token.TokenType == RTokenType.Comment) {
+                    // Tokenize inside comment since we do want F1 to work inside 
+                    // commented out code, code samples or Rozygen blocks.
+                    positionInTokens -= token.Start;
+                    offset = token.Start + 1;
+                    tokens = tokenizer.Tokenize(lineText.Substring(offset, token.Length - 1));
+                    tokenIndex = tokens.GetItemContaining(positionInTokens);
+                    if (tokenIndex >= 0) {
+                        token = tokens[tokenIndex];
+                    }
+                }
+                if (tokenTypeCheck(token.TokenType)) {
+                    span = new Span(line.Start + token.Start + offset, token.Length);
+                    return lineText.Substring(token.Start + offset, token.Length);
+                }
             }
 
             span = Span.FromBounds(0, 0);
