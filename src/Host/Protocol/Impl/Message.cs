@@ -146,6 +146,11 @@ namespace Microsoft.R.Host.Protocol {
             return (int)arg;
         }
 
+        public long GetInt64(int i, string name) {
+            var arg = GetArgument(i, name, JTokenType.Integer);
+            return (long)arg;
+        }
+
         public ulong GetUInt64(int i, string name) {
             var arg = GetArgument(i, name, JTokenType.Integer);
             return (ulong)arg;

@@ -3,16 +3,14 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Script;
-using Microsoft.R.Interpreters;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
@@ -73,34 +71,89 @@ namespace Microsoft.R.Host.Client.Test.RtvsPackage {
             byte[] data3 = new byte[] { 20, 21, 22, 23, 24, 25 };
             var dataSet = new byte[][] { data1, data2, data3 };
 
-            var blob1 = await _session.CreateBlobAsync(data1);
-            var blob2 = await _session.CreateBlobAsync(data2);
-            var blob3 = await _session.CreateBlobAsync(data3);
+            using (DataTransferSession dts = new DataTransferSession(_session, null)) {
+                var blob1 = await dts.SendBytesAsync(data1);
+                var blob2 = await dts.SendBytesAsync(data2);
+                var blob3 = await dts.SendBytesAsync(data3);
 
-            blob1.Should().BeGreaterThan(0);
-            blob2.Should().BeGreaterThan(0);
-            blob3.Should().BeGreaterThan(0);
+                blob1.Id.Should().BeGreaterThan(0);
+                blob2.Id.Should().BeGreaterThan(0);
+                blob3.Id.Should().BeGreaterThan(0);
 
-            blob1.Should().NotBe(blob2);
-            blob2.Should().NotBe(blob3);
-            blob3.Should().NotBe(blob1);
-            var blobIds = new ulong[] { blob1, blob2, blob3 };
+                blob1.Id.Should().NotBe(blob2.Id);
+                blob2.Id.Should().NotBe(blob3.Id);
+                blob3.Id.Should().NotBe(blob1.Id);
 
-            for (int i = 0; i < blobIds.Length; ++i) {
-                var blob = await _session.GetBlobAsync(blobIds[i]);
-                blob.Should().Equal(dataSet[i]);
+                var blobIds = new IRBlobInfo[] { blob1, blob2, blob3 };
+
+                for (int i = 0; i < blobIds.Length; ++i) {
+                    var blob = await dts.FetchBytesAsync(blobIds[i], false);
+                    blob.Should().Equal(dataSet[i]);
+                }
+            }
+        }
+        
+        [Test]
+        public async Task CreateCopyToDestroyBlob() {
+            using (MemoryStream ms = new MemoryStream())
+            using (BinaryWriter writer = new BinaryWriter(ms)) {
+                // write ~7MB of data
+                for (int i = 0; i < 1000000; ++i) {
+                    writer.Write((long)i);
+                }
+                writer.Flush();
+                await ms.FlushAsync();
+                ms.Position = 0;
+
+                IRBlobInfo blob = null;
+                using (RBlobStream blobStream = await RBlobStream.CreateAsync(_session)) {
+                    await ms.CopyToAsync(blobStream);
+                    blob = blobStream.GetBlobInfo();
+                }
+
+                using (RBlobStream blobStream = await RBlobStream.OpenAsync(blob, _session))
+                using (MemoryStream ms2 = new MemoryStream()) {
+                    await blobStream.CopyToAsync(ms2, 1024 * 1024);
+                    await ms2.FlushAsync();
+                    ms.ToArray().Should().Equal(ms2.ToArray());
+                }
+            }
+        }
+        [Test]
+        public async Task CreateWriteWithSeekBlob() {
+            IRBlobInfo blob = null;
+            using (RBlobStream blobStream = await RBlobStream.CreateAsync(_session))
+            using (BinaryWriter writer = new BinaryWriter(blobStream)) {
+                // write {1, 2, 3}
+                writer.Write((long)1);
+                writer.Write((long)2);
+                writer.Write((long)3);
+
+                // go back to position 2
+                blobStream.Seek(sizeof(long), SeekOrigin.Begin);
+
+                // change data to {1, 4, 3}
+                writer.Write((long)4);
+                blob = blobStream.GetBlobInfo();
             }
 
-            await _session.DestroyBlobsAsync(blobIds);
+            using (RBlobStream blobStream = await RBlobStream.OpenAsync(blob, _session))
+            using (BinaryReader reader = new BinaryReader(blobStream)) {
+                long[] expectedData = { 1, 4, 3 };
+                
+                for(int i = 0; i < expectedData.Length; ++i) {
+                    reader.ReadInt64().Should().Be(expectedData[i]);
+                }
+            }
         }
 
         [Test]
         public async Task ZeroSizedBlob() {
             byte[] data = new byte[] { };
-            var blobId = await _session.CreateBlobAsync(data);
+            var blobId = await _session.CreateBlobAsync();
             blobId.Should().BeGreaterThan(0);
 
-            var res = await _session.GetBlobAsync(blobId);
+            var res = await _session.BlobReadAllAsync(blobId);
             res.Should().Equal(new byte[0]);
 
             await _session.DestroyBlobsAsync(new[] { blobId });
@@ -117,7 +170,7 @@ namespace Microsoft.R.Host.Client.Test.RtvsPackage {
 
                 byte[] expectedData = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
                 actualData.Should().Equal(expectedData);
-                
+
                 await eval.ExecuteAsync($"rtvs:::destroy_blob({blobId})");
             }
         }

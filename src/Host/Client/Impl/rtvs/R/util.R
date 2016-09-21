@@ -152,7 +152,7 @@ export_to_csv <- function(expr, sep, dec) {
     filepath <- tempfile('export_', fileext='.csv')
     on.exit(unlink(filepath))
     write.table(res, file=filepath, qmethod='double', col.names=NA, sep=sep, dec=dec)
-    readBin(filepath, 'raw', file.info(filepath)$size)
+    create_blob(readBin(filepath, 'raw', file.info(filepath)$size))
 }
 
 # Helper to export current plot to image
@@ -164,7 +164,7 @@ export_to_image <- function(device_id, plot_id, device, width, height, resolutio
     dev.copy(device=device,filename=filepath,width=width,height=height,res=resolution)
     dev.off()
     dev.set(prev_device_num)
-    readBin(filepath, 'raw', file.info(filepath)$size)
+    create_blob(readBin(filepath, 'raw', file.info(filepath)$size))
 }
 
 # Helper to export current plot to pdf
@@ -176,7 +176,7 @@ export_to_pdf <- function(device_id, plot_id, width, height) {
     dev.copy(device=pdf,file=filepath,width=width,height=height)
     dev.off()
     dev.set(prev_device_num)
-    readBin(filepath, 'raw', file.info(filepath)$size)
+    create_blob(readBin(filepath, 'raw', file.info(filepath)$size))
 }
 
 # Helper to publish rmarkdown files remotely
@@ -202,7 +202,7 @@ rmarkdown_publish <- function(blob_id, output_format, encoding) {
     on.exit(unlink(output_filepath));
 
     rmarkdown::render(rmdpath, output_format = output_format, output_file = output_filepath,  output_dir = tempdir(), encoding = encoding);
-    readBin(output_filepath, 'raw', file.info(output_filepath)$size);
+    create_blob(readBin(output_filepath, 'raw', file.info(output_filepath)$size));
 }
 
 as.lock_state <- function(x) {

@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -46,24 +47,25 @@ namespace Microsoft.R.Host.Client.Test.Session {
             public async Task CreateBlob_DisconnectedFromTheStart() {
                 using (var session = new RSession(0, _brokerClient, () => { })) {
                     var data = new byte[] { 1, 2, 3, 4, 5 };
-                    Func<Task> f = () => session.CreateBlobAsync(data);
-                    await f.ShouldThrowAsync<RHostDisconnectedException>();
+                    using (DataTransferSession dts = new DataTransferSession(session, null)) {
+                        Func<Task> f = () => dts.SendBytesAsync(data, false);
+                        await f.ShouldThrowAsync<RHostDisconnectedException>();
+                    }
                 }
             }
 
-            [Test (Skip = "https://github.com/Microsoft/RTVS/issues/2191")]
+            [Test]
             public async Task CreateBlob_DisconnectedDuringCreate() {
                 var data = new byte[25 * 1024 * 1024]; // try to send a massive blob
 
                 ManualResetEvent testStarted = new ManualResetEvent(false);
-                Func<Task> f = () => {
-                    testStarted.Set();
-                    return _session.CreateBlobAsync(data);
-                };
-                var assertion = f.ShouldThrowAsync<RHostDisconnectedException>();
-                await Task.Delay(100);
-                await _session.StopHostAsync();
-                await assertion;
+                using (DataTransferSession dts = new DataTransferSession(_session, null)) {
+                    Func<Task> f = () => dts.SendBytesAsync(data, false);
+                    var assertion = f.ShouldThrowAsync<RHostDisconnectedException>();
+                    await Task.Delay(100);
+                    await _session.StopHostAsync();
+                    await assertion;
+                }
             }
 
             [Test]
@@ -72,10 +74,11 @@ namespace Microsoft.R.Host.Client.Test.Session {
                 var data = new byte[1024 * 1024];
                 Func<Task> f = async () => {
                     while (true) {
-                        await _session.CreateBlobAsync(data, ct: cts.Token);
+                        var blob = await _session.CreateBlobAsync(ct: cts.Token);
+                        await _session.BlobWriteAsync(blob, data, -1, ct: cts.Token);
                     }
                 };
-                var assertion = f.ShouldThrowAsync<TaskCanceledException>();
+                var assertion = f.ShouldThrowAsync<OperationCanceledException>();
                 cts.CancelAfter(1);
                 await assertion;
             }
@@ -83,33 +86,45 @@ namespace Microsoft.R.Host.Client.Test.Session {
             [Test]
             public async Task GetBlob_DisconnectedFromTheStart() {
                 using (var session = new RSession(0, _brokerClient, () => { })) {
-                    Func<Task> f = () => session.GetBlobAsync(1);
+                    Func<Task> f = () => session.BlobReadAllAsync(1);
                     await f.ShouldThrowAsync<RHostDisconnectedException>();
                 }
             }
 
             [Test]
             public async Task GetBlob_DisconnectedDuringGet() {
-                var data = new byte[10 * 1024 * 1024];
-                var blobId = await _session.CreateBlobAsync(data);
+                var data = new byte[1024 * 1024];
 
+                IRBlobInfo blob = null;
+                using (DataTransferSession dts = new DataTransferSession(_session, null)) {
+                    blob = await dts.SendBytesAsync(data, false);
+                }
 
-                Func<Task> f = () => _session.GetBlobAsync(blobId);
-
-                await Task.Delay(100);
-                await _session.StopHostAsync();
-                await f.ShouldThrowAsync<RHostDisconnectedException>();
+                using (RBlobStream blobStream = await RBlobStream.OpenAsync(blob, _session)) {
+                    Func<Task> f = async () => {
+                        using (MemoryStream ms = new MemoryStream()) {
+                            await blobStream.CopyToAsync(ms, 1024);
+                        }
+                    };
+                    await Task.Delay(100);
+                    await _session.StopHostAsync();
+                    await f.ShouldThrowAsync<RHostDisconnectedException>();
+                }
             }
 
             [Test]
             public async Task GetBlob_CanceledDuringGet() {
                 var cts = new CancellationTokenSource();
                 var data = new byte[1024 * 1024];
-                var blobId = await _session.CreateBlobAsync(data);
+
+                IRBlobInfo blob = null;
+                using (DataTransferSession dts = new DataTransferSession(_session, null)) {
+                    blob = await dts.SendBytesAsync(data, false);
+                }
 
                 Func<Task> f = async () => {
                     while (true) {
-                        await _session.GetBlobAsync(blobId, ct: cts.Token);
+                        await _session.BlobReadAllAsync(blob.Id, ct: cts.Token);
                     }
                 };
                 var assertion = f.ShouldThrowAsync<OperationCanceledException>();

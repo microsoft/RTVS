@@ -15,8 +15,8 @@ namespace Microsoft.R.Host.Client {
                 : base(host, message, cancellationToken) {
             }
 
-            public static async Task<CreateBlobRequest> SendAsync(RHost host, byte[] blob, CancellationToken cancellationToken) {
-                var message = host.CreateRequestMessage("?CreateBlob", new JArray(), blob);
+            public static async Task<CreateBlobRequest> CreateAsync(RHost host, CancellationToken cancellationToken) {
+                var message = host.CreateRequestMessage("?CreateBlob", new JArray());
                 var request = new CreateBlobRequest(host, message, cancellationToken);
 
                 await host.SendAsync(message, cancellationToken);
