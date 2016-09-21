@@ -132,7 +132,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
             psi.EnvironmentVariables["PATH"] = Interpreter.Info.BinPath + ";" + Environment.GetEnvironmentVariable("PATH");
 
             psi.WorkingDirectory = Path.GetDirectoryName(rhostExePath);
-
+            
             _process = new Process {
                 StartInfo = psi,
                 EnableRaisingEvents = true,

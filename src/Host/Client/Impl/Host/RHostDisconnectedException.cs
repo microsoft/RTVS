@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Threading;
+using Microsoft.Common.Core;
 using Microsoft.R.Host.Client.BrokerServices;
 using Microsoft.R.Host.Protocol;
 
@@ -34,6 +35,9 @@ namespace Microsoft.R.Host.Client.Host {
                     return Resources.Error_NoRInterpreters;
                 case BrokerApiError.InterpreterNotFound:
                     return Resources.Error_InterpreterNotFound;
+                case BrokerApiError.UnableToStartRHost:
+                    return Resources.Error_UnableToStartHost.FormatInvariant(
+                        !string.IsNullOrEmpty(ex.BrokerMessage) ? ex.BrokerMessage : Resources.Error_UnknownError);
             }
 
             Debug.Fail("No localized resources for broker API error" + ex.ApiError.ToString());

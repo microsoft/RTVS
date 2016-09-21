@@ -106,6 +106,24 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Remote R host process did not start. Exception: {0}.
+        /// </summary>
+        internal static string Error_UnableToStartHost {
+            get {
+                return ResourceManager.GetString("Error_UnableToStartHost", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unknown error.
+        /// </summary>
+        internal static string Error_UnknownError {
+            get {
+                return ResourceManager.GetString("Error_UnknownError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Free Physical Memory: {0} MB.
         /// </summary>
         internal static string FreePhysicalMemory {

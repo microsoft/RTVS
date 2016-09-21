@@ -210,4 +210,10 @@ because of the following error: {2}</value>
   <data name="HttpErrorCreatingSession" xml:space="preserve">
     <value>HTTP error while creating session: {0}</value>
   </data>
+  <data name="Error_UnableToStartHost" xml:space="preserve">
+    <value>Remote R host process did not start. Exception: {0}</value>
+  </data>
+  <data name="Error_UnknownError" xml:space="preserve">
+    <value>Unknown error</value>
+  </data>
 </root>

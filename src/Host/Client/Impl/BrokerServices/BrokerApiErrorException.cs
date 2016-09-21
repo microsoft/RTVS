@@ -6,10 +6,12 @@ using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Client.BrokerServices {
     public sealed class BrokerApiErrorException: Exception {
-        public BrokerApiError ApiError { get; } 
+        public BrokerApiError ApiError { get; }
+        public string BrokerMessage { get; }
 
-        public BrokerApiErrorException(BrokerApiError error) {
+        public BrokerApiErrorException(BrokerApiError error, string brokerMessage) {
             ApiError = error;
+            BrokerMessage = brokerMessage;
         }
     }
 }

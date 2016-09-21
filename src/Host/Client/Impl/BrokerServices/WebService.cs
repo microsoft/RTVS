@@ -32,7 +32,8 @@ namespace Microsoft.R.Host.Client.BrokerServices {
                 if (s != null) {
                     BrokerApiError apiError;
                     if (Enum.TryParse(s, out apiError)) {
-                        throw new BrokerApiErrorException(apiError);
+                        response.Headers.TryGetValues(CustomHttpHeaders.RTVSBrokerException, out values);
+                        throw new BrokerApiErrorException(apiError, values?.FirstOrDefault());
                     } else {
                         throw new ProtocolViolationException("Unknown broker API error");
                     }

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security;
@@ -54,8 +55,12 @@ namespace Microsoft.R.Host.Broker.Sessions {
                 interp = _interpManager.Interpreters.First();
             }
 
-            var session = _sessionManager.CreateSession(User.Identity, id, interp, securePassword, profilePath, request.CommandLineArguments);
-            return Task.FromResult<IActionResult>(new ObjectResult(session.Info));
+            try {
+                var session = _sessionManager.CreateSession(User.Identity, id, interp, securePassword, profilePath, request.CommandLineArguments);
+                return Task.FromResult<IActionResult>(new ObjectResult(session.Info));
+            } catch(Exception) {
+                return Task.FromResult<IActionResult>(new ApiErrorResult(HttpContext.Response, BrokerApiError.UnableToStartRHost));
+            }
         }
 
         [HttpGet("{id}/pipe")]
