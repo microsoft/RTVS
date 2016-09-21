@@ -123,7 +123,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         public BrowserType WebHelpSearchBrowserType { get; set; } = BrowserType.Internal;
         public BrowserType HtmlBrowserType { get; set; } = BrowserType.Internal;
         public BrowserType MarkdownBrowserType { get; set; } = BrowserType.External;
-        public LogLevel LogLevel => LogLevel.Normal;
+        public LogLevel LogLevel { get; set; } = LogLevel.Normal;
 
         public RToolsSettingsImplementation() {
             _workingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);

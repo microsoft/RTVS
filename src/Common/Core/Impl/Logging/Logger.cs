@@ -28,22 +28,22 @@ namespace Microsoft.Common.Core.Logging {
             if (_instance != null) {
                 throw new InvalidOperationException("Log is already open");
             }
-            _instance = new Logger(appName, details);
+            _instance = new Logger(appName, details, null);
         }
 
         public static void Close() {
-            foreach(var log in _instance._logs) {
+            foreach (var log in _instance._logs) {
                 (log as IDisposable)?.Dispose();
             }
         }
 
-        internal Logger(string appName, LogLevel details) {
+        internal Logger(string appName, LogLevel details, IActionLogWriter writer) {
             _details = details;
 
             _logs[(int)LogLevel.None] = NullLogWriter.Instance;
-            _logs[(int)LogLevel.Minimal] = _details >= LogLevel.Minimal ? new ApplicationLogWriter(appName) : NullLogWriter.Instance;
-            _logs[(int)LogLevel.Normal] = _details >= LogLevel.Normal ? FileLogWriter.InTempFolder(appName) : NullLogWriter.Instance;
-            _logs[(int)LogLevel.Traffic] = details == LogLevel.Traffic ? FileLogWriter.InTempFolder(appName + ".traffic") : NullLogWriter.Instance;
+            _logs[(int)LogLevel.Minimal] = writer ?? (_details >= LogLevel.Minimal ? new ApplicationLogWriter(appName) : NullLogWriter.Instance);
+            _logs[(int)LogLevel.Normal] = writer ?? (_details >= LogLevel.Normal ? FileLogWriter.InTempFolder(appName) : NullLogWriter.Instance);
+            _logs[(int)LogLevel.Traffic] = writer ?? (details == LogLevel.Traffic ? FileLogWriter.InTempFolder(appName + ".traffic") : NullLogWriter.Instance);
         }
 
         #region IActionLog
@@ -56,6 +56,12 @@ namespace Microsoft.Common.Core.Logging {
         }
         public Task WriteLineAsync(LogLevel logLevel, MessageCategory category, string message) {
             return _logs[(int)logLevel].WriteAsync(category, message + Environment.NewLine);
+        }
+
+        public void Flush() {
+            foreach (var l in _logs) {
+                l.Flush();
+            }
         }
         #endregion
     }

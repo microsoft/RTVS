@@ -99,7 +99,7 @@ namespace Microsoft.R.Editor.Outline {
                 } catch (Exception ex) {
                     var message = Invariant($"Exception in R outliner: {ex.Message}");
                     Debug.Assert(false, message);
-                    GeneralLog.Write(message);
+                    Logger.Current.WriteAsync(LogLevel.Normal, MessageCategory.Error, message);
                 } finally {
                     if (rootNode != null) {
                         EditorTree.ReleaseReadLock(_treeUserId);

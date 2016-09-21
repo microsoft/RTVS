@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Help.Functions;
@@ -54,10 +55,8 @@ namespace Microsoft.R.Support.Help.Packages {
                         }
                     }
                     _saved = true;
-                } catch (IOException ioex) {
-                    GeneralLog.Write(ioex);
-                } catch (UnauthorizedAccessException aex) {
-                    GeneralLog.Write(aex);
+                } catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException) {
+                    Logger.Current.WriteAsync(LogLevel.Normal, MessageCategory.Error, ex.Message).DoNotWait();
                 }
             }
         }

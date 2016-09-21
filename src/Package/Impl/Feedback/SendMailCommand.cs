@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics;
 using System.Globalization;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Office.Interop.Outlook;
 using Microsoft.VisualStudio.R.Package.Commands;
@@ -33,8 +34,7 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
             try {
                 outlookApp = new Application();
             } catch (System.Exception ex) {
-                GeneralLog.Write("Unable to start Outlook (exception data follows)");
-                GeneralLog.Write(ex);
+                Logger.Current.WriteAsync(LogLevel.Normal, MessageCategory.Error, "Unable to start Outlook: " + ex.Message).DoNotWait();
             }
 
             if (outlookApp == null) {
@@ -60,8 +60,7 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
                     mail.To = "rtvsuserfeedback@microsoft.com";
                     mail.Display(Modal: false);
                 } catch (System.Exception ex) {
-                    GeneralLog.Write("Error composing Outlook e-mail (exception data follows)");
-                    GeneralLog.Write(ex);
+                    Logger.Current.WriteAsync(LogLevel.Normal, MessageCategory.Error, "Error composing Outlook e-mail: " + ex.Message).DoNotWait();
                 }
             }
         }

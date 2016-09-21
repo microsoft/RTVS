@@ -12,5 +12,6 @@ namespace Microsoft.Common.Core.Logging {
         Task WriteAsync(LogLevel logLevel, MessageCategory category, string message);
         Task WriteFormatAsync(LogLevel logLevel, MessageCategory category, string format, params object[] arguments);
         Task WriteLineAsync(LogLevel logLevel, MessageCategory category, string message);
+        void Flush();
     }
 }

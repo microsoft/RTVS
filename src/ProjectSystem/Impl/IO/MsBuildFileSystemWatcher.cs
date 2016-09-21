@@ -55,7 +55,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
             _fileSystem = fileSystem;
             _fileSystemFilter = fileSystemFilter;
             _taskScheduler = taskScheduler ?? TaskScheduler.Default;
-            _log = log ?? ProjectSystemActionLog.Default;
+            _log = log ?? Logger.Current;
 
             _entries = new MsBuildFileSystemWatcherEntries();
             _queue = new ConcurrentQueue<IFileSystemChange>();

@@ -155,7 +155,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             try {
                 await _surveyNews.CheckSurveyNewsAsync(false);
             } catch (Exception ex) when (!ex.IsCriticalException()) {
-                GeneralLog.Write(ex);
+                Logger.Current.WriteAsync(LogLevel.Normal, MessageCategory.Error, "SurveyNews exception: " + ex.Message).DoNotWait();
             }
         }
 

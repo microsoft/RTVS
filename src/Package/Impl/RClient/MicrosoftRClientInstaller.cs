@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.Globalization;
 using System.IO;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Net;
 using Microsoft.Common.Core.OS;
@@ -37,7 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.RClient {
                 var errorMessage = string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToDownloadRClient, downloadError);
                 coreShell.ShowErrorMessage(errorMessage);
                 coreShell.TelemetryService.ReportEvent(TelemetryArea.Configuration, RtvsTelemetry.ConfigurationEvents.RClientDownloadFailed, errorMessage);
-                GeneralLog.Write(errorMessage);
+                Logger.Current.WriteAsync(LogLevel.Minimal, MessageCategory.Error, "Microsoft R Client download error: " + errorMessage).DoNotWait();
             } else {
                 // Suppress 'Operation canceled by the user' if user clicks 'No' to elevation dialog.
                 try {

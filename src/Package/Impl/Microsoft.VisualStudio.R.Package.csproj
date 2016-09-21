@@ -390,7 +390,6 @@
     <Compile Include="Publishing\Handlers\RmdPublishHandler.cs" />
     <Compile Include="Publishing\Commands\PreviewCommand.cs" />
     <Compile Include="Publishing\Definitions\PublishFormat.cs" />
-    <Compile Include="Logging\PackagesInstallLog.cs" />
     <Compile Include="Packages\Markdown\MdEditorFactory.cs" />
     <Compile Include="Packages\Markdown\MdLanguageService.cs" />
     <Compile Include="Options\Attributes\ReplShortcutTypeConverter.cs" />

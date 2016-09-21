@@ -117,7 +117,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [Test]
         [Category.R.Session]
         public void StartRHostMissing() {
-            var brokerClient = new LocalBrokerClient(nameof(RSessionTest), @"C:\", Environment.SystemDirectory);
+            var brokerClient = new LocalBrokerClient(nameof(RSessionTest), @"C:\", Substitute.For<IActionLog>(), Environment.SystemDirectory);
             var session = new RSession(0, brokerClient, () => { });
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name

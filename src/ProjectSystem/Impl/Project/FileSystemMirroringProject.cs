@@ -52,7 +52,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project {
             _fileSystemWatcher = fileSystemWatcher;
             _dependencyProvider = dependencyProvider;
 
-            _log = log ?? ProjectSystemActionLog.Default;
+            _log = log ?? Logger.Current;
             _unloadCancellationToken = _unconfiguredProject.Services.ProjectAsynchronousTasks.UnloadCancellationToken;
             _projectDirectory = _unconfiguredProject.GetProjectDirectory();
             _inMemoryImportFullPath = _unconfiguredProject.GetInMemoryTargetsFileFullPath();

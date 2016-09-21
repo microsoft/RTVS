@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
@@ -62,7 +63,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             try {
                 task.Wait();
             } catch (Exception ex) {
-                GeneralLog.Write(ex);
+                Logger.Current.WriteAsync(LogLevel.Minimal, MessageCategory.Error, "Long operation exception: " + ex.Message).DoNotWait();
             }
             return true;
         }

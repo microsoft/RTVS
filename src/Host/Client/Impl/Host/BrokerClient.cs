@@ -198,7 +198,7 @@ namespace Microsoft.R.Host.Client.Host {
             var cts = new CancellationTokenSource();
             cts.Token.Register(() => { _log.RHostProcessExited(); });
 
-            return new RHost(name, callbacks, transport, cts);
+            return new RHost(name, callbacks, transport, _log, cts);
         }
 
         private async Task GetHostInformationAsync(CancellationToken cancellationToken) {

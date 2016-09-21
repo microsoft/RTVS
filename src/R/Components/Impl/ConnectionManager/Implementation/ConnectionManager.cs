@@ -28,6 +28,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         private readonly ICoreShell _shell;
         private readonly IStatusBar _statusBar;
         private readonly IRSessionProvider _sessionProvider;
+        private readonly IActionLog _log;
         private readonly DisposableBag _disposableBag;
         private readonly ConnectionStatusBarViewModel _statusBarViewModel;
         private readonly ConcurrentDictionary<Uri, IConnection> _userConnections;
@@ -40,11 +41,12 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         public event EventHandler RecentConnectionsChanged;
         public event EventHandler<ConnectionEventArgs> ConnectionStateChanged;
 
-        public ConnectionManager(IStatusBar statusBar, IRSettings settings, IRInteractiveWorkflow interactiveWorkflow) {
+        public ConnectionManager(IStatusBar statusBar, IRSettings settings, IRInteractiveWorkflow interactiveWorkflow, IActionLog log) {
             _statusBar = statusBar;
             _sessionProvider = interactiveWorkflow.RSessions;
             _settings = settings;
             _shell = interactiveWorkflow.Shell;
+            _log = log;
 
             _statusBarViewModel = new ConnectionStatusBarViewModel(this, interactiveWorkflow.Shell);
 
@@ -216,7 +218,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 var info = new RInterpreterInfo(name, path);
                 return info.VerifyInstallation();
             } catch (Exception ex) when (!ex.IsCriticalException()) {
-                GeneralLog.Write(ex);
+                _log.WriteAsync(LogLevel.Normal, MessageCategory.Error, ex.Message).DoNotWait();
             }
             return false;
         }
@@ -226,7 +228,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 Uri uri;
                 return Uri.TryCreate(path, UriKind.Absolute, out uri) && !uri.IsFile;
             } catch (Exception ex) when (!ex.IsCriticalException()) {
-                GeneralLog.Write(ex);
+                _log.WriteAsync(LogLevel.Normal, MessageCategory.Error, ex.Message).DoNotWait();
             }
             return false;
         }

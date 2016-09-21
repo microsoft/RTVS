@@ -1,38 +1,38 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Diagnostics.CodeAnalysis;
-using FluentAssertions;
+using System.Threading.Tasks;
 using Microsoft.Common.Core.Logging;
 using Microsoft.UnitTests.Core.XUnit;
+using NSubstitute;
+using Xunit;
 
 namespace Microsoft.Common.Core.Test.Logging {
     [ExcludeFromCodeCoverage]
+    [Category.Logging]
     public class LoggerTest {
-        [Test]
-        [Category.Logging]
-        public void Logging_NullLogTest() {
-            IActionLinesLog log = new NullLog();
-            log.WriteAsync(MessageCategory.Error, "message").Wait();
-            log.WriteFormatAsync(MessageCategory.Error, "message").Wait();
-            log.WriteLineAsync(MessageCategory.Error, "message").Wait();
+        [CompositeTest]
+        [InlineData()]
+        public async Task LogLevels(LogLevel level) {
+            var writer = Substitute.For<IActionLogWriter>();
 
-            log.Content.Should().BeEmpty();
-            log.Lines.Should().BeEmpty();
-        }
+            var log = new Logger(string.Empty, level, writer);
+            await log.WriteAsync(LogLevel.Minimal, MessageCategory.Error, "message1");
+            await log.WriteFormatAsync(LogLevel.Normal, MessageCategory.Error, "message2");
+            await log.WriteLineAsync(LogLevel.Traffic, MessageCategory.Error, "message3");
 
-        [Test]
-        [Category.Logging]
-        public void Logging_LinesLogTest() {
-            IActionLinesLog log = new LinesLog(NullLogWriter.Instance);
+            for(int i = 0; i < (int)level; i++) {
+                await writer.DidNotReceive().WriteAsync(Arg.Any<MessageCategory>(), Arg.Any<string>());
+            }
+            for (int i = (int)level; i < (int)Enum.GetValues(typeof(LogLevel)).Length; i++) {
+                await writer.Received().WriteAsync(MessageCategory.Error, "message" + i.ToString());
+            }
 
-            log.WriteAsync(MessageCategory.Error, "message1").Wait();
-            log.WriteLineAsync(MessageCategory.Error, " message2").Wait();
-            log.WriteFormatAsync(MessageCategory.Error, "message3 {0}\r\n", 1).Wait();
-            log.WriteLineAsync(MessageCategory.Error, "message4").Wait();
-
-            log.Content.Should().Be("message1 message2\r\nmessage3 1\r\nmessage4\r\n");
-            log.Lines.Should().Equal("message1 message2", "message3 1", "message4", string.Empty);
+            writer.DidNotReceive().Flush();
+            log.Flush();
+            writer.Received().Flush();
         }
     }
 }

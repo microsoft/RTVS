@@ -10,7 +10,7 @@ using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Logging {
-    internal sealed class OutputWindowLogWriter : IActionLogWriter {
+    internal sealed class OutputWindowLogWriter {
         private IVsOutputWindowPane _pane;
         private Guid _paneGuid;
         private readonly string _windowName;

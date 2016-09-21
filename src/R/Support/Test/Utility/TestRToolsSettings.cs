@@ -76,7 +76,7 @@ namespace Microsoft.R.Support.Test.Utility {
         public bool ShowPackageManagerDisclaimer { get; set; } = true;
 
         public string[] WorkingDirectoryList { get; set; } = new string[0];
-        
+
         public HelpBrowserType HelpBrowserType {
             get { return HelpBrowserType.Automatic; }
             set { }
@@ -131,6 +131,9 @@ namespace Microsoft.R.Support.Test.Utility {
 
         public bool EvaluateActiveBindings { get; set; } = false;
 
-        public LogLevel LogLevel => LogLevel.None;
+        public LogLevel LogLevel {
+            get { return LogLevel.None; }
+            set { }
+        }
     }
 }
