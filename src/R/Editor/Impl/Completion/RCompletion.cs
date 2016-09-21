@@ -27,9 +27,9 @@ namespace Microsoft.R.Editor.Completion {
             if (completion1 == null || completion2 == null)
                 return -1;
 
-            int value = String.Compare(completion1.DisplayText, completion2.DisplayText, StringComparison.OrdinalIgnoreCase);
+            int value = String.Compare(completion1.DisplayText, completion2.DisplayText, StringComparison.Ordinal);
             if (0 == value)
-                value = String.Compare(completion1.IconAutomationText, completion2.IconAutomationText, StringComparison.OrdinalIgnoreCase);
+                value = String.Compare(completion1.IconAutomationText, completion2.IconAutomationText, StringComparison.Ordinal);
 
             return value;
         }

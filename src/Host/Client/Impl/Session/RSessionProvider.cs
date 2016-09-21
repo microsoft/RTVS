@@ -251,10 +251,11 @@ namespace Microsoft.R.Host.Client.Session {
             _callback.WriteConsole("\t" + Resources.TotalVirtualMemory.FormatInvariant(a.TotalVirtualMemory));
             _callback.WriteConsole("\t" + Resources.FreeVirtualMemory.FormatInvariant(a.FreeVirtualMemory));
 
-            _callback.WriteConsole(Resources.InstalledInterpreters);
-            foreach (var name in a.Interpreters) {
-                _callback.WriteConsole("\t" + name);
-            }
+            // TODO: activate when we support switching between remote R interpreters in UI.
+            //_callback.WriteConsole(Resources.InstalledInterpreters);
+            //foreach (var name in a.Interpreters) {
+            //    _callback.WriteConsole("\t" + name);
+            //}
         }
 
         private async Task ConnectToNewBrokerAsync(IRSessionSwitchBrokerTransaction transaction) {
