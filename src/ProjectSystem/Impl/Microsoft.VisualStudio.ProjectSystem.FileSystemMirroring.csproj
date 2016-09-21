@@ -56,7 +56,6 @@
     <Compile Include="Package\Registration\ProvideProjectFileGeneratorAttribute.cs" />
     <Compile Include="Package\Registration\RegistrationAttributeBuilder.cs" />
     <Compile Include="Package\Registration\RegistrationAttributeBuilder.RegKey.cs" />
-    <Compile Include="Logging\ProjectSystemActionLog.cs" />
     <Compile Include="Project\FileSystemMirroringProjectFileGenerator.cs" />
     <Compile Include="Project\FileSystemMirroringProject.cs" />
     <Compile Include="Project\FileSystemMirroringProjectUtilities.cs" />

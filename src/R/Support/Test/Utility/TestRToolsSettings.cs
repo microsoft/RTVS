@@ -6,6 +6,7 @@ using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.Common.Core.Enums;
+using Microsoft.Common.Core.Logging;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.ConnectionManager.Implementation;
 using Microsoft.R.Components.Settings;
@@ -129,5 +130,7 @@ namespace Microsoft.R.Support.Test.Utility {
         }
 
         public bool EvaluateActiveBindings { get; set; } = false;
+
+        public LogLevel LogLevel => LogLevel.None;
     }
 }

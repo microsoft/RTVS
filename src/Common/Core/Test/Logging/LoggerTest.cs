@@ -8,12 +8,10 @@ using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.Common.Core.Test.Logging {
     [ExcludeFromCodeCoverage]
-    public class LoggerTest
-    {
+    public class LoggerTest {
         [Test]
         [Category.Logging]
-        public void Logging_NullLogTest()
-        {
+        public void Logging_NullLogTest() {
             IActionLinesLog log = new NullLog();
             log.WriteAsync(MessageCategory.Error, "message").Wait();
             log.WriteFormatAsync(MessageCategory.Error, "message").Wait();
@@ -25,8 +23,7 @@ namespace Microsoft.Common.Core.Test.Logging {
 
         [Test]
         [Category.Logging]
-        public void Logging_LinesLogTest()
-        {
+        public void Logging_LinesLogTest() {
             IActionLinesLog log = new LinesLog(NullLogWriter.Instance);
 
             log.WriteAsync(MessageCategory.Error, "message1").Wait();

@@ -30,7 +30,7 @@ namespace Microsoft.R.Host.Client.Host {
 
         protected DisposableBag DisposableBag { get; } = DisposableBag.Create<BrokerClient>();
 
-        private readonly LinesLog _log;
+        private readonly IActionLog _log;
         private readonly string _interpreterId;
         private AboutHost _aboutHost;
 
@@ -46,11 +46,11 @@ namespace Microsoft.R.Host.Client.Host {
 
         public AboutHost AboutHost => _aboutHost ?? AboutHost.Empty;
 
-        protected BrokerClient(string name, Uri brokerUri, string interpreterId) {
+        protected BrokerClient(string name, Uri brokerUri, string interpreterId, IActionLog log) {
             Name = name;
             Uri = brokerUri;
             _interpreterId = interpreterId;
-            _log = new LinesLog(FileLogWriter.InTempFolder(nameof(BrokerClient)));
+            _log = log;
         }
 
         protected void CreateHttpClient(Uri baseAddress, ICredentials credentials) {

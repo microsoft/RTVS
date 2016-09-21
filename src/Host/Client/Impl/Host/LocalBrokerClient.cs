@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Threading;
 using Newtonsoft.Json;
 
@@ -38,8 +39,8 @@ namespace Microsoft.R.Host.Client.Host {
             }
         }
 
-        public LocalBrokerClient(string name, string rHome, string rhostDirectory = null)
-            : base(name, new Uri(rHome), InterpreterId) {
+        public LocalBrokerClient(string name, string rHome, IActionLog log, string rhostDirectory = null)
+            : base(name, new Uri(rHome), InterpreterId, log) {
 
             _rhostDirectory = rhostDirectory ?? Path.GetDirectoryName(typeof(RHost).Assembly.GetAssemblyPath());
             _rHome = rHome;

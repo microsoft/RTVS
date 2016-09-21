@@ -917,4 +917,13 @@ Additional information:
   <data name="SqlPublish_PublishDatabaseSuccess" xml:space="preserve">
     <value>Publishing complete. Connection {0}</value>
   </data>
+  <data name="Settings_LogCategory" xml:space="preserve">
+    <value>Logging</value>
+  </data>
+  <data name="Settings_LogLevel" xml:space="preserve">
+    <value>Log events</value>
+  </data>
+  <data name="Settings_LogLevel_Description" xml:space="preserve">
+    <value>Defines what events are logged for diagnostic purposes. None disables logging completely. Minimal enables OS Application log. Normal also creates log file with extended information in the TEMP folder. No private or secure data is recorded. Traffic settings enables recording of complete data exchange in the session, incuding interactive commands and potentially secure or private data.</value>
+  </data>
 </root>

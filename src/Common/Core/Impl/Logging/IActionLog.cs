@@ -9,9 +9,8 @@ namespace Microsoft.Common.Core.Logging {
     /// an application output window or telemetry.
     /// </summary>
     public interface IActionLog {
-        Task WriteAsync(MessageCategory category, string message);
-        Task WriteFormatAsync(MessageCategory category, string format, params object[] arguments);
-        Task WriteLineAsync(MessageCategory category, string message);
-        string Content { get; }
+        Task WriteAsync(LogLevel logLevel, MessageCategory category, string message);
+        Task WriteFormatAsync(LogLevel logLevel, MessageCategory category, string format, params object[] arguments);
+        Task WriteLineAsync(LogLevel logLevel, MessageCategory category, string message);
     }
 }

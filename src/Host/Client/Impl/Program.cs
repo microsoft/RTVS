@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Host.Client.Host;
 using static System.FormattableString;
@@ -17,7 +18,8 @@ namespace Microsoft.R.Host.Client {
 
         static void Main(string[] args) {
             Console.CancelKeyPress += Console_CancelKeyPress;
-            var localConnector = new LocalBrokerClient("Program", args[0]);
+            Logger.Open("Microsoft.R.Host.Client", LogLevel.Traffic);
+            var localConnector = new LocalBrokerClient("Program", args[0], Logger.Current);
             var host = localConnector.ConnectAsync("Program", new Program()).GetAwaiter().GetResult();
             _evaluator = host;
             host.Run().GetAwaiter().GetResult();

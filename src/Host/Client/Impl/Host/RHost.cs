@@ -30,8 +30,7 @@ namespace Microsoft.R.Host.Client {
         
         private readonly IMessageTransport _transport;
         private readonly CancellationTokenSource _cts;
-        private readonly LinesLog _log;
-        private readonly FileLogWriter _fileLogWriter;
+        private readonly IActionLog _log;
         private readonly ConcurrentDictionary<ulong, Request> _requests = new ConcurrentDictionary<ulong, Request>();
 
         private volatile Task _runTask;
@@ -45,15 +44,13 @@ namespace Microsoft.R.Host.Client {
         private TaskCompletionSource<object> _cancelAllTcs;
         private CancellationTokenSource _cancelAllCts = new CancellationTokenSource();
 
-        public RHost(string name, IRCallbacks callbacks, IMessageTransport transport, CancellationTokenSource cts) {
+        public RHost(string name, IRCallbacks callbacks, IMessageTransport transport, IActionLog log, CancellationTokenSource cts) {
             Check.ArgumentStringNullOrEmpty(nameof(name), name);
 
             _callbacks = callbacks;
             _transport = transport;
+            _log = log;
             _cts = cts;
-
-            _fileLogWriter = FileLogWriter.InTempFolder("Microsoft.R.Host.Client" + "_" + name);
-            _log = new LinesLog(_fileLogWriter);
         }
 
         public void Dispose() {

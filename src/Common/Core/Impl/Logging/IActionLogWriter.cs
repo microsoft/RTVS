@@ -4,7 +4,7 @@
 using System.Threading.Tasks;
 
 namespace Microsoft.Common.Core.Logging {
-    public interface IActionLogWriter {
+    internal interface IActionLogWriter {
         Task WriteAsync(MessageCategory category, string message);
         void Flush();
     }

@@ -1470,6 +1470,33 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Logging.
+        /// </summary>
+        public static string Settings_LogCategory {
+            get {
+                return ResourceManager.GetString("Settings_LogCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Log events.
+        /// </summary>
+        public static string Settings_LogLevel {
+            get {
+                return ResourceManager.GetString("Settings_LogLevel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Defines what events are logged for diagnostic purposes. None disables logging completely. Minimal enables OS Application log. Normal also creates log file with extended information in the TEMP folder. No private or secure data is recorded. Traffic settings enables recording of complete data exchange in the session, incuding interactive commands and potentially secure or private data..
+        /// </summary>
+        public static string Settings_LogLevel_Description {
+            get {
+                return ResourceManager.GetString("Settings_LogLevel_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Markdown preview browser.
         /// </summary>
         public static string Settings_MarkdownBrowserType {

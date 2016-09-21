@@ -44,7 +44,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO {
                 _taskScheduler = new ControlledTaskScheduler(SynchronizationContext.Current);
 
                 DirectoryInfoStubFactory.Create(_fileSystem, ProjectDirectory);
-                _fileSystemWatcher = new MsBuildFileSystemWatcher(ProjectDirectory, "*", 0, 0, _fileSystem, fileSystemFilter, _taskScheduler, NullLog.Instance);
+                _fileSystemWatcher = new MsBuildFileSystemWatcher(ProjectDirectory, "*", 0, 0, _fileSystem, fileSystemFilter, _taskScheduler, Substitute.For<IActionLog>());
                 _fileSystemWatcher.Start();
 
                 _fileWatcher = watchers.FileWatcher;

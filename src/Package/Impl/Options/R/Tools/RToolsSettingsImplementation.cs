@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Enums;
+using Microsoft.Common.Core.Logging;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -122,6 +123,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         public BrowserType WebHelpSearchBrowserType { get; set; } = BrowserType.Internal;
         public BrowserType HtmlBrowserType { get; set; } = BrowserType.Internal;
         public BrowserType MarkdownBrowserType { get; set; } = BrowserType.External;
+        public LogLevel LogLevel => LogLevel.Normal;
 
         public RToolsSettingsImplementation() {
             _workingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);

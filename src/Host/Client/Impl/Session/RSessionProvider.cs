@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Interpreters;
@@ -22,6 +23,7 @@ namespace Microsoft.R.Host.Client.Session {
         private readonly AsyncCountdownEvent _connectCde = new AsyncCountdownEvent(0);
 
         private readonly BrokerClientProxy _brokerProxy;
+        private readonly IActionLog _log;
         private int _sessionCounter;
         private int _isConnected;
 
@@ -34,9 +36,10 @@ namespace Microsoft.R.Host.Client.Session {
         public event EventHandler BrokerChanged;
         public event EventHandler<BrokerStateChangedEventArgs> BrokerStateChanged;
 
-        public RSessionProvider(IRSessionProviderCallback callback = null) {
+        public RSessionProvider(IRSessionProviderCallback callback = null, IActionLog log = null) {
             _callback = callback ?? new NullRSessionProviderCallback();
             _brokerProxy = new BrokerClientProxy(_connectCde);
+            _log = log ?? Logger.Current;
         }
 
         public IRSession GetOrCreate(Guid guid) {
@@ -308,11 +311,11 @@ namespace Microsoft.R.Host.Client.Session {
             }
 
             if (uri.IsFile) {
-                return new LocalBrokerClient(name, uri.LocalPath) as IBrokerClient;
+                return new LocalBrokerClient(name, uri.LocalPath, _log) as IBrokerClient;
             }
 
             var windowHandle = await _callback.GetApplicationWindowHandleAsync();
-            return new RemoteBrokerClient(name, uri, windowHandle);
+            return new RemoteBrokerClient(name, uri, windowHandle, _log);
         }
 
         private class IsolatedRSessionEvaluation : IRSessionEvaluation {

@@ -28,7 +28,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO {
             var fileSystem = Substitute.For<IFileSystem>();
             var fileSystemFilter = Substitute.For<IMsBuildFileSystemFilter>();
 
-            MsBuildFileSystemWatcher watcher = new MsBuildFileSystemWatcher(ProjectDirectory, filter, delay, delay, fileSystem, fileSystemFilter, log: NullLog.Instance);
+            MsBuildFileSystemWatcher watcher = new MsBuildFileSystemWatcher(ProjectDirectory, filter, delay, delay, fileSystem, fileSystemFilter, log: Substitute.For<IActionLog>());
             fileSystemFilter.Received().Seal();
 
             var fileSystemWatchers = new List<IFileSystemWatcher>();
@@ -64,7 +64,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO {
             var fileSystem = hasFileSystem ? Substitute.For<IFileSystem>() : null;
             var fileSystemFilter = hasFileSystemFilter ? Substitute.For<IMsBuildFileSystemFilter>() : null;
 
-            Action ctor = () => new MsBuildFileSystemWatcher(projectFolder, filter, delay, recoveryDelay, fileSystem, fileSystemFilter, log: NullLog.Instance);
+            Action ctor = () => new MsBuildFileSystemWatcher(projectFolder, filter, delay, recoveryDelay, fileSystem, fileSystemFilter, null, Substitute.For<IActionLog>());
             ctor.ShouldThrow(exceptionType);
         }
 
