@@ -198,8 +198,10 @@ namespace Microsoft.R.Host.Client.Session {
                 await SwitchBrokerAsync(cancellationToken, oldBroker);
                 oldBroker.Dispose();
 
-                _callback.WriteConsole(Environment.NewLine + Resources.Connected + Environment.NewLine);
-                PrintBrokerInformation();
+                if (brokerClient.IsRemote) {
+                    _callback.WriteConsole(Environment.NewLine + Resources.Connected + Environment.NewLine);
+                    PrintBrokerInformation();
+                }
             } catch (Exception ex) {
                 _brokerProxy.Set(oldBroker);
                 brokerClient.Dispose();
