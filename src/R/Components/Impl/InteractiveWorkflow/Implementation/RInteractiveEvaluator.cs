@@ -78,11 +78,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             } catch (RHostBinaryMissingException) {
                 await _coreShell.ShowErrorMessageAsync(Resources.Error_Microsoft_R_Host_Missing);
                 return ExecutionResult.Failure;
-            } catch (RHostDisconnectedException ex) {
-                // We don't 
+            } catch (Exception ex) {
                 CurrentWindow.WriteError(Environment.NewLine + ex.Message);
-                return ExecutionResult.Failure;
-            } catch (Exception) {
                 return ExecutionResult.Failure;
             }
         }
