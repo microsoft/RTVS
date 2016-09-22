@@ -226,10 +226,11 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         private async Task SwitchSessionsAsync(IEnumerable<RSession> sessions, IBrokerClient oldBroker, CancellationToken cancellationToken) {
-            var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            var cts = new CancellationTokenSource();
+            var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, cts.Token);
 
             // All sessions should participate in switch. If any of it didn't start, cancel the rest.
-            var startTransactionTasks = sessions.Select(s => s.StartSwitchingBrokerAsync(cts.Token)).ToList();
+            var startTransactionTasks = sessions.Select(s => s.StartSwitchingBrokerAsync(linkedCts.Token)).ToList();
 
             try {
                 await Task.WhenAll(startTransactionTasks);
@@ -271,9 +272,10 @@ namespace Microsoft.R.Host.Client.Session {
         private async Task ReconnectAsync(CancellationToken cancellationToken) {
             var sessions = _sessions.Values.ToList();
             if (sessions.Any()) {
-                var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+                var cts = new CancellationTokenSource();
+                var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, cts.Token);
                 // All sessions should participate in reconnect. If any of it didn't start, cancel the rest.
-                var startTransactionTasks = sessions.Select(s => s.StartReconnectingAsync(cts.Token)).ToList();
+                var startTransactionTasks = sessions.Select(s => s.StartReconnectingAsync(linkedCts.Token)).ToList();
 
                 try {
                     await Task.WhenAll(startTransactionTasks);
