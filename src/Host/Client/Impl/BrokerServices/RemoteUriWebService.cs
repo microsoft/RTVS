@@ -58,11 +58,11 @@ namespace Microsoft.R.Host.Client.BrokerServices {
                 }
             } finally {
                 if (response != null) {
-                    if (context.Request.IsWebSocketRequest) {
+                    if (context.Request.IsWebSocketRequest && response.StatusCode == HttpStatusCode.SwitchingProtocols) {
                         Stream respStream = response.GetResponseStream();
                         string subProtocol = response.Headers[Constants.Headers.SecWebSocketProtocol];
-                        var remoteWebSocket = CommonWebSocket.CreateClientWebSocket(respStream, subProtocol, TimeSpan.FromMinutes(10), 65335, true);
-                        var websocketContext = await context.AcceptWebSocketAsync(subProtocol, 65335, TimeSpan.FromMinutes(10));
+                        var remoteWebSocket = CommonWebSocket.CreateClientWebSocket(respStream, subProtocol, TimeSpan.FromMinutes(10), receiveBufferSize: 65335, useZeroMask: true);
+                        var websocketContext = await context.AcceptWebSocketAsync(subProtocol, receiveBufferSize: 65335, keepAliveInterval: TimeSpan.FromMinutes(10));
                         await WebSocketHelper.SendReceiveAsync(websocketContext.WebSocket, remoteWebSocket, ct);
                     } else {
                         context.Response.StatusCode = (int)response.StatusCode;
