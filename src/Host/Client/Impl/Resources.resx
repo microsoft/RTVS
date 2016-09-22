@@ -164,8 +164,9 @@ Reason: {0}</value>
   <data name="InstalledInterpreters" xml:space="preserve">
     <value>Installed R:</value>
   </data>
-  <data name="Error_HostNotResponsing" xml:space="preserve">
-    <value>Host did did not respond to ping. The machine may be down or the network has been disconnected. HTTP message: {0}</value>
+  <data name="Error_HostNotResponding" xml:space="preserve">
+    <value>Host did not respond to a ping. The machine may be offline or the network has been disconnected.
+HTTP message: {0}</value>
   </data>
   <data name="Error_InterpreterNotFound" xml:space="preserve">
     <value>Specified R interpreter was not found</value>

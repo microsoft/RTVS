@@ -95,7 +95,7 @@ namespace Microsoft.R.Host.Client.Host {
             try {
                 (await HttpClient.PostAsync("/ping", new StringContent(""))).EnsureSuccessStatusCode();
             } catch (HttpRequestException ex) {
-                throw new RHostDisconnectedException(Resources.Error_HostNotResponsing.FormatInvariant(ex.Message), ex);
+                throw new RHostDisconnectedException(Resources.Error_HostNotResponding.FormatInvariant(ex.Message), ex);
             }
         }
 
@@ -120,7 +120,7 @@ namespace Microsoft.R.Host.Client.Host {
                 await GetHostInformationAsync(cancellationToken);
                 return host;
             } catch (HttpRequestException ex) {
-                throw new RHostDisconnectedException(Resources.Error_HostNotResponsing.FormatInvariant(ex.Message), ex);
+                throw new RHostDisconnectedException(Resources.Error_HostNotResponding.FormatInvariant(ex.Message), ex);
             }
         }
 

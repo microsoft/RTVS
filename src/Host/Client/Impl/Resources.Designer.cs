@@ -88,11 +88,12 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Host did did not respond to ping. The machine may be down or the network has been disconnected. HTTP message: {0}.
+        ///   Looks up a localized string similar to Host did not respond to a ping. The machine may be offline or the network has been disconnected.
+        ///HTTP message: {0}.
         /// </summary>
-        internal static string Error_HostNotResponsing {
+        internal static string Error_HostNotResponding {
             get {
-                return ResourceManager.GetString("Error_HostNotResponsing", resourceCulture);
+                return ResourceManager.GetString("Error_HostNotResponding", resourceCulture);
             }
         }
         
