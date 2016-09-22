@@ -112,6 +112,13 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             return _sessionProvider.TestBrokerConnectionAsync(connection.Name, connection.Path, cancellationToken);
         }
 
+        public async Task ReconnectAsync(CancellationToken cancellationToken = default(CancellationToken)) {
+            var connection = ActiveConnection;
+            if (connection != null && !_sessionProvider.IsConnected) {
+                await _sessionProvider.TrySwitchBrokerAsync(connection.Name, connection.Path, cancellationToken);
+            }
+        }
+
         public async Task ConnectAsync(IConnectionInfo connection, CancellationToken cancellationToken = default(CancellationToken)) {
             if (ActiveConnection == null || !ActiveConnection.Path.PathEquals(connection.Path) || string.IsNullOrEmpty(_sessionProvider.Broker.Name)) {
                 await TrySwitchBrokerAsync(connection, cancellationToken);

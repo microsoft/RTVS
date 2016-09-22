@@ -214,12 +214,19 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public async Task ConnectAsync(IConnectionViewModel connection) {
             _shell.AssertIsOnMainThread();
-            var progressBarMessage = _connectionManager.ActiveConnection != null
-                ? Resources.ConnectionManager_SwitchConnectionProgressBarMessage.FormatInvariant(_connectionManager.ActiveConnection.Name, connection.Name)
-                : Resources.ConnectionManager_ConnectionToProgressBarMessage.FormatInvariant(connection.Name);
-            using (var progressBarSession = _shell.ShowProgressBar(progressBarMessage)) {
-                await _connectionManager.ConnectAsync(connection, progressBarSession.UserCancellationToken);
+            if (_connectionManager.ActiveConnection != null && !IsConnected) {
+                using (_shell.ShowProgressBar(Resources.ConnectionManager_ReconnectionToProgressBarMessage.FormatInvariant(connection.Name))) {
+                    await _connectionManager.ReconnectAsync();
+                }
+            } else {
+                var progressBarMessage = _connectionManager.ActiveConnection != null
+                    ? Resources.ConnectionManager_SwitchConnectionProgressBarMessage.FormatInvariant(_connectionManager.ActiveConnection.Name, connection.Name)
+                    : Resources.ConnectionManager_ConnectionToProgressBarMessage.FormatInvariant(connection.Name);
+                using (var progressBarSession = _shell.ShowProgressBar(progressBarMessage)) {
+                    await _connectionManager.ConnectAsync(connection, progressBarSession.UserCancellationToken);
+                }
             }
+
             UpdateConnections();
         }
 

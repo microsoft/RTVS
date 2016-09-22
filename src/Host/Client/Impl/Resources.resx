@@ -125,7 +125,7 @@ use another connection or install local R.</value>
   <data name="RHostDisconnected" xml:space="preserve">
     <value>Interactive Window is disconnected from R Session.
 Try connecting to a remote machine in the Workspaces window or
-click Reset to restart local R interpreter.</value>
+click Reset to restart current R interpreter.</value>
   </data>
   <data name="RSessionProvider_StartSwitchingWorkspaceFormat" xml:space="preserve">
     <value>Start switching to the '{0}': {1}</value>
@@ -140,24 +140,35 @@ click Reset to restart local R interpreter.</value>
     <value>Restarting sessions ({0})...</value>
   </data>
   <data name="RSessionProvider_SwitchingWorkspaceFailed" xml:space="preserve">
-    <value>Connecting to the new R Workspace failed, restoring connection to 
-'{0}' : {1}</value>
+    <value>Couldn't connect session to the '{0}': {1} 
+because of the following error: {2}</value>
   </data>
   <data name="RSessionProvider_SwitchingWorkspaceCanceled" xml:space="preserve">
-    <value>Connection to the new R Workspace has been canceled, restoring connection to the
-'{0}': {1}</value>
+    <value>Connection to the '{0}': {1}
+has been canceled</value>
   </data>
   <data name="RSessionProvider_StartingSessionAfterSwitchingFailed" xml:space="preserve">
-    <value>Starting R Session has failed, please restart it manually. Restoring connection to the
-'{0}': {1}</value>
+    <value>Couldn't start R Session '{0}': {1} 
+because of the following error: {2}
+Please restart R Session manually or select another connection in Workspaces window.</value>
   </data>
-  <data name="RSessionProvider_StartingSessionAfterSwitchingCanceled" xml:space="preserve">
-    <value>Starting R Session has been canceled, please restart it manually.</value>
+  <data name="RSessionProvider_RestartingSessionAfterSwitchingFailed" xml:space="preserve">
+    <value>Couldn't restart R Session '{0}': {1} 
+because of the following error: {2}
+Connection switched back to '{3}': {4}
+Please restart R Session manually or select another connection in Workspaces window.</value>
   </data>
-  <data name="RSessionProvider_RestartingSessionFailed" xml:space="preserve">
-    <value>Couldn't connect session to 
-'{0}' : {1} 
-because of the following error: {2}</value>
+  <data name="RSessionProvider_RestartingSessionAfterSwitchingCanceled" xml:space="preserve">
+    <value>R Session restart has been canceled for '{0}': {1}
+Please restart it manually or select another connection in Workspaces window.</value>
+  </data>
+  <data name="RSessionProvider_ReconnectingWorkspaceFailed" xml:space="preserve">
+    <value>Reconnection to the '{0}': {1}
+has failed because of the following error: {2}</value>
+  </data>
+  <data name="RSessionProvider_ReconnectingWorkspaceCanceled" xml:space="preserve">
+    <value>Reconnection to the '{0}': {1}
+has been canceled</value>
   </data>
   <data name="Bits32" xml:space="preserve">
     <value>32 bit</value>

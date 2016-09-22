@@ -32,36 +32,34 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             Container = container;
 
             _sessionProvider = sessionProvider;
-            sessionProvider.BrokerChanged += OnBrokerChanged;
+            sessionProvider.BrokerStateChanged += OnBrokerChanged;
 
             var textView = interactiveWindow.TextView;
             Controller = ServiceManagerBase.GetService<ICommandTarget>(textView);
             Control = textView.VisualElement;
             interactiveWindow.Properties.AddProperty(typeof(IInteractiveWindowVisualComponent), this);
 
-            UpdateWindowTitle();
+            UpdateWindowTitle(_sessionProvider.IsConnected);
         }
 
         public void Dispose() {
             InteractiveWindow.Properties.RemoveProperty(typeof (IInteractiveWindowVisualComponent));
-            _sessionProvider.BrokerChanged -= OnBrokerChanged;
+            _sessionProvider.BrokerStateChanged -= OnBrokerChanged;
         }
 
-        private void OnBrokerChanged(object sender, EventArgs e) {
-            UpdateWindowTitle();
+        private void OnBrokerChanged(object sender, BrokerStateChangedEventArgs e) {
+            UpdateWindowTitle(e.IsConnected);
         }
 
-        private void UpdateWindowTitle() {
-            var broker = _sessionProvider.Broker;
-            string title;
-            if (broker != null) {
-                title = broker.IsRemote
+        private void UpdateWindowTitle(bool isConnected) {
+            if (isConnected) {
+                var broker = _sessionProvider.Broker;
+                Container.CaptionText = broker.IsRemote
                     ? Invariant($"{Resources.ReplWindowName} - {broker.Name} ({broker.Uri.ToString().TrimTrailingSlash()})")
                     : Invariant($"{Resources.ReplWindowName} - {broker.Name}");
             } else {
-                title = Resources.Disconnected;
+                Container.CaptionText = Resources.Disconnected;
             }
-            Container.CaptionText = title;
         }
     }
 }
