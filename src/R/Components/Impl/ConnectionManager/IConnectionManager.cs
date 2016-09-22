@@ -26,6 +26,7 @@ namespace Microsoft.R.Components.ConnectionManager {
         bool TryRemove(Uri id);
 
         Task ConnectAsync(IConnectionInfo connection, CancellationToken cancellationToken = default(CancellationToken));
+        Task ReconnectAsync(CancellationToken cancellationToken = default(CancellationToken));
         Task TestConnectionAsync(IConnectionInfo connection, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

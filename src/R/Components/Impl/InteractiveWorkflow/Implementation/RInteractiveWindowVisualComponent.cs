@@ -32,38 +32,34 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             Container = container;
 
             _sessionProvider = sessionProvider;
-            sessionProvider.BrokerChanged += OnBrokerChanged;
+            sessionProvider.BrokerStateChanged += OnBrokerChanged;
 
             var textView = interactiveWindow.TextView;
             Controller = ServiceManagerBase.GetService<ICommandTarget>(textView);
             Control = textView.VisualElement;
             interactiveWindow.Properties.AddProperty(typeof(IInteractiveWindowVisualComponent), this);
 
-            UpdateWindowTitle();
+            UpdateWindowTitle(_sessionProvider.IsConnected);
         }
 
         public void Dispose() {
-            InteractiveWindow.Properties.RemoveProperty(typeof(IInteractiveWindowVisualComponent));
-            _sessionProvider.BrokerChanged -= OnBrokerChanged;
+            InteractiveWindow.Properties.RemoveProperty(typeof (IInteractiveWindowVisualComponent));
+            _sessionProvider.BrokerStateChanged -= OnBrokerChanged;
         }
 
-        private void OnBrokerChanged(object sender, EventArgs e) {
-            UpdateWindowTitle();
+        private void OnBrokerChanged(object sender, BrokerStateChangedEventArgs e) {
+            UpdateWindowTitle(e.IsConnected);
         }
 
-        private void UpdateWindowTitle() {
-            var broker = _sessionProvider.Broker;
-            var title = Invariant($"{Resources.ReplWindowName} - {Resources.ConnectionManager_Disconnected}");
-            if (broker != null) {
-                if (broker.IsRemote) {
-                    if (!broker.Uri.IsLoopback) {
-                        title = Invariant($"{Resources.ReplWindowName} - {broker.Name} ({broker.Uri.ToString().TrimTrailingSlash()})");
-                    }
-                } else {
-                    title = Invariant($"{Resources.ReplWindowName} - {broker.Name}");
-                }
+        private void UpdateWindowTitle(bool isConnected) {
+            if (isConnected) {
+                var broker = _sessionProvider.Broker;
+                Container.CaptionText = broker.IsRemote
+                    ? Invariant($"{Resources.ReplWindowName} - {broker.Name} ({broker.Uri.ToString().TrimTrailingSlash()})")
+                    : Invariant($"{Resources.ReplWindowName} - {broker.Name}");
+            } else {
+                Container.CaptionText = Resources.Disconnected;
             }
-            Container.CaptionText = title;
         }
     }
 }

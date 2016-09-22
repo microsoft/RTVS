@@ -124,8 +124,9 @@ Open Workspaces window and either select local R interpreter or try connecting t
   <data name="RSessionProvider_ConnectionFailed" xml:space="preserve">
     <value>Connecting to R Workspace failed. Reason: {0}</value>
   </data>
-  <data name="RSessionProvider_StartingSessionAfterSwitchingCanceled" xml:space="preserve">
-    <value>Starting R Session has been canceled, please restart it manually.</value>
+  <data name="RSessionProvider_ReconnectingWorkspaceFailed" xml:space="preserve">
+    <value>Reconnection to the '{0}': {1}
+has failed because of the following error: {2}</value>
   </data>
   <data name="Bits32" xml:space="preserve">
     <value>32 bit</value>

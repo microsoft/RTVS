@@ -495,6 +495,9 @@ Arguments: {2}</value>
   <data name="ConnectionManager_ConnectionToProgressBarMessage" xml:space="preserve">
     <value>Connecting to "{0}"</value>
   </data>
+  <data name="ConnectionManager_ReconnectionToProgressBarMessage" xml:space="preserve">
+    <value>Reconnecting to "{0}"</value>
+  </data>
   <data name="ConnectionManager_None" xml:space="preserve">
     <value>none specified</value>
   </data>
