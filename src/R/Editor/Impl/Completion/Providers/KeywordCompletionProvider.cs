@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Linq;
 using System.Windows.Media;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Imaging;
@@ -36,7 +37,9 @@ namespace Microsoft.R.Editor.Completion.Providers {
                 var infoSource = _snippetInformationSource?.InformationSource;
                 ImageSource keyWordGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphKeyword, StandardGlyphItem.GlyphItemPublic, _shell);
 
-                foreach (string keyword in Keywords.KeywordList) {
+                // Union with constants like TRUE and other common things
+                var keywords = Keywords.KeywordList.Union(Logicals.LogicalsList).Union(Constants.ConstantsList);
+                foreach (string keyword in keywords) {
                     bool? isSnippet = infoSource?.IsSnippet(keyword);
                     if (!isSnippet.HasValue || !isSnippet.Value) {
                         completions.Add(new RCompletion(keyword, keyword, string.Empty, keyWordGlyph));
