@@ -11,6 +11,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.IO;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Fixtures;
 using Microsoft.R.Host.Client.Test.Script;
@@ -586,8 +587,11 @@ dev.off()
 device_id <- rtvs:::graphics.ide.getactivedeviceid()
 rtvs:::export_to_image(device_id, rtvs:::graphics.ide.getactiveplotid(device_id), {0}, {1}, {2}, {3})
 ", format, widthInPixels, heightInPixels, resolution);
-            var data = await session.EvaluateAsync<byte[]>(script, REvaluationKind.Normal);
-            File.WriteAllBytes(filePath, data);
+            var blobid = await session.EvaluateAsync<ulong>(script, REvaluationKind.Normal);
+
+            using(DataTransferSession dts = new DataTransferSession(session, new FileSystem())) {
+                await dts.FetchFileAsync(new RBlobInfo(blobid), filePath);
+            }
         }
 
         private async Task<IEnumerable<string>> ExportToImageAsync(string[] inputs, string[] format, string[] paths, int widthInPixels, int heightInPixels, int resolution) {
@@ -638,8 +642,10 @@ rtvs:::export_to_image(device_id, rtvs:::graphics.ide.getactiveplotid(device_id)
 device_id <- rtvs:::graphics.ide.getactivedeviceid()
 rtvs:::export_to_pdf(device_id, rtvs:::graphics.ide.getactiveplotid(device_id), {0}, {1})
 ", width, height);
-                var data = await session.EvaluateAsync<byte[]>(script, REvaluationKind.Normal);
-                File.WriteAllBytes(filePath, data);
+                var blobid = await session.EvaluateAsync<ulong>(script, REvaluationKind.Normal);
+                using (DataTransferSession dts = new DataTransferSession(session, new FileSystem())) {
+                    await dts.FetchFileAsync(new RBlobInfo(blobid), filePath);
+                }
 
                 await session.StopHostAsync();
             }
