@@ -99,7 +99,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                     return ExecutionResult.Success;
                 }
 
-                CurrentWindow.WriteError(Resources.MicrosoftRHostStarting + Environment.NewLine);
+                CurrentWindow.WriteError(Environment.NewLine + Resources.MicrosoftRHostStarting + Environment.NewLine);
                 return await InitializeAsync();
             } catch (Exception ex) {
                 Trace.Fail($"Exception in RInteractiveEvaluator.ResetAsync\n{ex}");

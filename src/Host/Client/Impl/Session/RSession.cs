@@ -702,7 +702,7 @@ namespace Microsoft.R.Host.Client.Session {
                     // Session never started. No need to restart it.
                     // Reset _initializationLock so that next awaiter can proceed.
                     _lockToken.Reset();
-                    throw new RHostDisconnectedException(Resources.RHostDisconnected);
+                    return;
                 }
 
                 var host = _session._host;

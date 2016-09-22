@@ -197,8 +197,10 @@ namespace Microsoft.R.Host.Client.Session {
                 BrokerChanging?.Invoke(this, EventArgs.Empty);
                 await SwitchBrokerAsync(cancellationToken, oldBroker);
                 oldBroker.Dispose();
+
+                _callback.WriteConsole(Environment.NewLine + Resources.Connected + Environment.NewLine);
                 PrintBrokerInformation();
-            } catch(Exception ex) {
+            } catch (Exception ex) {
                 _brokerProxy.Set(oldBroker);
                 brokerClient.Dispose();
                 BrokerChangeFailed?.Invoke(this, EventArgs.Empty);
@@ -298,12 +300,11 @@ namespace Microsoft.R.Host.Client.Session {
             } catch (OperationCanceledException ex) when (!(ex is RHostDisconnectedException)) {
                 // Swallow cancellation if it is a result of another session failure
                 if (!cts.IsCancellationRequested) {
-                    _callback.WriteConsole(Resources.RSessionProvider_SwitchingWorkspaceCanceled.FormatInvariant(_brokerProxy.Name, GetUriString(_brokerProxy)));
                     cts.Cancel();
                     throw;
                 }
             } catch (Exception ex) {
-                _callback.WriteConsole(Resources.RSessionProvider_SwitchingWorkspaceFailed.FormatInvariant(_brokerProxy.Name, GetUriString(_brokerProxy), ex.Message));
+                _callback.WriteConsole(Resources.RSessionProvider_ConnectionFailed.FormatInvariant(ex.Message));
                 cts.Cancel();
                 throw;
             }
@@ -336,12 +337,11 @@ namespace Microsoft.R.Host.Client.Session {
             } catch (OperationCanceledException ex) when (!(ex is RHostDisconnectedException)) {
                 // Swallow cancellation if it is a result of another session failure
                 if (!cts.IsCancellationRequested) {
-                    _callback.WriteConsole(Resources.RSessionProvider_SwitchingWorkspaceCanceled.FormatInvariant(_brokerProxy.Name, GetUriString(_brokerProxy)));
                     cts.Cancel();
                     throw;
                 }
             } catch (Exception ex) {
-                _callback.WriteConsole(Resources.RSessionProvider_SwitchingWorkspaceFailed.FormatInvariant(_brokerProxy.Name, GetUriString(_brokerProxy), ex.Message));
+                _callback.WriteConsole(Resources.RSessionProvider_ConnectionFailed.FormatInvariant(ex.Message));
                 cts.Cancel();
                 throw;
             }
@@ -353,16 +353,10 @@ namespace Microsoft.R.Host.Client.Session {
             } catch (OperationCanceledException ex) when (!(ex is RHostDisconnectedException)) {
                 // Swallow cancellation if it is a result of another session failure
                 if (!cts.IsCancellationRequested) {
-                    _callback.WriteConsole(Resources.RSessionProvider_RestartingSessionAfterSwitchingCanceled.FormatInvariant(_brokerProxy.Name, GetUriString(_brokerProxy)));
                     cts.Cancel();
                 }
             } catch (Exception ex) {
-                var switchingFromNull = oldBroker is NullBrokerClient;
-                var message = switchingFromNull
-                    ? Resources.RSessionProvider_StartingSessionAfterSwitchingFailed
-                    : Resources.RSessionProvider_RestartingSessionAfterSwitchingFailed.FormatInvariant(_brokerProxy.Name, GetUriString(_brokerProxy), ex.Message, oldBroker.Name, GetUriString(oldBroker));
-
-                _callback.WriteConsole(message);
+                _callback.WriteConsole(Resources.RSessionProvider_ConnectionFailed.FormatInvariant(ex.Message));
                 cts.Cancel();
                 throw;
             }

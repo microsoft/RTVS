@@ -79,6 +79,15 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to *** Connected ***.
+        /// </summary>
+        internal static string Connected {
+            get {
+                return ResourceManager.GetString("Connected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Host did did not respond to ping. The machine may be down or the network has been disconnected. HTTP message: {0}.
         /// </summary>
         internal static string Error_HostNotResponsing {
@@ -215,20 +224,12 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Connecting to R Workspace failed. Reason: {0}.
+        ///   Looks up a localized string similar to Connecting to R Workspace failed.
+        ///Reason: {0}.
         /// </summary>
         internal static string RSessionProvider_ConnectionFailed {
             get {
                 return ResourceManager.GetString("RSessionProvider_ConnectionFailed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Starting R Session has been canceled, please restart it manually..
-        /// </summary>
-        internal static string RSessionProvider_StartingSessionAfterSwitchingCanceled {
-            get {
-                return ResourceManager.GetString("RSessionProvider_StartingSessionAfterSwitchingCanceled", resourceCulture);
             }
         }
         
