@@ -48,7 +48,7 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
 
             applicableSpan.Should().NotBeNull();
             quickInfoContent.Should().ContainSingle()
-                .Which.ToString().Should().StartWith("as.matrix(x, data, nrow, ncol, byrow, dimnames, rownames.force, ...)");
+                .Which.ToString().Should().StartWith("as.matrix(x, ..., data, nrow, ncol, byrow, dimnames, rownames.force)");
         }
 
         [Test]

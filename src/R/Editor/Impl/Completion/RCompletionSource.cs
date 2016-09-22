@@ -92,8 +92,8 @@ namespace Microsoft.R.Editor.Completion {
                 }
 
                 if (sort) {
-                    completions.Sort(RCompletion.Compare);
-                    completions.RemoveDuplicates();
+                    completions.Sort(RCompletion.CompareOrdinal);
+                    completions.RemoveDuplicates(RCompletion.CompareOrdinal);
                 }
 
                 CompletionSet completionSet = new RCompletionSet(session.TextView.TextBuffer, trackingSpan, completions);

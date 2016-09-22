@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Microsoft.Languages.Core.Utility {
     public static class ListHelpers {
-        public static void RemoveDuplicates<T>(this List<T> list) where T : IComparable<T> {
+        public static void RemoveDuplicates<T>(this List<T> list, Comparison<T> comparison = null) where T : IComparable<T> {
             if (list == null) {
                 throw new ArgumentNullException(nameof(list));
             }
@@ -15,7 +15,8 @@ namespace Microsoft.Languages.Core.Utility {
 
             int lastFilledIndex = 0;
             for (int i = 1; i < list.Count; i++) {
-                if (list[i].CompareTo(list[lastFilledIndex]) != 0) {
+                if ((comparison != null && comparison(list[i], list[lastFilledIndex]) != 0) ||
+                    list[i].CompareTo(list[lastFilledIndex]) != 0) {
                     list[++lastFilledIndex] = list[i];
                 }
             }
