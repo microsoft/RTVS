@@ -251,24 +251,6 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Restarting sessions ({0})....
-        /// </summary>
-        internal static string RSessionProvider_RestartingSessionsFormat {
-            get {
-                return ResourceManager.GetString("RSessionProvider_RestartingSessionsFormat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Connecting sessions ({0}) to the new R Workspace....
-        /// </summary>
-        internal static string RSessionProvider_StartConnectingToWorkspaceFormat {
-            get {
-                return ResourceManager.GetString("RSessionProvider_StartConnectingToWorkspaceFormat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Couldn&apos;t start R Session &apos;{0}&apos;: {1} 
         ///because of the following error: {2}
         ///Please restart R Session manually or select another connection in Workspaces window..
@@ -276,24 +258,6 @@ namespace Microsoft.R.Host.Client {
         internal static string RSessionProvider_StartingSessionAfterSwitchingFailed {
             get {
                 return ResourceManager.GetString("RSessionProvider_StartingSessionAfterSwitchingFailed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Start switching to the &apos;{0}&apos;: {1}.
-        /// </summary>
-        internal static string RSessionProvider_StartSwitchingWorkspaceFormat {
-            get {
-                return ResourceManager.GetString("RSessionProvider_StartSwitchingWorkspaceFormat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Switching R Workspace completed.
-        /// </summary>
-        internal static string RSessionProvider_SwitchingRWorkspaceCompleted {
-            get {
-                return ResourceManager.GetString("RSessionProvider_SwitchingRWorkspaceCompleted", resourceCulture);
             }
         }
         

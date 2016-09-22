@@ -198,11 +198,14 @@ namespace Microsoft.R.Host.Client.Session {
                 await SwitchBrokerAsync(cancellationToken, oldBroker);
                 oldBroker.Dispose();
                 PrintBrokerInformation();
-            } catch(Exception) {
+            } catch(Exception ex) {
                 _brokerProxy.Set(oldBroker);
                 brokerClient.Dispose();
                 BrokerChangeFailed?.Invoke(this, EventArgs.Empty);
-                return false;
+                if (ex is OperationCanceledException || ex is RHostBinaryMissingException) { // RHostDisconnectedException is derived from OperationCanceledException
+                    return false;
+                }
+                throw;
             } finally {
                 lockToken.Reset();
             }
@@ -213,21 +216,12 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         private async Task SwitchBrokerAsync(CancellationToken cancellationToken, IBrokerClient oldBroker) {
-            var switchingFromNull = oldBroker is NullBrokerClient;
-            if (!switchingFromNull) {
-                _callback.WriteConsole(Resources.RSessionProvider_StartSwitchingWorkspaceFormat.FormatInvariant(_brokerProxy.Name, GetUriString(_brokerProxy)));
-            }
-
             var sessions = _sessions.Values.ToList();
             if (sessions.Any()) {
                 await SwitchSessionsAsync(sessions, oldBroker, cancellationToken);
             } else {
                 // Ping isn't enough here - need a "full" test with RHost
                 await TestBrokerConnectionWithRHost(_brokerProxy, cancellationToken);
-            }
-
-            if (!switchingFromNull) {
-                _callback.WriteConsole(Resources.RSessionProvider_SwitchingRWorkspaceCompleted);
             }
         }
 
@@ -241,10 +235,8 @@ namespace Microsoft.R.Host.Client.Session {
                 await Task.WhenAll(startTransactionTasks);
                 var transactions = startTransactionTasks.Select(t => t.Result).ToList();
 
-                _callback.WriteConsole(Resources.RSessionProvider_StartConnectingToWorkspaceFormat.FormatInvariant(transactions.Count));
                 await Task.WhenAll(transactions.Select(t => ConnectToNewBrokerAsync(t, cts)));
 
-                _callback.WriteConsole(Resources.RSessionProvider_RestartingSessionsFormat.FormatInvariant(transactions.Count));
                 OnBrokerDisconnected();
                 await Task.WhenAll(transactions.Select(t => CompleteSwitchingBrokerAsync(t, oldBroker, cts)));
             } finally {
