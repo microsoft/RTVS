@@ -166,6 +166,18 @@ namespace Microsoft.R.Host.Client.Test.Session {
             }
         }
 
+        [Test]
+        public async Task SwitchToTheSameBroker_NoSessions() {
+            using (var sessionProvider = new RSessionProvider()) {
+                var switch1Task = sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(SwitchToTheSameBroker));
+                var switch2Task = sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(SwitchToTheSameBroker));
+                await Task.WhenAll(switch1Task, switch2Task);
+
+                switch1Task.Status.Should().Be(TaskStatus.RanToCompletion);
+                switch2Task.Status.Should().Be(TaskStatus.RanToCompletion);
+            }
+        }
+
         [InlineData(0)]
         [InlineData(10)]
         [InlineData(50)]

@@ -288,6 +288,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Reconnecting to &quot;{0}&quot;.
+        /// </summary>
+        public static string ConnectionManager_ReconnectionToProgressBarMessage {
+            get {
+                return ResourceManager.GetString("ConnectionManager_ReconnectionToProgressBarMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Remote.
         /// </summary>
         public static string ConnectionManager_RemoteConnections {

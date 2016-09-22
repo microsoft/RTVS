@@ -65,6 +65,7 @@
     <Compile Include="DataInspection\RSessionExtensions.cs" />
     <Compile Include="Definitions\IRBlobInfo.cs" />
     <Compile Include="Definitions\IRSessionProviderCallback.cs" />
+    <Compile Include="Definitions\IRSessionReconnectTransaction.cs" />
     <Compile Include="Definitions\IRSessionSwitchBrokerTransaction.cs" />
     <Compile Include="Host\RHost.BlobWriteRequest.cs" />
     <Compile Include="Host\RHost.BlobReadRequest.cs" />
