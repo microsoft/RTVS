@@ -81,7 +81,7 @@ namespace Microsoft.R.Components.Plots.Implementation.View {
             if (e.Data.GetDataPresent(PlotClipboardData.Format)) {
                 var source = PlotClipboardData.Parse((string)e.Data.GetData(PlotClipboardData.Format));
                 if (source != null) {
-                    var targetDeviceId = Model?.Device.DeviceId;
+                    var targetDeviceId = Model?.Device?.DeviceId;
                     if (targetDeviceId != source.DeviceId) {
                         bool isMove = (e.KeyStates & DragDropKeyStates.ShiftKey) != 0;
                         e.Effects = isMove ? DragDropEffects.Move : DragDropEffects.Copy;

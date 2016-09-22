@@ -163,7 +163,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                 ProgressOutputWriter.WriteLine($"Compressing: {p}");
             }), CancellationToken.None);
             
-            using (var fts = new FileTransferSession(Session, FileSystem)) {
+            using (var fts = new DataTransferSession(Session, FileSystem)) {
                 ProgressOutputWriter.Write("Transferring project to remote host...");
                 var remoteFile = await fts.SendFileAsync(compressedFilePath);
                 await Session.EvaluateAsync<string>($"rtvs:::save_to_project_folder({remoteFile.Id}, {projectName.ToRStringLiteral()}, '{remotePath.ToRPath()}')", REvaluationKind.Normal);

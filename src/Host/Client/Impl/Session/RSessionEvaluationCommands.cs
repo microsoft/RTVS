@@ -169,19 +169,19 @@ grDevices::deviceIsInteractive('ide')
             return evaluation.EvaluateAsync<JArray>(script, REvaluationKind.Normal);
         }
 
-        public static Task<byte[]> ExportPlotToBitmapAsync(this IRExpressionEvaluator evaluation, Guid deviceId, Guid plotId, string deviceName, string outputFilePath, int widthInPixels, int heightInPixels, int resolution) {
+        public static Task<ulong> ExportPlotToBitmapAsync(this IRExpressionEvaluator evaluation, Guid deviceId, Guid plotId, string deviceName, string outputFilePath, int widthInPixels, int heightInPixels, int resolution) {
             string script = $"rtvs:::export_to_image({deviceId.ToString().ToRStringLiteral()}, {plotId.ToString().ToRStringLiteral()}, {deviceName}, {widthInPixels}, {heightInPixels}, {resolution})";
-            return evaluation.EvaluateAsync<byte[]>(script, REvaluationKind.Normal);
+            return evaluation.EvaluateAsync<ulong>(script, REvaluationKind.Normal);
         }
 
-        public static Task<byte[]> ExportPlotToMetafileAsync(this IRExpressionEvaluator evaluation, Guid deviceId, Guid plotId, string outputFilePath, double widthInInches, double heightInInches, int resolution) {
+        public static Task<ulong> ExportPlotToMetafileAsync(this IRExpressionEvaluator evaluation, Guid deviceId, Guid plotId, string outputFilePath, double widthInInches, double heightInInches, int resolution) {
             string script = $"rtvs:::export_to_image({deviceId.ToString().ToRStringLiteral()}, {plotId.ToString().ToRStringLiteral()}, win.metafile, {widthInInches}, {heightInInches}, {resolution})";
-            return evaluation.EvaluateAsync<byte[]>(script, REvaluationKind.Normal);
+            return evaluation.EvaluateAsync<ulong>(script, REvaluationKind.Normal);
         }
 
-        public static Task<byte[]> ExportToPdfAsync(this IRExpressionEvaluator evaluation, Guid deviceId, Guid plotId, string outputFilePath, double widthInInches, double heightInInches) {
+        public static Task<ulong> ExportToPdfAsync(this IRExpressionEvaluator evaluation, Guid deviceId, Guid plotId, string outputFilePath, double widthInInches, double heightInInches) {
             string script = $"rtvs:::export_to_pdf({deviceId.ToString().ToRStringLiteral()}, {plotId.ToString().ToRStringLiteral()}, {widthInInches}, {heightInInches})";
-            return evaluation.EvaluateAsync<byte[]>(script, REvaluationKind.Normal);
+            return evaluation.EvaluateAsync<ulong>(script, REvaluationKind.Normal);
         }
 
         public static async Task SetVsCranSelectionAsync(this IRExpressionEvaluator evaluation, string mirrorUrl) {
