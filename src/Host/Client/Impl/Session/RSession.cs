@@ -159,17 +159,17 @@ namespace Microsoft.R.Host.Client.Session {
 
         public Task<ulong> CreateBlobAsync(byte[] data, CancellationToken ct = default(CancellationToken)) =>
             DoBlobServiceAsync(_host?.CreateBlobAsync(data, ct));
-        
+
 
         public Task<byte[]> GetBlobAsync(ulong blobId, CancellationToken ct = default(CancellationToken)) =>
             DoBlobServiceAsync(_host?.GetBlobAsync(blobId, ct));
-        
-        public Task DestroyBlobsAsync(IEnumerable<ulong> blobIds, CancellationToken ct = default(CancellationToken)) => 
+
+        public Task DestroyBlobsAsync(IEnumerable<ulong> blobIds, CancellationToken ct = default(CancellationToken)) =>
             DoBlobServiceAsync(new Lazy<Task<long>>(async () => {
                 await _host.DestroyBlobsAsync(blobIds, ct);
                 return 0;
             }).Value);
-        
+
         private async Task<T> DoBlobServiceAsync<T>(Task<T> work) {
             if (!IsHostRunning) {
                 throw new RHostDisconnectedException();
@@ -265,7 +265,7 @@ namespace Microsoft.R.Host.Client.Session {
             await TaskUtilities.SwitchToBackgroundThread();
 
             var lockToken = await _initializationLock.WaitAsync();
-            
+
             // Host wasn't started yet or host is already stopped - nothing to stop, just pass acquired lock to the next awaiter
             if (!lockToken.IsSet) {
                 lockToken.Reset();
@@ -295,7 +295,7 @@ namespace Microsoft.R.Host.Client.Session {
                     // Try graceful shutdown with q() first.
                     try {
                         await Task.WhenAny(_hostRunTask, inter.QuitAsync(), Task.Delay(500)).Unwrap();
-                    } catch (Exception) {}
+                    } catch (Exception) { }
 
                     if (_hostRunTask.IsCompleted) {
                         return;
@@ -339,7 +339,7 @@ namespace Microsoft.R.Host.Client.Session {
             while (true) {
                 var tcs = _initializationTcs;
                 if (!tcs.Task.IsCompleted) {
-                    return;   
+                    return;
                 }
 
                 if (Interlocked.CompareExchange(ref _initializationTcs, new TaskCompletionSourceEx<object>(), tcs) == tcs) {
@@ -655,13 +655,13 @@ namespace Microsoft.R.Host.Client.Session {
             var callback = _callback;
             return callback != null ? callback.SaveFileAsync(filename, data) : Task.FromResult(string.Empty);
         }
-        
+
         private class SwitchBrokerTransaction : IRSessionSwitchBrokerTransaction {
             private readonly RSession _session;
             private readonly IBinaryAsyncLockToken _lockToken;
             private readonly CancellationToken _cancellationToken;
             private RHost _hostToSwitch;
-            
+
             public SwitchBrokerTransaction(RSession session, IBinaryAsyncLockToken lockToken, CancellationToken cancellationToken) {
                 _session = session;
                 _lockToken = lockToken;
@@ -684,7 +684,7 @@ namespace Microsoft.R.Host.Client.Session {
                     // Session never started. No need to restart it.
                     // Reset _initializationLock so that next awaiter can proceed.
                     _lockToken.Reset();
-                    return;
+                    throw new RHostDisconnectedException(Resources.RHostDisconnected);
                 }
 
                 var host = _session._host;

@@ -131,7 +131,7 @@ namespace Microsoft.R.Host.Client.Host {
                     UpdateCredentials();
                     isValidCredentials = true;
 
-                    await sessions.PutAsync(name, new SessionCreateRequest {
+                    var response = await sessions.PutAsync(name, new SessionCreateRequest {
                         InterpreterId = _interpreterId,
                         CommandLineArguments = rCommandLineArguments,
                     }, cancellationToken);

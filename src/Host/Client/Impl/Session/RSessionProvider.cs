@@ -180,9 +180,6 @@ namespace Microsoft.R.Host.Client.Session {
                 var oldBroker = _brokerProxy.Set(brokerClient);
                 BrokerChanging?.Invoke(this, EventArgs.Empty);
                 var switchingFromNull = oldBroker is NullBrokerClient;
-                if (!switchingFromNull) {
-                    _callback.WriteConsole(Resources.RSessionProvider_StartSwitchingWorkspaceFormat.FormatInvariant(_brokerProxy.Name, GetUriString(_brokerProxy)));
-                }
 
                 var sessions = _sessions.Values.ToList();
                 if (sessions.Any()) {
@@ -193,9 +190,6 @@ namespace Microsoft.R.Host.Client.Session {
                     }
                 }
 
-                if (!switchingFromNull) {
-                    _callback.WriteConsole(Resources.RSessionProvider_SwitchingRWorkspaceCompleted);
-                }
                 PrintBrokerInformation();
             } finally {
                 lockToken.Reset();
@@ -226,7 +220,8 @@ namespace Microsoft.R.Host.Client.Session {
                 await ConnectSessionsToNewBrokerAsync(transactions, oldBroker);
                 OnBrokerDisconnected();
                 await CompleteSwitchingBrokerAsync(transactions, oldBroker);
-            } catch (Exception) {
+            } catch (Exception ex) {
+                _callback.WriteConsole(Environment.NewLine + Resources.RSessionProvider_ConnectionFailed.FormatInvariant(ex.Message));
                 return false;
             } finally {
                 foreach (var transaction in transactions) {
@@ -240,7 +235,7 @@ namespace Microsoft.R.Host.Client.Session {
         public void PrintBrokerInformation() {
             var a = _brokerProxy.AboutHost;
 
-            _callback.WriteConsole(Resources.RServices_Information);
+            _callback.WriteConsole(Environment.NewLine + Resources.RServices_Information);
             _callback.WriteConsole("\t" + Resources.Version.FormatInvariant(a.Version));
             _callback.WriteConsole("\t" + Resources.OperatingSystem.FormatInvariant(a.OS.VersionString));
             _callback.WriteConsole("\t" + Resources.PlatformBits.FormatInvariant(a.Is64BitOperatingSystem ? Resources.Bits64 : Resources.Bits32));
@@ -259,25 +254,13 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         private async Task ConnectToNewBrokerAsync(IRSessionSwitchBrokerTransaction transaction) {
-            try {
-                await transaction.ConnectToNewBrokerAsync();
-            } catch (RHostDisconnectedException ex) {
-                _callback.WriteConsole(Resources.RSessionProvider_RestartingSessionFailed.FormatInvariant(_brokerProxy.Name, _brokerProxy.Uri, ex.Message));
-                throw;
-            }
+            await transaction.ConnectToNewBrokerAsync();
         }
 
         private async Task ConnectSessionsToNewBrokerAsync(List<IRSessionSwitchBrokerTransaction> transactions, IBrokerClient oldBroker) {
             try {
-                _callback.WriteConsole(Resources.RSessionProvider_StartConnectingToWorkspaceFormat.FormatInvariant(transactions.Count));
                 await Task.WhenAll(transactions.Select(ConnectToNewBrokerAsync));
-            } catch(Exception ex) {
-                if (ex is OperationCanceledException && !(ex is RHostDisconnectedException)) {
-                    _callback.WriteConsole(Resources.RSessionProvider_SwitchingWorkspaceCanceled.FormatInvariant(oldBroker.Name, GetUriString(oldBroker)));
-                } else {
-                    _callback.WriteConsole(Resources.RSessionProvider_SwitchingWorkspaceFailed.FormatInvariant(oldBroker.Name, GetUriString(oldBroker)));
-                }
-                
+            } catch (Exception) {
                 var newBroker = _brokerProxy.Set(oldBroker);
                 newBroker.Dispose();
                 throw;
@@ -286,14 +269,12 @@ namespace Microsoft.R.Host.Client.Session {
 
         private async Task CompleteSwitchingBrokerAsync(List<IRSessionSwitchBrokerTransaction> transactions, IBrokerClient oldBroker) {
             try {
-                _callback.WriteConsole(Resources.RSessionProvider_RestartingSessionsFormat.FormatInvariant(transactions.Count));
                 await Task.WhenAll(transactions.Select(t => t.CompleteSwitchingBrokerAsync()));
             } catch (OperationCanceledException ex) when (!(ex is RHostDisconnectedException)) {
                 _callback.WriteConsole(Resources.RSessionProvider_StartingSessionAfterSwitchingCanceled);
                 oldBroker.Dispose();
                 throw;
             } catch (Exception) {
-                _callback.WriteConsole(Resources.RSessionProvider_StartingSessionAfterSwitchingFailed.FormatInvariant(oldBroker.Name, GetUriString(oldBroker)));
                 var newBroker = _brokerProxy.Set(oldBroker);
                 newBroker.Dispose();
                 throw;

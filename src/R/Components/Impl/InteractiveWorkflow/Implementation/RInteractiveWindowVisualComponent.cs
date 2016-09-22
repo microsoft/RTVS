@@ -43,7 +43,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         }
 
         public void Dispose() {
-            InteractiveWindow.Properties.RemoveProperty(typeof (IInteractiveWindowVisualComponent));
+            InteractiveWindow.Properties.RemoveProperty(typeof(IInteractiveWindowVisualComponent));
             _sessionProvider.BrokerChanged -= OnBrokerChanged;
         }
 
@@ -53,13 +53,15 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
         private void UpdateWindowTitle() {
             var broker = _sessionProvider.Broker;
-            string title;
+            var title = Invariant($"{Resources.ReplWindowName} - {Resources.ConnectionManager_Disconnected}");
             if (broker != null) {
-                title = broker.IsRemote
-                    ? Invariant($"{Resources.ReplWindowName} - {broker.Name} ({broker.Uri.ToString().TrimTrailingSlash()})")
-                    : Invariant($"{Resources.ReplWindowName} - {broker.Name}");
-            } else {
-                title = Resources.Disconnected;
+                if (broker.IsRemote) {
+                    if (!broker.Uri.IsLoopback) {
+                        title = Invariant($"{Resources.ReplWindowName} - {broker.Name} ({broker.Uri.ToString().TrimTrailingSlash()})");
+                    }
+                } else {
+                    title = Invariant($"{Resources.ReplWindowName} - {broker.Name}");
+                }
             }
             Container.CaptionText = title;
         }

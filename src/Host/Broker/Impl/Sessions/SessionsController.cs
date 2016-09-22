@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Security;
 using System.Threading.Tasks;
@@ -58,16 +59,17 @@ namespace Microsoft.R.Host.Broker.Sessions {
             try {
                 var session = _sessionManager.CreateSession(User.Identity, id, interp, securePassword, profilePath, request.CommandLineArguments);
                 return Task.FromResult<IActionResult>(new ObjectResult(session.Info));
-            } catch(Exception) {
-                return Task.FromResult<IActionResult>(new ApiErrorResult(HttpContext.Response, BrokerApiError.UnableToStartRHost));
+            } catch (Exception ex) {
+                return Task.FromResult<IActionResult>(new ApiErrorResult(HttpContext.Response, BrokerApiError.UnableToStartRHost, ex));
             }
         }
 
         [HttpGet("{id}/pipe")]
         public IActionResult GetPipe(string id) {
             var session = _sessionManager.GetSession(User.Identity, id);
-            if (session?.Process?.HasExited ?? true) {
-                return NotFound();
+            Exception ex = (session?.Process != null && session.Process.HasExited) ? new Win32Exception(session.Process.ExitCode) : null;
+            if (session == null || ex != null) {
+                return new ApiErrorResult(HttpContext.Response, BrokerApiError.UnableToStartRHost, ex);
             }
 
             return new WebSocketPipeAction(session);

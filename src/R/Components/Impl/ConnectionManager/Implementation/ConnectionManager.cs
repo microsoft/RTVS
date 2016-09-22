@@ -240,18 +240,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 }
             }
 
-            if (!string.IsNullOrEmpty(connectionInfo?.Path) && await TrySwitchBrokerAsync(connectionInfo)) {
-                return;
-            }
-
-            var connection = RecentConnections.FirstOrDefault(c => !c.IsRemote);
-            if (connection != null && await TrySwitchBrokerAsync(connection)) {
-                return;
-            }
-
-            var local = _userConnections.Values.FirstOrDefault(c => !c.IsRemote);
-            if (local != null) {
-                await TrySwitchBrokerAsync(local);
+            if (!string.IsNullOrEmpty(connectionInfo?.Path)) {
+                await TrySwitchBrokerAsync(connectionInfo);
             }
         }
 

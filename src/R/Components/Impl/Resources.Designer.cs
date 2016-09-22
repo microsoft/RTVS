@@ -424,15 +424,6 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to disconnected.
-        /// </summary>
-        public static string Disconnected {
-            get {
-                return ResourceManager.GetString("Disconnected", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Dismiss.
         /// </summary>
         public static string Dismiss {

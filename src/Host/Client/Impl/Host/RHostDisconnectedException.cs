@@ -15,19 +15,19 @@ namespace Microsoft.R.Host.Client.Host {
     public class RHostDisconnectedException : OperationCanceledException {
         public RHostDisconnectedException() : this(Resources.RHostDisconnected) { }
 
-        public RHostDisconnectedException(string message) : base(message) {}
+        public RHostDisconnectedException(string message) : base(message) { }
 
-        public RHostDisconnectedException(string message, Exception innerException) : base(message, innerException) {}
+        public RHostDisconnectedException(string message, Exception innerException) : base(message, innerException) { }
 
-        public RHostDisconnectedException(CancellationToken token) : base(token) {}
+        public RHostDisconnectedException(CancellationToken token) : base(token) { }
 
-        public RHostDisconnectedException(string message, CancellationToken token): base(message, token) {}
+        public RHostDisconnectedException(string message, CancellationToken token) : base(message, token) { }
 
-        public RHostDisconnectedException(string message, Exception innerException, CancellationToken token) : base(message, innerException, token) {}
+        public RHostDisconnectedException(string message, Exception innerException, CancellationToken token) : base(message, innerException, token) { }
 
         public RHostDisconnectedException(BrokerApiErrorException ex) : base(FromBrokerApiException(ex), ex) { }
 
-        protected RHostDisconnectedException(SerializationInfo info, StreamingContext context) : base (info, context) {}
+        protected RHostDisconnectedException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 
         private static string FromBrokerApiException(BrokerApiErrorException ex) {
             switch (ex.ApiError) {
@@ -36,8 +36,10 @@ namespace Microsoft.R.Host.Client.Host {
                 case BrokerApiError.InterpreterNotFound:
                     return Resources.Error_InterpreterNotFound;
                 case BrokerApiError.UnableToStartRHost:
-                    return Resources.Error_UnableToStartHost.FormatInvariant(
-                        !string.IsNullOrEmpty(ex.BrokerMessage) ? ex.BrokerMessage : Resources.Error_UnknownError);
+                    if (!string.IsNullOrEmpty(ex.Message)) {
+                        return Resources.Error_UnableToStartHostException.FormatInvariant(ex.Message);
+                    }
+                    return Resources.Error_UnknownError;
             }
 
             Debug.Fail("No localized resources for broker API error" + ex.ApiError.ToString());

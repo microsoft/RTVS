@@ -117,47 +117,15 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="NoConnectionsAvailable" xml:space="preserve">
-    <value>There is no local R detected and no remote connection established.
-You can try re-connecting to the remote machine, 
-use another connection or install local R.</value>
-  </data>
   <data name="RHostDisconnected" xml:space="preserve">
     <value>Interactive Window is disconnected from R Session.
-Try connecting to a remote machine in the Workspaces window or
-click Reset to restart local R interpreter.</value>
+Open Workspaces window and either select local R interpreter or try connecting to a remote machine.</value>
   </data>
-  <data name="RSessionProvider_StartSwitchingWorkspaceFormat" xml:space="preserve">
-    <value>Start switching to the '{0}': {1}</value>
-  </data>
-  <data name="RSessionProvider_StartConnectingToWorkspaceFormat" xml:space="preserve">
-    <value>Connecting sessions ({0}) to the new R Workspace...</value>
-  </data>
-  <data name="RSessionProvider_SwitchingRWorkspaceCompleted" xml:space="preserve">
-    <value>Switching R Workspace completed</value>
-  </data>
-  <data name="RSessionProvider_RestartingSessionsFormat" xml:space="preserve">
-    <value>Restarting sessions ({0})...</value>
-  </data>
-  <data name="RSessionProvider_SwitchingWorkspaceFailed" xml:space="preserve">
-    <value>Connecting to the new R Workspace failed, restoring connection to 
-'{0}' : {1}</value>
-  </data>
-  <data name="RSessionProvider_SwitchingWorkspaceCanceled" xml:space="preserve">
-    <value>Connection to the new R Workspace has been canceled, restoring connection to the
-'{0}': {1}</value>
-  </data>
-  <data name="RSessionProvider_StartingSessionAfterSwitchingFailed" xml:space="preserve">
-    <value>Starting R Session has failed, please restart it manually. Restoring connection to the
-'{0}': {1}</value>
+  <data name="RSessionProvider_ConnectionFailed" xml:space="preserve">
+    <value>Connecting to R Workspace failed. Reason: {0}</value>
   </data>
   <data name="RSessionProvider_StartingSessionAfterSwitchingCanceled" xml:space="preserve">
     <value>Starting R Session has been canceled, please restart it manually.</value>
-  </data>
-  <data name="RSessionProvider_RestartingSessionFailed" xml:space="preserve">
-    <value>Couldn't connect session to 
-'{0}' : {1} 
-because of the following error: {2}</value>
   </data>
   <data name="Bits32" xml:space="preserve">
     <value>32 bit</value>
@@ -210,8 +178,8 @@ because of the following error: {2}</value>
   <data name="HttpErrorCreatingSession" xml:space="preserve">
     <value>HTTP error while creating session: {0}</value>
   </data>
-  <data name="Error_UnableToStartHost" xml:space="preserve">
-    <value>Remote R host process did not start. Exception: {0}</value>
+  <data name="Error_UnableToStartHostException" xml:space="preserve">
+    <value>Remote R host process did not start:  {0}</value>
   </data>
   <data name="Error_UnknownError" xml:space="preserve">
     <value>Unknown error</value>
