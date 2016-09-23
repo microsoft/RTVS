@@ -283,7 +283,13 @@ namespace Microsoft.R.Host.Client.Session {
                 } catch (Exception ex) {
                     _callback.WriteConsole(Resources.RSessionProvider_ConnectionFailed.FormatInvariant(ex.Message));
                     throw;
+                } finally {
+                    foreach (var transaction in transactions) {
+                        transaction.Dispose();
+                    }
                 }
+            } else {
+                await TestBrokerConnectionWithRHost(_brokerProxy, cancellationToken);
             }
         }
 
