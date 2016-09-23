@@ -67,11 +67,9 @@ namespace Microsoft.R.Host.Broker.Sessions {
         [HttpGet("{id}/pipe")]
         public IActionResult GetPipe(string id) {
             var session = _sessionManager.GetSession(User.Identity, id);
-            Exception ex = (session?.Process != null && session.Process.HasExited) ? new Win32Exception(session.Process.ExitCode) : null;
-            if (session == null || ex != null) {
-                return new ApiErrorResult(BrokerApiError.UnableToStartRHost, ex.Message);
+            if (session?.Process?.HasExited ?? true) {
+                return NotFound();
             }
-
             return new WebSocketPipeAction(session);
         }
     }

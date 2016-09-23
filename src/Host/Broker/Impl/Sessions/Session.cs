@@ -164,7 +164,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
         private void StartSession() {
             _process.Start();
             _process.WaitForExit(250);
-            if (_process.HasExited && _process.ExitCode != 0) {
+            if (_process.HasExited && _process.ExitCode < 0) {
                 var message = ErrorCodeConverter.MessageFromErrorCode(_process.ExitCode);
                 if (!string.IsNullOrEmpty(message)) { 
                     throw new Win32Exception(message);
