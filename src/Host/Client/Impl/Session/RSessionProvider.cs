@@ -279,12 +279,11 @@ namespace Microsoft.R.Host.Client.Session {
                     await Task.WhenAll(transactions.Select(t => t.AcquireLockAsync(cancellationToken)));
                     await Task.WhenAll(transactions.Select(t => t.ReconnectAsync(cancellationToken)));
                 } catch (OperationCanceledException ex) when (!(ex is RHostDisconnectedException)) {
-                     throw;
+                    throw;
+                } catch (Exception ex) {
+                    _callback.WriteConsole(Resources.RSessionProvider_ConnectionFailed.FormatInvariant(ex.Message));
+                    throw;
                 }
-            } catch (Exception ex) {
-                _callback.WriteConsole(Resources.RSessionProvider_ConnectionFailed.FormatInvariant(ex.Message));
-                cts.Cancel();
-                throw;
             }
         }
 
@@ -313,10 +312,9 @@ namespace Microsoft.R.Host.Client.Session {
             try {
                 await TaskUtilities.WhenAllCancelOnFailure(transactions, (t, ct) => t.ConnectToNewBrokerAsync(ct), cancellationToken);
             } catch (OperationCanceledException ex) when (!(ex is RHostDisconnectedException)) {
-                _callback.WriteConsole(Resources.RSessionProvider_SwitchingWorkspaceCanceled.FormatInvariant(_brokerProxy.Name, GetUriString(_brokerProxy)));
                 throw;
             } catch (Exception ex) {
-                _callback.WriteConsole(Resources.RSessionProvider_SwitchingWorkspaceFailed.FormatInvariant(_brokerProxy.Name, GetUriString(_brokerProxy), ex.Message));
+                _callback.WriteConsole(Resources.RSessionProvider_ConnectionFailed.FormatInvariant(ex.Message));
                 throw;
             }
         }
@@ -325,11 +323,8 @@ namespace Microsoft.R.Host.Client.Session {
             try {
                 await TaskUtilities.WhenAllCancelOnFailure(transactions, (t, ct) => t.CompleteSwitchingBrokerAsync(ct), cancellationToken);
             } catch (OperationCanceledException ex) when (!(ex is RHostDisconnectedException)) {
-                _callback.WriteConsole(Resources.RSessionProvider_RestartingSessionAfterSwitchingCanceled.FormatInvariant(_brokerProxy.Name, GetUriString(_brokerProxy)));
             } catch (Exception ex) {
                 _callback.WriteConsole(Resources.RSessionProvider_ConnectionFailed.FormatInvariant(ex.Message));
-
-                cts.Cancel();
                 throw;
             }
         }

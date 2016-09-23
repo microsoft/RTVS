@@ -22,16 +22,23 @@ namespace Microsoft.R.Editor.Test.Completions {
         [Test]
         public async Task InstallPackageTest() {
             using (var script = new RHostScript(Workflow.RSessions)) {
-                try {
-                    await script.Session.ExecuteAsync("remove.packages('abc')", REvaluationKind.Mutating);
-                } catch (RException) { }
-
-                await PackageIndex.BuildIndexAsync();
-
                 var completionSets = new List<CompletionSet>();
-                GetCompletions("abc::", 5, completionSets);
+                for (int i = 0; i < 2; i++) {
+                    try {
+                        await script.Session.ExecuteAsync("remove.packages('abc')", REvaluationKind.Mutating);
+                    } catch (RException) { }
 
-                completionSets.Should().ContainSingle();
+                    await PackageIndex.BuildIndexAsync();
+
+                    completionSets.Clear();
+                    GetCompletions("abc::", 5, completionSets);
+
+                    completionSets.Should().ContainSingle();
+                    // Try again one more time
+                    if (completionSets[0].Completions.Count == 0) {
+                        break;
+                    }
+                }
                 completionSets[0].Completions.Should().BeEmpty();
 
                 try {
