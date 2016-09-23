@@ -60,7 +60,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
                 var session = _sessionManager.CreateSession(User.Identity, id, interp, securePassword, profilePath, request.CommandLineArguments);
                 return Task.FromResult<IActionResult>(new ObjectResult(session.Info));
             } catch (Exception ex) {
-                return Task.FromResult<IActionResult>(new ApiErrorResult(BrokerApiError.UnableToStartRHost, ex));
+                return Task.FromResult<IActionResult>(new ApiErrorResult(BrokerApiError.UnableToStartRHost, ex.Message));
             }
         }
 
@@ -69,7 +69,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
             var session = _sessionManager.GetSession(User.Identity, id);
             Exception ex = (session?.Process != null && session.Process.HasExited) ? new Win32Exception(session.Process.ExitCode) : null;
             if (session == null || ex != null) {
-                return new ApiErrorResult(BrokerApiError.UnableToStartRHost, ex);
+                return new ApiErrorResult(BrokerApiError.UnableToStartRHost, ex.Message);
             }
 
             return new WebSocketPipeAction(session);

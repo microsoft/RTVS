@@ -11,7 +11,7 @@ namespace Microsoft.R.Host.Broker {
         private BrokerApiError _brokerApiError;
         private readonly string _message;
          
-        public ApiErrorResult(BrokerApiError error, Exception ex = null) : base(error) {
+        public ApiErrorResult(BrokerApiError error, string message = null) : base(error) {
             // https://tools.ietf.org/html/rfc7231#section-6.5.1
             // The 400(Bad Request) status code indicates that the server cannot or 
             // will not process the request due to something that is perceived to be 
@@ -20,7 +20,7 @@ namespace Microsoft.R.Host.Broker {
             StatusCode = StatusCodes.Status400BadRequest;
 
             _brokerApiError = error;
-            _message = ex?.Message;
+            _message = message;
          }
 
         public override void ExecuteResult(ActionContext context) {
