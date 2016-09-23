@@ -61,7 +61,7 @@ namespace Microsoft.R.Components.Plots.Implementation.View {
             }
 
             // The PresentationSource will be null in the specific scenario where:
-            //   - Host is creating a graphics device is being created and requesting properties
+            //   - Host is creating a graphics device, requesting properties of the plot window
             //   - This plot window is docked and has never been visible
             //
             // In that case, it is okay to re-use the last properties that we've
