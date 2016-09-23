@@ -225,7 +225,10 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Port: {2}.
+        ///   Looks up a localized string similar to Host: {1}
+        ///Port: {2}
+        ///Arguments: {3}
+        ///    .
         /// </summary>
         public static string ConnectionManager_InformationTooltipFormatRemote {
             get {
@@ -429,15 +432,6 @@ namespace Microsoft.R.Components {
         public static string ConnectionManager_Unknown {
             get {
                 return ResourceManager.GetString("ConnectionManager_Unknown", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to disconnected.
-        /// </summary>
-        public static string Disconnected {
-            get {
-                return ResourceManager.GetString("Disconnected", resourceCulture);
             }
         }
         

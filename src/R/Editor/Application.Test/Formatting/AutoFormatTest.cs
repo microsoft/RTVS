@@ -88,7 +88,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 script.DoIdle(300);
                 script.Type("{ENTER}foo");
 
-                string expected = "while (true) {\r\n    if (x > 1) {\r\n        foo\r\n    }\r\n}";
+                string expected = "while (TRUE) {\r\n    if (x > 1) {\r\n        foo\r\n    }\r\n}";
                 string actual = script.EditorText;
 
                 actual.Should().Be(expected);
@@ -105,7 +105,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 script.DoIdle(300);
                 script.Type("}");
 
-                string expected = "while (true) { }";
+                string expected = "while (TRUE) { }";
                 string actual = script.EditorText;
 
                 actual.Should().Be(expected);
@@ -118,7 +118,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
             using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 REditorSettings.FormatOptions.BracesOnNewLine = false;
 
-                script.Type("while(true) {");
+                script.Type("while(True) {");
                 script.DoIdle(300);
                 script.Type("{ENTER}if(x>1) {");
                 script.DoIdle(300);
@@ -126,7 +126,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 script.DoIdle(300);
                 script.Type("}}");
 
-                string expected = "while (true) {\r\n    if (x > 1) {\r\n    }\r\n}";
+                string expected = "while (TRUE) {\r\n    if (x > 1) {\r\n    }\r\n}";
                 string actual = script.EditorText;
 
                 actual.Should().Be(expected);

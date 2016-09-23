@@ -487,10 +487,10 @@ Path: {1}
 Arguments: {2}</value>
   </data>
   <data name="ConnectionManager_InformationTooltipFormatRemote" xml:space="preserve">
-    <value>{0}
-Host: {1}
-Arguments: {3}</value>
+    <value>Host: {1}
 Port: {2}
+Arguments: {3}
+    </value>
   </data>
   <data name="ConnectionManager_SwitchConnectionProgressBarMessage" xml:space="preserve">
     <value>Switching connection "{0}" to "{1}"</value>
@@ -511,9 +511,6 @@ Port: {2}
     <value>Terminating R will immediately abort calculations and all workspace objects will be discarded. This action cannot be undone.
 
 Are you sure you want to terminate R session?</value>
-  </data>
-  <data name="Disconnected" xml:space="preserve">
-    <value>disconnected</value>
   </data>
   <data name="ReplWindowName" xml:space="preserve">
     <value>R Interactive</value>

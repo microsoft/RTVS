@@ -59,8 +59,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
 
             var contents = await InUI(() => Clipboard.GetText());
             contents.Should().Be("\"" + filePath + "\"");
-
-            VsRHostScript.DoIdle(500);
         }
 
         [Test]

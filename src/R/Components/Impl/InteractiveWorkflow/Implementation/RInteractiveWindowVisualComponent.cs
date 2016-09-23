@@ -58,7 +58,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                     ? Invariant($"{Resources.ReplWindowName} - {broker.Name} ({broker.Uri.ToString().TrimTrailingSlash()})")
                     : Invariant($"{Resources.ReplWindowName} - {broker.Name}");
             } else {
-                Container.CaptionText = Resources.Disconnected;
+                Container.CaptionText = Invariant($"{Resources.ReplWindowName} - {Resources.ConnectionManager_Disconnected}");
             }
         }
     }

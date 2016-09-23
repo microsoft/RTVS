@@ -10,11 +10,12 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.OS;
 using Microsoft.Extensions.Logging;
 using Microsoft.R.Host.Broker.Interpreters;
 using Microsoft.R.Host.Broker.Pipes;
-using Microsoft.R.Host.Protocol;
 using Microsoft.R.Host.Broker.Startup;
+using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Broker.Sessions {
     public class Session {
@@ -132,7 +133,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
             psi.EnvironmentVariables["PATH"] = Interpreter.Info.BinPath + ";" + Environment.GetEnvironmentVariable("PATH");
 
             psi.WorkingDirectory = Path.GetDirectoryName(rhostExePath);
-
+            
             _process = new Process {
                 StartInfo = psi,
                 EnableRaisingEvents = true,
@@ -148,7 +149,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
             };
 
             _sessionLogger.LogInformation(Resources.Info_StartingRHost, Id, User.Name, rhostExePath, arguments);
-            _process.Start();
+            StartSession();
             _sessionLogger.LogInformation(Resources.Info_StartedRHost, Id, User.Name);
 
             _process.BeginErrorReadLine();
@@ -158,6 +159,18 @@ namespace Microsoft.R.Host.Broker.Sessions {
 
             ClientToHostWorker(_process.StandardInput.BaseStream, hostEnd).DoNotWait();
             HostToClientWorker(_process.StandardOutput.BaseStream, hostEnd).DoNotWait();
+        }
+
+        private void StartSession() {
+            _process.Start();
+            _process.WaitForExit(250);
+            if (_process.HasExited && _process.ExitCode < 0) {
+                var message = ErrorCodeConverter.MessageFromErrorCode(_process.ExitCode);
+                if (!string.IsNullOrEmpty(message)) { 
+                    throw new Win32Exception(message);
+                }
+                throw new Win32Exception(_process.ExitCode);
+            }
         }
 
         public void KillHost() {

@@ -279,7 +279,7 @@ namespace Microsoft.R.Host.Client.Session {
             await TaskUtilities.SwitchToBackgroundThread();
 
             var lockToken = await _initializationLock.WaitAsync();
-            
+
             // Host wasn't started yet or host is already stopped - nothing to stop, just pass acquired lock to the next awaiter
             if (!lockToken.IsSet) {
                 lockToken.Reset();
@@ -309,7 +309,7 @@ namespace Microsoft.R.Host.Client.Session {
                     // Try graceful shutdown with q() first.
                     try {
                         await Task.WhenAny(_hostRunTask, inter.QuitAsync(), Task.Delay(500)).Unwrap();
-                    } catch (Exception) {}
+                    } catch (Exception) { }
 
                     if (_hostRunTask.IsCompleted) {
                         return;
@@ -353,7 +353,7 @@ namespace Microsoft.R.Host.Client.Session {
             while (true) {
                 var tcs = _initializationTcs;
                 if (!tcs.Task.IsCompleted) {
-                    return;   
+                    return;
                 }
 
                 if (Interlocked.CompareExchange(ref _initializationTcs, new TaskCompletionSourceEx<object>(), tcs) == tcs) {

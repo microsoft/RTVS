@@ -23,20 +23,30 @@ namespace Microsoft.R.Editor.Completion {
 
         public bool IsVisible { get; set; } = true;
 
-        public static int Compare(Completion completion1, Completion completion2) {
-            if (completion1 == null || completion2 == null)
-                return -1;
+        public static int CompareOrdinal(Completion completion1, Completion completion2) {
+            return Compare(completion1, completion2, StringComparison.Ordinal);
+        }
 
-            int value = String.Compare(completion1.DisplayText, completion2.DisplayText, StringComparison.OrdinalIgnoreCase);
-            if (0 == value)
-                value = String.Compare(completion1.IconAutomationText, completion2.IconAutomationText, StringComparison.OrdinalIgnoreCase);
+        public static int CompareIgnoreCase(Completion completion1, Completion completion2) {
+            return Compare(completion1, completion2, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public static int Compare(Completion completion1, Completion completion2, StringComparison comparison) {
+            if (completion1 == null || completion2 == null) {
+                return -1;
+            }
+
+            int value = String.Compare(completion1.DisplayText, completion2.DisplayText, comparison);
+            if (0 == value) {
+                value = String.Compare(completion1.IconAutomationText, completion2.IconAutomationText, comparison);
+            }
 
             return value;
         }
 
         #region IComparable<RCompletion>
         public int CompareTo(RCompletion other) {
-            return string.Compare(this.DisplayText, other.DisplayText, StringComparison.OrdinalIgnoreCase);
+            return CompareIgnoreCase(this, other);
         }
         #endregion
     }
