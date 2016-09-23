@@ -32,7 +32,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
         [HttpPut("{id}")]
         public Task<IActionResult> PutAsync(string id, [FromBody] SessionCreateRequest request) {
             if (!_interpManager.Interpreters.Any()) {
-                return Task.FromResult<IActionResult>(new ApiErrorResult(HttpContext.Response, BrokerApiError.NoRInterpreters));
+                return Task.FromResult<IActionResult>(new ApiErrorResult(BrokerApiError.NoRInterpreters));
             }
 
             SecureString securePassword = null;
@@ -50,7 +50,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
             if (!string.IsNullOrEmpty(request.InterpreterId)) {
                 interp = _interpManager.Interpreters.FirstOrDefault(ip => ip.Id == request.InterpreterId);
                 if (interp == null) {
-                    return Task.FromResult<IActionResult>(new ApiErrorResult(HttpContext.Response, BrokerApiError.InterpreterNotFound));
+                    return Task.FromResult<IActionResult>(new ApiErrorResult(BrokerApiError.InterpreterNotFound));
                 }
             } else {
                 interp = _interpManager.Interpreters.First();
@@ -60,7 +60,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
                 var session = _sessionManager.CreateSession(User.Identity, id, interp, securePassword, profilePath, request.CommandLineArguments);
                 return Task.FromResult<IActionResult>(new ObjectResult(session.Info));
             } catch (Exception ex) {
-                return Task.FromResult<IActionResult>(new ApiErrorResult(HttpContext.Response, BrokerApiError.UnableToStartRHost, ex));
+                return Task.FromResult<IActionResult>(new ApiErrorResult(BrokerApiError.UnableToStartRHost, ex));
             }
         }
 
@@ -69,7 +69,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
             var session = _sessionManager.GetSession(User.Identity, id);
             Exception ex = (session?.Process != null && session.Process.HasExited) ? new Win32Exception(session.Process.ExitCode) : null;
             if (session == null || ex != null) {
-                return new ApiErrorResult(HttpContext.Response, BrokerApiError.UnableToStartRHost, ex);
+                return new ApiErrorResult(BrokerApiError.UnableToStartRHost, ex);
             }
 
             return new WebSocketPipeAction(session);
