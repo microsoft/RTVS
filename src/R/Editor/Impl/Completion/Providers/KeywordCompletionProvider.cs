@@ -38,7 +38,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
                 ImageSource keyWordGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphKeyword, StandardGlyphItem.GlyphItemPublic, _shell);
 
                 // Union with constants like TRUE and other common things
-                var keywords = Keywords.KeywordList.Union(Logicals.LogicalsList).Union(Constants.ConstantsList);
+                var keywords = Keywords.KeywordList.Concat(Logicals.LogicalsList).Concat(Constants.ConstantsList);
                 foreach (string keyword in keywords) {
                     bool? isSnippet = infoSource?.IsSnippet(keyword);
                     if (!isSnippet.HasValue || !isSnippet.Value) {
