@@ -20,7 +20,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
                 // We prevent that scaling by calculating a size based on
                 // pixel size and dpi setting.
                 Size bitmapSize = new Size(bmp.PixelWidth, bmp.PixelHeight);
-                return WpfUnitsConversion.FromPixels(this, bitmapSize);
+                return WpfUnitsConversion.FromPixels(PresentationSource.FromVisual(this), bitmapSize);
             }
             return base.MeasureOverride(constraint);
         }
