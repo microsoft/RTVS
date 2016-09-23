@@ -35,6 +35,7 @@
                Source="{Binding Path=PlotImage}"
                Visibility="{Binding Path=PlotImage, Converter={x:Static rwpf:Converters.NullIsCollapsed}}"
                MouseMove="Image_MouseMove"
+               MouseLeave="Image_MouseLeave"
                PreviewMouseDown="Image_PreviewMouseDown"
                MouseLeftButtonUp="Image_MouseLeftButtonUp">
             <Image.ToolTip>

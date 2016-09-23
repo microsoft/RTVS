@@ -128,7 +128,13 @@ namespace Microsoft.R.Components.Plots.Implementation.View {
                 var data = PlotClipboardData.Serialize(new PlotClipboardData(Model.Device.DeviceId, Model.Device.ActivePlot.PlotId, false));
                 var obj = new DataObject(PlotClipboardData.Format, data);
                 DragDrop.DoDragDrop(this, obj, DragDropEffects.Copy | DragDropEffects.Move);
+            } else {
+                _dragSurface.MouseMove(e);
             }
+        }
+
+        private void Image_MouseLeave(object sender, MouseEventArgs e) {
+            _dragSurface.MouseLeave(e);
         }
 
         private void Image_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
