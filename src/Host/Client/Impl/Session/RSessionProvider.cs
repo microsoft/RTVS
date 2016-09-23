@@ -226,23 +226,19 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         private async Task SwitchSessionsAsync(IEnumerable<RSession> sessions, IBrokerClient oldBroker, CancellationToken cancellationToken) {
-            var cts = new CancellationTokenSource();
-            var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, cts.Token);
 
             // All sessions should participate in switch. If any of it didn't start, cancel the rest.
-            var startTransactionTasks = sessions.Select(s => s.StartSwitchingBrokerAsync(linkedCts.Token)).ToList();
+            var transactions = sessions.Select(s => s.StartSwitchingBroker()).ToList();
 
             try {
-                await Task.WhenAll(startTransactionTasks);
-                var transactions = startTransactionTasks.Select(t => t.Result).ToList();
-
-                await Task.WhenAll(transactions.Select(t => ConnectToNewBrokerAsync(t, cts)));
+                await TaskUtilities.WhenAllCancelOnFailure(transactions, (t, ct) => t.AcquireLockAsync(ct), cancellationToken);
+                await ConnectToNewBrokerAsync(transactions, cancellationToken);
 
                 OnBrokerDisconnected();
-                await Task.WhenAll(transactions.Select(t => CompleteSwitchingBrokerAsync(t, oldBroker, cts)));
+                await CompleteSwitchingBrokerAsync(transactions, oldBroker, cancellationToken);
             } finally {
-                foreach (var task in startTransactionTasks.Where(t => t.Status == TaskStatus.RanToCompletion)) {
-                    task.Result.Dispose();
+                foreach (var transaction in transactions) {
+                    transaction.Dispose();
                 }
             }
         }
@@ -272,40 +268,25 @@ namespace Microsoft.R.Host.Client.Session {
         private async Task ReconnectAsync(CancellationToken cancellationToken) {
             var sessions = _sessions.Values.ToList();
             if (sessions.Any()) {
-                var cts = new CancellationTokenSource();
-                var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, cts.Token);
                 // All sessions should participate in reconnect. If any of it didn't start, cancel the rest.
-                var startTransactionTasks = sessions.Select(s => s.StartReconnectingAsync(linkedCts.Token)).ToList();
+                var transactions = sessions.Select(s => s.StartReconnecting()).ToList();
 
                 try {
-                    await Task.WhenAll(startTransactionTasks);
-                    var transactions = startTransactionTasks.Select(t => t.Result).ToList();
-
-                    await Task.WhenAll(transactions.Select(s => ReconnectSessionAsync(s, cts)));
+                    await Task.WhenAll(transactions.Select(t => t.AcquireLockAsync(cancellationToken)));
+                    await Task.WhenAll(transactions.Select(t => t.ReconnectAsync(cancellationToken)));
+                } catch (OperationCanceledException ex) when (!(ex is RHostDisconnectedException)) {
+                    _callback.WriteConsole(Resources.RSessionProvider_SwitchingWorkspaceCanceled.FormatInvariant(_brokerProxy.Name, GetUriString(_brokerProxy)));
+                    throw;
+                } catch (Exception ex) {
+                    _callback.WriteConsole(Resources.RSessionProvider_SwitchingWorkspaceFailed.FormatInvariant(_brokerProxy.Name, GetUriString(_brokerProxy), ex.Message));
+                    throw;
                 } finally {
-                    foreach (var task in startTransactionTasks.Where(t => t.Status == TaskStatus.RanToCompletion)) {
-                        task.Result.Dispose();
+                    foreach (var transaction in transactions) {
+                        transaction.Dispose();
                     }
                 }
             } else {
                 await TestBrokerConnectionWithRHost(_brokerProxy, cancellationToken);
-            }
-        }
-
-        private async Task ReconnectSessionAsync(IRSessionReconnectTransaction transaction, CancellationTokenSource cts) {
-            try {
-                await transaction.ReconnectAsync();
-            } catch (OperationCanceledException ex) when (!(ex is RHostDisconnectedException)) {
-                // Swallow cancellation if it is a result of another session failure
-                if (!cts.IsCancellationRequested) {
-                    _callback.WriteConsole(Resources.RSessionProvider_SwitchingWorkspaceCanceled.FormatInvariant(_brokerProxy.Name, GetUriString(_brokerProxy)));
-                    cts.Cancel();
-                    throw;
-                }
-            } catch (Exception ex) {
-                _callback.WriteConsole(Resources.RSessionProvider_SwitchingWorkspaceFailed.FormatInvariant(_brokerProxy.Name, GetUriString(_brokerProxy), ex.Message));
-                cts.Cancel();
-                throw;
             }
         }
 
@@ -329,32 +310,23 @@ namespace Microsoft.R.Host.Client.Session {
             }
         }
 
-        private async Task ConnectToNewBrokerAsync(IRSessionSwitchBrokerTransaction transaction, CancellationTokenSource cts) {
+        private async Task ConnectToNewBrokerAsync(List<IRSessionSwitchBrokerTransaction> transactions, CancellationToken cancellationToken) {
             try {
-                await transaction.ConnectToNewBrokerAsync();
+                await TaskUtilities.WhenAllCancelOnFailure(transactions, (t, ct) => t.ConnectToNewBrokerAsync(ct), cancellationToken);
             } catch (OperationCanceledException ex) when (!(ex is RHostDisconnectedException)) {
-                // Swallow cancellation if it is a result of another session failure
-                if (!cts.IsCancellationRequested) {
-                    _callback.WriteConsole(Resources.RSessionProvider_SwitchingWorkspaceCanceled.FormatInvariant(_brokerProxy.Name, GetUriString(_brokerProxy)));
-                    cts.Cancel();
-                    throw;
-                }
+                _callback.WriteConsole(Resources.RSessionProvider_SwitchingWorkspaceCanceled.FormatInvariant(_brokerProxy.Name, GetUriString(_brokerProxy)));
+                throw;
             } catch (Exception ex) {
                 _callback.WriteConsole(Resources.RSessionProvider_SwitchingWorkspaceFailed.FormatInvariant(_brokerProxy.Name, GetUriString(_brokerProxy), ex.Message));
-                cts.Cancel();
                 throw;
             }
         }
 
-        private async Task CompleteSwitchingBrokerAsync(IRSessionSwitchBrokerTransaction transaction, IBrokerClient oldBroker, CancellationTokenSource cts) {
+        private async Task CompleteSwitchingBrokerAsync(List<IRSessionSwitchBrokerTransaction> transactions, IBrokerClient oldBroker, CancellationToken cancellationToken) {
             try {
-                await transaction.CompleteSwitchingBrokerAsync();
+                await TaskUtilities.WhenAllCancelOnFailure(transactions, (t, ct) => t.CompleteSwitchingBrokerAsync(ct), cancellationToken);
             } catch (OperationCanceledException ex) when (!(ex is RHostDisconnectedException)) {
-                // Swallow cancellation if it is a result of another session failure
-                if (!cts.IsCancellationRequested) {
-                    _callback.WriteConsole(Resources.RSessionProvider_RestartingSessionAfterSwitchingCanceled.FormatInvariant(_brokerProxy.Name, GetUriString(_brokerProxy)));
-                    cts.Cancel();
-                }
+                _callback.WriteConsole(Resources.RSessionProvider_RestartingSessionAfterSwitchingCanceled.FormatInvariant(_brokerProxy.Name, GetUriString(_brokerProxy)));
             } catch (Exception ex) {
                 var switchingFromNull = oldBroker is NullBrokerClient;
                 var message = switchingFromNull
@@ -362,7 +334,6 @@ namespace Microsoft.R.Host.Client.Session {
                     : Resources.RSessionProvider_RestartingSessionAfterSwitchingFailed.FormatInvariant(_brokerProxy.Name, GetUriString(_brokerProxy), ex.Message, oldBroker.Name, GetUriString(oldBroker));
 
                 _callback.WriteConsole(message);
-                cts.Cancel();
                 throw;
             }
         }
