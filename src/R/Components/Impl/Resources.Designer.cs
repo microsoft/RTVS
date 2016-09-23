@@ -225,7 +225,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Host: {1
+        ///   Looks up a localized string similar to Host: {1}
         ///Port: {2}
         ///Arguments: {3}
         ///    .
