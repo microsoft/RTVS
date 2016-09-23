@@ -16,9 +16,14 @@ namespace Microsoft.R.Components.Plots.Implementation.View {
         // Anything below 200 pixels at fixed 96dpi is impractical, and prone to rendering errors
         private const int MinPixelWidth = 200;
         private const int MinPixelHeight = 200;
+        private const int DefaultResolution = 96;
 
         private readonly DelayedAsyncAction _resizeAction = new DelayedAsyncAction(250);
         private readonly DragSurface _dragSurface = new DragSurface();
+
+        private int? _lastPixelWidth;
+        private int? _lastPixelHeight;
+        private int? _lastResolution;
 
         public IRPlotDeviceViewModel Model => DataContext as IRPlotDeviceViewModel;
 
@@ -45,20 +50,39 @@ namespace Microsoft.R.Components.Plots.Implementation.View {
         }
 
         private PlotDeviceProperties GetPixelSizeAndResolution(Size wpfSize) {
-            var unadjustedPixelSize = WpfUnitsConversion.ToPixels(Content as Visual, wpfSize);
+            var source = PresentationSource.FromVisual(Content as Visual);
+            if (source != null) {
+                var unadjustedPixelSize = WpfUnitsConversion.ToPixels(source, wpfSize);
 
-            // If the window gets below a certain minimum size, plot to the minimum size
-            int pixelWidth = Math.Max((int)unadjustedPixelSize.Width, MinPixelWidth);
-            int pixelHeight = Math.Max((int)unadjustedPixelSize.Height, MinPixelHeight);
-            int resolution = WpfUnitsConversion.GetResolution(Content as Visual);
+                // If the window gets below a certain minimum size, plot to the minimum size
+                _lastPixelWidth = Math.Max((int)unadjustedPixelSize.Width, MinPixelWidth);
+                _lastPixelHeight = Math.Max((int)unadjustedPixelSize.Height, MinPixelHeight);
+                _lastResolution = WpfUnitsConversion.GetResolution(source);
+            }
 
-            return new PlotDeviceProperties(pixelWidth, pixelHeight, resolution);
+            // The PresentationSource will be null in the specific scenario where:
+            //   - Host is creating a graphics device, requesting properties of the plot window
+            //   - This plot window is docked and has never been visible
+            //
+            // In that case, it is okay to re-use the last properties that we've
+            // seen for this window. The window will have received the appropriate
+            // SizeChanged events prior to this, and those were able to get a
+            // non-null PresentationSource.
+            //
+            // I do not understand why, this might be some optimization that
+            // VS/WPF is doing for hidden document windows.
+            //
+            // The fallback to the Minimum size when last properties are null 
+            // is only there as a precaution, I have not seen it happen in my
+            // testing. If they ever happen, you'll see a low resolution plot
+            // when you activate the plot window.
+            return new PlotDeviceProperties(_lastPixelWidth ?? MinPixelWidth, _lastPixelHeight ?? MinPixelHeight, _lastResolution ?? DefaultResolution);
         }
 
         private void Image_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
             var image = (FrameworkElement)sender;
             var pos = e.GetPosition(image);
-            var pixelSize = WpfUnitsConversion.ToPixels(image as Visual, pos);
+            var pixelSize = WpfUnitsConversion.ToPixels(PresentationSource.FromVisual(image as Visual), pos);
 
             Model?.ClickPlot((int)pixelSize.X, (int)pixelSize.Y);
         }
