@@ -249,9 +249,6 @@
   <data name="PlotHistoryWindowCaption" xml:space="preserve">
     <value>R Plot History</value>
   </data>
-  <data name="MicrosoftRHostStarting" xml:space="preserve">
-    <value>Starting R Session...</value>
-  </data>
   <data name="LoadWorkspaceIntoGlobalEnvironment" xml:space="preserve">
     <value>Do you want to load the R data file {0} into the global environment?</value>
   </data>

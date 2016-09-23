@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using FluentAssertions;
 using Microsoft.Languages.Core.Text;
 using Microsoft.UnitTests.Core.XUnit;
@@ -331,6 +332,37 @@ aaa(a
 
             completionSets[0].Completions.Should().NotBeEmpty()
                 .And.Contain(c => c.DisplayText == "a =");
+        }
+
+        [Test]
+        public void CaseSensitiveEntries() {
+            var completionSets = new List<CompletionSet>();
+            GetCompletions("ma", 2, completionSets);
+
+            completionSets.Should().ContainSingle()
+                .Which.Completions.Should()
+                    .Contain(c => c.DisplayText == "matrix").And
+                    .Contain(c => c.DisplayText == "Matrix");
+        }
+
+        [Test]
+        public void NoDuplicatesEntries() {
+            var completionSets = new List<CompletionSet>();
+            GetCompletions("r", 1, completionSets);
+
+            completionSets.Should().ContainSingle()
+                .Which.Completions
+                    .Should().ContainSingle(c => c.DisplayText == "require");
+        }
+
+        [Test]
+        public void Datasets() {
+            var completionSets = new List<CompletionSet>();
+            GetCompletions("m", 1, completionSets);
+
+            completionSets.Should().ContainSingle()
+                .Which.Completions
+                    .Should().Contain(c => c.DisplayText == "mtcars");
         }
     }
 }

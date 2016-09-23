@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Security;
 using System.Threading.Tasks;
@@ -30,7 +32,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
         [HttpPut("{id}")]
         public Task<IActionResult> PutAsync(string id, [FromBody] SessionCreateRequest request) {
             if (!_interpManager.Interpreters.Any()) {
-                return Task.FromResult<IActionResult>(new ApiErrorResult(HttpContext.Response, BrokerApiError.NoRInterpreters));
+                return Task.FromResult<IActionResult>(new ApiErrorResult(BrokerApiError.NoRInterpreters));
             }
 
             SecureString securePassword = null;
@@ -48,14 +50,18 @@ namespace Microsoft.R.Host.Broker.Sessions {
             if (!string.IsNullOrEmpty(request.InterpreterId)) {
                 interp = _interpManager.Interpreters.FirstOrDefault(ip => ip.Id == request.InterpreterId);
                 if (interp == null) {
-                    return Task.FromResult<IActionResult>(new ApiErrorResult(HttpContext.Response, BrokerApiError.InterpreterNotFound));
+                    return Task.FromResult<IActionResult>(new ApiErrorResult(BrokerApiError.InterpreterNotFound));
                 }
             } else {
                 interp = _interpManager.Interpreters.First();
             }
 
-            var session = _sessionManager.CreateSession(User.Identity, id, interp, securePassword, profilePath, request.CommandLineArguments);
-            return Task.FromResult<IActionResult>(new ObjectResult(session.Info));
+            try {
+                var session = _sessionManager.CreateSession(User.Identity, id, interp, securePassword, profilePath, request.CommandLineArguments);
+                return Task.FromResult<IActionResult>(new ObjectResult(session.Info));
+            } catch (Exception ex) {
+                return Task.FromResult<IActionResult>(new ApiErrorResult(BrokerApiError.UnableToStartRHost, ex.Message));
+            }
         }
 
         [HttpGet("{id}/pipe")]
@@ -64,7 +70,6 @@ namespace Microsoft.R.Host.Broker.Sessions {
             if (session?.Process?.HasExited ?? true) {
                 return NotFound();
             }
-
             return new WebSocketPipeAction(session);
         }
     }

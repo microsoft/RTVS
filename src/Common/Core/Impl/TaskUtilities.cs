@@ -2,10 +2,13 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Tasks;
 using Microsoft.Common.Core.Threading;
 using static System.FormattableString;
 
@@ -47,6 +50,43 @@ namespace Microsoft.Common.Core {
         ) {
             if (!IsOnBackgroundThread()) {
                 Trace.Fail(Invariant($"{memberName} at {sourceFilePath}:{sourceLineNumber} was incorrectly called from a non-background thread."));
+            }
+        }
+
+        public static Task WhenAllCancelOnFailure(params Func<CancellationToken, Task>[]  functions) {
+            var cts = new CancellationTokenSource();
+            var tasks = functions.Select(f => f(cts.Token)
+                .ContinueWith(WhenAllCancelOnFailureContinuation, cts, default(CancellationToken), TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default));
+            return Task.WhenAll(tasks);
+        }
+
+        public static Task WhenAllCancelOnFailure<TSource>(IEnumerable<TSource> source, Func<TSource, CancellationToken, Task> taskFactory, CancellationToken cancellationToken) {
+            var functions = source.Select(s => SourceToFunctionConverter(s, taskFactory));
+            return WhenAllCancelOnFailure(functions, cancellationToken);
+        }
+
+        private static Func<CancellationToken, Task> SourceToFunctionConverter<TSource>(TSource source, Func<TSource, CancellationToken, Task> taskFactory)
+            => ct => taskFactory(source, ct);
+
+        public static Task WhenAllCancelOnFailure(IEnumerable<Func<CancellationToken, Task>> functions, CancellationToken cancellationToken) {
+            var cts = new CancellationTokenSource();
+            var tasks = functions.Select(f => f(CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken).Token)
+                .ContinueWith(WhenAllCancelOnFailureContinuation, cts, default(CancellationToken), TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default));
+            return Task.WhenAll(tasks);
+        }
+
+        private static void WhenAllCancelOnFailureContinuation(Task task, object state) {
+            var cts = (CancellationTokenSource) state;
+            try {
+                task.GetAwaiter().GetResult();
+            } catch (OperationCanceledException ex) {
+                if (!cts.IsCancellationRequested && ex.CancellationToken != cts.Token) {
+                    cts.Cancel();
+                    throw;
+                }
+            } catch (Exception) {
+                cts.Cancel();
+                throw;
             }
         }
     }

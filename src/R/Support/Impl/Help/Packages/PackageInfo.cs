@@ -76,8 +76,13 @@ namespace Microsoft.R.Support.Help.Packages {
                     var result = await _host.Session.EvaluateAsync<JArray>(Invariant($"as.list(getNamespaceExports('{this.Name}'))"), REvaluationKind.BaseEnv);
                     functions = result
                                     .Select(p => (string)((JValue)p).Value)
-                                    .Where(n => n.IndexOf(':') < 0)
-                                    .ToArray();
+                                    .Where(n => n.IndexOf(':') < 0);
+                    result = await _host.Session.EvaluateAsync<JArray>(Invariant($"as.list(ls('package:{this.Name}'))"), REvaluationKind.BaseEnv);
+                    var variables = result
+                                    .Select(p => (string)((JValue)p).Value)
+                                    .Where(n => n.IndexOf(':') < 0);
+
+                    functions = functions.Union(variables);
                 } catch (TaskCanceledException) { } catch (REvaluationException) { }
             } else {
                 _saved = true;

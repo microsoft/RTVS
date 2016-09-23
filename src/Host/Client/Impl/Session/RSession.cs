@@ -157,18 +157,29 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
 
-        public Task<ulong> CreateBlobAsync(byte[] data, CancellationToken ct = default(CancellationToken)) =>
-            DoBlobServiceAsync(_host?.CreateBlobAsync(data, ct));
-        
+        public Task<ulong> CreateBlobAsync(CancellationToken ct = default(CancellationToken)) =>
+            DoBlobServiceAsync(_host?.CreateBlobAsync(ct));
 
-        public Task<byte[]> GetBlobAsync(ulong blobId, CancellationToken ct = default(CancellationToken)) =>
-            DoBlobServiceAsync(_host?.GetBlobAsync(blobId, ct));
-        
         public Task DestroyBlobsAsync(IEnumerable<ulong> blobIds, CancellationToken ct = default(CancellationToken)) => 
             DoBlobServiceAsync(new Lazy<Task<long>>(async () => {
                 await _host.DestroyBlobsAsync(blobIds, ct);
                 return 0;
             }).Value);
+
+        public Task<byte[]> BlobReadAllAsync(ulong blobId, CancellationToken ct = default(CancellationToken)) =>
+            DoBlobServiceAsync(_host?.BlobReadAllAsync(blobId, ct));
+
+        public Task<byte[]> BlobReadAsync(ulong blobId, long position, long count, CancellationToken ct = default(CancellationToken)) =>
+            DoBlobServiceAsync(_host?.BlobReadAsync(blobId, position, count, ct));
+
+        public Task<long> BlobWriteAsync(ulong blobId, byte[] data, long position, CancellationToken ct = default(CancellationToken)) =>
+            DoBlobServiceAsync(_host?.BlobWriteAsync(blobId, data, position, ct));
+
+        public Task<long> GetBlobSizeAsync(ulong blobId, CancellationToken ct = default(CancellationToken)) =>
+            DoBlobServiceAsync(_host?.GetBlobSizeAsync(blobId, ct));
+
+        public Task<long> SetBlobSizeAsync(ulong blobId, long size, CancellationToken ct = default(CancellationToken)) =>
+            DoBlobServiceAsync(_host?.SetBlobSizeAsync(blobId, size, ct));
         
         private async Task<T> DoBlobServiceAsync<T>(Task<T> work) {
             if (!IsHostRunning) {
@@ -253,11 +264,14 @@ namespace Microsoft.R.Host.Client.Session {
             lockToken.Set();
         }
 
-        public async Task<IRSessionSwitchBrokerTransaction> StartSwitchingBrokerAsync(CancellationToken cancellationToken) {
+        public IRSessionSwitchBrokerTransaction StartSwitchingBroker() {
             _disposeToken.ThrowIfDisposed();
-            // reset and acquire _initializationLock, but don't interrupt existing initialization
-            var lockToken = await _initializationLock.ResetAsync(cancellationToken);
-            return new SwitchBrokerTransaction(this, lockToken, cancellationToken);
+            return new BrokerTransaction(this);
+        }
+
+        public IRSessionReconnectTransaction StartReconnecting() {
+            _disposeToken.ThrowIfDisposed();
+            return new BrokerTransaction(this);
         }
 
         public async Task StopHostAsync() {
@@ -265,7 +279,7 @@ namespace Microsoft.R.Host.Client.Session {
             await TaskUtilities.SwitchToBackgroundThread();
 
             var lockToken = await _initializationLock.WaitAsync();
-            
+
             // Host wasn't started yet or host is already stopped - nothing to stop, just pass acquired lock to the next awaiter
             if (!lockToken.IsSet) {
                 lockToken.Reset();
@@ -295,7 +309,7 @@ namespace Microsoft.R.Host.Client.Session {
                     // Try graceful shutdown with q() first.
                     try {
                         await Task.WhenAny(_hostRunTask, inter.QuitAsync(), Task.Delay(500)).Unwrap();
-                    } catch (Exception) {}
+                    } catch (Exception) { }
 
                     if (_hostRunTask.IsCompleted) {
                         return;
@@ -339,7 +353,7 @@ namespace Microsoft.R.Host.Client.Session {
             while (true) {
                 var tcs = _initializationTcs;
                 if (!tcs.Task.IsCompleted) {
-                    return;   
+                    return;
                 }
 
                 if (Interlocked.CompareExchange(ref _initializationTcs, new TaskCompletionSourceEx<object>(), tcs) == tcs) {
@@ -656,29 +670,40 @@ namespace Microsoft.R.Host.Client.Session {
             return callback != null ? callback.SaveFileAsync(filename, data) : Task.FromResult(string.Empty);
         }
         
-        private class SwitchBrokerTransaction : IRSessionSwitchBrokerTransaction {
+        private class BrokerTransaction : IRSessionSwitchBrokerTransaction, IRSessionReconnectTransaction {
             private readonly RSession _session;
-            private readonly IBinaryAsyncLockToken _lockToken;
-            private readonly CancellationToken _cancellationToken;
+            private IBinaryAsyncLockToken _lockToken;
             private RHost _hostToSwitch;
             
-            public SwitchBrokerTransaction(RSession session, IBinaryAsyncLockToken lockToken, CancellationToken cancellationToken) {
+            public BrokerTransaction(RSession session) {
                 _session = session;
-                _lockToken = lockToken;
-                _cancellationToken = cancellationToken;
             }
 
-            public async Task ConnectToNewBrokerAsync() {
+            public async Task AcquireLockAsync(CancellationToken cancellationToken) {
+                // reset and acquire _initializationLock, but don't interrupt existing initialization
+                _lockToken = await _session._initializationLock.ResetAsync(cancellationToken);
+            }
+
+            public async Task ConnectToNewBrokerAsync(CancellationToken cancellationToken) {
+                if (_lockToken == null) {
+                    throw new InvalidOperationException($"{nameof(AcquireLockAsync)} must be called before {nameof(ConnectToNewBrokerAsync)}");
+                }
+
                 _session._disposeToken.ThrowIfDisposed();
                 var startupInfo = _session._startupInfo;
                 if (startupInfo != null) {
                     // host requires _startupInfo, so proceed only if session was started at least once
-                    _hostToSwitch = await _session.BrokerClient.ConnectAsync(startupInfo.Name, _session, startupInfo.RHostCommandLineArguments, cancellationToken: _cancellationToken);
+                    _hostToSwitch = await _session.BrokerClient.ConnectAsync(startupInfo.Name, _session, startupInfo.RHostCommandLineArguments, cancellationToken: cancellationToken);
                 }
             }
 
-            public async Task CompleteSwitchingBrokerAsync() {
+            public async Task CompleteSwitchingBrokerAsync(CancellationToken cancellationToken) {
+                if (_lockToken == null) {
+                    throw new InvalidOperationException($"{nameof(AcquireLockAsync)} must be called before {nameof(CompleteSwitchingBrokerAsync)}");
+                }
+
                 _session._disposeToken.ThrowIfDisposed();
+
 
                 if (_session._startupInfo == null) {
                     // Session never started. No need to restart it.
@@ -696,11 +721,11 @@ namespace Microsoft.R.Host.Client.Session {
                     host.DetachCallback();
 
                     // Cancel all current requests
-                    await _session.CancelAllAsync(_cancellationToken);
+                    await _session.CancelAllAsync(cancellationToken);
                 }
 
                 // Start new RHost
-                await _session.StartHostAsyncBackground(_hostToSwitch, _lockToken, _cancellationToken);
+                await _session.StartHostAsyncBackground(_hostToSwitch, _lockToken, cancellationToken);
 
                 // Don't send stop notification to broker - just dispose host and wait for old hostRunTask to exit;
                 host?.Dispose();
@@ -711,8 +736,39 @@ namespace Microsoft.R.Host.Client.Session {
                 _hostToSwitch = null;
             }
 
+            public async Task ReconnectAsync(CancellationToken cancellationToken) {
+                if (_lockToken == null) {
+                    throw new InvalidOperationException($"{nameof(AcquireLockAsync)} must be called before {nameof(ReconnectAsync)}");
+                }
+
+                _session._disposeToken.ThrowIfDisposed();
+
+                if (_session._startupInfo == null) {
+                    // Session never started. No need to restart it.
+                    // Reset _initializationLock so that next awaiter can proceed.
+                    _lockToken.Reset();
+                    return;
+                }
+
+                var host = _session._host;
+                // host may be null if previous attempts to start it have failed
+                if (host != null) {
+                    // Detach RHost from RSession
+                    host.DetachCallback();
+
+                    // Cancel all current requests (if any)
+                    await _session.CancelAllAsync(cancellationToken);
+
+                    host.Dispose();
+                    await _session._hostRunTask;
+                }
+
+                host = await _session.BrokerClient.ConnectAsync(_session._startupInfo.Name, _session, _session._startupInfo.RHostCommandLineArguments, cancellationToken: cancellationToken);
+                await _session.StartHostAsyncBackground(host, _lockToken, cancellationToken);
+            }
+
             public void Dispose() {
-                _lockToken.Reset();
+                _lockToken?.Reset();
                 _hostToSwitch?.Dispose();
             }
         }

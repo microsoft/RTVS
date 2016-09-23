@@ -95,7 +95,7 @@ namespace Microsoft.R.Host.Client.Host {
             try {
                 (await HttpClient.PostAsync("/ping", new StringContent(""))).EnsureSuccessStatusCode();
             } catch (HttpRequestException ex) {
-                throw new RHostDisconnectedException(Resources.Error_HostNotResponsing.FormatInvariant(ex.Message), ex);
+                throw new RHostDisconnectedException(Resources.Error_HostNotResponding.FormatInvariant(ex.Message), ex);
             }
         }
 
@@ -113,12 +113,15 @@ namespace Microsoft.R.Host.Client.Host {
         public virtual async Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken()) {
             DisposableBag.ThrowIfDisposed();
             await TaskUtilities.SwitchToBackgroundThread();
-
-            await CreateBrokerSessionAsync(name, rCommandLineArguments, cancellationToken);
-            var webSocket = await ConnectToBrokerAsync(name, cancellationToken);
-            var host = CreateRHost(name, callbacks, webSocket);
-            await GetHostInformationAsync(cancellationToken);
-            return host;
+            try {
+                await CreateBrokerSessionAsync(name, rCommandLineArguments, cancellationToken);
+                var webSocket = await ConnectToBrokerAsync(name, cancellationToken);
+                var host = CreateRHost(name, callbacks, webSocket);
+                await GetHostInformationAsync(cancellationToken);
+                return host;
+            } catch (HttpRequestException ex) {
+                throw new RHostDisconnectedException(Resources.Error_HostNotResponding.FormatInvariant(ex.Message), ex);
+            }
         }
 
         private async Task CreateBrokerSessionAsync(string name, string rCommandLineArguments, CancellationToken cancellationToken) {

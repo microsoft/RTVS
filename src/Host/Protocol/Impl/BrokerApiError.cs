@@ -5,5 +5,6 @@ namespace Microsoft.R.Host.Protocol {
     public enum BrokerApiError {
         NoRInterpreters = 1,
         InterpreterNotFound,
+        UnableToStartRHost
     }
 }

@@ -52,9 +52,11 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
             _disposableBag = DisposableBag.Create<ConnectionManager>()
                 .Add(_statusBarViewModel)
-                .Add(() => _sessionProvider.BrokerStateChanged -= BrokerStateChanged);
+                .Add(() => interactiveWorkflow.RSession.Connected -= RSession_Connected)
+                .Add(() => interactiveWorkflow.RSession.Disconnected -= RSession_Disconnected);
 
-            _sessionProvider.BrokerStateChanged += BrokerStateChanged;
+            interactiveWorkflow.RSession.Connected += RSession_Connected;
+            interactiveWorkflow.RSession.Disconnected += RSession_Disconnected;
 
             // Get initial values
             var userConnections = CreateConnectionList();
@@ -62,6 +64,20 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
             UpdateRecentConnections();
             CompleteInitializationAsync().DoNotWait();
+        }
+
+        private void RSession_Connected(object sender, RConnectedEventArgs e) {
+            OnSessionConnectionStateChange(true);
+        }
+
+        private void RSession_Disconnected(object sender, EventArgs e) {
+            OnSessionConnectionStateChange(false);
+        }
+
+        private void OnSessionConnectionStateChange(bool connected) {
+            IsConnected = connected;
+            UpdateActiveConnection();
+            ConnectionStateChanged?.Invoke(this, new ConnectionEventArgs(IsConnected, ActiveConnection));
         }
 
         private async Task CompleteInitializationAsync() {
@@ -112,6 +128,13 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
         public Task TestConnectionAsync(IConnectionInfo connection, CancellationToken cancellationToken = default(CancellationToken)) {
             return _sessionProvider.TestBrokerConnectionAsync(connection.Name, connection.Path, cancellationToken);
+        }
+
+        public async Task ReconnectAsync(CancellationToken cancellationToken = default(CancellationToken)) {
+            var connection = ActiveConnection;
+            if (connection != null && !_sessionProvider.IsConnected) {
+                await _sessionProvider.TrySwitchBrokerAsync(connection.Name, connection.Path, cancellationToken);
+            }
         }
 
         public async Task ConnectAsync(IConnectionInfo connection, CancellationToken cancellationToken = default(CancellationToken)) {
@@ -242,25 +265,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 }
             }
 
-            if (!string.IsNullOrEmpty(connectionInfo?.Path) && await TrySwitchBrokerAsync(connectionInfo)) {
-                return;
+            if (!string.IsNullOrEmpty(connectionInfo?.Path)) {
+                await TrySwitchBrokerAsync(connectionInfo);
             }
-
-            var connection = RecentConnections.FirstOrDefault(c => !c.IsRemote);
-            if (connection != null && await TrySwitchBrokerAsync(connection)) {
-                return;
-            }
-
-            var local = _userConnections.Values.FirstOrDefault(c => !c.IsRemote);
-            if (local != null) {
-                await TrySwitchBrokerAsync(local);
-            }
-        }
-
-        private void BrokerStateChanged(object sender, BrokerStateChangedEventArgs eventArgs) {
-            IsConnected = eventArgs.IsConnected;
-            UpdateActiveConnection();
-            ConnectionStateChanged?.Invoke(this, new ConnectionEventArgs(IsConnected, ActiveConnection));
         }
 
         private void UpdateActiveConnection() {

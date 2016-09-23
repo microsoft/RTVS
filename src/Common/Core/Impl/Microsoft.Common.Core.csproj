@@ -19,10 +19,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <CodeAnalysisRuleSet>..\..\..\DevDivRuleSet.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>true</RunCodeAnalysis>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
     <DefineConstants Condition="'$(VisualStudioVersion)'=='14.0'">VS14;$(DefineConstants)</DefineConstants>
     <DefineConstants Condition="'$(VisualStudioVersion)'=='15.0'">VS15;$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <Import Project="..\..\..\R.Settings.targets" />
   <PropertyGroup>
@@ -56,10 +60,14 @@
     <Compile Include="Logging\IActionLogWriter.cs" />
     <Compile Include="Logging\LogLevel.cs" />
     <Compile Include="Logging\MessageCategory.cs" />
-    <Compile Include="Logging\Implementation\NullLogWriter.cs" />
+    <Compile Include="Logging\NullLog.cs" />
+    <Compile Include="Logging\NullLogWriter.cs" />
+    <Compile Include="Logging\StringLog.cs" />
+    <Compile Include="NativeMethods.cs" />
     <Compile Include="Net\FileDownloader.cs" />
     <Compile Include="Net\IFileDownloader.cs" />
     <Compile Include="Net\WebSocketHelper.cs" />
+    <Compile Include="OS\ErrorCodeConverter.cs" />
     <Compile Include="Shell\ProgressBarSession.cs" />
     <Compile Include="Tasks\TaskCompletionSourceEx.cs" />
     <Compile Include="Threading\AsyncCountdownEvent.cs" />

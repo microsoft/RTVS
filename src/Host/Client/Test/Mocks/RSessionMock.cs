@@ -24,17 +24,26 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
 
         public string Prompt { get; set; } = ">";
 
-        public Task<ulong> CreateBlobAsync(byte[] data, CancellationToken ct = default(CancellationToken)) {
-            return Task.FromResult(0ul);
-        }
+        public Task<ulong> CreateBlobAsync(CancellationToken ct = default(CancellationToken)) => 
+            Task.FromResult(0ul);
+        
+        public Task DestroyBlobsAsync(IEnumerable<ulong> blobIds, CancellationToken ct = default(CancellationToken)) =>
+            Task.CompletedTask;
 
-        public Task<byte[]> GetBlobAsync(ulong blobId, CancellationToken ct = default(CancellationToken)) {
-            return Task.FromResult(new byte[0]);
-        }
+        public Task<byte[]> BlobReadAllAsync(ulong blobId, CancellationToken cancellationToken = default(CancellationToken)) =>
+            Task.FromResult(new byte[0]);
 
-        public Task DestroyBlobsAsync(IEnumerable<ulong> blobIds, CancellationToken ct = default(CancellationToken)) {
-            return Task.CompletedTask;
-        }
+        public Task<byte[]> BlobReadAsync(ulong blobId, long position, long count, CancellationToken cancellationToken = default(CancellationToken)) =>
+            Task.FromResult(new byte[0]);
+
+        public Task<long> BlobWriteAsync(ulong blobId, byte[] data, long position, CancellationToken cancellationToken = default(CancellationToken)) =>
+            Task.FromResult(0L);
+
+        public Task<long> GetBlobSizeAsync(ulong blobId, CancellationToken cancellationToken = default(CancellationToken)) =>
+            Task.FromResult(0L);
+
+        public Task<long> SetBlobSizeAsync(ulong blobId, long size, CancellationToken cancellationToken = default(CancellationToken)) =>
+            Task.FromResult(0L);
 
         public Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind, CancellationToken ct = default(CancellationToken)) {
             LastExpression = expression;

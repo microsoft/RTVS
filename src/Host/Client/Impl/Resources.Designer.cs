@@ -79,11 +79,21 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Host did did not respond to ping. The machine may be down or the network has been disconnected. HTTP message: {0}.
+        ///   Looks up a localized string similar to *** Connected ***.
         /// </summary>
-        internal static string Error_HostNotResponsing {
+        internal static string Connected {
             get {
-                return ResourceManager.GetString("Error_HostNotResponsing", resourceCulture);
+                return ResourceManager.GetString("Connected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Host did not respond to a ping. The machine may be offline or the network has been disconnected.
+        ///HTTP message: {0}.
+        /// </summary>
+        internal static string Error_HostNotResponding {
+            get {
+                return ResourceManager.GetString("Error_HostNotResponding", resourceCulture);
             }
         }
         
@@ -102,6 +112,24 @@ namespace Microsoft.R.Host.Client {
         internal static string Error_NoRInterpreters {
             get {
                 return ResourceManager.GetString("Error_NoRInterpreters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remote R host process did not start:  {0}.
+        /// </summary>
+        internal static string Error_UnableToStartHostException {
+            get {
+                return ResourceManager.GetString("Error_UnableToStartHostException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unknown error.
+        /// </summary>
+        internal static string Error_UnknownError {
+            get {
+                return ResourceManager.GetString("Error_UnknownError", resourceCulture);
             }
         }
         
@@ -138,17 +166,6 @@ namespace Microsoft.R.Host.Client {
         internal static string InstalledInterpreters {
             get {
                 return ResourceManager.GetString("InstalledInterpreters", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to There is no local R detected and no remote connection established.
-        ///You can try re-connecting to the remote machine, 
-        ///use another connection or install local R..
-        /// </summary>
-        internal static string NoConnectionsAvailable {
-            get {
-                return ResourceManager.GetString("NoConnectionsAvailable", resourceCulture);
             }
         }
         
@@ -190,8 +207,7 @@ namespace Microsoft.R.Host.Client {
         
         /// <summary>
         ///   Looks up a localized string similar to Interactive Window is disconnected from R Session.
-        ///Try connecting to a remote machine in the Workspaces window or
-        ///click Reset to restart local R interpreter..
+        ///Open Workspaces window and either select local R interpreter or try connecting to a remote machine..
         /// </summary>
         internal static string RHostDisconnected {
             get {
@@ -209,88 +225,12 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Couldn&apos;t connect session to 
-        ///&apos;{0}&apos; : {1} 
-        ///because of the following error: {2}.
+        ///   Looks up a localized string similar to Connecting to R Workspace failed.
+        ///Reason: {0}.
         /// </summary>
-        internal static string RSessionProvider_RestartingSessionFailed {
+        internal static string RSessionProvider_ConnectionFailed {
             get {
-                return ResourceManager.GetString("RSessionProvider_RestartingSessionFailed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Restarting sessions ({0})....
-        /// </summary>
-        internal static string RSessionProvider_RestartingSessionsFormat {
-            get {
-                return ResourceManager.GetString("RSessionProvider_RestartingSessionsFormat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Connecting sessions ({0}) to the new R Workspace....
-        /// </summary>
-        internal static string RSessionProvider_StartConnectingToWorkspaceFormat {
-            get {
-                return ResourceManager.GetString("RSessionProvider_StartConnectingToWorkspaceFormat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Starting R Session has been canceled, please restart it manually..
-        /// </summary>
-        internal static string RSessionProvider_StartingSessionAfterSwitchingCanceled {
-            get {
-                return ResourceManager.GetString("RSessionProvider_StartingSessionAfterSwitchingCanceled", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Starting R Session has failed, please restart it manually. Restoring connection to the
-        ///&apos;{0}&apos;: {1}.
-        /// </summary>
-        internal static string RSessionProvider_StartingSessionAfterSwitchingFailed {
-            get {
-                return ResourceManager.GetString("RSessionProvider_StartingSessionAfterSwitchingFailed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Start switching to the &apos;{0}&apos;: {1}.
-        /// </summary>
-        internal static string RSessionProvider_StartSwitchingWorkspaceFormat {
-            get {
-                return ResourceManager.GetString("RSessionProvider_StartSwitchingWorkspaceFormat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Switching R Workspace completed.
-        /// </summary>
-        internal static string RSessionProvider_SwitchingRWorkspaceCompleted {
-            get {
-                return ResourceManager.GetString("RSessionProvider_SwitchingRWorkspaceCompleted", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Connection to the new R Workspace has been canceled, restoring connection to the
-        ///&apos;{0}&apos;: {1}.
-        /// </summary>
-        internal static string RSessionProvider_SwitchingWorkspaceCanceled {
-            get {
-                return ResourceManager.GetString("RSessionProvider_SwitchingWorkspaceCanceled", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Connecting to the new R Workspace failed, restoring connection to 
-        ///&apos;{0}&apos; : {1}.
-        /// </summary>
-        internal static string RSessionProvider_SwitchingWorkspaceFailed {
-            get {
-                return ResourceManager.GetString("RSessionProvider_SwitchingWorkspaceFailed", resourceCulture);
+                return ResourceManager.GetString("RSessionProvider_ConnectionFailed", resourceCulture);
             }
         }
         

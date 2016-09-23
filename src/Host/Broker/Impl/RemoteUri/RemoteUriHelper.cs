@@ -20,12 +20,11 @@ namespace Microsoft.R.Host.Broker.RemoteUri {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
             request.Method = context.Request.Method;
 
-            ClientWebSocket clientWebsocket = null;
             if (context.WebSockets.IsWebSocketRequest) {
                 UriBuilder ub = new UriBuilder(url) { Scheme = "ws" };
-                clientWebsocket = new ClientWebSocket();
+                ClientWebSocket clientWebsocket = new ClientWebSocket();
                 await clientWebsocket.ConnectAsync(ub.Uri, CancellationToken.None);
-                var serverWebSocket = await context.WebSockets.AcceptWebSocketAsync(clientWebsocket.SubProtocol);
+                var serverWebSocket = await context.WebSockets.AcceptWebSocketAsync(string.Join(", ", context.WebSockets.WebSocketRequestedProtocols));
                 await WebSocketHelper.SendReceiveAsync(serverWebSocket, clientWebsocket, CancellationToken.None);
             } else {
                 SetRequestHeaders(request, context.Request.Headers);
@@ -37,15 +36,27 @@ namespace Microsoft.R.Host.Broker.RemoteUri {
                     }
                 }
 
-                HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
-                SetResponseHeaders(response, context.Response);
+                HttpWebResponse response = null;
+                try {
+                    response = (HttpWebResponse)await request.GetResponseAsync();
+                } catch(WebException wex) {
+                    if(wex.Status == WebExceptionStatus.ProtocolError) {
+                        response = wex.Response as HttpWebResponse;
+                    } else {
+                        throw wex;
+                    }
+                } finally {
+                    if (response != null) {
+                        context.Response.StatusCode = (int)response.StatusCode;
+                        SetResponseHeaders(response, context.Response);
+                        using (Stream respStream = response.GetResponseStream()) {
+                            await respStream.CopyToAsync(context.Response.Body);
+                            await context.Response.Body.FlushAsync();
+                        }
 
-                using (Stream respStream = response.GetResponseStream()) {
-                    await respStream.CopyToAsync(context.Response.Body);
-                    await context.Response.Body.FlushAsync();
+                        response.Close();
+                    }
                 }
-
-                response.Close();
             }
         }
 

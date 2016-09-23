@@ -232,6 +232,5 @@ namespace Microsoft.R.Host.Broker {
             IntPtr hToken,
             StringBuilder pszProfilePath,
             ref uint cchProfilePath);
-
     }
 }

@@ -47,21 +47,33 @@ namespace Microsoft.R.Host.Client.BrokerServices {
                 }
             }
 
-            HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
-
-            if (context.Request.IsWebSocketRequest) {
-                Stream respStream = response.GetResponseStream();
-                string subProtocol = response.Headers[Constants.Headers.SecWebSocketProtocol];
-                var remoteWebSocket = CommonWebSocket.CreateClientWebSocket(respStream, subProtocol, TimeSpan.FromMinutes(10), 65335, true);
-                var websocketContext = await context.AcceptWebSocketAsync(subProtocol, 65335, TimeSpan.FromMinutes(10));
-                await WebSocketHelper.SendReceiveAsync(websocketContext.WebSocket, remoteWebSocket, ct);
-            } else {
-                SetResponseHeaders(response, context.Response, localBaseUrl, remoteBaseUrl);
-                using (Stream respStream = response.GetResponseStream())
-                using (Stream outStream = context.Response.OutputStream) {
-                    await outStream.CopyAndFlushAsync(respStream);
+            HttpWebResponse response = null;
+            try {
+                response = (HttpWebResponse)await request.GetResponseAsync();
+            } catch (WebException wex) {
+                if(wex.Status == WebExceptionStatus.ProtocolError) {
+                    response = wex.Response as HttpWebResponse;
+                } else {
+                    throw wex;
                 }
-                response.Close();
+            } finally {
+                if (response != null) {
+                    if (context.Request.IsWebSocketRequest && response.StatusCode == HttpStatusCode.SwitchingProtocols) {
+                        Stream respStream = response.GetResponseStream();
+                        string subProtocol = response.Headers[Constants.Headers.SecWebSocketProtocol];
+                        var remoteWebSocket = CommonWebSocket.CreateClientWebSocket(respStream, subProtocol, TimeSpan.FromMinutes(10), receiveBufferSize: 65335, useZeroMask: true);
+                        var websocketContext = await context.AcceptWebSocketAsync(subProtocol, receiveBufferSize: 65335, keepAliveInterval: TimeSpan.FromMinutes(10));
+                        await WebSocketHelper.SendReceiveAsync(websocketContext.WebSocket, remoteWebSocket, ct);
+                    } else {
+                        context.Response.StatusCode = (int)response.StatusCode;
+                        SetResponseHeaders(response, context.Response, localBaseUrl, remoteBaseUrl);
+                        using (Stream respStream = response.GetResponseStream())
+                        using (Stream outStream = context.Response.OutputStream) {
+                            await outStream.CopyAndFlushAsync(respStream);
+                        }
+                        response.Close();
+                    }
+                }
             }
         }
 

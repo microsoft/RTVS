@@ -792,15 +792,6 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Starting R Session....
-        /// </summary>
-        public static string MicrosoftRHostStarting {
-            get {
-                return ResourceManager.GetString("MicrosoftRHostStarting", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to R Tools News.
         /// </summary>
         public static string NewsWindowTitle {
