@@ -37,7 +37,8 @@ namespace Microsoft.Common.Core.IO {
 
         string GetDownloadsPath(string fileName = "");
 
-        string CompressFile(string path);
+        string CompressFile(string path, string relativeTodir = null);
+        string CompressFiles(IEnumerable<string> paths, string relativeToDir, IProgress<string> progress, CancellationToken ct);
         string CompressDirectory(string path);
         string CompressDirectory(string path, Matcher matcher, IProgress<string> progress, CancellationToken ct);
     }

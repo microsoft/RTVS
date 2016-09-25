@@ -1689,6 +1689,18 @@
         </Strings>
       </Button>
 
+      <Button guid="guidRToolsCmdSet" id="icmdSendToRemote" priority="0x0700" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup"/>
+        <Icon guid="ImageCatalogGuid" id="Upload"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Send To Remote</ButtonText>
+          <LocCanonicalName>SendToRemote</LocCanonicalName>
+        </Strings>
+      </Button>
+
       <Button guid="guidRToolsCmdSet" id="icmdAddRScript" priority="0x0100" type="Button">
         <Parent guid="guidRToolsCmdSet" id="projectAddItemContextMenuGroup"/>
         <Icon guid="rIconGuid" id="rFileIcon"/>
@@ -2747,6 +2759,7 @@
       <IDSymbol name="icmdSourceSelectedFilesWithEcho" value="1508"/>
       <IDSymbol name="icmdSetAsStartUpRScript" value="1509"/>
       <IDSymbol name="icmdCopyRemoteItemPath" value="1510"/>
+      <IDSymbol name="icmdSendToRemote" value="1511"/>
 
       <!-- Shiny -->
       <IDSymbol name="icmdRunShinyApp" value="1601"/>
