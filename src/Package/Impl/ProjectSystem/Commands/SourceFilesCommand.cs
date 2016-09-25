@@ -2,12 +2,18 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.IO;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Host.Client;
+using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring;
 using Microsoft.VisualStudio.R.Package.Commands;
 #if VS14
@@ -21,33 +27,70 @@ using Microsoft.VisualStudio.ProjectSystem;
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     [ExportCommandGroup("AD87578C-B324-44DC-A12A-B01A6ED5C6E3")]
     [AppliesTo(ProjectConstants.RtvsProjectCapability)]
-    internal sealed class SourceFilesCommand : ICommandGroupHandler {
+    internal sealed class SourceFilesCommand : IAsyncCommandGroupHandler {
+        private readonly ConfiguredProject _configuredProject;
         private IRInteractiveWorkflowProvider _interactiveWorkflowProvider;
 
         [ImportingConstructor]
-        public SourceFilesCommand(IRInteractiveWorkflowProvider interactiveWorkflowProvider)  {
+        public SourceFilesCommand(ConfiguredProject configuredProject, IRInteractiveWorkflowProvider interactiveWorkflowProvider)  {
+            _configuredProject = configuredProject;
             _interactiveWorkflowProvider = interactiveWorkflowProvider;
         }
 
-        public CommandStatusResult GetCommandStatus(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus progressiveStatus) {
+        public Task<CommandStatusResult> GetCommandStatusAsync(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus progressiveStatus) {
             if ((commandId == RPackageCommandId.icmdSourceSelectedFiles || commandId == RPackageCommandId.icmdSourceSelectedFilesWithEcho) && nodes.GetSelectedNodesPaths().Count() > 0) {
                 foreach (var n in nodes) {
                     if (n.IsFolder || !Path.GetExtension(n.FilePath).EqualsIgnoreCase(".r")) { 
-                        return CommandStatusResult.Unhandled;
+                        return Task.FromResult(CommandStatusResult.Unhandled);
                     }
                 }
-                return new CommandStatusResult(true, commandText, CommandStatus.Enabled | CommandStatus.Supported);
+                return Task.FromResult(new CommandStatusResult(true, commandText, CommandStatus.Enabled | CommandStatus.Supported));
             }
-            return CommandStatusResult.Unhandled;
+            return Task.FromResult(CommandStatusResult.Unhandled);
         }
 
-        public bool TryHandleCommand(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, long commandExecuteOptions, IntPtr variantArgIn, IntPtr variantArgOut) {
+        public async Task<bool> TryHandleCommandAsync(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, long commandExecuteOptions, IntPtr variantArgIn, IntPtr variantArgOut) {
             if (commandId == RPackageCommandId.icmdSourceSelectedFiles || commandId == RPackageCommandId.icmdSourceSelectedFilesWithEcho) {
-                var rFiles = nodes.GetSelectedNodesPaths().Where(x =>
+                bool echo = commandId == RPackageCommandId.icmdSourceSelectedFilesWithEcho;
+                IEnumerable<string> rFiles = Enumerable.Empty<string>();
+
+                var workflow = _interactiveWorkflowProvider.GetOrCreate();
+                var session = workflow.RSession;
+                if(session.IsHostRunning && session.IsRemote) {
+                    var outputWriter = workflow.ActiveWindow.InteractiveWindow.OutputWriter;
+                    var properties = _configuredProject.Services.ExportProvider.GetExportedValue<ProjectProperties>();
+
+                    string projectDir = Path.GetDirectoryName(_configuredProject.UnconfiguredProject.FullPath);
+                    string projectName = properties.GetProjectName();
+                    string remotePath = await properties.GetRemoteProjectPathAsync();
+
+                    var files = nodes.GetSelectedNodesPaths().Where(x =>
                                Path.GetExtension(x).EqualsIgnoreCase(".r") &&
                                File.Exists(x));
-                bool echo = commandId == RPackageCommandId.icmdSourceSelectedFilesWithEcho;
-                _interactiveWorkflowProvider.GetOrCreate().Operations.SourceFiles(rFiles, echo);
+                    outputWriter.WriteLine("Compressing files...");
+                    IFileSystem fs = new FileSystem();
+                    string compressedFilePath = fs.CompressFiles(files, projectDir, new Progress<string>((p) => {
+                        outputWriter.WriteLine($"Local Path  : {p}");
+                        string dest = p.MakeRelativePath(projectDir).ProjectRelativePathToRemoteProjectPath(remotePath, projectName);
+                        outputWriter.WriteLine($"Destination : {dest}");
+
+                    }), CancellationToken.None);
+
+                    using (var fts = new DataTransferSession(session, fs)) {
+                        outputWriter.WriteLine("Transferring project to remote host...");
+                        var remoteFile = await fts.SendFileAsync(compressedFilePath);
+                        await session.EvaluateAsync<string>($"rtvs:::save_to_project_folder({remoteFile.Id}, {projectName.ToRStringLiteral()}, '{remotePath.ToRPath()}')", REvaluationKind.Normal);
+                        outputWriter.WriteLine("Transferring project to remote host... Done.");
+                    }
+
+                    rFiles = files.Select(p => p.MakeRelativePath(projectDir).ProjectRelativePathToRemoteProjectPath(remotePath, projectName));
+                } else {
+                    rFiles = nodes.GetSelectedNodesPaths().Where(x =>
+                               Path.GetExtension(x).EqualsIgnoreCase(".r") &&
+                               File.Exists(x));
+                }
+
+                workflow.Operations.SourceFiles(rFiles, echo);
                 return true;
             }
             return false;

@@ -103,6 +103,14 @@ namespace Microsoft.R.Host.Client {
             return s.Replace("/", "\\");
         }
 
+        public static string ProjectRelativePathToRemoteProjectPath(this string path, string remoteRoot, string projectName) {
+            if (string.IsNullOrWhiteSpace(projectName)) {
+                return ($"{remoteRoot}/{path}")?.ToRPath();
+            } else {
+                return ($"{remoteRoot}/{projectName}/{path.ToRPath()}")?.ToRPath();
+            }
+        }
+
         /// <summary>
         /// Convert R string that comes encoded into &lt;U+ABCD&gt; into Unicode
         /// characters so user can see actual language symbols rather than 

@@ -4,19 +4,18 @@
 using System;
 using System.Collections.Immutable;
 using System.ComponentModel.Composition;
+using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
+using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring;
 using Microsoft.VisualStudio.R.Package.Commands;
-using Microsoft.Common.Core.IO;
-using Microsoft.R.Host.Client;
-using System.IO;
-using System.Collections.Generic;
-using System.Threading;
-using Microsoft.Common.Core;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
@@ -67,7 +66,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
                 IFileSystem fs = new FileSystem();
                 string compressedFilePath = fs.CompressFiles(files, projectDir, new Progress<string>((p) => {
                     outputWriter.WriteLine($"Local Path  : {p}");
-                    string dest = $"{remotePath.ToRPath()}/{projectName}/{p.MakeRelativePath(projectDir).Replace('\\', '/')}";
+                    string dest = p.MakeRelativePath(projectDir).ProjectRelativePathToRemoteProjectPath(remotePath, projectName);
                     outputWriter.WriteLine($"Destination : {dest}");
                       
                 }), CancellationToken.None);
