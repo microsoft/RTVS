@@ -25,6 +25,8 @@ using Microsoft.VisualStudio.R.Package.Test.Utility;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
+using NSubstitute;
+using Microsoft.Common.Core.Logging;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Shell {
     /// <summary>
@@ -118,9 +120,9 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
         }
 
         public bool IsUnitTestEnvironment { get; set; } = true;
-        public ITelemetryService TelemetryService { get; }
-
-        public IntPtr ApplicationWindowHandle { get; }
+        public ITelemetryService TelemetryService => Substitute.For<ITelemetryService>();
+        public IntPtr ApplicationWindowHandle => IntPtr.Zero;
+        public IActionLog Logger => Substitute.For<IActionLog>();
         #endregion
     }
 }

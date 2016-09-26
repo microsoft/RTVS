@@ -38,7 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.RClient {
                 var errorMessage = string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToDownloadRClient, downloadError);
                 coreShell.ShowErrorMessage(errorMessage);
                 coreShell.TelemetryService.ReportEvent(TelemetryArea.Configuration, RtvsTelemetry.ConfigurationEvents.RClientDownloadFailed, errorMessage);
-                Logger.Current.WriteAsync(LogLevel.Minimal, MessageCategory.Error, "Microsoft R Client download error: " + errorMessage).DoNotWait();
+                coreShell.Logger.WriteAsync(LogLevel.Minimal, MessageCategory.Error, "Microsoft R Client download error: " + errorMessage).DoNotWait();
             } else {
                 // Suppress 'Operation canceled by the user' if user clicks 'No' to elevation dialog.
                 try {

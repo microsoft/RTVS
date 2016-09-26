@@ -39,7 +39,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO {
 
                 _taskScheduler = new ControlledTaskScheduler(SynchronizationContext.Current);
 
-                _fileSystemWatcher = new MsBuildFileSystemWatcher(ProjectDirectory, "*", 50, 50, _fileSystem, _fileSystemFilter, _taskScheduler, Substitute.For<IActionLog>());
+                _fileSystemWatcher = new MsBuildFileSystemWatcher(ProjectDirectory, "*", 50, 50, _fileSystem, _fileSystemFilter, Substitute.For<IActionLog>(), _taskScheduler);
                 _taskScheduler.Link(_fileSystemWatcher.SourceBlock, c => { _changeset = c; });
 
                 _fileSystemWatcher.Start();

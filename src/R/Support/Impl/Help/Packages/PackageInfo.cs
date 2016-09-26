@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Help.Functions;
 using Newtonsoft.Json.Linq;
@@ -56,7 +57,7 @@ namespace Microsoft.R.Support.Help.Packages {
                     }
                     _saved = true;
                 } catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException) {
-                    Logger.Current.WriteAsync(LogLevel.Normal, MessageCategory.Error, ex.Message).DoNotWait();
+                    EditorShell.Current.Logger.WriteAsync(LogLevel.Normal, MessageCategory.Error, ex.Message).DoNotWait();
                 }
             }
         }

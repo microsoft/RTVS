@@ -923,4 +923,16 @@ Additional information:
   <data name="Settings_LogLevel_Description" xml:space="preserve">
     <value>Defines what events are logged for diagnostic purposes. None disables logging completely. Minimal enables OS Application log. Normal also creates log file with extended information in the TEMP folder. No private or secure data is recorded. Traffic settings enables recording of complete data exchange in the session, incuding interactive commands and potentially secure or private data.</value>
   </data>
+  <data name="LoggingLevel_Minimal" xml:space="preserve">
+    <value>Minimal</value>
+  </data>
+  <data name="LoggingLevel_None" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="LoggingLevel_Normal" xml:space="preserve">
+    <value>Normal</value>
+  </data>
+  <data name="LoggingLevel_Traffic" xml:space="preserve">
+    <value>Traffic</value>
+  </data>
 </root>

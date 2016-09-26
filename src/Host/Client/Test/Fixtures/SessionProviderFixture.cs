@@ -3,7 +3,9 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Logging;
 using Microsoft.R.Host.Client.Session;
+using NSubstitute;
 using Xunit;
 
 namespace Microsoft.R.Host.Client.Test.Fixtures {
@@ -13,7 +15,7 @@ namespace Microsoft.R.Host.Client.Test.Fixtures {
         public IRSessionProvider SessionProvider { get; }
 
         public SessionProviderFixture() {
-            SessionProvider = new RSessionProvider();
+            SessionProvider = new RSessionProvider(Substitute.For<IActionLog>());
         }
 
         public async Task InitializeAsync() {

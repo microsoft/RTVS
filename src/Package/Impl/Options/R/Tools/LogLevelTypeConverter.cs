@@ -2,34 +2,32 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Logging;
+using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
     internal sealed class LogLevelTypeConverter : TypeConverter {
-        private static readonly int[] _supportedCodePages = new int[] {
-            708,720, 737, 775,
-            850, 852, 855, 857, 860, 861, 862,
-            863, 864, 865, 866, 869, 874,
-            932, 936, 949, 950,
-            1250, 1251, 1252, 1253,1254, 1255, 1256, 1257, 1258,
-            20000, 20127, 20866, 20932, 20936, 20949, 21866,
-            28591, 28592, 28593, 28594, 28595, 28596, 28597,
-            28598, 28599, 28603, 28605,
-            38598
+        private static readonly string[] _permittedSettings = new string[] {
+            Resources.LoggingLevel_None,
+            Resources.LoggingLevel_Minimal,
+            Resources.LoggingLevel_Normal,
+            Resources.LoggingLevel_Traffic
         };
+        private readonly int _maxLogLevel;
+
+        public LogLevelTypeConverter() {
+            var permissions = VsAppShell.Current.ExportProvider.GetExportedValue<ILoggingPermissions>();
+            _maxLogLevel = (int)permissions.MaxLogLevel;
+        }
 
         public override bool GetStandardValuesSupported(ITypeDescriptorContext context) => true;
 
         public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context) {
-            var encodings = _supportedCodePages.Select(cp => Encoding.GetEncoding(cp));
-            var codePages = encodings.OrderBy(e => e.EncodingName).Select(e => e.CodePage).ToList();
-            codePages.Insert(0, 0);
-            return new StandardValuesCollection(codePages);
+            return new StandardValuesCollection(_permittedSettings.Take(_maxLogLevel+1).ToList());
         }
 
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType) {
@@ -37,15 +35,10 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
         }
 
         /// <summary>
-        /// Converts encoding name to code page
+        /// Converts logging level name to the enumerated value
         /// </summary>
         public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value) {
-            if (value.GetType() == typeof(string)) {
-                return ConvertToCodePage(value as string);
-            } else if (value.GetType() == typeof(int)) {
-                return ConvertToEncodingName((int)value);
-            }
-            return null;
+            return Convert(value);
         }
 
         public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType) {
@@ -53,28 +46,27 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
         }
 
         /// <summary>
-        /// Converts code page number to the user-friendly encoding name
+        /// Converts logging level to a user-friendly display name
         /// </summary>
         public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType) {
+            return Convert(value);
+        }
+
+        private object Convert(object value) {
             if (value.GetType() == typeof(string)) {
-                return ConvertToCodePage(value as string);
+                return ConvertToLevel(value as string);
             } else if (value.GetType() == typeof(int)) {
-                return ConvertToEncodingName((int)value);
+                return ConvertToName((int)value);
             }
             return null;
         }
-
-        private int ConvertToCodePage(string encodingName) {
-            if (encodingName.EqualsOrdinal(Resources.Settings_DefaultValue)) {
-                return 0;
-            }
-            var enc = Encoding.GetEncodings().FirstOrDefault(e => e.DisplayName.EqualsOrdinal(encodingName));
-            return enc != null ? enc.CodePage : 0;
+        private int? ConvertToLevel(string name) {
+            var index = _permittedSettings.IndexWhere(s => s.EqualsOrdinal(name));
+            return index.Any() ? index.First() : (int?)null;
         }
 
-        private string ConvertToEncodingName(int codePage) {
-            var enc = Encoding.GetEncodings().FirstOrDefault(e => e.CodePage == codePage);
-            return enc != null ? enc.DisplayName : Resources.Settings_DefaultValue;
+        private string ConvertToName(int level) {
+            return level >= 0 && level < _permittedSettings.Length ? _permittedSettings[level] : null;
         }
     }
 }

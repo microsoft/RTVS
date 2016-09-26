@@ -9,6 +9,7 @@ using Microsoft.Common.Core.Logging;
 using Microsoft.Office.Interop.Outlook;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Interop;
+using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Feedback {
     internal class SendMailCommand : PackageCommand {
@@ -34,7 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
             try {
                 outlookApp = new Application();
             } catch (System.Exception ex) {
-                Logger.Current.WriteAsync(LogLevel.Normal, MessageCategory.Error, "Unable to start Outlook: " + ex.Message).DoNotWait();
+                VsAppShell.Current.Logger.WriteAsync(LogLevel.Normal, MessageCategory.Error, "Unable to start Outlook: " + ex.Message).DoNotWait();
             }
 
             if (outlookApp == null) {
@@ -60,7 +61,7 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
                     mail.To = "rtvsuserfeedback@microsoft.com";
                     mail.Display(Modal: false);
                 } catch (System.Exception ex) {
-                    Logger.Current.WriteAsync(LogLevel.Normal, MessageCategory.Error, "Error composing Outlook e-mail: " + ex.Message).DoNotWait();
+                    VsAppShell.Current.Logger.WriteAsync(LogLevel.Normal, MessageCategory.Error, "Error composing Outlook e-mail: " + ex.Message).DoNotWait();
                 }
             }
         }

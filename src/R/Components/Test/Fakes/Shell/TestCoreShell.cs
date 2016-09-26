@@ -9,10 +9,12 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Wpf.Threading;
 using Microsoft.UnitTests.Core.Threading;
+using NSubstitute;
 
 namespace Microsoft.R.Components.Test.Fakes.Shell {
     [ExcludeFromCodeCoverage]
@@ -69,18 +71,16 @@ namespace Microsoft.R.Components.Test.Fakes.Shell {
         public void UpdateCommandStatus(bool immediate) { }
 
         public int LocaleId => 1033;
-
         public string LastShownMessage { get; private set; }
         public string LastShownErrorMessage { get; private set; }
         public CommandID LastShownContextMenu { get; private set; }
         public string OpenFilePath { get; set; }
         public string BrowseDirectoryPath { get; set; }
         public string SaveFilePath { get; set; }
-        public ITelemetryService TelemetryService { get; }
-
         public bool IsUnitTestEnvironment => true;
-
-        public IntPtr ApplicationWindowHandle { get; }
+        public ITelemetryService TelemetryService => Substitute.For<ITelemetryService>();
+        public IntPtr ApplicationWindowHandle => IntPtr.Zero;
+        public IActionLog Logger => Substitute.For<IActionLog>();
 
         #region IMainThread
         public int ThreadId => MainThread.ManagedThreadId;

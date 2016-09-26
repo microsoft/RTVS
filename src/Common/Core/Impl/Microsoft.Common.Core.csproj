@@ -54,7 +54,9 @@
     <Compile Include="Extensions\MathExtensions.cs" />
     <Compile Include="Extensions\StreamExtensions.cs" />
     <Compile Include="IO\KnownFolderGuids.cs" />
+    <Compile Include="Logging\ILoggingServices.cs" />
     <Compile Include="Logging\ILoggingPermissions.cs" />
+    <Compile Include="Logging\Implementation\LoggerProvider.cs" />
     <Compile Include="Logging\Implementation\NullLogWriter.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Logging\Implementation\ApplicationLogWriter.cs" />

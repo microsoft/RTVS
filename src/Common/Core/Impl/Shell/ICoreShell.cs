@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel.Design;
 using System.Threading;
+using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Telemetry;
 
 namespace Microsoft.Common.Core.Shell {
@@ -115,6 +116,14 @@ namespace Microsoft.Common.Core.Shell {
         /// </summary>
         bool IsUnitTestEnvironment { get; }
 
+        /// <summary>
+        /// Application top level window handle. Typically used as a parent for native dialogs.
+        /// </summary>
         IntPtr ApplicationWindowHandle { get; }
+
+        /// <summary>
+        /// Application event logging service
+        /// </summary>
+        IActionLog Logger { get; }
     }
 }

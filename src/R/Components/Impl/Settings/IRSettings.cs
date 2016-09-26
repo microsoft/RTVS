@@ -1,11 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.ComponentModel;
 using Microsoft.Common.Core.Logging;
 using Microsoft.R.Components.ConnectionManager;
 
 namespace Microsoft.R.Components.Settings {
-    public interface IRSettings {
+    public interface IRSettings: INotifyPropertyChanged {
         bool AlwaysSaveHistory { get; set; }
         bool ClearFilterOnAddHistory { get; set; }
         bool MultilineHistorySelection { get; set; }

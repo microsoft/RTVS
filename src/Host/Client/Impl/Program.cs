@@ -18,11 +18,13 @@ namespace Microsoft.R.Host.Client {
 
         static void Main(string[] args) {
             Console.CancelKeyPress += Console_CancelKeyPress;
-            Logger.Open("Microsoft.R.Host.Client", LogLevel.Traffic);
-            var localConnector = new LocalBrokerClient("Program", args[0], Logger.Current);
-            var host = localConnector.ConnectAsync("Program", new Program()).GetAwaiter().GetResult();
-            _evaluator = host;
-            host.Run().GetAwaiter().GetResult();
+
+            using (var logger = new Logger("Program", LogLevel.Traffic, FileLogWriter.InTempFolder("Microsoft.R.Host.Client.Program"))) {
+                var localConnector = new LocalBrokerClient("Program", args[0], logger);
+                var host = localConnector.ConnectAsync("Program", new Program()).GetAwaiter().GetResult();
+                _evaluator = host;
+                host.Run().GetAwaiter().GetResult();
+            }
         }
 
         private static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e) {

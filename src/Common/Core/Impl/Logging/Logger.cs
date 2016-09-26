@@ -9,58 +9,54 @@ namespace Microsoft.Common.Core.Logging {
     /// <summary>
     /// Application event logger
     /// </summary>
-    public sealed class Logger : IActionLog {
-        private static Logger _instance;
-
-        private readonly IActionLogWriter[] _logs = new IActionLogWriter[Enum.GetValues(typeof(LogLevel)).Length];
+    internal sealed class Logger : IActionLog, IDisposable {
+        private IActionLogWriter[] _logs;
         private readonly LogLevel _maxLogLevel;
+        private readonly string _appName;
+        private readonly IActionLogWriter _writer;
 
-        public static IActionLog Current {
-            get {
-                if (_instance == null) {
-                    throw new InvalidOperationException("Log is not open yet");
-                }
-                return _instance;
-            }
-        }
-
-        public static void Open(string appName, LogLevel maxLogLevel) {
-            if (_instance != null) {
-                throw new InvalidOperationException("Log is already open");
-            }
-            _instance = new Logger(appName, maxLogLevel, null);
-        }
-
-        public static void Close() {
-            foreach (var log in _instance._logs) {
+        public void Dispose() {
+            foreach (var log in _logs) {
                 (log as IDisposable)?.Dispose();
             }
         }
 
         internal Logger(string appName, LogLevel maxLogLevel, IActionLogWriter writer) {
+            _appName = appName;
             _maxLogLevel = maxLogLevel;
+            _writer = writer;
+        }
 
-            _logs[(int)LogLevel.None] = NullLogWriter.Instance;
-            _logs[(int)LogLevel.Minimal] = maxLogLevel >= LogLevel.Minimal ? (writer ?? new ApplicationLogWriter(appName)) : NullLogWriter.Instance;
-            _logs[(int)LogLevel.Normal] = maxLogLevel >= LogLevel.Normal  ? (writer ?? FileLogWriter.InTempFolder(appName)) : NullLogWriter.Instance;
-            _logs[(int)LogLevel.Traffic] = maxLogLevel == LogLevel.Traffic ? (writer ?? FileLogWriter.InTempFolder(appName + ".traffic")) : NullLogWriter.Instance;
+        private void EnsureCreated() {
+            // Delay-create log since permission is established when settings are loaded
+            // which may happen after ctor is called.
+            if (_logs == null) {
+                _logs = new IActionLogWriter[Enum.GetValues(typeof(LogLevel)).Length];
+                _logs[(int)LogLevel.None] = NullLogWriter.Instance;
+                _logs[(int)LogLevel.Minimal] = _maxLogLevel >= LogLevel.Minimal ? (_writer ?? new ApplicationLogWriter(_appName)) : NullLogWriter.Instance;
+                _logs[(int)LogLevel.Normal] = _maxLogLevel >= LogLevel.Normal ? (_writer ?? FileLogWriter.InTempFolder(_appName)) : NullLogWriter.Instance;
+                _logs[(int)LogLevel.Traffic] = _maxLogLevel == LogLevel.Traffic ? (_writer ?? FileLogWriter.InTempFolder(_appName + ".traffic")) : NullLogWriter.Instance;
+            }
         }
 
         #region IActionLog
         public Task WriteAsync(LogLevel logLevel, MessageCategory category, string message) {
+            EnsureCreated();
             return _logs[(int)logLevel].WriteAsync(category, message);
         }
         public Task WriteFormatAsync(LogLevel logLevel, MessageCategory category, string format, params object[] arguments) {
+            EnsureCreated();
             string message = string.Format(CultureInfo.InvariantCulture, format, arguments);
             return _logs[(int)logLevel].WriteAsync(category, message);
         }
         public Task WriteLineAsync(LogLevel logLevel, MessageCategory category, string message) {
+            EnsureCreated();
             return _logs[(int)logLevel].WriteAsync(category, message + Environment.NewLine);
         }
 
         public void Flush() {
             foreach (var l in _logs) {
-                l.Flush();
+                l?.Flush();
             }
         }
         #endregion

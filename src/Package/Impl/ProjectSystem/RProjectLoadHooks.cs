@@ -72,7 +72,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             , IRToolsSettings toolsSettings
             , IThreadHandling threadHandling
             , ISurveyNewsService surveyNews
-            , [Import(AllowDefault = true)] IProjectItemDependencyProvider dependencyProvider) {
+            , [Import(AllowDefault = true)] IProjectItemDependencyProvider dependencyProvider
+            , ICoreShell coreShell) {
 
             _unconfiguredProject = unconfiguredProject;
             _cpsIVsProjects = cpsIVsProjects;
@@ -87,9 +88,9 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             _projectDirectory = unconfiguredProject.GetProjectDirectory();
 
             unconfiguredProject.ProjectUnloading += ProjectUnloading;
-            _fileWatcher = new MsBuildFileSystemWatcher(_projectDirectory, "*", 25, 1000, _fileSystem, new RMsBuildFileSystemFilter());
+            _fileWatcher = new MsBuildFileSystemWatcher(_projectDirectory, "*", 25, 1000, _fileSystem, new RMsBuildFileSystemFilter(), coreShell.Logger);
             _fileWatcher.Error += FileWatcherError;
-            Project = new FileSystemMirroringProject(unconfiguredProject, projectLockService, _fileWatcher, _dependencyProvider);
+            Project = new FileSystemMirroringProject(unconfiguredProject, projectLockService, _fileWatcher, _dependencyProvider, coreShell.Logger);
         }
 
         [AppliesTo(ProjectConstants.RtvsProjectCapability)]
@@ -155,7 +156,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             try {
                 await _surveyNews.CheckSurveyNewsAsync(false);
             } catch (Exception ex) when (!ex.IsCriticalException()) {
-                Logger.Current.WriteAsync(LogLevel.Normal, MessageCategory.Error, "SurveyNews exception: " + ex.Message).DoNotWait();
+                VsAppShell.Current.Logger.WriteAsync(LogLevel.Normal, MessageCategory.Error, "SurveyNews exception: " + ex.Message).DoNotWait();
             }
         }
 

@@ -7,14 +7,15 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Logging;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
-using Microsoft.R.Host.Client.Test.Fixtures;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 using Microsoft.VisualStudio.R.Package.DataInspect;
 using Microsoft.VisualStudio.R.Package.DataInspect.DataSource;
+using NSubstitute;
 using Xunit;
 
 namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
@@ -35,7 +36,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
 
         public GridDataTest(TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo;
-            _sessionProvider = new RSessionProvider();
+            _sessionProvider = new RSessionProvider(Substitute.For<IActionLog>());
             _session = _sessionProvider.GetOrCreate(Guid.NewGuid());
         }
 

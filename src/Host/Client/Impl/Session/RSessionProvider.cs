@@ -37,10 +37,10 @@ namespace Microsoft.R.Host.Client.Session {
         public event EventHandler BrokerChanged;
         public event EventHandler<BrokerStateChangedEventArgs> BrokerStateChanged;
 
-        public RSessionProvider(IRSessionProviderCallback callback = null, IActionLog log = null) {
+        public RSessionProvider(IActionLog log, IRSessionProviderCallback callback = null) {
             _callback = callback ?? new NullRSessionProviderCallback();
             _brokerProxy = new BrokerClientProxy(_connectCde);
-            _log = log ?? Logger.Current;
+            _log = log;
         }
 
         public IRSession GetOrCreate(Guid guid) {

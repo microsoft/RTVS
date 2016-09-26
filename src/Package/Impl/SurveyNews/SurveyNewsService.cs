@@ -9,6 +9,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
 using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.VisualStudio.R.Package.Browsers;
+using Microsoft.VisualStudio.R.Package.Shell;
 using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.SurveyNews {
@@ -83,7 +84,7 @@ namespace Microsoft.VisualStudio.R.Package.SurveyNews {
                     url = _options.IndexUrl;
                 }
             } catch (Exception ex) when (!ex.IsCriticalException()) {
-                Logger.Current.WriteAsync(LogLevel.Normal, MessageCategory.Error, "SurveyNews exception: " + ex.Message).DoNotWait();
+                VsAppShell.Current.Logger.WriteAsync(LogLevel.Normal, MessageCategory.Error, "SurveyNews exception: " + ex.Message).DoNotWait();
                 if (forceCheck) {
                     url = _options.CannotConnectUrl;
                 }
@@ -94,7 +95,7 @@ namespace Microsoft.VisualStudio.R.Package.SurveyNews {
                     _browserServices.OpenBrowser(WebBrowserRole.News, url, onIdle: !forceCheck);
                 }
             } catch (Exception ex) when (!ex.IsCriticalException()) {
-                Logger.Current.WriteAsync(LogLevel.Normal, MessageCategory.Error, "SurveyNews exception: " + ex.Message).DoNotWait();
+                VsAppShell.Current.Logger.WriteAsync(LogLevel.Normal, MessageCategory.Error, "SurveyNews exception: " + ex.Message).DoNotWait();
             }
         }
     }

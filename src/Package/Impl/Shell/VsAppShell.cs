@@ -10,6 +10,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Threading;
+using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Wpf.Threading;
@@ -24,7 +25,6 @@ using Microsoft.R.Components.Extensions;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Interop;
-using Microsoft.VisualStudio.R.Package.Telemetry;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -49,6 +49,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private static IApplicationShell _testShell;
         private IdleTimeSource _idleTimeSource;
         private IWritableSettingsStorage _settingStorage;
+        private ILoggingServices _loggingServices;
 
         public static void EnsureInitialized() {
             ThreadHelper.ThrowIfNotOnUIThread();
@@ -67,6 +68,10 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             _idleTimeSource.OnTerminateApp += OnTerminateApp;
 
             EditorShell.Current = this;
+
+            _loggingServices = ExportProvider.GetExportedValue<ILoggingServices>();
+            var loggingPermissions = ExportProvider.GetExportedValue<ILoggingPermissions>();
+            Logger = _loggingServices.Open("RTVS");
         }
 
         /// <summary>
@@ -165,7 +170,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             }
         }
 
-
         private Dispatcher MainThreadDispatcher { get; set; }
 
         /// <summary>
@@ -249,13 +253,13 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         public string SaveFileIfDirty(string fullPath) =>
             new RunningDocumentTable(RPackage.Current).SaveFileIfDirty(fullPath);
 
-        public string ShowOpenFileDialog(string filter, string initialPath = null, string title = null) 
+        public string ShowOpenFileDialog(string filter, string initialPath = null, string title = null)
             => BrowseForFileOpen(IntPtr.Zero, filter, initialPath, title);
 
         public string ShowBrowseDirectoryDialog(string initialPath = null, string title = null)
             => VisualStudioTools.Dialogs.BrowseForDirectory(this.GetDialogOwnerWindow(), initialPath, title);
 
-        public string ShowSaveFileDialog(string filter, string initialPath = null, string title = null) 
+        public string ShowSaveFileDialog(string filter, string initialPath = null, string title = null)
             => BrowseForFileSave(IntPtr.Zero, filter, initialPath, title);
 
         public void UpdateCommandStatus(bool immediate) {
@@ -278,6 +282,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             }
         }
 
+        public IActionLog Logger { get; private set; }
         #endregion
 
         #region IIdleTimeService
@@ -436,6 +441,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         #endregion
 
         public void Dispose() {
+            _loggingServices?.Dispose();
         }
 
         void OnIdle(object sender, EventArgs args) {

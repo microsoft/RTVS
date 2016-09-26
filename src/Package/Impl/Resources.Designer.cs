@@ -747,6 +747,42 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Minimal.
+        /// </summary>
+        public static string LoggingLevel_Minimal {
+            get {
+                return ResourceManager.GetString("LoggingLevel_Minimal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to None.
+        /// </summary>
+        public static string LoggingLevel_None {
+            get {
+                return ResourceManager.GetString("LoggingLevel_None", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Normal.
+        /// </summary>
+        public static string LoggingLevel_Normal {
+            get {
+                return ResourceManager.GetString("LoggingLevel_Normal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Traffic.
+        /// </summary>
+        public static string LoggingLevel_Traffic {
+            get {
+                return ResourceManager.GetString("LoggingLevel_Traffic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Processing Item {0} of {1}.
         /// </summary>
         public static string LongOperationProgressMessage1 {

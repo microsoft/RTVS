@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -135,5 +136,8 @@ namespace Microsoft.R.Support.Test.Utility {
             get { return LogLevel.None; }
             set { }
         }
+
+#pragma warning disable 67
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

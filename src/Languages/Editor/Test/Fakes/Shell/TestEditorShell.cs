@@ -8,6 +8,7 @@ using System.ComponentModel.Design;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Wpf.Threading;
@@ -17,6 +18,7 @@ using Microsoft.R.Components.Controller;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using NSubstitute;
 
 namespace Microsoft.Languages.Editor.Test.Fakes.Shell {
     public class TestEditorShell : IEditorShell, IMainThread {
@@ -72,8 +74,9 @@ namespace Microsoft.Languages.Editor.Test.Fakes.Shell {
         public string OpenFilePath { get; set; }
         public string BrowseDirectoryPath { get; set; }
         public string SaveFilePath { get; set; }
-        public ITelemetryService TelemetryService { get; }
-        public IntPtr ApplicationWindowHandle { get; }
+        public ITelemetryService TelemetryService => Substitute.For<ITelemetryService>();
+        public IntPtr ApplicationWindowHandle => IntPtr.Zero;
+        public IActionLog Logger => Substitute.For<IActionLog>();
 
         #region IMainThread
         public int ThreadId => MainThread.ManagedThreadId;
