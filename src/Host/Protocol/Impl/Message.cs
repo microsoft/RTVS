@@ -5,13 +5,14 @@ using System;
 using System.Text;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime;
+using System.Security.Cryptography;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 
 namespace Microsoft.R.Host.Protocol {
     public class Message {
+        private static readonly MD5 _hash = MD5.Create();
         public readonly ulong Id;
         public readonly ulong RequestId;
         public readonly string Name;
@@ -92,7 +93,14 @@ namespace Microsoft.R.Host.Protocol {
                 result += $":#{RequestId}#";
             }
 
-            var blobString = BitConverter.ToString(Blob);
+            string blobString = string.Empty;
+            if (Blob.Length > 100) {
+                var hashString = BitConverter.ToString(_hash.ComputeHash(Blob));
+                blobString = $"<blob length=\"{Blob.Length}\" md5=\"{hashString}\" />";
+            } else {
+                blobString = $"<blob content=\"{BitConverter.ToString(Blob)}\" />";
+            }
+            
             result += $" {Name} {Json} {blobString}";
             return result;
         }
