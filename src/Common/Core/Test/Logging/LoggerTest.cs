@@ -22,20 +22,27 @@ namespace Microsoft.Common.Core.Test.Logging {
             var writer = Substitute.For<IActionLogWriter>();
 
             var log = new Logger(string.Empty, level, writer);
+            await log.WriteAsync(LogLevel.None, MessageCategory.Error, "message0");
             await log.WriteAsync(LogLevel.Minimal, MessageCategory.Error, "message1");
-            await log.WriteFormatAsync(LogLevel.Normal, MessageCategory.Error, "message2");
-            await log.WriteLineAsync(LogLevel.Traffic, MessageCategory.Error, "message3");
+            await log.WriteAsync(LogLevel.Normal, MessageCategory.Error, "message2");
+            await log.WriteAsync(LogLevel.Traffic, MessageCategory.Error, "message3");
 
-            for(int i = 0; i < (int)level; i++) {
-                await writer.DidNotReceive().WriteAsync(Arg.Any<MessageCategory>(), Arg.Any<string>());
-            }
-            for (int i = (int)level; i < (int)Enum.GetValues(typeof(LogLevel)).Length; i++) {
-                await writer.Received().WriteAsync(MessageCategory.Error, "message" + i.ToString());
+            int i = 0;
+            foreach(var v in Enum.GetValues(typeof(LogLevel))) {
+                if ((int)v > (int)LogLevel.None && (int)v <= (int)level) {
+                    await writer.Received().WriteAsync(MessageCategory.Error, "message" + i.ToString());
+                } else {
+                    await writer.DidNotReceive().WriteAsync(MessageCategory.Error, "message" + i.ToString());
+                }
+                i++;
             }
 
             writer.DidNotReceive().Flush();
-            log.Flush();
-            writer.Received().Flush();
+
+            if (level > LogLevel.None) {
+                log.Flush();
+                writer.Received().Flush();
+            }
         }
     }
 }

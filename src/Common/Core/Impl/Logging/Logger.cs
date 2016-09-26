@@ -13,7 +13,7 @@ namespace Microsoft.Common.Core.Logging {
         private static Logger _instance;
 
         private readonly IActionLogWriter[] _logs = new IActionLogWriter[Enum.GetValues(typeof(LogLevel)).Length];
-        private readonly LogLevel _details;
+        private readonly LogLevel _maxLogLevel;
 
         public static IActionLog Current {
             get {
@@ -24,11 +24,11 @@ namespace Microsoft.Common.Core.Logging {
             }
         }
 
-        public static void Open(string appName, LogLevel details) {
+        public static void Open(string appName, LogLevel maxLogLevel) {
             if (_instance != null) {
                 throw new InvalidOperationException("Log is already open");
             }
-            _instance = new Logger(appName, details, null);
+            _instance = new Logger(appName, maxLogLevel, null);
         }
 
         public static void Close() {
@@ -37,13 +37,13 @@ namespace Microsoft.Common.Core.Logging {
             }
         }
 
-        internal Logger(string appName, LogLevel details, IActionLogWriter writer) {
-            _details = details;
+        internal Logger(string appName, LogLevel maxLogLevel, IActionLogWriter writer) {
+            _maxLogLevel = maxLogLevel;
 
             _logs[(int)LogLevel.None] = NullLogWriter.Instance;
-            _logs[(int)LogLevel.Minimal] = writer ?? (_details >= LogLevel.Minimal ? new ApplicationLogWriter(appName) : NullLogWriter.Instance);
-            _logs[(int)LogLevel.Normal] = writer ?? (_details >= LogLevel.Normal ? FileLogWriter.InTempFolder(appName) : NullLogWriter.Instance);
-            _logs[(int)LogLevel.Traffic] = writer ?? (details == LogLevel.Traffic ? FileLogWriter.InTempFolder(appName + ".traffic") : NullLogWriter.Instance);
+            _logs[(int)LogLevel.Minimal] = maxLogLevel >= LogLevel.Minimal ? (writer ?? new ApplicationLogWriter(appName)) : NullLogWriter.Instance;
+            _logs[(int)LogLevel.Normal] = maxLogLevel >= LogLevel.Normal  ? (writer ?? FileLogWriter.InTempFolder(appName)) : NullLogWriter.Instance;
+            _logs[(int)LogLevel.Traffic] = maxLogLevel == LogLevel.Traffic ? (writer ?? FileLogWriter.InTempFolder(appName + ".traffic")) : NullLogWriter.Instance;
         }
 
         #region IActionLog
