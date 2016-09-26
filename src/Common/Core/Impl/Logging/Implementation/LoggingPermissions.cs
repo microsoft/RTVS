@@ -36,10 +36,11 @@ namespace Microsoft.Common.Core.Logging {
         private LogLevel? _registryLogLevel;
         private int? _registryFeedbackSetting;
 
-        public LoggingPermissions(IApplicationConstants appConstants, ITelemetryService telemetryService, IRegistry registry) {
+        [ImportingConstructor]
+        public LoggingPermissions(IApplicationConstants appConstants, ITelemetryService telemetryService, [Import(AllowDefault = true)] IRegistry registry) {
             _appConstants = appConstants;
             _telemetryService = telemetryService;
-            _registry = registry;
+            _registry = registry ?? new RegistryImpl();
 
             _registryLogLevel = GetLogLevelFromRegistry();
             _registryFeedbackSetting = GetFeedbackFromRegistry();
@@ -88,8 +89,8 @@ namespace Microsoft.Common.Core.Logging {
             using (var hlkm = _registry.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32)) {
                 try {
                     using (var key = hlkm.OpenSubKey(_appConstants.LocalMachineHive)) {
-                        var value = (int)key.GetValue(name);
-                        if (value >= minValue && value <= maxValue) {
+                        var value = (int?)key.GetValue(name);
+                        if (value.HasValue && value.Value >= minValue && value.Value <= maxValue) {
                             return value;
                         }
                     }

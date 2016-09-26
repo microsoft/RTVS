@@ -22,16 +22,13 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
     internal static class DiagnosticLogs {
         public const int DaysToRetain = 5;
         public const int MaximumFileSize = 1024 * 1024;
-        public const string GeneralLogPattern = "Microsoft.R.General*.log";
-        public const string RHostLogPattern = "Microsoft.R.Host*.log";
-        public const string ProjectSystemLogPattern = "Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring*.log";
+        public const string GeneralLogPattern = "RTVS*.log";
         public const string RtvsGeneralDataFile = "RTVSGeneralData.log";
         public const string RtvsSystemEventsFile = "RTVSSystemEvents.log";
         public const string RtvsLogZipFile = "RTVSLogs.zip";
 
         public static IEnumerable<string> RtvsLogFilePatterns => new [] {
-            RHostLogPattern,
-            ProjectSystemLogPattern,
+            GeneralLogPattern,
             RtvsGeneralDataFile,
             RtvsSystemEventsFile,
             RtvsLogZipFile
@@ -75,12 +72,6 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
             IEnumerable<string> logs;
 
             logs = GetRecentLogFiles(GeneralLogPattern);
-            _logFiles.AddRange(logs);
-
-            logs = GetRecentLogFiles(RHostLogPattern);
-            _logFiles.AddRange(logs);
-
-            logs = GetRecentLogFiles(ProjectSystemLogPattern);
             _logFiles.AddRange(logs);
 
             string roamingFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);

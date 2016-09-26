@@ -3,18 +3,16 @@
 
 using System.Globalization;
 using System.IO;
+using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.OS;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Logging;
 using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Feedback {
     internal sealed class SendFrownCommand : SendMailCommand {
-        public SendFrownCommand() :
-            base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSendFrown) {
-        }
-
-        protected override void SetStatus() {
-            Enabled = true;
+        public SendFrownCommand(ILoggingPermissions permissions, IProcessServices pss, IActionLog log) :
+            base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSendFrown, permissions, pss, log) {
         }
 
         protected override void Handle() {

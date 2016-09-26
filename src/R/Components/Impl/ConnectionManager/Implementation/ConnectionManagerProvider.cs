@@ -3,6 +3,7 @@
 
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.StatusBar;
@@ -15,10 +16,10 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         private readonly IActionLog _log;
 
         [ImportingConstructor]
-        public ConnectionManagerProvider(IStatusBar statusBar, IRSettings settings, IActionLog log) {
+        public ConnectionManagerProvider(IStatusBar statusBar, IRSettings settings, ICoreShell coreShell) {
             _statusBar = statusBar;
             _settings = settings;
-            _log = log;
+            _log = coreShell.Logger;
         }
 
         public IConnectionManager CreateConnectionManager(IRInteractiveWorkflow interactiveWorkflow) {

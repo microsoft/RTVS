@@ -33,8 +33,14 @@ namespace Microsoft.Common.Core.Logging {
             if (_logs == null) {
                 _logs = new IActionLogWriter[Enum.GetValues(typeof(LogLevel)).Length];
                 _logs[(int)LogLevel.None] = NullLogWriter.Instance;
-                _logs[(int)LogLevel.Minimal] = _maxLogLevel >= LogLevel.Minimal ? (_writer ?? new ApplicationLogWriter(_appName)) : NullLogWriter.Instance;
-                _logs[(int)LogLevel.Normal] = _maxLogLevel >= LogLevel.Normal ? (_writer ?? FileLogWriter.InTempFolder(_appName)) : NullLogWriter.Instance;
+
+                var mainWriter = _maxLogLevel >= LogLevel.Normal ? (_writer ?? FileLogWriter.InTempFolder(_appName)) : NullLogWriter.Instance;
+                // Unfortunately, creation of event sources in OS logs requires local admin rights.
+                // http://www.christiano.ch/wordpress/2009/12/02/iis7-web-application-writing-to-event-log-generates-security-exception/
+                // So we can't use OS event logs as in Dev15 there is no MSI which could elevate..
+                // _maxLogLevel >= LogLevel.Minimal ? (_writer ?? new ApplicationLogWriter(_appName)) : NullLogWriter.Instance;
+                _logs[(int)LogLevel.Minimal] = mainWriter;
+                _logs[(int)LogLevel.Normal] = mainWriter;
                 _logs[(int)LogLevel.Traffic] = _maxLogLevel == LogLevel.Traffic ? (_writer ?? FileLogWriter.InTempFolder(_appName + ".traffic")) : NullLogWriter.Instance;
             }
         }

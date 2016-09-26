@@ -1,6 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
-
+#if _NOT_
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -11,15 +11,19 @@ namespace Microsoft.Common.Core.Logging {
     /// Represents OS Application event log
     /// </summary>
     public sealed class ApplicationLogWriter : IActionLogWriter, IDisposable {
-        private const string _root = @"Microsoft\R Tools\";
-        private readonly string _applicationName;
+        private const string _root = @"Microsoft/";
         private readonly EventLog _eventLog;
 
         public ApplicationLogWriter(string applicationName) {
             Check.ArgumentStringNullOrEmpty(nameof(applicationName), applicationName);
 
-            var source = _root + applicationName;
-            _eventLog = new EventLog(_applicationName, source);
+            var logName = _root + applicationName;
+            try {
+                EventLog.CreateEventSource(applicationName, logName);
+            } catch (Exception) { }
+
+            _eventLog = new EventLog();
+            _eventLog.Source = applicationName;
         }
 
         public void Dispose() {
@@ -45,3 +49,4 @@ namespace Microsoft.Common.Core.Logging {
         }
     }
 }
+#endif

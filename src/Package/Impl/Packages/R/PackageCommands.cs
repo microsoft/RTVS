@@ -4,6 +4,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Design;
+using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.OS;
 using Microsoft.R.Components.ConnectionManager.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Commands;
@@ -48,6 +50,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             var wbs = exportProvider.GetExportedValue<IWebBrowserServices>();
             var pcsp = exportProvider.GetExportedValue<IProjectConfigurationSettingsProvider>();
             var dbcs = exportProvider.GetExportedValue<IDbConnectionService>();
+            var logPerms = exportProvider.GetExportedValue<ILoggingPermissions>();
 
             return new List<MenuCommand> {
                 new GoToOptionsCommand(),
@@ -58,9 +61,9 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new SurveyNewsCommand(),
                 new SetupRemoteCommand(),
 
-                new ReportIssueCommand(),
-                new SendSmileCommand(),
-                new SendFrownCommand(),
+                new ReportIssueCommand(logPerms, ProcessServices.Current),
+                new SendSmileCommand(logPerms, ProcessServices.Current, appShell.Logger),
+                new SendFrownCommand(logPerms, ProcessServices.Current, appShell.Logger),
 
                 new OpenDocumentationCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdRtvsDocumentation, DocumentationUrls.RtvsDocumentation),
                 new OpenDocumentationCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdRtvsSamples, DocumentationUrls.RtvsSamples),
