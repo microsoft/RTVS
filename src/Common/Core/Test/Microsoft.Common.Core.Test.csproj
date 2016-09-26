@@ -55,6 +55,7 @@
     <Compile Include="Disposables\DisposableTest.cs" />
     <Compile Include="EnumerableExtensionsTest.cs" />
     <Compile Include="Extensions\IOExtensionsTest.cs" />
+    <Compile Include="Logging\PermissionsTest.cs" />
     <Compile Include="Logging\LoggerTest.cs" />
     <Compile Include="Match\MatchElements.cs" />
     <Compile Include="Match\MatchNull.cs" />

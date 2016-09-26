@@ -194,12 +194,14 @@
     <Compile Include="Options\PackageManager\PackageSourceOptionsPage.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Options\R\Tools\LogLevelTypeConverter.cs" />
     <Compile Include="Options\R\Tools\EncodingTypeConverter.cs" />
     <Compile Include="History\Commands\ToggleMultilineHistorySelectionCommand.cs" />
     <Compile Include="History\HistoryWindowPane.cs" />
     <Compile Include="Options\Attributes\SurveyNewsPolicyTypeConverter.cs" />
     <Compile Include="Options\R\Commands\SetupRemoteCommand.cs" />
     <Compile Include="Options\R\Commands\SurveyNewsCommand.cs" />
+    <Compile Include="Shell\ApplicationConstants.cs" />
     <Compile Include="ToolWindows\PlotHistoryWindowPane.cs" />
     <Compile Include="ProjectSystem\Commands\CopyRemoteItemPathCommand.cs" />
     <Compile Include="ProjectSystem\Commands\SetAsStartUpRScriptCommand.cs" />

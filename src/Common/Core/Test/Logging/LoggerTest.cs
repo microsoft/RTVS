@@ -14,7 +14,10 @@ namespace Microsoft.Common.Core.Test.Logging {
     [Category.Logging]
     public class LoggerTest {
         [CompositeTest]
-        [InlineData()]
+        [InlineData(LogLevel.None)]
+        [InlineData(LogLevel.Minimal)]
+        [InlineData(LogLevel.Normal)]
+        [InlineData(LogLevel.Traffic)]
         public async Task LogLevels(LogLevel level) {
             var writer = Substitute.For<IActionLogWriter>();
 

@@ -107,6 +107,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             var instance = (VsAppShell)componentModel.DefaultExportProvider.GetExportedValue<IApplicationShell>();
             instance.CompositionService = componentModel.DefaultCompositionService;
             instance.ExportProvider = componentModel.DefaultExportProvider;
+            instance.TelemetryService = instance.ExportProvider.GetExportedValue<ITelemetryService>();
+
             return Interlocked.CompareExchange(ref _instance, instance, null) ?? instance;
         }
 
@@ -263,21 +265,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             });
         }
 
-        /// <summary>
-        /// Returns host locale ID
-        /// </summary>
-        public int LocaleId {
-            get {
-                IUIHostLocale hostLocale = GetGlobalService<IUIHostLocale>();
-                uint lcid;
-                if (hostLocale != null && hostLocale.GetUILocale(out lcid) == VSConstants.S_OK) {
-                    return (int)lcid;
-                }
-                return 0;
-            }
-        }
-
-        public ITelemetryService TelemetryService => RtvsTelemetry.Current.TelemetryService;
+        public ITelemetryService TelemetryService { get; private set; }
 
         public bool IsUnitTestEnvironment { get; set; }
 

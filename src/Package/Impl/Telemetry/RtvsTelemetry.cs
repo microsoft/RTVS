@@ -13,6 +13,7 @@ using Microsoft.R.Editor.Settings;
 using Microsoft.R.Interpreters;
 using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Settings;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Telemetry.Data;
 using Microsoft.VisualStudio.R.Package.Telemetry.Definitions;
 using Microsoft.VisualStudio.R.Package.Telemetry.Windows;
@@ -58,7 +59,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
 
         public RtvsTelemetry(IPackageIndex packageIndex, ITelemetryService service = null) {
             _packageIndex = packageIndex;
-            TelemetryService = service ?? VsTelemetryService.Current;
+            TelemetryService = service ?? VsAppShell.Current.ExportProvider.GetExportedValue<ITelemetryService>();
         }
 
         public ITelemetryService TelemetryService { get; }

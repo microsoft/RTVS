@@ -5,7 +5,6 @@ using System;
 using System.ComponentModel.Design;
 using System.Threading;
 using Microsoft.Common.Core.Telemetry;
-using Microsoft.Common.Core.Threading;
 
 namespace Microsoft.Common.Core.Shell {
     /// <summary>
@@ -65,11 +64,6 @@ namespace Microsoft.Common.Core.Shell {
         /// Displays message with specified buttons in a host-specific UI
         /// </summary>
         MessageButtons ShowMessage(string message, MessageButtons buttons);
-
-        /// <summary>
-        /// Returns host locale ID
-        /// </summary>
-        int LocaleId { get; }
 
         /// <summary>
         /// If the specified file is opened as a document, and it has unsaved changes, save those changes.

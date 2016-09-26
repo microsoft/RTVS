@@ -84,5 +84,15 @@ namespace Microsoft.Common.Core {
             }
             return path.Length;
         }
+
+        public static string EnsureTrailingSlash(this string path) {
+            if (path != null &&  path.Length > 0) { 
+                if (path[path.Length - 1] != '\\') {
+                    return path + "\\";
+                }
+                return path;
+            }
+            return "\\";
+        }
     }
 }
