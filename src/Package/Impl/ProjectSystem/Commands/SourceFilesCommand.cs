@@ -11,8 +11,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
+using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring;
 using Microsoft.VisualStudio.R.Package.Commands;
@@ -54,44 +56,49 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
                 bool echo = commandId == RPackageCommandId.icmdSourceSelectedFilesWithEcho;
                 IEnumerable<string> rFiles = Enumerable.Empty<string>();
 
+                IFileSystem fs = new FileSystem();
                 var workflow = _interactiveWorkflowProvider.GetOrCreate();
-                var session = workflow.RSession;
-                if(session.IsHostRunning && session.IsRemote) {
-                    var outputWriter = workflow.ActiveWindow.InteractiveWindow.OutputWriter;
-                    var properties = _configuredProject.Services.ExportProvider.GetExportedValue<ProjectProperties>();
+                try {
+                    var session = workflow.RSession;
+                    if (session.IsRemote) {
+                        var properties = _configuredProject.Services.ExportProvider.GetExportedValue<ProjectProperties>();
+                        
+                        string projectDir = Path.GetDirectoryName(_configuredProject.UnconfiguredProject.FullPath);
+                        string projectName = properties.GetProjectName();
+                        string remotePath = await properties.GetRemoteProjectPathAsync();
 
-                    string projectDir = Path.GetDirectoryName(_configuredProject.UnconfiguredProject.FullPath);
-                    string projectName = properties.GetProjectName();
-                    string remotePath = await properties.GetRemoteProjectPathAsync();
+                        var files = nodes.GetSelectedNodesPaths().Where(x =>
+                                   Path.GetExtension(x).EqualsIgnoreCase(RContentTypeDefinition.FileExtension) &&
+                                   fs.FileExists(x));
+                        workflow.ActiveWindow.InteractiveWindow.WriteLine(Resources.Info_CompressingFiles);
+                        
+                        string compressedFilePath = fs.CompressFiles(files, projectDir, new Progress<string>((p) => {
+                            workflow.ActiveWindow.InteractiveWindow.WriteLine(string.Format(Resources.Info_LocalFilePath, p));
+                            string dest = p.MakeRelativePath(projectDir).ProjectRelativePathToRemoteProjectPath(remotePath, projectName);
+                            workflow.ActiveWindow.InteractiveWindow.WriteLine(string.Format(Resources.Info_RemoteDestination, dest));
 
-                    var files = nodes.GetSelectedNodesPaths().Where(x =>
-                               Path.GetExtension(x).EqualsIgnoreCase(".r") &&
-                               File.Exists(x));
-                    outputWriter.WriteLine("Compressing files...");
-                    IFileSystem fs = new FileSystem();
-                    string compressedFilePath = fs.CompressFiles(files, projectDir, new Progress<string>((p) => {
-                        outputWriter.WriteLine($"Local Path  : {p}");
-                        string dest = p.MakeRelativePath(projectDir).ProjectRelativePathToRemoteProjectPath(remotePath, projectName);
-                        outputWriter.WriteLine($"Destination : {dest}");
+                        }), CancellationToken.None);
 
-                    }), CancellationToken.None);
+                        using (var fts = new DataTransferSession(session, fs)) {
+                            workflow.ActiveWindow.InteractiveWindow.WriteLine(Resources.Info_TransferingFiles);
+                            var remoteFile = await fts.SendFileAsync(compressedFilePath);
+                            await session.EvaluateAsync<string>($"rtvs:::save_to_project_folder({remoteFile.Id}, {projectName.ToRStringLiteral()}, '{remotePath.ToRPath()}')", REvaluationKind.Normal);
+                            workflow.ActiveWindow.InteractiveWindow.WriteLine(Resources.Info_TransferingFilesDone);
+                        }
 
-                    using (var fts = new DataTransferSession(session, fs)) {
-                        outputWriter.WriteLine("Transferring project to remote host...");
-                        var remoteFile = await fts.SendFileAsync(compressedFilePath);
-                        await session.EvaluateAsync<string>($"rtvs:::save_to_project_folder({remoteFile.Id}, {projectName.ToRStringLiteral()}, '{remotePath.ToRPath()}')", REvaluationKind.Normal);
-                        outputWriter.WriteLine("Transferring project to remote host... Done.");
+                        rFiles = files.Select(p => p.MakeRelativePath(projectDir).ProjectRelativePathToRemoteProjectPath(remotePath, projectName));
+                    } else {
+                        rFiles = nodes.GetSelectedNodesPaths().Where(x =>
+                                   Path.GetExtension(x).EqualsIgnoreCase(RContentTypeDefinition.FileExtension) &&
+                                   fs.FileExists(x));
                     }
 
-                    rFiles = files.Select(p => p.MakeRelativePath(projectDir).ProjectRelativePathToRemoteProjectPath(remotePath, projectName));
-                } else {
-                    rFiles = nodes.GetSelectedNodesPaths().Where(x =>
-                               Path.GetExtension(x).EqualsIgnoreCase(".r") &&
-                               File.Exists(x));
+                    workflow.Operations.SourceFiles(rFiles, echo);
+                    return true;
+                } catch (RHostDisconnectedException) {
+                    workflow.ActiveWindow.InteractiveWindow.WriteErrorLine(Resources.Error_CannotTransferNoRSession);
+                    return false;
                 }
-
-                workflow.Operations.SourceFiles(rFiles, echo);
-                return true;
             }
             return false;
         }

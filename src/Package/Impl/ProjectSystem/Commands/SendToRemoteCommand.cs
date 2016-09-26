@@ -13,6 +13,7 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring;
 using Microsoft.VisualStudio.R.Package.Commands;
@@ -52,9 +53,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
             }
 
             var workflow = _interactiveWorkflowProvider.GetOrCreate();
-            var session = workflow.RSession;
-            if (session.IsHostRunning) {
-                var outputWriter = workflow.ActiveWindow.InteractiveWindow.OutputWriter;
+            try {
+                var session = workflow.RSession;
                 var properties = _configuredProject.Services.ExportProvider.GetExportedValue<ProjectProperties>();
 
                 string projectDir = Path.GetDirectoryName(_configuredProject.UnconfiguredProject.FullPath);
@@ -62,21 +62,23 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
                 string remotePath = await properties.GetRemoteProjectPathAsync();
                 var files = nodes.GetAllFilePaths();
 
-                outputWriter.WriteLine("Compressing files...");
+                workflow.ActiveWindow.InteractiveWindow.WriteLine(Resources.Info_CompressingFiles);
                 IFileSystem fs = new FileSystem();
                 string compressedFilePath = fs.CompressFiles(files, projectDir, new Progress<string>((p) => {
-                    outputWriter.WriteLine($"Local Path  : {p}");
+                    workflow.ActiveWindow.InteractiveWindow.WriteLine(string.Format(Resources.Info_LocalFilePath, p));
                     string dest = p.MakeRelativePath(projectDir).ProjectRelativePathToRemoteProjectPath(remotePath, projectName);
-                    outputWriter.WriteLine($"Destination : {dest}");
-                      
+                    workflow.ActiveWindow.InteractiveWindow.WriteLine(string.Format(Resources.Info_RemoteFilePath, dest));
+
                 }), CancellationToken.None);
 
                 using (var fts = new DataTransferSession(session, fs)) {
-                    outputWriter.WriteLine("Transferring project to remote host...");
+                    workflow.ActiveWindow.InteractiveWindow.WriteLine(Resources.Info_TransferingFiles);
                     var remoteFile = await fts.SendFileAsync(compressedFilePath);
                     await session.EvaluateAsync<string>($"rtvs:::save_to_project_folder({remoteFile.Id}, {projectName.ToRStringLiteral()}, '{remotePath.ToRPath()}')", REvaluationKind.Normal);
-                    outputWriter.WriteLine("Transferring project to remote host... Done.");
+                    workflow.ActiveWindow.InteractiveWindow.WriteLine(Resources.Info_TransferingFilesDone);
                 }
+            } catch (RHostDisconnectedException) {
+                workflow.ActiveWindow.InteractiveWindow.WriteErrorLine(Resources.Error_CannotTransferNoRSession);
             }
 
             return true;

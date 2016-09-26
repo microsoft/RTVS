@@ -331,6 +331,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot transfer files, no active RSession available..
+        /// </summary>
+        public static string Error_CannotTransferNoRSession {
+            get {
+                return ResourceManager.GetString("Error_CannotTransferNoRSession", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to access path {0}. Exception: {1}..
         /// </summary>
         public static string Error_ExceptionAccessingPath {
@@ -436,6 +445,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Error_UnableToSaveSettings {
             get {
                 return ResourceManager.GetString("Error_UnableToSaveSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to verify if file exists on remote host..
+        /// </summary>
+        public static string Error_UnableToVerifyFile {
+            get {
+                return ResourceManager.GetString("Error_UnableToVerifyFile", resourceCulture);
             }
         }
         
@@ -652,6 +670,87 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Importing {
             get {
                 return ResourceManager.GetString("Importing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Compressing files.
+        /// </summary>
+        public static string Info_CompressingFiles {
+            get {
+                return ResourceManager.GetString("Info_CompressingFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File filter applied : {0}.
+        /// </summary>
+        public static string Info_FileTransferFilter {
+            get {
+                return ResourceManager.GetString("Info_FileTransferFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Local Path  : {0}.
+        /// </summary>
+        public static string Info_LocalFilePath {
+            get {
+                return ResourceManager.GetString("Info_LocalFilePath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Preparing project for transfer..
+        /// </summary>
+        public static string Info_PreparingProjectForTransfer {
+            get {
+                return ResourceManager.GetString("Info_PreparingProjectForTransfer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remote project folder : {0}.
+        /// </summary>
+        public static string Info_RemoteDestination {
+            get {
+                return ResourceManager.GetString("Info_RemoteDestination", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remote Path : {0}.
+        /// </summary>
+        public static string Info_RemoteFilePath {
+            get {
+                return ResourceManager.GetString("Info_RemoteFilePath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sourcing: {0}.
+        /// </summary>
+        public static string Info_SourcingFile {
+            get {
+                return ResourceManager.GetString("Info_SourcingFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Transfering files to remote RHost..
+        /// </summary>
+        public static string Info_TransferingFiles {
+            get {
+                return ResourceManager.GetString("Info_TransferingFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Transfering files to remote RHost... completed..
+        /// </summary>
+        public static string Info_TransferingFilesDone {
+            get {
+                return ResourceManager.GetString("Info_TransferingFilesDone", resourceCulture);
             }
         }
         

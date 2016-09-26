@@ -64,25 +64,22 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring {
         }
 
         public static IEnumerable<string> GetAllFilePaths(this IEnumerable<IProjectTree> nodes) {
-            if (nodes != null) {
-                List<string> paths = new List<string>();
-                foreach (IProjectTree node in nodes) {
-                    if (node.IsFolder) {
-                        paths.AddRange(node.GetAllFilePaths());
-                    } else if (node.Children.Count > 0) {
-                        paths.AddRange(node.Children.GetAllFilePaths());
-                    } else if (!string.IsNullOrWhiteSpace(node.FilePath)) {
-                        paths.Add(node.FilePath);
-                    }
+            List<string> paths = new List<string>();
+            foreach (IProjectTree node in nodes) {
+                if (node.IsFolder) {
+                    paths.AddRange(node.GetAllFilePaths());
+                } else if (node.Children.Count > 0) {
+                    paths.AddRange(node.Children.GetAllFilePaths());
+                } else if (!string.IsNullOrWhiteSpace(node.FilePath)) {
+                    paths.Add(node.FilePath);
                 }
-                return paths;
             }
-            return Enumerable.Empty<string>();
+            return paths.Distinct();
         }
 
         public static IEnumerable<string> GetAllFilePaths(this IProjectTree node) {
-            if (node.IsFolder) {
-                List<string> paths = new List<string>();
+            List<string> paths = new List<string>();
+            if (node.IsFolder || node.Children.Count > 0) {
                 foreach (IProjectTree child in node.Children) {
                     if (child.IsFolder) {
                         paths.AddRange(child.GetAllFilePaths());
@@ -91,8 +88,10 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring {
                     }
                 }
                 return paths;
+            } else if (!string.IsNullOrWhiteSpace(node.FilePath)) {
+                paths.Add(node.FilePath);
             }
-            return Enumerable.Empty<string>();
+            return paths.Distinct();
         }
 
         public static string GetSelectedFolderPath(this IImmutableSet<IProjectTree> nodes, UnconfiguredProject unconfiguredProject) {

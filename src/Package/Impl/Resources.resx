@@ -914,6 +914,39 @@ Additional information:
   <data name="SqlPublish_PublishDatabaseSuccess" xml:space="preserve">
     <value>Publishing complete. Connection {0}</value>
   </data>
+  <data name="Error_CannotTransferNoRSession" xml:space="preserve">
+    <value>Cannot transfer files, no active RSession available.</value>
+  </data>
+  <data name="Error_UnableToVerifyFile" xml:space="preserve">
+    <value>Unable to verify if file exists on remote host.</value>
+  </data>
+  <data name="Info_CompressingFiles" xml:space="preserve">
+    <value>Compressing files</value>
+  </data>
+  <data name="Info_FileTransferFilter" xml:space="preserve">
+    <value>File filter applied : {0}</value>
+  </data>
+  <data name="Info_LocalFilePath" xml:space="preserve">
+    <value>Local Path  : {0}</value>
+  </data>
+  <data name="Info_PreparingProjectForTransfer" xml:space="preserve">
+    <value>Preparing project for transfer.</value>
+  </data>
+  <data name="Info_RemoteDestination" xml:space="preserve">
+    <value>Remote project folder : {0}</value>
+  </data>
+  <data name="Info_RemoteFilePath" xml:space="preserve">
+    <value>Remote Path : {0}</value>
+  </data>
+  <data name="Info_SourcingFile" xml:space="preserve">
+    <value>Sourcing: {0}</value>
+  </data>
+  <data name="Info_TransferingFiles" xml:space="preserve">
+    <value>Transfering files to remote RHost.</value>
+  </data>
+  <data name="Info_TransferingFilesDone" xml:space="preserve">
+    <value>Transfering files to remote RHost... completed.</value>
+  </data>
   <data name="Settings_LogCategory" xml:space="preserve">
     <value>Logging</value>
   </data>

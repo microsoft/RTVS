@@ -107,7 +107,7 @@ namespace Microsoft.R.Host.Client {
             if (string.IsNullOrWhiteSpace(projectName)) {
                 return ($"{remoteRoot}/{path}")?.ToRPath();
             } else {
-                return ($"{remoteRoot}/{projectName}/{path.ToRPath()}")?.ToRPath();
+                return ($"{remoteRoot}/{projectName}/{path}")?.ToRPath();
             }
         }
 
