@@ -93,7 +93,7 @@ namespace Microsoft.R.Host.Protocol {
                 result += $":#{RequestId}#";
             }
 
-            string blobString = string.Empty;
+            string blobString;
             if (Blob.Length > 100) {
                 var hashString = BitConverter.ToString(_hash.ComputeHash(Blob));
                 blobString = $"<blob length=\"{Blob.Length}\" md5=\"{hashString}\" />";
