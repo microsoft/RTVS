@@ -43,6 +43,7 @@
                   SelectionMode="Single"
                   BorderThickness="0"
                   MouseMove="HistoryListView_MouseMove"
+                  MouseLeave="HistoryListView_MouseLeave"
                   PreviewMouseDown="HistoryListView_PreviewMouseDown"
                   MouseRightButtonUp="HistoryListView_MouseRightButtonUp">
             <ListView.GroupStyle>
