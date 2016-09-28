@@ -25,14 +25,14 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     internal sealed class SendToRemoteCommand : SendFileCommandBase, IAsyncCommandGroupHandler {
         private readonly ConfiguredProject _configuredProject;
         private readonly IRInteractiveWorkflowProvider _interactiveWorkflowProvider;
-        private readonly ICoreShell _coreShell;
+        private readonly IApplicationShell _appShell;
 
         [ImportingConstructor]
         public SendToRemoteCommand(ConfiguredProject configuredProject, IRInteractiveWorkflowProvider interactiveWorkflowProvider, ICoreShell coreShell, IApplicationShell appShell) :
-            base(interactiveWorkflowProvider, coreShell, appShell, new FileSystem()) {
+            base(interactiveWorkflowProvider, appShell, new FileSystem()) {
             _configuredProject = configuredProject;
             _interactiveWorkflowProvider = interactiveWorkflowProvider;
-            _coreShell = coreShell;
+            _appShell = appShell;
         }
 
         public Task<CommandStatusResult> GetCommandStatusAsync(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus progressiveStatus) {
@@ -45,7 +45,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
 
 
         public async Task<bool> TryHandleCommandAsync(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, long commandExecuteOptions, IntPtr variantArgIn, IntPtr variantArgOut) {
-            _coreShell.AssertIsOnMainThread();
+            _appShell.AssertIsOnMainThread();
             if (commandId != RPackageCommandId.icmdSendToRemote) {
                 return false;
             }

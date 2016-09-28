@@ -33,14 +33,7 @@ namespace Microsoft.R.Host.Client {
             IRBlobInfo blob = null;
             using (RBlobStream blobStream = await RBlobStream.CreateAsync(_blobService))
             using (Stream ms = new MemoryStream(data)) {
-                byte[] buffer = new byte[81920];
-                int bytesRead = 0;
-                long bytesTotal = 0;
-                while ((bytesRead = await ms.ReadAsync(buffer, 0, buffer.Length)) > 0) {
-                    await blobStream.WriteAsync(buffer, 0, bytesRead);
-                    bytesTotal += bytesRead;
-                    progress?.Report(bytesTotal);
-                }
+                await ms.CopyToAsync(blobStream, progress);
                 blob = blobStream.GetBlobInfo();
             }
 
@@ -61,14 +54,7 @@ namespace Microsoft.R.Host.Client {
             IRBlobInfo blob = null;
             using (RBlobStream blobStream = await RBlobStream.CreateAsync(_blobService))
             using (Stream fileStream = _fs.FileOpen(filePath, FileMode.Open)){
-                byte[] buffer = new byte[81920];
-                int bytesRead = 0;
-                long bytesTotal = 0;
-                while((bytesRead = await fileStream.ReadAsync(buffer, 0, buffer.Length)) > 0) {
-                    await blobStream.WriteAsync(buffer, 0, bytesRead);
-                    bytesTotal += bytesRead;
-                    progress?.Report(bytesTotal);
-                }
+                await fileStream.CopyToAsync(blobStream, progress);
                 blob = blobStream.GetBlobInfo();
             }
 
@@ -88,15 +74,7 @@ namespace Microsoft.R.Host.Client {
         public async Task FetchFileAsync(IRBlobInfo blob, string filePath, bool doCleanUp = true, IProgress<long> progress = null) {
             using (RBlobStream blobStream = await RBlobStream.OpenAsync(blob, _blobService))
             using (Stream fileStream = _fs.CreateFile(filePath)) {
-                byte[] buffer = new byte[81920];
-                int bytesRead = 0;
-                long bytesTotal = 0;
-                while ((bytesRead = await blobStream.ReadAsync(buffer, 0, buffer.Length)) > 0) {
-                    await fileStream.WriteAsync(buffer, 0, bytesRead);
-                    bytesTotal += bytesRead;
-                    progress?.Report(bytesTotal);
-                }
-                await fileStream.FlushAsync();
+                await blobStream.CopyToAsync(fileStream, progress);
             }
 
             if (doCleanUp) {
@@ -114,15 +92,7 @@ namespace Microsoft.R.Host.Client {
             byte[] data = null;
             using (RBlobStream blobStream = await RBlobStream.OpenAsync(blob, _blobService))
             using (MemoryStream ms = new MemoryStream((int)blobStream.Length)) {
-                byte[] buffer = new byte[81920];
-                int bytesRead = 0;
-                long bytesTotal = 0;
-                while ((bytesRead = await blobStream.ReadAsync(buffer, 0, buffer.Length)) > 0) {
-                    await ms.WriteAsync(buffer, 0, bytesRead);
-                    bytesTotal += bytesRead;
-                    progress?.Report(bytesTotal);
-                }
-                await ms.FlushAsync();
+                await blobStream.CopyToAsync(ms, progress);
                 data = ms.ToArray();
             }
 

@@ -25,23 +25,26 @@ using Microsoft.VisualStudio.ProjectSystem.Utilities;
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     internal class SendFileCommandBase {
         private readonly IRInteractiveWorkflowProvider _interactiveWorkflowProvider;
-        private readonly ICoreShell _coreShell;
         private readonly IFileSystem _fs;
         private readonly IApplicationShell _appShell;
 
-        protected SendFileCommandBase(IRInteractiveWorkflowProvider interactiveWorkflowProvider, ICoreShell coreShell, IApplicationShell appShell, IFileSystem fs) {
+        protected SendFileCommandBase(IRInteractiveWorkflowProvider interactiveWorkflowProvider, IApplicationShell appShell, IFileSystem fs) {
             _interactiveWorkflowProvider = interactiveWorkflowProvider;
-            _coreShell = coreShell;
             _appShell = appShell;
             _fs = fs;
         }
 
         protected async Task<bool> SendToRemoteAsync(IEnumerable<string> files, string projectDir, string projectName, string remotePath) {
             IVsStatusbar statusBar = _appShell.GetGlobalService<IVsStatusbar>(typeof(SVsStatusbar));
+            return await SendToRemoteWorkerAsync(files, projectDir, projectName, remotePath, statusBar);
+        }
+
+        private async Task<bool> SendToRemoteWorkerAsync(IEnumerable<string> files, string projectDir, string projectName, string remotePath, IVsStatusbar statusBar) {
+            await TaskUtilities.SwitchToBackgroundThread();
+
             string currentStatusText;
             statusBar.GetText(out currentStatusText);
 
-            await TaskUtilities.SwitchToBackgroundThread();
             var workflow = _interactiveWorkflowProvider.GetOrCreate();
             var outputWindow = workflow.ActiveWindow.InteractiveWindow;
             uint cookie = 0;
@@ -58,7 +61,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
                         Interlocked.Increment(ref count);
                         statusBar.Progress(ref cookie, 1, string.Format(Resources.Info_CompressingFile, Path.GetFileName(p)), (uint)count, total);
                         string dest = p.MakeRelativePath(projectDir).ProjectRelativePathToRemoteProjectPath(remotePath, projectName);
-                        _coreShell.DispatchOnUIThread(() => {
+                        _appShell.DispatchOnUIThread(() => {
                             outputWindow.WriteLine(string.Format(Resources.Info_LocalFilePath, p));
                             outputWindow.WriteLine(string.Format(Resources.Info_RemoteFilePath, dest));
                         });
@@ -79,22 +82,21 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
                     statusBar.SetText(Resources.Info_ExtractingFilesInRHost);
                     await session.EvaluateAsync<string>($"rtvs:::save_to_project_folder({remoteFile.Id}, {projectName.ToRStringLiteral()}, '{remotePath.ToRPath()}')", REvaluationKind.Normal);
 
-                    _coreShell.DispatchOnUIThread(() => {
+                    _appShell.DispatchOnUIThread(() => {
                         outputWindow.WriteLine(Resources.Info_TransferringFilesDone);
                     });
                 }
             } catch (IOException ex) {
-                _coreShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotTransferFile, ex.Message));
+                _appShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotTransferFile, ex.Message));
             } catch (RHostDisconnectedException) {
-                _coreShell.DispatchOnUIThread(() => {
+                _appShell.DispatchOnUIThread(() => {
                     outputWindow.WriteErrorLine(Resources.Error_CannotTransferNoRSession);
                 });
             } finally {
                 statusBar.Progress(ref cookie, 0, "", 0, 0);
                 statusBar.SetText(currentStatusText);
-                await _coreShell.SwitchToMainThreadAsync();
             }
-            
+
             return true;
         }
     }

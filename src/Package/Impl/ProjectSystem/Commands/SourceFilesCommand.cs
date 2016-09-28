@@ -34,14 +34,14 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     internal sealed class SourceFilesCommand : SendFileCommandBase, IAsyncCommandGroupHandler {
         private readonly ConfiguredProject _configuredProject;
         private IRInteractiveWorkflowProvider _interactiveWorkflowProvider;
-        private readonly ICoreShell _coreShell;
+        private readonly IApplicationShell _appShell;
 
         [ImportingConstructor]
-        public SourceFilesCommand(ConfiguredProject configuredProject, IRInteractiveWorkflowProvider interactiveWorkflowProvider, ICoreShell coreShell, IApplicationShell appShell) :
-            base(interactiveWorkflowProvider, coreShell, appShell, new FileSystem()) {
+        public SourceFilesCommand(ConfiguredProject configuredProject, IRInteractiveWorkflowProvider interactiveWorkflowProvider, IApplicationShell appShell) :
+            base(interactiveWorkflowProvider, appShell, new FileSystem()) {
             _configuredProject = configuredProject;
             _interactiveWorkflowProvider = interactiveWorkflowProvider;
-             _coreShell = coreShell;
+            _appShell = appShell;
         }
 
         public Task<CommandStatusResult> GetCommandStatusAsync(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus progressiveStatus) {
@@ -87,7 +87,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
 
                     workflow.Operations.SourceFiles(rFiles, echo);
                 } catch (IOException ex) {
-                    _coreShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotTransferFile, ex.Message));
+                    _appShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotTransferFile, ex.Message));
                 } 
                 catch (RHostDisconnectedException) {
                     workflow.ActiveWindow.InteractiveWindow.WriteErrorLine(Resources.Error_CannotTransferNoRSession);
