@@ -87,11 +87,11 @@ namespace Microsoft.Common.Core {
 
         public static string EnsureTrailingSlash(this string path) {
             if (!string.IsNullOrEmpty(path)) {
-                char slash = path.IndexOf(Path.AltDirectorySeparatorChar) >= 0 ? Path.AltDirectorySeparatorChar : Path.DirectorySeparatorChar;
-                if (path[path.Length - 1] != slash) {
-                    return path + slash;
+                if (path[path.Length - 1] == Path.DirectorySeparatorChar || path[path.Length - 1] == Path.AltDirectorySeparatorChar) {
+                    return path;
                 }
-                return path;
+                char slash = path.IndexOf(Path.AltDirectorySeparatorChar) >= 0 ? Path.AltDirectorySeparatorChar : Path.DirectorySeparatorChar;
+                return path + slash;
             }
             return Path.DirectorySeparatorChar.ToString();
         }

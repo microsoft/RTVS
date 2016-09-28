@@ -59,6 +59,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         private IRSession _session;
         private IRHistory _history;
         private ISurveyNewsService _surveyNews;
+        private ICoreShell _coreShell;
 
         /// <summary>
         /// Backing field for the similarly named property.
@@ -84,6 +85,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             _threadHandling = threadHandling;
             _surveyNews = surveyNews;
             _dependencyProvider = dependencyProvider;
+            _coreShell = coreShell;
 
             _projectDirectory = unconfiguredProject.GetProjectDirectory();
 
@@ -156,13 +158,13 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             try {
                 await _surveyNews.CheckSurveyNewsAsync(false);
             } catch (Exception ex) when (!ex.IsCriticalException()) {
-                VsAppShell.Current.Logger.WriteAsync(LogVerbosity.Normal, MessageCategory.Error, "SurveyNews exception: " + ex.Message).DoNotWait();
+                _coreShell.Logger.WriteAsync(LogVerbosity.Normal, MessageCategory.Error, "SurveyNews exception: " + ex.Message).DoNotWait();
             }
         }
 
         private void FileWatcherError(object sender, EventArgs args) {
             _fileWatcher.Error -= FileWatcherError;
-            VsAppShell.Current.DispatchOnUIThread(() => {
+            _coreShell.DispatchOnUIThread(() => {
                 foreach (var iVsProjectLazy in _cpsIVsProjects) {
                     IVsProject iVsProject;
                     try {
@@ -183,7 +185,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         }
 
         private async Task ProjectUnloading(object sender, EventArgs args) {
-            VsAppShell.Current.AssertIsOnMainThread();
+            _coreShell.AssertIsOnMainThread();
 
             _unconfiguredProject.ProjectUnloading -= ProjectUnloading;
             _fileWatcher.Dispose();
@@ -218,7 +220,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                     return true;
                 case YesNoAsk.Ask:
                     await _threadHandling.SwitchToUIThread();
-                    return VsAppShell.Current.ShowMessage(
+                    return _coreShell.ShowMessage(
                         string.Format(CultureInfo.CurrentCulture, Resources.LoadWorkspaceIntoGlobalEnvironment, rdataPath),
                         MessageButtons.YesNo) == MessageButtons.Yes;
                 default:
@@ -232,7 +234,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                     return true;
                 case YesNoAsk.Ask:
                     await _threadHandling.SwitchToUIThread();
-                    return VsAppShell.Current.ShowMessage(
+                    return _coreShell.ShowMessage(
                         string.Format(CultureInfo.CurrentCulture, Resources.SaveWorkspaceOnProjectUnload, rdataPath),
                         MessageButtons.YesNo) == MessageButtons.Yes;
                 default:
@@ -248,7 +250,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                 remoteDrive = driveType == NativeMethods.DriveType.Remote;
             }
             if (remoteDrive) {
-                VsAppShell.Current.ShowMessage(Resources.Warning_UncPath, MessageButtons.OK);
+                _coreShell.ShowMessage(Resources.Warning_UncPath, MessageButtons.OK);
             }
         }
     }
