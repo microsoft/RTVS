@@ -22,6 +22,7 @@ using Microsoft.VisualStudio.R.Package.Test.FakeFactories;
 using NSubstitute;
 using Xunit;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Test.Utility;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 #else
@@ -36,7 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
         private readonly TestRInteractiveWorkflowProvider _interactiveWorkflowProvider;
 
         public ProjectCommandsTest() {
-            var sessionProvider = new RSessionProvider(Substitute.For<IActionLog>());
+            var sessionProvider = new RSessionProvider(StandardServicesMock.Create());
             var connectionsProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IConnectionManagerProvider>();
             var historyProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRHistoryProvider>();
             var packagesProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRPackageManagerProvider>();

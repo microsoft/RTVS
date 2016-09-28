@@ -10,6 +10,10 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
+using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Telemetry;
+using Microsoft.Common.Core.Test.Utility;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Interpreters;
@@ -119,9 +123,8 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [Test]
         [Category.R.Session]
         public void StartRHostMissing() {
-            var brokerClient = new LocalBrokerClient(nameof(RSessionTest), @"C:\", 
-                    Substitute.For<IActionLog>(), Substitute.For<IFileSystem>(), 
-                    Substitute.For<IProcessServices>(),  Environment.SystemDirectory);
+            var brokerClient = new LocalBrokerClient(nameof(RSessionTest), @"C:\",
+                    StandardServicesMock.Create(),  Environment.SystemDirectory);
             var session = new RSession(0, brokerClient, () => { });
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name
@@ -150,9 +153,8 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [Test]
         [Category.R.Session]
         public async Task StopBeforeInitialized_RHostMissing() {
-            var brokerClient = new LocalBrokerClient(nameof(RSessionTest), @"C:\", 
-                Substitute.For<IActionLog>(), Substitute.For<IFileSystem>(), 
-                Substitute.For<IProcessServices>(), Environment.SystemDirectory);
+            var brokerClient = new LocalBrokerClient(nameof(RSessionTest), @"C:\",
+                StandardServicesMock.Create(), Environment.SystemDirectory);
             var session = new RSession(0, brokerClient, () => { });
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name
@@ -168,8 +170,9 @@ namespace Microsoft.R.Host.Client.Test.Session {
         }
 
         private static IBrokerClient CreateLocalBrokerClient(string name) {
-            return new LocalBrokerClient(name, new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath, 
-                Substitute.For<IActionLog>(), new FileSystem(), new ProcessServices());
+            return new LocalBrokerClient(name, 
+                new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath,
+                StandardServicesMock.Create());
         }
     }
 }

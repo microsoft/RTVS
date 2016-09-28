@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 
 namespace Microsoft.Common.Core.Services {
-    public sealed class ServiceBag: IServiceBag {
+    public class ServiceBag: IServiceBag {
         private readonly Dictionary<Type, object> _services = new Dictionary<Type, object>();
 
         public static ServiceBag Create(object service) => new ServiceBag().Add(service);
@@ -17,7 +17,7 @@ namespace Microsoft.Common.Core.Services {
             }
         }
 
-        public ServiceBag Add(object service) {
+        public virtual ServiceBag Add(object service) {
              _services[service.GetType()] = service;
             return this;
         }

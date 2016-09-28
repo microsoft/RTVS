@@ -5,8 +5,8 @@ using System;
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
-using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Test.Utility;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -18,7 +18,6 @@ using Microsoft.R.Components.Workspace;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.UnitTests.Core.Mef;
-using NSubstitute;
 
 namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
     [ExcludeFromCodeCoverage]
@@ -81,7 +80,7 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
         public IRInteractiveWorkflow Active => _instanceLazy.IsValueCreated ? _instanceLazy.Value : null;
 
         private IRInteractiveWorkflow CreateRInteractiveWorkflow() {
-            var sessionProvider = _sessionProvider ?? new RSessionProvider(Substitute.For<IActionLog>());
+            var sessionProvider = _sessionProvider ?? new RSessionProvider(StandardServicesMock.Create());
             return new RInteractiveWorkflow(sessionProvider
                 , _connectionManagerProvider
                 , _historyProvider

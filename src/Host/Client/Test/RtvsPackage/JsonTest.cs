@@ -6,14 +6,13 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Test.Utility;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 using Newtonsoft.Json;
-using NSubstitute;
 using Xunit;
 
 namespace Microsoft.R.RtvsPackage.Test {
@@ -27,7 +26,7 @@ namespace Microsoft.R.RtvsPackage.Test {
 
         public JsonTest(TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo;
-            _sessionProvider = new RSessionProvider(Substitute.For<IActionLog>());
+            _sessionProvider = new RSessionProvider(StandardServicesMock.Create());
             _session = _sessionProvider.GetOrCreate(Guid.NewGuid());
         }
 

@@ -79,6 +79,7 @@
     <Compile Include="Threading\BinaryAsyncLockTest.cs" />
     <Compile Include="Threading\DelayedAsyncActionTest.cs" />
     <Compile Include="Utility\CommonTestData.cs" />
+    <Compile Include="Utility\StandardServicesMock.cs" />
     <Compile Include="Utility\SupportedWpfProperties.cs" />
     <Compile Include="Utility\TestFiles.cs" />
     <Compile Include="Utility\VisualTreeWriter.cs" />

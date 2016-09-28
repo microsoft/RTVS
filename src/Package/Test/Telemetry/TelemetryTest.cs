@@ -6,6 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Common.Core.Test.Telemetry;
 using Microsoft.R.Support.Help;
+using Microsoft.R.Support.Test.Utility;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.Telemetry;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -16,6 +17,7 @@ using Xunit;
 namespace Microsoft.VisualStudio.R.Package.Test.Telemetry {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
+    [Category.Telemetry]
     public class TelemetryTest {
         private readonly IPackageIndex _packageIndex;
 
@@ -31,11 +33,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.Telemetry {
         }
 
         [Test]
-        [Category.Telemetry]
         public void ReportConfiguration() {
             var svc = new TelemetryTestService();
             string log;
-            using (var t = new RtvsTelemetry(_packageIndex, svc)) {
+            using (var t = new RtvsTelemetry(_packageIndex, new TestRToolsSettings(), svc)) {
                 t.ReportConfiguration();
                 log = svc.SessionLog;
             }
@@ -46,11 +47,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.Telemetry {
         }
 
         [Test]
-        [Category.Telemetry]
         public void ReportSettings() {
             var svc = new TelemetryTestService();
             string log;
-            using (var t = new RtvsTelemetry(_packageIndex, svc)) {
+            using (var t = new RtvsTelemetry(_packageIndex, new TestRToolsSettings(), svc)) {
                 t.ReportSettings();
                 log = svc.SessionLog;
             }
@@ -75,7 +75,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.Telemetry {
         }
 
         [Test]
-        [Category.Telemetry]
         public void ReportWindowLayout() {
             var svc = new TelemetryTestService();
             var shell = new VsUiShellMock();
@@ -90,7 +89,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Telemetry {
             shell.CreateToolWindow(0, 3, null, ref g, ref p3, ref g, null, "Window#3", null, out frame);
 
             string log;
-            using (var t = new RtvsTelemetry(_packageIndex, svc)) {
+            using (var t = new RtvsTelemetry(_packageIndex, new TestRToolsSettings(), svc)) {
                 t.ReportWindowLayout(shell);
                 log = svc.SessionLog;
             }

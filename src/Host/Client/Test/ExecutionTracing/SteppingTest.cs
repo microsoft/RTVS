@@ -7,7 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Test.Utility;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test;
@@ -15,7 +15,6 @@ using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.R.StackTracing;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
-using NSubstitute;
 using Xunit;
 
 namespace Microsoft.R.ExecutionTracing.Test {
@@ -28,7 +27,7 @@ namespace Microsoft.R.ExecutionTracing.Test {
 
         public SteppingTest(TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo;
-            _sessionProvider = new RSessionProvider(Substitute.For<IActionLog>());
+            _sessionProvider = new RSessionProvider(StandardServicesMock.Create());
             _session = _sessionProvider.GetOrCreate(Guid.NewGuid());
         }
 

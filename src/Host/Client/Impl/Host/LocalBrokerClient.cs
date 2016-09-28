@@ -13,6 +13,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Threading;
 using Newtonsoft.Json;
 
@@ -27,8 +28,7 @@ namespace Microsoft.R.Host.Client.Host {
         private readonly string _rhostDirectory;
         private readonly string _rHome;
         private readonly BinaryAsyncLock _connectLock = new BinaryAsyncLock();
-        private readonly IFileSystem _fs;
-        private readonly IProcessServices _ps;
+        private readonly IStandardServices _services;
 
         private Process _brokerProcess;
 
@@ -43,13 +43,12 @@ namespace Microsoft.R.Host.Client.Host {
             }
         }
 
-        public LocalBrokerClient(string name, string rHome, IActionLog log, IFileSystem fs, IProcessServices ps, string rhostDirectory = null)
-            : base(name, new Uri(rHome), InterpreterId, log) {
+        public LocalBrokerClient(string name, string rHome, IStandardServices services, string rhostDirectory = null)
+            : base(name, new Uri(rHome), InterpreterId, services.Log) {
 
             _rhostDirectory = rhostDirectory ?? Path.GetDirectoryName(typeof(RHost).Assembly.GetAssemblyPath());
             _rHome = rHome;
-            _fs = fs;
-            _ps = ps;
+            _services = services;
         }
 
         public override async Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken()) {
@@ -76,7 +75,7 @@ namespace Microsoft.R.Host.Client.Host {
             Trace.Assert(_brokerProcess == null);
 
             string rhostBrokerExe = Path.Combine(_rhostDirectory, RHostBrokerExe);
-            if (!_fs.FileExists(rhostBrokerExe)) {
+            if (!_services.FileSystem.FileExists(rhostBrokerExe)) {
                 throw new RHostBrokerBinaryMissingException();
             }
 
@@ -105,7 +104,7 @@ namespace Microsoft.R.Host.Client.Host {
                         psi.CreateNoWindow = true;
                     }
 
-                    process = _ps.Start(psi);
+                    process = _services.ProcessServices.Start(psi);
                     process.EnableRaisingEvents = true;
 
                     var cts = new CancellationTokenSource(10000);

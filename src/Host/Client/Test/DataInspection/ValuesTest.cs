@@ -9,7 +9,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Test.Utility;
 using Microsoft.R.DataInspection;
 using Microsoft.R.ExecutionTracing;
 using Microsoft.R.Host.Client;
@@ -35,7 +35,7 @@ namespace Microsoft.R.DataInspection.Test {
 
         public ValuesTest(TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo;
-            _sessionProvider = new RSessionProvider(Substitute.For<IActionLog>());
+            _sessionProvider = new RSessionProvider(StandardServicesMock.Create());
             
             _session = _sessionProvider.GetOrCreate(Guid.NewGuid());
         }

@@ -4,7 +4,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
-using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Test.Utility;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -21,7 +21,6 @@ using Microsoft.VisualStudio.R.Package.Repl.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Test.Mocks;
 using Microsoft.VisualStudio.R.Package.Test.Utility;
-using NSubstitute;
 using Xunit;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Repl {
@@ -32,7 +31,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
         private readonly IRSessionProvider _sessionProvider;
 
         public CurrentDirectoryTest() {
-            _sessionProvider = new RSessionProvider(Substitute.For<IActionLog>());
+            _sessionProvider = new RSessionProvider(StandardServicesMock.Create());
 
             var connectionsProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IConnectionManagerProvider>();
             var historyProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRHistoryProvider>();
