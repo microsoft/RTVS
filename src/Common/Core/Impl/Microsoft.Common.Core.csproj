@@ -59,7 +59,6 @@
     <Compile Include="Logging\Implementation\LoggingServices.cs" />
     <Compile Include="Logging\Implementation\NullLogWriter.cs" />
     <Compile Include="Logging\Logger.cs" />
-    <Compile Include="Logging\Implementation\ApplicationLogWriter.cs" />
     <Compile Include="Logging\Implementation\FileLogWriter.cs" />
     <Compile Include="Logging\IActionLog.cs" />
     <Compile Include="Logging\IActionLogWriter.cs" />
