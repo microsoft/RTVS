@@ -10,13 +10,13 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
 
 namespace Microsoft.Common.Core.Services {
-    [Export(typeof(IStandardServices))]
-    public sealed class StandardServices : IStandardServices {
+    [Export(typeof(ICoreServices))]
+    public sealed class CoreServices : ICoreServices {
         private readonly ServiceBag _services = new ServiceBag();
         private IActionLog _log;
 
         [ImportingConstructor]
-        public StandardServices(
+        public CoreServices(
               ICoreShell coreShell
             , ITelemetryService telemetry
             , [Import(AllowDefault = true)] IActionLog log

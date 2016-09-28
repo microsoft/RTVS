@@ -71,9 +71,9 @@
     <Compile Include="Net\WebSocketHelper.cs" />
     <Compile Include="OS\ErrorCodeConverter.cs" />
     <Compile Include="Services\IServiceBag.cs" />
-    <Compile Include="Services\IStandardServices.cs" />
+    <Compile Include="Services\ICoreServices.cs" />
     <Compile Include="Services\ServiceBag.cs" />
-    <Compile Include="Services\StandardServices.cs" />
+    <Compile Include="Services\CoreServices.cs" />
     <Compile Include="Shell\IApplicationConstants.cs" />
     <Compile Include="Shell\ProgressBarSession.cs" />
     <Compile Include="Tasks\TaskCompletionSourceEx.cs" />

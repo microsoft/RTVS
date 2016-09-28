@@ -28,7 +28,7 @@ namespace Microsoft.R.Host.Client.Host {
         private readonly string _rhostDirectory;
         private readonly string _rHome;
         private readonly BinaryAsyncLock _connectLock = new BinaryAsyncLock();
-        private readonly IStandardServices _services;
+        private readonly ICoreServices _services;
 
         private Process _brokerProcess;
 
@@ -43,7 +43,7 @@ namespace Microsoft.R.Host.Client.Host {
             }
         }
 
-        public LocalBrokerClient(string name, string rHome, IStandardServices services, string rhostDirectory = null)
+        public LocalBrokerClient(string name, string rHome, ICoreServices services, string rhostDirectory = null)
             : base(name, new Uri(rHome), InterpreterId, services.Log) {
 
             _rhostDirectory = rhostDirectory ?? Path.GetDirectoryName(typeof(RHost).Assembly.GetAssemblyPath());

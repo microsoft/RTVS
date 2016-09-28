@@ -25,7 +25,7 @@ namespace Microsoft.R.Host.Client.Session {
         private readonly AsyncCountdownEvent _connectCde = new AsyncCountdownEvent(0);
 
         private readonly BrokerClientProxy _brokerProxy;
-        private readonly IStandardServices _services;
+        private readonly ICoreServices _services;
 
         private int _sessionCounter;
         private int _isConnected;
@@ -39,7 +39,7 @@ namespace Microsoft.R.Host.Client.Session {
         public event EventHandler BrokerChanged;
         public event EventHandler<BrokerStateChangedEventArgs> BrokerStateChanged;
 
-        public RSessionProvider(IStandardServices services, IRSessionProviderCallback callback = null) {
+        public RSessionProvider(ICoreServices services, IRSessionProviderCallback callback = null) {
             _callback = callback ?? new NullRSessionProviderCallback();
             _brokerProxy = new BrokerClientProxy(_connectCde);
             _services = services;

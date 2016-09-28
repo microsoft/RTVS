@@ -21,7 +21,7 @@ namespace Microsoft.R.Host.Client {
             Console.CancelKeyPress += Console_CancelKeyPress;
 
             using (var logger = new Logger("Program", new MaxLoggingPermissions(), FileLogWriter.InTempFolder("Microsoft.R.Host.Client.Program"))) {
-                var services = new StandardServices(null, null, logger);
+                var services = new CoreServices(null, null, logger);
                 var localConnector = new LocalBrokerClient("Program", args[0], services);
                 var host = localConnector.ConnectAsync("Program", new Program()).GetAwaiter().GetResult();
                 _evaluator = host;

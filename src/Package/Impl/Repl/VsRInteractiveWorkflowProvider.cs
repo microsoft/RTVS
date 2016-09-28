@@ -37,7 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         private readonly IApplicationShell _shell;
         private readonly IWorkspaceServices _wss;
         private readonly IRSettings _settings;
-        private readonly IStandardServices _services;
+        private readonly ICoreServices _services;
 
         private Lazy<IRInteractiveWorkflow> _instanceLazy;
 
@@ -51,7 +51,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             , IApplicationShell shell
             , IWorkspaceServices wss
             , IRSettings settings
-            , IStandardServices services) {
+            , ICoreServices services) {
 
             _connectionsProvider = connectionsProvider;
             _historyProvider = historyProvider;

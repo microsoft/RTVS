@@ -8,7 +8,7 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
 
 namespace Microsoft.Common.Core.Services {
-    public interface IStandardServices: IServiceBag {
+    public interface ICoreServices: IServiceBag {
         ICoreShell CoreShell { get; }
         IActionLog Log { get; }
         ITelemetryService TelemetryService { get; }

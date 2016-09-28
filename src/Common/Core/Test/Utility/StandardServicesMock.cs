@@ -11,8 +11,8 @@ using NSubstitute;
 
 namespace Microsoft.Common.Core.Test.Utility {
     public static class StandardServicesMock {
-        public static IStandardServices Create() {
-            return new StandardServices(
+        public static ICoreServices Create() {
+            return new CoreServices(
                 Substitute.For<ICoreShell>(),
                 Substitute.For<ITelemetryService>(),
                 Substitute.For<IActionLog>(),
