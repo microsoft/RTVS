@@ -10,6 +10,7 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
 using Microsoft.Extensions.Logging;
 using Microsoft.R.Host.Broker.Interpreters;
@@ -71,10 +72,10 @@ namespace Microsoft.R.Host.Broker.Sessions {
             _sessionLogger = sessionLogger;
         }
 
-        public void StartHost(SecureString password, string profilePath, ILogger outputLogger, ILogger messageLogger) {
+        public void StartHost(SecureString password, string profilePath, ILogger outputLogger, ILogger messageLogger, LogVerbosity verbosity) {
             string brokerPath = Path.GetDirectoryName(typeof(Program).Assembly.GetAssemblyPath());
             string rhostExePath = Path.Combine(brokerPath, RHostExe);
-            string arguments = $"--rhost-name \"{Id}\" {CommandLineArguments}";
+            string arguments = $"--rhost-name \"{Id}\" --rhost-log-verbosity {(int)verbosity} {CommandLineArguments}";
             var username = new StringBuilder(NativeMethods.CREDUI_MAX_USERNAME_LENGTH + 1);
             var domain = new StringBuilder(NativeMethods.CREDUI_MAX_PASSWORD_LENGTH + 1);
 

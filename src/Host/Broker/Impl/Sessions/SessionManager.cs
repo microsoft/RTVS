@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Security;
 using System.Security.Principal;
+using Microsoft.Common.Core.Logging;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.R.Host.Broker.Interpreters;
@@ -68,7 +69,8 @@ namespace Microsoft.R.Host.Broker.Sessions {
                 password,
                 profilePath,
                 _loggingOptions.LogHostOutput ? _hostOutputLogger : null,
-                _loggingOptions.LogPackets ? _messageLogger : null);
+                _loggingOptions.LogPackets ? _messageLogger : null,
+                _loggingOptions.LogPackets ? LogVerbosity.Traffic : LogVerbosity.Minimal);
 
             return session;
         }

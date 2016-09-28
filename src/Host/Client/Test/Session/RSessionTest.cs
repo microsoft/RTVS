@@ -7,7 +7,9 @@ using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.OS;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Interpreters;
@@ -117,13 +119,15 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [Test]
         [Category.R.Session]
         public void StartRHostMissing() {
-            var brokerClient = new LocalBrokerClient(nameof(RSessionTest), @"C:\", Substitute.For<IActionLog>(), Environment.SystemDirectory);
+            var brokerClient = new LocalBrokerClient(nameof(RSessionTest), @"C:\", 
+                    Substitute.For<IActionLog>(), Substitute.For<IFileSystem>(), 
+                    Substitute.For<IProcessServices>(),  Environment.SystemDirectory);
             var session = new RSession(0, brokerClient, () => { });
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name
             }, null, 10000);
 
-            start.ShouldThrow<RHostBinaryMissingException>();
+            start.ShouldThrow<RHostBrokerBinaryMissingException>();
         }
 
         [Test]
@@ -135,7 +139,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
             }, null, 10000);
 
             Task.Run(start)
-                .SilenceException<RHostBinaryMissingException>()
+                .SilenceException<RHostBrokerBinaryMissingException>()
                 .DoNotWait();
 
             await session.StopHostAsync();
@@ -146,14 +150,16 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [Test]
         [Category.R.Session]
         public async Task StopBeforeInitialized_RHostMissing() {
-            var brokerClient = new LocalBrokerClient(nameof(RSessionTest), @"C:\", Substitute.For<IActionLog>(), Environment.SystemDirectory);
+            var brokerClient = new LocalBrokerClient(nameof(RSessionTest), @"C:\", 
+                Substitute.For<IActionLog>(), Substitute.For<IFileSystem>(), 
+                Substitute.For<IProcessServices>(), Environment.SystemDirectory);
             var session = new RSession(0, brokerClient, () => { });
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name
             }, null, 10000);
 
             Task.Run(start)
-                .SilenceException<RHostBinaryMissingException>()
+                .SilenceException<RHostBrokerBinaryMissingException>()
                 .DoNotWait();
 
             await session.StopHostAsync();
@@ -162,7 +168,8 @@ namespace Microsoft.R.Host.Client.Test.Session {
         }
 
         private static IBrokerClient CreateLocalBrokerClient(string name) {
-            return new LocalBrokerClient(name, new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath, Substitute.For<IActionLog>());
+            return new LocalBrokerClient(name, new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath, 
+                Substitute.For<IActionLog>(), new FileSystem(), new ProcessServices());
         }
     }
 }

@@ -48,7 +48,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         private BrowserType _webHelpSearchBrowserType = BrowserType.Internal;
         private BrowserType _htmlBrowserType = BrowserType.Internal;
         private BrowserType _markdownBrowserType = BrowserType.External;
-        private LogLevel _logLevel = LogLevel.Normal;
+        private LogVerbosity _logLevel = LogVerbosity.Normal;
 
         public YesNoAsk LoadRDataOnProjectLoad {
             get { return _loadRDataOnProjectLoad; }
@@ -190,7 +190,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set { SetProperty(ref _markdownBrowserType, value); }
         }
 
-        public LogLevel LogLevel {
+        public LogVerbosity LogVerbosity {
             get { return _logLevel; }
             set { SetProperty(ref _logLevel, value); }
         }

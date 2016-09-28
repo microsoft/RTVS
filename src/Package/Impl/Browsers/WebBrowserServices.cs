@@ -23,7 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.Browsers {
         private IRToolsSettings Settings => _settings ?? RToolsSettings.Current;
 
         public WebBrowserServices() : 
-            this(null, ProcessServices.Current, null) {
+            this(null, new ProcessServices(), null) {
         }
 
         public WebBrowserServices(IVsWebBrowsingService wbs, IProcessServices ps, IRToolsSettings settings) {

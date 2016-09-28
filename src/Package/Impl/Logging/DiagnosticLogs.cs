@@ -22,13 +22,15 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
     internal static class DiagnosticLogs {
         public const int DaysToRetain = 5;
         public const int MaximumFileSize = 1024 * 1024;
-        public const string GeneralLogPattern = "RTVS*.log";
-        public const string RtvsGeneralDataFile = "RTVSGeneralData.log";
-        public const string RtvsSystemEventsFile = "RTVSSystemEvents.log";
+        public const string GeneralLogPattern = "RTVS.*.log";
+        public const string RHostLogPattern = "Microsoft.R.Host*.log";
+        public const string RtvsGeneralDataFile = "RTVS-GeneralData.log";
+        public const string RtvsSystemEventsFile = "RTVS-SystemEvents.log";
         public const string RtvsLogZipFile = "RTVSLogs.zip";
 
-        public static IEnumerable<string> RtvsLogFilePatterns => new [] {
+        public static IEnumerable<string> RtvsLogFilePatterns => new[] {
             GeneralLogPattern,
+            RHostLogPattern,
             RtvsGeneralDataFile,
             RtvsSystemEventsFile,
             RtvsLogZipFile
@@ -72,6 +74,9 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
             IEnumerable<string> logs;
 
             logs = GetRecentLogFiles(GeneralLogPattern);
+            _logFiles.AddRange(logs);
+
+            logs = GetRecentLogFiles(RHostLogPattern);
             _logFiles.AddRange(logs);
 
             string roamingFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
@@ -207,7 +212,7 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
                     }
                     writer.WriteLine();
                 }
-                
+
                 var activeConnection = workflow.Connections.ActiveConnection;
                 if (activeConnection != null) {
                     writer.WriteLine("Active R URI:");

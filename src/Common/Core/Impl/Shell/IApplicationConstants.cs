@@ -10,7 +10,7 @@ namespace Microsoft.Common.Core.Shell {
         /// <summary>
         /// Application locale ID (LCID)
         /// </summary>
-        int LocaleId { get; }
+        uint LocaleId { get; }
 
         string LocalMachineHive { get; }
     }

@@ -9,7 +9,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Interpreters;
@@ -209,7 +211,7 @@ namespace Microsoft.R.Host.Client.Session {
                 _brokerProxy.Set(oldBroker);
                 brokerClient.Dispose();
                 BrokerChangeFailed?.Invoke(this, EventArgs.Empty);
-                if (ex is OperationCanceledException || ex is RHostBinaryMissingException) { // RHostDisconnectedException is derived from OperationCanceledException
+                if (ex is OperationCanceledException || ex is RHostBrokerBinaryMissingException) { // RHostDisconnectedException is derived from OperationCanceledException
                     return false;
                 }
                 throw;
@@ -347,7 +349,7 @@ namespace Microsoft.R.Host.Client.Session {
             }
 
             if (uri.IsFile) {
-                return new LocalBrokerClient(name, uri.LocalPath, _log) as IBrokerClient;
+                return new LocalBrokerClient(name, uri.LocalPath, _log, new FileSystem(), new ProcessServices()) as IBrokerClient;
             }
 
             var windowHandle = await _callback.GetApplicationWindowHandleAsync();

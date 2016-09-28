@@ -132,8 +132,8 @@ namespace Microsoft.R.Support.Test.Utility {
 
         public bool EvaluateActiveBindings { get; set; } = false;
 
-        public LogLevel LogLevel {
-            get { return LogLevel.None; }
+        public LogVerbosity LogVerbosity {
+            get { return LogVerbosity.None; }
             set { }
         }
 

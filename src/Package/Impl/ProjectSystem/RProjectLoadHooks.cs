@@ -156,7 +156,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             try {
                 await _surveyNews.CheckSurveyNewsAsync(false);
             } catch (Exception ex) when (!ex.IsCriticalException()) {
-                VsAppShell.Current.Logger.WriteAsync(LogLevel.Normal, MessageCategory.Error, "SurveyNews exception: " + ex.Message).DoNotWait();
+                VsAppShell.Current.Logger.WriteAsync(LogVerbosity.Normal, MessageCategory.Error, "SurveyNews exception: " + ex.Message).DoNotWait();
             }
         }
 

@@ -77,9 +77,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
             ps.When(x => x.Start(Arg.Any<string>())).Do((c) => {
                 c.Args()[0].Should().Be(folder);
             });
-            ProcessServices.Current = ps;
 
-            var cmd = new OpenContainingFolderCommand(null);
+            var cmd = new OpenContainingFolderCommand(null, ps);
             CheckSingleNodeCommandStatus(cmd, RPackageCommandId.icmdOpenContainingFolder, nodes1, nodes2);
         }
 
@@ -98,9 +97,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
             ps.When(x => x.Start(Arg.Any<string>())).Do((c) => {
                 c.Args()[0].Should().Be(folder);
             });
-            ProcessServices.Current = ps;
 
-            var cmd = new OpenCommandPromptCommand();
+            var cmd = new OpenCommandPromptCommand(ps);
             CheckSingleNodeCommandStatus(cmd, RPackageCommandId.icmdOpenCmdPromptHere, nodes1, nodes2);
         }
 

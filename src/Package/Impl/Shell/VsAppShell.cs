@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Design;
@@ -22,6 +23,7 @@ using Microsoft.Languages.Editor.Undo;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.Extensions;
+using Microsoft.R.Components.Settings;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Interop;
@@ -47,15 +49,35 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
     public sealed class VsAppShell : IApplicationShell, IMainThread, IIdleTimeService, IDisposable {
         private static VsAppShell _instance;
         private static IApplicationShell _testShell;
+
+        private readonly ILoggingServices _loggingServices;
+        private readonly ITelemetryService _telemetryService;
+        private readonly IRSettings _settings;
+
         private IdleTimeSource _idleTimeSource;
         private IWritableSettingsStorage _settingStorage;
-        private ILoggingServices _loggingServices;
+
+        [ImportingConstructor]
+        public VsAppShell(ITelemetryService telemetryService, ILoggingServices loggingServices, IRSettings settings) {
+            _telemetryService = telemetryService;
+            _loggingServices = loggingServices;
+            _settings = settings;
+            _settings.PropertyChanged += OnSettingsChanged;
+        }
 
         public static void EnsureInitialized() {
             ThreadHelper.ThrowIfNotOnUIThread();
             var instance = GetInstance();
             if (instance.MainThread == null) {
                 instance.Initialize();
+            }
+        }
+
+        private void OnSettingsChanged(object sender, PropertyChangedEventArgs e) {
+            if(e.PropertyName == nameof(IRSettings.LogVerbosity)) {
+                // Only set it once per session
+                _settings.PropertyChanged -= OnSettingsChanged;
+                _loggingServices.Permissions.CurrentVerbosity = _settings.LogVerbosity;
             }
         }
 
@@ -68,10 +90,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             _idleTimeSource.OnTerminateApp += OnTerminateApp;
 
             EditorShell.Current = this;
-
-            _loggingServices = ExportProvider.GetExportedValue<ILoggingServices>();
-            var loggingPermissions = ExportProvider.GetExportedValue<ILoggingPermissions>();
-            Logger = _loggingServices.Open("RTVS");
+            Logger = _loggingServices.OpenLog("RTVS");
         }
 
         /// <summary>
@@ -112,7 +131,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             var instance = (VsAppShell)componentModel.DefaultExportProvider.GetExportedValue<IApplicationShell>();
             instance.CompositionService = componentModel.DefaultCompositionService;
             instance.ExportProvider = componentModel.DefaultExportProvider;
-            instance.TelemetryService = instance.ExportProvider.GetExportedValue<ITelemetryService>();
 
             return Interlocked.CompareExchange(ref _instance, instance, null) ?? instance;
         }
@@ -269,7 +287,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             });
         }
 
-        public ITelemetryService TelemetryService { get; private set; }
+        public ITelemetryService TelemetryService => _telemetryService;
 
         public bool IsUnitTestEnvironment { get; set; }
 

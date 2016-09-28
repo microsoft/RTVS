@@ -51,19 +51,20 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             var pcsp = exportProvider.GetExportedValue<IProjectConfigurationSettingsProvider>();
             var dbcs = exportProvider.GetExportedValue<IDbConnectionService>();
             var logPerms = exportProvider.GetExportedValue<ILoggingPermissions>();
+            var ps = new ProcessServices();
 
             return new List<MenuCommand> {
                 new GoToOptionsCommand(),
                 new GoToEditorOptionsCommand(),
                 new ImportRSettingsCommand(),
-                new InstallRClientCommand(appShell),
-                new SwitchToRClientCommand(interactiveWorkflow.Connections, appShell),
+                new InstallRClientCommand(appShell, ps),
+                new SwitchToRClientCommand(interactiveWorkflow.Connections, appShell, ps),
                 new SurveyNewsCommand(),
                 new SetupRemoteCommand(),
 
-                new ReportIssueCommand(logPerms, ProcessServices.Current),
-                new SendSmileCommand(logPerms, ProcessServices.Current, appShell.Logger),
-                new SendFrownCommand(logPerms, ProcessServices.Current, appShell.Logger),
+                new ReportIssueCommand(logPerms, ps),
+                new SendSmileCommand(logPerms, ps, appShell.Logger),
+                new SendFrownCommand(logPerms, ps, appShell.Logger),
 
                 new OpenDocumentationCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdRtvsDocumentation, DocumentationUrls.RtvsDocumentation),
                 new OpenDocumentationCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdRtvsSamples, DocumentationUrls.RtvsSamples),

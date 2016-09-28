@@ -25,7 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataSource {
                     return await evaluator.EvaluateAsync<GridData>(expr, REvaluationKind.Normal);
                 } catch (RException ex) {
                     var message = Invariant($"Grid data evaluation failed:{Environment.NewLine}{ex.Message}");
-                    await VsAppShell.Current.Logger.WriteAsync(LogLevel.Normal, MessageCategory.Error, message);
+                    await VsAppShell.Current.Logger.WriteAsync(LogVerbosity.Normal, MessageCategory.Error, message);
                     return null;
                 }
             }

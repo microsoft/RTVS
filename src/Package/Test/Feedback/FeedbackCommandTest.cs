@@ -46,9 +46,11 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
 
         private void TestStatus(OleMenuCommand cmd, ILoggingPermissions lp) {
             lp.IsFeedbackPermitted.Returns(false);
+            var status = cmd.OleStatus;
             cmd.Visible.Should().BeFalse();
 
             lp.IsFeedbackPermitted.Returns(true);
+            status = cmd.OleStatus;
             cmd.Visible.Should().BeTrue();
         }
     }

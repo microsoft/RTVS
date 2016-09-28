@@ -56,6 +56,6 @@ namespace Microsoft.R.Components.Settings {
         /// </summary>
         bool EvaluateActiveBindings { get; set; }
 
-        LogLevel LogLevel { get; set; }
+        LogVerbosity LogVerbosity { get; set; }
     }
 }

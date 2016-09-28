@@ -18,7 +18,7 @@ using Microsoft.VisualStudio.R.Package.Utilities;
 namespace Microsoft.VisualStudio.R.Package.RClient {
     [Export(typeof(IMicrosoftRClientInstaller))]
     internal sealed class MicrosoftRClientInstaller : IMicrosoftRClientInstaller {
-        public void LaunchRClientSetup(ICoreShell coreShell, IFileDownloader downloader = null) {
+        public void LaunchRClientSetup(ICoreShell coreShell, IProcessServices ps, IFileDownloader downloader = null) {
             coreShell.TelemetryService.ReportEvent(TelemetryArea.Configuration, RtvsTelemetry.ConfigurationEvents.RClientInstallYes);
             downloader = downloader ?? new FileDownloader();
 
@@ -38,12 +38,12 @@ namespace Microsoft.VisualStudio.R.Package.RClient {
                 var errorMessage = string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToDownloadRClient, downloadError);
                 coreShell.ShowErrorMessage(errorMessage);
                 coreShell.TelemetryService.ReportEvent(TelemetryArea.Configuration, RtvsTelemetry.ConfigurationEvents.RClientDownloadFailed, errorMessage);
-                coreShell.Logger.WriteAsync(LogLevel.Minimal, MessageCategory.Error, "Microsoft R Client download error: " + errorMessage).DoNotWait();
+                coreShell.Logger.WriteAsync(LogVerbosity.Minimal, MessageCategory.Error, "Microsoft R Client download error: " + errorMessage).DoNotWait();
             } else {
                 // Suppress 'Operation canceled by the user' if user clicks 'No' to elevation dialog.
                 try {
                     coreShell.ShowMessage(Resources.PleaseRestartVisualStudioAfterRClientSetup, MessageButtons.OK);
-                    ProcessServices.Current.Start(rClientExe);
+                    ps.Start(rClientExe);
                 } catch (Win32Exception ex) {
                     if((uint)ex.NativeErrorCode == 0x800704C7) {
                         coreShell.TelemetryService.ReportEvent(TelemetryArea.Configuration, RtvsTelemetry.ConfigurationEvents.RClientInstallCancel);

@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager.Implementation.View;
 using Microsoft.R.Components.ConnectionManager.Implementation.ViewModel;
@@ -32,6 +33,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         private readonly DisposableBag _disposableBag;
         private readonly ConnectionStatusBarViewModel _statusBarViewModel;
         private readonly ConcurrentDictionary<Uri, IConnection> _userConnections;
+        private readonly IProcessServices _ps;
 
         public bool IsConnected { get; private set; }
         public IConnection ActiveConnection { get; private set; }
@@ -41,12 +43,13 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         public event EventHandler RecentConnectionsChanged;
         public event EventHandler<ConnectionEventArgs> ConnectionStateChanged;
 
-        public ConnectionManager(IStatusBar statusBar, IRSettings settings, IRInteractiveWorkflow interactiveWorkflow, IActionLog log) {
+        public ConnectionManager(IStatusBar statusBar, IRSettings settings, IRInteractiveWorkflow interactiveWorkflow, IActionLog log, IProcessServices ps) {
             _statusBar = statusBar;
             _sessionProvider = interactiveWorkflow.RSessions;
             _settings = settings;
             _shell = interactiveWorkflow.Shell;
             _log = log;
+            _ps = ps;
 
             _statusBarViewModel = new ConnectionStatusBarViewModel(this, interactiveWorkflow.Shell);
 
@@ -222,7 +225,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                     var message = string.Format(CultureInfo.InvariantCulture, Resources.NoLocalR, Environment.NewLine + Environment.NewLine, Environment.NewLine);
                     if (_shell.ShowMessage(message, MessageButtons.YesNo) == MessageButtons.Yes) {
                         var installer = _shell.ExportProvider.GetExportedValue<IMicrosoftRClientInstaller>();
-                        installer.LaunchRClientSetup(_shell);
+                        installer.LaunchRClientSetup(_shell, _ps);
                         return connections;
                     }
                 }
@@ -241,7 +244,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 var info = new RInterpreterInfo(name, path);
                 return info.VerifyInstallation();
             } catch (Exception ex) when (!ex.IsCriticalException()) {
-                _log.WriteAsync(LogLevel.Normal, MessageCategory.Error, ex.Message).DoNotWait();
+                _log.WriteAsync(LogVerbosity.Normal, MessageCategory.Error, ex.Message).DoNotWait();
             }
             return false;
         }
@@ -251,7 +254,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 Uri uri;
                 return Uri.TryCreate(path, UriKind.Absolute, out uri) && !uri.IsFile;
             } catch (Exception ex) when (!ex.IsCriticalException()) {
-                _log.WriteAsync(LogLevel.Normal, MessageCategory.Error, ex.Message).DoNotWait();
+                _log.WriteAsync(LogVerbosity.Normal, MessageCategory.Error, ex.Message).DoNotWait();
             }
             return false;
         }

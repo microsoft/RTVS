@@ -7,23 +7,16 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
     [Export(typeof(IApplicationConstants))]
-    sealed class ApplicationConstants : IApplicationConstants {
-        private readonly IApplicationShell _shell;
-
-        [ImportingConstructor]
-        public ApplicationConstants(IApplicationShell shell) {
-            _shell = shell;
-        }
-
+    public sealed class ApplicationConstants : IApplicationConstants {
         /// <summary>
         /// Returns host locale ID
         /// </summary>
-        public int LocaleId {
+        public uint LocaleId {
             get {
-                var hostLocale = _shell.GetGlobalService<IUIHostLocale>(typeof(SUIHostLocale));
+                var hostLocale = VsAppShell.Current.GetGlobalService<IUIHostLocale>(typeof(SUIHostLocale));
                 uint lcid;
                 if (hostLocale != null && hostLocale.GetUILocale(out lcid) == VSConstants.S_OK) {
-                    return (int)lcid;
+                    return lcid;
                 }
                 return 0;
             }

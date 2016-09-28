@@ -25,15 +25,15 @@ namespace Microsoft.Common.Core.Logging {
     /// </remarks>
     [Export(typeof(ILoggingPermissions))]
     internal sealed class LoggingPermissions : ILoggingPermissions {
-        internal const string LogLevelValueName = "LogLevel";
+        internal const string LogVerbosityValueName = "LogVerbosity";
         internal const string FeedbackValueName = "Feedback";
 
         private readonly IApplicationConstants _appConstants;
         private readonly ITelemetryService _telemetryService;
         private readonly IRegistry _registry;
 
-        private LogLevel _currentLogLevel;
-        private LogLevel? _registryLogLevel;
+        private LogVerbosity _currentVerbosity;
+        private LogVerbosity? _registryVerbosity;
         private int? _registryFeedbackSetting;
 
         [ImportingConstructor]
@@ -42,28 +42,28 @@ namespace Microsoft.Common.Core.Logging {
             _telemetryService = telemetryService;
             _registry = registry ?? new RegistryImpl();
 
-            _registryLogLevel = GetLogLevelFromRegistry();
+            _registryVerbosity = GetLogLevelFromRegistry();
             _registryFeedbackSetting = GetFeedbackFromRegistry();
         }
 
-        public LogLevel Current {
-            get { return _currentLogLevel; }
-            set { _currentLogLevel = MathExtensions.Min(value, MaxLogLevel); }
+        public LogVerbosity CurrentVerbosity {
+            get { return _currentVerbosity; }
+            set { _currentVerbosity = MathExtensions.Min(value, MaxVerbosity); }
         }
 
-        public LogLevel MaxLogLevel => GetEffectiveLogLevel();
+        public LogVerbosity MaxVerbosity => GetEffectiveVerbosity();
 
         public bool IsFeedbackPermitted => GetEffectiveFeedbackSetting();
 
-        private LogLevel GetEffectiveLogLevel() {
-            LogLevel adminSetValue;
+        private LogVerbosity GetEffectiveVerbosity() {
+            LogVerbosity adminSetValue;
             if (_telemetryService.IsEnabled) {
-                adminSetValue = _registryLogLevel.HasValue ? _registryLogLevel.Value : LogLevel.Traffic;
-                return MathExtensions.Min(adminSetValue, LogLevel.Traffic);
+                adminSetValue = _registryVerbosity.HasValue ? _registryVerbosity.Value : LogVerbosity.Traffic;
+                return MathExtensions.Min(adminSetValue, LogVerbosity.Traffic);
             }
             // If telemetry is disabled, registry setting allows increase in the logging level.
-            adminSetValue = _registryLogLevel.HasValue ? _registryLogLevel.Value : LogLevel.None;
-            return MathExtensions.Max(_registryLogLevel.HasValue ? _registryLogLevel.Value : LogLevel.None, LogLevel.Minimal);
+            adminSetValue = _registryVerbosity.HasValue ? _registryVerbosity.Value : LogVerbosity.None;
+            return MathExtensions.Max(_registryVerbosity.HasValue ? _registryVerbosity.Value : LogVerbosity.None, LogVerbosity.Minimal);
         }
 
         private bool GetEffectiveFeedbackSetting() {
@@ -77,8 +77,8 @@ namespace Microsoft.Common.Core.Logging {
             return MathExtensions.Max(adminSetValue, 0) == 1;
         }
 
-        private LogLevel? GetLogLevelFromRegistry() {
-            return (LogLevel?)GetValueFromRegistry(LogLevelValueName, (int)LogLevel.None, (int)LogLevel.Traffic);
+        private LogVerbosity? GetLogLevelFromRegistry() {
+            return (LogVerbosity?)GetValueFromRegistry(LogVerbosityValueName, (int)LogVerbosity.None, (int)LogVerbosity.Traffic);
         }
 
         private int? GetFeedbackFromRegistry() {

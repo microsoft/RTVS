@@ -3,9 +3,9 @@
 
 namespace Microsoft.Common.Core.Logging {
     /// <summary>
-    /// Defines level of logging the application performs
+    /// Defines verbosity of logging the application performs
     /// </summary>
-    public enum LogLevel {
+    public enum LogVerbosity {
         /// <summary>
         /// Logging is completely off
         /// </summary>

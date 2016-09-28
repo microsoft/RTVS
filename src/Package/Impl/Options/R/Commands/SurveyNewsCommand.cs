@@ -21,7 +21,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
                 var service = VsAppShell.Current.ExportProvider.GetExportedValue<ISurveyNewsService>();
                 await service.CheckSurveyNewsAsync(true);
             } catch (Exception ex) when (!ex.IsCriticalException()) {
-                VsAppShell.Current.Logger.WriteAsync(LogLevel.Normal, MessageCategory.Error, "SurveyNewsCommand exception: " + ex.Message).DoNotWait();
+                VsAppShell.Current.Logger.WriteAsync(LogVerbosity.Normal, MessageCategory.Error, "SurveyNewsCommand exception: " + ex.Message).DoNotWait();
             }
         }
     }

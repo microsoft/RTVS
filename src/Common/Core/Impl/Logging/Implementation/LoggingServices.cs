@@ -2,21 +2,24 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.ComponentModel.Composition;
+using System.Threading;
 
 namespace Microsoft.Common.Core.Logging.Implementation {
     [Export(typeof(ILoggingServices))]
     internal sealed class LoggingServices : ILoggingServices {
         private static Logger _instance;
-        private readonly ILoggingPermissions _permissions;
 
         [ImportingConstructor]
         public LoggingServices(ILoggingPermissions permissions) {
-            _permissions = permissions;
+            Permissions = permissions;
         }
 
-        public IActionLog Open(string appName) {
+        public ILoggingPermissions Permissions { get; }
+
+        public IActionLog OpenLog(string appName) {
             if (_instance == null) {
-                _instance = new Logger(appName, _permissions.MaxLogLevel, writer: null);
+                var instance = new Logger(appName, Permissions, writer: null);
+                Interlocked.Exchange(ref _instance, instance);
             }
             return _instance;
         }

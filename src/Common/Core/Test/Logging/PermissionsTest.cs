@@ -18,20 +18,20 @@ namespace Microsoft.Common.Core.Test.Logging {
     [Category.Logging]
     public class PermissionsTest {
         [CompositeTest]
-        [InlineData(true, null, null, LogLevel.Traffic, true)]
-        [InlineData(false, null, null, LogLevel.Minimal, false)]
-        [InlineData(true, (int)LogLevel.Normal, null, LogLevel.Normal, true)]
-        [InlineData(false, (int)LogLevel.Normal, null, LogLevel.Normal, false)]
-        [InlineData(true, (int)LogLevel.Minimal, 0, LogLevel.Minimal, false)]
-        [InlineData(false, (int)LogLevel.Traffic, 1, LogLevel.Traffic, true)]
-        [InlineData(true, -1, -1, (int)LogLevel.Traffic, true)]
-        [InlineData(false, 42, 42, (int)LogLevel.Minimal, false)]
-        public void Overrides(bool telemetryEnabled, int? logLevel, int? feedbackSetting, LogLevel expectedMaxLogLevel, bool expectedFeedback) {
+        [InlineData(true, null, null, LogVerbosity.Traffic, true)]
+        [InlineData(false, null, null, LogVerbosity.Minimal, false)]
+        [InlineData(true, (int)LogVerbosity.Normal, null, LogVerbosity.Normal, true)]
+        [InlineData(false, (int)LogVerbosity.Normal, null, LogVerbosity.Normal, false)]
+        [InlineData(true, (int)LogVerbosity.Minimal, 0, LogVerbosity.Minimal, false)]
+        [InlineData(false, (int)LogVerbosity.Traffic, 1, LogVerbosity.Traffic, true)]
+        [InlineData(true, -1, -1, (int)LogVerbosity.Traffic, true)]
+        [InlineData(false, 42, 42, (int)LogVerbosity.Minimal, false)]
+        public void Overrides(bool telemetryEnabled, int? logVerbosity, int? feedbackSetting, LogVerbosity expectedMaxLogLevel, bool expectedFeedback) {
             var constants = Substitute.For<IApplicationConstants>();
             constants.LocalMachineHive.Returns("rtvs");
 
             var rtvsKey = Substitute.For<IRegistryKey>(); ;
-            rtvsKey.GetValue(LoggingPermissions.LogLevelValueName).Returns(logLevel);
+            rtvsKey.GetValue(LoggingPermissions.LogVerbosityValueName).Returns(logVerbosity);
             rtvsKey.GetValue(LoggingPermissions.FeedbackValueName).Returns(feedbackSetting);
 
             var hklm = Substitute.For<IRegistryKey>();
@@ -44,15 +44,15 @@ namespace Microsoft.Common.Core.Test.Logging {
             telemetry.IsEnabled.Returns(telemetryEnabled);
 
             var permissions = new LoggingPermissions(constants, telemetry, registry);
-            permissions.MaxLogLevel.Should().Be(expectedMaxLogLevel);
+            permissions.MaxVerbosity.Should().Be(expectedMaxLogLevel);
             permissions.IsFeedbackPermitted.Should().Be(expectedFeedback);
 
-            if (logLevel.HasValue) {
-                var values = Enum.GetValues(typeof(LogLevel));
+            if (logVerbosity.HasValue) {
+                var values = Enum.GetValues(typeof(LogVerbosity));
                 foreach (var v in values) {
-                    permissions.Current = (LogLevel)v;
-                    ((int)permissions.Current).Should().BeGreaterOrEqualTo((int)LogLevel.None);
-                    ((int)permissions.Current).Should().BeLessOrEqualTo((int)permissions.MaxLogLevel);
+                    permissions.CurrentVerbosity = (LogVerbosity)v;
+                    ((int)permissions.CurrentVerbosity).Should().BeGreaterOrEqualTo((int)LogVerbosity.None);
+                    ((int)permissions.CurrentVerbosity).Should().BeLessOrEqualTo((int)permissions.MaxVerbosity);
                 }
             }
         }

@@ -14,22 +14,24 @@ namespace Microsoft.Common.Core.Test.Logging {
     [Category.Logging]
     public class LoggerTest {
         [CompositeTest]
-        [InlineData(LogLevel.None)]
-        [InlineData(LogLevel.Minimal)]
-        [InlineData(LogLevel.Normal)]
-        [InlineData(LogLevel.Traffic)]
-        public async Task LogLevels(LogLevel level) {
+        [InlineData(LogVerbosity.None)]
+        [InlineData(LogVerbosity.Minimal)]
+        [InlineData(LogVerbosity.Normal)]
+        [InlineData(LogVerbosity.Traffic)]
+        public async Task Verbosity(LogVerbosity verbosity) {
             var writer = Substitute.For<IActionLogWriter>();
+            var perm = Substitute.For<ILoggingPermissions>();
+            perm.CurrentVerbosity.Returns(verbosity);
 
-            var log = new Logger(string.Empty, level, writer);
-            await log.WriteAsync(LogLevel.None, MessageCategory.Error, "message0");
-            await log.WriteAsync(LogLevel.Minimal, MessageCategory.Error, "message1");
-            await log.WriteAsync(LogLevel.Normal, MessageCategory.Error, "message2");
-            await log.WriteAsync(LogLevel.Traffic, MessageCategory.Error, "message3");
+            var log = new Logger(string.Empty, perm, writer);
+            await log.WriteAsync(LogVerbosity.None, MessageCategory.Error, "message0");
+            await log.WriteAsync(LogVerbosity.Minimal, MessageCategory.Error, "message1");
+            await log.WriteAsync(LogVerbosity.Normal, MessageCategory.Error, "message2");
+            await log.WriteAsync(LogVerbosity.Traffic, MessageCategory.Error, "message3");
 
             int i = 0;
-            foreach(var v in Enum.GetValues(typeof(LogLevel))) {
-                if ((int)v > (int)LogLevel.None && (int)v <= (int)level) {
+            foreach(var v in Enum.GetValues(typeof(LogVerbosity))) {
+                if ((int)v > (int)LogVerbosity.None && (int)v <= (int)verbosity) {
                     await writer.Received().WriteAsync(MessageCategory.Error, "message" + i.ToString());
                 } else {
                     await writer.DidNotReceive().WriteAsync(MessageCategory.Error, "message" + i.ToString());
@@ -39,7 +41,7 @@ namespace Microsoft.Common.Core.Test.Logging {
 
             writer.DidNotReceive().Flush();
 
-            if (level > LogLevel.None) {
+            if (verbosity > LogVerbosity.None) {
                 log.Flush();
                 writer.Received().Flush();
             }

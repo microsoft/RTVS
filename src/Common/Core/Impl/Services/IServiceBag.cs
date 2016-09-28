@@ -3,8 +3,8 @@
 
 using System;
 
-namespace Microsoft.Common.Core.Logging {
-    public interface ILoggingServices: IDisposable {
-        IActionLog Open(string appName);
+namespace Microsoft.Common.Core.Services {
+    public interface IServiceBag : IServiceProvider {
+        T GetService<T>() where T : class;
     }
 }

@@ -16,8 +16,11 @@ using Microsoft.VisualStudio.ProjectSystem.Designers;
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     internal abstract class CommandPromptCommand : ICommandGroupHandler {
         private readonly int _commandId;
-        public CommandPromptCommand(int id) {
+        private readonly IProcessServices _ps;
+
+        public CommandPromptCommand(int id, IProcessServices ps) {
             _commandId = id;
+            _ps = ps;
         }
 
         public CommandStatusResult GetCommandStatus(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus progressiveStatus) {
@@ -38,7 +41,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
                     path = path.TrimTrailingSlash();
                     var psi = new ProcessStartInfo();
                     SetFlags(psi, path);
-                    ProcessServices.Current.Start(psi);
+                    _ps.Start(psi);
                 }
                 return true;
             }

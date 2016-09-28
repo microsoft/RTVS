@@ -10,7 +10,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Threading;
 using Newtonsoft.Json;
 
@@ -25,6 +27,8 @@ namespace Microsoft.R.Host.Client.Host {
         private readonly string _rhostDirectory;
         private readonly string _rHome;
         private readonly BinaryAsyncLock _connectLock = new BinaryAsyncLock();
+        private readonly IFileSystem _fs;
+        private readonly IProcessServices _ps;
 
         private Process _brokerProcess;
 
@@ -39,11 +43,13 @@ namespace Microsoft.R.Host.Client.Host {
             }
         }
 
-        public LocalBrokerClient(string name, string rHome, IActionLog log, string rhostDirectory = null)
+        public LocalBrokerClient(string name, string rHome, IActionLog log, IFileSystem fs, IProcessServices ps, string rhostDirectory = null)
             : base(name, new Uri(rHome), InterpreterId, log) {
 
             _rhostDirectory = rhostDirectory ?? Path.GetDirectoryName(typeof(RHost).Assembly.GetAssemblyPath());
             _rHome = rHome;
+            _fs = fs;
+            _ps = ps;
         }
 
         public override async Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken()) {
@@ -70,21 +76,21 @@ namespace Microsoft.R.Host.Client.Host {
             Trace.Assert(_brokerProcess == null);
 
             string rhostBrokerExe = Path.Combine(_rhostDirectory, RHostBrokerExe);
-            if (!File.Exists(rhostBrokerExe)) {
-                throw new RHostBinaryMissingException();
+            if (!_fs.FileExists(rhostBrokerExe)) {
+                throw new RHostBrokerBinaryMissingException();
             }
 
             Process process = null;
             try {
                 string pipeName = Guid.NewGuid().ToString();
-               
+
                 using (var serverUriPipe = new NamedPipeServerStream(pipeName, PipeDirection.In)) {
                     var psi = new ProcessStartInfo {
                         FileName = rhostBrokerExe,
                         UseShellExecute = false,
                         Arguments =
-                            $" --logging:logHostOutput true" +
-                            $" --logging:logPackets true" +
+                            $" --logging:logHostOutput {Log.LogVerbosity <= LogVerbosity.Normal}" +
+                            $" --logging:logPackets {Log.LogVerbosity == LogVerbosity.Traffic}" +
                             $" --server.urls http://127.0.0.1:0" + // :0 means first available ephemeral port
                             $" --startup:name \"{Name}\"" +
                             $" --startup:writeServerUrlsToPipe {pipeName}" +
@@ -99,7 +105,7 @@ namespace Microsoft.R.Host.Client.Host {
                         psi.CreateNoWindow = true;
                     }
 
-                    process = Process.Start(psi);
+                    process = _ps.Start(psi);
                     process.EnableRaisingEvents = true;
 
                     var cts = new CancellationTokenSource(10000);

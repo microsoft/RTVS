@@ -175,13 +175,13 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [CustomLocDisplayName("Settings_LogLevel")]
         [LocDescription("Settings_LogLevel_Description")]
 #if DEBUG
-        [DefaultValue(LogLevel.Traffic)]
+        [DefaultValue(LogVerbosity.Traffic)]
 #else
         [DefaultValue(LogLevel.Normal)]
 #endif
-        public LogLevel LogLevel {
-            get { return RToolsSettings.Current.LogLevel; }
-            set { RToolsSettings.Current.LogLevel = value; }
+        public LogVerbosity LogLevel {
+            get { return RToolsSettings.Current.LogVerbosity; }
+            set { RToolsSettings.Current.LogVerbosity = value; }
         }
 
         /// <summary>

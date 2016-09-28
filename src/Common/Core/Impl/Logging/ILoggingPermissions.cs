@@ -9,7 +9,7 @@ namespace Microsoft.Common.Core.Logging {
         /// <summary>
         /// Defines maximum allowable logging level.
         /// </summary>
-        LogLevel MaxLogLevel { get; }
+        LogVerbosity MaxVerbosity { get; }
 
         /// <summary>
         /// Is user permitted to send feedback
@@ -20,6 +20,6 @@ namespace Microsoft.Common.Core.Logging {
         /// Currently set logging level (usually via Tools | Options). 
         /// Cannot exceeed maximum level.
         /// </summary>
-        LogLevel Current { get; set; }
+        LogVerbosity CurrentVerbosity { get; set; }
     }
 }

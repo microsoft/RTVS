@@ -606,7 +606,7 @@ namespace Microsoft.R.Host.Client {
                 throw new OperationCanceledException(new OperationCanceledException().Message, ex);
             } catch (Exception ex) {
                 var message = "Exception in RHost run loop:\n" + ex;
-                _log.WriteLineAsync(LogLevel.Minimal, MessageCategory.Error, message).DoNotWait();
+                _log.WriteLineAsync(LogVerbosity.Minimal, MessageCategory.Error, message).DoNotWait();
                 Debug.Fail(message);
                 throw;
             } finally {

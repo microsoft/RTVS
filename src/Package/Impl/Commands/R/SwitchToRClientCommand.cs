@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Interpreters;
@@ -11,11 +12,13 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
     internal sealed class SwitchToRClientCommand : PackageCommand {
         private readonly IConnectionManager _connectionManager;
         private readonly ICoreShell _shell;
+        private readonly IProcessServices _ps;
 
-        public SwitchToRClientCommand(IConnectionManager connectionManager, ICoreShell shell) :
+        public SwitchToRClientCommand(IConnectionManager connectionManager, ICoreShell shell, IProcessServices ps) :
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSwitchToRClient) {
             _connectionManager = connectionManager;
             _shell = shell;
+            _ps = ps;
         }
 
         protected override void SetStatus() {
@@ -27,7 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
             if (string.IsNullOrEmpty(rClientPath)) {
                 if (_shell.ShowMessage(Resources.Prompt_RClientNotInstalled, MessageButtons.YesNo) == MessageButtons.Yes) {
                     var installer = _shell.ExportProvider.GetExportedValue<IMicrosoftRClientInstaller>();
-                    installer.LaunchRClientSetup(_shell);
+                    installer.LaunchRClientSetup(_shell, _ps);
                     return;
                 }
             }

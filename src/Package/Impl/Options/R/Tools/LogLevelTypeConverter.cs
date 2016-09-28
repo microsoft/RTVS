@@ -21,7 +21,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
 
         public LogLevelTypeConverter() {
             var permissions = VsAppShell.Current.ExportProvider.GetExportedValue<ILoggingPermissions>();
-            _maxLogLevel = (int)permissions.MaxLogLevel;
+            _maxLogLevel = (int)permissions.MaxVerbosity;
         }
 
         public override bool GetStandardValuesSupported(ITypeDescriptorContext context) => true;
