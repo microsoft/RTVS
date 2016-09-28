@@ -12,6 +12,7 @@ using System.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -21,6 +22,7 @@ using Microsoft.R.Host.Client.Extensions;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Utilities;
 using Task = System.Threading.Tasks.Task;
@@ -57,7 +59,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
 
             try {
                 statusBar.SetText(Resources.Status_WritingCSV);
-                await CreateCsvAndStartProcess(result, session, file, fileSystem, processServices, statusBar);
+                using (ProgressBarSession<ThreadedWaitDialogProgressData> progressBarSession = (ProgressBarSession<ThreadedWaitDialogProgressData>)appShell.ShowProgressBarWithUpdate(Resources.Status_WritingCSV, 500)) {
+                    await CreateCsvAndStartProcess(result, session, file, fileSystem, processServices, progressBarSession.Progress);
+                }
+                if (fileSystem.FileExists(file)) {
+                    processServices.Start(file);
+                }
             } catch (Win32Exception ex) {
                 appShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotOpenCsv, ex.Message));
             } catch (IOException ex) {
@@ -69,27 +76,22 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
             Interlocked.Exchange(ref _busy, 0);
         }
 
-        private static async Task CreateCsvAndStartProcess(IREvaluationResultInfo result, IRSession session, string fileName, IFileSystem fileSystem, IProcessServices processServices, IVsStatusbar statusBar) {
+        private static async Task CreateCsvAndStartProcess(IREvaluationResultInfo result, IRSession session, string fileName, IFileSystem fileSystem, IProcessServices processServices, IProgress<ThreadedWaitDialogProgressData> progress) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             var sep = CultureInfo.CurrentCulture.TextInfo.ListSeparator;
             var dec = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
-
-            using (var e = await session.BeginEvaluationAsync()) {
+            using (var e = await session.BeginEvaluationAsync()) { 
                 var csvDataBlobId = await e.EvaluateAsync<ulong>($"rtvs:::export_to_csv({result.Expression}, sep={sep.ToRStringLiteral()}, dec={dec.ToRStringLiteral()})", REvaluationKind.Normal);
                 using (DataTransferSession dts = new DataTransferSession(session, fileSystem)) {
-                    uint cookie = 0;
-                    statusBar.Progress(ref cookie, 1, Resources.Status_WritingCSV, 0, 0);
-                    uint total = (uint)await session.GetBlobSizeAsync(csvDataBlobId, CancellationToken.None);
+                    long total = await session.GetBlobSizeAsync(csvDataBlobId, CancellationToken.None);
+                    progress.Report(new ThreadedWaitDialogProgressData(Resources.Status_WritingCSV, null, Resources.Status_WritingCSV, true, 0, 100));
                     await dts.FetchFileAsync(new RBlobInfo(csvDataBlobId), fileName, true, new Progress<long>((b) => {
-                        statusBar.Progress(ref cookie, 1, Resources.Status_WritingCSV, (uint)b, total);
+                        int step = (int)((b * 100) / total);
+                        progress.Report(new ThreadedWaitDialogProgressData(Resources.Status_WritingCSV, null, Resources.Status_WritingCSV, true, step, 100));
                     }));
-                    statusBar.Progress(ref cookie, 0, Resources.Status_WritingCSV, 0, 0);
+                    progress.Report(new ThreadedWaitDialogProgressData(Resources.Status_WritingCSV, null, Resources.Status_WritingCSV, true, 100, 100));
                 }
-            }
-
-            if (fileSystem.FileExists(fileName)) {
-                processServices.Start(fileName);
             }
         }
 
