@@ -2,8 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.Common.Core.Settings;
 using Microsoft.Languages.Core.Formatting;
-using Microsoft.Languages.Core.Settings;
 using Microsoft.Languages.Editor.Settings;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;

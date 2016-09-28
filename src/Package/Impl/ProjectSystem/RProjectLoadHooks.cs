@@ -54,6 +54,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         private readonly IRInteractiveWorkflowProvider _workflowProvider;
         private readonly IInteractiveWindowComponentContainerFactory _componentContainerFactory;
         private readonly IProjectItemDependencyProvider _dependencyProvider;
+        private readonly ICoreShell _coreShell;
 
         private IRInteractiveWorkflow _workflow;
         private IRSession _session;
@@ -84,13 +85,14 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             _threadHandling = threadHandling;
             _surveyNews = surveyNews;
             _dependencyProvider = dependencyProvider;
+            _coreShell = coreShell;
 
             _projectDirectory = unconfiguredProject.GetProjectDirectory();
 
             unconfiguredProject.ProjectUnloading += ProjectUnloading;
-            _fileWatcher = new MsBuildFileSystemWatcher(_projectDirectory, "*", 25, 1000, _fileSystem, new RMsBuildFileSystemFilter(), coreShell.Logger);
+            _fileWatcher = new MsBuildFileSystemWatcher(_projectDirectory, "*", 25, 1000, _fileSystem, new RMsBuildFileSystemFilter(), coreShell.Services.Log);
             _fileWatcher.Error += FileWatcherError;
-            Project = new FileSystemMirroringProject(unconfiguredProject, projectLockService, _fileWatcher, _dependencyProvider, coreShell.Logger);
+            Project = new FileSystemMirroringProject(unconfiguredProject, projectLockService, _fileWatcher, _dependencyProvider, coreShell.Services.Log);
         }
 
         [AppliesTo(ProjectConstants.RtvsProjectCapability)]
@@ -156,7 +158,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             try {
                 await _surveyNews.CheckSurveyNewsAsync(false);
             } catch (Exception ex) when (!ex.IsCriticalException()) {
-                VsAppShell.Current.Logger.WriteAsync(LogVerbosity.Normal, MessageCategory.Error, "SurveyNews exception: " + ex.Message).DoNotWait();
+                _coreShell.Services.Log.WriteAsync(LogVerbosity.Normal, MessageCategory.Error, "SurveyNews exception: " + ex.Message).DoNotWait();
             }
         }
 

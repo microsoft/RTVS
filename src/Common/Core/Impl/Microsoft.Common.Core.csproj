@@ -74,6 +74,7 @@
     <Compile Include="Services\ICoreServices.cs" />
     <Compile Include="Services\ServiceBag.cs" />
     <Compile Include="Services\CoreServices.cs" />
+    <Compile Include="Settings\ISettingsStorage.cs" />
     <Compile Include="Shell\IApplicationConstants.cs" />
     <Compile Include="Shell\ProgressBarSession.cs" />
     <Compile Include="Tasks\TaskCompletionSourceEx.cs" />
@@ -133,6 +134,7 @@
     <Compile Include="Telemetry\TelemetryServiceBase.cs" />
     <Compile Include="Threading\BinaryAsyncLock.cs" />
     <Compile Include="Threading\DelayedAsyncAction.cs" />
+    <Compile Include="Threading\IMainThread.cs" />
     <Compile Include="Versions\Toolset.cs" />
   </ItemGroup>
   <ItemGroup>

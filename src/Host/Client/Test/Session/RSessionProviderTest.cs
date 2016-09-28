@@ -5,7 +5,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Test.Utility;
+using Microsoft.Common.Core.Test.Shell;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.Threading;
@@ -17,7 +17,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
     public class RSessionProviderTest {
         [Test]
         public void Lifecycle() {
-            var sessionProvider = new RSessionProvider(StandardServicesMock.Create());
+            var sessionProvider = new RSessionProvider(TestCoreServices.CreateSubstitute());
             // ReSharper disable once AccessToDisposedClosure
             Action a = () => sessionProvider.GetOrCreate(new Guid());
             a.ShouldNotThrow();
@@ -28,7 +28,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
         [Test]
         public void GetOrCreate() {
-            using (var sessionProvider = new RSessionProvider(StandardServicesMock.Create())) {
+            using (var sessionProvider = new RSessionProvider(TestCoreServices.CreateSubstitute())) {
                 var guid = new Guid();
                 var session1 = sessionProvider.GetOrCreate(guid);
                 session1.Should().NotBeNull();
@@ -45,7 +45,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
         [Test]
         public void ParallelAccess() {
-            using (var sessionProvider = new RSessionProvider(StandardServicesMock.Create())) {
+            using (var sessionProvider = new RSessionProvider(TestCoreServices.CreateSubstitute())) {
                 var guids = new[] { new Guid(), new Guid() };
                 ParallelTools.Invoke(100, i => {
                     var session = sessionProvider.GetOrCreate(guids[i % 2]);
@@ -56,7 +56,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
         [Test]
         public async Task ConnectWhenSwitching() {
-            using (var sessionProvider = new RSessionProvider(StandardServicesMock.Create())) {
+            using (var sessionProvider = new RSessionProvider(TestCoreServices.CreateSubstitute())) {
                 var guid1 = new Guid();
                 var guid2 = new Guid();
                 var session1 = sessionProvider.GetOrCreate(guid1);
@@ -82,7 +82,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
         [Test]
         public async Task SwitchWhenConnecting() {
-            using (var sessionProvider = new RSessionProvider(StandardServicesMock.Create())) {
+            using (var sessionProvider = new RSessionProvider(TestCoreServices.CreateSubstitute())) {
                 var guid = new Guid();
                 var session = sessionProvider.GetOrCreate(guid);
 
@@ -110,7 +110,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
         [Test]
         public async Task SwitchToInvalid() {
-            using (var sessionProvider = new RSessionProvider(StandardServicesMock.Create())) {
+            using (var sessionProvider = new RSessionProvider(TestCoreServices.CreateSubstitute())) {
                 var guid = new Guid();
                 var session = sessionProvider.GetOrCreate(guid);
                 await sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(SwitchToTheSameBroker));
@@ -132,7 +132,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
         [Test]
         public async Task SwitchWhileEnsureHostStartedAsyncFailed() {
-            using (var sessionProvider = new RSessionProvider(StandardServicesMock.Create())) {
+            using (var sessionProvider = new RSessionProvider(TestCoreServices.CreateSubstitute())) {
                 var guid = new Guid();
                 var session = sessionProvider.GetOrCreate(guid);
                 var startTask = session.EnsureHostStartedAsync(new RHostStartupInfo {
@@ -148,7 +148,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
         [Test]
         public async Task SwitchToTheSameBroker() {
-            using (var sessionProvider = new RSessionProvider(StandardServicesMock.Create())) {
+            using (var sessionProvider = new RSessionProvider(TestCoreServices.CreateSubstitute())) {
                 var guid = new Guid();
                 var session = sessionProvider.GetOrCreate(guid);
                 await sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(SwitchToTheSameBroker));
@@ -167,7 +167,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
         [Test]
         public async Task SwitchToTheSameBroker_NoSessions() {
-            using (var sessionProvider = new RSessionProvider(StandardServicesMock.Create())) {
+            using (var sessionProvider = new RSessionProvider(TestCoreServices.CreateSubstitute())) {
                 var switch1Task = sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(SwitchToTheSameBroker));
                 var switch2Task = sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(SwitchToTheSameBroker));
                 await Task.WhenAll(switch1Task, switch2Task);
@@ -187,7 +187,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [InlineData(800)]
         [CompositeTest]
         public async Task SwitchBrokerWithCancellation(int timeout) {
-            using (var sessionProvider = new RSessionProvider(StandardServicesMock.Create())) {
+            using (var sessionProvider = new RSessionProvider(TestCoreServices.CreateSubstitute())) {
                 var guid = new Guid();
                 var session = sessionProvider.GetOrCreate(guid);
                 await sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(SwitchBrokerWithCancellation));

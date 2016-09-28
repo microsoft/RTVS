@@ -4,7 +4,8 @@
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Common.Core.Logging;
-using Microsoft.Common.Core.OS;
+using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Test.Shell;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.Feedback;
 using Microsoft.VisualStudio.Shell;
@@ -15,41 +16,38 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
     public class FeedbackCommandTest {
+        private readonly ILoggingPermissions _lp;
+        private readonly ICoreServices _services;
+
+        public FeedbackCommandTest() {
+            _lp = Substitute.For<ILoggingPermissions>();
+            _services = TestCoreServices.CreateSubstitute();
+        }
+
         [Test]
         public void ReportIssue() {
-            var lp = Substitute.For<ILoggingPermissions>();
-            var pss = Substitute.For<IProcessServices>();
-
-            var cmd = new ReportIssueCommand(lp, pss);
-            TestStatus(cmd, lp);
+            var cmd = new ReportIssueCommand(_lp, _services.ProcessServices);
+            TestStatus(cmd);
         }
 
         [Test]
         public void SendFrown() {
-            var lp = Substitute.For<ILoggingPermissions>();
-            var pss = Substitute.For<IProcessServices>();
-            var log = Substitute.For<IActionLog>();
-
-            var cmd = new SendFrownCommand(lp, pss, log);
-            TestStatus(cmd, lp);
+            var cmd = new SendFrownCommand(_lp, _services);
+            TestStatus(cmd);
         }
 
         [Test]
         public void SendSmile() {
-            var lp = Substitute.For<ILoggingPermissions>();
-            var pss = Substitute.For<IProcessServices>();
-            var log = Substitute.For<IActionLog>();
-
-            var cmd = new SendSmileCommand(lp, pss, log);
-            TestStatus(cmd, lp);
+            var cmd = new SendSmileCommand(_lp, _services);
+            TestStatus(cmd);
         }
 
-        private void TestStatus(OleMenuCommand cmd, ILoggingPermissions lp) {
-            lp.IsFeedbackPermitted.Returns(false);
+        private void TestStatus(OleMenuCommand cmd) {
+            _lp.IsFeedbackPermitted.Returns(false);
             var status = cmd.OleStatus;
             cmd.Visible.Should().BeFalse();
 
-            lp.IsFeedbackPermitted.Returns(true);
+            _lp.IsFeedbackPermitted.Returns(true);
             status = cmd.OleStatus;
             cmd.Visible.Should().BeTrue();
         }

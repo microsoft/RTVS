@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
@@ -19,7 +20,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
     }
 
     internal static class LongOperationNotification {
-        public static bool ShowWaitingPopup(string message, IReadOnlyList<LongAction> actions) {
+        public static bool ShowWaitingPopup(string message, IReadOnlyList<LongAction> actions, IActionLog log) {
             CommonMessagePump msgPump = new CommonMessagePump();
             msgPump.AllowCancel = true;
             msgPump.EnableRealProgress = true;
@@ -63,7 +64,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             try {
                 task.Wait();
             } catch (Exception ex) {
-                VsAppShell.Current.Logger.WriteAsync(LogVerbosity.Minimal, MessageCategory.Error, "Long operation exception: " + ex.Message).DoNotWait();
+                log?.WriteAsync(LogVerbosity.Minimal, MessageCategory.Error, "Long operation exception: " + ex.Message).DoNotWait();
             }
             return true;
         }

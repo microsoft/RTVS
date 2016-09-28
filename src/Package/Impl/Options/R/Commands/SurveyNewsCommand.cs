@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel.Design;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.SurveyNews;
@@ -12,8 +13,10 @@ using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
     public sealed class SurveyNewsCommand : MenuCommand {
-        public SurveyNewsCommand() :
+        private static ICoreShell _coreShell;
+        public SurveyNewsCommand(ICoreShell coreShell) :
             base(OnCommand, new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSurveyNews)) {
+            _coreShell = coreShell;
         }
 
         public async static void OnCommand(object sender, EventArgs args) {
@@ -21,7 +24,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
                 var service = VsAppShell.Current.ExportProvider.GetExportedValue<ISurveyNewsService>();
                 await service.CheckSurveyNewsAsync(true);
             } catch (Exception ex) when (!ex.IsCriticalException()) {
-                VsAppShell.Current.Logger.WriteAsync(LogVerbosity.Normal, MessageCategory.Error, "SurveyNewsCommand exception: " + ex.Message).DoNotWait();
+                _coreShell.Services.Log.WriteAsync(LogVerbosity.Normal, MessageCategory.Error, "SurveyNewsCommand exception: " + ex.Message).DoNotWait();
             }
         }
     }

@@ -66,6 +66,8 @@
     <Compile Include="Registry\RegistryKeyMock.cs" />
     <Compile Include="Registry\RegistryMocks.cs" />
     <Compile Include="Script\EventsPump.cs" />
+    <Compile Include="Shell\TestAppConstants.cs" />
+    <Compile Include="Shell\TestCoreShell.cs" />
     <Compile Include="StubFactories\DirectoryInfoStubFactory.cs" />
     <Compile Include="StubFactories\FileInfoStubFactory.cs" />
     <Compile Include="Script\TestScript.cs" />
@@ -79,7 +81,7 @@
     <Compile Include="Threading\BinaryAsyncLockTest.cs" />
     <Compile Include="Threading\DelayedAsyncActionTest.cs" />
     <Compile Include="Utility\CommonTestData.cs" />
-    <Compile Include="Utility\StandardServicesMock.cs" />
+    <Compile Include="Shell\TestCoreServices.cs" />
     <Compile Include="Utility\SupportedWpfProperties.cs" />
     <Compile Include="Utility\TestFiles.cs" />
     <Compile Include="Utility\VisualTreeWriter.cs" />

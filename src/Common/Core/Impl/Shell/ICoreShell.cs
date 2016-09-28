@@ -5,6 +5,8 @@ using System;
 using System.ComponentModel.Design;
 using System.Threading;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Settings;
 using Microsoft.Common.Core.Telemetry;
 
 namespace Microsoft.Common.Core.Shell {
@@ -13,7 +15,7 @@ namespace Microsoft.Common.Core.Shell {
     /// composition container, export provider, global VS IDE
     /// services and so on.
     /// </summary>
-    public interface ICoreShell: ICompositionCatalog {
+    public interface ICoreShell : ICompositionCatalog {
         /// <summary>
         /// Provides a way to execute action on UI thread while
         /// UI thread is waiting for the completion of the action.
@@ -107,23 +109,23 @@ namespace Microsoft.Common.Core.Shell {
         void UpdateCommandStatus(bool immediate = false);
 
         /// <summary>
-        /// Application telemetry service
-        /// </summary>
-        ITelemetryService TelemetryService { get; }
-
-        /// <summary>
         /// Tells if code runs in unit test environment
         /// </summary>
         bool IsUnitTestEnvironment { get; }
 
         /// <summary>
-        /// Application top level window handle. Typically used as a parent for native dialogs.
+        /// Application core services
         /// </summary>
-        IntPtr ApplicationWindowHandle { get; }
+        ICoreServices Services { get; }
 
         /// <summary>
-        /// Application event logging service
+        /// Application constants
         /// </summary>
-        IActionLog Logger { get; }
+        IApplicationConstants AppConstants { get; }
+
+        /// <summary>
+        /// Persistent storage for any settings application may need to keep between sessions.
+        /// </summary>
+        IWritableSettingsStorage SettingsStorage { get; }
     }
 }

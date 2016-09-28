@@ -6,7 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Test.Utility;
+using Microsoft.Common.Core.Test.Shell;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test;
@@ -24,7 +24,7 @@ namespace Microsoft.R.ExecutionTracing.Test {
 
         public DebugReplTest(TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo;
-            _sessionProvider = new RSessionProvider(StandardServicesMock.Create());
+            _sessionProvider = new RSessionProvider(TestCoreServices.CreateReal());
             _session = _sessionProvider.GetOrCreate(Guid.NewGuid());
         }
 

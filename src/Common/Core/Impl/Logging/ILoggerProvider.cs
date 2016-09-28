@@ -6,6 +6,6 @@ using System;
 namespace Microsoft.Common.Core.Logging {
     public interface ILoggingServices: IDisposable {
         ILoggingPermissions Permissions { get; }
-        IActionLog OpenLog(string appName);
+        IActionLog GetOrCreateLog(string appName);
     }
 }

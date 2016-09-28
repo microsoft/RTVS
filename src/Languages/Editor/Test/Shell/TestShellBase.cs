@@ -6,14 +6,17 @@ using System.ComponentModel.Design;
 using System.Threading;
 using System.Windows.Threading;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Settings;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Common.Wpf.Threading;
+using Microsoft.Common.Core.Test.Shell;
+using Microsoft.Common.Core.Threading;
 using Microsoft.UnitTests.Core.Threading;
+using NSubstitute;
 
 namespace Microsoft.Languages.Editor.Test.Shell {
     public class TestShellBase : IMainThread {
         public Thread MainThread { get; set; }
-        public int LocaleId => 1033;
 
         public TestShellBase() {
             MainThread = Thread.CurrentThread;
@@ -86,6 +89,13 @@ namespace Microsoft.Languages.Editor.Test.Shell {
         #region IMainThread
         public int ThreadId => MainThread.ManagedThreadId;
         public void Post(Action action) => UIThreadHelper.Instance.InvokeAsync(action).DoNotWait();
+        #endregion
+
+        #region ICoreShell
+        public bool IsUnitTestEnvironment { get; set; } = true;
+        public IApplicationConstants AppConstants => new TestAppConstants();
+        public virtual ICoreServices Services => TestCoreServices.CreateSubstitute();
+        public virtual IWritableSettingsStorage SettingsStorage => Substitute.For<IWritableSettingsStorage>();
         #endregion
     }
 }

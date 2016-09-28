@@ -315,10 +315,10 @@ namespace Microsoft.R.Host.Client.Session {
             // TODO: activate when we support switching between remote R interpreters in UI.
             //_callback.WriteConsole(Resources.InstalledInterpreters);
             foreach (var name in a.Interpreters) {
-                _services.TelemetryService.ReportEvent(TelemetryArea.Configuration, "Remote Interpteter", name);
-                _services.TelemetryService.ReportEvent(TelemetryArea.Configuration, "Remote OS", a.OS.VersionString);
-                _services.TelemetryService.ReportEvent(TelemetryArea.Configuration, "Remote CPUs", a.ProcessorCount);
-                _services.TelemetryService.ReportEvent(TelemetryArea.Configuration, "Remote RAM", a.TotalPhysicalMemory);
+                _services.Telemetry.ReportEvent(TelemetryArea.Configuration, "Remote Interpteter", name);
+                _services.Telemetry.ReportEvent(TelemetryArea.Configuration, "Remote OS", a.OS.VersionString);
+                _services.Telemetry.ReportEvent(TelemetryArea.Configuration, "Remote CPUs", a.ProcessorCount);
+                _services.Telemetry.ReportEvent(TelemetryArea.Configuration, "Remote RAM", a.TotalPhysicalMemory);
                 //_callback.WriteConsole("\t" + name);
             }
         }

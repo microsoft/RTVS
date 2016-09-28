@@ -12,10 +12,11 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Threading;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Settings;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
-using Microsoft.Common.Wpf.Threading;
-using Microsoft.Languages.Core.Settings;
+using Microsoft.Common.Core.Threading;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.Host;
 using Microsoft.Languages.Editor.Shell;
@@ -53,14 +54,24 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private readonly ILoggingServices _loggingServices;
         private readonly ITelemetryService _telemetryService;
         private readonly IRSettings _settings;
+        private readonly ICoreServices _coreServices;
+        private readonly IApplicationConstants _appConstants;
 
         private IdleTimeSource _idleTimeSource;
         private IWritableSettingsStorage _settingStorage;
 
         [ImportingConstructor]
-        public VsAppShell(ITelemetryService telemetryService, ILoggingServices loggingServices, IRSettings settings) {
+        public VsAppShell(ITelemetryService telemetryService
+            , ILoggingServices loggingServices
+            , IRSettings settings
+            , ICoreServices coreServices
+            , IApplicationConstants appConstants) {
+
             _telemetryService = telemetryService;
             _loggingServices = loggingServices;
+            _coreServices = coreServices;
+            _appConstants = appConstants;
+
             _settings = settings;
             _settings.PropertyChanged += OnSettingsChanged;
         }
@@ -90,7 +101,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             _idleTimeSource.OnTerminateApp += OnTerminateApp;
 
             EditorShell.Current = this;
-            Logger = _loggingServices.OpenLog("RTVS");
         }
 
         /// <summary>
@@ -287,20 +297,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             });
         }
 
-        public ITelemetryService TelemetryService => _telemetryService;
-
         public bool IsUnitTestEnvironment { get; set; }
 
-        public IntPtr ApplicationWindowHandle {
-            get {
-                var uiShell = GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-                IntPtr handle;
-                uiShell.GetDialogOwnerHwnd(out handle);
-                return handle;
-            }
-        }
-
-        public IActionLog Logger { get; private set; }
         #endregion
 
         #region IIdleTimeService
@@ -495,5 +493,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
             return package;
         }
+
+        public ICoreServices Services => _coreServices;
+        public IApplicationConstants AppConstants => _appConstants;
     }
 }

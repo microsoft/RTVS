@@ -6,9 +6,10 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
-using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Settings;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Common.Core.Telemetry;
+using Microsoft.Common.Core.Test.Shell;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.R.Components.Controller;
@@ -45,20 +46,6 @@ namespace Microsoft.Languages.Editor.Test.Shell {
         #region ICompositionCatalog
         public ICompositionService CompositionService { get; private set; }
         public ExportProvider ExportProvider { get; private set; }
-        #endregion
-
-        #region ICoreShell
-        /// <summary>
-        /// Displays error message in a host-specific UI
-        /// </summary>
-        public T GetGlobalService<T>(Type type = null) where T : class {
-            throw new NotImplementedException();
-        }
-
-        public bool IsUnitTestEnvironment { get; set; } = true;
-        public ITelemetryService TelemetryService => Substitute.For<ITelemetryService>();
-        public IntPtr ApplicationWindowHandle => IntPtr.Zero;
-        public IActionLog Logger => Substitute.For<IActionLog>();
         #endregion
 
         #region IEditorShell

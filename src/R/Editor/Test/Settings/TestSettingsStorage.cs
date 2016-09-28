@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.Languages.Core.Settings;
+using Microsoft.Common.Core.Settings;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.VisualStudio.Utilities;
 

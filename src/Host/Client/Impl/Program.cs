@@ -21,7 +21,7 @@ namespace Microsoft.R.Host.Client {
             Console.CancelKeyPress += Console_CancelKeyPress;
 
             using (var logger = new Logger("Program", new MaxLoggingPermissions(), FileLogWriter.InTempFolder("Microsoft.R.Host.Client.Program"))) {
-                var services = new CoreServices(null, null, logger);
+                var services = new CoreServices(new AppConstants(), null, null);
                 var localConnector = new LocalBrokerClient("Program", args[0], services);
                 var host = localConnector.ConnectAsync("Program", new Program()).GetAwaiter().GetResult();
                 _evaluator = host;
@@ -184,6 +184,13 @@ namespace Microsoft.R.Host.Client {
             public LogVerbosity CurrentVerbosity { get; set; } = LogVerbosity.Traffic;
             public bool IsFeedbackPermitted => true;
             public LogVerbosity MaxVerbosity => LogVerbosity.Traffic;
+        }
+
+        class AppConstants : IApplicationConstants {
+            public string ApplicationName => "Microsoft.R.Host.Client";
+            public IntPtr ApplicationWindowHandle => IntPtr.Zero;
+            public uint LocaleId => 1033;
+            public string LocalMachineHive => null;
         }
     }
 }

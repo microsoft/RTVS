@@ -4,7 +4,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Test.Utility;
+using Microsoft.Common.Core.Test.Shell;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.UnitTests.Core.XUnit;
@@ -22,7 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Options {
         public async Task ValidateEncodings() {
             var etc = new EncodingTypeConverter();
             var codePages = etc.GetStandardValues();
-            using (var sessionProvider = new RSessionProvider(StandardServicesMock.Create())) {
+            using (var sessionProvider = new RSessionProvider(TestCoreServices.CreateSubstitute())) {
                 await sessionProvider.TrySwitchBrokerAsync(nameof(ValidateEncodings));
                 using (var script = new VsRHostScript(sessionProvider)) {
                     foreach (var cp in codePages) {

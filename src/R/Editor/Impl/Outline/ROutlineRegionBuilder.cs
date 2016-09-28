@@ -3,11 +3,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows.Threading;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Logging;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Outline;
 using Microsoft.Languages.Editor.Shell;
@@ -17,7 +15,6 @@ using Microsoft.R.Core.AST.Scopes;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Tree;
 using Microsoft.VisualStudio.Text;
-using static System.FormattableString;
 
 namespace Microsoft.R.Editor.Outline {
     /// <summary>
@@ -96,11 +93,7 @@ namespace Microsoft.R.Editor.Outline {
                         rootNode.Accept(this, context);
                         OutlineSections(rootNode, context);
                     }
-                } catch (Exception ex) {
-                    var message = Invariant($"Exception in R outliner: {ex.Message}");
-                    Debug.Assert(false, message);
-                    EditorShell.Current.Logger.WriteAsync(LogVerbosity.Normal, MessageCategory.Error, message).DoNotWait();
-                } finally {
+                } catch (Exception) { } finally {
                     if (rootNode != null) {
                         EditorTree.ReleaseReadLock(_treeUserId);
                     } else {

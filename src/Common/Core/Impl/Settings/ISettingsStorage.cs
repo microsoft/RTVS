@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.Languages.Core.Settings {
+namespace Microsoft.Common.Core.Settings {
     /// <summary>
     /// Settings storage. Exported via MEF for a particular content type.
     /// Editor uses exported object to retrieve its settings such as indentation
