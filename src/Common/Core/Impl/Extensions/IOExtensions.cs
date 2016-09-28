@@ -86,13 +86,14 @@ namespace Microsoft.Common.Core {
         }
 
         public static string EnsureTrailingSlash(this string path) {
-            if (path != null &&  path.Length > 0) { 
-                if (path[path.Length - 1] != '\\') {
-                    return path + "\\";
+            if (!string.IsNullOrEmpty(path)) {
+                char slash = path.IndexOf(Path.AltDirectorySeparatorChar) >= 0 ? Path.AltDirectorySeparatorChar : Path.DirectorySeparatorChar;
+                if (path[path.Length - 1] != slash) {
+                    return path + slash;
                 }
                 return path;
             }
-            return "\\";
+            return Path.DirectorySeparatorChar.ToString();
         }
     }
 }
