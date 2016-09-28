@@ -5,12 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.ComponentModel.Composition;
+using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
@@ -18,6 +19,7 @@ using Microsoft.R.Host.Client.Host;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring;
 using Microsoft.VisualStudio.R.Package.Commands;
+using Microsoft.VisualStudio.R.Package.Shell;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
@@ -29,14 +31,17 @@ using Microsoft.VisualStudio.ProjectSystem;
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     [ExportCommandGroup("AD87578C-B324-44DC-A12A-B01A6ED5C6E3")]
     [AppliesTo(ProjectConstants.RtvsProjectCapability)]
-    internal sealed class SourceFilesCommand : IAsyncCommandGroupHandler {
+    internal sealed class SourceFilesCommand : SendFileCommandBase, IAsyncCommandGroupHandler {
         private readonly ConfiguredProject _configuredProject;
         private IRInteractiveWorkflowProvider _interactiveWorkflowProvider;
+        private readonly ICoreShell _coreShell;
 
         [ImportingConstructor]
-        public SourceFilesCommand(ConfiguredProject configuredProject, IRInteractiveWorkflowProvider interactiveWorkflowProvider)  {
+        public SourceFilesCommand(ConfiguredProject configuredProject, IRInteractiveWorkflowProvider interactiveWorkflowProvider, ICoreShell coreShell, IApplicationShell appShell) :
+            base(interactiveWorkflowProvider, coreShell, appShell, new FileSystem()) {
             _configuredProject = configuredProject;
             _interactiveWorkflowProvider = interactiveWorkflowProvider;
+             _coreShell = coreShell;
         }
 
         public Task<CommandStatusResult> GetCommandStatusAsync(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus progressiveStatus) {
@@ -54,37 +59,24 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
         public async Task<bool> TryHandleCommandAsync(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, long commandExecuteOptions, IntPtr variantArgIn, IntPtr variantArgOut) {
             if (commandId == RPackageCommandId.icmdSourceSelectedFiles || commandId == RPackageCommandId.icmdSourceSelectedFilesWithEcho) {
                 bool echo = commandId == RPackageCommandId.icmdSourceSelectedFilesWithEcho;
+                
+                IFileSystem fs = new FileSystem();
                 IEnumerable<string> rFiles = Enumerable.Empty<string>();
 
-                IFileSystem fs = new FileSystem();
                 var workflow = _interactiveWorkflowProvider.GetOrCreate();
                 try {
                     var session = workflow.RSession;
                     if (session.IsRemote) {
+                        var files = nodes.GetSelectedNodesPaths().Where(x =>
+                                   Path.GetExtension(x).EqualsIgnoreCase(RContentTypeDefinition.FileExtension) &&
+                                   fs.FileExists(x));
+
                         var properties = _configuredProject.Services.ExportProvider.GetExportedValue<ProjectProperties>();
-                        
                         string projectDir = Path.GetDirectoryName(_configuredProject.UnconfiguredProject.FullPath);
                         string projectName = properties.GetProjectName();
                         string remotePath = await properties.GetRemoteProjectPathAsync();
 
-                        var files = nodes.GetSelectedNodesPaths().Where(x =>
-                                   Path.GetExtension(x).EqualsIgnoreCase(RContentTypeDefinition.FileExtension) &&
-                                   fs.FileExists(x));
-                        workflow.ActiveWindow.InteractiveWindow.WriteLine(Resources.Info_CompressingFiles);
-                        
-                        string compressedFilePath = fs.CompressFiles(files, projectDir, new Progress<string>((p) => {
-                            workflow.ActiveWindow.InteractiveWindow.WriteLine(string.Format(Resources.Info_LocalFilePath, p));
-                            string dest = p.MakeRelativePath(projectDir).ProjectRelativePathToRemoteProjectPath(remotePath, projectName);
-                            workflow.ActiveWindow.InteractiveWindow.WriteLine(string.Format(Resources.Info_RemoteDestination, dest));
-
-                        }), CancellationToken.None);
-
-                        using (var fts = new DataTransferSession(session, fs)) {
-                            workflow.ActiveWindow.InteractiveWindow.WriteLine(Resources.Info_TransferingFiles);
-                            var remoteFile = await fts.SendFileAsync(compressedFilePath);
-                            await session.EvaluateAsync<string>($"rtvs:::save_to_project_folder({remoteFile.Id}, {projectName.ToRStringLiteral()}, '{remotePath.ToRPath()}')", REvaluationKind.Normal);
-                            workflow.ActiveWindow.InteractiveWindow.WriteLine(Resources.Info_TransferingFilesDone);
-                        }
+                        await SendToRemoteAsync(files, projectDir, projectName, remotePath);
 
                         rFiles = files.Select(p => p.MakeRelativePath(projectDir).ProjectRelativePathToRemoteProjectPath(remotePath, projectName));
                     } else {
@@ -94,11 +86,13 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
                     }
 
                     workflow.Operations.SourceFiles(rFiles, echo);
-                    return true;
-                } catch (RHostDisconnectedException) {
+                } catch (IOException ex) {
+                    _coreShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotTransferFile, ex.Message));
+                } 
+                catch (RHostDisconnectedException) {
                     workflow.ActiveWindow.InteractiveWindow.WriteErrorLine(Resources.Error_CannotTransferNoRSession);
-                    return false;
                 }
+                return true;
             }
             return false;
         }

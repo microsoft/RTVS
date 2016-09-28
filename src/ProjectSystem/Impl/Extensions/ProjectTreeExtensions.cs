@@ -66,30 +66,11 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring {
         public static IEnumerable<string> GetAllFilePaths(this IEnumerable<IProjectTree> nodes) {
             List<string> paths = new List<string>();
             foreach (IProjectTree node in nodes) {
-                if (node.IsFolder) {
-                    paths.AddRange(node.GetAllFilePaths());
-                } else if (node.Children.Count > 0) {
+                if (node.IsFolder || node.Children.Count > 0) {
                     paths.AddRange(node.Children.GetAllFilePaths());
                 } else if (!string.IsNullOrWhiteSpace(node.FilePath)) {
                     paths.Add(node.FilePath);
                 }
-            }
-            return paths.Distinct();
-        }
-
-        public static IEnumerable<string> GetAllFilePaths(this IProjectTree node) {
-            List<string> paths = new List<string>();
-            if (node.IsFolder || node.Children.Count > 0) {
-                foreach (IProjectTree child in node.Children) {
-                    if (child.IsFolder) {
-                        paths.AddRange(child.GetAllFilePaths());
-                    } else if (!string.IsNullOrWhiteSpace(child.FilePath)) {
-                        paths.Add(child.FilePath);
-                    }
-                }
-                return paths;
-            } else if (!string.IsNullOrWhiteSpace(node.FilePath)) {
-                paths.Add(node.FilePath);
             }
             return paths.Distinct();
         }

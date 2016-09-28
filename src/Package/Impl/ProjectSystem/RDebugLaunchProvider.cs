@@ -167,12 +167,12 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             }), CancellationToken.None);
             
             using (var fts = new DataTransferSession(Session, FileSystem)) {
-                ProgressOutputWriter.WriteLine(Resources.Info_TransferingFiles);
+                ProgressOutputWriter.WriteLine(Resources.Info_TransferringFiles);
                 var remoteFile = await fts.SendFileAsync(compressedFilePath);
                 await Session.EvaluateAsync<string>($"rtvs:::save_to_project_folder({remoteFile.Id}, {projectName.ToRStringLiteral()}, '{remotePath.ToRPath()}')", REvaluationKind.Normal);
             }
 
-            ProgressOutputWriter.WriteLine(Resources.Info_TransferingFilesDone);
+            ProgressOutputWriter.WriteLine(Resources.Info_TransferringFilesDone);
         }
 
         private async Task<string> GetStartupFileAsync(bool transferFiles, EnvDTE.Project project) {

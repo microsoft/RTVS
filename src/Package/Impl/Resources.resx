@@ -941,11 +941,23 @@ Additional information:
   <data name="Info_SourcingFile" xml:space="preserve">
     <value>Sourcing: {0}</value>
   </data>
-  <data name="Info_TransferingFiles" xml:space="preserve">
-    <value>Transfering files to remote RHost.</value>
+  <data name="Info_TransferringFiles" xml:space="preserve">
+    <value>Transferring files to remote RHost.</value>
   </data>
-  <data name="Info_TransferingFilesDone" xml:space="preserve">
-    <value>Transfering files to remote RHost... completed.</value>
+  <data name="Info_TransferringFilesDone" xml:space="preserve">
+    <value>Transferring files to remote RHost... completed.</value>
+  </data>
+  <data name="Error_CannotAccess" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Error_CannotTransferFile" xml:space="preserve">
+    <value>Unable to transfer file. Exception: {0}.</value>
+  </data>
+  <data name="Info_CompressingFile" xml:space="preserve">
+    <value>Compressing: {0}</value>
+  </data>
+  <data name="Info_ExtractingFilesInRHost" xml:space="preserve">
+    <value>Extracting file on remote RHost.</value>
   </data>
   <data name="Settings_LogCategory" xml:space="preserve">
     <value>Logging</value>

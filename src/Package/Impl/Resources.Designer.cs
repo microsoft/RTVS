@@ -286,6 +286,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        public static string Error_CannotAccess {
+            get {
+                return ResourceManager.GetString("Error_CannotAccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to collect and package logs. Exception: {0}.
         /// </summary>
         public static string Error_CannotCollectLogs {
@@ -327,6 +336,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Error_CannotSendFeedback2 {
             get {
                 return ResourceManager.GetString("Error_CannotSendFeedback2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to transfer file. Exception: {0}..
+        /// </summary>
+        public static string Error_CannotTransferFile {
+            get {
+                return ResourceManager.GetString("Error_CannotTransferFile", resourceCulture);
             }
         }
         
@@ -674,11 +692,29 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Compressing: {0}.
+        /// </summary>
+        public static string Info_CompressingFile {
+            get {
+                return ResourceManager.GetString("Info_CompressingFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Compressing files.
         /// </summary>
         public static string Info_CompressingFiles {
             get {
                 return ResourceManager.GetString("Info_CompressingFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Extracting file on remote RHost..
+        /// </summary>
+        public static string Info_ExtractingFilesInRHost {
+            get {
+                return ResourceManager.GetString("Info_ExtractingFilesInRHost", resourceCulture);
             }
         }
         
@@ -737,20 +773,20 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Transfering files to remote RHost..
+        ///   Looks up a localized string similar to Transferring files to remote RHost..
         /// </summary>
-        public static string Info_TransferingFiles {
+        public static string Info_TransferringFiles {
             get {
-                return ResourceManager.GetString("Info_TransferingFiles", resourceCulture);
+                return ResourceManager.GetString("Info_TransferringFiles", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Transfering files to remote RHost... completed..
+        ///   Looks up a localized string similar to Transferring files to remote RHost... completed..
         /// </summary>
-        public static string Info_TransferingFilesDone {
+        public static string Info_TransferringFilesDone {
             get {
-                return ResourceManager.GetString("Info_TransferingFilesDone", resourceCulture);
+                return ResourceManager.GetString("Info_TransferringFilesDone", resourceCulture);
             }
         }
         

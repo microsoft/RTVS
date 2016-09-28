@@ -14,10 +14,15 @@ using Microsoft.Extensions.FileSystemGlobbing;
 namespace Microsoft.Common.Core.IO {
     public sealed class FileSystem : IFileSystem {
         public IFileSystemWatcher CreateFileSystemWatcher(string path, string filter) => new FileSystemWatcherProxy(path, filter);
-        
+
         public IDirectoryInfo GetDirectoryInfo(string directoryPath) => new DirectoryInfoProxy(directoryPath);
-        
+
         public bool FileExists(string path) => File.Exists(path);
+
+        public long FileSize(string path) {
+            var fileInfo = new FileInfo(path);
+            return fileInfo.Length;
+        }
 
         public string ReadAllText(string path) => File.ReadAllText(path);
         

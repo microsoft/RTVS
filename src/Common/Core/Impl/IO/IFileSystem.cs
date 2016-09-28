@@ -13,6 +13,9 @@ namespace Microsoft.Common.Core.IO {
         IDirectoryInfo GetDirectoryInfo(string directoryPath);
         bool FileExists(string fullPath);
         bool DirectoryExists(string fullPath);
+
+        long FileSize(string path);
+
         FileAttributes GetFileAttributes(string fullPath);
         string ToLongPath(string path);
         string ToShortPath(string path);

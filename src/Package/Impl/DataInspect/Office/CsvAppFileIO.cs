@@ -57,7 +57,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
 
             try {
                 statusBar.SetText(Resources.Status_WritingCSV);
-                await CreateCsvAndStartProcess(result, session, file, fileSystem, processServices);
+                await CreateCsvAndStartProcess(result, session, file, fileSystem, processServices, statusBar);
             } catch (Win32Exception ex) {
                 appShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotOpenCsv, ex.Message));
             } catch (IOException ex) {
@@ -69,7 +69,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
             Interlocked.Exchange(ref _busy, 0);
         }
 
-        private static async Task CreateCsvAndStartProcess(IREvaluationResultInfo result, IRSession session, string fileName, IFileSystem fileSystem, IProcessServices processServices) {
+        private static async Task CreateCsvAndStartProcess(IREvaluationResultInfo result, IRSession session, string fileName, IFileSystem fileSystem, IProcessServices processServices, IVsStatusbar statusBar) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             var sep = CultureInfo.CurrentCulture.TextInfo.ListSeparator;
@@ -78,7 +78,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
             using (var e = await session.BeginEvaluationAsync()) {
                 var csvDataBlobId = await e.EvaluateAsync<ulong>($"rtvs:::export_to_csv({result.Expression}, sep={sep.ToRStringLiteral()}, dec={dec.ToRStringLiteral()})", REvaluationKind.Normal);
                 using (DataTransferSession dts = new DataTransferSession(session, fileSystem)) {
-                    await dts.FetchFileAsync(new RBlobInfo(csvDataBlobId), fileName);
+                    uint cookie = 0;
+                    statusBar.Progress(ref cookie, 1, Resources.Status_WritingCSV, 0, 0);
+                    uint total = (uint)await session.GetBlobSizeAsync(csvDataBlobId, CancellationToken.None);
+                    await dts.FetchFileAsync(new RBlobInfo(csvDataBlobId), fileName, true, new Progress<long>((b) => {
+                        statusBar.Progress(ref cookie, 1, Resources.Status_WritingCSV, (uint)b, total);
+                    }));
+                    statusBar.Progress(ref cookie, 0, Resources.Status_WritingCSV, 0, 0);
                 }
             }
 
