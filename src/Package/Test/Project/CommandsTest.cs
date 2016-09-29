@@ -19,12 +19,13 @@ using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Test.FakeFactories;
-using Microsoft.VisualStudio.R.Package.Test.Utility;
-using Microsoft.VisualStudio.ProjectSystem;
 using NSubstitute;
 using Xunit;
+using Microsoft.Common.Core.Test.Fakes.Shell;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
+#else
+using Microsoft.VisualStudio.ProjectSystem;
 #endif
 using static Microsoft.UnitTests.Core.Threading.UIThreadTools;
 
@@ -35,7 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
         private readonly TestRInteractiveWorkflowProvider _interactiveWorkflowProvider;
 
         public ProjectCommandsTest() {
-            var sessionProvider = new RSessionProvider();
+            var sessionProvider = new RSessionProvider(TestCoreServices.CreateReal());
             var connectionsProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IConnectionManagerProvider>();
             var historyProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRHistoryProvider>();
             var packagesProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRPackageManagerProvider>();
@@ -76,9 +77,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
             ps.When(x => x.Start(Arg.Any<string>())).Do((c) => {
                 c.Args()[0].Should().Be(folder);
             });
-            ProcessServices.Current = ps;
 
-            var cmd = new OpenContainingFolderCommand(null);
+            var cmd = new OpenContainingFolderCommand(null, ps);
             CheckSingleNodeCommandStatus(cmd, RPackageCommandId.icmdOpenContainingFolder, nodes1, nodes2);
         }
 
@@ -97,9 +97,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
             ps.When(x => x.Start(Arg.Any<string>())).Do((c) => {
                 c.Args()[0].Should().Be(folder);
             });
-            ProcessServices.Current = ps;
 
-            var cmd = new OpenCommandPromptCommand();
+            var cmd = new OpenCommandPromptCommand(ps);
             CheckSingleNodeCommandStatus(cmd, RPackageCommandId.icmdOpenCmdPromptHere, nodes1, nodes2);
         }
 

@@ -1,41 +1,50 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Diagnostics.CodeAnalysis;
-using FluentAssertions;
+using System.Threading.Tasks;
 using Microsoft.Common.Core.Logging;
 using Microsoft.UnitTests.Core.XUnit;
+using NSubstitute;
+using Xunit;
 
 namespace Microsoft.Common.Core.Test.Logging {
     [ExcludeFromCodeCoverage]
-    public class LoggerTest
-    {
-        [Test]
-        [Category.Logging]
-        public void Logging_NullLogTest()
-        {
-            IActionLinesLog log = new NullLog();
-            log.WriteAsync(MessageCategory.Error, "message").Wait();
-            log.WriteFormatAsync(MessageCategory.Error, "message").Wait();
-            log.WriteLineAsync(MessageCategory.Error, "message").Wait();
+    [Category.Logging]
+    public class LoggerTest {
+        [CompositeTest]
+        [InlineData(LogVerbosity.None)]
+        [InlineData(LogVerbosity.Minimal)]
+        [InlineData(LogVerbosity.Normal)]
+        [InlineData(LogVerbosity.Traffic)]
+        public async Task Verbosity(LogVerbosity verbosity) {
+            var writer = Substitute.For<IActionLogWriter>();
+            var perm = Substitute.For<ILoggingPermissions>();
+            perm.CurrentVerbosity.Returns(verbosity);
 
-            log.Content.Should().BeEmpty();
-            log.Lines.Should().BeEmpty();
-        }
+            var log = new Logger(string.Empty, perm, writer);
+            await log.WriteAsync(LogVerbosity.None, MessageCategory.Error, "message0");
+            await log.WriteAsync(LogVerbosity.Minimal, MessageCategory.Error, "message1");
+            await log.WriteAsync(LogVerbosity.Normal, MessageCategory.Error, "message2");
+            await log.WriteAsync(LogVerbosity.Traffic, MessageCategory.Error, "message3");
 
-        [Test]
-        [Category.Logging]
-        public void Logging_LinesLogTest()
-        {
-            IActionLinesLog log = new LinesLog(NullLogWriter.Instance);
+            int i = 0;
+            foreach(var v in Enum.GetValues(typeof(LogVerbosity))) {
+                if ((int)v > (int)LogVerbosity.None && (int)v <= (int)verbosity) {
+                    await writer.Received().WriteAsync(MessageCategory.Error, "message" + i.ToString());
+                } else {
+                    await writer.DidNotReceive().WriteAsync(MessageCategory.Error, "message" + i.ToString());
+                }
+                i++;
+            }
 
-            log.WriteAsync(MessageCategory.Error, "message1").Wait();
-            log.WriteLineAsync(MessageCategory.Error, " message2").Wait();
-            log.WriteFormatAsync(MessageCategory.Error, "message3 {0}\r\n", 1).Wait();
-            log.WriteLineAsync(MessageCategory.Error, "message4").Wait();
+            writer.DidNotReceive().Flush();
 
-            log.Content.Should().Be("message1 message2\r\nmessage3 1\r\nmessage4\r\n");
-            log.Lines.Should().Equal("message1 message2", "message3 1", "message4", string.Empty);
+            if (verbosity > LogVerbosity.None) {
+                log.Flush();
+                writer.Received().Flush();
+            }
         }
     }
 }

@@ -46,13 +46,13 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project {
 
         public FileSystemMirroringProject(UnconfiguredProject unconfiguredProject, IProjectLockService projectLockService, 
                                           MsBuildFileSystemWatcher fileSystemWatcher, IProjectItemDependencyProvider dependencyProvider, 
-                                          IActionLog log = null) {
+                                          IActionLog log) {
             _unconfiguredProject = unconfiguredProject;
             _projectLockService = projectLockService;
             _fileSystemWatcher = fileSystemWatcher;
             _dependencyProvider = dependencyProvider;
 
-            _log = log ?? ProjectSystemActionLog.Default;
+            _log = log;
             _unloadCancellationToken = _unconfiguredProject.Services.ProjectAsynchronousTasks.UnloadCancellationToken;
             _projectDirectory = _unconfiguredProject.GetProjectDirectory();
             _inMemoryImportFullPath = _unconfiguredProject.GetInMemoryTargetsFileFullPath();

@@ -3,6 +3,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.R.Host.Client.Session;
 using Xunit;
 
@@ -13,7 +14,7 @@ namespace Microsoft.R.Host.Client.Test.Fixtures {
         public IRSessionProvider SessionProvider { get; }
 
         public SessionProviderFixture() {
-            SessionProvider = new RSessionProvider();
+            SessionProvider = new RSessionProvider(TestCoreServices.CreateReal());
         }
 
         public async Task InitializeAsync() {

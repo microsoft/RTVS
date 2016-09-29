@@ -2,7 +2,12 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
+using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager;
@@ -11,12 +16,15 @@ using Microsoft.R.Components.History;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Settings;
+using Microsoft.R.Components.Settings.Mirrors;
 using Microsoft.R.Components.Workspace;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.R.Package.Repl;
 
 namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
     public sealed class RInteractiveWorkflow : IRInteractiveWorkflow {
+        private readonly DisposableBag _disposableBag;
         private readonly IActiveWpfTextViewTracker _activeTextViewTracker;
         private readonly IDebuggerModeTracker _debuggerModeTracker;
         private readonly IRSettings _settings;
@@ -25,7 +33,6 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         private readonly IWorkspaceServices _wss;
 
         private bool _replLostFocus;
-        private bool _disposed;
         private bool _debuggerJustEnteredBreakMode;
 
         public ICoreShell Shell { get; }
@@ -74,6 +81,18 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
             _debuggerModeTracker.EnterBreakMode += DebuggerEnteredBreakMode;
             _debuggerModeTracker.LeaveBreakMode += DebuggerLeftBreakMode;
+
+            _settings.PropertyChanged += OnSettingsChanged;
+
+            _disposableBag = DisposableBag.Create<RInteractiveWorkflow>()
+                .Add(() => _settings.PropertyChanged -= OnSettingsChanged)
+                .Add(() => _debuggerModeTracker.EnterBreakMode -= DebuggerEnteredBreakMode)
+                .Add(() => _debuggerModeTracker.LeaveBreakMode -= DebuggerLeftBreakMode)
+                .Add(() => _activeTextViewTracker.LastActiveTextViewChanged -= LastActiveTextViewChanged)
+                .Add(() => RSession.Disconnected -= RSessionDisconnected)
+                .Add(Operations)
+                .Add(Connections).
+                Add(_onDispose);
         }
 
         private void DebuggerEnteredBreakMode(object sender, EventArgs e) {
@@ -150,18 +169,36 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         }
 
         public void Dispose() {
-            if (_disposed) {
-                return;
-            }
-            _disposed = true;
+            _disposableBag.TryDispose();
+        }
 
-            _debuggerModeTracker.EnterBreakMode -= DebuggerEnteredBreakMode;
-            _debuggerModeTracker.LeaveBreakMode -= DebuggerLeftBreakMode;
-            _activeTextViewTracker.LastActiveTextViewChanged -= LastActiveTextViewChanged;
-            RSession.Disconnected -= RSessionDisconnected;
-            Operations.Dispose();
-            Connections.Dispose();
-            _onDispose();
+        private void OnSettingsChanged(object sender, PropertyChangedEventArgs e) {
+            if (e.PropertyName == nameof(IRSettings.CranMirror)) {
+                SetMirrorToSession().DoNotWait();
+            } else if (e.PropertyName == nameof(IRSettings.RCodePage)) {
+                SetSessionCodePage().DoNotWait();
+            }
+        }
+
+        private async Task SetMirrorToSession() {
+            string mirrorName = _settings.CranMirror;
+            string mirrorUrl = CranMirrorList.UrlFromName(mirrorName);
+
+            foreach (var s in RSessions.GetSessions()) {
+                try {
+                    await s.SetVsCranSelectionAsync(mirrorUrl);
+                } catch (RException) { } catch (OperationCanceledException) { }
+            }
+        }
+
+        private async Task SetSessionCodePage() {
+            var cp = _settings.RCodePage;
+
+            foreach (var s in RSessions.GetSessions()) {
+                try {
+                    await s.SetCodePageAsync(cp);
+                } catch (OperationCanceledException) { }
+            }
         }
     }
 }

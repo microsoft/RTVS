@@ -7,10 +7,10 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.R.DataInspection;
 using Microsoft.R.ExecutionTracing;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test;
 using Microsoft.R.Host.Client.Test.Script;
@@ -29,7 +29,7 @@ namespace Microsoft.R.StackTracing.Test {
 
         public CallStackTest(TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo; 
-            _sessionProvider = new RSessionProvider();
+            _sessionProvider = new RSessionProvider(TestCoreServices.CreateReal());
             _session = _sessionProvider.GetOrCreate(Guid.NewGuid());
         }
 

@@ -20,10 +20,12 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     [AppliesTo(ProjectConstants.RtvsProjectCapability)]
     internal sealed class OpenContainingFolderCommand : ICommandGroupHandler {
         private readonly UnconfiguredProject _unconfiguredProject;
+        private readonly IProcessServices _ps;
 
         [ImportingConstructor]
-        public OpenContainingFolderCommand(UnconfiguredProject unconfiguredProject) {
+        public OpenContainingFolderCommand(UnconfiguredProject unconfiguredProject, [Import(AllowDefault = true)] IProcessServices ps) {
             _unconfiguredProject = unconfiguredProject;
+            _ps = ps ?? new ProcessServices();
         }
 
         public CommandStatusResult GetCommandStatus(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus progressiveStatus) {
@@ -38,7 +40,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
                 var path = nodes.GetSelectedFolderPath(_unconfiguredProject);
                 if (!string.IsNullOrEmpty(path)) {
                     path = path.TrimTrailingSlash();
-                    ProcessServices.Current.Start(Path.GetDirectoryName(path));
+                    _ps.Start(Path.GetDirectoryName(path));
                 }
                 return true;
             }

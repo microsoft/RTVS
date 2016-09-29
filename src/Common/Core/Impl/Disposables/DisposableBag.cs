@@ -3,8 +3,6 @@
 
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Microsoft.Common.Core.Disposables {
     public sealed class DisposableBag {

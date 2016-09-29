@@ -6,18 +6,14 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Enums;
+using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Wpf;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ConnectionManager;
-using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
-using Microsoft.R.Components.Settings.Mirrors;
-using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Session;
-using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.SurveyNews;
@@ -27,7 +23,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace Microsoft.VisualStudio.R.Package.Options.R {
     [Export(typeof(IRSettings))]
     [Export(typeof(IRToolsSettings))]
-    internal sealed class RToolsSettingsImplementation : IRToolsSettings {
+    internal sealed class RToolsSettingsImplementation : BindableBase, IRToolsSettings {
         private const int MaxDirectoryEntries = 8;
         private string _cranMirror;
         private string _workingDirectory;
@@ -36,46 +32,73 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         private IConnectionInfo[] _connections = new IConnectionInfo[0];
         private IConnectionInfo _lastActiveConnection;
 
-        public YesNoAsk LoadRDataOnProjectLoad { get; set; } = YesNoAsk.No;
+        private YesNoAsk _loadRDataOnProjectLoad = YesNoAsk.No;
+        private YesNoAsk _saveRDataOnProjectUnload = YesNoAsk.No;
+        private bool _alwaysSaveHistory = true;
+        private bool _clearFilterOnAddHistory = true;
+        private bool _multilineHistorySelection = true;
+        private HelpBrowserType _helpBrowserType = HelpBrowserType.Automatic;
+        private bool _showDotPrefixedVariables;
+        private SurveyNewsPolicy _surveyNewsCheck = SurveyNewsPolicy.CheckOnceWeek;
+        private DateTime _surveyNewsLastCheck;
+        private string _surveyNewsFeedUrl = SurveyNewsUrls.Feed;
+        private string _surveyNewsIndexUrl = SurveyNewsUrls.Index;
+        private bool _evaluateActiveBindings = true;
+        private string _webHelpSearchString = "R site:stackoverflow.com";
+        private BrowserType _webHelpSearchBrowserType = BrowserType.Internal;
+        private BrowserType _htmlBrowserType = BrowserType.Internal;
+        private BrowserType _markdownBrowserType = BrowserType.External;
+        private LogVerbosity _logLevel = LogVerbosity.Normal;
 
-        public YesNoAsk SaveRDataOnProjectUnload { get; set; } = YesNoAsk.No;
+        public YesNoAsk LoadRDataOnProjectLoad {
+            get { return _loadRDataOnProjectLoad; }
+            set { SetProperty(ref _loadRDataOnProjectLoad, value); }
+        }
 
-        public bool AlwaysSaveHistory { get; set; } = true;
+        public YesNoAsk SaveRDataOnProjectUnload {
+            get { return _saveRDataOnProjectUnload; }
+            set { SetProperty(ref _saveRDataOnProjectUnload, value); }
+        }
 
-        public bool ClearFilterOnAddHistory { get; set; } = true;
+        public bool AlwaysSaveHistory {
+            get { return _alwaysSaveHistory; }
+            set { SetProperty(ref _alwaysSaveHistory, value); }
+        }
 
-        public bool MultilineHistorySelection { get; set; } = true;
+        public bool ClearFilterOnAddHistory {
+            get { return _clearFilterOnAddHistory; }
+            set { SetProperty(ref _clearFilterOnAddHistory, value); }
+        }
+
+        public bool MultilineHistorySelection {
+            get { return _multilineHistorySelection; }
+            set { SetProperty(ref _multilineHistorySelection, value); }
+        }
 
         public bool ShowPackageManagerDisclaimer {
             get { return _showPackageManagerDisclaimer; }
             set {
                 using (SaveSettings()) {
-                    _showPackageManagerDisclaimer = value;
+                    SetProperty(ref _showPackageManagerDisclaimer, value);
                 }
             }
         }
 
         public string CranMirror {
             get { return _cranMirror; }
-            set {
-                _cranMirror = value;
-                SetMirrorToSession().DoNotWait();
-            }
+            set { SetProperty(ref _cranMirror, value); }
         }
 
         public int RCodePage {
             get { return _codePage; }
-            set {
-                _codePage = value;
-                SetSessionCodePage().DoNotWait();
-            }
+            set { SetProperty(ref _codePage, value); }
         }
 
         public IConnectionInfo[] Connections {
             get { return _connections; }
             set {
                 using (SaveSettings()) {
-                    _connections = value;
+                    SetProperty(ref _connections, value);
                 }
             }
         }
@@ -84,7 +107,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             get { return _lastActiveConnection; }
             set {
                 using (SaveSettings()) {
-                    _lastActiveConnection = value;
+                    SetProperty(ref _lastActiveConnection, value);
                 }
             }
         }
@@ -98,7 +121,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
                     newDirectory = newDirectory.TrimTrailingSlash();
                 }
 
-                _workingDirectory = newDirectory;
+                SetProperty(ref _workingDirectory, newDirectory);
                 UpdateWorkingDirectoryList(newDirectory);
 
                 if (EditorShell.HasShell) {
@@ -111,49 +134,69 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         }
 
         public string[] WorkingDirectoryList { get; set; } = new string[0];
-        public HelpBrowserType HelpBrowserType { get; set; }
-        public bool ShowDotPrefixedVariables { get; set; }
-        public SurveyNewsPolicy SurveyNewsCheck { get; set; } = SurveyNewsPolicy.CheckOnceWeek;
-        public DateTime SurveyNewsLastCheck { get; set; }
-        public string SurveyNewsFeedUrl { get; set; } = SurveyNewsUrls.Feed;
-        public string SurveyNewsIndexUrl { get; set; } = SurveyNewsUrls.Index;
-        public bool EvaluateActiveBindings { get; set; } = true;
-        public string WebHelpSearchString { get; set; } = "R site:stackoverflow.com";
-        public BrowserType WebHelpSearchBrowserType { get; set; } = BrowserType.Internal;
-        public BrowserType HtmlBrowserType { get; set; } = BrowserType.Internal;
-        public BrowserType MarkdownBrowserType { get; set; } = BrowserType.External;
+
+        public HelpBrowserType HelpBrowserType {
+            get { return _helpBrowserType; }
+            set { SetProperty(ref _helpBrowserType, value); }
+        }
+
+        public bool ShowDotPrefixedVariables {
+            get { return _showDotPrefixedVariables; }
+            set { SetProperty(ref _showDotPrefixedVariables, value); }
+        }
+
+        public SurveyNewsPolicy SurveyNewsCheck {
+            get { return _surveyNewsCheck; }
+            set { SetProperty(ref _surveyNewsCheck, value); }
+        }
+
+        public DateTime SurveyNewsLastCheck {
+            get { return _surveyNewsLastCheck; }
+            set { SetProperty(ref _surveyNewsLastCheck, value); }
+        }
+
+        public string SurveyNewsFeedUrl {
+            get { return _surveyNewsFeedUrl; }
+            set { SetProperty(ref _surveyNewsFeedUrl, value); }
+        }
+
+        public string SurveyNewsIndexUrl {
+            get { return _surveyNewsIndexUrl; }
+            set { SetProperty(ref _surveyNewsIndexUrl, value); }
+        }
+
+        public bool EvaluateActiveBindings {
+            get { return _evaluateActiveBindings; }
+            set { SetProperty(ref _evaluateActiveBindings, value); }
+        }
+
+        public string WebHelpSearchString {
+            get { return _webHelpSearchString; }
+            set { SetProperty(ref _webHelpSearchString, value); }
+        }
+
+        public BrowserType WebHelpSearchBrowserType {
+            get { return _webHelpSearchBrowserType; }
+            set { SetProperty(ref _webHelpSearchBrowserType, value); }
+        }
+
+        public BrowserType HtmlBrowserType {
+            get { return _htmlBrowserType; }
+            set { SetProperty(ref _htmlBrowserType, value); }
+        }
+
+        public BrowserType MarkdownBrowserType {
+            get { return _markdownBrowserType; }
+            set { SetProperty(ref _markdownBrowserType, value); }
+        }
+
+        public LogVerbosity LogVerbosity {
+            get { return _logLevel; }
+            set { SetProperty(ref _logLevel, value); }
+        }
 
         public RToolsSettingsImplementation() {
             _workingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-        }
-
-        private async Task SetMirrorToSession() {
-            var sessions = GetRSessions();
-            string mirrorName = RToolsSettings.Current.CranMirror;
-            string mirrorUrl = CranMirrorList.UrlFromName(mirrorName);
-
-            foreach (var s in sessions.Where(s => s.IsHostRunning)) {
-                try {
-                    using (var eval = await s.BeginEvaluationAsync()) {
-                        await eval.SetVsCranSelectionAsync(mirrorUrl);
-                    }
-                } catch (RException) {
-                } catch (OperationCanceledException) {
-                }
-            }
-        }
-
-        private async Task SetSessionCodePage() {
-            var sessions = GetRSessions();
-            var cp = RToolsSettings.Current.RCodePage;
-
-            foreach (var s in sessions.Where(s => s.IsHostRunning)) {
-                try {
-                    using (var eval = await s.BeginEvaluationAsync()) {
-                        await eval.SetCodePageAsync(cp);
-                    }
-                } catch (OperationCanceledException) { }
-            }
         }
 
         private void UpdateWorkingDirectoryList(string newDirectory) {
@@ -173,12 +216,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             return page != null && !page.IsLoadingFromStorage
                 ? Disposable.Create(() => page.SaveSettings())
                 : Disposable.Empty;
-        }
-
-        private static IEnumerable<IRSession> GetRSessions() {
-            var provider = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
-            var instance = provider.Active;
-            return instance != null ? instance.RSessions.GetSessions() : Enumerable.Empty<IRSession>();
         }
     }
 }

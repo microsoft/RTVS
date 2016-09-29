@@ -9,6 +9,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Interpreters;
@@ -23,6 +25,8 @@ namespace Microsoft.R.Host.Client.Session {
         private readonly AsyncCountdownEvent _connectCde = new AsyncCountdownEvent(0);
 
         private readonly BrokerClientProxy _brokerProxy;
+        private readonly ICoreServices _services;
+
         private int _sessionCounter;
         private int _isConnected;
 
@@ -35,9 +39,10 @@ namespace Microsoft.R.Host.Client.Session {
         public event EventHandler BrokerChanged;
         public event EventHandler<BrokerStateChangedEventArgs> BrokerStateChanged;
 
-        public RSessionProvider(IRSessionProviderCallback callback = null) {
+        public RSessionProvider(ICoreServices services, IRSessionProviderCallback callback = null) {
             _callback = callback ?? new NullRSessionProviderCallback();
             _brokerProxy = new BrokerClientProxy(_connectCde);
+            _services = services;
         }
 
         public IRSession GetOrCreate(Guid guid) {
@@ -206,7 +211,7 @@ namespace Microsoft.R.Host.Client.Session {
                 _brokerProxy.Set(oldBroker);
                 brokerClient.Dispose();
                 BrokerChangeFailed?.Invoke(this, EventArgs.Empty);
-                if (ex is OperationCanceledException || ex is RHostBinaryMissingException) { // RHostDisconnectedException is derived from OperationCanceledException
+                if (ex is OperationCanceledException || ex is RHostBrokerBinaryMissingException) { // RHostDisconnectedException is derived from OperationCanceledException
                     return false;
                 }
                 throw;
@@ -309,9 +314,13 @@ namespace Microsoft.R.Host.Client.Session {
 
             // TODO: activate when we support switching between remote R interpreters in UI.
             //_callback.WriteConsole(Resources.InstalledInterpreters);
-            //foreach (var name in a.Interpreters) {
-            //    _callback.WriteConsole("\t" + name);
-            //}
+            foreach (var name in a.Interpreters) {
+                _services.Telemetry.ReportEvent(TelemetryArea.Configuration, "Remote Interpteter", name);
+                _services.Telemetry.ReportEvent(TelemetryArea.Configuration, "Remote OS", a.OS.VersionString);
+                _services.Telemetry.ReportEvent(TelemetryArea.Configuration, "Remote CPUs", a.ProcessorCount);
+                _services.Telemetry.ReportEvent(TelemetryArea.Configuration, "Remote RAM", a.TotalPhysicalMemory);
+                //_callback.WriteConsole("\t" + name);
+            }
         }
 
         private async Task ConnectToNewBrokerAsync(List<IRSessionSwitchBrokerTransaction> transactions, CancellationToken cancellationToken) {
@@ -344,11 +353,11 @@ namespace Microsoft.R.Host.Client.Session {
             }
 
             if (uri.IsFile) {
-                return new LocalBrokerClient(name, uri.LocalPath) as IBrokerClient;
+                return new LocalBrokerClient(name, uri.LocalPath, _services) as IBrokerClient;
             }
 
             var windowHandle = await _callback.GetApplicationWindowHandleAsync();
-            return new RemoteBrokerClient(name, uri, windowHandle);
+            return new RemoteBrokerClient(name, uri, windowHandle, _services.Log);
         }
 
         private class IsolatedRSessionEvaluation : IRSessionEvaluation {

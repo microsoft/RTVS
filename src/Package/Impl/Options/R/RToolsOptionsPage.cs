@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel;
 using Microsoft.Common.Core.Enums;
+using Microsoft.Common.Core.Logging;
 using Microsoft.R.Components.ConnectionManager.Implementation;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Support.Settings;
@@ -168,6 +169,19 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         public SurveyNewsPolicy SurveyNewsCheck {
             get { return RToolsSettings.Current.SurveyNewsCheck; }
             set { RToolsSettings.Current.SurveyNewsCheck = value; }
+        }
+
+        [LocCategory("Settings_LogCategory")]
+        [CustomLocDisplayName("Settings_LogLevel")]
+        [LocDescription("Settings_LogLevel_Description")]
+#if DEBUG
+        [DefaultValue(LogVerbosity.Traffic)]
+#else
+        [DefaultValue(LogLevel.Normal)]
+#endif
+        public LogVerbosity LogLevel {
+            get { return RToolsSettings.Current.LogVerbosity; }
+            set { RToolsSettings.Current.LogVerbosity = value; }
         }
 
         /// <summary>

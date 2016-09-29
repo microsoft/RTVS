@@ -7,7 +7,6 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.R.Package.Shell;
 using static System.FormattableString;
 
@@ -26,7 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataSource {
                     return await evaluator.EvaluateAsync<GridData>(expr, REvaluationKind.Normal);
                 } catch (RException ex) {
                     var message = Invariant($"Grid data evaluation failed:{Environment.NewLine}{ex.Message}");
-                    GeneralLog.Write(message);
+                    await VsAppShell.Current.Services.Log.WriteAsync(LogVerbosity.Normal, MessageCategory.Error, message);
                     return null;
                 }
             }

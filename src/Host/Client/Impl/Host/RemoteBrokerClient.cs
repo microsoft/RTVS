@@ -1,12 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using Microsoft.R.Host.Client.BrokerServices;
 using System;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
+using Microsoft.Common.Core.Logging;
+using Microsoft.R.Host.Client.BrokerServices;
 using static Microsoft.R.Host.Client.NativeMethods;
 
 namespace Microsoft.R.Host.Client.Host {
@@ -17,8 +18,8 @@ namespace Microsoft.R.Host.Client.Host {
         private readonly string _authority;
         private bool _ignoreSavedCredentials;
 
-        public RemoteBrokerClient(string name, Uri brokerUri, IntPtr applicationWindowHandle)
-            : base(name, brokerUri, brokerUri.Fragment) {
+        public RemoteBrokerClient(string name, Uri brokerUri, IntPtr applicationWindowHandle, IActionLog log)
+            : base(name, brokerUri, brokerUri.Fragment, log) {
             _applicationWindowHandle = applicationWindowHandle;
 
             _credentials = new NetworkCredential();

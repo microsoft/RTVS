@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Interpreters;
 using Microsoft.VisualStudio.R.Packages.R;

@@ -55,6 +55,7 @@
     <Compile Include="Disposables\DisposableTest.cs" />
     <Compile Include="EnumerableExtensionsTest.cs" />
     <Compile Include="Extensions\IOExtensionsTest.cs" />
+    <Compile Include="Logging\PermissionsTest.cs" />
     <Compile Include="Logging\LoggerTest.cs" />
     <Compile Include="Match\MatchElements.cs" />
     <Compile Include="Match\MatchNull.cs" />
@@ -65,6 +66,8 @@
     <Compile Include="Registry\RegistryKeyMock.cs" />
     <Compile Include="Registry\RegistryMocks.cs" />
     <Compile Include="Script\EventsPump.cs" />
+    <Compile Include="Fakes\Shell\TestAppConstants.cs" />
+    <Compile Include="Fakes\Shell\TestCoreShell.cs" />
     <Compile Include="StubFactories\DirectoryInfoStubFactory.cs" />
     <Compile Include="StubFactories\FileInfoStubFactory.cs" />
     <Compile Include="Script\TestScript.cs" />
@@ -78,6 +81,7 @@
     <Compile Include="Threading\BinaryAsyncLockTest.cs" />
     <Compile Include="Threading\DelayedAsyncActionTest.cs" />
     <Compile Include="Utility\CommonTestData.cs" />
+    <Compile Include="Fakes\Shell\TestCoreServices.cs" />
     <Compile Include="Utility\SupportedWpfProperties.cs" />
     <Compile Include="Utility\TestFiles.cs" />
     <Compile Include="Utility\VisualTreeWriter.cs" />

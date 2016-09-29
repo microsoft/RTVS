@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.Browsers;
@@ -190,7 +191,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.SurveyNews {
             var feedClient = new MockSurveyNewsFeedClient(feed);
 
             // Invoke the real survey/news service
-            var service = new SurveyNewsService(feedClient, options, browser);
+            var service = new SurveyNewsService(feedClient, options, browser, Substitute.For<ICoreShell>());
             await service.CheckSurveyNewsAsync(forceCheck);
 
             // Check that we navigated to the right url (or didn't navigate at all)

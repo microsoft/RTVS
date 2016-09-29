@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -44,7 +43,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO {
                 _taskScheduler = new ControlledTaskScheduler(SynchronizationContext.Current);
 
                 DirectoryInfoStubFactory.Create(_fileSystem, ProjectDirectory);
-                _fileSystemWatcher = new MsBuildFileSystemWatcher(ProjectDirectory, "*", 0, 0, _fileSystem, fileSystemFilter, _taskScheduler, NullLog.Instance);
+                _fileSystemWatcher = new MsBuildFileSystemWatcher(ProjectDirectory, "*", 0, 0, _fileSystem, fileSystemFilter, Substitute.For<IActionLog>(), _taskScheduler);
                 _fileSystemWatcher.Start();
 
                 _fileWatcher = watchers.FileWatcher;

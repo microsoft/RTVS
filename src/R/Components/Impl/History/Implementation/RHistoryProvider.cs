@@ -24,7 +24,12 @@ namespace Microsoft.R.Components.History.Implementation {
         private readonly Dictionary<ITextBuffer, IRHistory> _histories;
 
         [ImportingConstructor]
-        public RHistoryProvider(ITextBufferFactoryService textBufferFactory, IContentTypeRegistryService contentTypeRegistryService, IEditorOperationsFactoryService editorOperationsFactory, IRtfBuilderService rtfBuilderService, ITextSearchService2 textSearchService, IRSettings settings) {
+        public RHistoryProvider(ITextBufferFactoryService textBufferFactory 
+            , IContentTypeRegistryService contentTypeRegistryService
+            , IEditorOperationsFactoryService editorOperationsFactory
+            , IRtfBuilderService rtfBuilderService
+            , ITextSearchService2 textSearchService
+            , IRSettings settings) {
             _textBufferFactory = textBufferFactory;
             _editorOperationsFactory = editorOperationsFactory;
             _rtfBuilderService = rtfBuilderService;

@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Host.Client.Host;
 using static System.FormattableString;
@@ -17,10 +19,14 @@ namespace Microsoft.R.Host.Client {
 
         static void Main(string[] args) {
             Console.CancelKeyPress += Console_CancelKeyPress;
-            var localConnector = new LocalBrokerClient("Program", args[0]);
-            var host = localConnector.ConnectAsync("Program", new Program()).GetAwaiter().GetResult();
-            _evaluator = host;
-            host.Run().GetAwaiter().GetResult();
+
+            using (var logger = new Logger("Program", new MaxLoggingPermissions(), FileLogWriter.InTempFolder("Microsoft.R.Host.Client.Program"))) {
+                var services = new CoreServices(new AppConstants(), null, null);
+                var localConnector = new LocalBrokerClient("Program", args[0], services);
+                var host = localConnector.ConnectAsync("Program", new Program()).GetAwaiter().GetResult();
+                _evaluator = host;
+                host.Run().GetAwaiter().GetResult();
+            }
         }
 
         private static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e) {
@@ -172,6 +178,19 @@ namespace Microsoft.R.Host.Client {
 
         public async Task PlotDeviceDestroy(Guid deviceId, CancellationToken ct) {
             await Console.Error.WriteLineAsync(Invariant($"PlotDeviceDestroy called for {deviceId}."));
+        }
+
+        class MaxLoggingPermissions : ILoggingPermissions {
+            public LogVerbosity CurrentVerbosity { get; set; } = LogVerbosity.Traffic;
+            public bool IsFeedbackPermitted => true;
+            public LogVerbosity MaxVerbosity => LogVerbosity.Traffic;
+        }
+
+        class AppConstants : IApplicationConstants {
+            public string ApplicationName => "Microsoft.R.Host.Client";
+            public IntPtr ApplicationWindowHandle => IntPtr.Zero;
+            public uint LocaleId => 1033;
+            public string LocalMachineHive => null;
         }
     }
 }

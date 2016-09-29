@@ -4,8 +4,10 @@
 using System;
 using System.ComponentModel.Design;
 using System.Threading;
+using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Settings;
 using Microsoft.Common.Core.Telemetry;
-using Microsoft.Common.Core.Threading;
 
 namespace Microsoft.Common.Core.Shell {
     /// <summary>
@@ -13,7 +15,7 @@ namespace Microsoft.Common.Core.Shell {
     /// composition container, export provider, global VS IDE
     /// services and so on.
     /// </summary>
-    public interface ICoreShell: ICompositionCatalog {
+    public interface ICoreShell : ICompositionCatalog {
         /// <summary>
         /// Provides a way to execute action on UI thread while
         /// UI thread is waiting for the completion of the action.
@@ -67,11 +69,6 @@ namespace Microsoft.Common.Core.Shell {
         MessageButtons ShowMessage(string message, MessageButtons buttons);
 
         /// <summary>
-        /// Returns host locale ID
-        /// </summary>
-        int LocaleId { get; }
-
-        /// <summary>
         /// If the specified file is opened as a document, and it has unsaved changes, save those changes.
         /// </summary>
         /// <param name="fullPath">The full path to the document to be saved.</param>
@@ -112,15 +109,23 @@ namespace Microsoft.Common.Core.Shell {
         void UpdateCommandStatus(bool immediate = false);
 
         /// <summary>
-        /// Application telemetry service
-        /// </summary>
-        ITelemetryService TelemetryService { get; }
-
-        /// <summary>
         /// Tells if code runs in unit test environment
         /// </summary>
         bool IsUnitTestEnvironment { get; }
 
-        IntPtr ApplicationWindowHandle { get; }
+        /// <summary>
+        /// Application core services
+        /// </summary>
+        ICoreServices Services { get; }
+
+        /// <summary>
+        /// Application constants
+        /// </summary>
+        IApplicationConstants AppConstants { get; }
+
+        /// <summary>
+        /// Persistent storage for any settings application may need to keep between sessions.
+        /// </summary>
+        IWritableSettingsStorage SettingsStorage { get; }
     }
 }

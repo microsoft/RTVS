@@ -7,9 +7,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
-using Microsoft.R.Host.Client.Test.Fixtures;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
@@ -35,7 +35,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
 
         public GridDataTest(TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo;
-            _sessionProvider = new RSessionProvider();
+            _sessionProvider = new RSessionProvider(TestCoreServices.CreateReal());
             _session = _sessionProvider.GetOrCreate(Guid.NewGuid());
         }
 

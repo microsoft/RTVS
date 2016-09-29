@@ -3,22 +3,21 @@
 
 using System.Globalization;
 using System.IO;
+using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.OS;
+using Microsoft.Common.Core.Services;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Logging;
 using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Feedback {
     internal sealed class SendFrownCommand : SendMailCommand {
-        public SendFrownCommand() :
-            base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSendFrown) {
-        }
-
-        protected override void SetStatus() {
-            Enabled = true;
+        public SendFrownCommand(ILoggingPermissions permissions, ICoreServices services) :
+            base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSendFrown, permissions, services) {
         }
 
         protected override void Handle() {
-            string zipPath = DiagnosticLogs.Collect();
+            string zipPath = DiagnosticLogs.Collect(Services.Log);
 
             var generalData = new StringWriter(CultureInfo.InvariantCulture);
             DiagnosticLogs.WriteGeneralData(generalData, detailed: false);

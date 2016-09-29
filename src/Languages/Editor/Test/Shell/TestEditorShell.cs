@@ -1,13 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Common.Core.Telemetry;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.R.Components.Controller;
@@ -43,19 +41,6 @@ namespace Microsoft.Languages.Editor.Test.Shell {
         #region ICompositionCatalog
         public ICompositionService CompositionService { get; private set; }
         public ExportProvider ExportProvider { get; private set; }
-        #endregion
-
-        #region ICoreShell
-        /// <summary>
-        /// Displays error message in a host-specific UI
-        /// </summary>
-        public T GetGlobalService<T>(Type type = null) where T : class {
-            throw new NotImplementedException();
-        }
-
-        public bool IsUnitTestEnvironment { get; set; } = true;
-        public ITelemetryService TelemetryService { get; }
-        public IntPtr ApplicationWindowHandle { get; }
         #endregion
 
         #region IEditorShell

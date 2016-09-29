@@ -747,6 +747,42 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Minimal.
+        /// </summary>
+        public static string LoggingLevel_Minimal {
+            get {
+                return ResourceManager.GetString("LoggingLevel_Minimal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to None.
+        /// </summary>
+        public static string LoggingLevel_None {
+            get {
+                return ResourceManager.GetString("LoggingLevel_None", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Normal.
+        /// </summary>
+        public static string LoggingLevel_Normal {
+            get {
+                return ResourceManager.GetString("LoggingLevel_Normal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Traffic.
+        /// </summary>
+        public static string LoggingLevel_Traffic {
+            get {
+                return ResourceManager.GetString("LoggingLevel_Traffic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Processing Item {0} of {1}.
         /// </summary>
         public static string LongOperationProgressMessage1 {
@@ -1457,6 +1493,33 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Settings_LoadRDataOnProjectLoad_Description {
             get {
                 return ResourceManager.GetString("Settings_LoadRDataOnProjectLoad_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Logging.
+        /// </summary>
+        public static string Settings_LogCategory {
+            get {
+                return ResourceManager.GetString("Settings_LogCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Log events.
+        /// </summary>
+        public static string Settings_LogLevel {
+            get {
+                return ResourceManager.GetString("Settings_LogLevel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Defines what events are logged for diagnostic purposes. None disables logging completely. Minimal enables OS Application log. Normal also creates log file with extended information in the TEMP folder. No private or secure data is recorded. Traffic settings enables recording of complete data exchange in the session, incuding interactive commands and potentially secure or private data..
+        /// </summary>
+        public static string Settings_LogLevel_Description {
+            get {
+                return ResourceManager.GetString("Settings_LogLevel_Description", resourceCulture);
             }
         }
         

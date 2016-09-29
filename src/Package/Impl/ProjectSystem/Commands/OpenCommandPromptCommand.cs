@@ -4,6 +4,7 @@
 using System.Diagnostics;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Commands;
+using Microsoft.Common.Core.OS;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
 #endif
@@ -12,8 +13,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     [ExportCommandGroup("AD87578C-B324-44DC-A12A-B01A6ED5C6E3")]
     [AppliesTo(ProjectConstants.RtvsProjectCapability)]
     internal sealed class OpenCommandPromptCommand : CommandPromptCommand {
-        public OpenCommandPromptCommand() :
-            base(RPackageCommandId.icmdOpenCmdPromptHere) { }
+        public OpenCommandPromptCommand(IProcessServices ps) :
+            base(RPackageCommandId.icmdOpenCmdPromptHere, ps) { }
 
         protected override void SetFlags(ProcessStartInfo psi, string path) {
             psi.WorkingDirectory = path;

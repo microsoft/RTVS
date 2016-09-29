@@ -5,13 +5,13 @@ using System;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading;
 using Microsoft.Common.Core.Extensions;
+using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Settings;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
-using Microsoft.Languages.Editor.Shell;
-using Microsoft.Languages.Core.Settings;
 using Microsoft.Languages.Editor.Composition;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Test.Shell;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.R.Components.ContentTypes;
@@ -25,6 +25,7 @@ using Microsoft.VisualStudio.R.Package.Test.Utility;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
+using NSubstitute;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Shell {
     /// <summary>
@@ -86,7 +87,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
             return null;
         }
 
-        public IWritableSettingsStorage SettingsStorage {
+        public override IWritableSettingsStorage SettingsStorage {
             get {
                 if (_settingStorage == null) {
                     var ctrs = ExportProvider.GetExportedValue<IContentTypeRegistryService>();
@@ -117,10 +118,9 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
             return _sp.GetService(type ?? typeof(T)) as T;
         }
 
-        public bool IsUnitTestEnvironment { get; set; } = true;
-        public ITelemetryService TelemetryService { get; }
-
-        public IntPtr ApplicationWindowHandle { get; }
+        public ITelemetryService TelemetryService => Substitute.For<ITelemetryService>();
+        public IntPtr ApplicationWindowHandle => IntPtr.Zero;
+        public IActionLog Logger => Substitute.For<IActionLog>();
         #endregion
     }
 }

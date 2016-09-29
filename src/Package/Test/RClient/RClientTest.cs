@@ -9,6 +9,7 @@ using FluentAssertions;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Net;
 using Microsoft.Common.Core.OS;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Core.Test.Registry;
@@ -32,17 +33,20 @@ namespace Microsoft.VisualStudio.R.Package.Test.RClient {
                      .Do(x => telemetryEvents.Add(x.Args()[1] as string));
 
             var coreShell = Substitute.For<ICoreShell>();
-            coreShell.TelemetryService.Returns(telemetry);
-            coreShell.ShowMessage(Arg.Any<string>(), Arg.Any<MessageButtons>()).Returns(MessageButtons.Yes);
-
-            var downloader = Substitute.For<IFileDownloader>();
-            downloader.Download(null, null, CancellationToken.None).ReturnsForAnyArgs((string)null);
+            var services = Substitute.For<ICoreServices>();
+            services.Telemetry.Returns(telemetry);
 
             var ps = Substitute.For<IProcessServices>();
             ps.When(x => x.Start(Arg.Any<string>())).Do(c => {
                 c.Args()[0].Should().NotBeNull();
             });
-            ProcessServices.Current = ps;
+            services.ProcessServices.Returns(ps);
+
+            coreShell.Services.Returns(services);
+            coreShell.ShowMessage(Arg.Any<string>(), Arg.Any<MessageButtons>()).Returns(MessageButtons.Yes);
+
+            var downloader = Substitute.For<IFileDownloader>();
+            downloader.Download(null, null, CancellationToken.None).ReturnsForAnyArgs((string)null);
 
             var inst = new MicrosoftRClientInstaller();
             inst.LaunchRClientSetup(coreShell, downloader);
@@ -65,7 +69,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.RClient {
             ps.When(x => x.Start(Arg.Any<string>())).Do(c => {
                 throw new Win32Exception((unchecked((int)0x800704C7)));
             });
-            ProcessServices.Current = ps;
+            services.ProcessServices.Returns(ps);
 
             telemetryEvents.Clear();
             inst.LaunchRClientSetup(coreShell, downloader);

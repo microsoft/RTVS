@@ -2,10 +2,12 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.Common.Core.Enums;
+using Microsoft.Common.Core.Logging;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.ConnectionManager.Implementation;
 using Microsoft.R.Components.Settings;
@@ -75,7 +77,7 @@ namespace Microsoft.R.Support.Test.Utility {
         public bool ShowPackageManagerDisclaimer { get; set; } = true;
 
         public string[] WorkingDirectoryList { get; set; } = new string[0];
-        
+
         public HelpBrowserType HelpBrowserType {
             get { return HelpBrowserType.Automatic; }
             set { }
@@ -129,5 +131,13 @@ namespace Microsoft.R.Support.Test.Utility {
         }
 
         public bool EvaluateActiveBindings { get; set; } = false;
+
+        public LogVerbosity LogVerbosity {
+            get { return LogVerbosity.None; }
+            set { }
+        }
+
+#pragma warning disable 67
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

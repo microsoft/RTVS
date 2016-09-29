@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using FluentAssertions;
-using Microsoft.R.Host.Client.Host;
+using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.XUnit;
@@ -235,7 +235,7 @@ namespace Microsoft.R.Host.Client.Test {
         }
 
         private async Task<XDocument> RunGraphicsTest(string code, string outputFilePath) {
-            using (var sessionProvider = new RSessionProvider()) {
+            using (var sessionProvider = new RSessionProvider(TestCoreServices.CreateReal())) {
                 await sessionProvider.TrySwitchBrokerAsync(nameof(XamlGraphicsDeviceTest));
                 var session = sessionProvider.GetOrCreate(Guid.NewGuid());
                 await session.StartHostAsync(new RHostStartupInfo {

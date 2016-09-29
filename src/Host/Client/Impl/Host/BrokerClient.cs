@@ -28,29 +28,24 @@ namespace Microsoft.R.Host.Client.Host {
             TimeSpan.FromSeconds(5);
 #endif
 
-        protected DisposableBag DisposableBag { get; } = DisposableBag.Create<BrokerClient>();
-
-        private readonly LinesLog _log;
         private readonly string _interpreterId;
         private AboutHost _aboutHost;
 
+        protected DisposableBag DisposableBag { get; } = DisposableBag.Create<BrokerClient>();
+        protected IActionLog Log { get; }
         protected HttpClientHandler HttpClientHandler { get; private set; }
-
         protected HttpClient HttpClient { get; private set; }
 
         public string Name { get; }
-
         public Uri Uri { get; }
-
         public bool IsRemote => !Uri.IsFile;
-
         public AboutHost AboutHost => _aboutHost ?? AboutHost.Empty;
 
-        protected BrokerClient(string name, Uri brokerUri, string interpreterId) {
+        protected BrokerClient(string name, Uri brokerUri, string interpreterId, IActionLog log) {
             Name = name;
             Uri = brokerUri;
             _interpreterId = interpreterId;
-            _log = new LinesLog(FileLogWriter.InTempFolder(nameof(BrokerClient)));
+            Log = log;
         }
 
         protected void CreateHttpClient(Uri baseAddress, ICredentials credentials) {
@@ -199,9 +194,9 @@ namespace Microsoft.R.Host.Client.Host {
             var transport = new WebSocketMessageTransport(socket);
 
             var cts = new CancellationTokenSource();
-            cts.Token.Register(() => { _log.RHostProcessExited(); });
+            cts.Token.Register(() => { Log.RHostProcessExited(); });
 
-            return new RHost(name, callbacks, transport, cts);
+            return new RHost(name, callbacks, transport, Log, cts);
         }
 
         private async Task GetHostInformationAsync(CancellationToken cancellationToken) {

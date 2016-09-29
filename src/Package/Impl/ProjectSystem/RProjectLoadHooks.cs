@@ -47,13 +47,13 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         private readonly MsBuildFileSystemWatcher _fileWatcher;
         private readonly string _projectDirectory;
         private readonly IRToolsSettings _toolsSettings;
-        private readonly IFileSystem _fileSystem = new FileSystem();
         private readonly IThreadHandling _threadHandling;
         private readonly UnconfiguredProject _unconfiguredProject;
         private readonly IEnumerable<Lazy<IVsProject>> _cpsIVsProjects;
         private readonly IRInteractiveWorkflowProvider _workflowProvider;
         private readonly IInteractiveWindowComponentContainerFactory _componentContainerFactory;
         private readonly IProjectItemDependencyProvider _dependencyProvider;
+        private readonly ICoreShell _coreShell;
 
         private IRInteractiveWorkflow _workflow;
         private IRSession _session;
@@ -72,7 +72,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             , IRToolsSettings toolsSettings
             , IThreadHandling threadHandling
             , ISurveyNewsService surveyNews
-            , [Import(AllowDefault = true)] IProjectItemDependencyProvider dependencyProvider) {
+            , [Import(AllowDefault = true)] IProjectItemDependencyProvider dependencyProvider
+            , ICoreShell coreShell) {
 
             _unconfiguredProject = unconfiguredProject;
             _cpsIVsProjects = cpsIVsProjects;
@@ -83,13 +84,14 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             _threadHandling = threadHandling;
             _surveyNews = surveyNews;
             _dependencyProvider = dependencyProvider;
+            _coreShell = coreShell;
 
             _projectDirectory = unconfiguredProject.GetProjectDirectory();
 
             unconfiguredProject.ProjectUnloading += ProjectUnloading;
-            _fileWatcher = new MsBuildFileSystemWatcher(_projectDirectory, "*", 25, 1000, _fileSystem, new RMsBuildFileSystemFilter());
+            _fileWatcher = new MsBuildFileSystemWatcher(_projectDirectory, "*", 25, 1000, _coreShell.Services.FileSystem, new RMsBuildFileSystemFilter(), coreShell.Services.Log);
             _fileWatcher.Error += FileWatcherError;
-            Project = new FileSystemMirroringProject(unconfiguredProject, projectLockService, _fileWatcher, _dependencyProvider);
+            Project = new FileSystemMirroringProject(unconfiguredProject, projectLockService, _fileWatcher, _dependencyProvider, coreShell.Services.Log);
         }
 
         [AppliesTo(ProjectConstants.RtvsProjectCapability)]
@@ -130,7 +132,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             // https://github.com/Microsoft/RTVS/issues/2223
             if (!_session.IsRemote) {
                 var rdataPath = Path.Combine(_projectDirectory, DefaultRDataName);
-                bool loadDefaultWorkspace = _fileSystem.FileExists(rdataPath) && await GetLoadDefaultWorkspace(rdataPath);
+                bool loadDefaultWorkspace = _coreShell.Services.FileSystem.FileExists(rdataPath) && await GetLoadDefaultWorkspace(rdataPath);
                 using (var evaluation = await _session.BeginEvaluationAsync()) {
                     if (loadDefaultWorkspace) {
                         await evaluation.LoadWorkspaceAsync(rdataPath);
@@ -155,13 +157,13 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             try {
                 await _surveyNews.CheckSurveyNewsAsync(false);
             } catch (Exception ex) when (!ex.IsCriticalException()) {
-                GeneralLog.Write(ex);
+                _coreShell.Services.Log.WriteAsync(LogVerbosity.Normal, MessageCategory.Error, "SurveyNews exception: " + ex.Message).DoNotWait();
             }
         }
 
         private void FileWatcherError(object sender, EventArgs args) {
             _fileWatcher.Error -= FileWatcherError;
-            VsAppShell.Current.DispatchOnUIThread(() => {
+            _coreShell.DispatchOnUIThread(() => {
                 foreach (var iVsProjectLazy in _cpsIVsProjects) {
                     IVsProject iVsProject;
                     try {
@@ -182,12 +184,12 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         }
 
         private async Task ProjectUnloading(object sender, EventArgs args) {
-            VsAppShell.Current.AssertIsOnMainThread();
+            _coreShell.AssertIsOnMainThread();
 
             _unconfiguredProject.ProjectUnloading -= ProjectUnloading;
             _fileWatcher.Dispose();
 
-            if (!_fileSystem.DirectoryExists(_projectDirectory)) {
+            if (!_coreShell.Services.FileSystem.DirectoryExists(_projectDirectory)) {
                 return;
             }
 
@@ -217,7 +219,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                     return true;
                 case YesNoAsk.Ask:
                     await _threadHandling.SwitchToUIThread();
-                    return VsAppShell.Current.ShowMessage(
+                    return _coreShell.ShowMessage(
                         string.Format(CultureInfo.CurrentCulture, Resources.LoadWorkspaceIntoGlobalEnvironment, rdataPath),
                         MessageButtons.YesNo) == MessageButtons.Yes;
                 default:
@@ -231,7 +233,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                     return true;
                 case YesNoAsk.Ask:
                     await _threadHandling.SwitchToUIThread();
-                    return VsAppShell.Current.ShowMessage(
+                    return _coreShell.ShowMessage(
                         string.Format(CultureInfo.CurrentCulture, Resources.SaveWorkspaceOnProjectUnload, rdataPath),
                         MessageButtons.YesNo) == MessageButtons.Yes;
                 default:
@@ -247,7 +249,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                 remoteDrive = driveType == NativeMethods.DriveType.Remote;
             }
             if (remoteDrive) {
-                VsAppShell.Current.ShowMessage(Resources.Warning_UncPath, MessageButtons.OK);
+                _coreShell.ShowMessage(Resources.Warning_UncPath, MessageButtons.OK);
             }
         }
     }

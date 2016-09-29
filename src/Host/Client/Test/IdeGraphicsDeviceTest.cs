@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Fixtures;
 using Microsoft.R.Host.Client.Test.Script;
@@ -565,7 +566,7 @@ dev.off()
         }
 
         private async Task ExecuteInSession(string[] inputs, IRSessionCallback app) {
-            using (var sessionProvider = new RSessionProvider()) {
+            using (var sessionProvider = new RSessionProvider(TestCoreServices.CreateReal())) {
                 await sessionProvider.TrySwitchBrokerAsync(nameof(IdeGraphicsDeviceTest));
                 var session = sessionProvider.GetOrCreate(Guid.NewGuid());
                 await session.StartHostAsync(new RHostStartupInfo {
@@ -596,7 +597,7 @@ rtvs:::export_to_image(device_id, rtvs:::graphics.ide.getactiveplotid(device_id)
 
         private async Task<IEnumerable<string>> ExportToImageAsync(string[] inputs, string[] format, string[] paths, int widthInPixels, int heightInPixels, int resolution) {
             var app = new RHostClientTestApp { PlotHandler = OnPlot, PlotDeviceCreateHandler = OnDeviceCreate, PlotDeviceDestroyHandler = OnDeviceDestroy };
-            using (var sessionProvider = new RSessionProvider()) {
+            using (var sessionProvider = new RSessionProvider(TestCoreServices.CreateReal())) {
                 await sessionProvider.TrySwitchBrokerAsync(nameof(IdeGraphicsDeviceTest));
                 var session = sessionProvider.GetOrCreate(Guid.NewGuid());
                 await session.StartHostAsync(new RHostStartupInfo {
@@ -625,7 +626,7 @@ rtvs:::export_to_image(device_id, rtvs:::graphics.ide.getactiveplotid(device_id)
 
         private async Task<IEnumerable<string>> ExportToPdfAsync(string[] inputs, string filePath, int width, int height) {
             var app = new RHostClientTestApp { PlotHandler = OnPlot, PlotDeviceCreateHandler = OnDeviceCreate, PlotDeviceDestroyHandler = OnDeviceDestroy };
-            using (var sessionProvider = new RSessionProvider()) {
+            using (var sessionProvider = new RSessionProvider(TestCoreServices.CreateReal())) {
                 await sessionProvider.TrySwitchBrokerAsync(nameof(IdeGraphicsDeviceTest));
                 var session = sessionProvider.GetOrCreate(Guid.NewGuid());
                 await session.StartHostAsync(new RHostStartupInfo {

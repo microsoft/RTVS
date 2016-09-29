@@ -4,17 +4,29 @@
 using System;
 using System.Diagnostics;
 using System.Globalization;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Services;
 using Microsoft.Office.Interop.Outlook;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Feedback {
     internal class SendMailCommand : PackageCommand {
-        public SendMailCommand(Guid group, int id) :
-            base(group, id) { }
+        private readonly ILoggingPermissions _permissions;
+        protected ICoreServices Services { get; }
 
-        protected static void SendMail(string body, string subject, string attachmentFile) {
+        public SendMailCommand(Guid group, int id, ILoggingPermissions permissions, ICoreServices services) :
+            base(group, id) {
+            _permissions = permissions;
+            Services = services;
+        }
+
+        protected override void SetStatus() {
+            Enabled = Visible = _permissions.IsFeedbackPermitted;
+        }
+
+        protected void SendMail(string body, string subject, string attachmentFile) {
             if (attachmentFile != null) {
                 IntPtr pidl = IntPtr.Zero;
                 try {
@@ -33,8 +45,7 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
             try {
                 outlookApp = new Application();
             } catch (System.Exception ex) {
-                GeneralLog.Write("Unable to start Outlook (exception data follows)");
-                GeneralLog.Write(ex);
+                Services.Log.WriteAsync(LogVerbosity.Normal, MessageCategory.Error, "Unable to start Outlook: " + ex.Message).DoNotWait();
             }
 
             if (outlookApp == null) {
@@ -51,7 +62,7 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
                     "mailto:rtvsuserfeedback@microsoft.com?subject={0}&body={1}",
                     Uri.EscapeDataString(subject),
                     Uri.EscapeDataString(body));
-                Process.Start(psi);
+                Services.ProcessServices.Start(psi);
             } else {
                 try {
                     MailItem mail = outlookApp.CreateItem(OlItemType.olMailItem) as MailItem;
@@ -60,8 +71,7 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
                     mail.To = "rtvsuserfeedback@microsoft.com";
                     mail.Display(Modal: false);
                 } catch (System.Exception ex) {
-                    GeneralLog.Write("Error composing Outlook e-mail (exception data follows)");
-                    GeneralLog.Write(ex);
+                    Services.Log.WriteAsync(LogVerbosity.Normal, MessageCategory.Error, "Error composing Outlook e-mail: " + ex.Message).DoNotWait();
                 }
             }
         }

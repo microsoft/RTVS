@@ -6,17 +6,19 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Design;
 using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Settings;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Common.Core.Telemetry;
-using Microsoft.Common.Wpf.Threading;
+using Microsoft.Common.Core.Test.Fakes.Shell;
+using Microsoft.Common.Core.Threading;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.R.Components.Controller;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using NSubstitute;
 
 namespace Microsoft.Languages.Editor.Test.Fakes.Shell {
     public class TestEditorShell : IEditorShell, IMainThread {
@@ -72,8 +74,9 @@ namespace Microsoft.Languages.Editor.Test.Fakes.Shell {
         public string OpenFilePath { get; set; }
         public string BrowseDirectoryPath { get; set; }
         public string SaveFilePath { get; set; }
-        public ITelemetryService TelemetryService { get; }
-        public IntPtr ApplicationWindowHandle { get; }
+        public IApplicationConstants AppConstants => new TestAppConstants();
+        public ICoreServices Services => TestCoreServices.CreateReal();
+        public IWritableSettingsStorage SettingsStorage => Substitute.For<IWritableSettingsStorage>();
 
         #region IMainThread
         public int ThreadId => MainThread.ManagedThreadId;

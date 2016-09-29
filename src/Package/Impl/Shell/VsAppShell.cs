@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Design;
@@ -10,10 +11,12 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Threading;
+using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Settings;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
-using Microsoft.Common.Wpf.Threading;
-using Microsoft.Languages.Core.Settings;
+using Microsoft.Common.Core.Threading;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.Host;
 using Microsoft.Languages.Editor.Shell;
@@ -21,10 +24,10 @@ using Microsoft.Languages.Editor.Undo;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.Extensions;
+using Microsoft.R.Components.Settings;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Interop;
-using Microsoft.VisualStudio.R.Package.Telemetry;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -47,14 +50,42 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
     public sealed class VsAppShell : IApplicationShell, IMainThread, IIdleTimeService, IDisposable {
         private static VsAppShell _instance;
         private static IApplicationShell _testShell;
+
+        private readonly ITelemetryService _telemetryService;
+        private readonly IRSettings _settings;
+        private readonly ICoreServices _coreServices;
+        private readonly IApplicationConstants _appConstants;
+
         private IdleTimeSource _idleTimeSource;
         private IWritableSettingsStorage _settingStorage;
+
+        [ImportingConstructor]
+        public VsAppShell(ITelemetryService telemetryService
+            , IRSettings settings
+            , ICoreServices coreServices
+            , IApplicationConstants appConstants) {
+
+            _telemetryService = telemetryService;
+            _coreServices = coreServices;
+            _appConstants = appConstants;
+
+            _settings = settings;
+            _settings.PropertyChanged += OnSettingsChanged;
+        }
 
         public static void EnsureInitialized() {
             ThreadHelper.ThrowIfNotOnUIThread();
             var instance = GetInstance();
             if (instance.MainThread == null) {
                 instance.Initialize();
+            }
+        }
+
+        private void OnSettingsChanged(object sender, PropertyChangedEventArgs e) {
+            if(e.PropertyName == nameof(IRSettings.LogVerbosity)) {
+                // Only set it once per session
+                _settings.PropertyChanged -= OnSettingsChanged;
+                _coreServices.LoggingServices.Permissions.CurrentVerbosity = _settings.LogVerbosity;
             }
         }
 
@@ -107,6 +138,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             var instance = (VsAppShell)componentModel.DefaultExportProvider.GetExportedValue<IApplicationShell>();
             instance.CompositionService = componentModel.DefaultCompositionService;
             instance.ExportProvider = componentModel.DefaultExportProvider;
+
             return Interlocked.CompareExchange(ref _instance, instance, null) ?? instance;
         }
 
@@ -162,7 +194,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 ThreadHelper.Generic.BeginInvoke(DispatcherPriority.Normal, () => action());
             }
         }
-
 
         private Dispatcher MainThreadDispatcher { get; set; }
 
@@ -247,13 +278,13 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         public string SaveFileIfDirty(string fullPath) =>
             new RunningDocumentTable(RPackage.Current).SaveFileIfDirty(fullPath);
 
-        public string ShowOpenFileDialog(string filter, string initialPath = null, string title = null) 
+        public string ShowOpenFileDialog(string filter, string initialPath = null, string title = null)
             => BrowseForFileOpen(IntPtr.Zero, filter, initialPath, title);
 
         public string ShowBrowseDirectoryDialog(string initialPath = null, string title = null)
             => VisualStudioTools.Dialogs.BrowseForDirectory(this.GetDialogOwnerWindow(), initialPath, title);
 
-        public string ShowSaveFileDialog(string filter, string initialPath = null, string title = null) 
+        public string ShowSaveFileDialog(string filter, string initialPath = null, string title = null)
             => BrowseForFileSave(IntPtr.Zero, filter, initialPath, title);
 
         public void UpdateCommandStatus(bool immediate) {
@@ -263,32 +294,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             });
         }
 
-        /// <summary>
-        /// Returns host locale ID
-        /// </summary>
-        public int LocaleId {
-            get {
-                IUIHostLocale hostLocale = GetGlobalService<IUIHostLocale>();
-                uint lcid;
-                if (hostLocale != null && hostLocale.GetUILocale(out lcid) == VSConstants.S_OK) {
-                    return (int)lcid;
-                }
-                return 0;
-            }
-        }
-
-        public ITelemetryService TelemetryService => RtvsTelemetry.Current.TelemetryService;
-
         public bool IsUnitTestEnvironment { get; set; }
-
-        public IntPtr ApplicationWindowHandle {
-            get {
-                var uiShell = GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-                IntPtr handle;
-                uiShell.GetDialogOwnerHwnd(out handle);
-                return handle;
-            }
-        }
 
         #endregion
 
@@ -448,6 +454,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         #endregion
 
         public void Dispose() {
+            _coreServices.LoggingServices.Dispose();
         }
 
         void OnIdle(object sender, EventArgs args) {
@@ -483,5 +490,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
             return package;
         }
+
+        public ICoreServices Services => _coreServices;
+        public IApplicationConstants AppConstants => _appConstants;
     }
 }

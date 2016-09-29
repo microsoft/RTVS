@@ -5,20 +5,26 @@ using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.OS;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Logging;
 using Microsoft.VisualStudio.R.Packages.R;
 
-namespace Microsoft.VisualStudio.R.Package.Documentation {
+namespace Microsoft.VisualStudio.R.Package.Feedback {
     internal class ReportIssueCommand : PackageCommand {
         private const string _url = @"http://go.microsoft.com/fwlink/?LinkID=760668&body={0}";
+        private readonly ILoggingPermissions _permissions;
+        private readonly IProcessServices _pss;
 
-        public ReportIssueCommand()
+        public ReportIssueCommand(ILoggingPermissions permissions, IProcessServices pss)
             : base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdReportIssue) {
+            _permissions = permissions;
+            _pss = pss;
         }
 
         protected override void SetStatus() {
-            Enabled = true;
+            Enabled = Visible = _permissions.IsFeedbackPermitted;
         }
 
         protected override void Handle() {
@@ -31,7 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.Documentation {
                 UseShellExecute = true,
                 FileName = string.Format(CultureInfo.InvariantCulture, _url, Uri.EscapeDataString(body))
             };
-            Process.Start(psi);
+            _pss.Start(psi);
         }
     }
 }

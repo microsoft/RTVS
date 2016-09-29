@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -13,12 +14,9 @@ using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Host.Client.Host;
-using Newtonsoft.Json;
+using Microsoft.R.Host.Protocol;
 using Newtonsoft.Json.Linq;
 using static System.FormattableString;
-using System.Collections.Generic;
-using System.Runtime;
-using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Client {
     public sealed partial class RHost : IDisposable, IRExpressionEvaluator, IRBlobService {
@@ -31,8 +29,7 @@ namespace Microsoft.R.Host.Client {
         
         private readonly IMessageTransport _transport;
         private readonly CancellationTokenSource _cts;
-        private readonly LinesLog _log;
-        private readonly FileLogWriter _fileLogWriter;
+        private readonly IActionLog _log;
         private readonly ConcurrentDictionary<ulong, Request> _requests = new ConcurrentDictionary<ulong, Request>();
 
         private volatile Task _runTask;
@@ -48,15 +45,13 @@ namespace Microsoft.R.Host.Client {
         private TaskCompletionSource<object> _cancelAllTcs;
         private CancellationTokenSource _cancelAllCts = new CancellationTokenSource();
 
-        public RHost(string name, IRCallbacks callbacks, IMessageTransport transport, CancellationTokenSource cts) {
+        public RHost(string name, IRCallbacks callbacks, IMessageTransport transport, IActionLog log, CancellationTokenSource cts) {
             Check.ArgumentStringNullOrEmpty(nameof(name), name);
 
             _callbacks = callbacks;
             _transport = transport;
+            _log = log;
             _cts = cts;
-
-            _fileLogWriter = FileLogWriter.InTempFolder("Microsoft.R.Host.Client" + "_" + name);
-            _log = new LinesLog(_fileLogWriter);
         }
 
         public void Dispose() {
@@ -64,7 +59,7 @@ namespace Microsoft.R.Host.Client {
         }
 
         public void FlushLog() {
-            _fileLogWriter?.Flush();
+            _log?.Flush();
         }
 
         private static Exception ProtocolError(FormattableString fs, object message = null) {
@@ -611,7 +606,7 @@ namespace Microsoft.R.Host.Client {
                 throw new OperationCanceledException(new OperationCanceledException().Message, ex);
             } catch (Exception ex) {
                 var message = "Exception in RHost run loop:\n" + ex;
-                _log.WriteLineAsync(MessageCategory.Error, message).DoNotWait();
+                _log.WriteLineAsync(LogVerbosity.Minimal, MessageCategory.Error, message).DoNotWait();
                 Debug.Fail(message);
                 throw;
             } finally {

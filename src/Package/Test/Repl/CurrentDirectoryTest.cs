@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -13,7 +14,6 @@ using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Test.Fakes.Trackers;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
-using Microsoft.R.Host.Client.Test.Fixtures;
 using Microsoft.R.Support.Settings;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
@@ -31,7 +31,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
         private readonly IRSessionProvider _sessionProvider;
 
         public CurrentDirectoryTest() {
-            _sessionProvider = new RSessionProvider();
+            _sessionProvider = new RSessionProvider(TestCoreServices.CreateReal());
 
             var connectionsProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IConnectionManagerProvider>();
             var historyProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRHistoryProvider>();
