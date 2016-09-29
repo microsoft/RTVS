@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Test.Shell;
+using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.Feedback;
 using Microsoft.VisualStudio.Shell;

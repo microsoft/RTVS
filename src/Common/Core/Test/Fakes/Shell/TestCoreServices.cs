@@ -10,7 +10,7 @@ using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Core.Test.Telemetry;
 using NSubstitute;
 
-namespace Microsoft.Common.Core.Test.Shell {
+namespace Microsoft.Common.Core.Test.Fakes.Shell {
     public static class TestCoreServices {
         public static ICoreServices CreateSubstitute(IFileSystem fs = null, IRegistry registry = null, IProcessServices ps = null) {
             return new CoreServices(

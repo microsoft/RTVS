@@ -6,7 +6,7 @@ using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core.Extensions;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Common.Core.Test.Shell;
+using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Test.StubFactories;
 using Microsoft.UnitTests.Core.XUnit;

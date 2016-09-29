@@ -51,7 +51,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private static VsAppShell _instance;
         private static IApplicationShell _testShell;
 
-        private readonly ILoggingServices _loggingServices;
         private readonly ITelemetryService _telemetryService;
         private readonly IRSettings _settings;
         private readonly ICoreServices _coreServices;
@@ -62,13 +61,11 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         [ImportingConstructor]
         public VsAppShell(ITelemetryService telemetryService
-            , ILoggingServices loggingServices
             , IRSettings settings
             , ICoreServices coreServices
             , IApplicationConstants appConstants) {
 
             _telemetryService = telemetryService;
-            _loggingServices = loggingServices;
             _coreServices = coreServices;
             _appConstants = appConstants;
 
@@ -88,7 +85,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             if(e.PropertyName == nameof(IRSettings.LogVerbosity)) {
                 // Only set it once per session
                 _settings.PropertyChanged -= OnSettingsChanged;
-                _loggingServices.Permissions.CurrentVerbosity = _settings.LogVerbosity;
+                _coreServices.LoggingServices.Permissions.CurrentVerbosity = _settings.LogVerbosity;
             }
         }
 
@@ -457,7 +454,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         #endregion
 
         public void Dispose() {
-            _loggingServices?.Dispose();
+            _coreServices.LoggingServices.Dispose();
         }
 
         void OnIdle(object sender, EventArgs args) {

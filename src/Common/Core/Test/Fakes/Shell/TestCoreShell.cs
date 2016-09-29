@@ -15,7 +15,7 @@ using Microsoft.Common.Core.Threading;
 using Microsoft.UnitTests.Core.Threading;
 using NSubstitute;
 
-namespace Microsoft.Common.Core.Test.Shell {
+namespace Microsoft.Common.Core.Test.Fakes.Shell {
     [ExcludeFromCodeCoverage]
     public class TestCoreShell : ICoreShell, IMainThread {
         private readonly CompositionContainer _container;

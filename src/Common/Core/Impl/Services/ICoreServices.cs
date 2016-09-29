@@ -13,5 +13,6 @@ namespace Microsoft.Common.Core.Services {
         IFileSystem FileSystem { get; }
         IProcessServices ProcessServices { get; }
         IRegistry Registry { get; }
+        ILoggingServices LoggingServices { get; }
     }
 }

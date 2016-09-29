@@ -10,7 +10,7 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using FluentAssertions;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Test.Shell;
+using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.Common.Wpf.Imaging;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Plots;

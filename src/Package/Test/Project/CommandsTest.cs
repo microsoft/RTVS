@@ -21,7 +21,7 @@ using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Test.FakeFactories;
 using NSubstitute;
 using Xunit;
-using Microsoft.Common.Core.Test.Shell;
+using Microsoft.Common.Core.Test.Fakes.Shell;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 #else

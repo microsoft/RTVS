@@ -9,7 +9,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Settings;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Common.Core.Test.Shell;
+using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.Common.Core.Threading;
 using Microsoft.UnitTests.Core.Threading;
 using NSubstitute;

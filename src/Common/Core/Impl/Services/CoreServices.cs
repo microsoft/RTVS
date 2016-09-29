@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Logging.Implementation;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
@@ -13,20 +14,19 @@ namespace Microsoft.Common.Core.Services {
     [Export(typeof(ICoreServices))]
     public sealed class CoreServices : ICoreServices {
         private readonly IApplicationConstants _appConstants;
-        private readonly ILoggingServices _loggingServices;
         private IActionLog _log;
 
         [ImportingConstructor]
         public CoreServices(
               IApplicationConstants appConstants
             , ITelemetryService telemetry
-            , ILoggingServices loggingServices
+            , ILoggingPermissions permissions
             , [Import(AllowDefault = true)] IActionLog log = null
             , [Import(AllowDefault = true)] IFileSystem fs = null
             , [Import(AllowDefault = true)] IRegistry registry = null
             , [Import(AllowDefault = true)] IProcessServices ps = null) {
 
-            _loggingServices = loggingServices;
+            LoggingServices = new LoggingServices(permissions, appConstants);
             _appConstants = appConstants;
             _log = log;
 
@@ -39,7 +39,7 @@ namespace Microsoft.Common.Core.Services {
         public IActionLog Log {
             get {
                 if (_log == null) {
-                    _log = _loggingServices.GetOrCreateLog(_appConstants.ApplicationName);
+                    _log = LoggingServices.GetOrCreateLog(_appConstants.ApplicationName);
                 }
                 return _log;
             }
@@ -49,5 +49,6 @@ namespace Microsoft.Common.Core.Services {
         public IProcessServices ProcessServices { get; }
         public IRegistry Registry { get; } 
         public ITelemetryService Telemetry { get; }
+        public ILoggingServices LoggingServices { get; }
     }
 }

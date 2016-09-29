@@ -6,12 +6,10 @@ using System.Threading;
 using Microsoft.Common.Core.Shell;
 
 namespace Microsoft.Common.Core.Logging.Implementation {
-    [Export(typeof(ILoggingServices))]
     internal sealed class LoggingServices : ILoggingServices {
         private static Logger _instance;
         private readonly IApplicationConstants _appConstants;
 
-        [ImportingConstructor]
         public LoggingServices(ILoggingPermissions permissions, IApplicationConstants appConstants) {
             Permissions = permissions;
             _appConstants = appConstants;

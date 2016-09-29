@@ -4,7 +4,7 @@
 using System;
 using Microsoft.Common.Core.Shell;
 
-namespace Microsoft.Common.Core.Test.Shell {
+namespace Microsoft.Common.Core.Test.Fakes.Shell {
     public sealed class TestAppConstants : IApplicationConstants {
         public string ApplicationName => "TestApplication";
         public uint LocaleId => 1033;
