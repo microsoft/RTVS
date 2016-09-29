@@ -8,15 +8,14 @@ using System.ComponentModel.Design;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Common.Core;
-using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Settings;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Common.Core.Telemetry;
-using Microsoft.Common.Wpf.Threading;
+using Microsoft.Common.Core.Threading;
 using Microsoft.UnitTests.Core.Threading;
 using NSubstitute;
 
-namespace Microsoft.R.Components.Test.Fakes.Shell {
+namespace Microsoft.Common.Core.Test.Shell {
     [ExcludeFromCodeCoverage]
     public class TestCoreShell : ICoreShell, IMainThread {
         private readonly CompositionContainer _container;
@@ -78,9 +77,9 @@ namespace Microsoft.R.Components.Test.Fakes.Shell {
         public string BrowseDirectoryPath { get; set; }
         public string SaveFilePath { get; set; }
         public bool IsUnitTestEnvironment => true;
-        public ITelemetryService TelemetryService => Substitute.For<ITelemetryService>();
-        public IntPtr ApplicationWindowHandle => IntPtr.Zero;
-        public IActionLog Logger => Substitute.For<IActionLog>();
+        public IApplicationConstants AppConstants => new TestAppConstants();
+        public ICoreServices Services => TestCoreServices.CreateReal();
+        public IWritableSettingsStorage SettingsStorage => Substitute.For<IWritableSettingsStorage>();
 
         #region IMainThread
         public int ThreadId => MainThread.ManagedThreadId;

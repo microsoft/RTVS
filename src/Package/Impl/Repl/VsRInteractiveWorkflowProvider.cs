@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.Common.Core.Services;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.History;
@@ -36,6 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         private readonly IApplicationShell _shell;
         private readonly IWorkspaceServices _wss;
         private readonly IRSettings _settings;
+        private readonly ICoreServices _services;
 
         private Lazy<IRInteractiveWorkflow> _instanceLazy;
 
@@ -48,7 +50,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             , IDebuggerModeTracker debuggerModeTracker
             , IApplicationShell shell
             , IWorkspaceServices wss
-            , IRSettings settings) {
+            , IRSettings settings
+            , ICoreServices services) {
 
             _connectionsProvider = connectionsProvider;
             _historyProvider = historyProvider;
@@ -59,6 +62,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             _shell = shell;
             _wss = wss;
             _settings = settings;
+            _services = services;
         }
 
         public void Dispose() {
@@ -75,7 +79,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         public IRInteractiveWorkflow Active => (_instanceLazy != null && _instanceLazy.IsValueCreated) ? _instanceLazy.Value : null;
 
         private IRInteractiveWorkflow CreateRInteractiveWorkflow() {
-            var sessionProvider = new RSessionProvider(_shell.Logger, new RSessionProviderCallback( _shell, _instanceLazy));
+            var sessionProvider = new RSessionProvider(_services, new RSessionProviderCallback( _shell, _instanceLazy));
             var workflow = new RInteractiveWorkflow(sessionProvider, _connectionsProvider, _historyProvider, _packagesProvider, 
                                                     _plotsProvider, _activeTextViewTracker, _debuggerModeTracker, 
                                                     _shell, _settings, _wss, () => DisposeInstance(sessionProvider));

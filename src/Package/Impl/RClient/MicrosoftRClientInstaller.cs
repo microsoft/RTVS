@@ -18,8 +18,8 @@ using Microsoft.VisualStudio.R.Package.Utilities;
 namespace Microsoft.VisualStudio.R.Package.RClient {
     [Export(typeof(IMicrosoftRClientInstaller))]
     internal sealed class MicrosoftRClientInstaller : IMicrosoftRClientInstaller {
-        public void LaunchRClientSetup(ICoreShell coreShell, IProcessServices ps, IFileDownloader downloader = null) {
-            coreShell.TelemetryService.ReportEvent(TelemetryArea.Configuration, RtvsTelemetry.ConfigurationEvents.RClientInstallYes);
+        public void LaunchRClientSetup(ICoreShell coreShell, IFileDownloader downloader = null) {
+            coreShell.Services.Telemetry.ReportEvent(TelemetryArea.Configuration, RtvsTelemetry.ConfigurationEvents.RClientInstallYes);
             downloader = downloader ?? new FileDownloader();
 
             string downloadError = null;
@@ -31,22 +31,22 @@ namespace Microsoft.VisualStudio.R.Package.RClient {
                     Action = (o, ct) => {
                         downloadError = downloader.Download("http://go.microsoft.com/fwlink/?LinkId=800048", rClientExe, ct);
                     },
-                }
-            });
+                }, 
+            }, coreShell.Services.Log);
 
             if (!string.IsNullOrEmpty(downloadError)) {
                 var errorMessage = string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToDownloadRClient, downloadError);
                 coreShell.ShowErrorMessage(errorMessage);
-                coreShell.TelemetryService.ReportEvent(TelemetryArea.Configuration, RtvsTelemetry.ConfigurationEvents.RClientDownloadFailed, errorMessage);
-                coreShell.Logger.WriteAsync(LogVerbosity.Minimal, MessageCategory.Error, "Microsoft R Client download error: " + errorMessage).DoNotWait();
+                coreShell.Services.Telemetry.ReportEvent(TelemetryArea.Configuration, RtvsTelemetry.ConfigurationEvents.RClientDownloadFailed, errorMessage);
+                coreShell.Services.Log.WriteAsync(LogVerbosity.Minimal, MessageCategory.Error, "Microsoft R Client download error: " + errorMessage).DoNotWait();
             } else {
                 // Suppress 'Operation canceled by the user' if user clicks 'No' to elevation dialog.
                 try {
                     coreShell.ShowMessage(Resources.PleaseRestartVisualStudioAfterRClientSetup, MessageButtons.OK);
-                    ps.Start(rClientExe);
+                    coreShell.Services.ProcessServices.Start(rClientExe);
                 } catch (Win32Exception ex) {
                     if((uint)ex.NativeErrorCode == 0x800704C7) {
-                        coreShell.TelemetryService.ReportEvent(TelemetryArea.Configuration, RtvsTelemetry.ConfigurationEvents.RClientInstallCancel);
+                        coreShell.Services.Telemetry.ReportEvent(TelemetryArea.Configuration, RtvsTelemetry.ConfigurationEvents.RClientInstallCancel);
                     }
                 }
             }

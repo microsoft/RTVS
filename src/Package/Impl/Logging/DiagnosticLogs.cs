@@ -12,6 +12,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Logging;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Interpreters;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -45,7 +46,7 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
 
         private static List<string> _logFiles = new List<string>();
 
-        public static string Collect() {
+        public static string Collect(IActionLog log) {
             string zipPath = string.Empty;
             _logFiles.Clear();
 
@@ -66,7 +67,7 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
             } catch (ArgumentException) {
             }
 
-            LongOperationNotification.ShowWaitingPopup(Resources.GatheringDiagnosticData, _actions);
+            LongOperationNotification.ShowWaitingPopup(Resources.GatheringDiagnosticData, _actions, log);
             return zipPath;
         }
 

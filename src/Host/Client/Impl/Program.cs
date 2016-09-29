@@ -6,9 +6,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
-using Microsoft.Common.Core.OS;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Host.Client.Host;
 using static System.FormattableString;
@@ -22,7 +21,8 @@ namespace Microsoft.R.Host.Client {
             Console.CancelKeyPress += Console_CancelKeyPress;
 
             using (var logger = new Logger("Program", new MaxLoggingPermissions(), FileLogWriter.InTempFolder("Microsoft.R.Host.Client.Program"))) {
-                var localConnector = new LocalBrokerClient("Program", args[0], logger, new FileSystem(), new ProcessServices());
+                var services = new CoreServices(new AppConstants(), null, null);
+                var localConnector = new LocalBrokerClient("Program", args[0], services);
                 var host = localConnector.ConnectAsync("Program", new Program()).GetAwaiter().GetResult();
                 _evaluator = host;
                 host.Run().GetAwaiter().GetResult();
@@ -184,6 +184,13 @@ namespace Microsoft.R.Host.Client {
             public LogVerbosity CurrentVerbosity { get; set; } = LogVerbosity.Traffic;
             public bool IsFeedbackPermitted => true;
             public LogVerbosity MaxVerbosity => LogVerbosity.Traffic;
+        }
+
+        class AppConstants : IApplicationConstants {
+            public string ApplicationName => "Microsoft.R.Host.Client";
+            public IntPtr ApplicationWindowHandle => IntPtr.Zero;
+            public uint LocaleId => 1033;
+            public string LocalMachineHive => null;
         }
     }
 }

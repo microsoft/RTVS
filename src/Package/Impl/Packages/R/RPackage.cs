@@ -9,6 +9,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Components.ContentTypes;
+using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Settings.Mirrors;
 using Microsoft.R.Debugger;
 using Microsoft.R.Debugger.PortSupplier;
@@ -111,12 +112,11 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             VsWpfOverrides.Apply(VsAppShell.Current);
             CranMirrorList.Download();
 
-            RtvsTelemetry.Initialize(_packageIndex);
-
             using (var p = Current.GetDialogPage(typeof(RToolsOptionsPage)) as RToolsOptionsPage) {
                 p?.LoadSettings();
             }
 
+            RtvsTelemetry.Initialize(_packageIndex, VsAppShell.Current.ExportProvider.GetExportedValue<IRSettings>());
             base.Initialize();
 
             ProjectIconProvider.LoadProjectImages();

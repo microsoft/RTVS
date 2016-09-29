@@ -19,7 +19,7 @@ namespace SetupCustomActions {
             ActionResult actionResult = ActionResult.UserExit;
             DialogResult ds = DialogResult.No;
             bool vsInstalled = false;
-            string[] vsKeys = new string[] { @"\enterprise", @"\professional", @"\community" };
+            string[] vsKeys = new string[] { @"\devenv" };
 
             session.Log("Begin VS detection action");
             session["InstallVS"] = "No";

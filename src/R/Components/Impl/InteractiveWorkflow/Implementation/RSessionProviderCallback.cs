@@ -14,7 +14,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
         public async Task<IntPtr> GetApplicationWindowHandleAsync() {
             await _coreShell.SwitchToMainThreadAsync();
-            return _coreShell.ApplicationWindowHandle;
+            return _coreShell.AppConstants.ApplicationWindowHandle;
         }
 
         public RSessionProviderCallback(ICoreShell coreShell, Lazy<IRInteractiveWorkflow> workflowLazy) {

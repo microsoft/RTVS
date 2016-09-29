@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.VisualStudio.R.Package.Browsers;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -18,12 +19,14 @@ namespace Microsoft.VisualStudio.R.Package.SurveyNews {
         private readonly ISurveyNewsFeedClient _feedClient;
         private readonly ISurveyNewsOptions _options;
         private readonly IWebBrowserServices _browserServices;
+        private readonly ICoreShell _coreShell;
 
         [ImportingConstructor]
-        public SurveyNewsService(ISurveyNewsFeedClient feedClient, ISurveyNewsOptions options, IWebBrowserServices browserServices) {
+        public SurveyNewsService(ISurveyNewsFeedClient feedClient, ISurveyNewsOptions options, IWebBrowserServices browserServices, ICoreShell coreShell) {
             _feedClient = feedClient;
             _options = options;
             _browserServices = browserServices;
+            _coreShell = coreShell;
         }
 
         public async Task CheckSurveyNewsAsync(bool forceCheck) {
@@ -84,7 +87,7 @@ namespace Microsoft.VisualStudio.R.Package.SurveyNews {
                     url = _options.IndexUrl;
                 }
             } catch (Exception ex) when (!ex.IsCriticalException()) {
-                VsAppShell.Current.Logger.WriteAsync(LogVerbosity.Normal, MessageCategory.Error, "SurveyNews exception: " + ex.Message).DoNotWait();
+                _coreShell.Services.Log.WriteAsync(LogVerbosity.Normal, MessageCategory.Error, "SurveyNews exception: " + ex.Message).DoNotWait();
                 if (forceCheck) {
                     url = _options.CannotConnectUrl;
                 }
@@ -95,7 +98,7 @@ namespace Microsoft.VisualStudio.R.Package.SurveyNews {
                     _browserServices.OpenBrowser(WebBrowserRole.News, url, onIdle: !forceCheck);
                 }
             } catch (Exception ex) when (!ex.IsCriticalException()) {
-                VsAppShell.Current.Logger.WriteAsync(LogVerbosity.Normal, MessageCategory.Error, "SurveyNews exception: " + ex.Message).DoNotWait();
+                _coreShell.Services.Log.WriteAsync(LogVerbosity.Normal, MessageCategory.Error, "SurveyNews exception: " + ex.Message).DoNotWait();
             }
         }
     }

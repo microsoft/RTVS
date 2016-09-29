@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Telemetry;
+using Microsoft.R.Components.Settings;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Interpreters;
 using Microsoft.R.Support.Help;
@@ -26,6 +27,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
     internal sealed class RtvsTelemetry : IRtvsTelemetry {
         private ToolWindowTracker _toolWindowTracker = new ToolWindowTracker();
         private readonly IPackageIndex _packageIndex;
+        private static IRSettings _settings;
 
         public static IRtvsTelemetry Current { get; set; }
 
@@ -41,6 +43,8 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
             public const string RClientInstallCancel = "MRC Install Canceled";
             public const string RClientActive = "MRC Active";
             public const string RClientDownloadFailed = "MRC Download Failed";
+            public const string LocalConnection = "Local Connection";
+            public const string RemoteConnection = "Remote Connection";
         }
 
         internal class SettingEvents {
@@ -51,14 +55,15 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
             public const string ToolWindow = "Tool Window";
         }
 
-        public static void Initialize(IPackageIndex packageIndex, ITelemetryService service = null) {
+        public static void Initialize(IPackageIndex packageIndex, IRSettings settings, ITelemetryService service = null) {
             if (Current == null) {
-                Current = new RtvsTelemetry(packageIndex, service);
+                Current = new RtvsTelemetry(packageIndex, settings, service);
             }
         }
 
-        public RtvsTelemetry(IPackageIndex packageIndex, ITelemetryService service = null) {
+        public RtvsTelemetry(IPackageIndex packageIndex, IRSettings settings, ITelemetryService service = null) {
             _packageIndex = packageIndex;
+            _settings = settings;
             TelemetryService = service ?? VsAppShell.Current.ExportProvider.GetExportedValue<ITelemetryService>();
         }
 
@@ -70,8 +75,8 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
                     Assembly thisAssembly = Assembly.GetExecutingAssembly();
                     TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RtvsVersion, thisAssembly.GetName().Version.ToString());
 
-                    //TODO: Fix telemetry. There may be no local install path, and remote R brokers may be offline.
                     ReportLocalRConfiguration();
+                    ReportConnectionsConfiguration();
 
                 } catch (Exception ex) {
                     Trace.Fail("Telemetry exception: " + ex.Message);
@@ -109,6 +114,22 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
             if (_packageIndex != null) {
                 foreach(var p in _packageIndex.Packages) {
                     TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RPackages, p.Name.GetMD5Hash());
+                }
+            }
+        }
+
+        private void ReportConnectionsConfiguration() {
+            var connections = _settings.Connections;
+            if(connections != null) {
+                foreach (var c in connections) {
+                    Uri uri;
+                    if (Uri.TryCreate(c.Path, UriKind.Absolute, out uri)) {
+                        if (uri.IsFile) {
+                            TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.LocalConnection, uri.ToString());
+                        } else {
+                            TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RemoteConnection, uri.ToString().GetMD5Hash());
+                        }
+                    }
                 }
             }
         }

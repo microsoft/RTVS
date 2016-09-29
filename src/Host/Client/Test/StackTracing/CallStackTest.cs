@@ -7,7 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Test.Shell;
 using Microsoft.R.DataInspection;
 using Microsoft.R.ExecutionTracing;
 using Microsoft.R.Host.Client;
@@ -29,7 +29,7 @@ namespace Microsoft.R.StackTracing.Test {
 
         public CallStackTest(TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo; 
-            _sessionProvider = new RSessionProvider(Substitute.For<IActionLog>());
+            _sessionProvider = new RSessionProvider(TestCoreServices.CreateReal());
             _session = _sessionProvider.GetOrCreate(Guid.NewGuid());
         }
 

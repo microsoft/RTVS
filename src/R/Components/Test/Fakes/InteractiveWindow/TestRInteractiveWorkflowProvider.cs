@@ -5,8 +5,9 @@ using System;
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
-using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Test.Shell;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -81,7 +82,7 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
         public IRInteractiveWorkflow Active => _instanceLazy.IsValueCreated ? _instanceLazy.Value : null;
 
         private IRInteractiveWorkflow CreateRInteractiveWorkflow() {
-            var sessionProvider = _sessionProvider ?? new RSessionProvider(Substitute.For<IActionLog>());
+            var sessionProvider = _sessionProvider ?? new RSessionProvider(TestCoreServices.CreateReal());
             return new RInteractiveWorkflow(sessionProvider
                 , _connectionManagerProvider
                 , _historyProvider

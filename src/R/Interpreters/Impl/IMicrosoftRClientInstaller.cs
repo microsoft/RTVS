@@ -11,6 +11,6 @@ namespace Microsoft.R.Interpreters {
     /// of the Microsoft R Client. Exported via MEF.
     /// </summary>
     public interface IMicrosoftRClientInstaller {
-        void LaunchRClientSetup(ICoreShell coreShell, IProcessServices ps, IFileDownloader downloader = null);
+        void LaunchRClientSetup(ICoreShell coreShell, IFileDownloader downloader = null);
     }
 }

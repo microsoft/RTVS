@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Wpf.Threading;
 using static System.FormattableString;
 
