@@ -14,7 +14,7 @@ namespace Microsoft.R.Host.Client.Test.Fixtures {
         public IRSessionProvider SessionProvider { get; }
 
         public SessionProviderFixture() {
-            SessionProvider = new RSessionProvider(TestCoreServices.CreateSubstitute());
+            SessionProvider = new RSessionProvider(TestCoreServices.CreateReal());
         }
 
         public async Task InitializeAsync() {

@@ -75,7 +75,7 @@ namespace Microsoft.Languages.Editor.Test.Fakes.Shell {
         public string BrowseDirectoryPath { get; set; }
         public string SaveFilePath { get; set; }
         public IApplicationConstants AppConstants => new TestAppConstants();
-        public ICoreServices Services => TestCoreServices.CreateSubstitute();
+        public ICoreServices Services => TestCoreServices.CreateReal();
         public IWritableSettingsStorage SettingsStorage => Substitute.For<IWritableSettingsStorage>();
 
         #region IMainThread

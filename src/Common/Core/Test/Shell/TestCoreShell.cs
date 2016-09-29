@@ -78,7 +78,7 @@ namespace Microsoft.Common.Core.Test.Shell {
         public string SaveFilePath { get; set; }
         public bool IsUnitTestEnvironment => true;
         public IApplicationConstants AppConstants => new TestAppConstants();
-        public ICoreServices Services => TestCoreServices.CreateSubstitute();
+        public ICoreServices Services => TestCoreServices.CreateReal();
         public IWritableSettingsStorage SettingsStorage => Substitute.For<IWritableSettingsStorage>();
 
         #region IMainThread

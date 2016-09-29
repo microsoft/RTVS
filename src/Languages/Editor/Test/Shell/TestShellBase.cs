@@ -94,7 +94,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
         #region ICoreShell
         public bool IsUnitTestEnvironment { get; set; } = true;
         public IApplicationConstants AppConstants => new TestAppConstants();
-        public virtual ICoreServices Services => TestCoreServices.CreateSubstitute();
+        public virtual ICoreServices Services => TestCoreServices.CreateReal();
         public virtual IWritableSettingsStorage SettingsStorage => Substitute.For<IWritableSettingsStorage>();
         #endregion
     }
