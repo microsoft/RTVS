@@ -60,7 +60,6 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         private IRSession _session;
         private IRHistory _history;
         private ISurveyNewsService _surveyNews;
-        private ICoreShell _coreShell;
 
         /// <summary>
         /// Backing field for the similarly named property.
