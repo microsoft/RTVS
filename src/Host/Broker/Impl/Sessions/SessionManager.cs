@@ -70,7 +70,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
                 profilePath,
                 _loggingOptions.LogHostOutput ? _hostOutputLogger : null,
                 _loggingOptions.LogPackets ? _messageLogger : null,
-                _loggingOptions.LogPackets ? LogVerbosity.Traffic : LogVerbosity.Minimal);
+                _loggingOptions.LogPackets || _loggingOptions.LogHostOutput ? LogVerbosity.Traffic : LogVerbosity.Minimal);
 
             return session;
         }

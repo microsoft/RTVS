@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Diagnostics.CodeAnalysis;
-using FluentAssertions;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Test.Fakes.Shell;
@@ -44,12 +43,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
 
         private void TestStatus(OleMenuCommand cmd) {
             _lp.IsFeedbackPermitted.Returns(false);
-            var status = cmd.OleStatus;
-            cmd.Visible.Should().BeFalse();
+            cmd.Should().BeInvisibleAndDisabled();
 
             _lp.IsFeedbackPermitted.Returns(true);
-            status = cmd.OleStatus;
-            cmd.Visible.Should().BeTrue();
+            cmd.Should().BeEnabled();
         }
     }
 }

@@ -91,7 +91,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 .Add(() => _activeTextViewTracker.LastActiveTextViewChanged -= LastActiveTextViewChanged)
                 .Add(() => RSession.Disconnected -= RSessionDisconnected)
                 .Add(Operations)
-                .Add(Connections);
+                .Add(Connections).
+                Add(_onDispose);
         }
 
         private void DebuggerEnteredBreakMode(object sender, EventArgs e) {
@@ -169,7 +170,6 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
         public void Dispose() {
             _disposableBag.TryDispose();
-            _onDispose();
         }
 
         private void OnSettingsChanged(object sender, PropertyChangedEventArgs e) {
@@ -177,18 +177,16 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 SetMirrorToSession().DoNotWait();
             } else if (e.PropertyName == nameof(IRSettings.RCodePage)) {
                 SetSessionCodePage().DoNotWait();
-            } 
+            }
         }
 
         private async Task SetMirrorToSession() {
             string mirrorName = _settings.CranMirror;
             string mirrorUrl = CranMirrorList.UrlFromName(mirrorName);
 
-            foreach (var s in RunningSessions) {
+            foreach (var s in RSessions.GetSessions()) {
                 try {
-                    using (var eval = await s.BeginEvaluationAsync()) {
-                        await eval.SetVsCranSelectionAsync(mirrorUrl);
-                    }
+                    await s.SetVsCranSelectionAsync(mirrorUrl);
                 } catch (RException) { } catch (OperationCanceledException) { }
             }
         }
@@ -196,17 +194,11 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         private async Task SetSessionCodePage() {
             var cp = _settings.RCodePage;
 
-            foreach (var s in RunningSessions) {
+            foreach (var s in RSessions.GetSessions()) {
                 try {
-                    using (var eval = await s.BeginEvaluationAsync()) {
-                        await eval.SetCodePageAsync(cp);
-                    }
+                    await s.SetCodePageAsync(cp);
                 } catch (OperationCanceledException) { }
             }
-        }
-
-        private IEnumerable<IRSession> RunningSessions {
-            get { return RSessions.GetSessions().Where(s => s.IsHostRunning); }
         }
     }
 }
