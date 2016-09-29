@@ -70,9 +70,7 @@
     <Compile Include="Net\IFileDownloader.cs" />
     <Compile Include="Net\WebSocketHelper.cs" />
     <Compile Include="OS\ErrorCodeConverter.cs" />
-    <Compile Include="Services\IServiceBag.cs" />
     <Compile Include="Services\ICoreServices.cs" />
-    <Compile Include="Services\ServiceBag.cs" />
     <Compile Include="Services\CoreServices.cs" />
     <Compile Include="Settings\ISettingsStorage.cs" />
     <Compile Include="Shell\IApplicationConstants.cs" />

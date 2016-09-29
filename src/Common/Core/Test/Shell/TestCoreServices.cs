@@ -25,7 +25,7 @@ namespace Microsoft.Common.Core.Test.Shell {
 
         public static ICoreServices CreateReal() {
             return new CoreServices(
-                Substitute.For<IApplicationConstants>(),
+                new TestAppConstants(),
                 new TelemetryTestService(),
                 null,
                 Substitute.For<IActionLog>(),

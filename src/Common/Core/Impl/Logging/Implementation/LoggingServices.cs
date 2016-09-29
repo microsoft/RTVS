@@ -22,7 +22,7 @@ namespace Microsoft.Common.Core.Logging.Implementation {
         public IActionLog GetOrCreateLog(string appName) {
             if (_instance == null) {
                 var instance = new Logger(_appConstants.ApplicationName, Permissions, writer: null);
-                Interlocked.Exchange(ref _instance, instance);
+                Interlocked.CompareExchange(ref _instance, instance, null);
             }
             return _instance;
         }
