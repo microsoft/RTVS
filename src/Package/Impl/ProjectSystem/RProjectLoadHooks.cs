@@ -47,7 +47,6 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         private readonly MsBuildFileSystemWatcher _fileWatcher;
         private readonly string _projectDirectory;
         private readonly IRToolsSettings _toolsSettings;
-        private readonly IFileSystem _fileSystem = new FileSystem();
         private readonly IThreadHandling _threadHandling;
         private readonly UnconfiguredProject _unconfiguredProject;
         private readonly IEnumerable<Lazy<IVsProject>> _cpsIVsProjects;
@@ -90,7 +89,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             _projectDirectory = unconfiguredProject.GetProjectDirectory();
 
             unconfiguredProject.ProjectUnloading += ProjectUnloading;
-            _fileWatcher = new MsBuildFileSystemWatcher(_projectDirectory, "*", 25, 1000, _fileSystem, new RMsBuildFileSystemFilter(), coreShell.Services.Log);
+            _fileWatcher = new MsBuildFileSystemWatcher(_projectDirectory, "*", 25, 1000, _coreShell.Services.FileSystem, new RMsBuildFileSystemFilter(), coreShell.Services.Log);
             _fileWatcher.Error += FileWatcherError;
             Project = new FileSystemMirroringProject(unconfiguredProject, projectLockService, _fileWatcher, _dependencyProvider, coreShell.Services.Log);
         }
@@ -133,7 +132,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             // https://github.com/Microsoft/RTVS/issues/2223
             if (!_session.IsRemote) {
                 var rdataPath = Path.Combine(_projectDirectory, DefaultRDataName);
-                bool loadDefaultWorkspace = _fileSystem.FileExists(rdataPath) && await GetLoadDefaultWorkspace(rdataPath);
+                bool loadDefaultWorkspace = _coreShell.Services.FileSystem.FileExists(rdataPath) && await GetLoadDefaultWorkspace(rdataPath);
                 using (var evaluation = await _session.BeginEvaluationAsync()) {
                     if (loadDefaultWorkspace) {
                         await evaluation.LoadWorkspaceAsync(rdataPath);
@@ -190,7 +189,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             _unconfiguredProject.ProjectUnloading -= ProjectUnloading;
             _fileWatcher.Dispose();
 
-            if (!_fileSystem.DirectoryExists(_projectDirectory)) {
+            if (!_coreShell.Services.FileSystem.DirectoryExists(_projectDirectory)) {
                 return;
             }
 
