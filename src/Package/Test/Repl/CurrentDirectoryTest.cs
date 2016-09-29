@@ -31,7 +31,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
         private readonly IRSessionProvider _sessionProvider;
 
         public CurrentDirectoryTest() {
-            _sessionProvider = new RSessionProvider(TestCoreServices.CreateSubstitute());
+            _sessionProvider = new RSessionProvider(TestCoreServices.CreateReal());
 
             var connectionsProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IConnectionManagerProvider>();
             var historyProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRHistoryProvider>();

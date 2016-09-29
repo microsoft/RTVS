@@ -26,7 +26,7 @@ namespace Microsoft.R.RtvsPackage.Test {
 
         public JsonTest(TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo;
-            _sessionProvider = new RSessionProvider(TestCoreServices.CreateSubstitute());
+            _sessionProvider = new RSessionProvider(TestCoreServices.CreateReal());
             _session = _sessionProvider.GetOrCreate(Guid.NewGuid());
         }
 

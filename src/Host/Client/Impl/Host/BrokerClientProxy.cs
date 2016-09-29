@@ -4,7 +4,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Protocol;
 

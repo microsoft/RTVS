@@ -35,7 +35,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
 
         public GridDataTest(TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo;
-            _sessionProvider = new RSessionProvider(TestCoreServices.CreateSubstitute());
+            _sessionProvider = new RSessionProvider(TestCoreServices.CreateReal());
             _session = _sessionProvider.GetOrCreate(Guid.NewGuid());
         }
 
