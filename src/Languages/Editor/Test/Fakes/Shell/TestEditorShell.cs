@@ -49,7 +49,8 @@ namespace Microsoft.Languages.Editor.Test.Fakes.Shell {
             LastShownContextMenu = commandId;
         }
 
-        public ProgressBarSession ShowProgressBar(string waitMessage, int delayToShowDialigMs = 0) => new ProgressBarSession();
+        public ProgressBarSession ShowProgressBar(string waitMessage, int delayToShowDialogMs = 0) => new ProgressBarSession();
+        public ProgressBarSession ShowProgressBarWithUpdate(string waitMessage, int delayToShowDialogMs = 0) => new ProgressBarSession();
 
         public MessageButtons ShowMessage(string message, MessageButtons buttons) {
             LastShownMessage = message;

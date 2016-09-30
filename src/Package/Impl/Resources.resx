@@ -915,10 +915,10 @@ Additional information:
     <value>Publishing complete. Connection {0}</value>
   </data>
   <data name="Error_CannotTransferNoRSession" xml:space="preserve">
-    <value>Cannot transfer files, no active RSession available.</value>
+    <value>Cannot transfer files, no active RSession available. Reason: {0}</value>
   </data>
   <data name="Error_UnableToVerifyFile" xml:space="preserve">
-    <value>Unable to verify if file exists on remote host.</value>
+    <value>Unable to verify if file exists on remote host. Reason: {0}</value>
   </data>
   <data name="Info_CompressingFiles" xml:space="preserve">
     <value>Compressing files</value>

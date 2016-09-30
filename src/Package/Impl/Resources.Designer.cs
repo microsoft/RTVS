@@ -349,7 +349,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot transfer files, no active RSession available..
+        ///   Looks up a localized string similar to Cannot transfer files, no active RSession available. Reason: {0}.
         /// </summary>
         public static string Error_CannotTransferNoRSession {
             get {
@@ -467,7 +467,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to verify if file exists on remote host..
+        ///   Looks up a localized string similar to Unable to verify if file exists on remote host. Reason: {0}.
         /// </summary>
         public static string Error_UnableToVerifyFile {
             get {

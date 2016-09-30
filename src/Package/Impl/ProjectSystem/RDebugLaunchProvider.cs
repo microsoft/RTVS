@@ -130,8 +130,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             if (transferFiles && Session.IsRemote) {
                 try {
                     fileExists = await Session.EvaluateAsync<bool>($"file.exists({file.ToRPath().ToRStringLiteral()})", REvaluationKind.Normal);
-                } catch (RHostDisconnectedException) {
-                    ProgressOutputWriter.WriteLine(Resources.Error_UnableToVerifyFile);
+                } catch (RHostDisconnectedException rhdex) {
+                    ProgressOutputWriter.WriteLine(Resources.Error_UnableToVerifyFile.FormatInvariant(rhdex.Message));
                 }
             } else {
                 fileExists = FileSystem.FileExists(file);

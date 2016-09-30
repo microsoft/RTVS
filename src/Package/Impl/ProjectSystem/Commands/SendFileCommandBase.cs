@@ -86,11 +86,13 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
                         outputWindow.WriteLine(Resources.Info_TransferringFilesDone);
                     });
                 }
-            } catch (IOException ex) {
-                _appShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotTransferFile, ex.Message));
-            } catch (RHostDisconnectedException) {
+            } catch(UnauthorizedAccessException uaex) {
+                _appShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotTransferFile, uaex.Message));
+            } catch (IOException ioex) {
+                _appShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotTransferFile, ioex.Message));
+            } catch (RHostDisconnectedException rhdex) {
                 _appShell.DispatchOnUIThread(() => {
-                    outputWindow.WriteErrorLine(Resources.Error_CannotTransferNoRSession);
+                    outputWindow.WriteErrorLine(Resources.Error_CannotTransferNoRSession.FormatInvariant(rhdex.Message));
                 });
             } finally {
                 statusBar.Progress(ref cookie, 0, "", 0, 0);
