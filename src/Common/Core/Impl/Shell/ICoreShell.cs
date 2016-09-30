@@ -61,7 +61,13 @@ namespace Microsoft.Common.Core.Shell {
         /// Shows progress bar that blocks hosting shell
         /// </summary>
         /// <returns></returns>
-        ProgressBarSession ShowProgressBar(string waitMessage, int delayToShowDialigMs = 0);
+        ProgressBarSession ShowProgressBar(string waitMessage, int delayToShowDialogMs = 0);
+
+        /// <summary>
+        /// Shows progress bar that blocks hosting shell
+        /// </summary>
+        /// <returns></returns>
+        ProgressBarSession ShowProgressBarWithUpdate(string waitMessage, int delayToShowDialogMs = 0);
 
         /// <summary>
         /// Displays message with specified buttons in a host-specific UI
