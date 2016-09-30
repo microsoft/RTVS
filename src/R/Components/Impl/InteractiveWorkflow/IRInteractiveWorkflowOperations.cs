@@ -38,7 +38,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow {
         Task SourceFileAsync(string file, bool echo, Encoding encoding = null);
 
         /// <summary>
-        /// Attempts to launch Shiby app. Invokes 'library(shiny)'
+        /// Attempts to launch Shiny app. Invokes 'library(shiny)'
         /// followed by 'RunApp()'.
         /// </summary>
         void TryRunShinyApp();

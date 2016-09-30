@@ -145,6 +145,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public const int icmdSourceSelectedFilesWithEcho = 1508;
         public const int icmdSetAsStartUpRScript = 1509;
         public const int icmdCopyRemoteItemPath = 1510;
+        public const int icmdSendToRemote = 1511;
 
         // Shiny
         public const int icmdRunShinyApp = 1601;

@@ -286,6 +286,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        public static string Error_CannotAccess {
+            get {
+                return ResourceManager.GetString("Error_CannotAccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to collect and package logs. Exception: {0}.
         /// </summary>
         public static string Error_CannotCollectLogs {
@@ -327,6 +336,24 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Error_CannotSendFeedback2 {
             get {
                 return ResourceManager.GetString("Error_CannotSendFeedback2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to transfer file. Exception: {0}..
+        /// </summary>
+        public static string Error_CannotTransferFile {
+            get {
+                return ResourceManager.GetString("Error_CannotTransferFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot transfer files, no active RSession available. Reason: {0}.
+        /// </summary>
+        public static string Error_CannotTransferNoRSession {
+            get {
+                return ResourceManager.GetString("Error_CannotTransferNoRSession", resourceCulture);
             }
         }
         
@@ -436,6 +463,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Error_UnableToSaveSettings {
             get {
                 return ResourceManager.GetString("Error_UnableToSaveSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to verify if file exists on remote host. Reason: {0}.
+        /// </summary>
+        public static string Error_UnableToVerifyFile {
+            get {
+                return ResourceManager.GetString("Error_UnableToVerifyFile", resourceCulture);
             }
         }
         
@@ -652,6 +688,105 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Importing {
             get {
                 return ResourceManager.GetString("Importing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Compressing: {0}.
+        /// </summary>
+        public static string Info_CompressingFile {
+            get {
+                return ResourceManager.GetString("Info_CompressingFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Compressing files.
+        /// </summary>
+        public static string Info_CompressingFiles {
+            get {
+                return ResourceManager.GetString("Info_CompressingFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Extracting file on remote RHost..
+        /// </summary>
+        public static string Info_ExtractingFilesInRHost {
+            get {
+                return ResourceManager.GetString("Info_ExtractingFilesInRHost", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File filter applied : {0}.
+        /// </summary>
+        public static string Info_FileTransferFilter {
+            get {
+                return ResourceManager.GetString("Info_FileTransferFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Local Path  : {0}.
+        /// </summary>
+        public static string Info_LocalFilePath {
+            get {
+                return ResourceManager.GetString("Info_LocalFilePath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Preparing project for transfer..
+        /// </summary>
+        public static string Info_PreparingProjectForTransfer {
+            get {
+                return ResourceManager.GetString("Info_PreparingProjectForTransfer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remote project folder : {0}.
+        /// </summary>
+        public static string Info_RemoteDestination {
+            get {
+                return ResourceManager.GetString("Info_RemoteDestination", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remote Path : {0}.
+        /// </summary>
+        public static string Info_RemoteFilePath {
+            get {
+                return ResourceManager.GetString("Info_RemoteFilePath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sourcing: {0}.
+        /// </summary>
+        public static string Info_SourcingFile {
+            get {
+                return ResourceManager.GetString("Info_SourcingFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Transferring files to remote RHost..
+        /// </summary>
+        public static string Info_TransferringFiles {
+            get {
+                return ResourceManager.GetString("Info_TransferringFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Transferring files to remote RHost... completed..
+        /// </summary>
+        public static string Info_TransferringFilesDone {
+            get {
+                return ResourceManager.GetString("Info_TransferringFilesDone", resourceCulture);
             }
         }
         

@@ -244,11 +244,18 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             }
         }
 
-        public ProgressBarSession ShowProgressBar(string waitMessage, int delayToShowDialigMs = 0) {
+        public ProgressBarSession ShowProgressBar(string waitMessage, int delayToShowDialogMs = 0) {
             var dialogFactory = GetGlobalService<IVsThreadedWaitDialogFactory>(typeof(SVsThreadedWaitDialogFactory));
             var initialProgress = new ThreadedWaitDialogProgressData(waitMessage, isCancelable: true);
-            var vsProgressBarSession = dialogFactory.StartWaitDialog(null, initialProgress, TimeSpan.FromMilliseconds(delayToShowDialigMs));
+            var vsProgressBarSession = dialogFactory.StartWaitDialog(null, initialProgress, TimeSpan.FromMilliseconds(delayToShowDialogMs));
             return new ProgressBarSession(vsProgressBarSession, vsProgressBarSession.UserCancellationToken);
+        }
+
+        public ProgressBarSession ShowProgressBarWithUpdate(string waitMessage, int delayToShowDialogMs = 0) {
+            var dialogFactory = GetGlobalService<IVsThreadedWaitDialogFactory>(typeof(SVsThreadedWaitDialogFactory));
+            var initialProgress = new ThreadedWaitDialogProgressData(waitMessage, isCancelable: true);
+            var vsProgressBarSession = dialogFactory.StartWaitDialog(null, initialProgress, TimeSpan.FromMilliseconds(delayToShowDialogMs));
+            return new ProgressBarSession<ThreadedWaitDialogProgressData>(vsProgressBarSession, vsProgressBarSession.UserCancellationToken, vsProgressBarSession.Progress);
         }
 
         /// <summary>

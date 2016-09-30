@@ -18,4 +18,14 @@ namespace Microsoft.Common.Core.Shell {
             _disposable?.Dispose();
         }
     }
+
+    public class ProgressBarSession<T> : ProgressBarSession {
+        public ProgressBarSession(IDisposable disposable = null, CancellationToken cancellationToken = default(CancellationToken), IProgress<T> progress = null) :
+            base (disposable, cancellationToken){
+            Progress = progress;
+        }
+
+        public IProgress<T> Progress { get; }
+    }
+
 }
