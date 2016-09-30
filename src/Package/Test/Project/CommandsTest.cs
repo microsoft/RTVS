@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using FluentAssertions;
 using Microsoft.Common.Core.OS;
+using Microsoft.Common.Core.Test.Fakes.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.PackageManager;
@@ -21,7 +23,6 @@ using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Test.FakeFactories;
 using NSubstitute;
 using Xunit;
-using Microsoft.Common.Core.Test.Fakes.Shell;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 #else
@@ -98,7 +99,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
                 c.Args()[0].Should().Be(folder);
             });
 
-            var cmd = new OpenCommandPromptCommand(ps);
+            var cs = Substitute.For<ICoreServices>();
+            cs.ProcessServices.Returns(ps);
+
+            var cmd = new OpenCommandPromptCommand(cs);
             CheckSingleNodeCommandStatus(cmd, RPackageCommandId.icmdOpenCmdPromptHere, nodes1, nodes2);
         }
 
