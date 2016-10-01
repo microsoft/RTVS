@@ -5,6 +5,7 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.NetworkInformation;
 using System.Net.Security;
 using System.Net.WebSockets;
 using System.Threading;
@@ -91,7 +92,7 @@ namespace Microsoft.R.Host.Client.Host {
             try {
                 (await HttpClient.PostAsync("/ping", new StringContent(""))).EnsureSuccessStatusCode();
             } catch (HttpRequestException ex) {
-                throw new RHostDisconnectedException(Resources.Error_HostNotResponding.FormatInvariant(ex.Message), ex);
+                throw new RHostDisconnectedException(Resources.Error_BrokerNotRunning, ex);
             }
         }
 

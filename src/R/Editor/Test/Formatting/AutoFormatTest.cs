@@ -2,11 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Languages.Core.Formatting;
-using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Test.Text;
 using Microsoft.Languages.Editor.Text;

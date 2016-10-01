@@ -165,8 +165,7 @@ Reason: {0}</value>
     <value>Installed R:</value>
   </data>
   <data name="Error_HostNotResponding" xml:space="preserve">
-    <value>Host did not respond to a ping. The machine may be offline or the network has been disconnected.
-HTTP message: {0}</value>
+    <value>Host did not respond to a ping. The machine may be offline or the network has been disconnected.</value>
   </data>
   <data name="Error_InterpreterNotFound" xml:space="preserve">
     <value>Specified R interpreter was not found</value>
@@ -185,5 +184,8 @@ HTTP message: {0}</value>
   </data>
   <data name="Connected" xml:space="preserve">
     <value>*** Connected ***</value>
+  </data>
+  <data name="Error_BrokerNotRunning" xml:space="preserve">
+    <value>The machine appears to be online, but the Remote R Service is not running.</value>
   </data>
 </root>
