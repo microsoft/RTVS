@@ -47,6 +47,8 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             _codeColorBuilder = VsAppShell.Current.ExportProvider.GetExportedValue<IVignetteCodeColorBuilder>();
 
             var workflow = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
+            workflow.RSessions.BrokerStateChanged += OnBrokerStateChanged;
+
             _session = workflow.RSession;
             _session.Disconnected += OnRSessionDisconnected;
 
@@ -96,6 +98,13 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         private void OnRSessionDisconnected(object sender, EventArgs e) {
             // Event fires on a background thread
             VsAppShell.Current.DispatchOnUIThread(CloseBrowser);
+        }
+
+        private void OnBrokerStateChanged(object sender, BrokerStateChangedEventArgs e) {
+            if (!e.IsConnected) {
+                // Event mey fire on a background thread
+                VsAppShell.Current.DispatchOnUIThread(CloseBrowser);
+            }
         }
 
         private void CreateBrowser() {
