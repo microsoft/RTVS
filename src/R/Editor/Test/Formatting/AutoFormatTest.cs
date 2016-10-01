@@ -37,6 +37,8 @@ namespace Microsoft.R.Editor.Test.Formatting {
         [InlineData("x<-function(x,y,", 16, "x <- function(x, y,\n")]
         [InlineData("'x<-1'", 5, "'x<-1\n'")]
         [InlineData("x<-1", 4, "x <- 1\n")]
+        [InlineData("x(a,b,c,d)", 6, "x(a, b,\nc,d)")]
+        [InlineData("x(a,b,    c, d)", 8, "x(a, b,\n  c, d)")]
         public void FormatTest(string content, int position, string expected) {
             ITextView textView = TestAutoFormat(position, content);
 
