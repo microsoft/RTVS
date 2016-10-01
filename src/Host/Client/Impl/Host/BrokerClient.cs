@@ -87,6 +87,7 @@ namespace Microsoft.R.Host.Client.Host {
         protected abstract void OnCredentialsValidated(bool isValid);
 
         public async Task PingAsync() {
+            await CheckMachineOnlineAsync();
             try {
                 (await HttpClient.PostAsync("/ping", new StringContent(""))).EnsureSuccessStatusCode();
             } catch (HttpRequestException ex) {
@@ -209,6 +210,14 @@ namespace Microsoft.R.Host.Client.Host {
 
         public virtual string HandleUrl(string url, CancellationToken ct) {
             return url;
+        }
+
+        private async Task CheckMachineOnlineAsync() {
+            var ping = new Ping();
+            var reply = await ping.SendPingAsync(Uri.Host, 5000);
+            if (reply.Status != IPStatus.Success) {
+                throw new RHostDisconnectedException(Resources.Error_HostNotResponding);
+            }
         }
     }
 }

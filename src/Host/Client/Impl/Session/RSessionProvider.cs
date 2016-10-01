@@ -199,6 +199,8 @@ namespace Microsoft.R.Host.Client.Session {
             // First switch broker proxy so that all new sessions are created for the new broker
             var oldBroker = _brokerProxy.Set(brokerClient);
             try {
+                await brokerClient.PingAsync();
+
                 BrokerChanging?.Invoke(this, EventArgs.Empty);
                 await SwitchBrokerAsync(cancellationToken, oldBroker);
                 oldBroker.Dispose();
