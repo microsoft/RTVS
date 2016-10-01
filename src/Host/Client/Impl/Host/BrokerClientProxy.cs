@@ -26,10 +26,10 @@ namespace Microsoft.R.Host.Client.Host {
             broker.Dispose();
         }
 
-        public string Name => _broker.Name;
-        public bool IsRemote => _broker.IsRemote;
-        public Uri Uri => _broker.Uri;
-        public AboutHost AboutHost => _broker.AboutHost;
+        public string Name => _broker?.Name;
+        public bool IsRemote => _broker != null ? _broker.IsRemote : false;
+        public Uri Uri => _broker?.Uri;
+        public AboutHost AboutHost => _broker?.AboutHost;
 
         public Task PingAsync() => _broker.PingAsync();
 

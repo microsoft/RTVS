@@ -69,10 +69,10 @@ namespace Microsoft.R.Editor.Test.Formatting {
 
                 if (e.Changes[0].NewText.Length == 1) {
                     char ch = e.Changes[0].NewText[0];
-                    if (AutoFormat.IsPreProcessAutoformatTriggerCharacter(ch)) {
+                    if (AutoFormat.IsPostProcessAutoformatTriggerCharacter(ch)) {
                         position = e.Changes[0].OldPosition + 1;
-                        FormatOperations.FormatCurrentLine(textView, textView.TextBuffer, _exportProvider.GetExportedValue<IEditorShell>());
                         textView.Caret.MoveTo(new SnapshotPoint(e.After, position));
+                        FormatOperations.FormatViewLine(textView, textView.TextBuffer, -1, _exportProvider.GetExportedValue<IEditorShell>());
                     }
                 } else {
                     ITextSnapshotLine line = e.After.GetLineFromPosition(position);
