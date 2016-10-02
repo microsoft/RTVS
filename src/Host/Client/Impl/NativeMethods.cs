@@ -49,7 +49,7 @@ namespace Microsoft.R.Host.Client {
             int dwAuthError,
             StringBuilder pszUserName,
             int ulUserNameMaxChars,
-            StringBuilder pszPassword,
+            IntPtr pszPassword,
             int ulPasswordMaxChars,
             ref bool pfSave,
             int dwFlags);

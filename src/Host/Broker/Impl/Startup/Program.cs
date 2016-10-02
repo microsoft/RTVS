@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using System.IO.Pipes;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,6 +31,10 @@ namespace Microsoft.R.Host.Broker.Startup {
         }
 
         public static void Main(string[] args) {
+            // TODO: handle missing/expired ceriticate.
+            // TODO: handle local without SSL
+            var certificate = GetSSLCertificate();
+
             var configBuilder = new ConfigurationBuilder().AddCommandLine(args);
             Configuration = configBuilder.Build();
 
@@ -51,14 +56,17 @@ namespace Microsoft.R.Host.Broker.Startup {
                 _logger.LogInformation(Resources.Info_BrokerName, _startupOptions.Name);
             }
 
-            CreateWebHost().Run();
+
+            CreateWebHost(certificate).Run();
         }
 
-        public static IWebHost CreateWebHost() {
+        public static IWebHost CreateWebHost(X509Certificate2 certificate) {
+
             var webHostBuilder = new WebHostBuilder()
                 .UseLoggerFactory(_loggerFactory)
                 .UseConfiguration(Configuration)
                 .UseKestrel(options => {
+                    options.UseHttps(certificate);
                     //options.UseConnectionLogging();
                 })
                 .UseContentRoot(Directory.GetCurrentDirectory())
@@ -110,6 +118,22 @@ namespace Microsoft.R.Host.Broker.Startup {
                 _logger.LogCritical(Resources.Critical_TimeOutShutdown);
                 Environment.Exit(1);
             });
+        }
+
+        private static X509Certificate2 GetSSLCertificate() {
+            // #if WINDOWS
+            X509Certificate2 certificate = null;
+
+            using (var store = new X509Store(StoreLocation.LocalMachine)) {
+                store.Open(OpenFlags.OpenExistingOnly);
+                try {
+                    var cers = store.Certificates.Find(X509FindType.FindBySubjectName, "R Remote Services", validOnly: true);
+                    certificate = cers.Count > 0 ? cers[0] : null;
+                } finally {
+                    store.Close();
+                }
+            }
+            return certificate;
         }
     }
 }

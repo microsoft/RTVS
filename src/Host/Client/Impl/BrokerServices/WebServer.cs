@@ -15,17 +15,17 @@ namespace Microsoft.R.Host.Client.BrokerServices {
         public string RemoteHost { get; }
         public int RemotePort { get; }
 
-        private HttpListener _listener;
+        private readonly HttpListener _listener;
+        private readonly IRemoteUriWebService _remoteUriService;
 
         private static Dictionary<int, WebServer> Servers { get; } = new Dictionary<int, WebServer>();
-
-        private IRemoteUriWebService RemoteUriService { get; }
 
         private WebServer(string remoteHostIp, int remotePort,  string baseAddress) {
             LocalHost = IPAddress.Loopback.ToString();
             RemoteHost = remoteHostIp;
             RemotePort = remotePort;
-            RemoteUriService = new RemoteUriWebService(baseAddress);
+
+            _remoteUriService = new RemoteUriWebService(baseAddress);
             Random r = new Random();
 
             // if remote port is between 10000 and 32000, select a port in the same range.
@@ -36,7 +36,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             while(true) {
                 _listener = new HttpListener();
                 LocalPort = r.Next(localPortMin, localPortMax);
-                _listener.Prefixes.Add($"http://{LocalHost}:{LocalPort}/");
+                _listener.Prefixes.Add($"https://{LocalHost}:{LocalPort}/");
                 try {
                     _listener.Start();
                 } catch (HttpListenerException) {
@@ -74,13 +74,17 @@ namespace Microsoft.R.Host.Client.BrokerServices {
                 string localUrl = $"{LocalHost}:{LocalPort}";
                 string remoteUrl = $"{RemoteHost}:{RemotePort}";
 
-                await RemoteUriService.GetResponseAsync(context, localUrl, remoteUrl, ct);
+                await _remoteUriService.GetResponseAsync(context, localUrl, remoteUrl, ct);
             }
         }
 
         public static string CreateWebServer(string remoteUrl, string baseAddress, CancellationToken ct) {
             Uri remoteUri = new Uri(remoteUrl);
             UriBuilder localUri = new UriBuilder(remoteUri);
+
+            if(!remoteUri.Scheme.EqualsIgnoreCase("https")) {
+                // TODO: reject
+            }
 
             WebServer server = null;
             if (Servers.ContainsKey(remoteUri.Port)) {
