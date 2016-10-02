@@ -88,11 +88,13 @@ namespace Microsoft.R.Host.Client.Host {
         protected abstract void OnCredentialsValidated(bool isValid);
 
         public async Task PingAsync() {
-            await CheckMachineOnlineAsync();
-            try {
-                (await HttpClient.PostAsync("/ping", new StringContent(""))).EnsureSuccessStatusCode();
-            } catch (HttpRequestException ex) {
-                throw new RHostDisconnectedException(Resources.Error_BrokerNotRunning, ex);
+            if (HttpClient != null) {
+                await CheckMachineOnlineAsync();
+                try {
+                    (await HttpClient.PostAsync("/ping", new StringContent(""))).EnsureSuccessStatusCode();
+                } catch (HttpRequestException ex) {
+                    throw new RHostDisconnectedException(Resources.Error_BrokerNotRunning, ex);
+                }
             }
         }
 
