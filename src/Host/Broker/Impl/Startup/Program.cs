@@ -14,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.R.Host.Broker.Logging;
+using Microsoft.R.Host.Broker.Security;
 using Newtonsoft.Json;
 
 namespace Microsoft.R.Host.Broker.Startup {
@@ -31,10 +32,6 @@ namespace Microsoft.R.Host.Broker.Startup {
         }
 
         public static void Main(string[] args) {
-            // TODO: handle missing/expired ceriticate.
-            // TODO: handle local without SSL
-            var certificate = GetSSLCertificate();
-
             var configBuilder = new ConfigurationBuilder().AddCommandLine(args);
             Configuration = configBuilder.Build();
 
@@ -56,7 +53,7 @@ namespace Microsoft.R.Host.Broker.Startup {
                 _logger.LogInformation(Resources.Info_BrokerName, _startupOptions.Name);
             }
 
-
+            var certificate = _startupOptions.IsLocal ? Certificates.GetLocalCertificate() : Certificates.GetTLSCertificate();
             CreateWebHost(certificate).Run();
         }
 
@@ -120,20 +117,6 @@ namespace Microsoft.R.Host.Broker.Startup {
             });
         }
 
-        private static X509Certificate2 GetSSLCertificate() {
-            // #if WINDOWS
-            X509Certificate2 certificate = null;
 
-            using (var store = new X509Store(StoreLocation.LocalMachine)) {
-                store.Open(OpenFlags.OpenExistingOnly);
-                try {
-                    var cers = store.Certificates.Find(X509FindType.FindBySubjectName, "R Remote Services", validOnly: true);
-                    certificate = cers.Count > 0 ? cers[0] : null;
-                } finally {
-                    store.Close();
-                }
-            }
-            return certificate;
-        }
     }
 }

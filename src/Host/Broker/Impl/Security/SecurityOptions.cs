@@ -4,8 +4,6 @@
 namespace Microsoft.R.Host.Broker.Security {
     public class SecurityOptions {
         public string Secret { get; set; }
-
-        // TODO: remove default
-        public string AllowedGroup { get; set; } = "Users";
+        public string AllowedGroup { get; set; } = "R Remote Users";
     }
 }

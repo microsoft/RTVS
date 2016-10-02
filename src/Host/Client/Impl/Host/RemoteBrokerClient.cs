@@ -96,6 +96,5 @@ namespace Microsoft.R.Host.Client.Host {
         public override string HandleUrl(string url, CancellationToken ct) {
             return WebServer.CreateWebServer(url, HttpClient.BaseAddress.ToString(), ct);
         }
-
     }
 }

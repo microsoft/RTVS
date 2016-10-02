@@ -91,6 +91,7 @@ namespace Microsoft.R.Host.Client.Host {
                             $" --server.urls http://127.0.0.1:0" + // :0 means first available ephemeral port
                             $" --startup:name \"{Name}\"" +
                             $" --startup:writeServerUrlsToPipe {pipeName}" +
+                            $" --startup:local {true}" +
                             $" --lifetime:parentProcessId {Process.GetCurrentProcess().Id}" +
                             $" --security:secret \"{_credentials.Password}\"" +
                             $" --R:autoDetect false" +
