@@ -214,10 +214,12 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         private async Task CheckMachineOnlineAsync() {
-            var ping = new Ping();
-            var reply = await ping.SendPingAsync(Uri.Host, 5000);
-            if (reply.Status != IPStatus.Success) {
-                throw new RHostDisconnectedException(Resources.Error_HostNotResponding);
+            if (!Uri.IsFile) {
+                var ping = new Ping();
+                var reply = await ping.SendPingAsync(Uri.Host, 5000);
+                if (reply.Status != IPStatus.Success) {
+                    throw new RHostDisconnectedException(Resources.Error_HostNotResponding);
+                }
             }
         }
     }
