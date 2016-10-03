@@ -43,6 +43,7 @@
   <File Source="$(var.BinDir)\Microsoft.AspNetCore.Routing.dll" />
   <File Source="$(var.BinDir)\Microsoft.AspNetCore.Server.WebListener.dll" />
   <File Source="$(var.BinDir)\Microsoft.AspNetCore.Server.Kestrel.dll" />
+  <File Source="$(var.BinDir)\Microsoft.AspNetCore.Server.Kestrel.Https.dll" />
   <File Source="$(var.BinDir)\Microsoft.AspNetCore.WebSockets.Protocol.dll" />
   <File Source="$(var.BinDir)\Microsoft.AspNetCore.WebSockets.Server.dll" />
   <File Source="$(var.BinDir)\Microsoft.AspNetCore.WebUtilities.dll" />

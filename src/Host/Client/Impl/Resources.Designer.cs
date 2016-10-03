@@ -125,7 +125,16 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Remote R host process did not start:  {0}.
+        ///   Looks up a localized string similar to R broker process did not start:  {0}.
+        /// </summary>
+        internal static string Error_UnableToStartBrokerException {
+            get {
+                return ResourceManager.GetString("Error_UnableToStartBrokerException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R host process did not start:  {0}.
         /// </summary>
         internal static string Error_UnableToStartHostException {
             get {

@@ -187,13 +187,15 @@ namespace Microsoft.R.Host.Client.Session {
             }
 
             // Connector switching shouldn't be concurrent
-            IBinaryAsyncLockToken lockToken;
+            IBinaryAsyncLockToken lockToken = null;
             try {
                 lockToken = await _brokerSwitchLock.WaitAsync(cancellationToken);
                 await _connectCde.WaitAsync(cancellationToken);
             } catch (OperationCanceledException) {
                 brokerClient.Dispose();
                 return false;
+            } finally {
+                lockToken?.Reset();
             }
 
             // First switch broker proxy so that all new sessions are created for the new broker

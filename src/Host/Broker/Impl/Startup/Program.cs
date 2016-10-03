@@ -8,6 +8,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.Configuration;
@@ -22,6 +23,7 @@ namespace Microsoft.R.Host.Broker.Startup {
         private static readonly ILoggerFactory _loggerFactory = new LoggerFactory();
         private static ILogger _logger;
         private static readonly StartupOptions _startupOptions = new StartupOptions();
+        private static readonly SecurityOptions _securityOptions = new SecurityOptions();
         private static readonly CancellationTokenSource _cts = new CancellationTokenSource();
 
         internal static IConfigurationRoot Configuration { get; private set; }
@@ -32,6 +34,8 @@ namespace Microsoft.R.Host.Broker.Startup {
         }
 
         public static void Main(string[] args) {
+            //MessageBox.Show("Broker");
+
             var configBuilder = new ConfigurationBuilder().AddCommandLine(args);
             Configuration = configBuilder.Build();
 
@@ -42,6 +46,7 @@ namespace Microsoft.R.Host.Broker.Startup {
             }
 
             ConfigurationBinder.Bind(Configuration.GetSection("startup"), _startupOptions);
+            ConfigurationBinder.Bind(Configuration.GetSection("security"), _securityOptions);
 
             _loggerFactory
                 .AddDebug()
@@ -53,7 +58,7 @@ namespace Microsoft.R.Host.Broker.Startup {
                 _logger.LogInformation(Resources.Info_BrokerName, _startupOptions.Name);
             }
 
-            var certificate = _startupOptions.IsLocal ? Certificates.GetLocalCertificate() : Certificates.GetTLSCertificate();
+            var certificate = ConfigureTls();
             CreateWebHost(certificate).Run();
         }
 
@@ -62,15 +67,16 @@ namespace Microsoft.R.Host.Broker.Startup {
             var webHostBuilder = new WebHostBuilder()
                 .UseLoggerFactory(_loggerFactory)
                 .UseConfiguration(Configuration)
-                .UseKestrel(options => {
-                    options.UseHttps(certificate);
-                    //options.UseConnectionLogging();
-                })
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseStartup<Startup>();
 
-            var webHost = webHostBuilder.Build();
+            if (certificate != null) {
+                webHostBuilder.UseKestrel(options => {
+                    options.UseHttps(certificate);
+                });
+            }
 
+            var webHost = webHostBuilder.Build();
             var serverAddresses = webHost.ServerFeatures.Get<IServerAddressesFeature>();
 
             string pipeName = _startupOptions.WriteServerUrlsToPipe;
@@ -117,6 +123,24 @@ namespace Microsoft.R.Host.Broker.Startup {
             });
         }
 
+        private static X509Certificate2 ConfigureTls() {
+            try {
+                Uri uri;
+                var url = Configuration.GetValue<string>("server.urls", null);
+                if (Uri.TryCreate(url, UriKind.Absolute, out uri) && uri.IsLoopback) {
+                    _logger.LogInformation(Resources.Trace_CertificateName, "none");
+                    return null; // localhost, no TLS
+                }
+            } catch(Exception) { }
 
+            X509Certificate2 certificate = null;
+            certificate = Certificates.GetTLSCertificate();
+            if (certificate == null) {
+                _logger.LogCritical(Resources.Critical_NoTlsCertificate, _securityOptions.X509CertificateName);
+                throw new InvalidOperationException(Resources.Critical_NoTlsCertificate);
+            }
+            _logger.LogInformation(Resources.Trace_CertificateName, certificate.FriendlyName);
+            return certificate;
+        }
     }
 }

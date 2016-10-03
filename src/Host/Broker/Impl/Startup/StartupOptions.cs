@@ -5,6 +5,5 @@ namespace Microsoft.R.Host.Broker.Startup {
     public class StartupOptions {
         public string Name { get; set; }
         public string WriteServerUrlsToPipe { get; set; }
-        public bool IsLocal { get; set; }
     }
 }

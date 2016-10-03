@@ -178,7 +178,7 @@ The machine may be offline or the network has been disconnected. Error: {0}</val
     <value>HTTP error while creating session: {0}</value>
   </data>
   <data name="Error_UnableToStartHostException" xml:space="preserve">
-    <value>Remote R host process did not start:  {0}</value>
+    <value>R host process did not start:  {0}</value>
   </data>
   <data name="Error_UnknownError" xml:space="preserve">
     <value>Unknown error</value>
@@ -188,5 +188,8 @@ The machine may be offline or the network has been disconnected. Error: {0}</val
   </data>
   <data name="Error_BrokerNotRunning" xml:space="preserve">
     <value>The machine appears to be online, but the Remote R Service is not running.</value>
+  </data>
+  <data name="Error_UnableToStartBrokerException" xml:space="preserve">
+    <value>R broker process did not start:  {0}</value>
   </data>
 </root>

@@ -15,11 +15,6 @@ namespace Microsoft.R.Host.Broker.Security {
                     X509FindType.FindBySubjectName, "R Remote Services", validOnly: true));
         }
 
-        public static X509Certificate2 GetLocalCertificate() {
-            return FindCertificate((store) => store.Certificates.Find(
-                   X509FindType.FindByKeyUsage, X509KeyUsageFlags.DataEncipherment, validOnly: true));
-        }
-
         private static X509Certificate2 FindCertificate(Func<X509Store, X509Certificate2Collection> search) {
             X509Certificate2 certificate = null;
 

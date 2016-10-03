@@ -70,6 +70,15 @@ namespace Microsoft.R.Host.Broker {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to TLS certificate not found: {0}.
+        /// </summary>
+        internal static string Critical_NoTlsCertificate {
+            get {
+                return ResourceManager.GetString("Critical_NoTlsCertificate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Designated parent process {0} not found.
         /// </summary>
         internal static string Critical_ParentProcessNotFound {
@@ -273,6 +282,15 @@ namespace Microsoft.R.Host.Broker {
         internal static string Trace_AutoDetectingR {
             get {
                 return ResourceManager.GetString("Trace_AutoDetectingR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to TLS Certificate: {0}.
+        /// </summary>
+        internal static string Trace_CertificateName {
+            get {
+                return ResourceManager.GetString("Trace_CertificateName", resourceCulture);
             }
         }
         

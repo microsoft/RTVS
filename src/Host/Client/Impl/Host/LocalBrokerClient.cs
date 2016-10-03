@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
@@ -11,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Threading;
 using Newtonsoft.Json;
@@ -91,7 +93,6 @@ namespace Microsoft.R.Host.Client.Host {
                             $" --server.urls http://127.0.0.1:0" + // :0 means first available ephemeral port
                             $" --startup:name \"{Name}\"" +
                             $" --startup:writeServerUrlsToPipe {pipeName}" +
-                            $" --startup:local {true}" +
                             $" --lifetime:parentProcessId {Process.GetCurrentProcess().Id}" +
                             $" --security:secret \"{_credentials.Password}\"" +
                             $" --R:autoDetect false" +
@@ -103,7 +104,7 @@ namespace Microsoft.R.Host.Client.Host {
                         psi.CreateNoWindow = true;
                     }
 
-                    process = _services.ProcessServices.Start(psi);
+                    process = StartBroker(psi);
                     process.EnableRaisingEvents = true;
 
                     var cts = new CancellationTokenSource(10000);
@@ -156,6 +157,19 @@ namespace Microsoft.R.Host.Client.Host {
                     }
                 }
             }
+        }
+
+        private Process StartBroker(ProcessStartInfo psi) {
+            var process = _services.ProcessServices.Start(psi);
+            process.WaitForExit(250);
+            if (process.HasExited && process.ExitCode < 0) {
+                var message = ErrorCodeConverter.MessageFromErrorCode(process.ExitCode);
+                if (!string.IsNullOrEmpty(message)) {
+                    throw new RHostDisconnectedException(Resources.Error_UnableToStartBrokerException.FormatInvariant(message), new Win32Exception(message));
+                }
+                throw new RHostDisconnectedException(Resources.Error_UnableToStartBrokerException.FormatInvariant(process.ExitCode.ToString()), new Win32Exception(process.ExitCode));
+            }
+            return process;
         }
 
         private void DisposeBrokerProcess() {

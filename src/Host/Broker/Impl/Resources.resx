@@ -120,6 +120,9 @@
   <data name="Critical_InvalidPipeHandle" xml:space="preserve">
     <value>Requested to write server.urls to pipe '{0}', but it is not a valid pipe handle</value>
   </data>
+  <data name="Critical_NoTlsCertificate" xml:space="preserve">
+    <value>TLS certificate not found: {0}</value>
+  </data>
   <data name="Critical_ParentProcessNotFound" xml:space="preserve">
     <value>Designated parent process {0} not found</value>
   </data>
@@ -188,6 +191,9 @@
   </data>
   <data name="Trace_AutoDetectingR" xml:space="preserve">
     <value>Auto-detecting R ...</value>
+  </data>
+  <data name="Trace_CertificateName" xml:space="preserve">
+    <value>TLS Certificate: {0}</value>
   </data>
   <data name="Trace_DetectedR" xml:space="preserve">
     <value>R {0} detected at \"{1}\"</value>
