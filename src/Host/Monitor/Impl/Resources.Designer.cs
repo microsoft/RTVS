@@ -97,6 +97,15 @@ namespace Microsoft.R.Host.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to CredUIPromptForWindowsCredentials failed to laod, with error: {0}.
+        /// </summary>
+        public static string Error_CredUIFailedToLoad {
+            get {
+                return ResourceManager.GetString("Error_CredUIFailedToLoad", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add or change the credentials which will be used to run R Host Broker..
         /// </summary>
         public static string Text_AddOrChangeBrokerUser {
@@ -115,6 +124,33 @@ namespace Microsoft.R.Host.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to R Host Broker Credentials.
+        /// </summary>
+        public static string Text_RHostBrokerCredentials {
+            get {
+                return ResourceManager.GetString("Text_RHostBrokerCredentials", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The credentials entered below will be used to start the R Host Broker Process. If you choose to save the credentials monitor will automatically start the broker procress..
+        /// </summary>
+        public static string Text_RHostBrokerCredentialsDetail {
+            get {
+                return ResourceManager.GetString("Text_RHostBrokerCredentialsDetail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The user could not be logged in on this machine, please try again. The credentials entered below will be used to start the R Host Broker Process. If you choose to save the credentials monitor will automatically start the broker procress..
+        /// </summary>
+        public static string Text_RHostBrokerCredentialsInvalidTryAgain {
+            get {
+                return ResourceManager.GetString("Text_RHostBrokerCredentialsInvalidTryAgain", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Starts and monitors an instance of the R Host Broker..
         /// </summary>
         public static string Text_StartBroker {
@@ -129,6 +165,15 @@ namespace Microsoft.R.Host.Monitor {
         public static string Text_StopBroker {
             get {
                 return ResourceManager.GetString("Text_StopBroker", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use a different user to run the Broker..
+        /// </summary>
+        public static string Text_UseDifferentBroker {
+            get {
+                return ResourceManager.GetString("Text_UseDifferentBroker", resourceCulture);
             }
         }
     }

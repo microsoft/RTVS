@@ -135,10 +135,25 @@
   <data name="Text_RemoveBrokerUser" xml:space="preserve">
     <value>Removes the credentials used for R Host Broker.</value>
   </data>
+  <data name="Text_RHostBrokerCredentials" xml:space="preserve">
+    <value>R Host Broker Credentials</value>
+  </data>
+  <data name="Text_RHostBrokerCredentialsDetail" xml:space="preserve">
+    <value>The credentials entered below will be used to start the R Host Broker Process. If you choose to save the credentials monitor will automatically start the broker procress.</value>
+  </data>
   <data name="Text_StartBroker" xml:space="preserve">
     <value>Starts and monitors an instance of the R Host Broker.</value>
   </data>
   <data name="Text_StopBroker" xml:space="preserve">
     <value>Stops the monitored R Host Broker instance.</value>
+  </data>
+  <data name="Error_CredUIFailedToLoad" xml:space="preserve">
+    <value>CredUIPromptForWindowsCredentials failed to laod, with error: {0}</value>
+  </data>
+  <data name="Text_RHostBrokerCredentialsInvalidTryAgain" xml:space="preserve">
+    <value>The user could not be logged in on this machine, please try again. The credentials entered below will be used to start the R Host Broker Process. If you choose to save the credentials monitor will automatically start the broker procress.</value>
+  </data>
+  <data name="Text_UseDifferentBroker" xml:space="preserve">
+    <value>Use a different user to run the Broker.</value>
   </data>
 </root>

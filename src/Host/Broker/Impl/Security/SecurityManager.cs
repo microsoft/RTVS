@@ -69,6 +69,7 @@ namespace Microsoft.R.Host.Broker.Security {
                 StringBuilder profileDir = new StringBuilder(NativeMethods.MAX_PATH);
                 uint size = (uint)profileDir.Capacity;
 
+                /*
                 _logger.LogTrace(Resources.Trace_UserProfileCreation, context.Username);
                 error = NativeMethods.CreateProfile(winIdentity.User.Value, user.ToString(), profileDir, size);
                 // 0x800700b7 - Profile already exists.
@@ -80,6 +81,7 @@ namespace Microsoft.R.Host.Broker.Security {
                 } else {
                     _logger.LogInformation(Resources.Info_ProfileCreated, context.Username);
                 }
+                */
 
                 profileDir = new StringBuilder(NativeMethods.MAX_PATH * 2);
                 size = (uint)profileDir.Capacity;
