@@ -67,14 +67,13 @@ namespace Microsoft.R.Host.Broker.Startup {
             var webHostBuilder = new WebHostBuilder()
                 .UseLoggerFactory(_loggerFactory)
                 .UseConfiguration(Configuration)
+                .UseKestrel(options => {
+                    if (certificate != null) {
+                        options.UseHttps(certificate);
+                    }
+                })
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseStartup<Startup>();
-
-            if (certificate != null) {
-                webHostBuilder.UseKestrel(options => {
-                    options.UseHttps(certificate);
-                });
-            }
 
             var webHost = webHostBuilder.Build();
             var serverAddresses = webHost.ServerFeatures.Get<IServerAddressesFeature>();
@@ -131,7 +130,7 @@ namespace Microsoft.R.Host.Broker.Startup {
                     _logger.LogInformation(Resources.Trace_CertificateName, "none");
                     return null; // localhost, no TLS
                 }
-            } catch(Exception) { }
+            } catch (Exception) { }
 
             X509Certificate2 certificate = null;
             certificate = Certificates.GetTLSCertificate();

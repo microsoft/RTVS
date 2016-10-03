@@ -1450,6 +1450,7 @@
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.AspNetCore.Routing.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.AspNetCore.Server.WebListener.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.AspNetCore.Server.Kestrel.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Microsoft.AspNetCore.Server.Kestrel.Https.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.AspNetCore.WebSockets.Protocol.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.AspNetCore.WebSockets.Server.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.AspNetCore.WebUtilities.dll" />
