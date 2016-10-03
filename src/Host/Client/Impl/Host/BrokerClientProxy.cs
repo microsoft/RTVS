@@ -22,13 +22,13 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         public void Dispose() {
-            var broker = Interlocked.Exchange(ref _broker, null);
+            var broker = Interlocked.Exchange(ref _broker, new NullBrokerClient());
             broker.Dispose();
         }
 
-        public string Name => _broker?.Name;
-        public bool IsRemote => _broker != null ? _broker.IsRemote : false;
-        public Uri Uri => _broker?.Uri;
+        public string Name => _broker.Name;
+        public bool IsRemote => _broker.IsRemote;
+        public Uri Uri => _broker.Uri;
         public AboutHost AboutHost => _broker?.AboutHost;
 
         public Task PingAsync() => _broker.PingAsync();
