@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.NetworkInformation;
 using System.Net.Security;
+using System.Net.Sockets;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -89,28 +90,18 @@ namespace Microsoft.R.Host.Client.Host {
 
         public async Task PingAsync() {
             if (HttpClient != null) {
-                var isOnline = await CheckMachineOnlineAsync();
                 // Just in case ping was disable for security reasons, try connecting to the broker anyway.
                 try {
                     (await HttpClient.PostAsync("/ping", new StringContent(""))).EnsureSuccessStatusCode();
-                } catch (HttpRequestException ex) {
-                    if (isOnline) {
+                } catch (Exception ex) when (ex is HttpRequestException || ex is OperationCanceledException) {
+                    // Broker is not responsing. Try regular ping.
+                    string status = await GetMachineOnlineStatusAsync();
+                    if (string.IsNullOrEmpty(status)) {
                         throw new RHostDisconnectedException(Resources.Error_BrokerNotRunning, ex);
                     } else {
-                        throw new RHostDisconnectedException(Resources.Error_HostNotResponding, ex);
+                        throw new RHostDisconnectedException(Resources.Error_HostNotResponding.FormatInvariant(status), ex);
                     }
                 }
-            }
-        }
-
-        private async Task PingWorker() {
-            try {
-                while (true) {
-                    await PingAsync();
-                    await Task.Delay(1000);
-                }
-            } catch (OperationCanceledException) {
-            } catch (HttpRequestException) {
             }
         }
 
@@ -220,13 +211,24 @@ namespace Microsoft.R.Host.Client.Host {
             return url;
         }
 
-        private async Task<bool> CheckMachineOnlineAsync() {
+        private async Task<string> GetMachineOnlineStatusAsync() {
             if (!Uri.IsFile) {
-                var ping = new Ping();
-                var reply = await ping.SendPingAsync(Uri.Host, 5000);
-                return reply.Status == IPStatus.Success;
+                try {
+                    var ping = new Ping();
+                    var reply = await ping.SendPingAsync(Uri.Host, 5000);
+                    if(reply.Status != IPStatus.Success) {
+                        return reply.Status.ToString();
+                    }
+                } catch (PingException pex) {
+                    var pingMessage = pex.InnerException != null ? pex.InnerException.Message : pex.Message;
+                    if (!string.IsNullOrEmpty(pingMessage)) {
+                        return pingMessage;
+                    }
+                } catch (SocketException sx) {
+                    return sx.Message;
+                }
             }
-            return true;
+            return string.Empty;
         }
     }
 }
