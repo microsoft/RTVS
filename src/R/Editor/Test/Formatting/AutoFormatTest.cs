@@ -2,11 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Languages.Core.Formatting;
-using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Test.Text;
 using Microsoft.Languages.Editor.Text;
@@ -39,6 +37,8 @@ namespace Microsoft.R.Editor.Test.Formatting {
         [InlineData("x<-function(x,y,", 16, "x <- function(x, y,\n")]
         [InlineData("'x<-1'", 5, "'x<-1\n'")]
         [InlineData("x<-1", 4, "x <- 1\n")]
+        [InlineData("x(a,b,c,d)", 6, "x(a, b,\nc,d)")]
+        [InlineData("x(a,b,    c, d)", 8, "x(a, b,\n  c, d)")]
         public void FormatTest(string content, int position, string expected) {
             ITextView textView = TestAutoFormat(position, content);
 
@@ -69,10 +69,10 @@ namespace Microsoft.R.Editor.Test.Formatting {
 
                 if (e.Changes[0].NewText.Length == 1) {
                     char ch = e.Changes[0].NewText[0];
-                    if (AutoFormat.IsPreProcessAutoformatTriggerCharacter(ch)) {
+                    if (AutoFormat.IsPostProcessAutoformatTriggerCharacter(ch)) {
                         position = e.Changes[0].OldPosition + 1;
-                        FormatOperations.FormatCurrentLine(textView, textView.TextBuffer, _exportProvider.GetExportedValue<IEditorShell>());
                         textView.Caret.MoveTo(new SnapshotPoint(e.After, position));
+                        FormatOperations.FormatViewLine(textView, textView.TextBuffer, -1, _exportProvider.GetExportedValue<IEditorShell>());
                     }
                 } else {
                     ITextSnapshotLine line = e.After.GetLineFromPosition(position);

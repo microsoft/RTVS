@@ -16,11 +16,11 @@ using Microsoft.VisualStudio.Text.Editor;
 namespace Microsoft.R.Editor.Formatting {
     internal static class AutoFormat {
         public static bool IsPreProcessAutoformatTriggerCharacter(char ch) {
-            return ch == '\n' || ch == '\r' || ch == ';';
+            return ch == ';';
         }
 
         public static bool IsPostProcessAutoformatTriggerCharacter(char ch) {
-            return ch == '}';
+            return ch.IsLineBreak() || ch == '}';
         }
 
         public static void HandleAutoformat(ITextView textView, IEditorShell editorShell, char typedChar) {
@@ -65,7 +65,7 @@ namespace Microsoft.R.Editor.Formatting {
                     if (scopeStatement != null && scopeStatement.Length < 200) {
                         FormatOperations.FormatNode(textView, subjectBuffer, editorShell, scopeStatement);
                     } else {
-                        FormatOperations.FormatCurrentLine(textView, subjectBuffer, editorShell);
+                        FormatOperations.FormatViewLine(textView, subjectBuffer, -1, editorShell);
                     }
                 }
             } else if (typedChar == ';') {
@@ -75,7 +75,7 @@ namespace Microsoft.R.Editor.Formatting {
                 int positionInLine = rPoint.Value.Position - line.Start;
                 string lineText = line.GetText();
                 if (positionInLine >= lineText.TrimEnd().Length) {
-                    FormatOperations.FormatCurrentLine(textView, subjectBuffer, editorShell);
+                    FormatOperations.FormatViewLine(textView, subjectBuffer, 0, editorShell);
                 }
             } else if (typedChar == '}') {
                 FormatOperations.FormatCurrentStatement(textView, subjectBuffer, editorShell, limitAtCaret: true, caretOffset: -1);

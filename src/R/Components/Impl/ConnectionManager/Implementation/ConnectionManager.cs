@@ -270,7 +270,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         private void UpdateActiveConnection() {
-            if (ActiveConnection?.Id == _sessionProvider.Broker.Uri) {
+            if (string.IsNullOrEmpty(_sessionProvider.Broker.Name) || ActiveConnection?.Id == _sessionProvider.Broker.Uri) {
                 return;
             }
 

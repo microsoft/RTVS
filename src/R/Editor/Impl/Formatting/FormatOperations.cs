@@ -87,7 +87,7 @@ namespace Microsoft.R.Editor.Formatting {
         /// <summary>
         /// Formats line the caret is currently at
         /// </summary>
-        public static void FormatCurrentLine(ITextView textView, ITextBuffer textBuffer, IEditorShell editorShell) {
+        public static void FormatViewLine(ITextView textView, ITextBuffer textBuffer, int offset, IEditorShell editorShell) {
             SnapshotPoint? caretPoint = REditorDocument.MapCaretPositionFromView(textView);
             if (!caretPoint.HasValue) {
                 return;
@@ -95,7 +95,7 @@ namespace Microsoft.R.Editor.Formatting {
 
             ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
             int lineNumber = snapshot.GetLineNumberFromPosition(caretPoint.Value.Position);
-            ITextSnapshotLine line = snapshot.GetLineFromLineNumber(lineNumber);
+            ITextSnapshotLine line = snapshot.GetLineFromLineNumber(lineNumber + offset);
             ITextRange formatRange = new TextRange(line.Start, line.Length);
 
             UndoableFormatRange(textView, textBuffer, formatRange, editorShell, exactRange: true);

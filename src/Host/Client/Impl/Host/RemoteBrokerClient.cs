@@ -6,6 +6,7 @@ using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Common.Core.Logging;
 using Microsoft.R.Host.Client.BrokerServices;
 using static Microsoft.R.Host.Client.NativeMethods;
@@ -80,6 +81,13 @@ namespace Microsoft.R.Host.Client.Host {
 
         public override string HandleUrl(string url, CancellationToken ct) {
             return WebServer.CreateWebServer(url, HttpClient.BaseAddress.ToString(), ct);
+        }
+
+        public override async Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = default(CancellationToken)) {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            await PingAsync();
+            return await base.ConnectAsync(name, callbacks, rCommandLineArguments, timeout, cancellationToken);
         }
     }
 }

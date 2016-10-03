@@ -8,7 +8,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Common.Core.Tasks;
 using Microsoft.Common.Core.Threading;
 using static System.FormattableString;
 
