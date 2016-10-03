@@ -89,11 +89,16 @@ namespace Microsoft.R.Host.Client.Host {
 
         public async Task PingAsync() {
             if (HttpClient != null) {
-                await CheckMachineOnlineAsync();
+                var isOnline = await CheckMachineOnlineAsync();
+                // Just in case ping was disable for security reasons, try connecting to the broker anyway.
                 try {
                     (await HttpClient.PostAsync("/ping", new StringContent(""))).EnsureSuccessStatusCode();
                 } catch (HttpRequestException ex) {
-                    throw new RHostDisconnectedException(Resources.Error_BrokerNotRunning, ex);
+                    if (isOnline) {
+                        throw new RHostDisconnectedException(Resources.Error_BrokerNotRunning, ex);
+                    } else {
+                        throw new RHostDisconnectedException(Resources.Error_HostNotResponding, ex);
+                    }
                 }
             }
         }
@@ -215,14 +220,13 @@ namespace Microsoft.R.Host.Client.Host {
             return url;
         }
 
-        private async Task CheckMachineOnlineAsync() {
+        private async Task<bool> CheckMachineOnlineAsync() {
             if (!Uri.IsFile) {
                 var ping = new Ping();
                 var reply = await ping.SendPingAsync(Uri.Host, 5000);
-                if (reply.Status != IPStatus.Success) {
-                    throw new RHostDisconnectedException(Resources.Error_HostNotResponding);
-                }
+                return reply.Status == IPStatus.Success;
             }
+            return true;
         }
     }
 }
