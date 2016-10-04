@@ -87,7 +87,8 @@
     <Compile Include="Logging\FileLoggerProvider.cs" />
     <Compile Include="Logging\LoggingOptions.cs" />
     <Compile Include="NativeMethods.cs" />
-    <Compile Include="Pipes\IOwnedMessagePipeEnd.cs" />
+    <Compile Include="Pipes\HostDisconnectedException.cs" />
+    <Compile Include="Pipes\MessageParser.cs" />
     <Compile Include="Pipes\ProcessHelpers.cs" />
     <Compile Include="Pipes\WebSocketPipeAction.cs" />
     <Compile Include="RemoteUri\RemoteUriHelper.cs" />
@@ -105,6 +106,8 @@
     <Compile Include="Security\HttpBasicAuth\IBasicEvents.cs" />
     <Compile Include="Security\SecurityManager.cs" />
     <Compile Include="Security\Policies.cs" />
+    <Compile Include="Sessions\SessionStateChangedEventArgs.cs" />
+    <Compile Include="Sessions\SessionState.cs" />
     <Compile Include="Startup\StartupOptions.cs" />
     <Compile Include="Startup\Program.cs" />
     <Compile Include="Sessions\Session.cs" />

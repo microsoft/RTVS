@@ -1,6 +1,8 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See LICENSE in the project root for license information.
 
+version <- 1
+
 call_embedded <- function(name, ...) {
   .Call(paste0('Microsoft.R.Host::Call.', name, collapse = ''), ..., PACKAGE = '(embedding)')
 }

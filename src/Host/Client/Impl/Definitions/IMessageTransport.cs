@@ -8,7 +8,8 @@ using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Client {
     public interface IMessageTransport {
-        Task SendAsync(Message message, CancellationToken ct = default(CancellationToken));
-        Task<Message> ReceiveAsync(CancellationToken ct = default(CancellationToken));
+        Task CloseAsync(CancellationToken cancellationToken = default(CancellationToken));
+        Task SendAsync(Message message, CancellationToken cancellationToken = default(CancellationToken));
+        Task<Message> ReceiveAsync(CancellationToken cancellationToken = default(CancellationToken));
     }
 }

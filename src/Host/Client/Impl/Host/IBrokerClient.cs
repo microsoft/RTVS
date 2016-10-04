@@ -17,6 +17,7 @@ namespace Microsoft.R.Host.Client.Host {
         Task PingAsync();
         Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000,
             CancellationToken cancellationToken = default(CancellationToken), ReentrancyToken reentrancyToken = default(ReentrancyToken));
+        Task TerminateSessionAsync(string name, CancellationToken cancellationToken = default(CancellationToken));
         string HandleUrl(string url, CancellationToken ct);
     }
 }

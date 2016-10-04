@@ -47,6 +47,10 @@ namespace Microsoft.R.Host.Client {
             return Task.CompletedTask;
         }
 
+        public Task Shutdown(bool savedRData) {
+            return Task.CompletedTask;
+        }
+
         public async Task<string> ReadConsole(IReadOnlyList<IRContext> contexts, string prompt, int len, bool addToHistory, CancellationToken ct) {
             return (await ReadLineAsync(prompt, ct)) + "\n";
         }

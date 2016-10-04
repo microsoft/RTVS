@@ -23,6 +23,8 @@ namespace Microsoft.R.Host.Client.Host {
         public Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000,
             CancellationToken cancellationToken = new CancellationToken(), ReentrancyToken reentrancyToken = new ReentrancyToken()) => Result;
 
+        public Task TerminateSessionAsync(string name, CancellationToken cancellationToken = new CancellationToken()) => Result;
+
         public void Dispose() { }
 
         public string HandleUrl(string url, CancellationToken ct) => url;

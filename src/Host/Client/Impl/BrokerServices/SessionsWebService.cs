@@ -10,8 +10,8 @@ using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Client.BrokerServices {
     public class SessionsWebService : WebService, ISessionsWebService {
-        public SessionsWebService(HttpClient httpClient)
-            : base(httpClient) {
+        public SessionsWebService(HttpClient httpClient, ICredentialsProvider credentialsProvider)
+            : base(httpClient, credentialsProvider) {
         }
 
         private static readonly Uri getUri = new Uri("/sessions", UriKind.Relative);
@@ -19,9 +19,12 @@ namespace Microsoft.R.Host.Client.BrokerServices {
         public Task<IEnumerable<SessionInfo>> GetAsync(CancellationToken cancellationToken = default(CancellationToken)) =>
             HttpGetAsync<IEnumerable<SessionInfo>>(getUri, cancellationToken);
 
-        private static readonly UriTemplate putUri = new UriTemplate("/sessions/{name}");
+        private static readonly UriTemplate sessionUri = new UriTemplate("/sessions/{name}");
 
         public Task<SessionInfo> PutAsync(string id, SessionCreateRequest request, CancellationToken cancellationToken = default(CancellationToken)) =>
-            HttpPutAsync<SessionCreateRequest, SessionInfo>(putUri, request, cancellationToken, id);
+            HttpPutAsync<SessionCreateRequest, SessionInfo>(sessionUri, request, cancellationToken, id);
+
+        public Task DeleteAsync(string id, CancellationToken cancellationToken = default(CancellationToken)) =>
+            HttpDeleteAsync(sessionUri, cancellationToken, id);
     }
 }
