@@ -3,6 +3,9 @@
 
 using System;
 using System.Net;
+using System.Net.Http;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -84,12 +87,33 @@ namespace Microsoft.R.Host.Client.Host {
             return WebServer.CreateWebServer(url, HttpClient.BaseAddress.ToString(), ct);
         }
 
-        public override async Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000,
-            CancellationToken cancellationToken = default(CancellationToken), ReentrancyToken reentrancyToken = default(ReentrancyToken)) {
-
-            cancellationToken.ThrowIfCancellationRequested();
-            await PingAsync();
-            return await base.ConnectAsync(name, callbacks, rCommandLineArguments, timeout, cancellationToken);
+        protected override async Task<Exception> HandleHttpRequestExceptionAsync(HttpRequestException exception) {
+            // Broker is not responsing. Try regular ping.
+            string status = await GetMachineOnlineStatusAsync();
+            return string.IsNullOrEmpty(status)
+                ? new RHostDisconnectedException(Resources.Error_BrokerNotRunning, exception)
+                : await base.HandleHttpRequestExceptionAsync(exception);
         }
+
+        private async Task<string> GetMachineOnlineStatusAsync() {
+            if (!Uri.IsFile) {
+                try {
+                    var ping = new Ping();
+                    var reply = await ping.SendPingAsync(Uri.Host, 5000);
+                    if (reply.Status != IPStatus.Success) {
+                        return reply.Status.ToString();
+                    }
+                } catch (PingException pex) {
+                    var pingMessage = pex.InnerException?.Message ?? pex.Message;
+                    if (!string.IsNullOrEmpty(pingMessage)) {
+                        return pingMessage;
+                    }
+                } catch (SocketException sx) {
+                    return sx.Message;
+                }
+            }
+            return string.Empty;
+        }
+
     }
 }

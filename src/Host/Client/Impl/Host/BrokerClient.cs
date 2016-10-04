@@ -2,14 +2,11 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Net.NetworkInformation;
 using System.Net.Security;
-using System.Net.Sockets;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -96,14 +93,8 @@ namespace Microsoft.R.Host.Client.Host {
                 // Just in case ping was disable for security reasons, try connecting to the broker anyway.
                 try {
                     (await HttpClient.PostAsync("/ping", new StringContent(""))).EnsureSuccessStatusCode();
-                } catch (Exception ex) when (ex is HttpRequestException || ex is OperationCanceledException) {
-                    // Broker is not responsing. Try regular ping.
-                    string status = await GetMachineOnlineStatusAsync();
-                    if (string.IsNullOrEmpty(status)) {
-                        throw new RHostDisconnectedException(Resources.Error_BrokerNotRunning, ex);
-                    } else {
-                        throw new RHostDisconnectedException(Resources.Error_HostNotResponding.FormatInvariant(status), ex);
-                    }
+                } catch (HttpRequestException ex) {
+                    throw await HandleHttpRequestExceptionAsync(ex);
                 }
             }
         }
@@ -140,7 +131,7 @@ namespace Microsoft.R.Host.Client.Host {
                 await GetHostInformationAsync(cancellationToken);
                 return host;
             } catch (HttpRequestException ex) {
-                throw new RHostDisconnectedException(Resources.Error_HostNotResponding.FormatInvariant(ex.Message), ex);
+                throw await HandleHttpRequestExceptionAsync(ex);
             }
         }
 
@@ -148,6 +139,9 @@ namespace Microsoft.R.Host.Client.Host {
             var sessionsService = new SessionsWebService(HttpClient, this);
             return sessionsService.DeleteAsync(name, cancellationToken);
         }
+
+        protected virtual Task<Exception> HandleHttpRequestExceptionAsync(HttpRequestException exception) 
+            => Task.FromResult<Exception>(new RHostDisconnectedException(Resources.Error_HostNotResponding.FormatInvariant(exception.Message), exception));
 
         private async Task<bool> IsSessionRunningAsync(string name) {
             var sessionsService = new SessionsWebService(HttpClient, this);
@@ -229,26 +223,6 @@ namespace Microsoft.R.Host.Client.Host {
 
         public virtual string HandleUrl(string url, CancellationToken ct) {
             return url;
-        }
-
-        private async Task<string> GetMachineOnlineStatusAsync() {
-            if (!Uri.IsFile) {
-                try {
-                    var ping = new Ping();
-                    var reply = await ping.SendPingAsync(Uri.Host, 5000);
-                    if(reply.Status != IPStatus.Success) {
-                        return reply.Status.ToString();
-                    }
-                } catch (PingException pex) {
-                    var pingMessage = pex.InnerException != null ? pex.InnerException.Message : pex.Message;
-                    if (!string.IsNullOrEmpty(pingMessage)) {
-                        return pingMessage;
-                    }
-                } catch (SocketException sx) {
-                    return sx.Message;
-                }
-            }
-            return string.Empty;
         }
 
         void ICredentialsProvider.UpdateCredentials() => UpdateCredentials();
