@@ -12,7 +12,8 @@ using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Odachi.AspNetCore.Authentication.Basic;
-
+using System.IO.Pipes;
+using System.IO;
 
 namespace Microsoft.R.Host.Broker.Security {
     public class SecurityManager {
@@ -48,6 +49,33 @@ namespace Microsoft.R.Host.Broker.Security {
             return new ClaimsPrincipal(identity);
         }
 
+        private uint CreateProfile(string username, string domain, string password,out StringBuilder profilePath, out bool profileExists) {
+            uint error = 0;
+            profilePath = new StringBuilder();
+            profileExists = false;
+            using(NamedPipeClientStream client = new NamedPipeClientStream("RUserCreatorPipe"))
+            using (BinaryReader reader = new BinaryReader(client))
+            using (BinaryWriter writer = new BinaryWriter(client)) {
+                try {
+                    client.Connect();
+
+                    writer.Write(username);
+                    writer.Write(domain);
+                    writer.Write(password);
+
+                    client.WaitForPipeDrain();
+
+                    error = reader.ReadUInt32();
+                    profilePath.Append(reader.ReadString());
+                    profileExists = reader.ReadBoolean();
+                } catch (IOException) {
+
+                } 
+            }
+
+            return error;
+        }
+
         private ClaimsPrincipal SignInUsingLogon(BasicSignInContext context) {
             var user = new StringBuilder(NativeMethods.CREDUI_MAX_USERNAME_LENGTH + 1);
             var domain = new StringBuilder(NativeMethods.CREDUI_MAX_PASSWORD_LENGTH + 1);
@@ -66,25 +94,23 @@ namespace Microsoft.R.Host.Broker.Security {
             if (NativeMethods.LogonUser(user.ToString(), domain.ToString(), context.Password, (int)LogonType.LOGON32_LOGON_NETWORK, (int)LogonProvider.LOGON32_PROVIDER_DEFAULT, out token)) {
                 _logger.LogTrace(Resources.Trace_LogOnSuccess, context.Username);
                 winIdentity = new WindowsIdentity(token);
-                StringBuilder profileDir = new StringBuilder(NativeMethods.MAX_PATH);
-                uint size = (uint)profileDir.Capacity;
 
-                /*
+                StringBuilder profileDir = new StringBuilder(NativeMethods.MAX_PATH * 2);
+                bool profileExists = false;
                 _logger.LogTrace(Resources.Trace_UserProfileCreation, context.Username);
-                error = NativeMethods.CreateProfile(winIdentity.User.Value, user.ToString(), profileDir, size);
+                error = CreateProfile(user.ToString(), domain.ToString(), context.Password, out profileDir, out profileExists);
                 // 0x800700b7 - Profile already exists.
                 if (error != 0 && error != 0x800700b7) {
                     _logger.LogError(Resources.Error_ProfileCreationFailed, context.Username, error.ToString("X"));
                     return null;
-                } else if (error == 0x800700b7) {
+                } else if (error == 0x800700b7 || profileExists) {
                     _logger.LogInformation(Resources.Info_ProfileAlreadyExists, context.Username);
                 } else {
                     _logger.LogInformation(Resources.Info_ProfileCreated, context.Username);
                 }
-                */
 
                 profileDir = new StringBuilder(NativeMethods.MAX_PATH * 2);
-                size = (uint)profileDir.Capacity;
+                uint size = (uint)profileDir.Capacity;
 
                 if (NativeMethods.GetUserProfileDirectory(token, profileDir, ref size)) {
                     profilePath = profileDir.ToString();
