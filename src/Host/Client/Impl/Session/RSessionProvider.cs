@@ -354,12 +354,11 @@ namespace Microsoft.R.Host.Client.Session {
                 return null;
             }
 
-            if (uri.IsFile) {
-                return new LocalBrokerClient(name, uri.LocalPath, _services) as IBrokerClient;
-            }
-
             var windowHandle = await _callback.GetApplicationWindowHandleAsync();
-            return new RemoteBrokerClient(name, uri, windowHandle, _services.Log);
+            if (uri.IsFile) {
+                return new LocalBrokerClient(name, uri.LocalPath, _services, windowHandle) as IBrokerClient;
+            }
+            return new RemoteBrokerClient(name, uri, _services.Log, windowHandle);
         }
 
         private class IsolatedRSessionEvaluation : IRSessionEvaluation {

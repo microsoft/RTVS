@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -9,12 +10,14 @@ using System.Net.NetworkInformation;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Net.WebSockets;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebSockets.Client;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Host.Client.BrokerServices;
 using Microsoft.R.Host.Protocol;
 using Newtonsoft.Json;
@@ -32,10 +35,13 @@ namespace Microsoft.R.Host.Client.Host {
 
         private readonly string _interpreterId;
         private AboutHost _aboutHost;
+        private IRCallbacks _callbacks;
+        private IntPtr _applicationWindowHandle;
+        private int _display;
 
         protected DisposableBag DisposableBag { get; } = DisposableBag.Create<BrokerClient>();
         protected IActionLog Log { get; }
-        protected HttpClientHandler HttpClientHandler { get; private set; }
+        protected WebRequestHandler HttpClientHandler { get; private set; }
         protected HttpClient HttpClient { get; private set; }
 
         public string Name { get; }
@@ -43,26 +49,47 @@ namespace Microsoft.R.Host.Client.Host {
         public bool IsRemote => !Uri.IsFile;
         public AboutHost AboutHost => _aboutHost ?? AboutHost.Empty;
 
-        protected BrokerClient(string name, Uri brokerUri, string interpreterId, IActionLog log) {
+        protected BrokerClient(string name, Uri brokerUri, string interpreterId, IActionLog log, IntPtr applicationWindowHandle) {
             Name = name;
             Uri = brokerUri;
             _interpreterId = interpreterId;
             Log = log;
+            _applicationWindowHandle = applicationWindowHandle;
         }
 
         protected void CreateHttpClient(Uri baseAddress, ICredentials credentials) {
-            HttpClientHandler = new HttpClientHandler {
+
+            HttpClientHandler = new WebRequestHandler() {
                 PreAuthenticate = true,
                 Credentials = credentials
             };
 
+            HttpClientHandler.ServerCertificateValidationCallback += ValidateCertificate;
+
             HttpClient = new HttpClient(HttpClientHandler) {
                 BaseAddress = baseAddress,
-                Timeout = TimeSpan.FromSeconds(30)
+                Timeout = TimeSpan.FromSeconds(30),
             };
 
             HttpClient.DefaultRequestHeaders.Accept.Clear();
             HttpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        }
+
+        private bool ValidateCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) {
+            if ((sslPolicyErrors & SslPolicyErrors.RemoteCertificateNotAvailable) != 0) {
+                Log.WriteAsync(LogVerbosity.Minimal, MessageCategory.Error, Resources.Error_NoBrokerCertificate);
+                _callbacks.WriteConsoleEx(Resources.Error_NoBrokerCertificate, OutputType.Error, CancellationToken.None).DoNotWait();
+                return false;
+            } else if (sslPolicyErrors != SslPolicyErrors.None) {
+                if (Interlocked.CompareExchange(ref _display, 1, 0) == 0) {
+                    var certificate2 = certificate as X509Certificate2;
+                    Debug.Assert(certificate2 != null);
+                    X509Certificate2UI.DisplayCertificate(certificate2, _applicationWindowHandle);
+                    Interlocked.Exchange(ref _display, 0);
+                }
+                certificate.Reset();
+            }
+            return true;
         }
 
         public void Dispose() {
@@ -107,6 +134,8 @@ namespace Microsoft.R.Host.Client.Host {
 
         public virtual async Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken()) {
             DisposableBag.ThrowIfDisposed();
+            _callbacks = callbacks;
+
             await TaskUtilities.SwitchToBackgroundThread();
             try {
                 await CreateBrokerSessionAsync(name, rCommandLineArguments, cancellationToken);
@@ -216,7 +245,7 @@ namespace Microsoft.R.Host.Client.Host {
                 try {
                     var ping = new Ping();
                     var reply = await ping.SendPingAsync(Uri.Host, 5000);
-                    if(reply.Status != IPStatus.Success) {
+                    if (reply.Status != IPStatus.Success) {
                         return reply.Status.ToString();
                     }
                 } catch (PingException pex) {

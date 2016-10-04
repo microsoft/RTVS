@@ -13,6 +13,6 @@ namespace Microsoft.R.Host.Broker.Security {
         /// <summary>
         /// Friendly name of the certificate installed for the TLS (SSL)
         /// </summary>
-        public string X509CertificateName { get; set; } = "R Remote Services TLS";
+        public string X509CertificateName { get; set; }
     }
 }

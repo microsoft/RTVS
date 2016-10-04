@@ -4,10 +4,12 @@
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
 
 namespace Microsoft.Common.Core.Services {
     public interface ICoreServices {
+        ICoreShell CoreShell { get; set; }
         IActionLog Log { get; }
         ITelemetryService Telemetry { get; }
         IFileSystem FileSystem { get; }

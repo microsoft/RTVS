@@ -8,7 +8,6 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.Configuration;
@@ -58,7 +57,7 @@ namespace Microsoft.R.Host.Broker.Startup {
                 _logger.LogInformation(Resources.Info_BrokerName, _startupOptions.Name);
             }
 
-            var certificate = ConfigureTls();
+            var certificate = ConfigureTls(_securityOptions);
             CreateWebHost(certificate).Run();
         }
 
@@ -110,7 +109,7 @@ namespace Microsoft.R.Host.Broker.Startup {
             return webHost;
         }
 
-        public static void Exit() {
+        public static void Exit(int code = 1) {
             _cts.Cancel();
 
             Task.Run(async () => {
@@ -118,27 +117,29 @@ namespace Microsoft.R.Host.Broker.Startup {
                 // but if it didn't work, just terminate it.
                 await Task.Delay(10000);
                 _logger.LogCritical(Resources.Critical_TimeOutShutdown);
-                Environment.Exit(1);
+                Environment.Exit(code);
             });
         }
 
-        private static X509Certificate2 ConfigureTls() {
+        private static X509Certificate2 ConfigureTls(SecurityOptions options) {
             try {
                 Uri uri;
                 var url = Configuration.GetValue<string>("server.urls", null);
                 if (Uri.TryCreate(url, UriKind.Absolute, out uri) && uri.IsLoopback) {
-                    _logger.LogInformation(Resources.Trace_CertificateName, "none");
                     return null; // localhost, no TLS
                 }
             } catch (Exception) { }
 
             X509Certificate2 certificate = null;
-            certificate = Certificates.GetTLSCertificate();
+            var certName = _securityOptions.X509CertificateName ?? Environment.MachineName;
+            certificate = Certificates.GetCertificateForEncryption(certName);
             if (certificate == null) {
-                _logger.LogCritical(Resources.Critical_NoTlsCertificate, _securityOptions.X509CertificateName);
-                throw new InvalidOperationException(Resources.Critical_NoTlsCertificate);
+                _logger.LogCritical(Resources.Critical_NoTlsCertificate, certName);
+                Exit(2);
             }
-            _logger.LogInformation(Resources.Trace_CertificateName, certificate.FriendlyName);
+            _logger.LogInformation(Resources.Trace_CertificateIssuer, certificate.Issuer);
+            _logger.LogInformation(Resources.Trace_CertificateSubject, certificate.Subject);
+
             return certificate;
         }
     }

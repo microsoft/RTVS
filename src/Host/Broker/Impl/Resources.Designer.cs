@@ -286,11 +286,20 @@ namespace Microsoft.R.Host.Broker {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to TLS Certificate: {0}.
+        ///   Looks up a localized string similar to Certificale issued by {0}.
         /// </summary>
-        internal static string Trace_CertificateName {
+        internal static string Trace_CertificateIssuer {
             get {
-                return ResourceManager.GetString("Trace_CertificateName", resourceCulture);
+                return ResourceManager.GetString("Trace_CertificateIssuer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Certificale issued to {0}.
+        /// </summary>
+        internal static string Trace_CertificateSubject {
+            get {
+                return ResourceManager.GetString("Trace_CertificateSubject", resourceCulture);
             }
         }
         

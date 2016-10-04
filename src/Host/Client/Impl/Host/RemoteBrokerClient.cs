@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Host.Client.BrokerServices;
 using Microsoft.R.Host.Client.Security;
 using static Microsoft.R.Host.Client.NativeMethods;
@@ -22,8 +23,8 @@ namespace Microsoft.R.Host.Client.Host {
         private readonly string _authority;
         private bool _ignoreSavedCredentials;
 
-        public RemoteBrokerClient(string name, Uri brokerUri, IntPtr applicationWindowHandle, IActionLog log)
-            : base(name, brokerUri, brokerUri.Fragment, log) {
+        public RemoteBrokerClient(string name, Uri brokerUri, IActionLog log, IntPtr applicationWindowHandle)
+            : base(name, brokerUri, brokerUri.Fragment, log, applicationWindowHandle) {
             _applicationWindowHandle = applicationWindowHandle;
 
             _credentials = new NetworkCredential();

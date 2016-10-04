@@ -71,6 +71,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
             _settings = settings;
             _settings.PropertyChanged += OnSettingsChanged;
+
+            _coreServices.CoreShell = this;
         }
 
         public static void EnsureInitialized() {

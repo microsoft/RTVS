@@ -116,6 +116,15 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Remote machine does not have certificate installed for the TLS with the Remote R Service..
+        /// </summary>
+        internal static string Error_NoBrokerCertificate {
+            get {
+                return ResourceManager.GetString("Error_NoBrokerCertificate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No R Interpreters installed.
         /// </summary>
         internal static string Error_NoRInterpreters {

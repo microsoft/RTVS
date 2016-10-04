@@ -192,4 +192,7 @@ The machine may be offline or the network has been disconnected. Error: {0}</val
   <data name="Error_UnableToStartBrokerException" xml:space="preserve">
     <value>R broker process did not start:  {0}</value>
   </data>
+  <data name="Error_NoBrokerCertificate" xml:space="preserve">
+    <value>Remote machine does not have certificate installed for the TLS with the Remote R Service.</value>
+  </data>
 </root>

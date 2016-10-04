@@ -117,7 +117,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [Category.R.Session]
         public void StartRHostMissing() {
             var brokerClient = new LocalBrokerClient(nameof(RSessionTest), @"C:\",
-                    TestCoreServices.CreateReal(),  Environment.SystemDirectory);
+                    TestCoreServices.CreateReal(), IntPtr.Zero, Environment.SystemDirectory);
             var session = new RSession(0, brokerClient, () => { });
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name
@@ -147,7 +147,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [Category.R.Session]
         public async Task StopBeforeInitialized_RHostMissing() {
             var brokerClient = new LocalBrokerClient(nameof(RSessionTest), @"C:\",
-                TestCoreServices.CreateReal(), Environment.SystemDirectory);
+                TestCoreServices.CreateReal(), IntPtr.Zero, Environment.SystemDirectory);
             var session = new RSession(0, brokerClient, () => { });
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name
@@ -165,7 +165,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
         private static IBrokerClient CreateLocalBrokerClient(string name) {
             return new LocalBrokerClient(name, 
                 new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath,
-                TestCoreServices.CreateReal());
+                TestCoreServices.CreateReal(), IntPtr.Zero);
         }
     }
 }
