@@ -76,8 +76,8 @@
     <Compile Include="Shell\IApplicationConstants.cs" />
     <Compile Include="Shell\ProgressBarSession.cs" />
     <Compile Include="Tasks\TaskCompletionSourceEx.cs" />
-    <Compile Include="Threading\AsyncCountdownEvent.cs" />
     <Compile Include="Threading\AsyncManualResetEvent.cs" />
+    <Compile Include="Threading\AsyncReaderWriterLock.cs" />
     <Compile Include="Threading\BackgroundThreadAwaitable.cs" />
     <Compile Include="Threading\BackgroundThreadAwaiter.cs" />
     <Compile Include="Collections\ListExtensions.cs" />
@@ -132,6 +132,9 @@
     <Compile Include="Telemetry\TelemetryServiceBase.cs" />
     <Compile Include="Threading\BinaryAsyncLock.cs" />
     <Compile Include="Threading\DelayedAsyncAction.cs" />
+    <Compile Include="Threading\IAsyncReaderWriterLockToken.cs" />
+    <Compile Include="Threading\IReentrancyTokenFactory.cs" />
+    <Compile Include="Threading\ReentrancyToken.cs" />
     <Compile Include="Threading\IMainThread.cs" />
     <Compile Include="Versions\Toolset.cs" />
   </ItemGroup>

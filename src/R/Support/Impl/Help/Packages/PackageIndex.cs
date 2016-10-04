@@ -202,7 +202,7 @@ namespace Microsoft.R.Support.Help.Packages {
 
         private async Task RebuildIndexAsync() {
             if(!_buildIndexLock.IsSet) {
-                // Stull building, try again later
+                // Still building, try again later
                 ScheduleIdleTimeRebuild();
                 return;
             }

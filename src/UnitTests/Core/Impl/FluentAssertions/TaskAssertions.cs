@@ -21,7 +21,7 @@ namespace Microsoft.UnitTests.Core.FluentAssertions {
 
             Execute.Assertion.ForCondition(Subject.IsCompleted)
                 .BecauseOf(because, reasonArgs)
-                .FailWith($"Expected task to be completed {{reason}}, but it is {Subject.Status}.");
+                .FailWith($"Expected task to be completed{{reason}}, but it is {Subject.Status}.");
 
             return new AndConstraint<TaskAssertions>(this);
         }
@@ -31,7 +31,7 @@ namespace Microsoft.UnitTests.Core.FluentAssertions {
 
             Execute.Assertion.ForCondition(!Subject.IsCompleted)
                 .BecauseOf(because, reasonArgs)
-                .FailWith($"Expected task not to be completed {{reason}}, but {GetNotBeCompletedMessage()}.");
+                .FailWith($"Expected task not to be completed{{reason}}, but {GetNotBeCompletedMessage()}.");
 
             return new AndConstraint<TaskAssertions>(this);
         }

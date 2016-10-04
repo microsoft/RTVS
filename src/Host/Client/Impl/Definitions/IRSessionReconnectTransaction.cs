@@ -4,6 +4,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Threading;
 
 namespace Microsoft.R.Host.Client {
     public interface IRSessionReconnectTransaction : IDisposable {
@@ -16,6 +17,6 @@ namespace Microsoft.R.Host.Client {
         /// <summary>
         /// Second step of the transaction. Performs actual reconnection.
         /// </summary>
-        Task ReconnectAsync(CancellationToken cancellationToken);
+        Task ReconnectAsync(CancellationToken cancellationToken, ReentrancyToken reentrancyToken);
     }
 }

@@ -678,7 +678,7 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
                 _lockToken = await _session._initializationLock.ResetAsync(cancellationToken);
             }
 
-            public async Task ConnectToNewBrokerAsync(CancellationToken cancellationToken) {
+            public async Task ConnectToNewBrokerAsync(CancellationToken cancellationToken, ReentrancyToken reentrancyToken) {
                 if (_lockToken == null) {
                     throw new InvalidOperationException($"{nameof(AcquireLockAsync)} must be called before {nameof(ConnectToNewBrokerAsync)}");
                 }
@@ -687,7 +687,7 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
                 var startupInfo = _session._startupInfo;
                 if (startupInfo != null) {
                     // host requires _startupInfo, so proceed only if session was started at least once
-                    _hostToSwitch = await _session.BrokerClient.ConnectAsync(startupInfo.Name, _session, startupInfo.RHostCommandLineArguments, cancellationToken: cancellationToken);
+                    _hostToSwitch = await _session.BrokerClient.ConnectAsync(startupInfo.Name, _session, startupInfo.RHostCommandLineArguments, cancellationToken: cancellationToken, reentrancyToken: reentrancyToken);
                 }
             }
 
@@ -730,7 +730,7 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
                 _hostToSwitch = null;
             }
 
-            public async Task ReconnectAsync(CancellationToken cancellationToken) {
+            public async Task ReconnectAsync(CancellationToken cancellationToken, ReentrancyToken reentrancyToken) {
                 if (_lockToken == null) {
                     throw new InvalidOperationException($"{nameof(AcquireLockAsync)} must be called before {nameof(ReconnectAsync)}");
                 }
@@ -757,7 +757,9 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
                     await _session._hostRunTask;
                 }
 
-                host = await _session.BrokerClient.ConnectAsync(_session._startupInfo.Name, _session, _session._startupInfo.RHostCommandLineArguments, cancellationToken: cancellationToken);
+                host = await _session.BrokerClient.ConnectAsync(_session._startupInfo.Name, _session, _session._startupInfo.RHostCommandLineArguments,
+                    cancellationToken: cancellationToken, reentrancyToken: reentrancyToken);
+
                 await _session.StartHostAsyncBackground(host, _lockToken, cancellationToken);
             }
 

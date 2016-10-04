@@ -9,12 +9,12 @@ using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Client.Host {
     internal sealed class BrokerClientProxy : IBrokerClient {
-        private readonly AsyncCountdownEvent _connectCde;
+        private readonly AsyncReaderWriterLock _connectArwl;
         private IBrokerClient _broker;
 
-        public BrokerClientProxy(AsyncCountdownEvent connectCde) {
+        public BrokerClientProxy(AsyncReaderWriterLock connectArwl) {
             _broker = new NullBrokerClient();
-            _connectCde = connectCde;
+            _connectArwl = connectArwl;
         }
 
         public IBrokerClient Set(IBrokerClient broker) {
@@ -33,8 +33,10 @@ namespace Microsoft.R.Host.Client.Host {
 
         public Task PingAsync() => _broker.PingAsync();
 
-        public async Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken()) {
-            using (_connectCde.AddOneDisposable()) {
+        public async Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000,
+            CancellationToken cancellationToken = default(CancellationToken), ReentrancyToken reentrancyToken = default(ReentrancyToken)) {
+
+            using (await _connectArwl.ReaderLockAsync(cancellationToken, reentrancyToken)) {
                 return await _broker.ConnectAsync(name, callbacks, rCommandLineArguments, timeout, cancellationToken);
             }
         }

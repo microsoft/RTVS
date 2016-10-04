@@ -623,6 +623,9 @@ namespace Microsoft.R.Host.Client {
                 Debug.Fail(message);
                 throw;
             } finally {
+                // Signal cancellation to any callbacks that haven't returned yet.
+                _cts.Cancel();
+
                 _requests.Clear();
             }
         }

@@ -3,8 +3,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Collections;
 
 namespace Microsoft.UnitTests.Core.Threading {
@@ -19,24 +21,25 @@ namespace Microsoft.UnitTests.Core.Threading {
             Parallel.For(0, count, method);
         }
 
-        public static async Task<T[]> InvokeAsync<T>(int count, Func<int, Task<T>> method) {
+        public static async Task<Task<T>[]> InvokeAsync<T>(int count, Func<int, Task<T>> method, int delayMs = 10000) {
             var results = Invoke(count, method);
-
-            IList<Task<T>> tasks = results.ToList();
-            while (tasks.Count > 0) {
-                await Task.WhenAny(tasks).Unwrap();
-                tasks.RemoveWhere(t => t.Status == TaskStatus.RanToCompletion);
-            }
-            
-            return results.Select(t => t.Result).ToArray();
+            var tasks = results.ToArray();
+            await Task.WhenAny(Task.WhenAll(tasks).SilenceException<Exception>(), Task.Delay(delayMs));
+            return tasks.ToArray();
         }
 
-        public static async Task InvokeAsync(int count, Func<int, Task> method) {
-            IList<Task> tasks = Invoke(count, method).ToList();
-            while (tasks.Count > 0) {
-                await Task.WhenAny(tasks).Unwrap();
-                tasks.RemoveWhere(t => t.Status == TaskStatus.RanToCompletion);
-            }
+        public static async Task<TResult[]> InvokeAsync<TResult>(int count, Func<int, TResult> method, Func<TResult, Task> taskSelector, int delayMs = 10000) {
+            var results = Invoke(count, method).ToArray();
+            var tasks = results.Select(taskSelector).ToArray();
+            await Task.WhenAny(Task.WhenAll(tasks).SilenceException<Exception>(), Task.Delay(delayMs));
+            return results;
+        }
+
+        public static async Task<Task[]> InvokeAsync(int count, Func<int, Task> method, int delayMs = 10000) {
+            var results = Invoke(count, method);
+            var tasks = results.ToArray();
+            await Task.WhenAny(Task.WhenAll(tasks).SilenceException<Exception>(), Task.Delay(delayMs));
+            return tasks.ToArray();
         }
     }
 }
