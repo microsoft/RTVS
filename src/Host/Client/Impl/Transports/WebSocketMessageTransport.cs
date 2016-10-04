@@ -10,12 +10,28 @@ using System.Threading.Tasks;
 using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Client {
-    internal class WebSocketMessageTransport : IMessageTransport {
+    internal sealed class WebSocketMessageTransport : IMessageTransport {
         private readonly WebSocket _socket;
+        private readonly SemaphoreSlim _receiveLock = new SemaphoreSlim(1, 1);
         private readonly SemaphoreSlim _sendLock = new SemaphoreSlim(1, 1);
         
         public WebSocketMessageTransport(WebSocket socket) {
             _socket = socket;
+        }
+
+        public async Task CloseAsync(CancellationToken cancellationToken = default(CancellationToken)) {
+            await _sendLock.WaitAsync(cancellationToken);
+            try {
+                await _socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, "", cancellationToken);
+            } catch (IOException ex) {
+                throw new MessageTransportException(ex);
+            } catch (SocketException ex) {
+                throw new MessageTransportException(ex);
+            } catch (WebSocketException ex) {
+                throw new MessageTransportException(ex);
+            } finally {
+                _sendLock.Release();
+            }
         }
 
         public async Task<Message> ReceiveAsync(CancellationToken cancellationToken = default(CancellationToken)) {
@@ -28,6 +44,7 @@ namespace Microsoft.R.Host.Client {
                 int index = (int)buffer.Length;
                 buffer.SetLength(index + blockSize);
 
+                await _receiveLock.WaitAsync(cancellationToken);
                 WebSocketReceiveResult wsrr;
                 try {
                     wsrr = await _socket.ReceiveAsync(new ArraySegment<byte>(buffer.GetBuffer(), index, blockSize), cancellationToken);
@@ -37,12 +54,14 @@ namespace Microsoft.R.Host.Client {
                     throw new MessageTransportException(ex);
                 } catch (WebSocketException ex) {
                     throw new MessageTransportException(ex);
+                } finally {
+                    _receiveLock.Release();
                 }
 
                 buffer.SetLength(index + wsrr.Count);
 
                 if (wsrr.CloseStatus != null) {
-                    throw new MessageTransportException("Connection closed by host.");
+                    return null;
                 }
 
                 if (wsrr.EndOfMessage) {
