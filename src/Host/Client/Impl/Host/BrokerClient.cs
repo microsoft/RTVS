@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.WebSockets.Client;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.BrokerServices;
 using Microsoft.R.Host.Protocol;
 using Newtonsoft.Json;
@@ -105,7 +106,9 @@ namespace Microsoft.R.Host.Client.Host {
             }
         }
 
-        public virtual async Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken()) {
+        public virtual async Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000,
+            CancellationToken cancellationToken = default(CancellationToken), ReentrancyToken reentrancyToken = default(ReentrancyToken)) {
+
             DisposableBag.ThrowIfDisposed();
             await TaskUtilities.SwitchToBackgroundThread();
             try {

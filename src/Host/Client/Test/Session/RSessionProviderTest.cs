@@ -81,6 +81,25 @@ namespace Microsoft.R.Host.Client.Test.Session {
         }
 
         [Test]
+        public async Task ConnectWhenSwitching_SwitchFailed() {
+            using (var sessionProvider = new RSessionProvider()) {
+                await sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(ConnectWhenSwitching_SwitchFailed));
+                var switchTask = sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(ConnectWhenSwitching_SwitchFailed) + "1", @"\\JHF\F\R");
+                await Task.Yield();
+                var session = sessionProvider.GetOrCreate(new Guid());
+                var startHostTask = session.EnsureHostStartedAsync(new RHostStartupInfo {
+                    Name = nameof(session)
+                }, null, 1000);
+
+                await Task.WhenAll(switchTask, startHostTask);
+
+                startHostTask.Should().BeRanToCompletion();
+                switchTask.Should().BeRanToCompletion();
+                switchTask.Result.Should().BeFalse();
+            }
+        }
+
+        [Test]
         public async Task SwitchWhenConnecting() {
             using (var sessionProvider = new RSessionProvider(TestCoreServices.CreateReal())) {
                 var guid = new Guid();

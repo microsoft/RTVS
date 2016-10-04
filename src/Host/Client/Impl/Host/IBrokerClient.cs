@@ -4,6 +4,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Client.Host {
@@ -14,7 +15,8 @@ namespace Microsoft.R.Host.Client.Host {
         AboutHost AboutHost { get; }
 
         Task PingAsync();
-        Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = default(CancellationToken));
+        Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000,
+            CancellationToken cancellationToken = default(CancellationToken), ReentrancyToken reentrancyToken = default(ReentrancyToken));
         string HandleUrl(string url, CancellationToken ct);
     }
 }
