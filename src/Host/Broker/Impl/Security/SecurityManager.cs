@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.IO.Pipes;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Security.Principal;
@@ -12,8 +14,6 @@ using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Odachi.AspNetCore.Authentication.Basic;
-using System.IO.Pipes;
-using System.IO;
 
 namespace Microsoft.R.Host.Broker.Security {
     public class SecurityManager {
@@ -53,7 +53,7 @@ namespace Microsoft.R.Host.Broker.Security {
             uint error = 0;
             profilePath = new StringBuilder();
             profileExists = false;
-            using(NamedPipeClientStream client = new NamedPipeClientStream("RUserCreatorPipe"))
+            using (NamedPipeClientStream client = new NamedPipeClientStream("RUserCreatorPipe"))
             using (BinaryReader reader = new BinaryReader(client))
             using (BinaryWriter writer = new BinaryWriter(client)) {
                 try {
@@ -68,11 +68,12 @@ namespace Microsoft.R.Host.Broker.Security {
                     error = reader.ReadUInt32();
                     profilePath.Append(reader.ReadString());
                     profileExists = reader.ReadBoolean();
+                } catch (InvalidOperationException) {
+                    _logger.LogError(Resources.Error_ProfileCreationFailedIO, username);
                 } catch (IOException) {
-
+                    _logger.LogError(Resources.Error_ProfileCreationFailedIO, username);
                 } 
             }
-
             return error;
         }
 

@@ -10,6 +10,7 @@ using Microsoft.Win32.SafeHandles;
 
 namespace Microsoft.R.Host.Broker.Pipes {
     internal static class ProcessHelpers {
+        /*
         public static int StartProcessAsUser(IIdentity user, string applicationName, string commandLine, string workingDirectory, out Stream stdin, out Stream stdout) {
             var winUser = user as WindowsIdentity;
             if (winUser == null) {
@@ -115,5 +116,6 @@ namespace Microsoft.R.Host.Broker.Pipes {
                 return pi.dwProcessId;
             }
         }
+        */
     }
 }

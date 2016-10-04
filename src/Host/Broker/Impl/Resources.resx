@@ -150,6 +150,9 @@
   <data name="Error_ProfileCreationFailed" xml:space="preserve">
     <value>Profile creation failed for user {0} with WIN32 error code 0x{1}</value>
   </data>
+  <data name="Error_ProfileCreationFailedIO" xml:space="preserve">
+    <value>Profile creation failed for user {0}.</value>
+  </data>
   <data name="Error_RHostFailedToStart" xml:space="preserve">
     <value>R Host process failed to start. Error: {0}</value>
   </data>

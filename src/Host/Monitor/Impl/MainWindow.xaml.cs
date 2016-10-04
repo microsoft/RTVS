@@ -3,7 +3,6 @@
 
 using System.Windows;
 
-
 namespace Microsoft.R.Host.Monitor {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
