@@ -82,7 +82,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
         [Test]
         public async Task ConnectWhenSwitching_SwitchFailed() {
-            using (var sessionProvider = new RSessionProvider()) {
+            using (var sessionProvider = new RSessionProvider(TestCoreServices.CreateReal())) {
                 await sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(ConnectWhenSwitching_SwitchFailed));
                 var switchTask = sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(ConnectWhenSwitching_SwitchFailed) + "1", @"\\JHF\F\R");
                 await Task.Yield();

@@ -158,7 +158,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name
             }, null, 10000);
-            var startTask = Task.Run(start).SilenceException<RHostBinaryMissingException>();
+            var startTask = Task.Run(start).SilenceException<RHostBrokerBinaryMissingException>();
 
             await session.StopHostAsync();
             session.IsHostRunning.Should().BeFalse();
