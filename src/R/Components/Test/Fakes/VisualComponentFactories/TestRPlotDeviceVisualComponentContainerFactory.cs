@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Plots;
@@ -22,7 +23,7 @@ namespace Microsoft.R.Components.Test.Fakes.VisualComponentFactories {
             _coreShell = coreShell;
         }
 
-        public PlotDeviceProperties DeviceProperties { get; set; } = new PlotDeviceProperties(360, 360, 96);
+        public Nullable<PlotDeviceProperties> DeviceProperties { get; set; } = new PlotDeviceProperties(360, 360, 96);
 
         public IVisualComponentContainer<IRPlotDeviceVisualComponent> GetOrCreate(IRPlotManager plotManager, IRSession session, int instanceId = 0) {
             return GetOrCreate(instanceId, container => new RPlotDeviceVisualComponent(plotManager, null, instanceId, container, _coreShell) { TestDeviceProperties=DeviceProperties });

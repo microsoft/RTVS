@@ -20,7 +20,7 @@ using Microsoft.R.Host.Protocol;
 using Newtonsoft.Json;
 
 namespace Microsoft.R.Host.Client.Host {
-    internal abstract class BrokerClient : IBrokerClient, ICredentialsProvider {
+    internal abstract class BrokerClient : IBrokerClient {
         private static readonly TimeSpan HeartbeatTimeout =
 #if DEBUG
             // In debug mode, increase the timeout significantly, so that when the host is paused in debugger,
@@ -31,6 +31,8 @@ namespace Microsoft.R.Host.Client.Host {
 #endif
 
         private readonly string _interpreterId;
+        private readonly ICredentialsDecorator _credentials;
+
         private AboutHost _aboutHost;
         private IntPtr _applicationWindowHandle;
 
@@ -45,19 +47,21 @@ namespace Microsoft.R.Host.Client.Host {
         public bool IsRemote => !Uri.IsFile;
         public AboutHost AboutHost => _aboutHost ?? AboutHost.Empty;
 
-        protected BrokerClient(string name, Uri brokerUri, string interpreterId, IActionLog log, IntPtr applicationWindowHandle) {
+        protected BrokerClient(string name, Uri brokerUri, string interpreterId, ICredentialsDecorator credentials, IActionLog log, IntPtr applicationWindowHandle) {
             Name = name;
             Uri = brokerUri;
-            _interpreterId = interpreterId;
             Log = log;
+
             _applicationWindowHandle = applicationWindowHandle;
+            _interpreterId = interpreterId;
+            _credentials = credentials;
         }
 
         protected virtual void CreateHttpClient(Uri baseAddress, ICredentials credentials) {
 
             HttpClientHandler = new WebRequestHandler() {
                 PreAuthenticate = true,
-                Credentials = credentials
+                Credentials = _credentials
             };
 
             HttpClient = new HttpClient(HttpClientHandler) {
@@ -76,25 +80,6 @@ namespace Microsoft.R.Host.Client.Host {
         public void Dispose() {
             Dispose(true);
         }
-
-        /// <summary>
-        /// Called before issuing an authenticated HTTP request. Implementation can refresh <see cref="HttpClientHandler.Credentials"/> if necessary.
-        /// </summary>
-        /// <remarks>
-        /// For every call to this method, there will be a follow-up call to either <see cref="OnAuthenticationSucceeded"/> 
-        /// or to <see cref="OnAuthenticationFailed"/> to indicate the result of authentication.
-        /// </remarks>
-        /// <exception cref="OperationCanceledException">
-        /// Retrieval of credentials was canceled by the user (for example, by clicking the "Cancel" button in the dialog).
-        /// Usually, this indicates that the operation that asked for credentials should be canceled as well.
-        /// </exception>
-        protected abstract void UpdateCredentials();
-
-        /// <summary>
-        /// Called after the request that used credentials updated by an earlier call to <see cref="UpdateCredentials"/> completes.
-        /// </summary>
-        /// <param name="isValid">Whether the credentials were accepted or rejected by the server.</param>
-        protected abstract void OnCredentialsValidated(bool isValid);
 
         public async Task PingAsync() {
             if (HttpClient != null) {
@@ -116,7 +101,7 @@ namespace Microsoft.R.Host.Client.Host {
             await TaskUtilities.SwitchToBackgroundThread();
 
             try {
-                bool sessionExists = await IsSessionRunningAsync(name);
+                bool sessionExists = await IsSessionRunningAsync(name, cancellationToken);
 
                 WebSocket webSocket;
                 while (true) {
@@ -146,22 +131,22 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         public Task TerminateSessionAsync(string name, CancellationToken cancellationToken = default(CancellationToken)) {
-            var sessionsService = new SessionsWebService(HttpClient, this);
+            var sessionsService = new SessionsWebService(HttpClient, _credentials);
             return sessionsService.DeleteAsync(name, cancellationToken);
         }
 
         protected virtual Task<Exception> HandleHttpRequestExceptionAsync(HttpRequestException exception) 
             => Task.FromResult<Exception>(new RHostDisconnectedException(Resources.Error_HostNotResponding.FormatInvariant(exception.Message), exception));
 
-        private async Task<bool> IsSessionRunningAsync(string name) {
-            var sessionsService = new SessionsWebService(HttpClient, this);
-            var sessions = await sessionsService.GetAsync();
+        private async Task<bool> IsSessionRunningAsync(string name, CancellationToken cancellationToken) {
+            var sessionsService = new SessionsWebService(HttpClient, _credentials);
+            var sessions = await sessionsService.GetAsync(cancellationToken);
             return sessions.Any(s => s.Id == name);
         }
 
         private async Task CreateBrokerSessionAsync(string name, string rCommandLineArguments, CancellationToken cancellationToken) {
             rCommandLineArguments = rCommandLineArguments ?? string.Empty;
-            var sessions = new SessionsWebService(HttpClient, this);
+            var sessions = new SessionsWebService(HttpClient, _credentials);
             try {
                 await sessions.PutAsync(name, new SessionCreateRequest {
                     InterpreterId = _interpreterId,
@@ -176,11 +161,6 @@ namespace Microsoft.R.Host.Client.Host {
             var wsClient = new WebSocketClient {
                 KeepAliveInterval = HeartbeatTimeout,
                 SubProtocols = { "Microsoft.R.Host" },
-                ConfigureRequest = request => {
-                    UpdateCredentials();
-                    request.AuthenticationLevel = AuthenticationLevel.MutualAuthRequested;
-                    request.Credentials = HttpClientHandler.Credentials;
-                },
                 InspectResponse = response => {
                     if (response.StatusCode == HttpStatusCode.Forbidden) {
                         throw new UnauthorizedAccessException();
@@ -193,25 +173,22 @@ namespace Microsoft.R.Host.Client.Host {
                 Path = $"sessions/{name}/pipe"
             }.Uri;
 
-            WebSocket socket;
             while (true) {
-                bool? isValidCredentials = null;
-                try {
-                    socket = await wsClient.ConnectAsync(pipeUri, cancellationToken);
-                    isValidCredentials = true;
-                    break;
-                } catch (UnauthorizedAccessException) {
-                    isValidCredentials = false;
-                    continue;
-                } catch (Exception ex) when (ex is InvalidOperationException || ex is WebException || ex is ProtocolViolationException) {
-                    throw new RHostDisconnectedException(Resources.HttpErrorCreatingSession.FormatInvariant(ex.Message), ex);
-                } finally {
-                    if (isValidCredentials != null) {
-                        OnCredentialsValidated(isValidCredentials.Value);
+                var request = wsClient.CreateRequest(pipeUri);
+
+                using (await _credentials.LockCredentialsAsync(cancellationToken)) {
+                    try {
+                        request.AuthenticationLevel = AuthenticationLevel.MutualAuthRequested;
+                        request.Credentials = HttpClientHandler.Credentials;
+                        return await wsClient.ConnectAsync(request, cancellationToken);
+                    } catch (UnauthorizedAccessException) {
+                        _credentials.InvalidateCredentials();
+                        continue;
+                    } catch (Exception ex) when (ex is InvalidOperationException || ex is WebException || ex is ProtocolViolationException) {
+                        throw new RHostDisconnectedException(Resources.HttpErrorCreatingSession.FormatInvariant(ex.Message), ex);
                     }
                 }
             }
-            return socket;
         }
 
         private RHost CreateRHost(string name, IRCallbacks callbacks, WebSocket socket) {
@@ -234,9 +211,5 @@ namespace Microsoft.R.Host.Client.Host {
         public virtual string HandleUrl(string url, CancellationToken ct) {
             return url;
         }
-
-        void ICredentialsProvider.UpdateCredentials() => UpdateCredentials();
-
-        void ICredentialsProvider.OnCredentialsValidated(bool isValid) => OnCredentialsValidated(isValid);
     }
 }

@@ -87,6 +87,7 @@
     <Compile Include="PackageManager\TestLibraries.cs" />
     <Compile Include="PackageManager\TestPackages.cs" />
     <Compile Include="PackageManager\TestRepositories.cs" />
+    <Compile Include="Plots\RPlotIntegrationUITest.cs" />
     <Compile Include="Plots\RPlotIntegrationTest.cs" />
     <Compile Include="RComponentsMefCatalogFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

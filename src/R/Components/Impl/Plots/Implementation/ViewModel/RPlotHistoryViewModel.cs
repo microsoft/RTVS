@@ -102,20 +102,24 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
         private void AddOrUpdate(IRPlot plot, BitmapImage plotImage) {
             _shell.AssertIsOnMainThread();
 
-            // A null image means the plot couldn't be rendered.
-            // This can happen if an existing plot was resized too small.
-            // Don't overwrite the history image in this case, because the
-            // existing image in history will be better than no image at all.
-            if (plotImage != null) {
-                foreach (var entry in Entries) {
-                    if (entry.Plot.PlotId == plot.PlotId) {
-                        entry.PlotImage = plotImage;
-                        return;
-                    }
-                }
+            // Some error messages coming from the host may not have a plot id
+            // associated with them. We never want to add a history entry in that case.
+            if (plot.PlotId == Guid.Empty) {
+                return;
             }
 
-            Entries.Add(new RPlotHistoryEntryViewModel(_plotManager, _shell, plot, plotImage));
+            var entry = Entries.SingleOrDefault(p => p.Plot.PlotId == plot.PlotId);
+            if (entry != null) {
+                // A null image means the plot couldn't be rendered.
+                // This can happen if an existing plot was resized too small.
+                // Don't overwrite the history image in this case, because the
+                // existing image in history will be better than no image at all.
+                if (plotImage != null) {
+                    entry.PlotImage = plotImage;
+                }
+            } else {
+                Entries.Add(new RPlotHistoryEntryViewModel(_plotManager, _shell, plot, plotImage));
+            }
 
             OnPropertyChanged(nameof(ShowWatermark));
         }

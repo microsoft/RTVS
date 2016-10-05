@@ -15,6 +15,7 @@ using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Threading;
+using Microsoft.R.Host.Client.BrokerServices;
 using Newtonsoft.Json;
 
 namespace Microsoft.R.Host.Client.Host {
@@ -23,7 +24,7 @@ namespace Microsoft.R.Host.Client.Host {
         private const string InterpreterId = "local";
 
         private static readonly bool ShowConsole;
-        private static readonly NetworkCredential _credentials = new NetworkCredential("RTVS", Guid.NewGuid().ToString());
+        private static readonly LocalCredentialsDecorator Credentials = new LocalCredentialsDecorator();
 
         private readonly string _rhostDirectory;
         private readonly string _rHome;
@@ -66,7 +67,7 @@ namespace Microsoft.R.Host.Client.Host {
             var lockToken = await _connectLock.WaitAsync();
             try {
                 if (!lockToken.IsSet) {
-                    await ConnectToBrokerWorker(lockToken);
+                    await ConnectToBrokerWorker();
                     lockToken.Set();
                 }
             } finally {
@@ -74,7 +75,7 @@ namespace Microsoft.R.Host.Client.Host {
             }
         }
 
-        private async Task ConnectToBrokerWorker(IBinaryAsyncLockToken lockToken) {
+        private async Task ConnectToBrokerWorker() {
             Trace.Assert(_brokerProcess == null);
 
             string rhostBrokerExe = Path.Combine(_rhostDirectory, RHostBrokerExe);
@@ -97,7 +98,7 @@ namespace Microsoft.R.Host.Client.Host {
                             $" --startup:name \"{Name}\"" +
                             $" --startup:writeServerUrlsToPipe {pipeName}" +
                             $" --lifetime:parentProcessId {Process.GetCurrentProcess().Id}" +
-                            $" --security:secret \"{_credentials.Password}\"" +
+                            $" --security:secret \"{Credentials.Password}\"" +
                             $" --R:autoDetect false" +
                             $" --R:interpreters:{InterpreterId}:name \"{Name}\"" +
                             $" --R:interpreters:{InterpreterId}:basePath \"{_rHome.TrimTrailingSlash()}\""
@@ -145,7 +146,7 @@ namespace Microsoft.R.Host.Client.Host {
                         throw new RHostDisconnectedException($"Unexpected number of endpoint URIs received from broker: {serverUriStr}");
                     }
 
-                    CreateHttpClient(serverUri[0], _credentials);
+                    CreateHttpClient(serverUri[0]);
                 }
 
                 if (_disposed == 0) {

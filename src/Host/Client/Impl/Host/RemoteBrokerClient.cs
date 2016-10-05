@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Net.NetworkInformation;
@@ -15,7 +14,6 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Security;
 using Microsoft.R.Host.Client.BrokerServices;
-using static Microsoft.R.Host.Client.NativeMethods;
 
 namespace Microsoft.R.Host.Client.Host {
     internal sealed class RemoteBrokerClient : BrokerClient {
@@ -84,21 +82,23 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         private async Task<string> GetMachineOnlineStatusAsync() {
-            if (!Uri.IsFile) {
-                try {
-                    var ping = new Ping();
-                    var reply = await ping.SendPingAsync(Uri.Host, 5000);
-                    if (reply.Status != IPStatus.Success) {
-                        return reply.Status.ToString();
-                    }
-                } catch (PingException pex) {
-                    var pingMessage = pex.InnerException?.Message ?? pex.Message;
-                    if (!string.IsNullOrEmpty(pingMessage)) {
-                        return pingMessage;
-                    }
-                } catch (SocketException sx) {
-                    return sx.Message;
+            if (Uri.IsFile) {
+                return string.Empty;
+            }
+
+            try {
+                var ping = new Ping();
+                var reply = await ping.SendPingAsync(Uri.Host, 5000);
+                if (reply.Status != IPStatus.Success) {
+                    return reply.Status.ToString();
                 }
+            } catch (PingException pex) {
+                var pingMessage = pex.InnerException?.Message ?? pex.Message;
+                if (!string.IsNullOrEmpty(pingMessage)) {
+                    return pingMessage;
+                }
+            } catch (SocketException sx) {
+                return sx.Message;
             }
             return string.Empty;
         }
