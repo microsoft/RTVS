@@ -177,7 +177,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
 #if DEBUG
         [DefaultValue(LogVerbosity.Traffic)]
 #else
-        [DefaultValue(LogLevel.Normal)]
+        [DefaultValue(LogVerbosity.Normal)]
 #endif
         public LogVerbosity LogLevel {
             get { return RToolsSettings.Current.LogVerbosity; }

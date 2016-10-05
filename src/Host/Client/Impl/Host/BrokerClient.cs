@@ -2,13 +2,11 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Net.NetworkInformation;
 using System.Net.Security;
-using System.Net.Sockets;
 using System.Net.WebSockets;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
@@ -23,7 +21,7 @@ using Microsoft.R.Host.Protocol;
 using Newtonsoft.Json;
 
 namespace Microsoft.R.Host.Client.Host {
-    internal abstract class BrokerClient : IBrokerClient {
+    internal abstract class BrokerClient : IBrokerClient, ICredentialsProvider {
         private static readonly TimeSpan HeartbeatTimeout =
 #if DEBUG
             // In debug mode, increase the timeout significantly, so that when the host is paused in debugger,
@@ -120,59 +118,74 @@ namespace Microsoft.R.Host.Client.Host {
                 // Just in case ping was disable for security reasons, try connecting to the broker anyway.
                 try {
                     (await HttpClient.PostAsync("/ping", new StringContent(""))).EnsureSuccessStatusCode();
-                } catch (Exception ex) when (ex is HttpRequestException || ex is OperationCanceledException) {
-                    // Broker is not responsing. Try regular ping.
-                    string status = await GetMachineOnlineStatusAsync();
-                    if (string.IsNullOrEmpty(status)) {
-                        throw new RHostDisconnectedException(Resources.Error_BrokerNotRunning, ex);
-                    } else {
-                        throw new RHostDisconnectedException(Resources.Error_HostNotResponding.FormatInvariant(status), ex);
-                    }
+                } catch (HttpRequestException ex) {
+                    throw await HandleHttpRequestExceptionAsync(ex);
                 }
             }
         }
 
-        public virtual async Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken()) {
+        public virtual async Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000,
+            CancellationToken cancellationToken = default(CancellationToken), ReentrancyToken reentrancyToken = default(ReentrancyToken)) {
+
             DisposableBag.ThrowIfDisposed();
             _callbacks = callbacks;
 
             await TaskUtilities.SwitchToBackgroundThread();
+
             try {
-                await CreateBrokerSessionAsync(name, rCommandLineArguments, cancellationToken);
-                var webSocket = await ConnectToBrokerAsync(name, cancellationToken);
+                bool sessionExists = await IsSessionRunningAsync(name);
+
+                WebSocket webSocket;
+                while (true) {
+                    if (!sessionExists) {
+                        await CreateBrokerSessionAsync(name, rCommandLineArguments, cancellationToken);
+                    }
+
+                    try {
+                        webSocket = await ConnectToBrokerAsync(name, cancellationToken);
+                        break;
+                    } catch (RHostDisconnectedException ex) when (
+                        sessionExists && ((ex.InnerException as WebException)?.Response as HttpWebResponse)?.StatusCode == HttpStatusCode.NotFound
+                    ) {
+                        // If we believed the session to be running, but failed to connect to its pipe, it probably terminated
+                        // between our check and our attempt to connect. Retry, but recreate the session this time.
+                        sessionExists = false;
+                        continue;
+                    }
+                }
+
                 var host = CreateRHost(name, callbacks, webSocket);
                 await GetHostInformationAsync(cancellationToken);
                 return host;
             } catch (HttpRequestException ex) {
-                throw new RHostDisconnectedException(Resources.Error_HostNotResponding.FormatInvariant(ex.Message), ex);
+                throw await HandleHttpRequestExceptionAsync(ex);
             }
+        }
+
+        public Task TerminateSessionAsync(string name, CancellationToken cancellationToken = default(CancellationToken)) {
+            var sessionsService = new SessionsWebService(HttpClient, this);
+            return sessionsService.DeleteAsync(name, cancellationToken);
+        }
+
+        protected virtual Task<Exception> HandleHttpRequestExceptionAsync(HttpRequestException exception) 
+            => Task.FromResult<Exception>(new RHostDisconnectedException(Resources.Error_HostNotResponding.FormatInvariant(exception.Message), exception));
+
+        private async Task<bool> IsSessionRunningAsync(string name) {
+            var sessionsService = new SessionsWebService(HttpClient, this);
+            var sessions = await sessionsService.GetAsync();
+            return sessions.Any(s => s.Id == name);
         }
 
         private async Task CreateBrokerSessionAsync(string name, string rCommandLineArguments, CancellationToken cancellationToken) {
             rCommandLineArguments = rCommandLineArguments ?? string.Empty;
-            var sessions = new SessionsWebService(HttpClient);
-
-            while (true) {
-                bool? isValidCredentials = null;
-                try {
-                    UpdateCredentials();
-                    isValidCredentials = true;
-
-                    await sessions.PutAsync(name, new SessionCreateRequest {
-                        InterpreterId = _interpreterId,
-                        CommandLineArguments = rCommandLineArguments,
-                    }, cancellationToken);
-                    break;
-                } catch (UnauthorizedAccessException) {
-                    isValidCredentials = false;
-                    continue;
-                } catch (BrokerApiErrorException apiex) {
-                    throw new RHostDisconnectedException(apiex);
-                } finally {
-                    if (isValidCredentials != null) {
-                        OnCredentialsValidated(isValidCredentials.Value);
-                    }
-                }
+            var sessions = new SessionsWebService(HttpClient, this);
+            try {
+                await sessions.PutAsync(name, new SessionCreateRequest {
+                    InterpreterId = _interpreterId,
+                    CommandLineArguments = rCommandLineArguments,
+                }, cancellationToken);
+            } catch (BrokerApiErrorException apiex) {
+                throw new RHostDisconnectedException(apiex);
             }
         }
 
@@ -207,9 +220,8 @@ namespace Microsoft.R.Host.Client.Host {
                 } catch (UnauthorizedAccessException) {
                     isValidCredentials = false;
                     continue;
-                } catch (Exception ex)
-                    when (ex is InvalidOperationException || ex is WebException || ex is ProtocolViolationException) {
-                    throw new RHostDisconnectedException(Resources.HttpErrorCreatingSession.FormatInvariant(ex.Message));
+                } catch (Exception ex) when (ex is InvalidOperationException || ex is WebException || ex is ProtocolViolationException) {
+                    throw new RHostDisconnectedException(Resources.HttpErrorCreatingSession.FormatInvariant(ex.Message), ex);
                 } finally {
                     if (isValidCredentials != null) {
                         OnCredentialsValidated(isValidCredentials.Value);
@@ -240,24 +252,8 @@ namespace Microsoft.R.Host.Client.Host {
             return url;
         }
 
-        private async Task<string> GetMachineOnlineStatusAsync() {
-            if (!Uri.IsFile) {
-                try {
-                    var ping = new Ping();
-                    var reply = await ping.SendPingAsync(Uri.Host, 5000);
-                    if (reply.Status != IPStatus.Success) {
-                        return reply.Status.ToString();
-                    }
-                } catch (PingException pex) {
-                    var pingMessage = pex.InnerException != null ? pex.InnerException.Message : pex.Message;
-                    if (!string.IsNullOrEmpty(pingMessage)) {
-                        return pingMessage;
-                    }
-                } catch (SocketException sx) {
-                    return sx.Message;
-                }
-            }
-            return string.Empty;
-        }
+        void ICredentialsProvider.UpdateCredentials() => UpdateCredentials();
+
+        void ICredentialsProvider.OnCredentialsValidated(bool isValid) => OnCredentialsValidated(isValid);
     }
 }

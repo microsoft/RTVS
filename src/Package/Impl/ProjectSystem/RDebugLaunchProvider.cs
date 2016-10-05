@@ -16,6 +16,7 @@ using Microsoft.R.Debugger.PortSupplier;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Extensions;
 using Microsoft.R.Host.Client.Host;
+using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.ProjectSystem;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Debuggers;
@@ -48,7 +49,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         internal IFileSystem FileSystem { get; set; } = new FileSystem();
 
         private IRSession Session => _interactiveWorkflow.RSession;
-        private TextWriter ProgressOutputWriter => _interactiveWorkflow.ActiveWindow.InteractiveWindow.OutputWriter;
+        private IInteractiveWindow ProgressOutputWriter => _interactiveWorkflow.ActiveWindow.InteractiveWindow;
 
         public override Task<bool> CanLaunchAsync(DebugLaunchOptions launchOptions) {
             return Task.FromResult(true);
@@ -129,8 +130,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             if (transferFiles && Session.IsRemote) {
                 try {
                     fileExists = await Session.EvaluateAsync<bool>($"file.exists({file.ToRPath().ToRStringLiteral()})", REvaluationKind.Normal);
-                } catch (RHostDisconnectedException) {
-                    ProgressOutputWriter.WriteLine("Unable to verify if file exists on remote host.");
+                } catch (RHostDisconnectedException rhdex) {
+                    ProgressOutputWriter.WriteLine(Resources.Error_UnableToVerifyFile.FormatInvariant(rhdex.Message));
                 }
             } else {
                 fileExists = FileSystem.FileExists(file);
@@ -141,12 +142,12 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                 return;
             }
 
-            ProgressOutputWriter.WriteLine($"Sourcing: {file}");
+            ProgressOutputWriter.WriteLine(string.Format(Resources.Info_SourcingFile, file));
             await _interactiveWorkflow.Operations.SourceFileAsync(file, echo: false).SilenceException<Exception>();
         }
 
         private async Task SendProjectAsync(EnvDTE.Project project, string remotePath, string filterString) {
-            ProgressOutputWriter.WriteLine("Preparing to transfer project.");
+            ProgressOutputWriter.WriteLine(Resources.Info_PreparingProjectForTransfer);
 
             var projectDir = Path.GetDirectoryName(project.FullName);
             var projectName = Path.GetFileNameWithoutExtension(project.FullName);
@@ -155,21 +156,23 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             Matcher matcher = new Matcher(StringComparison.InvariantCultureIgnoreCase);
             matcher.AddIncludePatterns(filterString.Split(filterSplitter, StringSplitOptions.RemoveEmptyEntries));
 
-            ProgressOutputWriter.WriteLine($"Remote destination: {remotePath}");
-            ProgressOutputWriter.WriteLine($"File filter applied: {filterString}");
-            ProgressOutputWriter.WriteLine("Compressing project files for transfer: ");
+            ProgressOutputWriter.WriteLine(string.Format(Resources.Info_RemoteDestination, remotePath));
+            ProgressOutputWriter.WriteLine(string.Format(Resources.Info_FileTransferFilter, filterString));
+            ProgressOutputWriter.WriteLine(Resources.Info_CompressingFiles);
 
             var compressedFilePath = FileSystem.CompressDirectory(projectDir, matcher, new Progress<string>((p) => {
-                ProgressOutputWriter.WriteLine($"Compressing: {p}");
+                ProgressOutputWriter.WriteLine(string.Format(Resources.Info_LocalFilePath, p));
+                string dest = p.MakeRelativePath(projectDir).ProjectRelativePathToRemoteProjectPath(remotePath, projectName);
+                ProgressOutputWriter.WriteLine(string.Format(Resources.Info_RemoteFilePath, dest));
             }), CancellationToken.None);
             
             using (var fts = new DataTransferSession(Session, FileSystem)) {
-                ProgressOutputWriter.Write("Transferring project to remote host...");
+                ProgressOutputWriter.WriteLine(Resources.Info_TransferringFiles);
                 var remoteFile = await fts.SendFileAsync(compressedFilePath);
                 await Session.EvaluateAsync<string>($"rtvs:::save_to_project_folder({remoteFile.Id}, {projectName.ToRStringLiteral()}, '{remotePath.ToRPath()}')", REvaluationKind.Normal);
             }
 
-            ProgressOutputWriter.WriteLine(" done.");
+            ProgressOutputWriter.WriteLine(Resources.Info_TransferringFilesDone);
         }
 
         private async Task<string> GetStartupFileAsync(bool transferFiles, EnvDTE.Project project) {

@@ -49,7 +49,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
             [Test]
             public async Task ExclusiveInteraction() {
-                var interactionTasks = await ParallelTools.InvokeAsync(4, i => Task.Factory.StartNew(() => _session.BeginInteractionAsync()));
+                var interactionTasks = ParallelTools.Invoke(4, i => _session.BeginInteractionAsync());
                 IList<Task<IRSessionInteraction>> runningTasks = interactionTasks.ToList();
 
                 while (runningTasks.Count > 0) {
@@ -74,7 +74,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
             [Test]
             public async Task ExclusiveEvaluation() {
-                var interactionTasks = await ParallelTools.InvokeAsync(4, i => Task.Factory.StartNew(() => _session.BeginEvaluationAsync()));
+                var interactionTasks = ParallelTools.Invoke(4, i => _session.BeginEvaluationAsync());
                 IList<Task<IRSessionEvaluation>> runningTasks = interactionTasks.ToList();
 
                 while (runningTasks.Count > 0) {

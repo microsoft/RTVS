@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -87,8 +88,8 @@ namespace Microsoft.R.Host.Client.Test.Session {
                 Name = _testMethod.Name
             }, null, 50000);
 
-            Func<Task> f = () => ParallelTools.InvokeAsync(4, i => start());
-            f.ShouldThrow<InvalidOperationException>();
+            var tasks = await ParallelTools.InvokeAsync(4, i => start());
+            tasks.Should().ContainSingle(t => t.Status == TaskStatus.RanToCompletion);
 
             await session.HostStarted;
             session.IsHostRunning.Should().BeTrue();
@@ -106,11 +107,18 @@ namespace Microsoft.R.Host.Client.Test.Session {
                 return session;
             };
 
-            var sessions = await ParallelTools.InvokeAsync(4, start);
-            sessions.Should().OnlyContain(s => s.IsHostRunning);
+            var sessionsTasks = await ParallelTools.InvokeAsync(4, start);
+            if (sessionsTasks.Any(t => t.Status != TaskStatus.RanToCompletion)) {
+                Debugger.Launch();
+            }
 
-            await ParallelTools.InvokeAsync(4, i => sessions[i].StopHostAsync());
-            sessions.Should().OnlyContain(s => !s.IsHostRunning);
+            sessionsTasks.Should().OnlyContain(t => t.Status == TaskStatus.RanToCompletion);
+            var sessions = sessionsTasks.Select(t => t.Result).ToList();
+            sessions.Should().OnlyContain(t => t.IsHostRunning);
+
+            var sessionStopTasks = await ParallelTools.InvokeAsync(4, i => sessionsTasks[i].Result.StopHostAsync());
+            sessionStopTasks.Should().OnlyContain(t => t.Status == TaskStatus.RanToCompletion);
+            sessions.Should().OnlyContain(t => !t.IsHostRunning);
         }
 
         [Test]
@@ -133,14 +141,12 @@ namespace Microsoft.R.Host.Client.Test.Session {
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name
             }, null, 10000);
-
-            Task.Run(start)
-                .SilenceException<RHostBrokerBinaryMissingException>()
-                .DoNotWait();
+            var startTask = Task.Run(start);
 
             await session.StopHostAsync();
-
             session.IsHostRunning.Should().BeFalse();
+
+            await startTask;
         }
 
         [Test]
@@ -152,14 +158,12 @@ namespace Microsoft.R.Host.Client.Test.Session {
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name
             }, null, 10000);
-
-            Task.Run(start)
-                .SilenceException<RHostBrokerBinaryMissingException>()
-                .DoNotWait();
+            var startTask = Task.Run(start).SilenceException<RHostBrokerBinaryMissingException>();
 
             await session.StopHostAsync();
-
             session.IsHostRunning.Should().BeFalse();
+
+            await startTask;
         }
 
         private static IBrokerClient CreateLocalBrokerClient(string name) {

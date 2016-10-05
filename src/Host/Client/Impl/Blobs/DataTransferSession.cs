@@ -29,11 +29,11 @@ namespace Microsoft.R.Host.Client {
         /// <param name="doCleanUp">
         /// true to add blob created upon transfer for cleanup on dispose, false to ignore it after transfer.
         /// </param>
-        public async Task<IRBlobInfo> SendBytesAsync(byte[] data, bool doCleanUp = true) {
+        public async Task<IRBlobInfo> SendBytesAsync(byte[] data, bool doCleanUp = true, IProgress<long> progress = null) {
             IRBlobInfo blob = null;
             using (RBlobStream blobStream = await RBlobStream.CreateAsync(_blobService))
             using (Stream ms = new MemoryStream(data)) {
-                await ms.CopyToAsync(blobStream);
+                await ms.CopyToAsync(blobStream, progress);
                 blob = blobStream.GetBlobInfo();
             }
 
@@ -50,11 +50,11 @@ namespace Microsoft.R.Host.Client {
         /// <param name="doCleanUp">
         /// true to add blob created upon transfer for cleanup on dispose, false to ignore it after transfer.
         /// </param>
-        public async Task<IRBlobInfo> SendFileAsync(string filePath, bool doCleanUp = true) {
+        public async Task<IRBlobInfo> SendFileAsync(string filePath, bool doCleanUp = true, IProgress<long> progress = null) {
             IRBlobInfo blob = null;
             using (RBlobStream blobStream = await RBlobStream.CreateAsync(_blobService))
             using (Stream fileStream = _fs.FileOpen(filePath, FileMode.Open)){
-                await fileStream.CopyToAsync(blobStream);
+                await fileStream.CopyToAsync(blobStream, progress);
                 blob = blobStream.GetBlobInfo();
             }
 
@@ -71,11 +71,10 @@ namespace Microsoft.R.Host.Client {
         /// <param name="blob">Blob from which the data is to be retrieved.</param>
         /// <param name="filePath">Path to the file where the retrieved data will be written.</param>
         /// <param name="doCleanUp">true to add blob upon transfer for cleanup on dispose, false to ignore it after transfer.</param>
-        public async Task FetchFileAsync(IRBlobInfo blob, string filePath, bool doCleanUp = true) {
+        public async Task FetchFileAsync(IRBlobInfo blob, string filePath, bool doCleanUp = true, IProgress<long> progress = null) {
             using (RBlobStream blobStream = await RBlobStream.OpenAsync(blob, _blobService))
             using (Stream fileStream = _fs.CreateFile(filePath)) {
-                await blobStream.CopyToAsync(fileStream);
-                await fileStream.FlushAsync();
+                await blobStream.CopyToAsync(fileStream, progress);
             }
 
             if (doCleanUp) {
@@ -89,12 +88,11 @@ namespace Microsoft.R.Host.Client {
         /// </summary>
         /// <param name="blob">Blob from which the data is to be retrieved.</param>
         /// <param name="doCleanUp">true to add blob upon transfer for cleanup on dispose, false to ignore it after transfer.</param>
-        public async Task<byte[]> FetchBytesAsync(IRBlobInfo blob, bool doCleanUp = true) {
+        public async Task<byte[]> FetchBytesAsync(IRBlobInfo blob, bool doCleanUp = true, IProgress<long> progress = null) {
             byte[] data = null;
             using (RBlobStream blobStream = await RBlobStream.OpenAsync(blob, _blobService))
             using (MemoryStream ms = new MemoryStream((int)blobStream.Length)) {
-                await blobStream.CopyToAsync(ms);
-                await ms.FlushAsync();
+                await blobStream.CopyToAsync(ms, progress);
                 data = ms.ToArray();
             }
 

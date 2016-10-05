@@ -8,6 +8,8 @@ using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Commands;
 using static System.FormattableString;
 using Microsoft.Common.Core.OS;
+using System.ComponentModel.Composition;
+using Microsoft.Common.Core.Services;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
 #endif
@@ -16,8 +18,9 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     [ExportCommandGroup("AD87578C-B324-44DC-A12A-B01A6ED5C6E3")]
     [AppliesTo(ProjectConstants.RtvsProjectCapability)]
     internal sealed class OpenAdminCommandPromptCommand : CommandPromptCommand {
-        public OpenAdminCommandPromptCommand(IProcessServices ps) :
-            base(RPackageCommandId.icmdOpenAdminCmdPromptHere, ps) { }
+        [ImportingConstructor]
+        public OpenAdminCommandPromptCommand(ICoreServices services) :
+            base(RPackageCommandId.icmdOpenAdminCmdPromptHere, services.ProcessServices) { }
 
         protected override void SetFlags(ProcessStartInfo psi, string path) {
             psi.Verb = "runas";

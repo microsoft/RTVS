@@ -12,6 +12,8 @@ namespace Microsoft.R.Host.Client {
         Task Connected(string rVersion);
         Task Disconnected();
 
+        Task Shutdown(bool rDataSaved);
+
         /// <summary>
         /// Called as a result of R calling R API 'YesNoCancel' callback
         /// </summary>

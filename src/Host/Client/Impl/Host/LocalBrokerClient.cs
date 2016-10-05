@@ -51,7 +51,9 @@ namespace Microsoft.R.Host.Client.Host {
             _services = services;
         }
 
-        public override async Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken()) {
+        public override async Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000,
+            CancellationToken cancellationToken = default(CancellationToken), ReentrancyToken reentrancyToken = default(ReentrancyToken)) {
+
             await EnsureBrokerStartedAsync();
             return await base.ConnectAsync(name, callbacks, rCommandLineArguments, timeout, cancellationToken);
         }
@@ -111,7 +113,7 @@ namespace Microsoft.R.Host.Client.Host {
                     process.Exited += delegate {
                         cts.Cancel();
                         _brokerProcess = null;
-                        _connectLock.TryReset();
+                        _connectLock.EnqueueReset();
                     };
 
                     await serverUriPipe.WaitForConnectionAsync(cts.Token);

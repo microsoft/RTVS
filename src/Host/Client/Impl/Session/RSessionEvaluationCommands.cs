@@ -14,6 +14,9 @@ namespace Microsoft.R.Host.Client.Session {
             return evaluation.ExecuteAsync($"options(width=as.integer({width}))\n");
         }
 
+        public static Task QuitAsync(this IRExpressionEvaluator eval) =>
+            eval.ExecuteAsync("q()", REvaluationKind.Normal);
+
         public static async Task<string> GetRUserDirectoryAsync(this IRExpressionEvaluator evaluation) {
             var result = await evaluation.EvaluateAsync<string>("Sys.getenv('R_USER')", REvaluationKind.Normal);
             return result.Replace('/', '\\');

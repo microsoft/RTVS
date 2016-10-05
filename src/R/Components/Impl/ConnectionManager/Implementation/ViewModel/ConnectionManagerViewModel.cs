@@ -214,7 +214,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public async Task ConnectAsync(IConnectionViewModel connection) {
             _shell.AssertIsOnMainThread();
-            if (_connectionManager.ActiveConnection == connection && !IsConnected) {
+            if (connection.IsActive && !IsConnected) {
                 using (_shell.ShowProgressBar(Resources.ConnectionManager_ReconnectionToProgressBarMessage.FormatInvariant(connection.Name))) {
                     await _connectionManager.ReconnectAsync();
                 }
