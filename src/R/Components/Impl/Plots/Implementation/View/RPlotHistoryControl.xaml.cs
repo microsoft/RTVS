@@ -5,6 +5,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using Microsoft.Common.Core;
 using Microsoft.R.Components.Plots.ViewModel;
 
@@ -41,15 +42,15 @@ namespace Microsoft.R.Components.Plots.Implementation.View {
 
         private void HistoryListView_MouseMove(object sender, MouseEventArgs e) {
             if (_dragSurface.IsMouseMoveStartingDrag(e)) {
-                if (HistoryListView.SelectedItems.Count == 1) {
-                    var entry = (IRPlotHistoryEntryViewModel)HistoryListView.SelectedItems[0];
+                var entry = GetSourceListViewItem((DependencyObject)e.OriginalSource)?.DataContext as IRPlotHistoryEntryViewModel;
+                if (entry != null) {
                     var data = PlotClipboardData.Serialize(new PlotClipboardData(entry.Plot.ParentDevice.DeviceId, entry.Plot.PlotId, false));
                     var obj = new DataObject(PlotClipboardData.Format, data);
                     DragDrop.DoDragDrop(HistoryListView, obj, DragDropEffects.Copy | DragDropEffects.Move);
+                    return;
                 }
-            } else {
-                _dragSurface.MouseMove(e);
             }
+            _dragSurface.MouseMove(e);
         }
 
         private void HistoryListView_MouseLeave(object sender, MouseEventArgs e) {
@@ -63,6 +64,19 @@ namespace Microsoft.R.Components.Plots.Implementation.View {
         private void HistoryListView_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
             // TODO: also support keyboard (Shift+F10 or context menu key)
             ContextMenuRequested?.Invoke(sender, e);
+        }
+
+        private static ListViewItem GetSourceListViewItem(DependencyObject obj) {
+            do {
+                var item = obj as ListViewItem;
+                if (item != null) {
+                    return item;
+                }
+
+                obj = VisualTreeHelper.GetParent(obj);
+            } while (obj != null);
+
+            return null;
         }
     }
 }
