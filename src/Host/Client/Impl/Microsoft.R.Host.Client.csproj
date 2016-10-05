@@ -51,8 +51,8 @@
     </Compile>
     <Compile Include="BrokerServices\BrokerApiErrorException.cs" />
     <Compile Include="Blobs\RBlobStream.cs" />
-    <Compile Include="BrokerServices\IRemoteUriWebService.cs" />
     <Compile Include="BrokerServices\ICredentialsProvider.cs" />
+    <Compile Include="BrokerServices\IRemoteUriWebService.cs" />
     <Compile Include="BrokerServices\ISessionsWebService.cs" />
     <Compile Include="BrokerServices\RemoteUriWebService.cs" />
     <Compile Include="BrokerServices\WebServer.cs" />

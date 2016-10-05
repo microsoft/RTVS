@@ -133,9 +133,9 @@
     <Compile Include="Threading\BinaryAsyncLock.cs" />
     <Compile Include="Threading\DelayedAsyncAction.cs" />
     <Compile Include="Threading\IAsyncReaderWriterLockToken.cs" />
+    <Compile Include="Threading\IMainThread.cs" />
     <Compile Include="Threading\IReentrancyTokenFactory.cs" />
     <Compile Include="Threading\ReentrancyToken.cs" />
-    <Compile Include="Threading\IMainThread.cs" />
     <Compile Include="Versions\Toolset.cs" />
   </ItemGroup>
   <ItemGroup>
