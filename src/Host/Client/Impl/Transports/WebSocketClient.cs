@@ -31,24 +31,25 @@ namespace Microsoft.AspNetCore.WebSockets.Client {
         public TimeSpan KeepAliveInterval { get; set; }
         public int ReceiveBufferSize { get; set; }
         public bool UseZeroMask { get; set; }
-        public Action<HttpWebRequest> ConfigureRequest { get; set; }
         public Action<HttpWebResponse> InspectResponse { get; set; }
 
-        public async Task<WebSocket> ConnectAsync(Uri uri, CancellationToken cancellationToken) {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
-
-            var cancellation = cancellationToken.Register(() => request.Abort());
-
+        public HttpWebRequest CreateRequest(Uri uri) {
+            var request = (HttpWebRequest)WebRequest.Create(uri);
+            
             request.Headers[Constants.Headers.SecWebSocketVersion] = Constants.Headers.SupportedVersion;
             if (SubProtocols.Count > 0) {
                 request.Headers[Constants.Headers.SecWebSocketProtocol] = string.Join(", ", SubProtocols);
             }
 
-            ConfigureRequest?.Invoke(request);
+            return request;
+        }
 
-            HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
+        public async Task<WebSocket> ConnectAsync(HttpWebRequest request, CancellationToken cancellationToken) {
+            HttpWebResponse response;
 
-            cancellation.Dispose();
+            using (cancellationToken.Register(request.Abort)) {
+                response = (HttpWebResponse)await request.GetResponseAsync();
+            }
 
             InspectResponse?.Invoke(response);
 

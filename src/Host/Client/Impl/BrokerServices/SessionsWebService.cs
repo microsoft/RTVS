@@ -10,21 +10,20 @@ using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Client.BrokerServices {
     public class SessionsWebService : WebService, ISessionsWebService {
-        public SessionsWebService(HttpClient httpClient, ICredentialsProvider credentialsProvider)
-            : base(httpClient, credentialsProvider) {
+        private static readonly Uri GetUri = new Uri("/sessions", UriKind.Relative);
+        private static readonly UriTemplate SessionUri = new UriTemplate("/sessions/{name}");
+
+        public SessionsWebService(HttpClient httpClient, ICredentialsDecorator credentialsDecorator)
+            : base(httpClient, credentialsDecorator) {
         }
 
-        private static readonly Uri getUri = new Uri("/sessions", UriKind.Relative);
-
         public Task<IEnumerable<SessionInfo>> GetAsync(CancellationToken cancellationToken = default(CancellationToken)) =>
-            HttpGetAsync<IEnumerable<SessionInfo>>(getUri, cancellationToken);
-
-        private static readonly UriTemplate sessionUri = new UriTemplate("/sessions/{name}");
+            HttpGetAsync<IEnumerable<SessionInfo>>(GetUri, cancellationToken);
 
         public Task<SessionInfo> PutAsync(string id, SessionCreateRequest request, CancellationToken cancellationToken = default(CancellationToken)) =>
-            HttpPutAsync<SessionCreateRequest, SessionInfo>(sessionUri, request, cancellationToken, id);
+            HttpPutAsync<SessionCreateRequest, SessionInfo>(SessionUri, request, cancellationToken, id);
 
         public Task DeleteAsync(string id, CancellationToken cancellationToken = default(CancellationToken)) =>
-            HttpDeleteAsync(sessionUri, cancellationToken, id);
+            HttpDeleteAsync(SessionUri, cancellationToken, id);
     }
 }
