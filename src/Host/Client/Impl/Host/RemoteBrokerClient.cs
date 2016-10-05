@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Net.NetworkInformation;
@@ -18,14 +19,9 @@ using Microsoft.R.Host.Client.BrokerServices;
 namespace Microsoft.R.Host.Client.Host {
     internal sealed class RemoteBrokerClient : BrokerClient {
         private readonly IntPtr _applicationWindowHandle;
-        private readonly AutoResetEvent _credentialsValidated = new AutoResetEvent(true);
         private readonly string _authority;
-        private bool _ignoreSavedCredentials;
+        private readonly ICredentialsDecorator _credentials;
         private int _certificateUIActive;
-
-        // Although NetworkCredential does support SecureString, it still exposes
-        // plain text password via property and it is visible in a debugger.
-        private Credentials _credentials = new Credentials();
 
         static RemoteBrokerClient() {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
@@ -35,43 +31,16 @@ namespace Microsoft.R.Host.Client.Host {
             : base(name, brokerUri, brokerUri.Fragment, log, applicationWindowHandle) {
             _applicationWindowHandle = applicationWindowHandle;
 
-
+            _credentials = new RemoteCredentialsDecorator(applicationWindowHandle, brokerUri);
             _authority = new UriBuilder { Scheme = brokerUri.Scheme, Host = brokerUri.Host, Port = brokerUri.Port }.ToString();
             CreateHttpClient(brokerUri, _credentials);
-        }
-
-        private void GetCredentials(out Credentials credentials) {
-            // If there is already a GetCredentials request for which there hasn't been a validation yet, wait until it completes.
-            // This can happen when two sessions are being created concurrently, and we don't want to pop the credential prompt twice -
-            // the first prompt should be validated and saved, and then the same credentials will be reused for the second session.
-            _credentialsValidated.WaitOne();
-            var prompted = false;
-            try {
-                prompted = SecurityServices.GetUserCredentials(_authority, _ignoreSavedCredentials, _applicationWindowHandle, out credentials);
-            } finally {
-                if (!prompted) {
-                    _credentialsValidated.Set();
-                }
-            }
-        }
-
-        protected override void UpdateCredentials() {
-            Credentials credentials;
-            GetCredentials(out credentials);
-
-            _credentials.UserName = credentials.UserName;
-            _credentials.Password = credentials.Password;
-        }
-
-        protected override void OnCredentialsValidated(bool isValid) {
-            CredUIConfirmCredentials(_authority, isValid);
-            _ignoreSavedCredentials = !isValid;
-            _credentialsValidated.Set();
         }
 
         public override string HandleUrl(string url, CancellationToken ct) {
             return WebServer.CreateWebServer(url, HttpClient.BaseAddress.ToString(), ct);
         }
+
+        protected override ICredentialsDecorator Credentials => _credentials;
 
         protected override async Task<Exception> HandleHttpRequestExceptionAsync(HttpRequestException exception) {
             // Broker is not responsing. Try regular ping.

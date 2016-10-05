@@ -24,7 +24,7 @@ namespace Microsoft.R.Host.Client.Host {
         private const string InterpreterId = "local";
 
         private static readonly bool ShowConsole;
-        private static readonly LocalCredentialsDecorator Credentials = new LocalCredentialsDecorator();
+        private static readonly LocalCredentialsDecorator _credentials = new LocalCredentialsDecorator();
 
         private readonly string _rhostDirectory;
         private readonly string _rHome;
@@ -59,6 +59,8 @@ namespace Microsoft.R.Host.Client.Host {
             await EnsureBrokerStartedAsync();
             return await base.ConnectAsync(name, callbacks, rCommandLineArguments, timeout, cancellationToken);
         }
+
+        protected override ICredentialsDecorator Credentials => _credentials;
 
         private async Task EnsureBrokerStartedAsync() {
             DisposableBag.ThrowIfDisposed();
@@ -98,7 +100,7 @@ namespace Microsoft.R.Host.Client.Host {
                             $" --startup:name \"{Name}\"" +
                             $" --startup:writeServerUrlsToPipe {pipeName}" +
                             $" --lifetime:parentProcessId {Process.GetCurrentProcess().Id}" +
-                            $" --security:secret \"{Credentials.Password}\"" +
+                            $" --security:secret \"{_credentials.Password}\"" +
                             $" --R:autoDetect false" +
                             $" --R:interpreters:{InterpreterId}:name \"{Name}\"" +
                             $" --R:interpreters:{InterpreterId}:basePath \"{_rHome.TrimTrailingSlash()}\""
@@ -146,7 +148,7 @@ namespace Microsoft.R.Host.Client.Host {
                         throw new RHostDisconnectedException($"Unexpected number of endpoint URIs received from broker: {serverUriStr}");
                     }
 
-                    CreateHttpClient(serverUri[0]);
+                    CreateHttpClient(serverUri[0], _credentials);
                 }
 
                 if (_disposed == 0) {
@@ -185,17 +187,6 @@ namespace Microsoft.R.Host.Client.Host {
             }
 
             _brokerProcess?.Dispose();
-        }
-
-        protected override void UpdateCredentials() { }
-
-        protected override void OnCredentialsValidated(bool isValid) {
-            if (!isValid) {
-                // Local broker authentication should never fail - if it does, it's a bug, and we want to surface it right away.
-                const string message = "Authentication failed for local broker";
-                Trace.Fail(message);
-                throw new RHostDisconnectedException(message);
-            }
         }
 
         protected override void Dispose(bool disposing) {
