@@ -97,7 +97,7 @@ namespace Microsoft.R.Host.Client.Host {
             await TaskUtilities.SwitchToBackgroundThread();
 
             try {
-                bool sessionExists = await IsSessionRunningAsync(name, cancellationToken);
+                bool sessionExists = false; //await IsSessionRunningAsync(name, cancellationToken);
 
                 WebSocket webSocket;
                 while (true) {

@@ -87,7 +87,7 @@
     <Compile Include="Logging\FileLoggerProvider.cs" />
     <Compile Include="Logging\LoggingOptions.cs" />
     <Compile Include="NativeMethods.cs" />
-    <Compile Include="Pipes\HostDisconnectedException.cs" />
+    <Compile Include="Pipes\PipeDisconnectedException.cs" />
     <Compile Include="Pipes\MessageParser.cs" />
     <Compile Include="Pipes\ProcessHelpers.cs" />
     <Compile Include="Pipes\WebSocketPipeAction.cs" />

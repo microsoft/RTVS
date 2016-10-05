@@ -16,7 +16,7 @@ using Microsoft.R.Host.Protocol;
 namespace Microsoft.R.Host.Broker.Pipes {
     public class MessagePipe {
         private static readonly byte[] _cancelAllMessageName = Encoding.ASCII.GetBytes("!//");
-        private static readonly byte[] _hostDisconnectMessage = new byte[0];
+        private static readonly byte[] _disconnectMessage = new byte[0];
 
         private readonly ILogger _logger;
         private int _pid;
@@ -41,7 +41,7 @@ namespace Microsoft.R.Host.Broker.Pipes {
 
             public void Dispose() {
                 Volatile.Write(ref _pipe._hostEnd, null);
-                _pipe._hostMessages.Post(_hostDisconnectMessage);
+                _pipe._hostMessages.Post(_disconnectMessage);
             }
 
             public void Write(byte[] message) {
@@ -50,7 +50,11 @@ namespace Microsoft.R.Host.Broker.Pipes {
             }
 
             public async Task<byte[]> ReadAsync(CancellationToken cancellationToken) {
-                return await _pipe._clientMessages.ReceiveAsync(cancellationToken);
+                var message = await _pipe._clientMessages.ReceiveAsync(cancellationToken);
+                if (message == _disconnectMessage) {
+                    throw new PipeDisconnectedException();
+                }
+                return message;
             }
         }
 
@@ -66,10 +70,13 @@ namespace Microsoft.R.Host.Broker.Pipes {
                 var unsent = new Queue<byte[]>(_pipe._sentPendingRequests
                     .OrderBy(kv => kv.Key)
                     .Select(kv => kv.Value)
-                    .Where(msg => msg != _hostDisconnectMessage));
+                    .Where(msg => msg != _disconnectMessage));
                 _pipe._sentPendingRequests.Clear();
+
                 Volatile.Write(ref _pipe._unsentPendingRequests, unsent);
                 Volatile.Write(ref _pipe._clientEnd, null);
+
+                _pipe._clientMessages.Post(_disconnectMessage);
             }
 
             public void Write(byte[] message) {
@@ -91,7 +98,7 @@ namespace Microsoft.R.Host.Broker.Pipes {
 
             public async Task<byte[]> ReadAsync(CancellationToken cancellationToken) {
                 if (Volatile.Read(ref _pipe._hostEnd) == null) {
-                    throw new HostDisconnectedException();
+                    throw new PipeDisconnectedException();
                 }
 
                 var handshake = _pipe._handshake;
@@ -111,8 +118,8 @@ namespace Microsoft.R.Host.Broker.Pipes {
                     message = await _pipe._hostMessages.ReceiveAsync(cancellationToken);
                 }
 
-                if (message == _hostDisconnectMessage) {
-                    throw new HostDisconnectedException();
+                if (message == _disconnectMessage) {
+                    throw new PipeDisconnectedException();
                 } else if (handshake == null) {
                     _pipe._handshake = message;
                 } else {

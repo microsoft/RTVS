@@ -67,6 +67,10 @@ destroy_blob <- function(blob_id) {
     invisible(call_embedded("destroy_blob", blob_id))
 }
 
+set_disconnect_callback <- function(callback) {
+    invisible(call_embedded('set_disconnect_callback', callback))
+}
+
 NA_if_error <- function(expr) {
   tryCatch(expr, error = function(e) { NA })
 }
@@ -241,4 +245,55 @@ fetch_file <- function(file_path) {
 save_to_project_folder <- function(blob_id, project_name, dest_dir) {
     temp_dir <- paste0(tempdir(), '/RTVSProjects');
     invisible(call_embedded('save_to_project_folder', blob_id, project_name, path.expand(dest_dir), temp_dir));
+}
+
+autosave_filename <- '~/.Autosave.RData';
+
+query_reload_autosave <- function() {
+	if (!file.exists(autosave_filename)) {
+		return(FALSE);
+	}
+
+	msg <- 'Previous R session terminated unexpectedly due to connectivity issues, and its global workspace has been saved to image "%s". Would you like to reload it?';
+	res <- winDialog('yesno', sprintf(msg, autosave_filename));
+
+	if (identical(res, 'YES')) {
+		# Use try instead of tryCatch, so that any errors are printed as usual.
+		loaded <- FALSE;
+		try({
+			load(autosave_filename, envir = .GlobalEnv);
+			loaded <- TRUE;
+		});
+
+		if (loaded) {
+			message(sprintf('Loaded workspace from autosaved image "%s".\n', autosave_filename));
+			# If we loaded the file successfully, it's safe to delete it - this session contains the reloaded
+			# state now, and if there's another disconnect, it will be autosaved again.
+			return(TRUE);
+		} else {
+			warning(sprintf('Failed to load workspace from autosaved image "%s".\n', autosave_filename), call. = FALSE, immediate. = TRUE);
+			return(FALSE);
+		}
+	} else {
+		msg <- 'Delete autosaved workspace image "%s"?';
+		res <- winDialog('yesno', sprintf(msg, autosave_filename));
+		return(identical(res, 'YES'));
+	}
+}
+
+disconnect_callback <- function() {
+	message(sprintf('Autosaving workspace to image "%s" ...', autosave_filename));
+	save.image(autosave_filename);
+	message(' workspace saved successfully.\n');
+}
+
+enable_autosave <- function(delete_existing) {
+	try({
+		set_disconnect_callback(disconnect_callback);
+
+		if (delete_existing) {
+			message(sprintf('Deleting autosaved workspace image "%s".\n', autosave_filename));
+			unlink(autosave_filename);
+		}
+	});
 }
