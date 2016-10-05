@@ -46,7 +46,7 @@
     <Compile Include="BrokerServices\BrokerApiErrorException.cs" />
     <Compile Include="Blobs\RBlobStream.cs" />
     <Compile Include="BrokerServices\IRemoteUriWebService.cs" />
-    <Compile Include="BrokerServices\ICredentialsProvider.cs" />
+    <Compile Include="BrokerServices\ICredentialsDecorator.cs" />
     <Compile Include="BrokerServices\ISessionsWebService.cs" />
     <Compile Include="BrokerServices\RemoteUriWebService.cs" />
     <Compile Include="BrokerServices\WebServer.cs" />
@@ -68,6 +68,8 @@
     <Compile Include="Definitions\IRSessionProviderCallback.cs" />
     <Compile Include="Definitions\IRSessionReconnectTransaction.cs" />
     <Compile Include="Definitions\IRSessionSwitchBrokerTransaction.cs" />
+    <Compile Include="Host\LocalCredentialsDecorator.cs" />
+    <Compile Include="Host\RemoteCredentialsDecorator.cs" />
     <Compile Include="Host\RHost.BlobWriteRequest.cs" />
     <Compile Include="Host\RHost.BlobReadRequest.cs" />
     <Compile Include="Host\BrokerClientProxy.cs" />
