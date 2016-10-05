@@ -26,7 +26,7 @@ namespace Microsoft.R.Host.Broker.Security {
                         var collection = store.Certificates.Cast<X509Certificate2>();
                         var cert = collection.FirstOrDefault(c => c.FriendlyName.EqualsIgnoreCase(name));
                         if (cert == null) {
-                            cert = collection.FirstOrDefault(c => c.Subject.IndexOfIgnoreCase(name) >= 0);
+                            cert = collection.FirstOrDefault(c => c.Subject.EqualsIgnoreCase(name));
                             if (cert != null) {
                                 return cert;
                             }

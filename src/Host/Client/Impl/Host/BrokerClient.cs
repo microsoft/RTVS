@@ -8,14 +8,13 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Security;
 using System.Net.WebSockets;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebSockets.Client;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Logging;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.BrokerServices;
 using Microsoft.R.Host.Protocol;
 using Newtonsoft.Json;
@@ -33,14 +32,13 @@ namespace Microsoft.R.Host.Client.Host {
 
         private readonly string _interpreterId;
         private AboutHost _aboutHost;
-        private IRCallbacks _callbacks;
         private IntPtr _applicationWindowHandle;
-        private int _display;
 
         protected DisposableBag DisposableBag { get; } = DisposableBag.Create<BrokerClient>();
         protected IActionLog Log { get; }
         protected WebRequestHandler HttpClientHandler { get; private set; }
         protected HttpClient HttpClient { get; private set; }
+        protected IRCallbacks Callbacks { get; private set; }
 
         public string Name { get; }
         public Uri Uri { get; }
@@ -55,14 +53,12 @@ namespace Microsoft.R.Host.Client.Host {
             _applicationWindowHandle = applicationWindowHandle;
         }
 
-        protected void CreateHttpClient(Uri baseAddress, ICredentials credentials) {
+        protected virtual void CreateHttpClient(Uri baseAddress, ICredentials credentials) {
 
             HttpClientHandler = new WebRequestHandler() {
                 PreAuthenticate = true,
                 Credentials = credentials
             };
-
-            HttpClientHandler.ServerCertificateValidationCallback += ValidateCertificate;
 
             HttpClient = new HttpClient(HttpClientHandler) {
                 BaseAddress = baseAddress,
@@ -73,25 +69,12 @@ namespace Microsoft.R.Host.Client.Host {
             HttpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-        private bool ValidateCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) {
-            if ((sslPolicyErrors & SslPolicyErrors.RemoteCertificateNotAvailable) != 0) {
-                Log.WriteAsync(LogVerbosity.Minimal, MessageCategory.Error, Resources.Error_NoBrokerCertificate);
-                _callbacks.WriteConsoleEx(Resources.Error_NoBrokerCertificate, OutputType.Error, CancellationToken.None).DoNotWait();
-                return false;
-            } else if (sslPolicyErrors != SslPolicyErrors.None) {
-                if (Interlocked.CompareExchange(ref _display, 1, 0) == 0) {
-                    var certificate2 = certificate as X509Certificate2;
-                    Debug.Assert(certificate2 != null);
-                    X509Certificate2UI.DisplayCertificate(certificate2, _applicationWindowHandle);
-                    Interlocked.Exchange(ref _display, 0);
-                }
-                certificate.Reset();
-            }
-            return true;
+        protected virtual void Dispose(bool disposing) {
+            DisposableBag.TryDispose();
         }
 
         public void Dispose() {
-            DisposableBag.TryDispose();
+            Dispose(true);
         }
 
         /// <summary>
@@ -117,7 +100,7 @@ namespace Microsoft.R.Host.Client.Host {
             if (HttpClient != null) {
                 // Just in case ping was disable for security reasons, try connecting to the broker anyway.
                 try {
-                    (await HttpClient.PostAsync("/ping", new StringContent(""))).EnsureSuccessStatusCode();
+                    await GetHostInformationAsync(CancellationToken.None);
                 } catch (HttpRequestException ex) {
                     throw await HandleHttpRequestExceptionAsync(ex);
                 }
@@ -128,7 +111,7 @@ namespace Microsoft.R.Host.Client.Host {
             CancellationToken cancellationToken = default(CancellationToken), ReentrancyToken reentrancyToken = default(ReentrancyToken)) {
 
             DisposableBag.ThrowIfDisposed();
-            _callbacks = callbacks;
+            Callbacks = callbacks;
 
             await TaskUtilities.SwitchToBackgroundThread();
 

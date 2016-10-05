@@ -32,16 +32,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
         [HttpPut("{id}")]
         public Task<IActionResult> PutAsync(string id, [FromBody] SessionCreateRequest request) {
             if (!_interpManager.Interpreters.Any()) {
-                return Task.FromResult<IActionResult>(new ApiErrorResult(BrokerApiError.NoRInterpreters));
-            }
-
-            SecureString securePassword = null;
-            string password = User.FindFirst(Claims.Password)?.Value;
-            if (password != null) {
-                securePassword = new SecureString();
-                foreach (var ch in password) {
-                    securePassword.AppendChar(ch);
-                }
+                return Task.FromResult<IActionResult>(new ApiErrorResult(HttpContext.Response, BrokerApiError.NoRInterpreters));
             }
 
             string profilePath = User.FindFirst(Claims.RUserProfileDir)?.Value;
@@ -50,17 +41,17 @@ namespace Microsoft.R.Host.Broker.Sessions {
             if (!string.IsNullOrEmpty(request.InterpreterId)) {
                 interp = _interpManager.Interpreters.FirstOrDefault(ip => ip.Id == request.InterpreterId);
                 if (interp == null) {
-                    return Task.FromResult<IActionResult>(new ApiErrorResult(BrokerApiError.InterpreterNotFound));
+                    return Task.FromResult<IActionResult>(new ApiErrorResult(HttpContext.Response, BrokerApiError.InterpreterNotFound));
                 }
             } else {
                 interp = _interpManager.Interpreters.First();
             }
 
             try {
-                var session = _sessionManager.CreateSession(User.Identity, id, interp, securePassword, profilePath, request.CommandLineArguments);
+                var session = _sessionManager.CreateSession(User.Identity, id, interp, User, profilePath, request.CommandLineArguments);
                 return Task.FromResult<IActionResult>(new ObjectResult(session.Info));
             } catch (Exception ex) {
-                return Task.FromResult<IActionResult>(new ApiErrorResult(BrokerApiError.UnableToStartRHost, ex.Message));
+                return Task.FromResult<IActionResult>(new ApiErrorResult(HttpContext.Response, BrokerApiError.UnableToStartRHost, ex.Message));
             }
         }
 
@@ -74,7 +65,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
             try {
                 session.KillHost();
             } catch (Exception ex) when (ex is Win32Exception || ex is InvalidOperationException) {
-                return new ApiErrorResult(BrokerApiError.UnableToTerminateRHost, ex.Message);
+                return new ApiErrorResult(HttpContext.Response, BrokerApiError.UnableToTerminateRHost, ex.Message);
             } finally {
                 session.State = SessionState.Terminated;
             }
@@ -93,7 +84,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
             try {
                 pipe = session.ConnectClient();
             } catch (InvalidOperationException) {
-                return new ApiErrorResult(BrokerApiError.PipeAlreadyConnected);
+                return new ApiErrorResult(HttpContext.Response, BrokerApiError.PipeAlreadyConnected);
             }
 
             return new WebSocketPipeAction(id, pipe);

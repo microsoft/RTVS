@@ -5,10 +5,21 @@ using System;
 using System.Runtime.InteropServices;
 using System.Security;
 
-namespace Microsoft.R.Host.Client.Security {
+namespace Microsoft.Common.Core.Security {
     public static class SecurityUtilities {
         public static IntPtr CreatePasswordBuffer() {
             return CreateSecureStringBuffer(NativeMethods.CREDUI_MAX_PASSWORD_LENGTH);
+        }
+
+        public static SecureString ToSecureString(this string s) {
+            if (s == null) {
+                return null;
+            }
+            var sec = new SecureString();
+            foreach (var ch in s) {
+                sec.AppendChar(ch);
+            }
+            return sec;
         }
 
         public static IntPtr CreateSecureStringBuffer(int length) {

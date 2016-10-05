@@ -6,15 +6,18 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Security;
+using System.Security.Claims;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
+using Microsoft.Common.Core.Security;
 using Microsoft.Extensions.Logging;
 using Microsoft.R.Host.Broker.Interpreters;
 using Microsoft.R.Host.Broker.Pipes;
+using Microsoft.R.Host.Broker.Security;
 using Microsoft.R.Host.Broker.Startup;
 using Microsoft.R.Host.Protocol;
 
@@ -74,7 +77,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
             _pipe = new MessagePipe(messageLogger);
         }
 
-        public void StartHost(SecureString password, string profilePath, ILogger outputLogger, LogVerbosity verbosity) {
+        public void StartHost(ClaimsPrincipal cp, string profilePath, ILogger outputLogger, LogVerbosity verbosity) {
             if (_hostEnd != null) {
                 throw new InvalidOperationException("Host process is already running");
             }
@@ -96,7 +99,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
             };
             
             var useridentity = User as WindowsIdentity;
-            if (useridentity != null && WindowsIdentity.GetCurrent().User != useridentity.User && password != null) {
+            if (useridentity != null && WindowsIdentity.GetCurrent().User != useridentity.User && cp != null) {
                 uint error = NativeMethods.CredUIParseUserName(User.Name, username, username.Capacity, domain, domain.Capacity);
                 if (error != 0) {
                     _sessionLogger.LogError(Resources.Error_UserNameParse, User.Name, error);
@@ -105,7 +108,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
 
                 psi.Domain = domain.ToString();
                 psi.UserName = username.ToString();
-                psi.Password = password;
+                psi.Password = cp.FindFirst(Claims.Password)?.Value.ToSecureString();
 
                 _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariableCreationBegin, User.Name, profilePath);
                 // if broker and rhost are run as different users recreate user environment variables.
@@ -158,7 +161,12 @@ namespace Microsoft.R.Host.Broker.Sessions {
             };
 
             _sessionLogger.LogInformation(Resources.Info_StartingRHost, Id, User.Name, rhostExePath, arguments);
-            StartSession();
+            try {
+                StartSession();
+            } catch(Exception ex) {
+                _sessionLogger.LogError(Resources.Error_RHostFailedToStart, ex.Message);
+                throw;
+            }
             _sessionLogger.LogInformation(Resources.Info_StartedRHost, Id, User.Name);
 
             _process.BeginErrorReadLine();

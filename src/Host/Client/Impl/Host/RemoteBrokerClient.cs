@@ -2,94 +2,67 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Net.NetworkInformation;
+using System.Net.Security;
 using System.Net.Sockets;
-using System.Runtime.InteropServices;
-using System.Security;
-using System.Text;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
-using Microsoft.Common.Core.Threading;
+using Microsoft.Common.Core.Security;
 using Microsoft.R.Host.Client.BrokerServices;
-using Microsoft.R.Host.Client.Security;
 using static Microsoft.R.Host.Client.NativeMethods;
 
 namespace Microsoft.R.Host.Client.Host {
     internal sealed class RemoteBrokerClient : BrokerClient {
-        
         private readonly IntPtr _applicationWindowHandle;
-        private readonly NetworkCredential _credentials;
         private readonly AutoResetEvent _credentialsValidated = new AutoResetEvent(true);
         private readonly string _authority;
         private bool _ignoreSavedCredentials;
+        private int _certificateUIActive;
+
+        // Although NetworkCredential does support SecureString, it still exposes
+        // plain text password via property and it is visible in a debugger.
+        private Credentials _credentials = new Credentials();
+
+        static RemoteBrokerClient() {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+        }
 
         public RemoteBrokerClient(string name, Uri brokerUri, IActionLog log, IntPtr applicationWindowHandle)
             : base(name, brokerUri, brokerUri.Fragment, log, applicationWindowHandle) {
             _applicationWindowHandle = applicationWindowHandle;
 
-            _credentials = new NetworkCredential();
-            _authority = new UriBuilder { Scheme = brokerUri.Scheme, Host = brokerUri.Host, Port = brokerUri.Port }.ToString();
 
+            _authority = new UriBuilder { Scheme = brokerUri.Scheme, Host = brokerUri.Host, Port = brokerUri.Port }.ToString();
             CreateHttpClient(brokerUri, _credentials);
         }
 
-        private void GetCredentials(out string userName, out SecureString password) {
+        private void GetCredentials(out Credentials credentials) {
             // If there is already a GetCredentials request for which there hasn't been a validation yet, wait until it completes.
             // This can happen when two sessions are being created concurrently, and we don't want to pop the credential prompt twice -
             // the first prompt should be validated and saved, and then the same credentials will be reused for the second session.
             _credentialsValidated.WaitOne();
             var prompted = false;
-            IntPtr passwordStorage = IntPtr.Zero;
-
             try {
-                var userNameBuilder = new StringBuilder(CREDUI_MAX_USERNAME_LENGTH + 1);
-                var passwordBuilder = new StringBuilder(CREDUI_MAX_PASSWORD_LENGTH + 1);
-
-                var save = false;
-
-                int flags = CREDUI_FLAGS_EXCLUDE_CERTIFICATES | CREDUI_FLAGS_PERSIST | CREDUI_FLAGS_EXPECT_CONFIRMATION | CREDUI_FLAGS_GENERIC_CREDENTIALS;
-                if (_ignoreSavedCredentials) {
-                    flags |= CREDUI_FLAGS_ALWAYS_SHOW_UI;
-                }
-
-                var credui = new CREDUI_INFO {
-                    cbSize = Marshal.SizeOf(typeof(CREDUI_INFO)),
-                    hwndParent = _applicationWindowHandle,
-                };
-
-                // For password, use native memory so it can be securely freed.
-                passwordStorage = SecurityUtilities.CreatePasswordBuffer();
-                int err = CredUIPromptForCredentials(ref credui, _authority, IntPtr.Zero, 0,
-                                          userNameBuilder, userNameBuilder.Capacity,
-                                          passwordStorage, CREDUI_MAX_PASSWORD_LENGTH, ref save, flags);
-                if (err != 0) {
-                    throw new OperationCanceledException("No credentials entered.");
-                }
-
-                prompted = true;
-                userName = userNameBuilder.ToString();
-                password = SecurityUtilities.SecureStringFromNativeBuffer(passwordStorage);
-                password.MakeReadOnly();
+                prompted = SecurityServices.GetUserCredentials(_authority, _ignoreSavedCredentials, _applicationWindowHandle, out credentials);
             } finally {
                 if (!prompted) {
                     _credentialsValidated.Set();
-                }
-                if(passwordStorage != IntPtr.Zero) {
-                    Marshal.ZeroFreeGlobalAllocUnicode(passwordStorage);
                 }
             }
         }
 
         protected override void UpdateCredentials() {
-            string userName;
-            SecureString password;
-            GetCredentials(out userName, out password);
+            Credentials credentials;
+            GetCredentials(out credentials);
 
-            _credentials.UserName = userName;
-            _credentials.SecurePassword = password;
+            _credentials.UserName = credentials.UserName;
+            _credentials.Password = credentials.Password;
         }
 
         protected override void OnCredentialsValidated(bool isValid) {
@@ -130,5 +103,32 @@ namespace Microsoft.R.Host.Client.Host {
             return string.Empty;
         }
 
+        protected override void CreateHttpClient(Uri baseAddress, ICredentials credentials) {
+            base.CreateHttpClient(baseAddress, credentials);
+
+            HttpClientHandler.ServerCertificateValidationCallback += ValidateCertificate;
+        }
+
+        private bool ValidateCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) {
+            if (sslPolicyErrors == SslPolicyErrors.None) {
+                return true;
+            }
+
+            if ((sslPolicyErrors & SslPolicyErrors.RemoteCertificateNotAvailable) != 0) {
+                Log.WriteAsync(LogVerbosity.Minimal, MessageCategory.Error, Resources.Error_NoBrokerCertificate);
+                Callbacks.WriteConsoleEx(Resources.Error_NoBrokerCertificate, OutputType.Error, CancellationToken.None).DoNotWait();
+                return false;
+            }
+
+            if (Interlocked.CompareExchange(ref _certificateUIActive, 1, 0) == 0) {
+                var certificate2 = certificate as X509Certificate2;
+                Debug.Assert(certificate2 != null);
+                X509Certificate2UI.DisplayCertificate(certificate2, _applicationWindowHandle);
+                Interlocked.Exchange(ref _certificateUIActive, 0);
+            }
+
+            certificate.Reset();
+            return false;
+        }
     }
 }

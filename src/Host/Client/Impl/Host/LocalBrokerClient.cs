@@ -31,6 +31,7 @@ namespace Microsoft.R.Host.Client.Host {
         private readonly ICoreServices _services;
 
         private Process _brokerProcess;
+        private int _disposed;
 
         static LocalBrokerClient() {
             // Allow "true" and non-zero integer to enable, otherwise disable.
@@ -109,7 +110,7 @@ namespace Microsoft.R.Host.Client.Host {
                     process = StartBroker(psi);
                     process.EnableRaisingEvents = true;
 
-                    var cts = new CancellationTokenSource(10000);
+                    var cts = new CancellationTokenSource(100000);
                     process.Exited += delegate {
                         cts.Cancel();
                         _brokerProcess = null;
@@ -147,8 +148,10 @@ namespace Microsoft.R.Host.Client.Host {
                     CreateHttpClient(serverUri[0], _credentials);
                 }
 
-                _brokerProcess = process;
-                DisposableBag.Add(DisposeBrokerProcess);
+                if (_disposed == 0) {
+                    _brokerProcess = process;
+                    DisposableBag.Add(DisposeBrokerProcess);
+                }
             } finally {
                 if (_brokerProcess == null) {
                     try {
@@ -192,6 +195,11 @@ namespace Microsoft.R.Host.Client.Host {
                 Trace.Fail(message);
                 throw new RHostDisconnectedException(message);
             }
+        }
+
+        protected override void Dispose(bool disposing) {
+            Interlocked.CompareExchange(ref _disposed, 1, 0);
+            base.Dispose(disposing);
         }
     }
 }

@@ -179,10 +179,11 @@ namespace Microsoft.R.Host.Client.Session {
             }
 
             // Broker switching shouldn't be concurrent
-            IAsyncReaderWriterLockToken lockToken;
+            IAsyncReaderWriterLockToken lockToken = null;
             try {
                 lockToken = await _connectArwl.WriterLockAsync(cancellationToken);
             } catch (OperationCanceledException) {
+                lockToken?.Dispose();
                 brokerClient.Dispose();
                 return false;
             }

@@ -166,7 +166,8 @@ Reason: {0}</value>
   </data>
   <data name="Error_HostNotResponding" xml:space="preserve">
     <value>Host did not respond to a ping.
-The machine may be offline or the network has been disconnected. Error: {0}</value>
+The machine may be offline or the network has been disconnected.
+Error: {0}</value>
   </data>
   <data name="Error_InterpreterNotFound" xml:space="preserve">
     <value>Specified R interpreter was not found</value>

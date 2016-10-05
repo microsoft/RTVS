@@ -98,7 +98,8 @@ namespace Microsoft.R.Host.Client {
         
         /// <summary>
         ///   Looks up a localized string similar to Host did not respond to a ping.
-        ///The machine may be offline or the network has been disconnected. Error: {0}.
+        ///The machine may be offline or the network has been disconnected.
+        ///Error: {0}.
         /// </summary>
         internal static string Error_HostNotResponding {
             get {

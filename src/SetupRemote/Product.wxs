@@ -26,12 +26,6 @@
     <DirectoryRef Id="INSTALLFOLDER">
       <Component Id="ProductAssemblies" Guid="{9C717F8F-4A97-4FA5-8031-5A180467754D}" Win64="yes">
         <?include "$(var.SourceDir)\Setup\CommonAssemblies.wxi" ?>
-        <!-- For remote we must include C++ runtime as VS may not be installed -->
-        <?ifdef Debug?>
-        <File Source="$(var.LibDir)\vcruntime140d.dll" />
-        <?else?>
-        <File Source="$(var.LibDir)\vcruntime140.dll" />
-        <?endif?>
       </Component>
     </DirectoryRef>
     <?include RtvsPackage.wxi ?>

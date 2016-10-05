@@ -4,10 +4,12 @@
 using System;
 using System.IO;
 using System.IO.Pipes;
+using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.Configuration;
@@ -15,6 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.R.Host.Broker.Logging;
 using Microsoft.R.Host.Broker.Security;
+using Microsoft.R.Host.Protocol;
 using Newtonsoft.Json;
 
 namespace Microsoft.R.Host.Broker.Startup {
@@ -30,10 +33,11 @@ namespace Microsoft.R.Host.Broker.Startup {
         public static CancellationToken CancellationToken => _cts.Token;
 
         static Program() {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
         }
 
         public static void Main(string[] args) {
-            //MessageBox.Show("Broker");
+            // MessageBox.Show("Broker");
 
             var configBuilder = new ConfigurationBuilder().AddCommandLine(args);
             Configuration = configBuilder.Build();
@@ -117,30 +121,38 @@ namespace Microsoft.R.Host.Broker.Startup {
                 // but if it didn't work, just terminate it.
                 await Task.Delay(10000);
                 _logger.LogCritical(Resources.Critical_TimeOutShutdown);
-                Environment.Exit(code);
+                Environment.Exit((int)BrokerExitCodes.Timeout);
             });
         }
 
         private static X509Certificate2 ConfigureTls(SecurityOptions options) {
-            try {
-                Uri uri;
-                var url = Configuration.GetValue<string>("server.urls", null);
-                if (Uri.TryCreate(url, UriKind.Absolute, out uri) && uri.IsLoopback) {
-                    return null; // localhost, no TLS
-                }
-            } catch (Exception) { }
+            if(IsLocalConnection()) {
+                return null; // localhost, no TLS
+            }
 
             X509Certificate2 certificate = null;
-            var certName = _securityOptions.X509CertificateName ?? Environment.MachineName;
+            var certName = _securityOptions.X509CertificateName ?? $"CN={Environment.MachineName}";
             certificate = Certificates.GetCertificateForEncryption(certName);
             if (certificate == null) {
                 _logger.LogCritical(Resources.Critical_NoTlsCertificate, certName);
-                Exit(2);
+                Environment.Exit((int)BrokerExitCodes.NoCertificate);
             }
+
             _logger.LogInformation(Resources.Trace_CertificateIssuer, certificate.Issuer);
             _logger.LogInformation(Resources.Trace_CertificateSubject, certificate.Subject);
 
             return certificate;
+        }
+
+        private static bool IsLocalConnection() {
+            try {
+                Uri uri;
+                var url = Configuration.GetValue<string>("server.urls", null);
+                if (Uri.TryCreate(url, UriKind.Absolute, out uri) && uri.IsLoopback) {
+                    return true; 
+                }
+            } catch (Exception) { }
+            return false;
         }
     }
 }

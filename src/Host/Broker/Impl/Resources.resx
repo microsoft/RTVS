@@ -151,7 +151,7 @@
     <value>Profile creation failed for user {0} with WIN32 error code 0x{1}</value>
   </data>
   <data name="Error_RHostFailedToStart" xml:space="preserve">
-    <value>RHost {0} process failed to start</value>
+    <value>R Host process failed to start. Error: {0}</value>
   </data>
   <data name="Error_SpecifiedRInterpreterNotFound" xml:space="preserve">
     <value>Specified R interpreter does not exist</value>

@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Microsoft.R.Host.Broker.Lifetime {
-    [RequireHttps]
     [Route("/ping")]
     public class PingController : Controller {
         private readonly LifetimeManager _lifetimeManager;
