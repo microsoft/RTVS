@@ -288,45 +288,26 @@ namespace Microsoft.R.Host.Client.Session {
 
             ResetInitializationTcs();
 
-            Task<IRSessionInteraction> requestTask;
+            // Try graceful shutdown with q() first.
             try {
-                requestTask = BeginInteractionAsync(false);
-                await Task.WhenAny(requestTask, Task.Delay(200)).Unwrap();
-            } catch (RHostDisconnectedException) {
-                // BeginInteractionAsync will fail with RHostDisconnectedException if RHost isn't running. Nothing to stop.
-                return;
-            }
+                await Task.WhenAny(_hostRunTask, this.QuitAsync(), Task.Delay(500)).Unwrap();
+            } catch (Exception) { }
 
             if (_hostRunTask.IsCompleted) {
-                requestTask
-                    .ContinueWith(t => t.Result.Dispose(), TaskContinuationOptions.OnlyOnRanToCompletion)
-                    .DoNotWait();
                 return;
             }
 
-            if (requestTask.Status == TaskStatus.RanToCompletion) {
-                using (var inter = await requestTask) {
-                    // Try graceful shutdown with q() first.
-                    try {
-                        await Task.WhenAny(_hostRunTask, inter.QuitAsync(), Task.Delay(500)).Unwrap();
-                    } catch (Exception) { }
+            // If it didn't work, tell the broker to forcibly terminate the host process. 
+            try {
+                await BrokerClient.TerminateSessionAsync(_startupInfo.Name);
+            } catch (Exception) { }
 
-                    if (_hostRunTask.IsCompleted) {
-                        return;
-                    }
-
-                    // If that doesn't work, then try sending the disconnect packet to the host -
-                    // it will call R_Suicide, which is not graceful, but at least it's cooperative.
-                    await Task.WhenAny(_host.DisconnectAsync(), Task.Delay(500)).Unwrap();
-
-                    if (_hostRunTask.IsCompleted) {
-                        return;
-                    }
-                }
+            if (_hostRunTask.IsCompleted) {
+                return;
             }
 
-            // If nothing worked, then just kill the host process.
-            _host?.Dispose();
+            // If nothing worked, then just disconnect.
+            await _host?.DisconnectAsync();
             await _hostRunTask;
         }
 
@@ -398,8 +379,17 @@ namespace Microsoft.R.Host.Client.Session {
             }
         }
 
+        private const int rtvsPackageVersion = 1;
+
         private static async Task LoadRtvsPackage(IRSessionEvaluation eval, string libPath) {
-            await eval.ExecuteAsync(Invariant($"base::loadNamespace('rtvs', lib.loc = {libPath.ToRStringLiteral()})"));
+            await eval.ExecuteAsync(Invariant($@"
+if (!base::isNamespaceLoaded('rtvs')) {{
+    base::loadNamespace('rtvs', lib.loc = {libPath.ToRStringLiteral()})
+}}
+if (rtvs:::version != {rtvsPackageVersion}) {{
+    warning('This R session was created using an incompatible version of RTVS, and may misbehave or crash when used with this version. Click ""Reset"" to replace it with a new clean session.');
+}}
+"));
         }
 
         public void FlushLog() {
@@ -426,6 +416,10 @@ namespace Microsoft.R.Host.Client.Session {
 
             ClearPendingRequests(exception);
             lockToken.Reset();
+        }
+
+        Task IRCallbacks.Shutdown(bool rDataSaved) {
+            return Task.CompletedTask;
         }
 
         private void ClearPendingRequests(OperationCanceledException exception) {
@@ -484,7 +478,7 @@ namespace Microsoft.R.Host.Client.Session {
             evaluationCts.Cancel();
             await evaluationTask;
 
-            AfterRequest?.Invoke(this, new RAfterRequestEventArgs(contexts, prompt, consoleInput, addToHistory, _currentRequestSource.IsVisible));
+            AfterRequest?.Invoke(this, new RAfterRequestEventArgs(contexts, prompt, consoleInput, addToHistory, currentRequest?.IsVisible ?? false));
 
             return consoleInput;
         }
@@ -684,7 +678,7 @@ namespace Microsoft.R.Host.Client.Session {
                 _lockToken = await _session._initializationLock.ResetAsync(cancellationToken);
             }
 
-            public async Task ConnectToNewBrokerAsync(CancellationToken cancellationToken) {
+            public async Task ConnectToNewBrokerAsync(CancellationToken cancellationToken, ReentrancyToken reentrancyToken) {
                 if (_lockToken == null) {
                     throw new InvalidOperationException($"{nameof(AcquireLockAsync)} must be called before {nameof(ConnectToNewBrokerAsync)}");
                 }
@@ -693,7 +687,7 @@ namespace Microsoft.R.Host.Client.Session {
                 var startupInfo = _session._startupInfo;
                 if (startupInfo != null) {
                     // host requires _startupInfo, so proceed only if session was started at least once
-                    _hostToSwitch = await _session.BrokerClient.ConnectAsync(startupInfo.Name, _session, startupInfo.RHostCommandLineArguments, cancellationToken: cancellationToken);
+                    _hostToSwitch = await _session.BrokerClient.ConnectAsync(startupInfo.Name, _session, startupInfo.RHostCommandLineArguments, cancellationToken: cancellationToken, reentrancyToken: reentrancyToken);
                 }
             }
 
@@ -736,7 +730,7 @@ namespace Microsoft.R.Host.Client.Session {
                 _hostToSwitch = null;
             }
 
-            public async Task ReconnectAsync(CancellationToken cancellationToken) {
+            public async Task ReconnectAsync(CancellationToken cancellationToken, ReentrancyToken reentrancyToken) {
                 if (_lockToken == null) {
                     throw new InvalidOperationException($"{nameof(AcquireLockAsync)} must be called before {nameof(ReconnectAsync)}");
                 }
@@ -763,7 +757,9 @@ namespace Microsoft.R.Host.Client.Session {
                     await _session._hostRunTask;
                 }
 
-                host = await _session.BrokerClient.ConnectAsync(_session._startupInfo.Name, _session, _session._startupInfo.RHostCommandLineArguments, cancellationToken: cancellationToken);
+                host = await _session.BrokerClient.ConnectAsync(_session._startupInfo.Name, _session, _session._startupInfo.RHostCommandLineArguments,
+                    cancellationToken: cancellationToken, reentrancyToken: reentrancyToken);
+
                 await _session.StartHostAsyncBackground(host, _lockToken, cancellationToken);
             }
 

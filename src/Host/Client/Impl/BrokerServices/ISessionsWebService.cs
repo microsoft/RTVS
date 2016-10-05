@@ -10,5 +10,6 @@ namespace Microsoft.R.Host.Client.BrokerServices {
     public interface ISessionsWebService {
         Task<IEnumerable<SessionInfo>> GetAsync(CancellationToken cancellationToken = default(CancellationToken));
         Task<SessionInfo> PutAsync(string id, SessionCreateRequest request, CancellationToken cancellationToken = default(CancellationToken));
+        Task DeleteAsync(string id, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

@@ -21,6 +21,7 @@ namespace Microsoft.R.Host.Client.Host {
 
         public Task Connected(string rVersion) => Task.CompletedTask;
         public Task Disconnected() => Task.CompletedTask;
+        public Task Shutdown(bool savedRData) => Task.CompletedTask;
         public Task<YesNoCancel> YesNoCancel(IReadOnlyList<IRContext> contexts, string s, CancellationToken ct) => Task.FromResult(Cancel);
         public Task<MessageButtons> ShowDialog(IReadOnlyList<IRContext> contexts, string s, MessageButtons buttons, CancellationToken ct) => Task.FromResult(MessageButtons.Cancel);
         public Task WriteConsoleEx(string buf, OutputType otype, CancellationToken ct) => Task.CompletedTask;

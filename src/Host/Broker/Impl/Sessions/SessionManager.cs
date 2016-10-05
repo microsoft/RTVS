@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
@@ -23,12 +24,24 @@ namespace Microsoft.R.Host.Broker.Sessions {
         private readonly Dictionary<string, List<Session>> _sessions = new Dictionary<string, List<Session>>();
 
         [ImportingConstructor]
-        public SessionManager(InterpreterManager interpManager, IOptions<LoggingOptions> loggingOptions, ILogger<Process> hostOutputLogger, ILogger<MessagePipe> messageLogger, ILogger<Session> sessionLogger) {
+        public SessionManager(
+            InterpreterManager interpManager,
+            IOptions<LoggingOptions> loggingOptions,
+            ILogger<Session> sessionLogger,
+            ILogger<MessagePipe> messageLogger,
+            ILogger<Process> hostOutputLogger
+        ) {
             _interpManager = interpManager;
             _loggingOptions = loggingOptions.Value;
-            _hostOutputLogger = hostOutputLogger;
-            _messageLogger = messageLogger;
             _sessionLogger = sessionLogger;
+
+            if (_loggingOptions.LogPackets) {
+                _messageLogger = messageLogger;
+            }
+
+            if (_loggingOptions.LogHostOutput) {
+                _hostOutputLogger = hostOutputLogger;
+            }
         }
 
         public IEnumerable<Session> GetSessions(IIdentity user) {
@@ -45,9 +58,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
             }
         }
 
-        public Session CreateSession(IIdentity user, string id, Interpreter interpreter, SecureString password, string profilePath, string commandLineArguments) {
-            Session session;
-
+        private List<Session> GetOrCreateSessionList(IIdentity user) {
             lock (_sessions) {
                 List<Session> userSessions;
                 _sessions.TryGetValue(user.Name, out userSessions);
@@ -55,13 +66,28 @@ namespace Microsoft.R.Host.Broker.Sessions {
                     _sessions[user.Name] = userSessions = new List<Session>();
                 }
 
+                return userSessions;
+            }
+        }
+
+        public Session CreateSession(IIdentity user, string id, Interpreter interpreter, SecureString password, string profilePath, string commandLineArguments) {
+            Session session;
+
+            lock (_sessions) {
+                var userSessions = GetOrCreateSessionList(user);
+
                 var oldSession = userSessions.FirstOrDefault(s => s.Id == id);
                 if (oldSession != null) {
-                    oldSession.KillHost();
-                    userSessions.Remove(oldSession);
+                    try {
+                        oldSession.KillHost();
+                    } catch (Exception) { }
+
+                    oldSession.State = SessionState.Terminated;
                 }
 
-                session = new Session(this, user, id, interpreter, commandLineArguments, _sessionLogger);
+                session = new Session(this, user, id, interpreter, commandLineArguments, _sessionLogger, _messageLogger);
+                session.StateChanged += Session_StateChanged;
+
                 userSessions.Add(session);
             }
 
@@ -69,10 +95,19 @@ namespace Microsoft.R.Host.Broker.Sessions {
                 password,
                 profilePath,
                 _loggingOptions.LogHostOutput ? _hostOutputLogger : null,
-                _loggingOptions.LogPackets ? _messageLogger : null,
                 _loggingOptions.LogPackets || _loggingOptions.LogHostOutput ? LogVerbosity.Traffic : LogVerbosity.Minimal);
 
             return session;
+        }
+
+        private void Session_StateChanged(object sender, SessionStateChangedEventArgs e) {
+            var session = (Session)sender;
+            if (e.NewState == SessionState.Terminated) {
+                lock (_sessions) {
+                    var userSessions = GetOrCreateSessionList(session.User);
+                    userSessions.Remove(session);
+                }
+            }
         }
     }
 }

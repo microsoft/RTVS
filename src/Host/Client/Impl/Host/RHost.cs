@@ -55,7 +55,7 @@ namespace Microsoft.R.Host.Client {
         }
 
         public void Dispose() {
-            _cts.Cancel();
+            DisconnectAsync().DoNotWait();
         }
 
         public void FlushLog() {
@@ -80,7 +80,10 @@ namespace Microsoft.R.Host.Client {
                 throw new OperationCanceledException(new OperationCanceledException().Message, ex);
             }
 
-            _log.Response(message.ToString(), _rLoopDepth);
+            if (message != null) {
+                _log.Response(message.ToString(), _rLoopDepth);
+            }
+
             return message;
         }
 
@@ -355,7 +358,7 @@ namespace Microsoft.R.Host.Client {
                 _cancelAllCts.Cancel();
 
                 try {
-                    await NotifyAsync("!/", CancellationTokenSource.CreateLinkedTokenSource(_cts.Token, cancellationToken).Token, null);
+                    await NotifyAsync("!//", CancellationTokenSource.CreateLinkedTokenSource(_cts.Token, cancellationToken).Token);
                 } catch (OperationCanceledException) {
                     return;
                 } catch (MessageTransportException) {
@@ -368,9 +371,12 @@ namespace Microsoft.R.Host.Client {
             }
         }
 
+        public Task RequestShutdownAsync(bool saveRData) =>
+            NotifyAsync("!Shutdown", _cts.Token, saveRData);
+
         public async Task DisconnectAsync() {
             if (_runTask == null) {
-                throw new InvalidOperationException("Not connected to host.");
+                return;
             }
 
             await TaskUtilities.SwitchToBackgroundThread();
@@ -384,7 +390,7 @@ namespace Microsoft.R.Host.Client {
             try {
                 // Don't use _cts, since it's already cancelled. We want to try to send this message in
                 // any case, and we'll catch MessageTransportException if no-one is on the other end anymore.
-                await NotifyAsync("!End", new CancellationToken());
+                await _transport.CloseAsync();
             } catch (OperationCanceledException) {
             } catch (MessageTransportException) {
             }
@@ -405,7 +411,9 @@ namespace Microsoft.R.Host.Client {
                 _log.EnterRLoop(_rLoopDepth++);
                 while (!ct.IsCancellationRequested) {
                     var message = await ReceiveMessageAsync(ct);
-                    if (message.IsResponse) {
+                    if (message == null) {
+                        return null;
+                    } else if (message.IsResponse) {
                         Request request;
                         if (!_requests.TryRemove(message.RequestId, out request)) {
                             throw ProtocolError($"Mismatched response - no request with such ID:", message);
@@ -420,7 +428,9 @@ namespace Microsoft.R.Host.Client {
                     try {
                         switch (message.Name) {
                             case "!End":
-                                return null;
+                                message.ExpectArguments(1);
+                                await _callbacks.Shutdown(message.GetBoolean(0, "rdataSaved"));
+                                break;
 
                             case "!CanceledAll":
                                 CancelAll();
@@ -566,7 +576,7 @@ namespace Microsoft.R.Host.Client {
 
             try {
                 var message = await ReceiveMessageAsync(ct);
-                if (!message.IsNotification || message.Name != "!Microsoft.R.Host") {
+                if (message == null || !message.IsNotification || message.Name != "!Microsoft.R.Host") {
                     throw ProtocolError($"Microsoft.R.Host handshake expected:", message);
                 }
 
@@ -583,6 +593,9 @@ namespace Microsoft.R.Host.Client {
                     throw ProtocolError($"Unexpected host response message:", message);
                 }
             } finally {
+                // Signal cancellation to any callbacks that haven't returned yet.
+                _cts.Cancel();
+
                 await _callbacks.Disconnected();
             }
         }
@@ -610,6 +623,9 @@ namespace Microsoft.R.Host.Client {
                 Debug.Fail(message);
                 throw;
             } finally {
+                // Signal cancellation to any callbacks that haven't returned yet.
+                _cts.Cancel();
+
                 _requests.Clear();
             }
         }

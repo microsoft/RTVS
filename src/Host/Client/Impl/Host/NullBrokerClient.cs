@@ -5,6 +5,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Client.Host {
@@ -19,7 +20,10 @@ namespace Microsoft.R.Host.Client.Host {
 
         public Task PingAsync() => Result;
 
-        public Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, CancellationToken cancellationToken = new CancellationToken()) => Result;
+        public Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000,
+            CancellationToken cancellationToken = new CancellationToken(), ReentrancyToken reentrancyToken = new ReentrancyToken()) => Result;
+
+        public Task TerminateSessionAsync(string name, CancellationToken cancellationToken = new CancellationToken()) => Result;
 
         public void Dispose() { }
 

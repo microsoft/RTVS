@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.Common.Core.Test.Threading {
+    [ExcludeFromCodeCoverage]
     public class BinaryAsyncLockTest {
         [Test]
         public async Task WaitAsync_Set() {
@@ -33,8 +35,8 @@ namespace Microsoft.Common.Core.Test.Threading {
             var bal = new BinaryAsyncLock(true);
             var count = 0;
             await ParallelTools.InvokeAsync(4, async i => {
-                var token = await bal.WaitAsync();
-                if (!token.IsSet) {
+                await bal.WaitAsync();
+                if (!bal.IsSet) {
                     await Task.Delay(50);
                     Interlocked.Increment(ref count);
                 }
@@ -49,7 +51,7 @@ namespace Microsoft.Common.Core.Test.Threading {
             var count = 0;
             await ParallelTools.InvokeAsync(4, async i => {
                 var token = await bal.WaitAsync();
-                if (!token.IsSet) {
+                if (!bal.IsSet) {
                     await Task.Delay(50);
                     Interlocked.Increment(ref count);
                     token.Reset();
@@ -63,21 +65,33 @@ namespace Microsoft.Common.Core.Test.Threading {
         public void ResetIfNotWaiting_ResetAsync_Skip_WaitAsync_Set() {
             var bal = new BinaryAsyncLock();
             var task = bal.ResetAsync();
+
             task.Should().BeRanToCompletion();
-            task.Result.IsSet.Should().BeFalse();
             bal.IsSet.Should().BeFalse();
 
             task.Result.Reset();
 
+            bal.IsSet.Should().BeFalse();
+
             task = bal.WaitAsync();
+
             task.Should().BeRanToCompletion();
-            task.Result.IsSet.Should().BeFalse();
             bal.IsSet.Should().BeFalse();
 
             task.Result.Set();
 
-            task.Result.IsSet.Should().BeFalse();
             bal.IsSet.Should().BeTrue();
+        }
+
+        [Test]
+        public void WaitAsync_ResetAsync() {
+            var bal = new BinaryAsyncLock();
+            var task1 = bal.WaitAsync();
+            var task2 = bal.ResetAsync();
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().NotBeCompleted();
+            bal.IsSet.Should().BeFalse();
         }
 
         [Test]
@@ -86,20 +100,236 @@ namespace Microsoft.Common.Core.Test.Threading {
             var task1 = bal.WaitAsync();
             var task2 = bal.ResetAsync();
 
+            task1.Result.Set();
+
             task1.Should().BeRanToCompletion();
-            task2.Should().NotBeCompleted();
+            task2.Should().BeRanToCompletion();
+            bal.IsSet.Should().BeFalse();
+        }
+
+        [Test]
+        public void WaitAsync_ResetAsync_SetIfLast() {
+            var bal = new BinaryAsyncLock();
+            var task1 = bal.WaitAsync();
+            var task2 = bal.ResetAsync();
+
+            task1.Result.SetIfLast();
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().BeRanToCompletion();
+            bal.IsSet.Should().BeFalse();
+        }
+
+        [Test]
+        public void ResetAsync_ResetAsync_Set() {
+            var bal = new BinaryAsyncLock();
+            var task1 = bal.ResetAsync();
+            var task2 = bal.ResetAsync();
 
             task1.Result.Set();
 
             task1.Should().BeRanToCompletion();
             task2.Should().BeRanToCompletion();
-            task1.Result.IsSet.Should().BeFalse();
-            task2.Result.IsSet.Should().BeFalse();
             bal.IsSet.Should().BeFalse();
+        }
 
+        [Test]
+        public void ResetAsync_ResetAsync_SetIfLast() {
+            var bal = new BinaryAsyncLock();
+            var task1 = bal.ResetAsync();
+            var task2 = bal.ResetAsync();
+
+            task1.Result.SetIfLast();
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().BeRanToCompletion();
+            bal.IsSet.Should().BeFalse();
+        }
+
+        [Test]
+        public void ResetAsync_WaitAsync_Set() {
+            var bal = new BinaryAsyncLock();
+            var task1 = bal.ResetAsync();
+            var task2 = bal.WaitAsync();
+
+            task1.Result.Set();
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().BeRanToCompletion();
+            bal.IsSet.Should().BeTrue();
+        }
+
+        [Test]
+        public void ResetAsync_WaitAsync_SetIfLast() {
+            var bal = new BinaryAsyncLock();
+            var task1 = bal.ResetAsync();
+            var task2 = bal.WaitAsync();
+
+            task1.Result.SetIfLast();
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().BeRanToCompletion();
+            bal.IsSet.Should().BeFalse();
+        }
+
+        [Test]
+        public void WaitAsync_ResetAsync_Set_Set() {
+            var bal = new BinaryAsyncLock();
+            var task1 = bal.WaitAsync();
+            var task2 = bal.ResetAsync();
+
+            task1.Result.Set();
             task2.Result.Set();
-            task1.Result.IsSet.Should().BeFalse();
-            task2.Result.IsSet.Should().BeFalse();
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().BeRanToCompletion();
+            bal.IsSet.Should().BeTrue();
+
+        }
+
+        [Test]
+        public void ResetAsync_ResetAsync_Set_Set() {
+            var bal = new BinaryAsyncLock();
+            var task1 = bal.ResetAsync();
+            var task2 = bal.ResetAsync();
+
+            task1.Result.Set();
+            task2.Result.Set();
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().BeRanToCompletion();
+            bal.IsSet.Should().BeTrue();}
+
+        [Test]
+        public void ResetAsync_ResetAsync_SetIfLast_SetIfLast() {
+            var bal = new BinaryAsyncLock();
+            var task1 = bal.ResetAsync();
+            var task2 = bal.ResetAsync();
+
+            task1.Result.SetIfLast();
+            task2.Result.SetIfLast();
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().BeRanToCompletion();
+            bal.IsSet.Should().BeTrue();
+        }
+
+        [Test]
+        public void WaitAsync_ResetAsync_SetIfLast_SetIfLast() {
+            var bal = new BinaryAsyncLock();
+            var task1 = bal.WaitAsync();
+            var task2 = bal.ResetAsync();
+
+            task1.Result.SetIfLast();
+            task2.Result.SetIfLast();
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().BeRanToCompletion();
+            bal.IsSet.Should().BeTrue();
+        }
+
+        [Test]
+        public void WaitAsync_WaitAsync_SetIfLast_SetIfLast() {
+            var bal = new BinaryAsyncLock();
+            var task1 = bal.WaitAsync();
+            var task2 = bal.WaitAsync();
+
+            task1.Result.Set();
+            task2.Result.Set();
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().BeRanToCompletion();
+            bal.IsSet.Should().BeTrue();
+        }
+
+        [Test]
+        public void WaitAsync_ResetAsync_Set_SetIfLast() {
+            var bal = new BinaryAsyncLock();
+            var task1 = bal.WaitAsync();
+            var task2 = bal.ResetAsync();
+
+            task1.Result.Set();
+            task2.Result.SetIfLast();
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().BeRanToCompletion();
+            bal.IsSet.Should().BeTrue();
+        }
+
+        [Test]
+        public void ResetAsync_ResetAsync_Set_SetIfLast() {
+            var bal = new BinaryAsyncLock();
+            var task1 = bal.ResetAsync();
+            var task2 = bal.ResetAsync();
+
+            task1.Result.Set();
+            task2.Result.SetIfLast();
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().BeRanToCompletion();
+            bal.IsSet.Should().BeTrue();
+        }
+
+        [Test]
+        public void ResetAsync_ResetAsyncCanceled_WaitAsync() {
+            var bal = new BinaryAsyncLock(true);
+            var cts = new CancellationTokenSource();
+            cts.Cancel();
+            var task1 = bal.ResetAsync(cts.Token);
+            var task2 = bal.WaitAsync();
+
+            task1.Should().BeCanceled();
+            task2.Should().BeRanToCompletion();
+            bal.IsSet.Should().BeTrue();
+        }
+
+        [Test]
+        public void ResetAsync_ResetAsync_WaitAsync() {
+            var bal = new BinaryAsyncLock(true);
+            var cts = new CancellationTokenSource();
+
+            var task1 = bal.ResetAsync();
+            var task2 = bal.ResetAsync(cts.Token);
+            var task3 = bal.WaitAsync();
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().NotBeCompleted();
+            task3.Should().NotBeCompleted();
+            bal.IsSet.Should().BeFalse();
+        }
+
+        [Test]
+        public void ResetAsync_ResetAsync_WaitAsync_CancelSecond() {
+            var bal = new BinaryAsyncLock(true);
+            var cts = new CancellationTokenSource();
+
+            var task1 = bal.ResetAsync();
+            var task2 = bal.ResetAsync(cts.Token);
+            var task3 = bal.WaitAsync();
+
+            cts.Cancel();
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().BeCanceled();
+            task3.Should().NotBeCompleted();
+            bal.IsSet.Should().BeFalse();
+        }
+
+        [Test]
+        public void ResetAsync_ResetAsync_WaitAsync_CancelSecond_SetFirst() {
+            var bal = new BinaryAsyncLock(true);
+            var cts = new CancellationTokenSource();
+
+            var task1 = bal.ResetAsync();
+            var task2 = bal.ResetAsync(cts.Token);
+            var task3 = bal.WaitAsync();
+
+            cts.Cancel();
+            task1.Result.Set();
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().BeCanceled();
+            task3.Should().BeRanToCompletion();
             bal.IsSet.Should().BeTrue();
         }
 
@@ -117,7 +347,6 @@ namespace Microsoft.Common.Core.Test.Threading {
             task3.Should().NotBeCompleted();
             task4.Should().NotBeCompleted();
             task5.Should().NotBeCompleted();
-            task1.Result.IsSet.Should().BeFalse();
             bal.IsSet.Should().BeFalse();
 
             task1.Result.Set();
@@ -127,9 +356,6 @@ namespace Microsoft.Common.Core.Test.Threading {
             task3.Should().BeRanToCompletion();
             task4.Should().NotBeCompleted();
             task5.Should().NotBeCompleted();
-            task1.Result.IsSet.Should().BeFalse();
-            task2.Result.IsSet.Should().BeTrue();
-            task3.Result.IsSet.Should().BeFalse();
             bal.IsSet.Should().BeFalse();
 
             task3.Result.Set();
@@ -139,11 +365,6 @@ namespace Microsoft.Common.Core.Test.Threading {
             task3.Should().BeRanToCompletion();
             task4.Should().BeRanToCompletion();
             task5.Should().BeRanToCompletion();
-            task1.Result.IsSet.Should().BeFalse();
-            task2.Result.IsSet.Should().BeTrue();
-            task3.Result.IsSet.Should().BeFalse();
-            task2.Result.IsSet.Should().BeTrue();
-            task3.Result.IsSet.Should().BeFalse();
             bal.IsSet.Should().BeFalse();
         }
 
