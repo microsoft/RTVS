@@ -41,6 +41,10 @@ namespace Microsoft.R.Support.Help {
         public async Task CreateSessionAsync() {
             var token = await _lock.ResetAsync();
             try {
+                if(string.IsNullOrEmpty(_sessionProvider.Broker.Name)) {
+                    throw new RHostDisconnectedException();
+                }
+
                 if (Session == null) {
                     Session = _sessionProvider.GetOrCreate(SessionId);
                 }
