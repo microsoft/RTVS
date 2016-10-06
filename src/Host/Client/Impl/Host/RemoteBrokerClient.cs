@@ -35,11 +35,10 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         public override string HandleUrl(string url, CancellationToken ct) {
-            return WebServer.CreateWebServer(url, HttpClient.BaseAddress.ToString(), WebSocketsScheme, ct);
+            return WebServer.CreateWebServer(url, HttpClient.BaseAddress.ToString(), ct);
         }
 
         protected override ICredentialsDecorator Credentials => _credentials;
-        protected override string WebSocketsScheme => "wss"; // Remote is using HTTPS hence secure sockets
 
         protected override async Task<Exception> HandleHttpRequestExceptionAsync(HttpRequestException exception) {
             // Broker is not responsing. Try regular ping.

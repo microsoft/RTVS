@@ -13,6 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebSockets.Protocol;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Net;
 using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Client.BrokerServices {
@@ -23,10 +24,12 @@ namespace Microsoft.R.Host.Client.BrokerServices {
 
         private Uri PostUri { get; }
 
-        public async Task GetResponseAsync(HttpListenerContext context, string localBaseUrl, string remoteBaseUrl, string webSocketsScheme, CancellationToken ct) {
+        public async Task GetResponseAsync(HttpListenerContext context, string localBaseUrl, string remoteBaseUrl, CancellationToken ct) {
             string postUri = null;
+            bool https = new Uri(remoteBaseUrl, UriKind.Absolute).IsHttps();
+
             if (context.Request.IsWebSocketRequest) {
-                UriBuilder ub = new UriBuilder(PostUri) { Scheme = webSocketsScheme };
+                UriBuilder ub = new UriBuilder(PostUri) { Scheme = https ? "wss" : "ws" };
                 postUri = ub.Uri.ToString();
             } else {
                 postUri = PostUri.ToString();
@@ -53,7 +56,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             try {
                 response = (HttpWebResponse)await request.GetResponseAsync();
             } catch (WebException wex) {
-                if(wex.Status == WebExceptionStatus.ProtocolError) {
+                if (wex.Status == WebExceptionStatus.ProtocolError) {
                     response = wex.Response as HttpWebResponse;
                 } else {
                     throw wex;

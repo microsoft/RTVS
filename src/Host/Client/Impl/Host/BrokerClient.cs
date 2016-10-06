@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.WebSockets.Client;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Net;
 using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.BrokerServices;
 using Microsoft.R.Host.Protocol;
@@ -42,7 +43,6 @@ namespace Microsoft.R.Host.Client.Host {
         protected IRCallbacks Callbacks { get; private set; }
 
         protected abstract ICredentialsDecorator Credentials { get; }
-        protected abstract string WebSocketsScheme { get; }
 
         public string Name { get; }
         public Uri Uri { get; }
@@ -165,7 +165,7 @@ namespace Microsoft.R.Host.Client.Host {
             };
 
             var pipeUri = new UriBuilder(HttpClient.BaseAddress) {
-                Scheme = WebSocketsScheme,
+                Scheme = HttpClient.BaseAddress.IsHttps() ? "wss" : "ws",
                 Path = $"sessions/{name}/pipe"
             }.Uri;
 
