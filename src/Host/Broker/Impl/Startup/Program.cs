@@ -55,8 +55,8 @@ namespace Microsoft.R.Host.Broker.Startup {
                 _logger.LogInformation(Resources.Info_BrokerName, _startupOptions.Name);
             }
 
-            var tlsConfig = new TlsConfiguration(_logger);
-            var httpsOptions = tlsConfig.GetHttpsOptions(Configuration, _securityOptions);
+            var tlsConfig = new TlsConfiguration(_logger, _securityOptions);
+            var httpsOptions = tlsConfig.GetHttpsOptions(Configuration);
             CreateWebHost(httpsOptions).Run();
         }
 

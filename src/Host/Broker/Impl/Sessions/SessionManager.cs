@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Linq;
-using System.Security.Claims;
+using System.Security;
 using System.Security.Principal;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Extensions.Logging;
@@ -70,7 +70,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
             }
         }
 
-        public Session CreateSession(IIdentity user, string id, Interpreter interpreter, ClaimsPrincipal cp, string profilePath, string commandLineArguments) {
+        public Session CreateSession(IIdentity user, string id, Interpreter interpreter, SecureString password, string profilePath, string commandLineArguments) {
             Session session;
 
             lock (_sessions) {
@@ -92,7 +92,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
             }
 
             session.StartHost(
-                cp,
+                password,
                 profilePath,
                 _loggingOptions.LogHostOutput ? _hostOutputLogger : null,
                 _loggingOptions.LogPackets || _loggingOptions.LogHostOutput ? LogVerbosity.Traffic : LogVerbosity.Minimal);

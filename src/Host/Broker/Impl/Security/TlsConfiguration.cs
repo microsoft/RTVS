@@ -13,13 +13,15 @@ using Microsoft.R.Host.Protocol;
 namespace Microsoft.R.Host.Broker.Security {
     internal sealed class TlsConfiguration {
         private readonly ILogger _logger;
+        private readonly SecurityOptions _securityOptions;
 
-        public TlsConfiguration(ILogger logger) {
+        public TlsConfiguration(ILogger logger, SecurityOptions options) {
             _logger = logger;
+            _securityOptions = options;
         }
 
-        public HttpsConnectionFilterOptions GetHttpsOptions(IConfigurationRoot configuration, SecurityOptions options) {
-            var cert = GetCertificate(configuration, options);
+        public HttpsConnectionFilterOptions GetHttpsOptions(IConfigurationRoot configuration) {
+            var cert = GetCertificate(configuration);
             if (cert != null) {
                 return new HttpsConnectionFilterOptions() {
                     ServerCertificate = cert,
@@ -31,13 +33,13 @@ namespace Microsoft.R.Host.Broker.Security {
             return null;
         }
 
-        private X509Certificate2 GetCertificate(IConfigurationRoot configuration, SecurityOptions options) {
+        private X509Certificate2 GetCertificate(IConfigurationRoot configuration) {
             if (IsLocalConnection(configuration)) {
                 return null; // localhost, no TLS
             }
 
             X509Certificate2 certificate = null;
-            var certName = options.X509CertificateName ?? $"CN={Environment.MachineName}";
+            var certName = _securityOptions.X509CertificateName ?? $"CN={Environment.MachineName}";
             certificate = Certificates.GetCertificateForEncryption(certName);
             if (certificate == null) {
                 _logger.LogCritical(Resources.Critical_NoTlsCertificate, certName);

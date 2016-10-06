@@ -23,7 +23,6 @@ namespace Microsoft.Common.Core.Security {
         }
 
         public static IntPtr CreateSecureStringBuffer(int length) {
-            var initial = new char[length + 1];
             var sec = new SecureString();
             for (int i = 0; i < length + 1; i++) {
                 sec.AppendChar('\0');
