@@ -27,7 +27,7 @@ namespace Microsoft.R.Components.Plots.Implementation.View {
 
         public IRPlotDeviceViewModel Model => DataContext as IRPlotDeviceViewModel;
 
-        public event EventHandler<MouseButtonEventArgs> ContextMenuRequested;
+        public event EventHandler<PointEventArgs> ContextMenuRequested;
 
         public RPlotDeviceControl() {
             InitializeComponent();
@@ -142,8 +142,8 @@ namespace Microsoft.R.Components.Plots.Implementation.View {
         }
 
         private void UserControl_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
-            // TODO: also support keyboard (Shift+F10 or context menu key)
-            ContextMenuRequested?.Invoke(sender, e);
+            var point = e.GetPosition(this);
+            ContextMenuRequested?.Invoke(this, new PointEventArgs(point));
         }
     }
 }
