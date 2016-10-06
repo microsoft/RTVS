@@ -150,6 +150,9 @@
   <data name="Error_ProfileCreationFailed" xml:space="preserve">
     <value>Profile creation failed for user {0} with WIN32 error code 0x{1}</value>
   </data>
+  <data name="Error_ProfileCreationFailedInvalidResponse" xml:space="preserve">
+    <value>Profile creation failed for user {0} with invalid response from the {1} service.</value>
+  </data>
   <data name="Error_ProfileCreationFailedIO" xml:space="preserve">
     <value>Profile creation failed for user {0}.</value>
   </data>
@@ -191,6 +194,9 @@
   </data>
   <data name="Info_StartingRHost" xml:space="preserve">
     <value>Starting RHost for session {0} of user {1} with command line: {2} {3}</value>
+  </data>
+  <data name="Info_UserProfileServiceName" xml:space="preserve">
+    <value>Microsoft.R.Host.UserProfile</value>
   </data>
   <data name="Trace_AutoDetectingR" xml:space="preserve">
     <value>Auto-detecting R ...</value>

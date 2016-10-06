@@ -6,8 +6,11 @@ using System.IO;
 using System.IO.Pipes;
 using System.Security.Principal;
 using System.ServiceProcess;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
+using Microsoft.Common.Core;
 
 namespace Microsoft.R.Host.UserProfile {
     partial class RUserProfileService : ServiceBase {
@@ -21,13 +24,13 @@ namespace Microsoft.R.Host.UserProfile {
             base.OnStart(args);
             _cts = new CancellationTokenSource();
             _workerdone = new ManualResetEvent(false);
-            Task.WhenAny(CreateProfileWorkerAsync(_cts.Token));
+            CreateProfileWorkerAsync(_cts.Token).DoNotWait();
         }
 
         protected override void OnStop() {
             base.OnStop();
             _cts.Cancel();
-            _workerdone.WaitOne(TimeSpan.FromSeconds(10));
+            _workerdone.WaitOne(TimeSpan.FromSeconds(5));
         }
 
         async Task CreateProfileWorkerAsync(CancellationToken ct) {
@@ -36,25 +39,52 @@ namespace Microsoft.R.Host.UserProfile {
                 SecurityIdentifier sid = new SecurityIdentifier(WellKnownSidType.WorldSid, null);
                 PipeAccessRule par = new PipeAccessRule(sid, PipeAccessRights.ReadWrite, System.Security.AccessControl.AccessControlType.Allow);
                 ps.AddAccessRule(par);
-                using (NamedPipeServerStream server = new NamedPipeServerStream("RUserCreatorPipe", PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous, 1024, 1024, ps))
-                using (BinaryReader reader = new BinaryReader(server))
-                using (BinaryWriter writer = new BinaryWriter(server)) {
+                using (NamedPipeServerStream server = new NamedPipeServerStream("Microsoft.R.Host.UserProfile.Creator{b101cc2d-156e-472e-8d98-b9d999a93c7a}", PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous, 1024, 1024, ps)) {
                     try {
                         await server.WaitForConnectionAsync(ct);
 
-                        string username = reader.ReadString();
-                        string domain = reader.ReadString();
-                        string password = reader.ReadString();
+                        byte[] request = new byte[1024];
+                        int bytesRead = 0;
 
-                        var result = RUserProfileCreator.Create(username, domain, password);
+                        while(bytesRead == 0 && !ct.IsCancellationRequested) {
+                            bytesRead = await server.ReadAsync(request, 0, request.Length, ct);
+                        }
+                        
+                        byte[] data = new byte[bytesRead];
+                        Array.Copy(request, data, bytesRead);
 
-                        writer.Write(result.Win32Result);
-                        writer.Write(result.ProfileExists);
-                        writer.Write(result.ProfilePath);
+                        string json = Encoding.Unicode.GetString(data);
+                        JArray dataArray = JArray.Parse(json);
+
+                        uint error = 13; // invalid data
+                        bool profileExists = false;
+                        string profilePath = string.Empty;
+
+                        if(dataArray.Count == 3) {
+                            string username = dataArray[0].Value<string>();
+                            string domain = dataArray[1].Value<string>();
+                            string password = dataArray[2].Value<string>();
+
+                            var result = RUserProfileCreator.Create(username, domain, password);
+                            error = result.Win32Result;
+                            profileExists = result.ProfileExists;
+                            profilePath = result.ProfilePath;
+
+                        } 
+
+                        JArray respArray = new JArray();
+                        respArray.Add(error);
+                        respArray.Add(profileExists);
+                        respArray.Add(profilePath);
+
+                        byte[] respData = Encoding.Unicode.GetBytes(respArray.ToString());
+
+                        await server.WriteAsync(respData, 0, respData.Length, ct);
+                        await server.FlushAsync(ct);
 
                         server.WaitForPipeDrain();
-                    } catch (IOException) {
 
+                    } catch (IOException) {
                     } 
                 }
             }

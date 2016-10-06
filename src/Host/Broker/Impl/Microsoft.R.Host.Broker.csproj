@@ -89,7 +89,6 @@
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Pipes\HostDisconnectedException.cs" />
     <Compile Include="Pipes\MessageParser.cs" />
-    <Compile Include="Pipes\ProcessHelpers.cs" />
     <Compile Include="Pipes\WebSocketPipeAction.cs" />
     <Compile Include="RemoteUri\RemoteUriHelper.cs" />
     <Compile Include="Security\Certificates.cs" />

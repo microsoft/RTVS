@@ -38,12 +38,12 @@ namespace Microsoft.R.Host.Monitor.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("5")]
-        public int AutoRestartCount {
+        public int AutoRestartMaxCount {
             get {
-                return ((int)(this["AutoRestartCount"]));
+                return ((int)(this["AutoRestartMaxCount"]));
             }
             set {
-                this["AutoRestartCount"] = value;
+                this["AutoRestartMaxCount"] = value;
             }
         }
     }

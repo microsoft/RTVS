@@ -8,11 +8,13 @@ using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json.Linq;
 using Odachi.AspNetCore.Authentication.Basic;
 
 namespace Microsoft.R.Host.Broker.Security {
@@ -49,32 +51,35 @@ namespace Microsoft.R.Host.Broker.Security {
             return new ClaimsPrincipal(identity);
         }
 
-        private uint CreateProfile(string username, string domain, string password,out StringBuilder profilePath, out bool profileExists) {
-            uint error = 0;
-            profilePath = new StringBuilder();
-            profileExists = false;
-            using (NamedPipeClientStream client = new NamedPipeClientStream("RUserCreatorPipe"))
-            using (BinaryReader reader = new BinaryReader(client))
-            using (BinaryWriter writer = new BinaryWriter(client)) {
+        private async Task<JArray> CreateProfileAsync(string username, string domain, string password, CancellationToken ct) {
+            using (NamedPipeClientStream client = new NamedPipeClientStream("Microsoft.R.Host.UserProfile.Creator{b101cc2d-156e-472e-8d98-b9d999a93c7a}")) { 
                 try {
-                    client.Connect();
+                    await client.ConnectAsync(ct);
 
-                    writer.Write(username);
-                    writer.Write(domain);
-                    writer.Write(password);
+                    JArray dataArray = new JArray();
+                    dataArray.Add(username);
+                    dataArray.Add(domain);
+                    dataArray.Add(password);
 
-                    client.WaitForPipeDrain();
+                    byte[] data = Encoding.Unicode.GetBytes(dataArray.ToString());
 
-                    error = reader.ReadUInt32();
-                    profilePath.Append(reader.ReadString());
-                    profileExists = reader.ReadBoolean();
+                    await client.WriteAsync(data, 0, data.Length, ct);
+                    await client.FlushAsync(ct);
+
+                    byte[] response = new byte[1024];
+                    var bytesRead = await client.ReadAsync(response, 0, response.Length, ct);
+                    byte[] result = new byte[bytesRead];
+                    Array.Copy(response, result, bytesRead);
+
+                    string json = Encoding.Unicode.GetString(result);
+                    return JArray.Parse(json);
                 } catch (InvalidOperationException) {
                     _logger.LogError(Resources.Error_ProfileCreationFailedIO, username);
                 } catch (IOException) {
                     _logger.LogError(Resources.Error_ProfileCreationFailedIO, username);
                 } 
             }
-            return error;
+            return new JArray();
         }
 
         private ClaimsPrincipal SignInUsingLogon(BasicSignInContext context) {
@@ -96,10 +101,25 @@ namespace Microsoft.R.Host.Broker.Security {
                 _logger.LogTrace(Resources.Trace_LogOnSuccess, context.Username);
                 winIdentity = new WindowsIdentity(token);
 
-                StringBuilder profileDir = new StringBuilder(NativeMethods.MAX_PATH * 2);
+                StringBuilder profileDir;
                 bool profileExists = false;
+#if DEBUG
+                CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMinutes(10));
+#else
+                CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+#endif
+
                 _logger.LogTrace(Resources.Trace_UserProfileCreation, context.Username);
-                error = CreateProfile(user.ToString(), domain.ToString(), context.Password, out profileDir, out profileExists);
+                JArray result = CreateProfileAsync(user.ToString(), domain.ToString(), context.Password, cts.Token).GetAwaiter().GetResult();
+                if (result.Count == 3) {
+                    error = result[0].Value<uint>();
+                    profileExists = result[1].Value<bool>();
+                    profilePath = result[2].Value<string>();
+                } else {
+                    _logger.LogError(Resources.Error_ProfileCreationFailedInvalidResponse, context.Username, Resources.Info_UserProfileServiceName);
+                    return null;
+                }
+
                 // 0x800700b7 - Profile already exists.
                 if (error != 0 && error != 0x800700b7) {
                     _logger.LogError(Resources.Error_ProfileCreationFailed, context.Username, error.ToString("X"));

@@ -31,23 +31,16 @@ namespace Microsoft.R.Host.UserProfile {
         private void InitializeComponent() {
             rUserProfileProcessInstaller = new ServiceProcessInstaller();
             rUserProfileServiceInstaller = new ServiceInstaller();
-            // 
-            // serviceProcessInstaller1
-            // 
+
             rUserProfileProcessInstaller.Account = ServiceAccount.LocalSystem;
             rUserProfileProcessInstaller.Password = null;
             rUserProfileProcessInstaller.Username = null;
-            // 
-            // serviceInstaller1
-            // 
+
             rUserProfileServiceInstaller.ServiceName = "RUserProfileService";
-            // 
-            // ProjectInstaller
-            // 
+
             Installers.AddRange(new System.Configuration.Install.Installer[] {
             rUserProfileProcessInstaller,
             rUserProfileServiceInstaller});
-
         }
 
         #endregion

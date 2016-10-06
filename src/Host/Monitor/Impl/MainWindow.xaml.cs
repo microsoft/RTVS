@@ -1,7 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
+using System.Threading.Tasks;
 using System.Windows;
+using Microsoft.Common.Core;
 
 namespace Microsoft.R.Host.Monitor {
     /// <summary>
@@ -13,53 +16,52 @@ namespace Microsoft.R.Host.Monitor {
             InitializeComponent();
             Loaded += MainWindow_Loaded;
             _currentWindow = this;
-            Closing += MainWindow_Closing;
+            UseBrokerUserCheckBox.IsChecked = Properties.Settings.Default.UseDifferentBrokerUser;
         }
 
-        private async void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
-            await BrokerManager.StopBrokerInstanceAsync();
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e) {
+            StartUpAsync().DoNotWait();
         }
 
-        private async void MainWindow_Loaded(object sender, RoutedEventArgs e) {
-            if (Properties.Settings.Default.UseDifferentBrokerUser) {
-                if (await CredentialManager.IsBrokerUserCredentialSavedAsync()) {
-                    await BrokerManager.StartBrokerInstanceAsync();
+        public static async Task StartUpAsync() {
+            try {
+                if (Properties.Settings.Default.UseDifferentBrokerUser) {
+                    if (await CredentialManager.IsBrokerUserCredentialSavedAsync()) {
+                        await BrokerManager.CreateOrAttachToBrokerInstanceAsync();
+                    } else {
+                        await CredentialManager.GetAndSaveCredentialsFromUserAsync();
+                    }
                 } else {
-                    await CredentialManager.GetAndSaveCredentialsFromUserAsync();
+                    await BrokerManager.CreateOrAttachToBrokerInstanceAsync();
                 }
-            } else {
-                await BrokerManager.StartBrokerInstanceAsync();
+            } catch (Exception ex) {
+                SetStatusText(ex.Message);
             }
         }
-
-        private async void StartBrokerBtn_Click(object sender, RoutedEventArgs e) {
+        private void StartBrokerBtn_Click(object sender, RoutedEventArgs e) {
             BrokerManager.ResetAutoStart();
-            if (Properties.Settings.Default.UseDifferentBrokerUser) {
-                if (await CredentialManager.IsBrokerUserCredentialSavedAsync()) {
-                    await BrokerManager.StartBrokerInstanceAsync();
-                } else {
-                    await CredentialManager.GetAndSaveCredentialsFromUserAsync();
-                }
-            } else {
-                await BrokerManager.StartBrokerInstanceAsync();
-            }
+            StartUpAsync().DoNotWait();
         }
-        private async void StopBrokerBtn_Click(object sender, RoutedEventArgs e) {
-            await BrokerManager.StopBrokerInstanceAsync();
+        private void StopBrokerBtn_Click(object sender, RoutedEventArgs e) {
+            BrokerManager.StopBrokerInstanceAsync().DoNotWait();
         }
 
         private async void AddOrChangeBrokerUserBtn_Click(object sender, RoutedEventArgs e) {
-            if(await CredentialManager.IsBrokerUserCredentialSavedAsync()) {
-                await CredentialManager.RemoveCredentialsAsync();
+            try {
+                if (await CredentialManager.IsBrokerUserCredentialSavedAsync()) {
+                    CredentialManager.RemoveCredentials();
+                }
+                await CredentialManager.GetAndSaveCredentialsFromUserAsync();
+            } catch (Exception ex) {
+                SetStatusText(ex.Message);
             }
-            await CredentialManager.GetAndSaveCredentialsFromUserAsync();
         }
-        private async void RemoveBrokerUserBtn_Click(object sender, RoutedEventArgs e) {
-            await CredentialManager.RemoveCredentialsAsync();
+        private void RemoveBrokerUserBtn_Click(object sender, RoutedEventArgs e) {
+            CredentialManager.RemoveCredentials();
         }
 
-        public static async void SetStatusText(string message) {
-            await _currentWindow.Dispatcher.InvokeAsync(() => {
+        public static void SetStatusText(string message) {
+            _currentWindow.Dispatcher.Invoke(() => {
                 _currentWindow.StatusDetailsTextBox.Text = message;
             });
         }

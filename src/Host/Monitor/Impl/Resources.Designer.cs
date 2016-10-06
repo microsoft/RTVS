@@ -97,11 +97,47 @@ namespace Microsoft.R.Host.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to parse credential data with Win32 error {0}..
+        /// </summary>
+        public static string Error_CredentialData {
+            get {
+                return ResourceManager.GetString("Error_CredentialData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to CredUIPromptForWindowsCredentials failed to laod, with error: {0}.
         /// </summary>
         public static string Error_CredUIFailedToLoad {
             get {
                 return ResourceManager.GetString("Error_CredUIFailedToLoad", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to parse user name with Win32 error {0}..
+        /// </summary>
+        public static string Error_UserNameParsing {
+            get {
+                return ResourceManager.GetString("Error_UserNameParsing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Broker is configured to run as a different user than the Monitor. Broker user credential were not found..
+        /// </summary>
+        public static string Info_DidNotFindSavedCredentails {
+            get {
+                return ResourceManager.GetString("Info_DidNotFindSavedCredentails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to too many attempts to add Broker user login credentials..
+        /// </summary>
+        public static string Info_TooManyLoginAttempts {
+            get {
+                return ResourceManager.GetString("Info_TooManyLoginAttempts", resourceCulture);
             }
         }
         

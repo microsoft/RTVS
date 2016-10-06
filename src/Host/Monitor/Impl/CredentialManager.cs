@@ -21,17 +21,14 @@ namespace Microsoft.R.Host.Monitor {
                     credStatus = true;
                 } else {
                     int error = Marshal.GetLastWin32Error();
-                    // ERROR_NOT_FOUND : Credentials were not found
-                    if (error == 1168L) {
+                    if (error == Win32ErrorCodes.ERROR_NOT_FOUND) {
                         credStatus = false;
-                        // TODO: show status message
+                        MainWindow.SetStatusText(Resources.Info_DidNotFindSavedCredentails);
                     }
                 }
-
                 if (credPtr !=IntPtr.Zero) {
                     CredFree(credPtr);
                 }
-
                 return credStatus;
             });
         }
@@ -54,26 +51,14 @@ namespace Microsoft.R.Host.Monitor {
                 bool saveCreds = false;
 
                 int attempts = 0;
-                while (attempts < 3) {
-                    ++attempts;
-                    uint ret = CredUIPromptForWindowsCredentials(
-                        ref credInfo,
-                        errorCode,
-                        ref authenticationPackage,
-                        IntPtr.Zero,
-                        0,
-                        out credentialBuffer,
-                        out credentialSize,
-                        ref saveCreds,
-                        PromptForWindowsCredentialsFlags.CREDUIWIN_GENERIC);
+                while (attempts++ < 3) {
+                    uint ret = CredUIPromptForWindowsCredentials(ref credInfo, errorCode, ref authenticationPackage, IntPtr.Zero, 0, out credentialBuffer, out credentialSize, ref saveCreds, PromptForWindowsCredentialsFlags.CREDUIWIN_GENERIC);
 
-                    // ERROR_CANCELLED: User clicked the cancel button.
-                    if (ret == 1223) {
+                    // User clicked the cancel button.
+                    if (ret == Win32ErrorCodes.ERROR_CANCELLED) {
                         break;
-                    }
-
-                    // ERROR_SUCCESS: User entered credentials
-                    if (ret == 0) {
+                    } else if (ret == Win32ErrorCodes.ERROR_SUCCESS) {
+                        // User entered credentials
                         StringBuilder username = new StringBuilder(CRED_MAX_USERNAME_LENGTH);
                         StringBuilder domain = new StringBuilder(CRED_MAX_USERNAME_LENGTH);
                         StringBuilder password = new StringBuilder(CRED_MAX_USERNAME_LENGTH);
@@ -82,69 +67,87 @@ namespace Microsoft.R.Host.Monitor {
                         int domainLen = domain.Capacity;
                         int passwordLen = password.Capacity;
 
-                        if (!CredUnPackAuthenticationBuffer(
-                            0,
-                            credentialBuffer,
-                            credentialSize,
-                            username,
-                            ref usernameLen,
-                            domain,
-                            ref domainLen,
-                            password,
-                            ref passwordLen)) {
-                            throw new Win32Exception(Marshal.GetLastWin32Error());
+                        if (!CredUnPackAuthenticationBuffer(0, credentialBuffer, credentialSize, username, ref usernameLen, domain, ref domainLen, password, ref passwordLen)) {
+                            // Do another attempt by showing user the CredUI with the errorCode set.
+                            errorCode = Marshal.GetLastWin32Error();
+                            if (credentialBuffer != IntPtr.Zero) {
+                                Marshal.FreeCoTaskMem(credentialBuffer);
+                            }
+                            continue;
+                        } else {
+                            // Credential buffer is no longer needed
+                            if (credentialBuffer != IntPtr.Zero) {
+                                Marshal.FreeCoTaskMem(credentialBuffer);
+                            }
                         }
 
                         IntPtr token = IntPtr.Zero;
-                        try {
-                            var usernameBldr = new StringBuilder(257);
-                            var domainBldr = new StringBuilder(257);
+                        var usernameBldr = new StringBuilder(CRED_MAX_USERNAME_LENGTH + 1);
+                        var domainBldr = new StringBuilder(CRED_MAX_USERNAME_LENGTH + 1);
 
-                            uint error = CredUIParseUserName(username.ToString(), usernameBldr, usernameBldr.Capacity, domainBldr, domainBldr.Capacity);
-                            if (error != 0) {
-                                throw new Win32Exception((int)error);
-                            }
+                        uint error = CredUIParseUserName(username.ToString(), usernameBldr, usernameBldr.Capacity, domainBldr, domainBldr.Capacity);
+                        if (error != 0) {
+                            // Couldn't parse the user name. Do another attempt by showing user the CredUI with the errorCode set.
+                            errorCode = (int)error;
+                            continue;
+                        }
 
-                            if (LogonUser(usernameBldr.ToString(), domainBldr.ToString(), password.ToString(), (int)LogonType.LOGON32_LOGON_INTERACTIVE, (int)LogonProvider.LOGON32_PROVIDER_DEFAULT, ref token)) {
-                                Credential creds = new Credential();
-                                creds.targetName = BrokerUserCredName;
-                                creds.type = (int)CredType.GENERIC;
-                                creds.userName = username.ToString();
-                                creds.attributeCount = 0;
-                                creds.persist = (int)CredPersist.LOCAL_MACHINE;
-                                byte[] bpassword = Encoding.Unicode.GetBytes(password.ToString());
-                                creds.credentialBlobSize = bpassword.Length;
-                                creds.credentialBlob = Marshal.StringToCoTaskMemUni(password.ToString());
+                        if (LogonUser(usernameBldr.ToString(), domainBldr.ToString(), password.ToString(), (int)LogonType.LOGON32_LOGON_INTERACTIVE, (int)LogonProvider.LOGON32_PROVIDER_DEFAULT, ref token)) {
+                            Credential creds = new Credential();
+                            creds.targetName = BrokerUserCredName;
+                            creds.type = (int)CredType.GENERIC;
+                            creds.userName = username.ToString();
+                            creds.attributeCount = 0;
+                            creds.persist = (int)CredPersist.LOCAL_MACHINE;
+                            byte[] bpassword = Encoding.Unicode.GetBytes(password.ToString());
+                            creds.credentialBlobSize = bpassword.Length;
+                            creds.credentialBlob = Marshal.StringToCoTaskMemUni(password.ToString());
 
-                                if (!CredWrite(ref creds, 0)) {
-                                    throw new Win32Exception(Marshal.GetLastWin32Error());
+                            if (!CredWrite(ref creds, 0)) {
+                                // Failed to save credentials. Do another attempt by showing user the CredUI with the errorCode set.
+                                errorCode = Marshal.GetLastWin32Error();
+                                if (token != IntPtr.Zero) {
+                                    CloseHandle(token);
                                 }
+                                continue;
                             }
-                        } finally {
+                        } else {
+                            // Failed to login user. Do another attempt by showing user the CredUI with the errorCode set.
+                            errorCode = Marshal.GetLastWin32Error();
                             if (token != IntPtr.Zero) {
                                 CloseHandle(token);
                             }
+                            continue;
                         }
 
-                        break;
-                    }
+                        // Credentials received successfully cleanup.
+                        if (token != IntPtr.Zero) {
+                            CloseHandle(token);
+                        }
 
-                    // CredUIPromptForWindowsCredentials failed to load some component
-                    if (ret != 0) {
+                        // exit loop, another attempt is not needed.
+                        break;
+                    } else {
+                        // CredUIPromptForWindowsCredentials failed to load some component
+                        if (credentialBuffer != IntPtr.Zero) {
+                            Marshal.FreeCoTaskMem(credentialBuffer);
+                        }
+
                         throw new Win32Exception(string.Format(Resources.Error_CredUIFailedToLoad, ret));
                     }
+                }
+
+                if(attempts >= 3) {
+                    MainWindow.SetStatusText(Resources.Info_TooManyLoginAttempts);
                 }
             });
         }
 
-        public static Task RemoveCredentialsAsync() {
-            return Task.Run(() => {
-                CredDelete(BrokerUserCredName, CredType.GENERIC, 0);
-            });
+        public static void RemoveCredentials() {
+            CredDelete(BrokerUserCredName, CredType.GENERIC, 0);
         }
 
-
-        public static Task SetCredentialsOnProcess(ProcessStartInfo psi) {
+        public static Task SetCredentialsOnProcessAsync(ProcessStartInfo psi) {
             return Task.Run(()=> {
                 IntPtr cred;
                 if (CredRead(BrokerUserCredName, CredType.GENERIC, 0, out cred)) {
@@ -171,6 +174,10 @@ namespace Microsoft.R.Host.Monitor {
                     psi.UserName = usernameBldr.ToString();
                     psi.Domain = domainBldr.ToString();
                     psi.Password = pass;
+                }
+
+                if (cred != IntPtr.Zero) {
+                    CredFree(cred);
                 }
             });
         }
