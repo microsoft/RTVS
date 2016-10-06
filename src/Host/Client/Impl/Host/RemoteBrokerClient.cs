@@ -18,7 +18,6 @@ namespace Microsoft.R.Host.Client.Host {
     internal sealed class RemoteBrokerClient : BrokerClient {
         private readonly IntPtr _applicationWindowHandle;
         private readonly string _authority;
-        private readonly ICredentialsDecorator _credentials;
         private int _certificateUIActive;
 
         static RemoteBrokerClient() {
@@ -26,10 +25,9 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         public RemoteBrokerClient(string name, Uri brokerUri, IActionLog log, IntPtr applicationWindowHandle)
-            : base(name, brokerUri, brokerUri.Fragment, log, applicationWindowHandle) {
+            : base(name, brokerUri, brokerUri.Fragment, new RemoteCredentialsDecorator(applicationWindowHandle, brokerUri), log, applicationWindowHandle) {
             _applicationWindowHandle = applicationWindowHandle;
 
-            _credentials = new RemoteCredentialsDecorator(applicationWindowHandle, brokerUri);
             _authority = new UriBuilder { Scheme = brokerUri.Scheme, Host = brokerUri.Host, Port = brokerUri.Port }.ToString();
             CreateHttpClient(brokerUri);
         }
@@ -37,8 +35,6 @@ namespace Microsoft.R.Host.Client.Host {
         public override string HandleUrl(string url, CancellationToken ct) {
             return WebServer.CreateWebServer(url, HttpClient.BaseAddress.ToString(), ct);
         }
-
-        protected override ICredentialsDecorator Credentials => _credentials;
 
         protected override async Task<Exception> HandleHttpRequestExceptionAsync(HttpRequestException exception) {
             // Broker is not responsing. Try regular ping.

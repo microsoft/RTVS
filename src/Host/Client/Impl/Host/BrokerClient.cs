@@ -32,6 +32,7 @@ namespace Microsoft.R.Host.Client.Host {
 #endif
 
         private readonly string _interpreterId;
+        private readonly ICredentialsDecorator _credentials;
 
         private AboutHost _aboutHost;
         private IntPtr _applicationWindowHandle;
@@ -42,27 +43,26 @@ namespace Microsoft.R.Host.Client.Host {
         protected HttpClient HttpClient { get; private set; }
         protected IRCallbacks Callbacks { get; private set; }
 
-        protected abstract ICredentialsDecorator Credentials { get; }
-
         public string Name { get; }
         public Uri Uri { get; }
         public bool IsRemote => !Uri.IsFile;
         public AboutHost AboutHost => _aboutHost ?? AboutHost.Empty;
 
-        protected BrokerClient(string name, Uri brokerUri, string interpreterId, IActionLog log, IntPtr applicationWindowHandle) {
+        protected BrokerClient(string name, Uri brokerUri, string interpreterId, ICredentialsDecorator credentials, IActionLog log, IntPtr applicationWindowHandle) {
             Name = name;
             Uri = brokerUri;
             Log = log;
 
             _applicationWindowHandle = applicationWindowHandle;
             _interpreterId = interpreterId;
+            _credentials = credentials;
         }
 
         protected virtual void CreateHttpClient(Uri baseAddress) {
 
             HttpClientHandler = new WebRequestHandler() {
                 PreAuthenticate = true,
-                Credentials = Credentials
+                Credentials = _credentials
             };
 
             HttpClient = new HttpClient(HttpClientHandler) {
@@ -127,7 +127,7 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         public Task TerminateSessionAsync(string name, CancellationToken cancellationToken = default(CancellationToken)) {
-            var sessionsService = new SessionsWebService(HttpClient, Credentials);
+            var sessionsService = new SessionsWebService(HttpClient, _credentials);
             return sessionsService.DeleteAsync(name, cancellationToken);
         }
 
@@ -135,14 +135,14 @@ namespace Microsoft.R.Host.Client.Host {
             => Task.FromResult<Exception>(new RHostDisconnectedException(Resources.Error_HostNotResponding.FormatInvariant(exception.Message), exception));
 
         private async Task<bool> IsSessionRunningAsync(string name, CancellationToken cancellationToken) {
-            var sessionsService = new SessionsWebService(HttpClient, Credentials);
+            var sessionsService = new SessionsWebService(HttpClient, _credentials);
             var sessions = await sessionsService.GetAsync(cancellationToken);
             return sessions.Any(s => s.Id == name);
         }
 
         private async Task CreateBrokerSessionAsync(string name, string rCommandLineArguments, CancellationToken cancellationToken) {
             rCommandLineArguments = rCommandLineArguments ?? string.Empty;
-            var sessions = new SessionsWebService(HttpClient, Credentials);
+            var sessions = new SessionsWebService(HttpClient, _credentials);
             try {
                 await sessions.PutAsync(name, new SessionCreateRequest {
                     InterpreterId = _interpreterId,
@@ -172,13 +172,13 @@ namespace Microsoft.R.Host.Client.Host {
             while (true) {
                 var request = wsClient.CreateRequest(pipeUri);
 
-                using (await Credentials.LockCredentialsAsync(cancellationToken)) {
+                using (await _credentials.LockCredentialsAsync(cancellationToken)) {
                     try {
                         request.AuthenticationLevel = AuthenticationLevel.MutualAuthRequested;
                         request.Credentials = HttpClientHandler.Credentials;
                         return await wsClient.ConnectAsync(request, cancellationToken);
                     } catch (UnauthorizedAccessException) {
-                        Credentials.InvalidateCredentials();
+                        _credentials.InvalidateCredentials();
                         continue;
                     } catch (Exception ex) when (ex is InvalidOperationException || ex is WebException || ex is ProtocolViolationException) {
                         throw new RHostDisconnectedException(Resources.HttpErrorCreatingSession.FormatInvariant(ex.Message), ex);
