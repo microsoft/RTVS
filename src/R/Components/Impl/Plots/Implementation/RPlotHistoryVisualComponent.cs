@@ -3,7 +3,6 @@
 
 using System;
 using System.Windows;
-using System.Windows.Input;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Controller;
@@ -91,22 +90,8 @@ namespace Microsoft.R.Components.Plots.Implementation {
             }
         }
 
-        private void Control_ContextMenuRequested(object sender, MouseButtonEventArgs e) {
-            Container.ShowContextMenu(RPlotCommandIds.PlotHistoryContextMenu, GetPosition(e, (FrameworkElement)sender));
-        }
-
-        private static Point GetPosition(InputEventArgs e, FrameworkElement fe) {
-            var mouseEventArgs = e as MouseEventArgs;
-            if (mouseEventArgs != null) {
-                return mouseEventArgs.GetPosition(fe);
-            }
-
-            var touchEventArgs = e as TouchEventArgs;
-            if (touchEventArgs != null) {
-                return touchEventArgs.GetTouchPoint(fe).Position;
-            }
-
-            return new Point(0, 0);
+        private void Control_ContextMenuRequested(object sender, PointEventArgs e) {
+            Container.ShowContextMenu(RPlotCommandIds.PlotHistoryContextMenu, e.Point);
         }
 
         public void DecreaseThumbnailSize() {
