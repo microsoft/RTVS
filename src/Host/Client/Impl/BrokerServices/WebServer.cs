@@ -17,14 +17,16 @@ namespace Microsoft.R.Host.Client.BrokerServices {
 
         private readonly HttpListener _listener;
         private readonly IRemoteUriWebService _remoteUriService;
+        private readonly string _webSocketsScheme;
 
         private static Dictionary<int, WebServer> Servers { get; } = new Dictionary<int, WebServer>();
 
-        private WebServer(string remoteHostIp, int remotePort,  string baseAddress) {
+        private WebServer(string remoteHostIp, int remotePort,  string baseAddress, string webSocketsScheme) {
             LocalHost = IPAddress.Loopback.ToString();
             RemoteHost = remoteHostIp;
             RemotePort = remotePort;
 
+            _webSocketsScheme = webSocketsScheme;
             _remoteUriService = new RemoteUriWebService(baseAddress);
             Random r = new Random();
 
@@ -74,11 +76,11 @@ namespace Microsoft.R.Host.Client.BrokerServices {
                 string localUrl = $"{LocalHost}:{LocalPort}";
                 string remoteUrl = $"{RemoteHost}:{RemotePort}";
 
-                await _remoteUriService.GetResponseAsync(context, localUrl, remoteUrl, ct);
+                await _remoteUriService.GetResponseAsync(context, localUrl, remoteUrl, _webSocketsScheme, ct);
             }
         }
 
-        public static string CreateWebServer(string remoteUrl, string baseAddress, CancellationToken ct) {
+        public static string CreateWebServer(string remoteUrl, string baseAddress, string webSocketsScheme, CancellationToken ct) {
             Uri remoteUri = new Uri(remoteUrl);
             UriBuilder localUri = new UriBuilder(remoteUri);
 
@@ -90,7 +92,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             if (Servers.ContainsKey(remoteUri.Port)) {
                 server = Servers[remoteUri.Port];
             } else {
-                server = new WebServer(remoteUri.Host, remoteUri.Port, baseAddress);
+                server = new WebServer(remoteUri.Host, remoteUri.Port, baseAddress, webSocketsScheme);
                 Servers.Add(remoteUri.Port, server);
             }
             

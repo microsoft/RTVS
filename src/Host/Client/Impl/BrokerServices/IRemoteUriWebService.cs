@@ -7,6 +7,6 @@ using System.Threading.Tasks;
 
 namespace Microsoft.R.Host.Client.BrokerServices {
     public interface IRemoteUriWebService {
-        Task GetResponseAsync(HttpListenerContext context, string localBaseUrl, string remoteBaseUrl, CancellationToken ct);
+        Task GetResponseAsync(HttpListenerContext context, string localBaseUrl, string remoteBaseUrl, string webSocketsScheme, CancellationToken ct);
     }
 }

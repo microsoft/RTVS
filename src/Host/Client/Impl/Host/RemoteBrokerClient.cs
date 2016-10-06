@@ -35,7 +35,7 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         public override string HandleUrl(string url, CancellationToken ct) {
-            return WebServer.CreateWebServer(url, HttpClient.BaseAddress.ToString(), ct);
+            return WebServer.CreateWebServer(url, HttpClient.BaseAddress.ToString(), WebSocketsScheme, ct);
         }
 
         protected override ICredentialsDecorator Credentials => _credentials;

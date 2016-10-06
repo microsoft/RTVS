@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Net;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,10 +23,10 @@ namespace Microsoft.R.Host.Client.BrokerServices {
 
         private Uri PostUri { get; }
 
-        public async Task GetResponseAsync(HttpListenerContext context, string localBaseUrl, string remoteBaseUrl, CancellationToken ct) {
+        public async Task GetResponseAsync(HttpListenerContext context, string localBaseUrl, string remoteBaseUrl, string webSocketsScheme, CancellationToken ct) {
             string postUri = null;
             if (context.Request.IsWebSocketRequest) {
-                UriBuilder ub = new UriBuilder(PostUri) { Scheme = "ws" };
+                UriBuilder ub = new UriBuilder(PostUri) { Scheme = webSocketsScheme };
                 postUri = ub.Uri.ToString();
             } else {
                 postUri = PostUri.ToString();
@@ -32,6 +34,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
 
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(postUri);
             request.Method = context.Request.HttpMethod;
+            request.ServerCertificateValidationCallback += ValidateCertificate;
 
             if (!context.Request.IsWebSocketRequest) {
                 SetRequestHeaders(request, context.Request.Headers, localBaseUrl, remoteBaseUrl);
@@ -210,6 +213,14 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             foreach (var pair in headers) {
                 httpListenerResponse.Headers.Add(pair.Key, pair.Value);
             }
+        }
+
+        private bool ValidateCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) {
+            if ((sslPolicyErrors & SslPolicyErrors.RemoteCertificateNotAvailable) != 0) {
+                return false;
+            }
+            // Accept other cases. Validation for untrusted certificates is done by the broker.
+            return true;
         }
     }
 }
