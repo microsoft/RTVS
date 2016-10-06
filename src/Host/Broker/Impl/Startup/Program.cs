@@ -109,7 +109,7 @@ namespace Microsoft.R.Host.Broker.Startup {
             return webHost;
         }
 
-        public static void Exit(int code = 1) {
+        public static void Exit() {
             _cts.Cancel();
 
             Task.Run(async () => {

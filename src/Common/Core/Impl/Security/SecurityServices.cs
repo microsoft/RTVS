@@ -15,8 +15,6 @@ namespace Microsoft.Common.Core.Security {
 
             try {
                 var userNameBuilder = new StringBuilder(CREDUI_MAX_USERNAME_LENGTH + 1);
-                var passwordBuilder = new StringBuilder(CREDUI_MAX_PASSWORD_LENGTH + 1);
-
                 var save = false;
                 int flags = CREDUI_FLAGS_EXCLUDE_CERTIFICATES | CREDUI_FLAGS_PERSIST | CREDUI_FLAGS_EXPECT_CONFIRMATION | CREDUI_FLAGS_GENERIC_CREDENTIALS;
                 if(showUI) {

@@ -36,7 +36,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             while(true) {
                 _listener = new HttpListener();
                 LocalPort = r.Next(localPortMin, localPortMax);
-                _listener.Prefixes.Add($"https://{LocalHost}:{LocalPort}/");
+                _listener.Prefixes.Add($"http://{LocalHost}:{LocalPort}/");
                 try {
                     _listener.Start();
                 } catch (HttpListenerException) {
@@ -82,7 +82,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             Uri remoteUri = new Uri(remoteUrl);
             UriBuilder localUri = new UriBuilder(remoteUri);
 
-            if(!remoteUri.Scheme.EqualsIgnoreCase("https")) {
+            if(!remoteUri.Scheme.EqualsIgnoreCase("http")) {
                 // TODO: reject
             }
 

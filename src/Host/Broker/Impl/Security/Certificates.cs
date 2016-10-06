@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
@@ -9,16 +8,20 @@ using Microsoft.Common.Core;
 
 namespace Microsoft.R.Host.Broker.Security {
     internal static class Certificates {
+        private static readonly StoreName[] _certificateStores = ;
+
         public static X509Certificate2 GetCertificateForEncryption(string certName) {
             return FindCertificate(certName);
         }
 
         private static X509Certificate2 FindCertificate(string name) {
-            foreach (StoreName storeName in Enum.GetValues(typeof(StoreName))) {
+            var stores = new StoreName[] { StoreName.Root, StoreName.AuthRoot, StoreName.CertificateAuthority, StoreName.My };
+            foreach (StoreName storeName in stores) {
                 using (var store = new X509Store(storeName, StoreLocation.LocalMachine)) {
                     try {
                         store.Open(OpenFlags.OpenExistingOnly);
                     } catch(CryptographicException) {
+                        // Not all stores may be present
                         continue;
                     }
 
