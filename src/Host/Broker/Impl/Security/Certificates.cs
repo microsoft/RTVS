@@ -8,8 +8,6 @@ using Microsoft.Common.Core;
 
 namespace Microsoft.R.Host.Broker.Security {
     internal static class Certificates {
-        private static readonly StoreName[] _certificateStores = ;
-
         public static X509Certificate2 GetCertificateForEncryption(string certName) {
             return FindCertificate(certName);
         }
