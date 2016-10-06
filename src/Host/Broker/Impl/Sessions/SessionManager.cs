@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Linq;
-using System.Security;
 using System.Security.Claims;
 using System.Security.Principal;
 using Microsoft.Common.Core.Logging;

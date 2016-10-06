@@ -22,12 +22,10 @@ namespace Microsoft.R.Host.Client {
         public async Task CloseAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             await _sendLock.WaitAsync(cancellationToken);
             try {
-                await _socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, "", cancellationToken);
-            } catch (IOException ex) {
-                throw new MessageTransportException(ex);
-            } catch (SocketException ex) {
-                throw new MessageTransportException(ex);
-            } catch (WebSocketException ex) {
+                if (_socket.State == WebSocketState.Open) {
+                    await _socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, "", cancellationToken);
+                }
+            } catch (Exception ex) when (ex is IOException || ex is SocketException || ex is WebSocketException) {
                 throw new MessageTransportException(ex);
             } finally {
                 _sendLock.Release();
