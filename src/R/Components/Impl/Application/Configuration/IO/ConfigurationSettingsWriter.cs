@@ -29,16 +29,18 @@ namespace Microsoft.R.Components.Application.Configuration {
 
         /// <summary>
         /// Persists settings into R file. Settings are written
-        /// into R file as assignment statements such as 'name &lt;- value'.
+        /// into R file as assignment statements such as 'settings$name &lt;- value'.
         /// Value
         /// </summary>
         public void SaveSettings(IEnumerable<IConfigurationSetting> settings) {
             WriteHeader();
+            _writer.WriteLine("settings <- new.env()");
+            _writer.WriteLine(string.Empty);
             foreach (var s in settings) {
                 var v = FormatValue(s);
                 if (!string.IsNullOrWhiteSpace(v)) {
                     WriteAttributes(s);
-                    _writer.WriteLine(Invariant($"{s.Name} <- {v}"));
+                    _writer.WriteLine(Invariant($"settings${s.Name} <- {v}"));
                     _writer.WriteLine(string.Empty);
                 }
             }
@@ -64,16 +66,16 @@ namespace Microsoft.R.Components.Application.Configuration {
         }
 
         private static string FormatValue(IConfigurationSetting s) {
-        if (s.ValueType == ConfigurationSettingValueType.String) {
-            var hasSingleQuotes = s.Value.IndexOf('\'') >= 0;
-            var hasDoubleQuotes = s.Value.IndexOf('\"') >= 0;
-            if (hasSingleQuotes && !hasDoubleQuotes) {
-                return Invariant($"\"{s.Value}\"");
-            } else if (!hasSingleQuotes) {
-                return Invariant($"'{s.Value}'");
+            if (s.ValueType == ConfigurationSettingValueType.String) {
+                var hasSingleQuotes = s.Value.IndexOf('\'') >= 0;
+                var hasDoubleQuotes = s.Value.IndexOf('\"') >= 0;
+                if (hasSingleQuotes && !hasDoubleQuotes) {
+                    return Invariant($"\"{s.Value}\"");
+                } else if (!hasSingleQuotes) {
+                    return Invariant($"'{s.Value}'");
+                }
             }
+            return s.Value;
         }
-        return s.Value;
     }
-}
 }
