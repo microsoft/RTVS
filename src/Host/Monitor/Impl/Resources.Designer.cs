@@ -97,6 +97,24 @@ namespace Microsoft.R.Host.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add or change user failed with exception: {0}.
+        /// </summary>
+        public static string Error_AddOrChangeUserFailed {
+            get {
+                return ResourceManager.GetString("Error_AddOrChangeUserFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Auto restart Broker failed , exception: {0}.
+        /// </summary>
+        public static string Error_AutoRestartFailed {
+            get {
+                return ResourceManager.GetString("Error_AutoRestartFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to parse credential data with Win32 error {0}..
         /// </summary>
         public static string Error_CredentialData {
@@ -106,11 +124,65 @@ namespace Microsoft.R.Host.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CredUIPromptForWindowsCredentials failed to laod, with error: {0}.
+        ///   Looks up a localized string similar to User credential unpacking failed with Win32 error {0}..
+        /// </summary>
+        public static string Error_CredentialUnpackingFailed {
+            get {
+                return ResourceManager.GetString("Error_CredentialUnpackingFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to retrieve credentials from credential manager, with Win32 error {0}..
+        /// </summary>
+        public static string Error_CredRetreiveFailed {
+            get {
+                return ResourceManager.GetString("Error_CredRetreiveFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Credential save failed with Win32 error {0}..
+        /// </summary>
+        public static string Error_CredSaveFailed {
+            get {
+                return ResourceManager.GetString("Error_CredSaveFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CredUIPromptForWindowsCredentials failed to load, with error: {0}.
         /// </summary>
         public static string Error_CredUIFailedToLoad {
             get {
                 return ResourceManager.GetString("Error_CredUIFailedToLoad", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Log on attempt failed, with Win32 error {0}..
+        /// </summary>
+        public static string Error_LogOnAttemptFailed {
+            get {
+                return ResourceManager.GetString("Error_LogOnAttemptFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Startup failed with exception: {0}.
+        /// </summary>
+        public static string Error_StartUpFailed {
+            get {
+                return ResourceManager.GetString("Error_StartUpFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stop Broker failed , exception: {0}.
+        /// </summary>
+        public static string Error_StopBrokerFailed {
+            get {
+                return ResourceManager.GetString("Error_StopBrokerFailed", resourceCulture);
             }
         }
         
@@ -124,11 +196,101 @@ namespace Microsoft.R.Host.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Broker is already running, process id {0}..
+        /// </summary>
+        public static string Info_BrokerAlreadyRunning {
+            get {
+                return ResourceManager.GetString("Info_BrokerAlreadyRunning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Trying to acquire credentials, attempt {0}..
+        /// </summary>
+        public static string Info_CredAttempt {
+            get {
+                return ResourceManager.GetString("Info_CredAttempt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Successfully retrieved credentials from credential manager..
+        /// </summary>
+        public static string Info_CredRetreiveSucceeded {
+            get {
+                return ResourceManager.GetString("Info_CredRetreiveSucceeded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Credential save succeeded..
+        /// </summary>
+        public static string Info_CredSaveSucceeded {
+            get {
+                return ResourceManager.GetString("Info_CredSaveSucceeded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User entered credentials..
+        /// </summary>
+        public static string Info_CredUICredsReceived {
+            get {
+                return ResourceManager.GetString("Info_CredUICredsReceived", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User dismissed Credential UI without entering credentials..
+        /// </summary>
+        public static string Info_CredUIDismissed {
+            get {
+                return ResourceManager.GetString("Info_CredUIDismissed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User credentials were successfully unpacked..
+        /// </summary>
+        public static string Info_CredUnpacked {
+            get {
+                return ResourceManager.GetString("Info_CredUnpacked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Broker is configured to run as a different user than the Monitor. Broker user credential were not found..
         /// </summary>
         public static string Info_DidNotFindSavedCredentails {
             get {
                 return ResourceManager.GetString("Info_DidNotFindSavedCredentails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Log on attempt succeeded..
+        /// </summary>
+        public static string Info_LogOnAttemptSucceeded {
+            get {
+                return ResourceManager.GetString("Info_LogOnAttemptSucceeded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New Broker instance started, process id {0}..
+        /// </summary>
+        public static string Info_NewBrokerInstanceStarted {
+            get {
+                return ResourceManager.GetString("Info_NewBrokerInstanceStarted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Removed credentials from credential manager..
+        /// </summary>
+        public static string Info_RemovedCredentials {
+            get {
+                return ResourceManager.GetString("Info_RemovedCredentials", resourceCulture);
             }
         }
         
@@ -169,7 +331,7 @@ namespace Microsoft.R.Host.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The credentials entered below will be used to start the R Host Broker Process. If you choose to save the credentials monitor will automatically start the broker procress..
+        ///   Looks up a localized string similar to The credentials entered below will be used to start the R Host Broker Process. If you choose to save the credentials monitor will automatically start the broker process..
         /// </summary>
         public static string Text_RHostBrokerCredentialsDetail {
             get {
@@ -178,7 +340,7 @@ namespace Microsoft.R.Host.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The user could not be logged in on this machine, please try again. The credentials entered below will be used to start the R Host Broker Process. If you choose to save the credentials monitor will automatically start the broker procress..
+        ///   Looks up a localized string similar to The user could not be logged in on this machine, please try again. The credentials entered below will be used to start the R Host Broker Process. If you choose to save the credentials monitor will automatically start the broker process..
         /// </summary>
         public static string Text_RHostBrokerCredentialsInvalidTryAgain {
             get {

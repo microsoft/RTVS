@@ -10,8 +10,10 @@ namespace Microsoft.R.Host.UserProfile {
         /// The main entry point for the application.
         /// </summary>
         static void Main() {
+#if DEBUG
             // Uncomment the line below to debug the Broker-Service
-            Debugger.Launch();
+            // Debugger.Launch();
+#endif
             ServiceBase[] ServicesToRun;
             ServicesToRun = new ServiceBase[]
             {

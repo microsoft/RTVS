@@ -2,15 +2,16 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.IO;
 using System.IO.Pipes;
 using System.Security.Principal;
 using System.ServiceProcess;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using Microsoft.Common.Core;
+using Microsoft.Extensions.Logging;
+using Microsoft.R.Host.Protocol;
+using Newtonsoft.Json;
 
 namespace Microsoft.R.Host.UserProfile {
     partial class RUserProfileService : ServiceBase {
@@ -20,8 +21,17 @@ namespace Microsoft.R.Host.UserProfile {
 
         private ManualResetEvent _workerdone;
         private CancellationTokenSource _cts;
+        private ILogger _logger;
+        private ILoggerFactory _loggerFactory;
         protected override void OnStart(string[] args) {
             base.OnStart(args);
+
+            _loggerFactory = new LoggerFactory();
+            _loggerFactory
+                .AddDebug()
+                .AddProvider(new ServiceLoggerProvider());
+            _logger = _loggerFactory.CreateLogger<RUserProfileService>();
+
             _cts = new CancellationTokenSource();
             _workerdone = new ManualResetEvent(false);
             CreateProfileWorkerAsync(_cts.Token).DoNotWait();
@@ -43,48 +53,29 @@ namespace Microsoft.R.Host.UserProfile {
                     try {
                         await server.WaitForConnectionAsync(ct);
 
-                        byte[] request = new byte[1024];
+                        byte[] requestRaw = new byte[1024];
                         int bytesRead = 0;
 
                         while(bytesRead == 0 && !ct.IsCancellationRequested) {
-                            bytesRead = await server.ReadAsync(request, 0, request.Length, ct);
+                            bytesRead = await server.ReadAsync(requestRaw, 0, requestRaw.Length, ct);
                         }
                         
-                        byte[] data = new byte[bytesRead];
-                        Array.Copy(request, data, bytesRead);
+                        string json = Encoding.Unicode.GetString(requestRaw, 0, bytesRead);
 
-                        string json = Encoding.Unicode.GetString(data);
-                        JArray dataArray = JArray.Parse(json);
+                        var requestData = JsonConvert.DeserializeObject<RUserProfileCreateRequest>(json);
 
-                        uint error = 13; // invalid data
-                        bool profileExists = false;
-                        string profilePath = string.Empty;
+                        var result = RUserProfileCreator.Create(requestData, _logger);
 
-                        if(dataArray.Count == 3) {
-                            string username = dataArray[0].Value<string>();
-                            string domain = dataArray[1].Value<string>();
-                            string password = dataArray[2].Value<string>();
-
-                            var result = RUserProfileCreator.Create(username, domain, password);
-                            error = result.Win32Result;
-                            profileExists = result.ProfileExists;
-                            profilePath = result.ProfilePath;
-
-                        } 
-
-                        JArray respArray = new JArray();
-                        respArray.Add(error);
-                        respArray.Add(profileExists);
-                        respArray.Add(profilePath);
-
-                        byte[] respData = Encoding.Unicode.GetBytes(respArray.ToString());
+                        string jsonResp = JsonConvert.SerializeObject(result);
+                        byte[] respData = Encoding.Unicode.GetBytes(jsonResp);
 
                         await server.WriteAsync(respData, 0, respData.Length, ct);
                         await server.FlushAsync(ct);
 
                         server.WaitForPipeDrain();
 
-                    } catch (IOException) {
+                    } catch (Exception ex) when (!ex.IsCriticalException()) {
+                        _logger?.LogError(Resources.Error_UserProfileCreationError, ex.Message);
                     } 
                 }
             }

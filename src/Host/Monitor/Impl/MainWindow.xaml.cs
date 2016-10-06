@@ -5,36 +5,54 @@ using System;
 using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.Common.Core;
+using Microsoft.Extensions.Logging;
+using Microsoft.R.Host.Monitor.Logging;
 
 namespace Microsoft.R.Host.Monitor {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window {
-        public static MainWindow _currentWindow;
+        private readonly ILoggerFactory _loggerFactory;
+        private readonly ILogger _logger;
         public MainWindow() {
             InitializeComponent();
             Loaded += MainWindow_Loaded;
-            _currentWindow = this;
             UseBrokerUserCheckBox.IsChecked = Properties.Settings.Default.UseDifferentBrokerUser;
+
+            _loggerFactory = new LoggerFactory();
+            _loggerFactory
+                .AddDebug()
+                .AddProvider(new MonitorLoggerProvider());
+            _logger = _loggerFactory.CreateLogger<MainWindow>();
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e) {
             StartUpAsync().DoNotWait();
         }
 
-        public static async Task StartUpAsync() {
+        public async Task StartUpAsync() {
             try {
+                int id = 0;
                 if (Properties.Settings.Default.UseDifferentBrokerUser) {
-                    if (await CredentialManager.IsBrokerUserCredentialSavedAsync()) {
-                        await BrokerManager.CreateOrAttachToBrokerInstanceAsync();
+                    if (await CredentialManager.IsBrokerUserCredentialSavedAsync(_logger)) {
+                        id = await BrokerManager.CreateOrAttachToBrokerInstanceAsync(_logger);
                     } else {
-                        await CredentialManager.GetAndSaveCredentialsFromUserAsync();
+                        SetStatusText(Monitor.Resources.Info_DidNotFindSavedCredentails);
+                        var count = await CredentialManager.GetAndSaveCredentialsFromUserAsync(_logger);
+                        if (count >= CredentialManager.MaxCredUIAttempts) {
+                            SetStatusText(Monitor.Resources.Info_TooManyLoginAttempts);
+                        }
                     }
                 } else {
-                    await BrokerManager.CreateOrAttachToBrokerInstanceAsync();
+                    id = await BrokerManager.CreateOrAttachToBrokerInstanceAsync(_logger);
                 }
-            } catch (Exception ex) {
+
+                if(id!= 0) {
+                    SetStatusText($"Broker Process running ... {id}");
+                }
+            } catch (Exception ex) when (!ex.IsCriticalException()) {
+                _logger?.LogError(Monitor.Resources.Error_StartUpFailed, ex.Message);
                 SetStatusText(ex.Message);
             }
         }
@@ -43,26 +61,31 @@ namespace Microsoft.R.Host.Monitor {
             StartUpAsync().DoNotWait();
         }
         private void StopBrokerBtn_Click(object sender, RoutedEventArgs e) {
-            BrokerManager.StopBrokerInstanceAsync().DoNotWait();
+            BrokerManager.StopBrokerInstanceAsync(_logger).DoNotWait();
+            SetStatusText($"Broker Process Stopped.");
         }
 
         private async void AddOrChangeBrokerUserBtn_Click(object sender, RoutedEventArgs e) {
             try {
-                if (await CredentialManager.IsBrokerUserCredentialSavedAsync()) {
-                    CredentialManager.RemoveCredentials();
+                if (await CredentialManager.IsBrokerUserCredentialSavedAsync(_logger)) {
+                    CredentialManager.RemoveCredentials(_logger);
                 }
-                await CredentialManager.GetAndSaveCredentialsFromUserAsync();
-            } catch (Exception ex) {
+                var count = await CredentialManager.GetAndSaveCredentialsFromUserAsync(_logger);
+                if(count >= CredentialManager.MaxCredUIAttempts) {
+                    SetStatusText(Monitor.Resources.Info_TooManyLoginAttempts);
+                }
+            } catch (Exception ex) when (!ex.IsCriticalException()) {
+                _logger?.LogError(Monitor.Resources.Error_AddOrChangeUserFailed, ex.Message);
                 SetStatusText(ex.Message);
             }
         }
         private void RemoveBrokerUserBtn_Click(object sender, RoutedEventArgs e) {
-            CredentialManager.RemoveCredentials();
+            CredentialManager.RemoveCredentials(_logger);
         }
 
-        public static void SetStatusText(string message) {
-            _currentWindow.Dispatcher.Invoke(() => {
-                _currentWindow.StatusDetailsTextBox.Text = message;
+        public void SetStatusText(string message) {
+            Dispatcher.Invoke(() => {
+                StatusDetailsTextBox.Text = message;
             });
         }
 

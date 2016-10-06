@@ -8,12 +8,14 @@ using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.R.Host.Monitor {
     public class CredentialManager {
         private const string BrokerUserCredName = "RHostBrokerUserCred";
 
-        public static Task<bool> IsBrokerUserCredentialSavedAsync() {
+        public static Task<bool> IsBrokerUserCredentialSavedAsync(ILogger logger = null) {
             return Task.Run(() => {
                 IntPtr credPtr;
                 bool credStatus = false;
@@ -23,10 +25,10 @@ namespace Microsoft.R.Host.Monitor {
                     int error = Marshal.GetLastWin32Error();
                     if (error == Win32ErrorCodes.ERROR_NOT_FOUND) {
                         credStatus = false;
-                        MainWindow.SetStatusText(Resources.Info_DidNotFindSavedCredentails);
+                        logger?.LogDebug(Resources.Info_DidNotFindSavedCredentails);
                     }
                 }
-                if (credPtr !=IntPtr.Zero) {
+                if (credPtr != IntPtr.Zero) {
                     CredFree(credPtr);
                 }
                 return credStatus;
@@ -36,120 +38,136 @@ namespace Microsoft.R.Host.Monitor {
         private const int CRED_MAX_USERNAME_LENGTH = 256;
         private const int CRED_MAX_DOMAIN_LENGTH = 256;
         private const int CRED_MAX_PASSWORD_LENGTH = 256;
-        public static Task GetAndSaveCredentialsFromUserAsync() {
-            return Task.Run(() => {
-                CredUIInfo credInfo = new CredUIInfo();
-                credInfo.cbSize = Marshal.SizeOf(credInfo);
-                credInfo.pszCaptionText = Resources.Text_RHostBrokerCredentials;
-                credInfo.pszMessageText = Resources.Text_RHostBrokerCredentialsDetail;
-                credInfo.hwndParent = Process.GetCurrentProcess().MainWindowHandle;
 
-                int errorCode = 0;
-                uint authenticationPackage = 0;
-                IntPtr credentialBuffer;
-                uint credentialSize;
-                bool saveCreds = false;
+        public static int MaxCredUIAttempts => 3;
+        public static async Task<int> GetAndSaveCredentialsFromUserAsync(ILogger logger = null) {
+            await TaskUtilities.SwitchToBackgroundThread();
 
-                int attempts = 0;
-                while (attempts++ < 3) {
-                    uint ret = CredUIPromptForWindowsCredentials(ref credInfo, errorCode, ref authenticationPackage, IntPtr.Zero, 0, out credentialBuffer, out credentialSize, ref saveCreds, PromptForWindowsCredentialsFlags.CREDUIWIN_GENERIC);
+            CredUIInfo credInfo = new CredUIInfo();
+            credInfo.cbSize = Marshal.SizeOf(credInfo);
+            credInfo.pszCaptionText = Resources.Text_RHostBrokerCredentials;
+            credInfo.pszMessageText = Resources.Text_RHostBrokerCredentialsDetail;
+            credInfo.hwndParent = Process.GetCurrentProcess().MainWindowHandle;
 
-                    // User clicked the cancel button.
-                    if (ret == Win32ErrorCodes.ERROR_CANCELLED) {
-                        break;
-                    } else if (ret == Win32ErrorCodes.ERROR_SUCCESS) {
-                        // User entered credentials
-                        StringBuilder username = new StringBuilder(CRED_MAX_USERNAME_LENGTH);
-                        StringBuilder domain = new StringBuilder(CRED_MAX_USERNAME_LENGTH);
-                        StringBuilder password = new StringBuilder(CRED_MAX_USERNAME_LENGTH);
+            int errorCode = 0;
+            uint authenticationPackage = 0;
+            IntPtr credentialBuffer;
+            uint credentialSize;
+            bool saveCreds = false;
 
-                        int usernameLen = username.Capacity;
-                        int domainLen = domain.Capacity;
-                        int passwordLen = password.Capacity;
+            int attempts = 0;
+            while (attempts++ < MaxCredUIAttempts) {
+                logger?.LogInformation(Resources.Info_CredAttempt, attempts);
+                uint ret = CredUIPromptForWindowsCredentials(ref credInfo, errorCode, ref authenticationPackage, IntPtr.Zero, 0, out credentialBuffer, out credentialSize, ref saveCreds, PromptForWindowsCredentialsFlags.CREDUIWIN_GENERIC);
 
-                        if (!CredUnPackAuthenticationBuffer(0, credentialBuffer, credentialSize, username, ref usernameLen, domain, ref domainLen, password, ref passwordLen)) {
-                            // Do another attempt by showing user the CredUI with the errorCode set.
-                            errorCode = Marshal.GetLastWin32Error();
-                            if (credentialBuffer != IntPtr.Zero) {
-                                Marshal.FreeCoTaskMem(credentialBuffer);
-                            }
-                            continue;
-                        } else {
-                            // Credential buffer is no longer needed
-                            if (credentialBuffer != IntPtr.Zero) {
-                                Marshal.FreeCoTaskMem(credentialBuffer);
-                            }
+                // User clicked the cancel button.
+                if (ret == Win32ErrorCodes.ERROR_CANCELLED) {
+                    logger?.LogInformation(Resources.Info_CredUIDismissed);
+                    break;
+                } else if (ret == Win32ErrorCodes.ERROR_SUCCESS) {
+                    // User entered credentials
+                    logger?.LogInformation(Resources.Info_CredUICredsReceived);
+                    StringBuilder username = new StringBuilder(CRED_MAX_USERNAME_LENGTH);
+                    StringBuilder domain = new StringBuilder(CRED_MAX_USERNAME_LENGTH);
+                    StringBuilder password = new StringBuilder(CRED_MAX_USERNAME_LENGTH);
+
+                    int usernameLen = username.Capacity;
+                    int domainLen = domain.Capacity;
+                    int passwordLen = password.Capacity;
+
+                    if (!CredUnPackAuthenticationBuffer(0, credentialBuffer, credentialSize, username, ref usernameLen, domain, ref domainLen, password, ref passwordLen)) {
+                        // Do another attempt by showing user the CredUI with the errorCode set.
+                        errorCode = Marshal.GetLastWin32Error();
+                        logger?.LogError(Resources.Error_CredentialUnpackingFailed, errorCode);
+                        if (credentialBuffer != IntPtr.Zero) {
+                            Marshal.ZeroFreeCoTaskMemUnicode(credentialBuffer);
                         }
-
-                        IntPtr token = IntPtr.Zero;
-                        var usernameBldr = new StringBuilder(CRED_MAX_USERNAME_LENGTH + 1);
-                        var domainBldr = new StringBuilder(CRED_MAX_USERNAME_LENGTH + 1);
-
-                        uint error = CredUIParseUserName(username.ToString(), usernameBldr, usernameBldr.Capacity, domainBldr, domainBldr.Capacity);
-                        if (error != 0) {
-                            // Couldn't parse the user name. Do another attempt by showing user the CredUI with the errorCode set.
-                            errorCode = (int)error;
-                            continue;
+                        continue;
+                    } else {
+                        logger?.LogInformation(Resources.Info_CredUnpacked);
+                        // Credential buffer is no longer needed
+                        if (credentialBuffer != IntPtr.Zero) {
+                            Marshal.ZeroFreeCoTaskMemUnicode(credentialBuffer);
                         }
+                    }
 
-                        if (LogonUser(usernameBldr.ToString(), domainBldr.ToString(), password.ToString(), (int)LogonType.LOGON32_LOGON_INTERACTIVE, (int)LogonProvider.LOGON32_PROVIDER_DEFAULT, ref token)) {
-                            Credential creds = new Credential();
-                            creds.targetName = BrokerUserCredName;
-                            creds.type = (int)CredType.GENERIC;
-                            creds.userName = username.ToString();
-                            creds.attributeCount = 0;
-                            creds.persist = (int)CredPersist.LOCAL_MACHINE;
-                            byte[] bpassword = Encoding.Unicode.GetBytes(password.ToString());
-                            creds.credentialBlobSize = bpassword.Length;
-                            creds.credentialBlob = Marshal.StringToCoTaskMemUni(password.ToString());
+                    IntPtr token = IntPtr.Zero;
+                    var usernameBldr = new StringBuilder(CRED_MAX_USERNAME_LENGTH + 1);
+                    var domainBldr = new StringBuilder(CRED_MAX_USERNAME_LENGTH + 1);
 
-                            if (!CredWrite(ref creds, 0)) {
-                                // Failed to save credentials. Do another attempt by showing user the CredUI with the errorCode set.
-                                errorCode = Marshal.GetLastWin32Error();
-                                if (token != IntPtr.Zero) {
-                                    CloseHandle(token);
-                                }
-                                continue;
-                            }
-                        } else {
-                            // Failed to login user. Do another attempt by showing user the CredUI with the errorCode set.
+                    uint error = CredUIParseUserName(username.ToString(), usernameBldr, usernameBldr.Capacity, domainBldr, domainBldr.Capacity);
+                    if (error != 0) {
+                        // Couldn't parse the user name. Do another attempt by showing user the CredUI with the errorCode set.
+                        errorCode = (int)error;
+                        logger?.LogError(Resources.Error_UserNameParsing, errorCode);
+                        continue;
+                    }
+
+                    if (LogonUser(usernameBldr.ToString(), domainBldr.ToString(), password.ToString(), (int)LogonType.LOGON32_LOGON_INTERACTIVE, (int)LogonProvider.LOGON32_PROVIDER_DEFAULT, ref token)) {
+                        logger?.LogInformation(Resources.Info_LogOnAttemptSucceeded);
+
+                        Credential creds = new Credential();
+                        creds.targetName = BrokerUserCredName;
+                        creds.type = (int)CredType.GENERIC;
+                        creds.userName = username.ToString();
+                        creds.attributeCount = 0;
+                        creds.persist = (int)CredPersist.LOCAL_MACHINE;
+                        byte[] bpassword = Encoding.Unicode.GetBytes(password.ToString());
+                        creds.credentialBlobSize = bpassword.Length;
+                        creds.credentialBlob = Marshal.StringToCoTaskMemUni(password.ToString());
+
+                        if (!CredWrite(ref creds, 0)) {
+                            // Failed to save credentials. Do another attempt by showing user the CredUI with the errorCode set.
                             errorCode = Marshal.GetLastWin32Error();
+                            logger?.LogInformation(Resources.Error_CredSaveFailed, errorCode);
                             if (token != IntPtr.Zero) {
                                 CloseHandle(token);
                             }
                             continue;
                         }
 
-                        // Credentials received successfully cleanup.
+                        logger?.LogInformation(Resources.Info_CredSaveSucceeded);
+                    } else {
+                        // Failed to login user. Do another attempt by showing user the CredUI with the errorCode set.
+                        errorCode = Marshal.GetLastWin32Error();
+                        logger?.LogError(Resources.Error_LogOnAttemptFailed, errorCode);
                         if (token != IntPtr.Zero) {
                             CloseHandle(token);
                         }
-
-                        // exit loop, another attempt is not needed.
-                        break;
-                    } else {
-                        // CredUIPromptForWindowsCredentials failed to load some component
-                        if (credentialBuffer != IntPtr.Zero) {
-                            Marshal.FreeCoTaskMem(credentialBuffer);
-                        }
-
-                        throw new Win32Exception(string.Format(Resources.Error_CredUIFailedToLoad, ret));
+                        continue;
                     }
-                }
 
-                if(attempts >= 3) {
-                    MainWindow.SetStatusText(Resources.Info_TooManyLoginAttempts);
+                    // Credentials received successfully cleanup.
+                    if (token != IntPtr.Zero) {
+                        CloseHandle(token);
+                    }
+
+                    // exit loop, another attempt is not needed.
+                    break;
+                } else {
+                    // CredUIPromptForWindowsCredentials failed to load some component
+                    logger?.LogError(Resources.Error_CredUIFailedToLoad, Marshal.GetLastWin32Error());
+                    if (credentialBuffer != IntPtr.Zero) {
+                        Marshal.ZeroFreeCoTaskMemUnicode(credentialBuffer);
+                    }
+
+                    throw new Win32Exception(string.Format(Resources.Error_CredUIFailedToLoad, ret));
                 }
-            });
+            }
+
+            return attempts;
         }
 
-        public static void RemoveCredentials() {
+        public static void RemoveCredentials(ILogger logger = null) {
             CredDelete(BrokerUserCredName, CredType.GENERIC, 0);
+            logger?.LogInformation(Resources.Info_RemovedCredentials);
         }
 
-        public static Task SetCredentialsOnProcessAsync(ProcessStartInfo psi) {
-            return Task.Run(()=> {
-                IntPtr cred;
+        public static async Task SetCredentialsOnProcessAsync(ProcessStartInfo psi, ILogger logger = null) {
+            await TaskUtilities.SwitchToBackgroundThread();
+
+            IntPtr cred = IntPtr.Zero;
+            try {
                 if (CredRead(BrokerUserCredName, CredType.GENERIC, 0, out cred)) {
                     Credential credential = new Credential();
                     credential = (Credential)Marshal.PtrToStructure(cred, typeof(Credential));
@@ -163,23 +181,28 @@ namespace Microsoft.R.Host.Monitor {
 
                     uint error = CredUIParseUserName(credential.userName, usernameBldr, usernameBldr.Capacity, domainBldr, domainBldr.Capacity);
                     if (error != 0) {
+                        logger?.LogError(Resources.Error_UserNameParsing, error);
                         throw new Win32Exception((int)error);
                     }
 
                     SecureString pass = new SecureString();
-                    foreach(char c in passwordText) {
+                    foreach (char c in passwordText) {
                         pass.AppendChar(c);
                     }
 
                     psi.UserName = usernameBldr.ToString();
                     psi.Domain = domainBldr.ToString();
                     psi.Password = pass;
-                }
 
+                    logger?.LogInformation(Resources.Info_CredRetreiveSucceeded);
+                } else {
+                    logger?.LogError(Resources.Error_CredRetreiveFailed, Marshal.GetLastWin32Error());
+                }
+            } finally {
                 if (cred != IntPtr.Zero) {
                     CredFree(cred);
                 }
-            });
+            }
         }
 
         internal enum LogonType {
@@ -355,14 +378,14 @@ namespace Microsoft.R.Host.Monitor {
 
         [DllImport("credui.dll", CharSet = CharSet.Auto, SetLastError = true)]
         private static extern bool CredUnPackAuthenticationBuffer(
-            int dwFlags, 
-            IntPtr pAuthBuffer, 
-            uint cbAuthBuffer, 
-            StringBuilder pszUserName, 
-            ref int pcchMaxUserName, 
-            StringBuilder pszDomainName, 
-            ref int pcchMaxDomainame, 
-            StringBuilder pszPassword, 
+            int dwFlags,
+            IntPtr pAuthBuffer,
+            uint cbAuthBuffer,
+            StringBuilder pszUserName,
+            ref int pcchMaxUserName,
+            StringBuilder pszDomainName,
+            ref int pcchMaxDomainame,
+            StringBuilder pszPassword,
             ref int pcchMaxPassword);
 
         [DllImport("advapi32.dll", SetLastError = true, BestFitMapping = false, ThrowOnUnmappableChar = true)]

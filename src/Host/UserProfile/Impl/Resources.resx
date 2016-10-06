@@ -117,109 +117,25 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Btn_AddOrChangeBrokerUser" xml:space="preserve">
-    <value>Change User</value>
+  <data name="Error_UserLogonFailed" xml:space="preserve">
+    <value>Failed to logon user {0}\{1}, with Win32 error {2}.</value>
   </data>
-  <data name="Btn_RemoveBrokerUser" xml:space="preserve">
-    <value>Remove User</value>
+  <data name="Error_UserProfileCreateFailed" xml:space="preserve">
+    <value>Failed to create user profile for user {0}\{1}, with Win32 error {2}.</value>
   </data>
-  <data name="Btn_StartBroker" xml:space="preserve">
-    <value>Start Broker</value>
+  <data name="Error_UserProfileCreationError" xml:space="preserve">
+    <value>User profile service failed with exception: {0}.</value>
   </data>
-  <data name="Btn_StopBroker" xml:space="preserve">
-    <value>Stop Broker</value>
+  <data name="Error_UserProfileDirectoryWasNotFound" xml:space="preserve">
+    <value>User profile directory expected but not found for user {0}\{1}, Win32 error {0}</value>
   </data>
-  <data name="Text_AddOrChangeBrokerUser" xml:space="preserve">
-    <value>Add or change the credentials which will be used to run R Host Broker.</value>
+  <data name="Info_UserProfileAlreadyExists" xml:space="preserve">
+    <value>User profile already exists for user  {0}\{1}.</value>
   </data>
-  <data name="Text_RemoveBrokerUser" xml:space="preserve">
-    <value>Removes the credentials used for R Host Broker.</value>
+  <data name="Info_UserProfileCreated" xml:space="preserve">
+    <value>Created user profile for user {0}\{1}.</value>
   </data>
-  <data name="Text_RHostBrokerCredentials" xml:space="preserve">
-    <value>R Host Broker Credentials</value>
-  </data>
-  <data name="Text_RHostBrokerCredentialsDetail" xml:space="preserve">
-    <value>The credentials entered below will be used to start the R Host Broker Process. If you choose to save the credentials monitor will automatically start the broker process.</value>
-  </data>
-  <data name="Text_StartBroker" xml:space="preserve">
-    <value>Starts and monitors an instance of the R Host Broker.</value>
-  </data>
-  <data name="Text_StopBroker" xml:space="preserve">
-    <value>Stops the monitored R Host Broker instance.</value>
-  </data>
-  <data name="Error_CredUIFailedToLoad" xml:space="preserve">
-    <value>CredUIPromptForWindowsCredentials failed to load, with error: {0}</value>
-  </data>
-  <data name="Text_RHostBrokerCredentialsInvalidTryAgain" xml:space="preserve">
-    <value>The user could not be logged in on this machine, please try again. The credentials entered below will be used to start the R Host Broker Process. If you choose to save the credentials monitor will automatically start the broker process.</value>
-  </data>
-  <data name="Text_UseDifferentBroker" xml:space="preserve">
-    <value>Use a different user to run the Broker.</value>
-  </data>
-  <data name="Info_DidNotFindSavedCredentails" xml:space="preserve">
-    <value>Broker is configured to run as a different user than the Monitor. Broker user credential were not found.</value>
-  </data>
-  <data name="Error_CredentialData" xml:space="preserve">
-    <value>Failed to parse credential data with Win32 error {0}.</value>
-  </data>
-  <data name="Error_UserNameParsing" xml:space="preserve">
-    <value>Failed to parse user name with Win32 error {0}.</value>
-  </data>
-  <data name="Info_TooManyLoginAttempts" xml:space="preserve">
-    <value>too many attempts to add Broker user login credentials.</value>
-  </data>
-  <data name="Error_AddOrChangeUserFailed" xml:space="preserve">
-    <value>Add or change user failed with exception: {0}</value>
-  </data>
-  <data name="Error_AutoRestartFailed" xml:space="preserve">
-    <value>Auto restart Broker failed , exception: {0}</value>
-  </data>
-  <data name="Error_CredentialUnpackingFailed" xml:space="preserve">
-    <value>User credential unpacking failed with Win32 error {0}.</value>
-  </data>
-  <data name="Error_CredRetreiveFailed" xml:space="preserve">
-    <value>Failed to retrieve credentials from credential manager, with Win32 error {0}.</value>
-  </data>
-  <data name="Error_CredSaveFailed" xml:space="preserve">
-    <value>Credential save failed with Win32 error {0}.</value>
-  </data>
-  <data name="Error_LogOnAttemptFailed" xml:space="preserve">
-    <value>Log on attempt failed, with Win32 error {0}.</value>
-  </data>
-  <data name="Error_StartUpFailed" xml:space="preserve">
-    <value>Startup failed with exception: {0}</value>
-  </data>
-  <data name="Error_StopBrokerFailed" xml:space="preserve">
-    <value>Stop Broker failed , exception: {0}</value>
-  </data>
-  <data name="Info_BrokerAlreadyRunning" xml:space="preserve">
-    <value>Broker is already running, process id {0}.</value>
-  </data>
-  <data name="Info_CredAttempt" xml:space="preserve">
-    <value>Trying to acquire credentials, attempt {0}.</value>
-  </data>
-  <data name="Info_CredRetreiveSucceeded" xml:space="preserve">
-    <value>Successfully retrieved credentials from credential manager.</value>
-  </data>
-  <data name="Info_CredSaveSucceeded" xml:space="preserve">
-    <value>Credential save succeeded.</value>
-  </data>
-  <data name="Info_CredUICredsReceived" xml:space="preserve">
-    <value>User entered credentials.</value>
-  </data>
-  <data name="Info_CredUIDismissed" xml:space="preserve">
-    <value>User dismissed Credential UI without entering credentials.</value>
-  </data>
-  <data name="Info_CredUnpacked" xml:space="preserve">
-    <value>User credentials were successfully unpacked.</value>
-  </data>
-  <data name="Info_LogOnAttemptSucceeded" xml:space="preserve">
-    <value>Log on attempt succeeded.</value>
-  </data>
-  <data name="Info_NewBrokerInstanceStarted" xml:space="preserve">
-    <value>New Broker instance started, process id {0}.</value>
-  </data>
-  <data name="Info_RemovedCredentials" xml:space="preserve">
-    <value>Removed credentials from credential manager.</value>
+  <data name="Info_UserProfileDirectoryFound" xml:space="preserve">
+    <value>User profile directory was found for user {0}\{1}, path: {2}</value>
   </data>
 </root>

@@ -5,36 +5,46 @@ using System;
 using System.Text;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
+using Microsoft.Extensions.Logging;
+using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.UserProfile {
     internal class RUserProfileCreator {
 
-        internal static IRUserProfileCreatorResult Create(string username, string domain, string password) {
+        internal static RUserProfileCreateResponse Create(RUserProfileCreateRequest request, ILogger logger = null) {
             IntPtr token;
-            IRUserProfileCreatorResult result = null;
-            if (LogonUser(username, domain, password, (int)LogonType.LOGON32_LOGON_NETWORK, (int)LogonProvider.LOGON32_PROVIDER_DEFAULT, out token)) {
+            RUserProfileCreateResponse result = new RUserProfileCreateResponse() { Error=13, ProfileExists = false, ProfilePath = string.Empty};
+            uint error = 0;
+            if (LogonUser(request.Username, request.Domain, request.Password, (int)LogonType.LOGON32_LOGON_NETWORK, (int)LogonProvider.LOGON32_PROVIDER_DEFAULT, out token)) {
                 WindowsIdentity winIdentity = new WindowsIdentity(token);
                 StringBuilder profileDir = new StringBuilder(MAX_PATH);
                 uint size = (uint)profileDir.Capacity;
 
                 bool profileExists = false;
-                uint error = CreateProfile(winIdentity.User.Value, username, profileDir, size);
+                error = CreateProfile(winIdentity.User.Value, request.Username, profileDir, size);
                 // 0x800700b7 - Profile already exists.
                 if (error != 0 && error != 0x800700b7) {
-                    result = new RUserProfileCreatorResult(null, error, profileExists);
+                    logger?.LogError(Resources.Error_UserProfileCreateFailed, request.Domain, request.Username, error);
+                    result = RUserProfileCreateResponse.Blank;
                 } else if (error == 0x800700b7) {
                     profileExists = true;
+                    logger?.LogInformation(Resources.Info_UserProfileAlreadyExists, request.Domain, request.Username);
+                } else {
+                    logger?.LogInformation(Resources.Info_UserProfileCreated, request.Domain, request.Username);
                 }
 
                 profileDir = new StringBuilder(MAX_PATH * 2);
                 size = (uint)profileDir.Capacity;
                 if (GetUserProfileDirectory(token, profileDir, ref size)) {
-                    result = new RUserProfileCreatorResult(profileDir.ToString(), 0, profileExists);
+                    logger?.LogInformation(Resources.Info_UserProfileDirectoryFound, request.Domain, request.Username, profileDir.ToString());
+                    result = RUserProfileCreateResponse.Create(0, profileExists, profileDir.ToString());
                 } else {
-                    result = new RUserProfileCreatorResult(profileDir.ToString(), (uint)Marshal.GetLastWin32Error(), profileExists);
+                    logger?.LogError(Resources.Error_UserProfileDirectoryWasNotFound, request.Domain, request.Username, Marshal.GetLastWin32Error());
+                    result = RUserProfileCreateResponse.Create((uint)Marshal.GetLastWin32Error(), profileExists, profileDir.ToString());
                 }
             } else {
-                result = new RUserProfileCreatorResult(null, (uint)Marshal.GetLastWin32Error(), false);
+                logger?.LogError(Resources.Error_UserLogonFailed, request.Domain, request.Username, Marshal.GetLastWin32Error());
+                result = RUserProfileCreateResponse.Create((uint)Marshal.GetLastWin32Error(), false, null);
             }
 
             if(token != IntPtr.Zero) {
