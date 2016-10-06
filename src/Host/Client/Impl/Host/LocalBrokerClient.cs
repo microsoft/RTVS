@@ -149,7 +149,7 @@ namespace Microsoft.R.Host.Client.Host {
                         throw new RHostDisconnectedException($"Unexpected number of endpoint URIs received from broker: {serverUriStr}");
                     }
 
-                    CreateHttpClient(serverUri[0], _credentials);
+                    CreateHttpClient(serverUri[0]);
                 }
 
                 if (_disposed == 0) {

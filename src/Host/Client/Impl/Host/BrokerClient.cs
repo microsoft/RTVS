@@ -58,7 +58,7 @@ namespace Microsoft.R.Host.Client.Host {
             _interpreterId = interpreterId;
         }
 
-        protected virtual void CreateHttpClient(Uri baseAddress, ICredentials credentials) {
+        protected virtual void CreateHttpClient(Uri baseAddress) {
 
             HttpClientHandler = new WebRequestHandler() {
                 PreAuthenticate = true,

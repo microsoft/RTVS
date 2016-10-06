@@ -31,7 +31,7 @@ namespace Microsoft.R.Host.Client.Host {
 
             _credentials = new RemoteCredentialsDecorator(applicationWindowHandle, brokerUri);
             _authority = new UriBuilder { Scheme = brokerUri.Scheme, Host = brokerUri.Host, Port = brokerUri.Port }.ToString();
-            CreateHttpClient(brokerUri, _credentials);
+            CreateHttpClient(brokerUri);
         }
 
         public override string HandleUrl(string url, CancellationToken ct) {
@@ -49,8 +49,8 @@ namespace Microsoft.R.Host.Client.Host {
                 : await base.HandleHttpRequestExceptionAsync(exception);
         }
 
-        protected override void CreateHttpClient(Uri baseAddress, ICredentials credentials) {
-            base.CreateHttpClient(baseAddress, credentials);
+        protected override void CreateHttpClient(Uri baseAddress) {
+            base.CreateHttpClient(baseAddress);
             HttpClientHandler.ServerCertificateValidationCallback += ValidateCertificate;
         }
 

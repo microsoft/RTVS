@@ -219,7 +219,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             if ((sslPolicyErrors & SslPolicyErrors.RemoteCertificateNotAvailable) != 0) {
                 return false;
             }
-            // Accept other cases. Validation for untrusted certificates is done by the broker.
+            // Accept other cases. Main certificate validation is done at the time we connect to the broker.
             return true;
         }
     }
