@@ -61,13 +61,25 @@ namespace Microsoft.Common.Core.Shell {
         /// Shows progress bar that blocks hosting shell
         /// </summary>
         /// <returns></returns>
-        ProgressBarSession ShowProgressBar(string waitMessage, int delayToShowDialogMs = 0);
+        void ShowProgressBar(Func<CancellationToken, System.Threading.Tasks.Task> method, string waitMessage, int delayToShowDialogMs = 0);
 
         /// <summary>
         /// Shows progress bar that blocks hosting shell
         /// </summary>
         /// <returns></returns>
-        ProgressBarSession ShowProgressBarWithUpdate(string waitMessage, int delayToShowDialogMs = 0);
+        TResult ShowProgressBar<TResult>(Func<CancellationToken, System.Threading.Tasks.Task<TResult>> method, string waitMessage, int delayToShowDialogMs = 0);
+
+        /// <summary>
+        /// Shows progress bar that blocks hosting shell
+        /// </summary>
+        /// <returns></returns>
+        void ShowProgressBar(Func<IProgress<ProgressDialogData>, CancellationToken, System.Threading.Tasks.Task> method, string waitMessage, int totalSteps = 100, int delayToShowDialogMs = 0);
+
+        /// <summary>
+        /// Shows progress bar that blocks hosting shell
+        /// </summary>
+        /// <returns></returns>
+        T ShowProgressBar<T>(Func<IProgress<ProgressDialogData>, CancellationToken, System.Threading.Tasks.Task<T>> method, string waitMessage, int totalSteps = 100, int delayToShowDialogMs = 0);
 
         /// <summary>
         /// Displays message with specified buttons in a host-specific UI

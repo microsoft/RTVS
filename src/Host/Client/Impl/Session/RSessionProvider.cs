@@ -124,7 +124,7 @@ namespace Microsoft.R.Host.Client.Session {
                 token.Set();
                 OnBrokerDisconnected();
             } catch (Exception) {
-                
+                token.Reset();
             }
         }
 

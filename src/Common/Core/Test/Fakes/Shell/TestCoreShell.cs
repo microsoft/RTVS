@@ -45,13 +45,19 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
             LastShownErrorMessage = message;
         }
 
-        public void ShowContextMenu(CommandID commandId, int x, int y, object commandTaget = null) {
-            LastShownContextMenu = commandId;
-        }
+        public void ShowContextMenu(CommandID commandId, int x, int y, object commandTaget = null) => LastShownContextMenu = commandId;
 
-        public ProgressBarSession ShowProgressBar(string waitMessage, int delayToShowDialogMs = 0) => new ProgressBarSession();
+        public void ShowProgressBar(Func<CancellationToken, Task> method, string waitMessage, int delayToShowDialogMs = 0) 
+            => UIThreadHelper.Instance.Invoke(() => method(CancellationToken.None)).GetAwaiter().GetResult();
 
-        public ProgressBarSession ShowProgressBarWithUpdate(string waitMessage, int delayToShowDialogMs = 0) => new ProgressBarSession();
+        public TResult ShowProgressBar<TResult>(Func<CancellationToken, Task<TResult>> method, string waitMessage, int delayToShowDialogMs = 0) 
+            => UIThreadHelper.Instance.Invoke(() => method(CancellationToken.None)).GetAwaiter().GetResult();
+
+        public void ShowProgressBar(Func<IProgress<ProgressDialogData>, CancellationToken, Task> method, string waitMessage, int totalSteps = 100, int delayToShowDialogMs = 0)
+            => UIThreadHelper.Instance.Invoke(() => method(new Progress<ProgressDialogData>(), CancellationToken.None)).GetAwaiter().GetResult();
+
+        public T ShowProgressBar<T>(Func<IProgress<ProgressDialogData>, CancellationToken, Task<T>> method, string waitMessage, int totalSteps = 100, int delayToShowDialogMs = 0)
+            => UIThreadHelper.Instance.Invoke(() => method(new Progress<ProgressDialogData>(), CancellationToken.None)).GetAwaiter().GetResult();
 
         public MessageButtons ShowMessage(string message, MessageButtons buttons) {
             LastShownMessage = message;

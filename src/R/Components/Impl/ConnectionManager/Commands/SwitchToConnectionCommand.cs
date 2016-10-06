@@ -38,7 +38,7 @@ namespace Microsoft.R.Components.ConnectionManager.Commands {
             return _recentConnections[index].Name;
         }
 
-        public async Task<CommandResult> InvokeAsync(int index) {
+        public Task<CommandResult> InvokeAsync(int index) {
             if (_recentConnections == null) {
                 _recentConnections = _connectionManager.RecentConnections;
             }
@@ -48,11 +48,9 @@ namespace Microsoft.R.Components.ConnectionManager.Commands {
                 var progressBarMessage = _connectionManager.ActiveConnection != null
                     ? Resources.ConnectionManager_SwitchConnectionProgressBarMessage.FormatInvariant(_connectionManager.ActiveConnection.Name, connection.Name)
                     : Resources.ConnectionManager_ConnectionToProgressBarMessage.FormatInvariant(connection.Name);
-                using (var progressBarSession = _shell.ShowProgressBar(progressBarMessage)) {
-                    await _connectionManager.ConnectAsync(connection, progressBarSession.UserCancellationToken);
-                }
+                _shell.ShowProgressBar(ct => _connectionManager.ConnectAsync(connection, ct), progressBarMessage);
             }
-            return CommandResult.Executed;
+            return Task.FromResult(CommandResult.Executed);
         }
 
         public int MaxCount { get; } = 5;

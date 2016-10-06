@@ -244,18 +244,44 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             }
         }
 
-        public ProgressBarSession ShowProgressBar(string waitMessage, int delayToShowDialogMs = 0) {
-            var dialogFactory = GetGlobalService<IVsThreadedWaitDialogFactory>(typeof(SVsThreadedWaitDialogFactory));
-            var initialProgress = new ThreadedWaitDialogProgressData(waitMessage, isCancelable: true);
-            var vsProgressBarSession = dialogFactory.StartWaitDialog(null, initialProgress, TimeSpan.FromMilliseconds(delayToShowDialogMs));
-            return new ProgressBarSession(vsProgressBarSession, vsProgressBarSession.UserCancellationToken);
+        public void ShowProgressBar(Func<CancellationToken, System.Threading.Tasks.Task> method, string waitMessage, int delayToShowDialogMs = 0) {
+            using (var session = StartWaitDialog(waitMessage, delayToShowDialogMs)) {
+                var ct = session.UserCancellationToken;
+                ThreadHelper.JoinableTaskFactory.Run(() => method(ct));
+            }
         }
 
-        public ProgressBarSession ShowProgressBarWithUpdate(string waitMessage, int delayToShowDialogMs = 0) {
+        public T ShowProgressBar<T>(Func<CancellationToken, System.Threading.Tasks.Task<T>> method, string waitMessage, int delayToShowDialogMs = 0) {
+            T result;
+            using (var session = StartWaitDialog(waitMessage, delayToShowDialogMs)) {
+                var ct = session.UserCancellationToken;
+                result = ThreadHelper.JoinableTaskFactory.Run(() => method(ct));
+            }
+            return result;
+        }
+
+        public void ShowProgressBar(Func<IProgress<ProgressDialogData>, CancellationToken, System.Threading.Tasks.Task> method, string waitMessage, int totalSteps = 100, int delayToShowDialogMs = 0) {
+            using (var session = StartWaitDialog(waitMessage, delayToShowDialogMs)) {
+                var ct = session.UserCancellationToken;
+                var progress = new Progress(session.Progress, totalSteps); 
+                ThreadHelper.JoinableTaskFactory.Run(() => method(progress, ct));
+            }
+        }
+
+        public T ShowProgressBar<T>(Func<IProgress<ProgressDialogData>, CancellationToken, System.Threading.Tasks.Task<T>> method, string waitMessage, int totalSteps = 100, int delayToShowDialogMs = 0) {
+            T result;
+            using (var session = StartWaitDialog(waitMessage, delayToShowDialogMs)) {
+                var ct = session.UserCancellationToken;
+                var progress = new Progress(session.Progress, totalSteps);
+                result = ThreadHelper.JoinableTaskFactory.Run(() => method(progress, ct));
+            }
+            return result;
+        }
+
+        private ThreadedWaitDialogHelper.Session StartWaitDialog(string waitMessage, int delayToShowDialogMs) {
             var dialogFactory = GetGlobalService<IVsThreadedWaitDialogFactory>(typeof(SVsThreadedWaitDialogFactory));
             var initialProgress = new ThreadedWaitDialogProgressData(waitMessage, isCancelable: true);
-            var vsProgressBarSession = dialogFactory.StartWaitDialog(null, initialProgress, TimeSpan.FromMilliseconds(delayToShowDialogMs));
-            return new ProgressBarSession<ThreadedWaitDialogProgressData>(vsProgressBarSession, vsProgressBarSession.UserCancellationToken, vsProgressBarSession.Progress);
+            return dialogFactory.StartWaitDialog(null, initialProgress, TimeSpan.FromMilliseconds(delayToShowDialogMs));
         }
 
         /// <summary>
@@ -500,5 +526,19 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         public ICoreServices Services => _coreServices;
         public IApplicationConstants AppConstants => _appConstants;
+
+        private class Progress : IProgress<ProgressDialogData> {
+            private readonly IProgress<ThreadedWaitDialogProgressData> _vsProgress;
+            private readonly int _totalSteps;
+
+            public Progress(IProgress<ThreadedWaitDialogProgressData> vsProgress, int totalSteps) {
+                _vsProgress = vsProgress;
+                _totalSteps = totalSteps;
+            }
+
+            public void Report(ProgressDialogData data) {
+                _vsProgress.Report(new ThreadedWaitDialogProgressData(data.WaitMessage, data.ProgressText, data.StatusBarText, true, data.Step, _totalSteps));
+            }
+        }
     }
 }
