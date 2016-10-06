@@ -174,12 +174,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     return;
                 case Key.System:
                     if (e.SystemKey == Key.F10 && (Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift) {
-                        var focus = Keyboard.FocusedElement as FrameworkElement;
-                        if (focus != null) {
-                            var pt = focus.PointToScreen(new Point(1, 1));
-                            _shell.ShowContextMenu(
-                                new CommandID(RGuidList.RCmdSetGuid, (int)RContextMenuId.VariableExplorer), (int)pt.X, (int)pt.Y, this);
-                        }
+                        ShowContextMenu();
                     }
                     break;
                 case Key.C:
@@ -196,6 +191,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             base.OnPreviewKeyDown(e);
         }
 
+        private void ShowContextMenu() {
+            var focus = Keyboard.FocusedElement as FrameworkElement;
+            if (focus != null) {
+                var pt = focus.PointToScreen(new Point(1, 1));
+                _shell.ShowContextMenu(
+                    new CommandID(RGuidList.RCmdSetGuid, (int)RContextMenuId.VariableExplorer), (int)pt.X, (int)pt.Y, this);
+            }
+        }
+
         protected override void OnPreviewKeyUp(KeyEventArgs e) {
             // Prevent Enter from being passed to WPF control
             // when user hits it in the context menu
@@ -206,6 +210,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 return;
             } else if (e.Key == Key.Delete || e.Key == Key.Back) {
                 DeleteCurrentVariableAsync().DoNotWait();
+            } else if (e.Key == Key.Apps) {
+                ShowContextMenu();
             }
             base.OnPreviewKeyUp(e);
         }
