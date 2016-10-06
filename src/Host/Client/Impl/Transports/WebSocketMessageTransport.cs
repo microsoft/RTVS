@@ -14,7 +14,7 @@ namespace Microsoft.R.Host.Client {
         private readonly WebSocket _socket;
         private readonly SemaphoreSlim _receiveLock = new SemaphoreSlim(1, 1);
         private readonly SemaphoreSlim _sendLock = new SemaphoreSlim(1, 1);
-        
+
         public WebSocketMessageTransport(WebSocket socket) {
             _socket = socket;
         }
@@ -22,9 +22,7 @@ namespace Microsoft.R.Host.Client {
         public async Task CloseAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             await _sendLock.WaitAsync(cancellationToken);
             try {
-                if (_socket.State == WebSocketState.Open) {
-                    await _socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, "", cancellationToken);
-                }
+                await _socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, "", cancellationToken);
             } catch (Exception ex) when (ex is IOException || ex is SocketException || ex is WebSocketException) {
                 throw new MessageTransportException(ex);
             } finally {
