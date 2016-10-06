@@ -78,7 +78,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
         }
 
         private string GetRemoteUrl(Uri url, string remoteBase) {
-            Uri remote = new Uri($"http://{remoteBase}");
+            Uri remote = new Uri($"https://{remoteBase}");
             UriBuilder ub = new UriBuilder(url);
             ub.Host = remote.Host;
             ub.Port = remote.Port;

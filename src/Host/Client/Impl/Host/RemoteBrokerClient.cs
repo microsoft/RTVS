@@ -79,6 +79,8 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         private bool ValidateCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) {
+            certificate.Reset();
+
             if (sslPolicyErrors == SslPolicyErrors.None) {
                 return true;
             }
@@ -86,17 +88,15 @@ namespace Microsoft.R.Host.Client.Host {
             if ((sslPolicyErrors & SslPolicyErrors.RemoteCertificateNotAvailable) != 0) {
                 Log.WriteAsync(LogVerbosity.Minimal, MessageCategory.Error, Resources.Error_NoBrokerCertificate);
                 Callbacks.WriteConsoleEx(Resources.Error_NoBrokerCertificate, OutputType.Error, CancellationToken.None).DoNotWait();
-                return false;
-            }
+            } else if (Interlocked.CompareExchange(ref _certificateUIActive, 1, 0) == 0) {
+                Log.WriteAsync(LogVerbosity.Minimal, MessageCategory.Warning, Resources.Trace_UntrustedCertificate.FormatInvariant(certificate.Subject)).DoNotWait();
 
-            if (Interlocked.CompareExchange(ref _certificateUIActive, 1, 0) == 0) {
                 var certificate2 = certificate as X509Certificate2;
                 Debug.Assert(certificate2 != null);
                 X509Certificate2UI.DisplayCertificate(certificate2, _applicationWindowHandle);
                 Interlocked.Exchange(ref _certificateUIActive, 0);
             }
 
-            certificate.Reset();
             return false;
         }
     }

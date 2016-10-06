@@ -196,4 +196,7 @@ Error: {0}</value>
   <data name="Error_NoBrokerCertificate" xml:space="preserve">
     <value>Remote machine does not have certificate installed for the TLS with the Remote R Service.</value>
   </data>
+  <data name="Trace_UntrustedCertificate" xml:space="preserve">
+    <value>The supplied TLS certificate is not trusted: {0}</value>
+  </data>
 </root>

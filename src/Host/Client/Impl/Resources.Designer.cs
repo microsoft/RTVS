@@ -281,6 +281,15 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The supplied TLS certificate is not trusted: {0}.
+        /// </summary>
+        internal static string Trace_UntrustedCertificate {
+            get {
+                return ResourceManager.GetString("Trace_UntrustedCertificate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Version: {0}.
         /// </summary>
         internal static string Version {
