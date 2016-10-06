@@ -165,7 +165,7 @@
         <DrawingBrush.Drawing>
             <DrawingGroup>
                 <DrawingGroup.Children>
-                    <GeometryDrawing Brush="#FFF6F6F6" Geometry="{StaticResource GeometryCircle18}" />
+                    <GeometryDrawing Brush="#FFA6A6A6" Geometry="{StaticResource GeometryCircle18}" />
                     <GeometryDrawing Brush="#FF000000" Geometry="{StaticResource GeometryLocal}" />
                     <GeometryDrawing Brush="#FFF6F6F6" Geometry="{StaticResource GeometryR}" />
                 </DrawingGroup.Children>
@@ -201,7 +201,7 @@
         <DrawingBrush.Drawing>
             <DrawingGroup>
                 <DrawingGroup.Children>
-                    <GeometryDrawing Brush="#FFF6F6F6" Geometry="{StaticResource GeometryCircle18}" />
+                    <GeometryDrawing Brush="#FFA6A6A6" Geometry="{StaticResource GeometryCircle18}" />
                     <GeometryDrawing Brush="#FF000000" Geometry="{StaticResource GeometryCloud}" />
                     <GeometryDrawing Brush="#FFF6F6F6" Geometry="{StaticResource GeometryR}" />
                 </DrawingGroup.Children>
