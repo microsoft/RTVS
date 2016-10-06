@@ -33,8 +33,6 @@ namespace Microsoft.R.Host.Broker.Startup {
         static Program() { }
 
         public static void Main(string[] args) {
-            // MessageBox.Show("Broker");
-
             var configBuilder = new ConfigurationBuilder().AddCommandLine(args);
             Configuration = configBuilder.Build();
 
@@ -71,7 +69,7 @@ namespace Microsoft.R.Host.Broker.Startup {
                     if (httpsOptions != null) {
                         options.UseHttps(httpsOptions);
                     }
-                    options.UseConnectionLogging();
+                    //options.UseConnectionLogging();
                 })
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseStartup<Startup>();
@@ -122,6 +120,5 @@ namespace Microsoft.R.Host.Broker.Startup {
                 Environment.Exit((int)BrokerExitCodes.Timeout);
             });
         }
-
     }
 }

@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Net;
-using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -78,7 +77,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
         }
 
         private string GetRemoteUrl(Uri url, string remoteBase) {
-            Uri remote = new Uri($"https://{remoteBase}");
+            Uri remote = new Uri($"http://{remoteBase}");
             UriBuilder ub = new UriBuilder(url);
             ub.Host = remote.Host;
             ub.Port = remote.Port;

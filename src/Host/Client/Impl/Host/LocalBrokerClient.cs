@@ -61,6 +61,7 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         protected override ICredentialsDecorator Credentials => _credentials;
+        protected override string WebSocketsScheme => "ws";
 
         private async Task EnsureBrokerStartedAsync() {
             DisposableBag.ThrowIfDisposed();

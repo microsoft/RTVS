@@ -27,15 +27,11 @@ namespace Microsoft.R.Host.Broker.Startup {
                 .Configure<SecurityOptions>(Program.Configuration.GetSection("security"))
                 .Configure<ROptions>(Program.Configuration.GetSection("R"));
 
-            services.AddSingleton<IFileSystem>(new FileSystem());
-
-            services.AddSingleton<LifetimeManager>();
-
-            services.AddSingleton<SecurityManager>();
-
-            services.AddSingleton<InterpreterManager>();
-
-            services.AddSingleton<SessionManager>();
+            services.AddSingleton<IFileSystem>(new FileSystem())
+                    .AddSingleton<LifetimeManager>()
+                    .AddSingleton<SecurityManager>()
+                    .AddSingleton<InterpreterManager>()
+                    .AddSingleton<SessionManager>();
 
             services.AddAuthorization(options => options.AddPolicy(
                 Policies.RUser,

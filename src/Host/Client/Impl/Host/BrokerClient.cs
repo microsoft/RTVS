@@ -40,7 +40,9 @@ namespace Microsoft.R.Host.Client.Host {
         protected WebRequestHandler HttpClientHandler { get; private set; }
         protected HttpClient HttpClient { get; private set; }
         protected IRCallbacks Callbacks { get; private set; }
+
         protected abstract ICredentialsDecorator Credentials { get; }
+        protected abstract string WebSocketsScheme { get; }
 
         public string Name { get; }
         public Uri Uri { get; }
@@ -72,13 +74,8 @@ namespace Microsoft.R.Host.Client.Host {
             HttpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-        protected virtual void Dispose(bool disposing) {
-            DisposableBag.TryDispose();
-        }
-
-        public void Dispose() {
-            Dispose(true);
-        }
+        protected virtual void Dispose(bool disposing) => DisposableBag.TryDispose();
+        public void Dispose() => Dispose(true);
 
         public async Task PingAsync() {
             if (HttpClient != null) {
@@ -168,7 +165,7 @@ namespace Microsoft.R.Host.Client.Host {
             };
 
             var pipeUri = new UriBuilder(HttpClient.BaseAddress) {
-                Scheme = "ws",
+                Scheme = WebSocketsScheme,
                 Path = $"sessions/{name}/pipe"
             }.Uri;
 

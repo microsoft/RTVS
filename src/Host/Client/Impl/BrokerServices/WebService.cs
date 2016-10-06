@@ -43,7 +43,6 @@ namespace Microsoft.R.Host.Client.BrokerServices {
                         }
                     }
                 }
-
                 return response.EnsureSuccessStatusCode();
             } catch {
                 response.Dispose();

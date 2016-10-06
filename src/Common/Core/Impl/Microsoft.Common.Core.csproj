@@ -68,6 +68,7 @@
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Net\FileDownloader.cs" />
     <Compile Include="Net\IFileDownloader.cs" />
+    <Compile Include="Net\Network.cs" />
     <Compile Include="Net\WebSocketHelper.cs" />
     <Compile Include="OS\ErrorCodeConverter.cs" />
     <Compile Include="Security\Credentials.cs" />

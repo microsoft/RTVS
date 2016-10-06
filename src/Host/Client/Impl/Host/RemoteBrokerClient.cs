@@ -5,15 +5,13 @@ using System;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
-using System.Net.NetworkInformation;
 using System.Net.Security;
-using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
-using Microsoft.Common.Core.Security;
+using Microsoft.Common.Core.Net;
 using Microsoft.R.Host.Client.BrokerServices;
 
 namespace Microsoft.R.Host.Client.Host {
@@ -41,46 +39,22 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         protected override ICredentialsDecorator Credentials => _credentials;
+        protected override string WebSocketsScheme => "wss"; // Remote is using HTTPS hence secure sockets
 
         protected override async Task<Exception> HandleHttpRequestExceptionAsync(HttpRequestException exception) {
             // Broker is not responsing. Try regular ping.
-            string status = await GetMachineOnlineStatusAsync();
+            string status = await Uri.GetMachineOnlineStatusAsync();
             return string.IsNullOrEmpty(status)
                 ? new RHostDisconnectedException(Resources.Error_BrokerNotRunning, exception)
                 : await base.HandleHttpRequestExceptionAsync(exception);
         }
 
-        private async Task<string> GetMachineOnlineStatusAsync() {
-            if (Uri.IsFile) {
-                return string.Empty;
-            }
-
-            try {
-                var ping = new Ping();
-                var reply = await ping.SendPingAsync(Uri.Host, 5000);
-                if (reply.Status != IPStatus.Success) {
-                    return reply.Status.ToString();
-                }
-            } catch (PingException pex) {
-                var pingMessage = pex.InnerException?.Message ?? pex.Message;
-                if (!string.IsNullOrEmpty(pingMessage)) {
-                    return pingMessage;
-                }
-            } catch (SocketException sx) {
-                return sx.Message;
-            }
-            return string.Empty;
-        }
-
         protected override void CreateHttpClient(Uri baseAddress, ICredentials credentials) {
             base.CreateHttpClient(baseAddress, credentials);
-
             HttpClientHandler.ServerCertificateValidationCallback += ValidateCertificate;
         }
 
         private bool ValidateCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) {
-            certificate.Reset();
-
             if (sslPolicyErrors == SslPolicyErrors.None) {
                 return true;
             }
@@ -95,6 +69,7 @@ namespace Microsoft.R.Host.Client.Host {
                 Debug.Assert(certificate2 != null);
                 X509Certificate2UI.DisplayCertificate(certificate2, _applicationWindowHandle);
                 Interlocked.Exchange(ref _certificateUIActive, 0);
+                certificate.Reset();
             }
 
             return false;

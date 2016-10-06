@@ -25,7 +25,6 @@ namespace Microsoft.R.Host.Broker.Security {
                     ServerCertificate = cert,
                     ClientCertificateValidation = ClientCertificateValidationCallback,
                     ClientCertificateMode = ClientCertificateMode.NoCertificate,
-                    CheckCertificateRevocation = false,
                     SslProtocols = SslProtocols.Tls12
                 };
             }
