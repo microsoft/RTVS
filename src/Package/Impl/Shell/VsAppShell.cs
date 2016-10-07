@@ -54,7 +54,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private readonly ITelemetryService _telemetryService;
         private readonly IRSettings _settings;
         private readonly ICoreServices _coreServices;
-        private readonly IApplicationConstants _appConstants;
 
         private IdleTimeSource _idleTimeSource;
         private IWritableSettingsStorage _settingStorage;
@@ -67,7 +66,9 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
             _telemetryService = telemetryService;
             _coreServices = coreServices;
-            _appConstants = appConstants;
+            AppConstants = appConstants;
+            ProgressDialog = new VsProgressDialog(this);
+            FileDialog = new VsFileDialog(this);
 
             _settings = settings;
             _settings.PropertyChanged += OnSettingsChanged;
@@ -246,20 +247,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             }
         }
 
-        public ProgressBarSession ShowProgressBar(string waitMessage, int delayToShowDialogMs = 0) {
-            var dialogFactory = GetGlobalService<IVsThreadedWaitDialogFactory>(typeof(SVsThreadedWaitDialogFactory));
-            var initialProgress = new ThreadedWaitDialogProgressData(waitMessage, isCancelable: true);
-            var vsProgressBarSession = dialogFactory.StartWaitDialog(null, initialProgress, TimeSpan.FromMilliseconds(delayToShowDialogMs));
-            return new ProgressBarSession(vsProgressBarSession, vsProgressBarSession.UserCancellationToken);
-        }
-
-        public ProgressBarSession ShowProgressBarWithUpdate(string waitMessage, int delayToShowDialogMs = 0) {
-            var dialogFactory = GetGlobalService<IVsThreadedWaitDialogFactory>(typeof(SVsThreadedWaitDialogFactory));
-            var initialProgress = new ThreadedWaitDialogProgressData(waitMessage, isCancelable: true);
-            var vsProgressBarSession = dialogFactory.StartWaitDialog(null, initialProgress, TimeSpan.FromMilliseconds(delayToShowDialogMs));
-            return new ProgressBarSession<ThreadedWaitDialogProgressData>(vsProgressBarSession, vsProgressBarSession.UserCancellationToken, vsProgressBarSession.Progress);
-        }
-
         /// <summary>
         /// Displays question in a host-specific UI
         /// </summary>
@@ -286,15 +273,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         public string SaveFileIfDirty(string fullPath) =>
             new RunningDocumentTable(RPackage.Current).SaveFileIfDirty(fullPath);
-
-        public string ShowOpenFileDialog(string filter, string initialPath = null, string title = null)
-            => BrowseForFileOpen(IntPtr.Zero, filter, initialPath, title);
-
-        public string ShowBrowseDirectoryDialog(string initialPath = null, string title = null)
-            => VisualStudioTools.Dialogs.BrowseForDirectory(this.GetDialogOwnerWindow(), initialPath, title);
-
-        public string ShowSaveFileDialog(string filter, string initialPath = null, string title = null)
-            => BrowseForFileSave(IntPtr.Zero, filter, initialPath, title);
 
         public void UpdateCommandStatus(bool immediate) {
             DispatchOnUIThread(() => {
@@ -364,82 +342,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         #endregion
 
         #region IApplicationShell
-        public string BrowseForFileOpen(IntPtr owner, string filter, string initialPath = null, string title = null) {
-            IVsUIShell uiShell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-            if (uiShell == null) {
-                return null;
-            }
-
-            if (owner == IntPtr.Zero) {
-                ErrorHandler.ThrowOnFailure(uiShell.GetDialogOwnerHwnd(out owner));
-            }
-
-            VSOPENFILENAMEW[] openInfo = new VSOPENFILENAMEW[1];
-            openInfo[0].lStructSize = (uint)Marshal.SizeOf(typeof(VSOPENFILENAMEW));
-            openInfo[0].pwzFilter = filter.Replace('|', '\0') + "\0";
-            openInfo[0].hwndOwner = owner;
-            openInfo[0].pwzDlgTitle = title;
-            openInfo[0].nMaxFileName = 260;
-            var pFileName = Marshal.AllocCoTaskMem(520);
-            openInfo[0].pwzFileName = pFileName;
-            openInfo[0].pwzInitialDir = Path.GetDirectoryName(initialPath);
-            var nameArray = (Path.GetFileName(initialPath) + "\0").ToCharArray();
-            Marshal.Copy(nameArray, 0, pFileName, nameArray.Length);
-
-            try {
-                int hr = uiShell.GetOpenFileNameViaDlg(openInfo);
-                if (hr == VSConstants.OLE_E_PROMPTSAVECANCELLED) {
-                    return null;
-                }
-                ErrorHandler.ThrowOnFailure(hr);
-                return Marshal.PtrToStringAuto(openInfo[0].pwzFileName);
-            } finally {
-                if (pFileName != IntPtr.Zero) {
-                    Marshal.FreeCoTaskMem(pFileName);
-                }
-            }
-        }
-
-        public string BrowseForFileSave(IntPtr owner, string filter, string initialPath = null, string title = null) {
-            if (string.IsNullOrEmpty(initialPath)) {
-                initialPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + Path.DirectorySeparatorChar;
-            }
-
-            IVsUIShell uiShell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-            if (null == uiShell) {
-                return null;
-            }
-
-            if (owner == IntPtr.Zero) {
-                ErrorHandler.ThrowOnFailure(uiShell.GetDialogOwnerHwnd(out owner));
-            }
-
-            VSSAVEFILENAMEW[] saveInfo = new VSSAVEFILENAMEW[1];
-            saveInfo[0].lStructSize = (uint)Marshal.SizeOf(typeof(VSSAVEFILENAMEW));
-            saveInfo[0].dwFlags = 0x00000002; // OFN_OVERWRITEPROMPT
-            saveInfo[0].pwzFilter = filter.Replace('|', '\0') + "\0";
-            saveInfo[0].hwndOwner = owner;
-            saveInfo[0].pwzDlgTitle = title;
-            saveInfo[0].nMaxFileName = 260;
-            var pFileName = Marshal.AllocCoTaskMem(520);
-            saveInfo[0].pwzFileName = pFileName;
-            saveInfo[0].pwzInitialDir = Path.GetDirectoryName(initialPath);
-            var nameArray = (Path.GetFileName(initialPath) + "\0").ToCharArray();
-            Marshal.Copy(nameArray, 0, pFileName, nameArray.Length);
-            try {
-                int hr = uiShell.GetSaveFileNameViaDlg(saveInfo);
-                if (hr == VSConstants.OLE_E_PROMPTSAVECANCELLED) {
-                    return null;
-                }
-                ErrorHandler.ThrowOnFailure(hr);
-                return Marshal.PtrToStringAuto(saveInfo[0].pwzFileName);
-            } finally {
-                if (pFileName != IntPtr.Zero) {
-                    Marshal.FreeCoTaskMem(pFileName);
-                }
-            }
-        }
-
         public IWritableSettingsStorage SettingsStorage {
             get {
                 if (_settingStorage == null) {
@@ -501,6 +403,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
 
         public ICoreServices Services => _coreServices;
-        public IApplicationConstants AppConstants => _appConstants;
+        public IApplicationConstants AppConstants { get; }
+        public IProgressDialog ProgressDialog { get; }
+        public IFileDialog FileDialog { get; }
     }
 }

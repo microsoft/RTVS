@@ -25,6 +25,6 @@ namespace Microsoft.R.Components.ConnectionManager.ViewModel {
         void CancelTestConnection(IConnectionViewModel connection);
         bool TryDelete(IConnectionViewModel connection);
 
-        Task ConnectAsync(IConnectionViewModel connection);
+        void Connect(IConnectionViewModel connection);
     }
 }

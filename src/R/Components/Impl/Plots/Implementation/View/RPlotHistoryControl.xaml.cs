@@ -17,7 +17,11 @@ namespace Microsoft.R.Components.Plots.Implementation.View {
         private IRPlotHistoryViewModel ViewModel => (IRPlotHistoryViewModel)DataContext;
         private DragSurface _dragSurface = new DragSurface();
 
-        public event EventHandler<MouseButtonEventArgs> ContextMenuRequested;
+        /// <summary>
+        /// Show context menu at the specified point, which is relative
+        /// to the visual component control (ie. this control).
+        /// </summary>
+        public event EventHandler<PointEventArgs> ContextMenuRequested;
 
 
         public RPlotHistoryControl() {
@@ -33,6 +37,11 @@ namespace Microsoft.R.Components.Plots.Implementation.View {
             if (e.Key == Key.Enter) {
                 var entry = (IRPlotHistoryEntryViewModel)(((ListViewItem)sender).Content);
                 ActivatePlot(entry);
+            } else if (e.Key == Key.Apps || (e.SystemKey == Key.F10 && (Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift)) {
+                ListViewItem item = (ListViewItem)sender;
+                var point = item.TranslatePoint(new Point(1, 1), this);
+                ContextMenuRequested?.Invoke(this, new PointEventArgs(point));
+                e.Handled = true;
             }
         }
 
@@ -62,8 +71,8 @@ namespace Microsoft.R.Components.Plots.Implementation.View {
         }
 
         private void HistoryListView_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
-            // TODO: also support keyboard (Shift+F10 or context menu key)
-            ContextMenuRequested?.Invoke(sender, e);
+            var point = e.GetPosition(this);
+            ContextMenuRequested?.Invoke(this, new PointEventArgs(point));
         }
 
         private static ListViewItem GetSourceListViewItem(DependencyObject obj) {

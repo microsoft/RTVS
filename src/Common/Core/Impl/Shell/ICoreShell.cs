@@ -4,10 +4,8 @@
 using System;
 using System.ComponentModel.Design;
 using System.Threading;
-using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Settings;
-using Microsoft.Common.Core.Telemetry;
 
 namespace Microsoft.Common.Core.Shell {
     /// <summary>
@@ -58,18 +56,6 @@ namespace Microsoft.Common.Core.Shell {
         void ShowContextMenu(CommandID commandId, int x, int y, object commandTarget = null);
 
         /// <summary>
-        /// Shows progress bar that blocks hosting shell
-        /// </summary>
-        /// <returns></returns>
-        ProgressBarSession ShowProgressBar(string waitMessage, int delayToShowDialogMs = 0);
-
-        /// <summary>
-        /// Shows progress bar that blocks hosting shell
-        /// </summary>
-        /// <returns></returns>
-        ProgressBarSession ShowProgressBarWithUpdate(string waitMessage, int delayToShowDialogMs = 0);
-
-        /// <summary>
         /// Displays message with specified buttons in a host-specific UI
         /// </summary>
         MessageButtons ShowMessage(string message, MessageButtons buttons);
@@ -82,33 +68,6 @@ namespace Microsoft.Common.Core.Shell {
         string SaveFileIfDirty(string fullPath);
 
         /// <summary>
-        /// Shows the open file dialog.
-        /// </summary>
-        /// <param name="filter"></param>
-        /// <param name="initialPath"></param>
-        /// <param name="title"></param>
-        /// <returns>Full path to the file selected, or <c>null</c>.</returns>
-        string ShowOpenFileDialog(string filter, string initialPath = null, string title = null);
-
-        /// <summary>
-        /// Shows the browse directory dialog.
-        /// </summary>
-        /// <param name="filter"></param>
-        /// <param name="initialPath"></param>
-        /// <param name="title"></param>
-        /// <returns>Full path to the directory selected, or <c>null</c>.</returns>
-        string ShowBrowseDirectoryDialog(string initialPath = null, string title = null);
-
-        /// <summary>
-        /// Shows the save file dialog.
-        /// </summary>
-        /// <param name="filter"></param>
-        /// <param name="initialPath"></param>
-        /// <param name="title"></param>
-        /// <returns>Full path to the file selected, or <c>null</c>.</returns>
-        string ShowSaveFileDialog(string filter, string initialPath = null, string title = null);
-
-        /// <summary>
         /// Informs the environment to update the state of the commands
         /// </summary>
         /// <param name="immediate">True if the update is performed immediately</param>
@@ -118,6 +77,16 @@ namespace Microsoft.Common.Core.Shell {
         /// Tells if code runs in unit test environment
         /// </summary>
         bool IsUnitTestEnvironment { get; }
+
+        /// <summary>
+        /// File dialogs
+        /// </summary>
+        IFileDialog FileDialog { get; }
+
+        /// <summary>
+        /// Modal dialog with progress bar
+        /// </summary>
+        IProgressDialog ProgressDialog { get; }
 
         /// <summary>
         /// Application core services

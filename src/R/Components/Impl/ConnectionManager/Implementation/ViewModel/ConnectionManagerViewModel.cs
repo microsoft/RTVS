@@ -133,7 +133,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                 } catch (ArgumentException) { } catch (IOException) { }
             }
 
-            var path = _shell.ShowBrowseDirectoryDialog(latestLocalPath);
+            var path = _shell.FileDialog.ShowBrowseDirectoryDialog(latestLocalPath);
             if (path != null) {
                 // Verify path
                 var ri = new RInterpreterInfo(string.Empty, path);
@@ -212,19 +212,15 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             return result;
         }
 
-        public async Task ConnectAsync(IConnectionViewModel connection) {
+        public void Connect(IConnectionViewModel connection) {
             _shell.AssertIsOnMainThread();
             if (connection.IsActive && !IsConnected) {
-                using (_shell.ShowProgressBar(Resources.ConnectionManager_ReconnectionToProgressBarMessage.FormatInvariant(connection.Name))) {
-                    await _connectionManager.ReconnectAsync();
-                }
+                _shell.ProgressDialog.Show(_connectionManager.ReconnectAsync, Resources.ConnectionManager_ReconnectionToProgressBarMessage.FormatInvariant(connection.Name));
             } else {
                 var progressBarMessage = _connectionManager.ActiveConnection != null
                     ? Resources.ConnectionManager_SwitchConnectionProgressBarMessage.FormatInvariant(_connectionManager.ActiveConnection.Name, connection.Name)
                     : Resources.ConnectionManager_ConnectionToProgressBarMessage.FormatInvariant(connection.Name);
-                using (var progressBarSession = _shell.ShowProgressBar(progressBarMessage)) {
-                    await _connectionManager.ConnectAsync(connection, progressBarSession.UserCancellationToken);
-                }
+                _shell.ProgressDialog.Show(ct => _connectionManager.ConnectAsync(connection, ct), progressBarMessage);
             }
 
             UpdateConnections();

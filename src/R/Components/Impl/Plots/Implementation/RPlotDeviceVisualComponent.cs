@@ -6,14 +6,12 @@ using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Input;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.Plots.Implementation.View;
 using Microsoft.R.Components.Plots.Implementation.ViewModel;
 using Microsoft.R.Components.Plots.ViewModel;
-using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.View;
 using Microsoft.R.Host.Client;
 
@@ -153,8 +151,8 @@ namespace Microsoft.R.Components.Plots.Implementation {
             _disposableBag.TryDispose();
         }
 
-        private void Control_ContextMenuRequested(object sender, System.Windows.Input.MouseButtonEventArgs e) {
-            Container.ShowContextMenu(RPlotCommandIds.PlotDeviceContextMenu, GetPosition(e, (FrameworkElement)sender));
+        private void Control_ContextMenuRequested(object sender, PointEventArgs e) {
+            Container.ShowContextMenu(RPlotCommandIds.PlotDeviceContextMenu, e.Point);
         }
 
         private void ViewModel_PlotChanged(object sender, EventArgs e) {
@@ -191,20 +189,6 @@ namespace Microsoft.R.Components.Plots.Implementation {
 
         private void UpdateStatus() {
             Container.StatusText = _viewModel.LocatorMode ? Resources.Plots_StatusLocatorActive : string.Empty;
-        }
-
-        private static Point GetPosition(InputEventArgs e, FrameworkElement fe) {
-            var mouseEventArgs = e as MouseEventArgs;
-            if (mouseEventArgs != null) {
-                return mouseEventArgs.GetPosition(fe);
-            }
-
-            var touchEventArgs = e as TouchEventArgs;
-            if (touchEventArgs != null) {
-                return touchEventArgs.GetTouchPoint(fe).Position;
-            }
-
-            return new Point(0, 0);
         }
     }
 }

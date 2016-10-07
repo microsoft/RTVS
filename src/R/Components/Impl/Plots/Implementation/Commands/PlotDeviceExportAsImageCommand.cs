@@ -24,7 +24,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
         }
 
         public async Task<CommandResult> InvokeAsync() {
-            string filePath = InteractiveWorkflow.Shell.ShowSaveFileDialog(Resources.Plots_ExportAsImageFilter, null, Resources.Plots_ExportAsImageDialogTitle);
+            string filePath = InteractiveWorkflow.Shell.FileDialog.ShowSaveFileDialog(Resources.Plots_ExportAsImageFilter, null, Resources.Plots_ExportAsImageDialogTitle);
             if (!string.IsNullOrEmpty(filePath)) {
                 string device = DeviceFromFileExtension(filePath);
                 if (!string.IsNullOrEmpty(device)) {

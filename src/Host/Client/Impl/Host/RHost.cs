@@ -13,6 +13,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Protocol;
 using Newtonsoft.Json.Linq;
@@ -31,6 +32,7 @@ namespace Microsoft.R.Host.Client {
         private readonly CancellationTokenSource _cts;
         private readonly IActionLog _log;
         private readonly ConcurrentDictionary<ulong, Request> _requests = new ConcurrentDictionary<ulong, Request>();
+        private readonly BinaryAsyncLock _disconnectLock = new BinaryAsyncLock();
 
         private volatile Task _runTask;
         private volatile Task<REvaluationResult> _cancelEvaluationAfterRunTask;
@@ -386,13 +388,18 @@ namespace Microsoft.R.Host.Client {
             // client, cancel this token to indicate that we're shutting down the host - SendAsync and
             // ReceiveAsync will take care of wrapping any WSE into OperationCanceledException.
             _cts.Cancel();
-
-            try {
-                // Don't use _cts, since it's already cancelled. We want to try to send this message in
-                // any case, and we'll catch MessageTransportException if no-one is on the other end anymore.
-                await _transport.CloseAsync();
-            } catch (OperationCanceledException) {
-            } catch (MessageTransportException) {
+            var token = await _disconnectLock.WaitAsync();
+            if (!token.IsSet) {
+                try {
+                    // Don't use _cts, since it's already cancelled. We want to try to send this message in
+                    // any case, and we'll catch MessageTransportException if no-one is on the other end anymore.
+                    await _transport.CloseAsync();
+                    token.Set();
+                } catch (OperationCanceledException) {
+                } catch (MessageTransportException) {
+                } finally {
+                    token.Reset();
+                }
             }
 
             try {

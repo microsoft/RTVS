@@ -3,6 +3,7 @@
 
 using System;
 using System.ComponentModel.Composition;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -20,14 +21,16 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
     internal class VsRInteractiveWindowComponentContainerFactory : IInteractiveWindowComponentContainerFactory {
         private readonly Lazy<IVsInteractiveWindowFactory> _vsInteractiveWindowFactoryLazy;
         private readonly IContentTypeRegistryService _contentTypeRegistryService;
+        private readonly ICoreShell _shell;
 
         [ImportingConstructor]
         public VsRInteractiveWindowComponentContainerFactory(
             Lazy<IVsInteractiveWindowFactory> vsInteractiveWindowFactory,
-            IContentTypeRegistryService contentTypeRegistryService) {
+            IContentTypeRegistryService contentTypeRegistryService,
+            ICoreShell shell) {
             _vsInteractiveWindowFactoryLazy = vsInteractiveWindowFactory;
             _contentTypeRegistryService = contentTypeRegistryService;
-
+            _shell = shell;
         }
 
         public IInteractiveWindowVisualComponent Create(int instanceId, IInteractiveEvaluator evaluator, IRSessionProvider sessionProvider) {
@@ -39,7 +42,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
             var toolWindow = (ToolWindowPane)vsWindow;
             var componentContainer = new VisualComponentToolWindowAdapter<IInteractiveWindowVisualComponent>(toolWindow);
-            var component = new RInteractiveWindowVisualComponent(vsWindow.InteractiveWindow, componentContainer, sessionProvider);
+            var component = new RInteractiveWindowVisualComponent(vsWindow.InteractiveWindow, componentContainer, sessionProvider, _shell);
             componentContainer.Component = component;
             return component;
         }

@@ -26,6 +26,7 @@ namespace Microsoft.R.Host.Client.Host {
             _applicationWindowHandle = applicationWindowHandle;
             _authority = new UriBuilder { Scheme = brokerUri.Scheme, Host = brokerUri.Host, Port = brokerUri.Port }.ToString();
             _lock = new AsyncReaderWriterLock();
+            _credentialsAreValid = true;
         }
 
         public NetworkCredential GetCredential(Uri uri, string authType) => new NetworkCredential(_credentials.UserName, _credentials.Password);
@@ -38,7 +39,7 @@ namespace Microsoft.R.Host.Client.Host {
             // the first prompt should be validated and saved, and then the same credentials will be reused for the second session.
             var token = await _lock.WriterLockAsync(cancellationToken);
             try {
-                var showUI = Volatile.Read(ref _credentialsAreValid);
+                var showUI = !Volatile.Read(ref _credentialsAreValid);
                 SecurityServices.GetUserCredentials(_authority, showUI, _applicationWindowHandle, out credentials);
             } catch (Exception) {
                 token.Dispose();
@@ -47,6 +48,7 @@ namespace Microsoft.R.Host.Client.Host {
 
             _credentials.UserName = credentials.UserName;
             _credentials.Password = credentials.Password;
+            Volatile.Write(ref _credentialsAreValid, true);
 
             return Disposable.Create(() => {
                 CredUIConfirmCredentials(_authority, Volatile.Read(ref _credentialsAreValid));

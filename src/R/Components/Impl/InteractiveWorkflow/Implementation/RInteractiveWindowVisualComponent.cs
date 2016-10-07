@@ -4,6 +4,7 @@
 using System;
 using System.Windows;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.Services;
 using Microsoft.R.Components.View;
@@ -16,6 +17,7 @@ using static System.FormattableString;
 namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
     public class RInteractiveWindowVisualComponent : IInteractiveWindowVisualComponent {
         private readonly IRSessionProvider _sessionProvider;
+        private readonly ICoreShell _shell;
 
         public ICommandTarget Controller { get; }
         public FrameworkElement Control { get; }
@@ -27,11 +29,12 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
         public IVisualComponentContainer<IVisualComponent> Container { get; }
 
-        public RInteractiveWindowVisualComponent(IInteractiveWindow interactiveWindow, IVisualComponentContainer<IInteractiveWindowVisualComponent> container, IRSessionProvider sessionProvider) {
+        public RInteractiveWindowVisualComponent(IInteractiveWindow interactiveWindow, IVisualComponentContainer<IInteractiveWindowVisualComponent> container, IRSessionProvider sessionProvider, ICoreShell shell) {
             InteractiveWindow = interactiveWindow;
             Container = container;
 
             _sessionProvider = sessionProvider;
+            _shell = shell;
             sessionProvider.BrokerStateChanged += OnBrokerChanged;
 
             var textView = interactiveWindow.TextView;
@@ -48,7 +51,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         }
 
         private void OnBrokerChanged(object sender, BrokerStateChangedEventArgs e) {
-            UpdateWindowTitle(e.IsConnected);
+            _shell.DispatchOnUIThread(() => UpdateWindowTitle(e.IsConnected));
         }
 
         private void UpdateWindowTitle(bool isConnected) {

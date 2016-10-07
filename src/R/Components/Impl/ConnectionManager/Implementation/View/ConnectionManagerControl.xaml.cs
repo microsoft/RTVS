@@ -28,7 +28,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
         }
 
         private void ButtonConnect_Click(object sender, RoutedEventArgs e) {
-            Model?.ConnectAsync(GetConnection(e)).DoNotWait();
+            Model?.Connect(GetConnection(e));
         }
 
         private void ButtonAdd_Click(object sender, RoutedEventArgs e) {
@@ -69,12 +69,12 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
 
         private void Connection_KeyUp(object sender, KeyEventArgs e) {
             if (e.Key == Key.Enter) {
-                Model?.ConnectAsync(GetConnection(e)).DoNotWait();
+                Model?.Connect(GetConnection(e));
             }
         }
 
         private void Connection_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
-            Model?.ConnectAsync(GetConnection(e)).DoNotWait();
+            Model?.Connect(GetConnection(e));
             e.Handled = true;
         }
     }
