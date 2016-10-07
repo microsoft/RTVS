@@ -46,7 +46,7 @@ namespace Microsoft.Common.Core {
         public const int CREDUI_FLAGS_KEEP_USERNAME = 0x100000;
 
         [DllImport("credui", CharSet = CharSet.Auto)]
-        public static extern int CredUIPromptForCredentials(
+        public static extern int CredUIPromptForWindowsCredentials(
             ref CREDUI_INFO pUiInfo,
             string pszTargetName,
             IntPtr Reserved,
