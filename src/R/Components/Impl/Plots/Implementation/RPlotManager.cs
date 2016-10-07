@@ -37,10 +37,10 @@ namespace Microsoft.R.Components.Plots.Implementation {
             _fileSystem = fileSystem;
 
             _disposableBag = DisposableBag.Create<RPlotManager>()
-                .Add(() => interactiveWorkflow.RSession.Disconnected += RSession_Disconnected)
+                .Add(() => interactiveWorkflow.RSession.Connected -= RSession_Connected)
                 .Add(() => interactiveWorkflow.RSession.Mutated -= RSession_Mutated);
 
-            interactiveWorkflow.RSession.Disconnected += RSession_Disconnected;
+            interactiveWorkflow.RSession.Connected += RSession_Connected;
             interactiveWorkflow.RSession.Mutated += RSession_Mutated;
         }
 
@@ -488,11 +488,11 @@ namespace Microsoft.R.Components.Plots.Implementation {
             device.DeviceNum = num ?? 0;
         }
 
-        private void RSession_Disconnected(object sender, EventArgs e) {
-            RSessionDisconnectedAsync().DoNotWait();
+        private void RSession_Connected(object sender, RConnectedEventArgs e) {
+            RSessionConnectedAsync().DoNotWait();
         }
 
-        private async Task RSessionDisconnectedAsync() {
+        private async Task RSessionConnectedAsync() {
             await InteractiveWorkflow.Shell.SwitchToMainThreadAsync();
 
             RemoveAllDevices();
