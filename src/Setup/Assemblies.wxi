@@ -17,13 +17,11 @@
       <File Source="$(var.BinDir)\Microsoft.R.Support.dll" />
       <File Source="$(var.BinDir)\Microsoft.Data.ConnectionUI.dll" />
       <File Source="$(var.BinDir)\Microsoft.Data.ConnectionUI.Dialog.dll" />
-      <File Source="$(var.BinDir)\Microsoft.SqlServer.Dac.dll" />
-      <File Source="$(var.BinDir)\Microsoft.SqlServer.Dac.Extensions.dll" />
-      <File Source="$(var.BinDir)\Microsoft.SqlServer.TransactSql.ScriptDom.dll" />
       <File Source="$(var.BinDir)\Microsoft.SqlServer.Types.dll" />
       <File Source="$(var.BinDir)\Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.dll" />
       <File Source="$(var.BinDir)\Microsoft.VisualStudio.R.Package.dll" />
       <File Source="$(var.BinDir)\Microsoft.VisualStudio.R.Package.pkgdef" />
+      <File Source="$(var.BinDir)\Microsoft.VisualStudio.R.Sql.dll" />
       <File Source="$(var.BinDir)\Newtonsoft.Json.dll" />
       <File Source="$(var.BinDir)\websocket-sharp.dll" />
       <File Source="$(var.BinDir)\Images\RFile.ico" />
@@ -32,6 +30,7 @@
     <?ifdef Debug?>
       <Component Id="ProductAssembliesDebugData" Guid="{320E46DF-665F-492C-A0D6-9CE7DE21036D}">
         <File Source="$(var.BinDir)\Microsoft.VisualStudio.R.Package.pdb" />
+        <File Source="$(var.BinDir)\Microsoft.VisualStudio.R.Sql.pdb" />
         <File Source="$(var.BinDir)\Microsoft.Markdown.Editor.pdb" />
         <File Source="$(var.BinDir)\Microsoft.R.Debugger.pdb" />
         <File Source="$(var.BinDir)\Microsoft.R.Editor.pdb" />

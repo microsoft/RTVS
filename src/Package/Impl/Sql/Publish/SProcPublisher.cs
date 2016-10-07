@@ -11,6 +11,7 @@ using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.R.Components.Sql;
+using Microsoft.R.Components.Sql.Publish;
 using Microsoft.VisualStudio.R.Package.Logging;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -76,7 +77,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
 
             var dbName = settings.TargetDatabaseConnection.GetValue(ConnectionStringConverter.OdbcDatabaseKey);
             var connection = settings.TargetDatabaseConnection.OdbcToSqlClient();
-            _dacServices.Deploy(package, connection, dbName);
+            package.Deploy(connection, dbName);
 
             var message = Environment.NewLine + 
                 string.Format(CultureInfo.InvariantCulture, Resources.SqlPublish_PublishDatabaseSuccess, connection) + 
@@ -101,7 +102,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             var project = _pss.GetSelectedProject<IVsHierarchy>()?.GetDTEProject();
             var g = new SProcScriptGenerator(_fs);
             var sprocMap = g.CreateStoredProcedureScripts(settings, sprocFiles);
-            var builder = _dacServices.GetBuilder(_appShell);
+            var builder = _dacServices.GetBuilder();
             builder.Build(dacpacPath, project.Name, sprocMap.Scripts);
         }
     }
