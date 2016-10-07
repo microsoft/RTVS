@@ -31,6 +31,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         private int _selectedCodePlacementIndex;
         private int _selectedQuoteTypeIndex;
         private string _targetTooltip;
+        private bool _noDbConnections;
 
         class DbConnectionData {
             public string Name;
@@ -191,6 +192,9 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             if (Settings.TargetType != PublishTargetType.Dacpac) {
                 CanPublish &= Targets?.Count > 0;
             }
+            if(Settings.TargetType == PublishTargetType.Database) {
+                CanPublish &= !_noDbConnections;
+            }
         }
 
         private async Task PopulateTargetsAsync() {
@@ -260,6 +264,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         }
 
         private async Task<IReadOnlyList<DbConnectionData>> GetDatabaseConnectionsAsync(ConfiguredProject project) {
+            _noDbConnections = false;
             var connections = new List<DbConnectionData>();
             if (project != null) {
                 var result = await project.GetDatabaseConnections(_pcsp);
@@ -269,6 +274,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             }
             if (connections.Count == 0) {
                 connections.Add(new DbConnectionData { Name = Resources.SqlPublishDialog_NoDatabaseConnections });
+                _noDbConnections = true;
             }
             return connections;
         }
