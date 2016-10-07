@@ -96,7 +96,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             s.EditorType.Should().Be(ConnectionStringEditor.ConnectionStringEditorName);
             s.Description.Should().Be(Resources.ConnectionStringDescription);
 
-            operations.Received(1).EnqueueExpression(Invariant($"dbConnection3 <- 'DSN'"), true);
+            var expected = "if (!exists('settings')) { settings <- new.env(); }; if (is.environment(settings)) { settings$dbConnection3 = \"DSN\"; }";
+            operations.Received(1).EnqueueExpression(expected, true);
         }
 
         [Test(ThreadType.UI)]
