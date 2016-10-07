@@ -98,7 +98,8 @@ namespace Microsoft.R.Host.Client {
         
         /// <summary>
         ///   Looks up a localized string similar to Host did not respond to a ping.
-        ///The machine may be offline or the network has been disconnected. Error: {0}.
+        ///The machine may be offline or the network has been disconnected.
+        ///Error: {0}.
         /// </summary>
         internal static string Error_HostNotResponding {
             get {
@@ -116,6 +117,15 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Remote machine does not have certificate installed for the TLS with the Remote R Service..
+        /// </summary>
+        internal static string Error_NoBrokerCertificate {
+            get {
+                return ResourceManager.GetString("Error_NoBrokerCertificate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No R Interpreters installed.
         /// </summary>
         internal static string Error_NoRInterpreters {
@@ -125,7 +135,16 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Remote R host process did not start:  {0}.
+        ///   Looks up a localized string similar to R broker process did not start:  {0}.
+        /// </summary>
+        internal static string Error_UnableToStartBrokerException {
+            get {
+                return ResourceManager.GetString("Error_UnableToStartBrokerException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R host process did not start:  {0}.
         /// </summary>
         internal static string Error_UnableToStartHostException {
             get {
@@ -258,6 +277,15 @@ namespace Microsoft.R.Host.Client {
         internal static string TotalVirtualMemory {
             get {
                 return ResourceManager.GetString("TotalVirtualMemory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The supplied TLS certificate is not trusted: {0}.
+        /// </summary>
+        internal static string Trace_UntrustedCertificate {
+            get {
+                return ResourceManager.GetString("Trace_UntrustedCertificate", resourceCulture);
             }
         }
         

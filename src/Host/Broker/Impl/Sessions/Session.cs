@@ -158,7 +158,12 @@ namespace Microsoft.R.Host.Broker.Sessions {
             };
 
             _sessionLogger.LogInformation(Resources.Info_StartingRHost, Id, User.Name, rhostExePath, arguments);
-            StartSession();
+            try {
+                StartSession();
+            } catch(Exception ex) {
+                _sessionLogger.LogError(Resources.Error_RHostFailedToStart, ex.Message);
+                throw;
+            }
             _sessionLogger.LogInformation(Resources.Info_StartedRHost, Id, User.Name);
 
             _process.BeginErrorReadLine();

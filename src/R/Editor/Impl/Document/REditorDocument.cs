@@ -161,10 +161,10 @@ namespace Microsoft.R.Editor.Document {
         /// <param name="textView"></param>
         /// <returns></returns>
         public static SnapshotPoint? MapCaretPositionFromView(ITextView textView) {
-            if (!textView.Caret.InVirtualSpace) {
+            try {
                 SnapshotPoint caretPosition = textView.Caret.Position.BufferPosition;
                 return MapPointFromView(textView, caretPosition);
-            }
+            } catch(ArgumentException) { }
             return null;
         }
 

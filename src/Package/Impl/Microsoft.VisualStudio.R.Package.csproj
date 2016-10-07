@@ -206,6 +206,7 @@
     <Compile Include="Shell\ApplicationConstants.cs" />
     <Compile Include="Shell\VsFileDialog.cs" />
     <Compile Include="Shell\VsProgressDialog.cs" />
+    <Compile Include="Sql\Commands\SqlTools.cs" />
     <Compile Include="ToolWindows\PlotHistoryWindowPane.cs" />
     <Compile Include="ProjectSystem\Commands\CopyRemoteItemPathCommand.cs" />
     <Compile Include="ProjectSystem\Commands\SetAsStartUpRScriptCommand.cs" />
@@ -1050,6 +1051,7 @@
     <ProjectReference Include="..\..\Host\Broker\Impl\Microsoft.R.Host.Broker.csproj">
       <Project>{2cc10e50-392e-4b5d-98e4-d38f0061d363}</Project>
       <Name>Microsoft.R.Host.Broker</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
       <Project>{E09D3BDA-2E6B-47B5-87AC-B6FC2D33DFAB}</Project>
@@ -1452,6 +1454,7 @@
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.AspNetCore.Routing.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.AspNetCore.Server.WebListener.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.AspNetCore.Server.Kestrel.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Microsoft.AspNetCore.Server.Kestrel.Https.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.AspNetCore.WebSockets.Protocol.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.AspNetCore.WebSockets.Server.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.AspNetCore.WebUtilities.dll" />

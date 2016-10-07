@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
@@ -10,7 +11,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Services;
@@ -24,7 +24,7 @@ namespace Microsoft.R.Host.Client.Host {
         private const string InterpreterId = "local";
 
         private static readonly bool ShowConsole;
-        private static readonly LocalCredentialsDecorator Credentials = new LocalCredentialsDecorator();
+        private static readonly LocalCredentialsDecorator _credentials = new LocalCredentialsDecorator();
 
         private readonly string _rhostDirectory;
         private readonly string _rHome;
@@ -32,6 +32,7 @@ namespace Microsoft.R.Host.Client.Host {
         private readonly ICoreServices _services;
 
         private Process _brokerProcess;
+        private int _disposed;
 
         static LocalBrokerClient() {
             // Allow "true" and non-zero integer to enable, otherwise disable.
@@ -44,8 +45,8 @@ namespace Microsoft.R.Host.Client.Host {
             }
         }
 
-        public LocalBrokerClient(string name, string rHome, ICoreServices services, string rhostDirectory = null)
-            : base(name, new Uri(rHome), InterpreterId, Credentials, services.Log) {
+        public LocalBrokerClient(string name, string rHome, ICoreServices services, IntPtr appWindowHandle, string rhostDirectory = null)
+            : base(name, new Uri(rHome), InterpreterId, _credentials, services.Log, appWindowHandle) {
 
             _rhostDirectory = rhostDirectory ?? Path.GetDirectoryName(typeof(RHost).Assembly.GetAssemblyPath());
             _rHome = rHome;
@@ -97,7 +98,7 @@ namespace Microsoft.R.Host.Client.Host {
                             $" --startup:name \"{Name}\"" +
                             $" --startup:writeServerUrlsToPipe {pipeName}" +
                             $" --lifetime:parentProcessId {Process.GetCurrentProcess().Id}" +
-                            $" --security:secret \"{Credentials.Password}\"" +
+                            $" --security:secret \"{_credentials.Password}\"" +
                             $" --R:autoDetect false" +
                             $" --R:interpreters:{InterpreterId}:name \"{Name}\"" +
                             $" --R:interpreters:{InterpreterId}:basePath \"{_rHome.TrimTrailingSlash()}\""
@@ -107,10 +108,10 @@ namespace Microsoft.R.Host.Client.Host {
                         psi.CreateNoWindow = true;
                     }
 
-                    process = _services.ProcessServices.Start(psi);
+                    process = StartBroker(psi);
                     process.EnableRaisingEvents = true;
 
-                    var cts = new CancellationTokenSource(10000);
+                    var cts = new CancellationTokenSource(100000);
                     process.Exited += delegate {
                         cts.Cancel();
                         _brokerProcess = null;
@@ -148,8 +149,10 @@ namespace Microsoft.R.Host.Client.Host {
                     CreateHttpClient(serverUri[0]);
                 }
 
-                _brokerProcess = process;
-                DisposableBag.Add(DisposeBrokerProcess);
+                if (_disposed == 0) {
+                    _brokerProcess = process;
+                    DisposableBag.Add(DisposeBrokerProcess);
+                }
             } finally {
                 if (_brokerProcess == null) {
                     try {
@@ -162,6 +165,19 @@ namespace Microsoft.R.Host.Client.Host {
             }
         }
 
+        private Process StartBroker(ProcessStartInfo psi) {
+            var process = _services.ProcessServices.Start(psi);
+            process.WaitForExit(250);
+            if (process.HasExited && process.ExitCode < 0) {
+                var message = ErrorCodeConverter.MessageFromErrorCode(process.ExitCode);
+                if (!string.IsNullOrEmpty(message)) {
+                    throw new RHostDisconnectedException(Resources.Error_UnableToStartBrokerException.FormatInvariant(message), new Win32Exception(message));
+                }
+                throw new RHostDisconnectedException(Resources.Error_UnableToStartBrokerException.FormatInvariant(process.ExitCode.ToString()), new Win32Exception(process.ExitCode));
+            }
+            return process;
+        }
+
         private void DisposeBrokerProcess() {
             try {
                 _brokerProcess?.Kill();
@@ -169,6 +185,11 @@ namespace Microsoft.R.Host.Client.Host {
             }
 
             _brokerProcess?.Dispose();
+        }
+
+        protected override void Dispose(bool disposing) {
+            Interlocked.CompareExchange(ref _disposed, 1, 0);
+            base.Dispose(disposing);
         }
     }
 }

@@ -52,10 +52,10 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 script.DoIdle(300);
                 script.Type("{ENTER}a");
                 script.DoIdle(300);
-                script.Type("{ENTER}x <-1{ENTER}");
+                script.Type("{ENTER}{ENTER}x <-1{ENTER}");
                 script.DoIdle(300);
 
-                string expected = "if (TRUE)\r\n    a\r\nx <- 1\r\n";
+                string expected = "if (TRUE)\r\n    abbreviate\r\nx <- 1\r\n";
                 string actual = script.EditorText;
 
                 actual.Should().Be(expected);

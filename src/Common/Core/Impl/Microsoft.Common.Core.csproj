@@ -68,8 +68,12 @@
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Net\FileDownloader.cs" />
     <Compile Include="Net\IFileDownloader.cs" />
+    <Compile Include="Net\Network.cs" />
     <Compile Include="Net\WebSocketHelper.cs" />
     <Compile Include="OS\ErrorCodeConverter.cs" />
+    <Compile Include="Security\Credentials.cs" />
+    <Compile Include="Security\SecurityServices.cs" />
+    <Compile Include="Security\SecurityUtilities.cs" />
     <Compile Include="Services\ICoreServices.cs" />
     <Compile Include="Services\CoreServices.cs" />
     <Compile Include="Settings\ISettingsStorage.cs" />
@@ -135,9 +139,9 @@
     <Compile Include="Threading\BinaryAsyncLock.cs" />
     <Compile Include="Threading\DelayedAsyncAction.cs" />
     <Compile Include="Threading\IAsyncReaderWriterLockToken.cs" />
+    <Compile Include="Threading\IMainThread.cs" />
     <Compile Include="Threading\IReentrancyTokenFactory.cs" />
     <Compile Include="Threading\ReentrancyToken.cs" />
-    <Compile Include="Threading\IMainThread.cs" />
     <Compile Include="Versions\Toolset.cs" />
   </ItemGroup>
   <ItemGroup>

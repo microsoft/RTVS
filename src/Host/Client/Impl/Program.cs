@@ -22,7 +22,7 @@ namespace Microsoft.R.Host.Client {
 
             using (var logger = new Logger("Program", new MaxLoggingPermissions(), FileLogWriter.InTempFolder("Microsoft.R.Host.Client.Program"))) {
                 var services = new CoreServices(new AppConstants(), null, null);
-                var localConnector = new LocalBrokerClient("Program", args[0], services);
+                var localConnector = new LocalBrokerClient("Program", args[0], services, IntPtr.Zero);
                 var host = localConnector.ConnectAsync("Program", new Program()).GetAwaiter().GetResult();
                 _evaluator = host;
                 host.Run().GetAwaiter().GetResult();

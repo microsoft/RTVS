@@ -6,12 +6,14 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Net;
-using System.Net.WebSockets;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebSockets.Protocol;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Net;
 using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Client.BrokerServices {
@@ -24,8 +26,10 @@ namespace Microsoft.R.Host.Client.BrokerServices {
 
         public async Task GetResponseAsync(HttpListenerContext context, string localBaseUrl, string remoteBaseUrl, CancellationToken ct) {
             string postUri = null;
+            bool https = new Uri(remoteBaseUrl, UriKind.Absolute).IsHttps();
+
             if (context.Request.IsWebSocketRequest) {
-                UriBuilder ub = new UriBuilder(PostUri) { Scheme = "ws" };
+                UriBuilder ub = new UriBuilder(PostUri) { Scheme = https ? "wss" : "ws" };
                 postUri = ub.Uri.ToString();
             } else {
                 postUri = PostUri.ToString();
@@ -33,6 +37,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
 
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(postUri);
             request.Method = context.Request.HttpMethod;
+            request.ServerCertificateValidationCallback += ValidateCertificate;
 
             if (!context.Request.IsWebSocketRequest) {
                 SetRequestHeaders(request, context.Request.Headers, localBaseUrl, remoteBaseUrl);
@@ -51,7 +56,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             try {
                 response = (HttpWebResponse)await request.GetResponseAsync();
             } catch (WebException wex) {
-                if(wex.Status == WebExceptionStatus.ProtocolError) {
+                if (wex.Status == WebExceptionStatus.ProtocolError) {
                     response = wex.Response as HttpWebResponse;
                 } else {
                     throw wex;
@@ -211,6 +216,14 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             foreach (var pair in headers) {
                 httpListenerResponse.Headers.Add(pair.Key, pair.Value);
             }
+        }
+
+        private bool ValidateCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) {
+            if ((sslPolicyErrors & SslPolicyErrors.RemoteCertificateNotAvailable) != 0) {
+                return false;
+            }
+            // Accept other cases. Main certificate validation is done at the time we connect to the broker.
+            return true;
         }
     }
 }

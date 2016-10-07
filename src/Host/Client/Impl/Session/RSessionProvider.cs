@@ -179,10 +179,11 @@ namespace Microsoft.R.Host.Client.Session {
             }
 
             // Broker switching shouldn't be concurrent
-            IAsyncReaderWriterLockToken lockToken;
+            IAsyncReaderWriterLockToken lockToken = null;
             try {
                 lockToken = await _connectArwl.WriterLockAsync(cancellationToken);
             } catch (OperationCanceledException) {
+                lockToken?.Dispose();
                 brokerClient.Dispose();
                 return false;
             }
@@ -343,12 +344,11 @@ namespace Microsoft.R.Host.Client.Session {
                 return null;
             }
 
-            if (uri.IsFile) {
-                return new LocalBrokerClient(name, uri.LocalPath, _services) as IBrokerClient;
-            }
-
             var windowHandle = await _callback.GetApplicationWindowHandleAsync();
-            return new RemoteBrokerClient(name, uri, windowHandle, _services.Log);
+            if (uri.IsFile) {
+                return new LocalBrokerClient(name, uri.LocalPath, _services, windowHandle) as IBrokerClient;
+            }
+            return new RemoteBrokerClient(name, uri, _services.Log, windowHandle);
         }
 
         private class IsolatedRSessionEvaluation : IRSessionEvaluation {

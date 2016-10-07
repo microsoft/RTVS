@@ -48,6 +48,7 @@
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.AspNetCore.Routing.dll" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.AspNetCore.Server.WebListener.dll" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.AspNetCore.Server.Kestrel.dll" />
+    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.AspNetCore.Server.Kestrel.Https.dll" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.AspNetCore.WebSockets.Protocol.dll" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.AspNetCore.WebSockets.Server.dll" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.AspNetCore.WebUtilities.dll" />

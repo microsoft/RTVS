@@ -120,6 +120,9 @@
   <data name="Critical_InvalidPipeHandle" xml:space="preserve">
     <value>Requested to write server.urls to pipe '{0}', but it is not a valid pipe handle</value>
   </data>
+  <data name="Critical_NoTlsCertificate" xml:space="preserve">
+    <value>TLS certificate not found: {0}</value>
+  </data>
   <data name="Critical_ParentProcessNotFound" xml:space="preserve">
     <value>Designated parent process {0} not found</value>
   </data>
@@ -148,7 +151,7 @@
     <value>Profile creation failed for user {0} with WIN32 error code 0x{1}</value>
   </data>
   <data name="Error_RHostFailedToStart" xml:space="preserve">
-    <value>RHost {0} process failed to start</value>
+    <value>R Host process failed to start. Error: {0}</value>
   </data>
   <data name="Error_SpecifiedRInterpreterNotFound" xml:space="preserve">
     <value>Specified R interpreter does not exist</value>
@@ -188,6 +191,12 @@
   </data>
   <data name="Trace_AutoDetectingR" xml:space="preserve">
     <value>Auto-detecting R ...</value>
+  </data>
+  <data name="Trace_CertificateIssuer" xml:space="preserve">
+    <value>Certificale issued by {0}</value>
+  </data>
+  <data name="Trace_CertificateSubject" xml:space="preserve">
+    <value>Certificale issued to {0}</value>
   </data>
   <data name="Trace_DetectedR" xml:space="preserve">
     <value>R {0} detected at \"{1}\"</value>

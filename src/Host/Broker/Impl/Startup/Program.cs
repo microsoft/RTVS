@@ -9,10 +9,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.AspNetCore.Server.Kestrel.Https;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.R.Host.Broker.Logging;
+using Microsoft.R.Host.Broker.Security;
+using Microsoft.R.Host.Protocol;
 using Newtonsoft.Json;
 
 namespace Microsoft.R.Host.Broker.Startup {
@@ -20,14 +23,14 @@ namespace Microsoft.R.Host.Broker.Startup {
         private static readonly ILoggerFactory _loggerFactory = new LoggerFactory();
         private static ILogger _logger;
         private static readonly StartupOptions _startupOptions = new StartupOptions();
+        private static readonly SecurityOptions _securityOptions = new SecurityOptions();
         private static readonly CancellationTokenSource _cts = new CancellationTokenSource();
 
         internal static IConfigurationRoot Configuration { get; private set; }
 
         public static CancellationToken CancellationToken => _cts.Token;
 
-        static Program() {
-        }
+        static Program() { }
 
         public static void Main(string[] args) {
             var configBuilder = new ConfigurationBuilder().AddCommandLine(args);
@@ -40,6 +43,7 @@ namespace Microsoft.R.Host.Broker.Startup {
             }
 
             ConfigurationBinder.Bind(Configuration.GetSection("startup"), _startupOptions);
+            ConfigurationBinder.Bind(Configuration.GetSection("security"), _securityOptions);
 
             _loggerFactory
                 .AddDebug()
@@ -51,21 +55,26 @@ namespace Microsoft.R.Host.Broker.Startup {
                 _logger.LogInformation(Resources.Info_BrokerName, _startupOptions.Name);
             }
 
-            CreateWebHost().Run();
+            var tlsConfig = new TlsConfiguration(_logger, _securityOptions);
+            var httpsOptions = tlsConfig.GetHttpsOptions(Configuration);
+            CreateWebHost(httpsOptions).Run();
         }
 
-        public static IWebHost CreateWebHost() {
+        public static IWebHost CreateWebHost(HttpsConnectionFilterOptions httpsOptions) {
+
             var webHostBuilder = new WebHostBuilder()
                 .UseLoggerFactory(_loggerFactory)
                 .UseConfiguration(Configuration)
                 .UseKestrel(options => {
+                    if (httpsOptions != null) {
+                        options.UseHttps(httpsOptions);
+                    }
                     //options.UseConnectionLogging();
                 })
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseStartup<Startup>();
 
             var webHost = webHostBuilder.Build();
-
             var serverAddresses = webHost.ServerFeatures.Get<IServerAddressesFeature>();
 
             string pipeName = _startupOptions.WriteServerUrlsToPipe;
@@ -108,7 +117,7 @@ namespace Microsoft.R.Host.Broker.Startup {
                 // but if it didn't work, just terminate it.
                 await Task.Delay(10000);
                 _logger.LogCritical(Resources.Critical_TimeOutShutdown);
-                Environment.Exit(1);
+                Environment.Exit((int)BrokerExitCodes.Timeout);
             });
         }
     }

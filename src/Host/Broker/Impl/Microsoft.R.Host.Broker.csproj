@@ -92,6 +92,7 @@
     <Compile Include="Pipes\ProcessHelpers.cs" />
     <Compile Include="Pipes\WebSocketPipeAction.cs" />
     <Compile Include="RemoteUri\RemoteUriHelper.cs" />
+    <Compile Include="Security\Certificates.cs" />
     <Compile Include="Security\Claims.cs" />
     <Compile Include="Security\HttpBasicAuth\BaseBasicContext.cs" />
     <Compile Include="Security\HttpBasicAuth\BasicAppBuilderExtensions.cs" />
@@ -106,8 +107,9 @@
     <Compile Include="Security\HttpBasicAuth\IBasicEvents.cs" />
     <Compile Include="Security\SecurityManager.cs" />
     <Compile Include="Security\Policies.cs" />
-    <Compile Include="Sessions\SessionStateChangedEventArgs.cs" />
+    <Compile Include="Security\TlsConfiguration.cs" />
     <Compile Include="Sessions\SessionState.cs" />
+    <Compile Include="Sessions\SessionStateChangedEventArgs.cs" />
     <Compile Include="Startup\StartupOptions.cs" />
     <Compile Include="Startup\Program.cs" />
     <Compile Include="Sessions\Session.cs" />

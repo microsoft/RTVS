@@ -31,6 +31,8 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         private int _selectedCodePlacementIndex;
         private int _selectedQuoteTypeIndex;
         private string _targetTooltip;
+        private bool _noDbConnections;
+        private bool _noDbProjects;
 
         class DbConnectionData {
             public string Name;
@@ -191,6 +193,12 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             if (Settings.TargetType != PublishTargetType.Dacpac) {
                 CanPublish &= Targets?.Count > 0;
             }
+            if(Settings.TargetType == PublishTargetType.Database) {
+                CanPublish &= !_noDbConnections;
+            }
+            if (Settings.TargetType == PublishTargetType.Project) {
+                CanPublish &= !_noDbProjects;
+            }
         }
 
         private async Task PopulateTargetsAsync() {
@@ -240,6 +248,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         }
 
         private IReadOnlyList<string> GetDatabaseProjects() {
+            _noDbProjects = false;
             var projectMap = new Dictionary<string, EnvDTE.Project>();
             var solution = _pss.GetSolution();
             var projects = new List<string>();
@@ -254,12 +263,14 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             }
 
             if (projects.Count == 0) {
+                _noDbProjects = true;
                 projects.Add(Resources.SqlPublishDialog_NoDatabaseProjects);
             }
             return projects;
         }
 
         private async Task<IReadOnlyList<DbConnectionData>> GetDatabaseConnectionsAsync(ConfiguredProject project) {
+            _noDbConnections = false;
             var connections = new List<DbConnectionData>();
             if (project != null) {
                 var result = await project.GetDatabaseConnections(_pcsp);
@@ -269,6 +280,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             }
             if (connections.Count == 0) {
                 connections.Add(new DbConnectionData { Name = Resources.SqlPublishDialog_NoDatabaseConnections });
+                _noDbConnections = true;
             }
             return connections;
         }

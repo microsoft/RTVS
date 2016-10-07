@@ -5,7 +5,14 @@ namespace Microsoft.R.Host.Broker.Security {
     public class SecurityOptions {
         public string Secret { get; set; }
 
-        // TODO: remove default
+        /// <summary>
+        /// Local group permitted to connect
+        /// </summary>
         public string AllowedGroup { get; set; } = "Users";
+
+        /// <summary>
+        /// Friendly name of the certificate installed for the TLS (SSL)
+        /// </summary>
+        public string X509CertificateName { get; set; }
     }
 }

@@ -45,6 +45,7 @@ namespace Microsoft.Common.Core.Services {
             }
         }
 
+        public ICoreShell CoreShell { get; set; }
         public IFileSystem FileSystem { get; } 
         public IProcessServices ProcessServices { get; }
         public IRegistry Registry { get; } 

@@ -5,10 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Security;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Common.Core.Security;
 using Microsoft.R.Host.Broker.Interpreters;
 using Microsoft.R.Host.Broker.Pipes;
 using Microsoft.R.Host.Broker.Security;
@@ -35,16 +35,8 @@ namespace Microsoft.R.Host.Broker.Sessions {
                 return Task.FromResult<IActionResult>(new ApiErrorResult(BrokerApiError.NoRInterpreters));
             }
 
-            SecureString securePassword = null;
-            string password = User.FindFirst(Claims.Password)?.Value;
-            if (password != null) {
-                securePassword = new SecureString();
-                foreach (var ch in password) {
-                    securePassword.AppendChar(ch);
-                }
-            }
-
             string profilePath = User.FindFirst(Claims.RUserProfileDir)?.Value;
+            var password = User.FindFirst(Claims.Password)?.Value.ToSecureString();
 
             Interpreter interp;
             if (!string.IsNullOrEmpty(request.InterpreterId)) {
@@ -57,7 +49,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
             }
 
             try {
-                var session = _sessionManager.CreateSession(User.Identity, id, interp, securePassword, profilePath, request.CommandLineArguments);
+                var session = _sessionManager.CreateSession(User.Identity, id, interp, password, profilePath, request.CommandLineArguments);
                 return Task.FromResult<IActionResult>(new ObjectResult(session.Info));
             } catch (Exception ex) {
                 return Task.FromResult<IActionResult>(new ApiErrorResult(BrokerApiError.UnableToStartRHost, ex.Message));

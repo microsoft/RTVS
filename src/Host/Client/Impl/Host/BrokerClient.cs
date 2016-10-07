@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.WebSockets.Client;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Net;
 using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.BrokerServices;
 using Microsoft.R.Host.Protocol;
@@ -32,50 +33,55 @@ namespace Microsoft.R.Host.Client.Host {
 
         private readonly string _interpreterId;
         private readonly ICredentialsDecorator _credentials;
-        protected DisposableBag DisposableBag { get; } = DisposableBag.Create<BrokerClient>();
-        protected IActionLog Log { get; }
 
         private AboutHost _aboutHost;
-        protected HttpClientHandler HttpClientHandler { get; private set; }
+        private IntPtr _applicationWindowHandle;
+
+        protected DisposableBag DisposableBag { get; } = DisposableBag.Create<BrokerClient>();
+        protected IActionLog Log { get; }
+        protected WebRequestHandler HttpClientHandler { get; private set; }
         protected HttpClient HttpClient { get; private set; }
+        protected IRCallbacks Callbacks { get; private set; }
 
         public string Name { get; }
         public Uri Uri { get; }
         public bool IsRemote => !Uri.IsFile;
         public AboutHost AboutHost => _aboutHost ?? AboutHost.Empty;
 
-        protected BrokerClient(string name, Uri brokerUri, string interpreterId, ICredentialsDecorator credentials, IActionLog log) {
+        protected BrokerClient(string name, Uri brokerUri, string interpreterId, ICredentialsDecorator credentials, IActionLog log, IntPtr applicationWindowHandle) {
             Name = name;
             Uri = brokerUri;
             Log = log;
+
+            _applicationWindowHandle = applicationWindowHandle;
             _interpreterId = interpreterId;
             _credentials = credentials;
         }
 
-        protected void CreateHttpClient(Uri baseAddress) {
-            HttpClientHandler = new HttpClientHandler {
+        protected virtual void CreateHttpClient(Uri baseAddress) {
+
+            HttpClientHandler = new WebRequestHandler() {
                 PreAuthenticate = true,
                 Credentials = _credentials
             };
 
             HttpClient = new HttpClient(HttpClientHandler) {
                 BaseAddress = baseAddress,
-                Timeout = TimeSpan.FromSeconds(30)
+                Timeout = TimeSpan.FromSeconds(30),
             };
 
             HttpClient.DefaultRequestHeaders.Accept.Clear();
             HttpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-        public void Dispose() {
-            DisposableBag.TryDispose();
-        }
+        protected virtual void Dispose(bool disposing) => DisposableBag.TryDispose();
+        public void Dispose() => Dispose(true);
 
         public async Task PingAsync() {
             if (HttpClient != null) {
                 // Just in case ping was disable for security reasons, try connecting to the broker anyway.
                 try {
-                    (await HttpClient.PostAsync("/ping", new StringContent(""))).EnsureSuccessStatusCode();
+                    await GetHostInformationAsync(CancellationToken.None);
                 } catch (HttpRequestException ex) {
                     throw await HandleHttpRequestExceptionAsync(ex);
                 }
@@ -86,6 +92,8 @@ namespace Microsoft.R.Host.Client.Host {
             CancellationToken cancellationToken = default(CancellationToken), ReentrancyToken reentrancyToken = default(ReentrancyToken)) {
 
             DisposableBag.ThrowIfDisposed();
+            Callbacks = callbacks;
+
             await TaskUtilities.SwitchToBackgroundThread();
 
             try {
@@ -157,7 +165,7 @@ namespace Microsoft.R.Host.Client.Host {
             };
 
             var pipeUri = new UriBuilder(HttpClient.BaseAddress) {
-                Scheme = "ws",
+                Scheme = HttpClient.BaseAddress.IsHttps() ? "wss" : "ws",
                 Path = $"sessions/{name}/pipe"
             }.Uri;
 
