@@ -51,11 +51,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
             _disposableBag = DisposableBag.Create<ConnectionManager>()
                 .Add(_statusBarViewModel)
-                .Add(() => interactiveWorkflow.RSession.Connected -= RSession_Connected)
-                .Add(() => interactiveWorkflow.RSession.Disconnected -= RSession_Disconnected);
+                .Add(() => _sessionProvider.BrokerStateChanged -= BrokerStateChanged);
 
-            interactiveWorkflow.RSession.Connected += RSession_Connected;
-            interactiveWorkflow.RSession.Disconnected += RSession_Disconnected;
+            _sessionProvider.BrokerStateChanged += BrokerStateChanged;
 
             // Get initial values
             var userConnections = CreateConnectionList();
@@ -63,20 +61,6 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
             UpdateRecentConnections();
             CompleteInitializationAsync().DoNotWait();
-        }
-
-        private void RSession_Connected(object sender, RConnectedEventArgs e) {
-            OnSessionConnectionStateChange(true);
-        }
-
-        private void RSession_Disconnected(object sender, EventArgs e) {
-            OnSessionConnectionStateChange(false);
-        }
-
-        private void OnSessionConnectionStateChange(bool connected) {
-            IsConnected = connected;
-            UpdateActiveConnection();
-            ConnectionStateChanged?.Invoke(this, new ConnectionEventArgs(IsConnected, ActiveConnection));
         }
 
         private async Task CompleteInitializationAsync() {
@@ -269,6 +253,12 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             }
         }
 
+        private void BrokerStateChanged(object sender, BrokerStateChangedEventArgs eventArgs) {
+            IsConnected = eventArgs.IsConnected;
+            UpdateActiveConnection();
+            ConnectionStateChanged?.Invoke(this, new ConnectionEventArgs(IsConnected, ActiveConnection));
+        }
+
         private void UpdateActiveConnection() {
             if (string.IsNullOrEmpty(_sessionProvider.Broker.Name) || ActiveConnection?.Id == _sessionProvider.Broker.Uri) {
                 return;
@@ -279,13 +269,13 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         private void SaveActiveConnectionToSettings() {
-            _settings.LastActiveConnection = ActiveConnection == null
+            _shell.DispatchOnUIThread(() => _settings.LastActiveConnection = ActiveConnection == null
                 ? null
                 : new ConnectionInfo {
                     Name = ActiveConnection.Name,
                     Path = ActiveConnection.Path,
                     RCommandLineArguments = ActiveConnection.RCommandLineArguments
-                };
+                });
         }
     }
 }

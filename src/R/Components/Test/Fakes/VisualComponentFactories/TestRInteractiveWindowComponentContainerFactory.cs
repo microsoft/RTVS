@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.ComponentModel.Composition;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Implementation;
@@ -15,12 +16,14 @@ namespace Microsoft.R.Components.Test.Fakes.VisualComponentFactories {
     [Export(typeof(IInteractiveWindowComponentContainerFactory))]
     internal sealed class TestRInteractiveWindowComponentContainerFactory : ContainerFactoryBase<IInteractiveWindowVisualComponent>, IInteractiveWindowComponentContainerFactory {
         private readonly IContentTypeRegistryService _contentTypeRegistryService;
+        private readonly ICoreShell _shell;
         private IInteractiveWindow _window;
         private IInteractiveWindowFactoryService InteractiveWindowFactory { get; }
 
         [ImportingConstructor]
-        public TestRInteractiveWindowComponentContainerFactory(IInteractiveWindowFactoryService interactiveWindowFactory, IContentTypeRegistryService contentTypeRegistryService) {
+        public TestRInteractiveWindowComponentContainerFactory(IInteractiveWindowFactoryService interactiveWindowFactory, IContentTypeRegistryService contentTypeRegistryService, ICoreShell shell) {
             _contentTypeRegistryService = contentTypeRegistryService;
+            _shell = shell;
             InteractiveWindowFactory = interactiveWindowFactory;
         }
 
@@ -32,7 +35,7 @@ namespace Microsoft.R.Components.Test.Fakes.VisualComponentFactories {
                 _window.CurrentLanguageBuffer?.ChangeContentType(contentType, null);
                 _window.TextView.Options.SetOptionValue(DefaultTextViewHostOptions.ChangeTrackingId, false);
 
-                return new RInteractiveWindowVisualComponent(_window, container, sessionProvider);
+                return new RInteractiveWindowVisualComponent(_window, container, sessionProvider, _shell);
             }).Component;
         }
 

@@ -6,6 +6,7 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Design;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Settings;
@@ -25,6 +26,8 @@ namespace Microsoft.Languages.Editor.Test.Fakes.Shell {
         private readonly CompositionContainer _container;
 
         public TestEditorShell(CompositionContainer container) {
+            FileDialog = new TestFileDialog();
+            ProgressDialog = new TestProgressDialog();
             _container = container;
         }
 
@@ -49,21 +52,12 @@ namespace Microsoft.Languages.Editor.Test.Fakes.Shell {
             LastShownContextMenu = commandId;
         }
 
-        public ProgressBarSession ShowProgressBar(string waitMessage, int delayToShowDialogMs = 0) => new ProgressBarSession();
-        public ProgressBarSession ShowProgressBarWithUpdate(string waitMessage, int delayToShowDialogMs = 0) => new ProgressBarSession();
-
         public MessageButtons ShowMessage(string message, MessageButtons buttons) {
             LastShownMessage = message;
             return MessageButtons.OK;
         }
 
         public string SaveFileIfDirty(string fullPath) => fullPath;
-
-        public string ShowOpenFileDialog(string filter, string initialPath = null, string title = null) => OpenFilePath;
-
-        public string ShowBrowseDirectoryDialog(string initialPath = null, string title = null) => BrowseDirectoryPath;
-
-        public string ShowSaveFileDialog(string filter, string initialPath = null, string title = null) => SaveFilePath;
 
         public void UpdateCommandStatus(bool immediate) { }
 
@@ -72,10 +66,9 @@ namespace Microsoft.Languages.Editor.Test.Fakes.Shell {
         public string LastShownMessage { get; private set; }
         public string LastShownErrorMessage { get; private set; }
         public CommandID LastShownContextMenu { get; private set; }
-        public string OpenFilePath { get; set; }
-        public string BrowseDirectoryPath { get; set; }
-        public string SaveFilePath { get; set; }
         public IApplicationConstants AppConstants => new TestAppConstants();
+        public IProgressDialog ProgressDialog { get; }
+        public IFileDialog FileDialog { get; }
         public ICoreServices Services => TestCoreServices.CreateReal();
         public IWritableSettingsStorage SettingsStorage => Substitute.For<IWritableSettingsStorage>();
 

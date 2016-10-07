@@ -26,6 +26,7 @@ namespace Microsoft.R.Host.Client.Host {
             _authority = new UriBuilder { Scheme = brokerUri.Scheme, Host = brokerUri.Host, Port = brokerUri.Port }.ToString();
             _credentials = new NetworkCredential();
             _lock = new AsyncReaderWriterLock();
+            _credentialsAreValid = true;
         }
 
         public NetworkCredential GetCredential(Uri uri, string authType) => _credentials;
@@ -38,7 +39,7 @@ namespace Microsoft.R.Host.Client.Host {
             // the first prompt should be validated and saved, and then the same credentials will be reused for the second session.
             var token = await _lock.WriterLockAsync(cancellationToken);
             try {
-                GetCredentials(_applicationWindowHandle, _authority, Volatile.Read(ref _credentialsAreValid), out userName, out password);
+                GetCredentials(_applicationWindowHandle, _authority, !Volatile.Read(ref _credentialsAreValid), out userName, out password);
             } catch (Exception) {
                 token.Dispose();
                 throw;
@@ -46,6 +47,7 @@ namespace Microsoft.R.Host.Client.Host {
 
             _credentials.UserName = userName;
             _credentials.Password = password;
+            Volatile.Write(ref _credentialsAreValid, true);
 
             return Disposable.Create(() => {
                 CredUIConfirmCredentials(_authority, Volatile.Read(ref _credentialsAreValid));
@@ -56,12 +58,7 @@ namespace Microsoft.R.Host.Client.Host {
         public void InvalidateCredentials() {
             Volatile.Write(ref _credentialsAreValid, false);
         }
-
-        public void OnCredentialsValidated(bool isValid) {
-            CredUIConfirmCredentials(_authority, isValid);
-            _credentialsValidated.Set();
-        }
-
+        
         private static void GetCredentials(IntPtr hwndParent, string authority, bool ignoreSavedCredentials, out string userName, out string password) {
             var userNameBuilder = new StringBuilder(CREDUI_MAX_USERNAME_LENGTH + 1);
             var passwordBuilder = new StringBuilder(CREDUI_MAX_PASSWORD_LENGTH + 1);
@@ -69,19 +66,17 @@ namespace Microsoft.R.Host.Client.Host {
             var save = false;
 
             var flags = CREDUI_FLAGS_EXCLUDE_CERTIFICATES | CREDUI_FLAGS_PERSIST | CREDUI_FLAGS_EXPECT_CONFIRMATION | CREDUI_FLAGS_GENERIC_CREDENTIALS;
-            if (ignoreSavedCredentials)
-            {
+            if (ignoreSavedCredentials) {
                 flags |= CREDUI_FLAGS_ALWAYS_SHOW_UI;
             }
 
-            var credui = new CREDUI_INFO
-            {
+            var credui = new CREDUI_INFO {
                 cbSize = Marshal.SizeOf(typeof(CREDUI_INFO)),
                 hwndParent = hwndParent,
             };
+
             var err = CredUIPromptForCredentials(ref credui, authority, IntPtr.Zero, 0, userNameBuilder, userNameBuilder.Capacity, passwordBuilder, passwordBuilder.Capacity, ref save, flags);
-            if (err != 0)
-            {
+            if (err != 0) {
                 throw new OperationCanceledException("No credentials entered.");
             }
 

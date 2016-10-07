@@ -18,6 +18,7 @@ using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.R.Package.Commands.R;
 using Microsoft.VisualStudio.R.Package.Repl.Commands;
 using Microsoft.VisualStudio.R.Package.Repl.Workspace;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Test.FakeFactories;
 using Microsoft.VisualStudio.R.Package.Test.Mocks;
 using Microsoft.VisualStudio.R.Package.Utilities;
@@ -37,7 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
         public ReplCommandTest() {
             _debuggerModeTracker = new VsDebuggerModeTracker();
 
-            _componentContainerFactory = new InteractiveWindowComponentContainerFactoryMock();
+            _componentContainerFactory = new InteractiveWindowComponentContainerFactoryMock(VsAppShell.Current);
             _workflowProvider = TestRInteractiveWorkflowProviderFactory.Create(nameof(ReplCommandTest), debuggerModeTracker: _debuggerModeTracker);
             _workflow = _workflowProvider.GetOrCreate();
         }

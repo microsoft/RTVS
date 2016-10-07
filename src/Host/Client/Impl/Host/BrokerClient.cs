@@ -172,7 +172,7 @@ namespace Microsoft.R.Host.Client.Host {
                     } catch (UnauthorizedAccessException) {
                         _credentials.InvalidateCredentials();
                         continue;
-                    } catch (Exception ex) when (ex is InvalidOperationException || ex is WebException || ex is ProtocolViolationException) {
+                    } catch (Exception ex) when (ex is InvalidOperationException) {
                         throw new RHostDisconnectedException(Resources.HttpErrorCreatingSession.FormatInvariant(ex.Message), ex);
                     }
                 }

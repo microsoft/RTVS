@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel.Design;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
@@ -20,6 +21,8 @@ namespace Microsoft.Languages.Editor.Test.Shell {
 
         public TestShellBase() {
             MainThread = Thread.CurrentThread;
+            FileDialog = new TestFileDialog();
+            ProgressDialog = new TestProgressDialog();
         }
 
         public void ShowErrorMessage(string msg) { }
@@ -30,17 +33,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
 
         public void ShowContextMenu(CommandID commandId, int x, int y, object commandTaget = null) { }
 
-        public ProgressBarSession ShowProgressBar(string waitMessage, int delayToShowDialogMs = 0) => new ProgressBarSession();
-
-        public ProgressBarSession ShowProgressBarWithUpdate(string waitMessage, int delayToShowDialogMs = 0) => new ProgressBarSession();
-
         public string SaveFileIfDirty(string fullPath) => fullPath;
-
-        public string ShowOpenFileDialog(string filter, string initialPath = null, string title = null) => null;
-
-        public string ShowBrowseDirectoryDialog(string initialPath = null, string title = null) => null;
-
-        public string ShowSaveFileDialog(string filter, string initialPath = null, string title = null) => null;
 
         public void UpdateCommandStatus(bool immediate) { }
 
@@ -98,6 +91,8 @@ namespace Microsoft.Languages.Editor.Test.Shell {
         public IApplicationConstants AppConstants => new TestAppConstants();
         public virtual ICoreServices Services => TestCoreServices.CreateReal();
         public virtual IWritableSettingsStorage SettingsStorage => Substitute.For<IWritableSettingsStorage>();
+        public IProgressDialog ProgressDialog { get; }
+        public IFileDialog FileDialog { get; }
         #endregion
     }
 }

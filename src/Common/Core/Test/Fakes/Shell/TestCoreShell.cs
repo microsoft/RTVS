@@ -45,13 +45,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
             LastShownErrorMessage = message;
         }
 
-        public void ShowContextMenu(CommandID commandId, int x, int y, object commandTaget = null) {
-            LastShownContextMenu = commandId;
-        }
-
-        public ProgressBarSession ShowProgressBar(string waitMessage, int delayToShowDialogMs = 0) => new ProgressBarSession();
-
-        public ProgressBarSession ShowProgressBarWithUpdate(string waitMessage, int delayToShowDialogMs = 0) => new ProgressBarSession();
+        public void ShowContextMenu(CommandID commandId, int x, int y, object commandTaget = null) => LastShownContextMenu = commandId;
 
         public MessageButtons ShowMessage(string message, MessageButtons buttons) {
             LastShownMessage = message;
@@ -63,22 +57,15 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
 
         public string SaveFileIfDirty(string fullPath) => fullPath;
 
-        public string ShowOpenFileDialog(string filter, string initialPath = null, string title = null) => OpenFilePath;
-
-        public string ShowBrowseDirectoryDialog(string initialPath = null, string title = null) => BrowseDirectoryPath;
-
-        public string ShowSaveFileDialog(string filter, string initialPath = null, string title = null) => SaveFilePath;
-
         public void UpdateCommandStatus(bool immediate) { }
 
         public int LocaleId => 1033;
         public string LastShownMessage { get; private set; }
         public string LastShownErrorMessage { get; private set; }
         public CommandID LastShownContextMenu { get; private set; }
-        public string OpenFilePath { get; set; }
-        public string BrowseDirectoryPath { get; set; }
-        public string SaveFilePath { get; set; }
         public bool IsUnitTestEnvironment => true;
+        public IFileDialog FileDialog { get; } = new TestFileDialog();
+        public IProgressDialog ProgressDialog { get; } = new TestProgressDialog();
         public IApplicationConstants AppConstants => new TestAppConstants();
         public ICoreServices Services => TestCoreServices.CreateReal();
         public IWritableSettingsStorage SettingsStorage => Substitute.For<IWritableSettingsStorage>();

@@ -59,9 +59,8 @@ namespace Microsoft.R.Components.Test.Plots {
             return Task.CompletedTask;
         }
 
-        private TestCoreShell CoreShell {
-            get { return _workflow.Shell as TestCoreShell; }
-        }
+        private TestCoreShell CoreShell => _workflow.Shell as TestCoreShell;
+        private TestFileDialog FileDialog => _workflow.Shell.FileDialog as TestFileDialog;
 
         [Test(ThreadType.UI)]
         [Category.Plots]
@@ -425,7 +424,7 @@ namespace Microsoft.R.Components.Test.Plots {
             });
 
             var outputFilePath = _testFiles.GetDestinationPath("ExportedPlot.pdf");
-            CoreShell.SaveFilePath = outputFilePath;
+            FileDialog.SaveFilePath = outputFilePath;
 
             var deviceVC = _workflow.Plots.GetPlotVisualComponent(_workflow.Plots.ActiveDevice);
             var deviceCommands = new RPlotDeviceCommands(_workflow, deviceVC);
@@ -447,7 +446,7 @@ namespace Microsoft.R.Components.Test.Plots {
 
             foreach (var ext in new string[] { "bmp", "jpg", "jpeg", "png", "tif", "tiff" }) {
                 var outputFilePath = _testFiles.GetDestinationPath("ExportedPlot." + ext);
-                CoreShell.SaveFilePath = outputFilePath;
+                FileDialog.SaveFilePath = outputFilePath;
 
                 var deviceVC = _workflow.Plots.GetPlotVisualComponent(_workflow.Plots.ActiveDevice);
                 var deviceCommands = new RPlotDeviceCommands(_workflow, deviceVC);
@@ -478,7 +477,7 @@ namespace Microsoft.R.Components.Test.Plots {
             // dialog is what determines the image format. When it's an
             // unsupported format, we show an error msg.
             var outputFilePath = _testFiles.GetDestinationPath("ExportedPlot.unsupportedextension");
-            CoreShell.SaveFilePath = outputFilePath;
+            FileDialog.SaveFilePath = outputFilePath;
 
             var deviceVC = _workflow.Plots.GetPlotVisualComponent(_workflow.Plots.ActiveDevice);
             var deviceCommands = new RPlotDeviceCommands(_workflow, deviceVC);
@@ -486,7 +485,7 @@ namespace Microsoft.R.Components.Test.Plots {
             deviceCommands.ExportAsImage.Should().BeEnabled();
             await deviceCommands.ExportAsImage.InvokeAsync();
 
-            File.Exists(CoreShell.SaveFilePath).Should().BeFalse();
+            File.Exists(FileDialog.SaveFilePath).Should().BeFalse();
             CoreShell.LastShownErrorMessage.Should().Contain(".unsupportedextension");
         }
 

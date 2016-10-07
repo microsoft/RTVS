@@ -45,7 +45,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
             var lastLoadedProject = projectService.LoadedUnconfiguredProjects.LastOrDefault();
 
             var initialPath = lastLoadedProject != null ? lastLoadedProject.GetProjectDirectory() : Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            var file = _appShell.BrowseForFileSave(IntPtr.Zero, Resources.WorkspaceFileFilter, initialPath, Resources.SaveWorkspaceAsTitle);
+            var file = _appShell.FileDialog.ShowSaveFileDialog(Resources.WorkspaceFileFilter, initialPath, Resources.SaveWorkspaceAsTitle);
             if (file == null) {
                 return;
             }

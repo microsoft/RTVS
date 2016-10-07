@@ -21,14 +21,12 @@ namespace Microsoft.R.Components.ConnectionManager.Commands {
             ? CommandStatus.Supported
             : CommandStatus.SupportedAndEnabled;
 
-        public async Task<CommandResult> InvokeAsync() {
+        public Task<CommandResult> InvokeAsync() {
             var connection = _connectionManager.ActiveConnection;
             if (connection != null && !_connectionManager.IsConnected) {
-                using (_shell.ShowProgressBar(Resources.ConnectionManager_ReconnectionToProgressBarMessage.FormatInvariant(connection.Name))) {
-                    await _connectionManager.ReconnectAsync();
-                }
+                _shell.ProgressDialog.Show(_connectionManager.ReconnectAsync, Resources.ConnectionManager_ReconnectionToProgressBarMessage.FormatInvariant(connection.Name));
             }
-            return CommandResult.Executed;
+            return Task.FromResult(CommandResult.Executed);
         }
     }
 }

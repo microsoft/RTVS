@@ -29,15 +29,15 @@ namespace Microsoft.VisualStudio.R.Package.History.Commands {
             _history = historyProvider.GetAssociatedRHistory(textView);
         }
 
-        public override Microsoft.R.Components.Controller.CommandStatus Status(Guid guid, int id) {
+        public override CommandStatus Status(Guid guid, int id) {
             return _interactiveWorkflow.ActiveWindow != null && _history.HasEntries
-                ? Microsoft.R.Components.Controller.CommandStatus.SupportedAndEnabled 
-                : Microsoft.R.Components.Controller.CommandStatus.Supported;
+                ? CommandStatus.SupportedAndEnabled 
+                : CommandStatus.Supported;
         }
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             var initialPath = RToolsSettings.Current.WorkingDirectory != null ? PathHelper.EnsureTrailingSlash(RToolsSettings.Current.WorkingDirectory) : null;
-            var file = _appShell.BrowseForFileSave(IntPtr.Zero, Resources.HistoryFileFilter, initialPath, Resources.SaveHistoryAsTitle);
+            var file = _appShell.FileDialog.ShowSaveFileDialog(Resources.HistoryFileFilter, initialPath, Resources.SaveHistoryAsTitle);
             if (file != null) {
                 _history.TrySaveToFile(file);
             }

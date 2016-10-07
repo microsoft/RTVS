@@ -41,7 +41,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View.DesignTim
         public void CancelTestConnection(IConnectionViewModel connection) { }
         public void Save(IConnectionViewModel connectionViewModel) { }
         public bool TryDelete(IConnectionViewModel connection) => false;
-        public Task ConnectAsync(IConnectionViewModel connection) => Task.CompletedTask;
+        public void Connect(IConnectionViewModel connection) { }
 
         public void Dispose() {}
         public Task<int> Search(string searchString, CancellationToken cancellationToken) => Task.FromResult(0);

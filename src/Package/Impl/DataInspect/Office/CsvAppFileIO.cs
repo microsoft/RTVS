@@ -59,9 +59,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
 
             try {
                 statusBar.SetText(Resources.Status_WritingCSV);
-                using (ProgressBarSession<ThreadedWaitDialogProgressData> progressBarSession = (ProgressBarSession<ThreadedWaitDialogProgressData>)appShell.ShowProgressBarWithUpdate(Resources.Status_WritingCSV, 500)) {
-                    await CreateCsvAndStartProcess(result, session, file, fileSystem, processServices, progressBarSession.Progress);
-                }
+                appShell.ProgressDialog.Show(async (p, ct) => await CreateCsvAndStartProcess(result, session, file, fileSystem, p), Resources.Status_WritingCSV, 100, 500);
                 if (fileSystem.FileExists(file)) {
                     processServices.Start(file);
                 }
@@ -76,7 +74,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
             Interlocked.Exchange(ref _busy, 0);
         }
 
-        private static async Task CreateCsvAndStartProcess(IREvaluationResultInfo result, IRSession session, string fileName, IFileSystem fileSystem, IProcessServices processServices, IProgress<ThreadedWaitDialogProgressData> progress) {
+        private static async Task CreateCsvAndStartProcess(IREvaluationResultInfo result, IRSession session, string fileName, IFileSystem fileSystem, IProgress<ProgressDialogData> progress) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             var sep = CultureInfo.CurrentCulture.TextInfo.ListSeparator;
@@ -84,13 +82,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
             using (var e = await session.BeginEvaluationAsync()) { 
                 var csvDataBlobId = await e.EvaluateAsync<ulong>($"rtvs:::export_to_csv({result.Expression}, sep={sep.ToRStringLiteral()}, dec={dec.ToRStringLiteral()})", REvaluationKind.Normal);
                 using (DataTransferSession dts = new DataTransferSession(session, fileSystem)) {
-                    long total = await session.GetBlobSizeAsync(csvDataBlobId, CancellationToken.None);
-                    progress.Report(new ThreadedWaitDialogProgressData(Resources.Status_WritingCSV, null, Resources.Status_WritingCSV, true, 0, 100));
-                    await dts.FetchFileAsync(new RBlobInfo(csvDataBlobId), fileName, true, new Progress<long>((b) => {
-                        int step = (int)((b * 100) / total);
-                        progress.Report(new ThreadedWaitDialogProgressData(Resources.Status_WritingCSV, null, Resources.Status_WritingCSV, true, step, 100));
+                    var total = await session.GetBlobSizeAsync(csvDataBlobId, CancellationToken.None);
+                    progress.Report(new ProgressDialogData(0, statusBarText: Resources.Status_WritingCSV, waitMessage: Resources.Status_WritingCSV));
+                    await dts.FetchFileAsync(new RBlobInfo(csvDataBlobId), fileName, true, new Progress<long>(b => {
+                        var step = (int)(b * 100 / total);
+                        progress.Report(new ProgressDialogData(step, statusBarText: Resources.Status_WritingCSV, waitMessage: Resources.Status_WritingCSV));
                     }));
-                    progress.Report(new ThreadedWaitDialogProgressData(Resources.Status_WritingCSV, null, Resources.Status_WritingCSV, true, 100, 100));
+                    progress.Report(new ProgressDialogData(100, statusBarText: Resources.Status_WritingCSV, waitMessage: Resources.Status_WritingCSV));
                 }
             }
         }
