@@ -1985,7 +1985,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This operation requires SQL Data Tools package. Please add Data Storage and Processign workload to your Visual Studio setup..
+        ///   Looks up a localized string similar to This operation requires SQL Data Tools package. Please add Data Storage and Processing workload to the Visual Studio installation..
         /// </summary>
         public static string SqlPublish_NoSqlToolsVS15 {
             get {
