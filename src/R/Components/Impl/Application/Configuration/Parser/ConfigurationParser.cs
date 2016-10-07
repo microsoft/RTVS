@@ -13,6 +13,7 @@ using Microsoft.R.Core.AST.Scopes;
 using Microsoft.R.Core.AST.Statements;
 using Microsoft.R.Core.AST.Variables;
 using Microsoft.R.Core.Parser;
+using Microsoft.R.Host.Client;
 using static System.FormattableString;
 
 namespace Microsoft.R.Components.Application.Configuration.Parser {
@@ -105,10 +106,13 @@ namespace Microsoft.R.Components.Application.Configuration.Parser {
                         var settingsName = (listOp.RightOperand as Variable)?.Name;
                         var result = !string.IsNullOrEmpty(settingsName) && !string.IsNullOrEmpty(value);
                         if (result && listName == "settings") {
-                            s.Name = settingsName;
-                            s.Value = value.TrimQuotes();
-                            s.ValueType = value[0] == '\'' || value[0] == '\"' ? ConfigurationSettingValueType.String : ConfigurationSettingValueType.Expression;
-                            return true;
+                            try {
+                                s.Name = settingsName;
+                                s.ValueType = value[0] == '\'' || value[0] == '\"' ? ConfigurationSettingValueType.String : ConfigurationSettingValueType.Expression;
+                                s.Value = s.ValueType == ConfigurationSettingValueType.String ? value.FromRStringLiteral() : value;
+                                return true;
+                            } catch (FormatException) {
+                            }
                         }
                     }
                 } else {
@@ -120,10 +124,13 @@ namespace Microsoft.R.Components.Application.Configuration.Parser {
                     var value = text.Substring(rightOperand.Start, rightOperand.Length);
                     var result = !string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(value);
                     if (result) {
-                        s.Name = name;
-                        s.Value = value.TrimQuotes();
-                        s.ValueType = value[0] == '\'' || value[0] == '\"' ? ConfigurationSettingValueType.String : ConfigurationSettingValueType.Expression;
-                        return true;
+                        try {
+                            s.Name = name;
+                            s.ValueType = value[0] == '\'' || value[0] == '\"' ? ConfigurationSettingValueType.String : ConfigurationSettingValueType.Expression;
+                            s.Value = s.ValueType == ConfigurationSettingValueType.String ? value.FromRStringLiteral() : value;
+                            return true;
+                        } catch (FormatException) {
+                        }
                     }
                 }
             }

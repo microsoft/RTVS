@@ -17,7 +17,18 @@ namespace Microsoft.R.Host.Client {
                 return nullValue;
             }
 
-            return quote + s.Replace("\\", "\\\\").Replace("" + quote, "\\" + quote) + quote;
+            return quote + s.Replace("\\", "\\\\").Replace("" + quote, "\\" + quote).EscapeCharacterConstants() + quote;
+        }
+
+        private static string EscapeCharacterConstants(this string s) {
+            s = s.Replace("\n", "\\n")
+                .Replace("\r", "\\r")
+                .Replace("\t", "\\t")
+                .Replace("\b", "\\b")
+                .Replace("\a", "\\a")
+                .Replace("\f", "\\f")
+                .Replace("\v", "\\v");
+            return s;
         }
 
         public static string FromRStringLiteral(this string s) {
@@ -35,7 +46,33 @@ namespace Microsoft.R.Host.Client {
             for (int i = 1; i < s.Length - 1; ++i) {
                 char c = s[i];
                 if (escape) {
-                    sb.Append(c);
+                    // https://stat.ethz.ch/R-manual/R-devel/library/base/html/Quotes.html
+                    switch (c) {
+                        case 'n':
+                            sb.Append("\n");
+                            break;
+                        case 'r':
+                            sb.Append("\r");
+                            break;
+                        case 't':
+                            sb.Append("\t");
+                            break;
+                        case 'b':
+                            sb.Append("\b");
+                            break;
+                        case 'a':
+                            sb.Append("\a");
+                            break;
+                        case 'f':
+                            sb.Append("\f");
+                            break;
+                        case 'v':
+                            sb.Append("\v");
+                            break;
+                        default:
+                            sb.Append(c);
+                            break;
+                    }
                     escape = false;
                 } else {
                     if (c == quote) {

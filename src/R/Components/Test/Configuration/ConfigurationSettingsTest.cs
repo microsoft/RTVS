@@ -183,7 +183,7 @@ c1 <- 'DSN'
 
         [Test]
         public void Rewrite() {
-            string content =
+            string content = string.Format(
 @"settings <- new.env()
 
 # [Category] SQL
@@ -192,7 +192,22 @@ c1 <- 'DSN'
 settings$c1 <- 'DSN'
 
 settings$x <- 1
-";
+
+settings$y <- 'MACHINE\\INSTANCE'
+
+settings$dq <- 'double{0}quote'
+
+settings$q <- {0}single'quote{0}
+
+settings$qplusdq <- 'single\'quote+double{0}quote'
+
+settings$tab <- 'hello\tworld'
+
+settings$newline <- 'hello\nworld'
+
+settings$cr <- 'hello\rworld'
+
+", '"');
             LoadAndWrite(content, content);
         }
 

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using Microsoft.R.Host.Client;
 using static System.FormattableString;
 
 namespace Microsoft.R.Components.Application.Configuration {
@@ -70,9 +71,9 @@ namespace Microsoft.R.Components.Application.Configuration {
                 var hasSingleQuotes = s.Value.IndexOf('\'') >= 0;
                 var hasDoubleQuotes = s.Value.IndexOf('\"') >= 0;
                 if (hasSingleQuotes && !hasDoubleQuotes) {
-                    return Invariant($"\"{s.Value}\"");
-                } else if (!hasSingleQuotes) {
-                    return Invariant($"'{s.Value}'");
+                    return s.Value.ToRStringLiteral(quote: '"');
+                } else {
+                    return s.Value.ToRStringLiteral(quote: '\'');
                 }
             }
             return s.Value;

@@ -45,7 +45,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
             }
 
             if(Workflow.RSession.IsHostRunning) {
-                Workflow.Operations.EnqueueExpression(Invariant($"{name ?? _settingNameTemplate} <- '{value}'"), addNewLine: true);
+                Workflow.Operations.EnqueueExpression(Invariant($"{name ?? _settingNameTemplate} <- {value.ToRStringLiteral()}"), addNewLine: true);
             }
         }
     }
