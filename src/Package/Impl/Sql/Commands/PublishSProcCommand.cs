@@ -51,8 +51,15 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
 
         public bool TryHandleCommand(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, long commandExecuteOptions, IntPtr variantArgIn, IntPtr variantArgOut) {
             if (commandId == RPackageCommandId.icmdPublishSProc) {
-                if (SqlTools.CheckInstalled(_appShell, showMessage: true)) {
+                if (_dacServicesProvider.GetDacPackageServices() != null) {
                     Handle();
+                } else {
+#if VS14
+                    var message = Resources.SqlPublish_NoSqlToolsVS14;
+#else
+                    var message = Resources.SqlPublish_NoSqlToolsVS15;
+#endif
+                    _appShell.ShowErrorMessage(message);
                 }
                 return true;
             }
@@ -69,7 +76,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
                         var dte = _appShell.GetGlobalService<DTE>(typeof(DTE));
                         dte.ExecuteCommand("File.SaveAll");
 
-                        var publisher = new SProcPublisher(_appShell, _pss, _fs, _dacServicesProvider.GetDacPackageServices(_appShell));
+                        var publisher = new SProcPublisher(_appShell, _pss, _fs, _dacServicesProvider.GetDacPackageServices());
                         var settings = new SqlSProcPublishSettings(_appShell.SettingsStorage);
                         publisher.Publish(settings, sprocFiles);
                     } catch (Exception ex) {

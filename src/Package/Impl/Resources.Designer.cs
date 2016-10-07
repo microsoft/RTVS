@@ -1974,7 +1974,9 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This operation requires SQL Data Tools package. Please add SQL Data Tools to the Visual Studio 2015 setup or install SSDT from https://msdn.microsoft.com/en-us/mt186501.aspx. You can modify Visual Studio installation in Control Panel -&gt; Uninstall Program -&gt; Right click on Visual Studio 2015 and select Change..
+        ///   Looks up a localized string similar to This operation requires SQL Data Tools package. Please add SQL Data Tools to the Visual Studio 2015 setup or install SSDT from https://msdn.microsoft.com/en-us/mt186501.aspx.
+        ///
+        ///You can modify Visual Studio installation in Control Panel -&gt; Uninstall Program -&gt; Right click on Visual Studio 2015 and select Change..
         /// </summary>
         public static string SqlPublish_NoSqlToolsVS14 {
             get {

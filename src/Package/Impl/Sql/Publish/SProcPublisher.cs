@@ -93,17 +93,21 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         private void PublishToProject(SqlSProcPublishSettings settings, IEnumerable<string> sprocFiles) {
             Check.ArgumentNull(nameof(settings), settings.TargetProject);
             var targetProject = _pss.GetProject(settings.TargetProject);
-            var generator = new SProcProjectFilesGenerator(_pss, _fs);
-            generator.Generate(settings, targetProject);
-            RtvsTelemetry.Current?.TelemetryService.ReportEvent(TelemetryArea.SQL, SqlTelemetryEvents.SqlProjectPublish);
+            if (targetProject != null) {
+                var generator = new SProcProjectFilesGenerator(_pss, _fs);
+                generator.Generate(settings, targetProject);
+                RtvsTelemetry.Current?.TelemetryService.ReportEvent(TelemetryArea.SQL, SqlTelemetryEvents.SqlProjectPublish);
+            }
         }
 
         private void CreateDacPac(SqlSProcPublishSettings settings, IEnumerable<string> sprocFiles, string dacpacPath) {
-            var project = _pss.GetSelectedProject<IVsHierarchy>()?.GetDTEProject();
-            var g = new SProcScriptGenerator(_fs);
-            var sprocMap = g.CreateStoredProcedureScripts(settings, sprocFiles);
-            var builder = _dacServices.GetBuilder();
-            builder.Build(dacpacPath, project.Name, sprocMap.Scripts);
+            if (_dacServices != null) {
+                var project = _pss.GetSelectedProject<IVsHierarchy>()?.GetDTEProject();
+                var g = new SProcScriptGenerator(_fs);
+                var sprocMap = g.CreateStoredProcedureScripts(settings, sprocFiles);
+                var builder = _dacServices.GetBuilder();
+                builder.Build(dacpacPath, project.Name, sprocMap.Scripts);
+            }
         }
     }
 }
