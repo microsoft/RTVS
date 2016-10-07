@@ -292,8 +292,8 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         private static async Task StopHostAsync(IBrokerClient brokerClient, string hostName, RHost host, Task hostRunTask) {
+            // Try graceful shutdown with q() first.
             if (host != null) {
-                // Try graceful shutdown with q() first.
                 try {
                     await Task.WhenAny(hostRunTask, host.QuitAsync(), Task.Delay(500)).Unwrap();
                 } catch (Exception) { }
@@ -304,12 +304,14 @@ namespace Microsoft.R.Host.Client.Session {
             }
 
             // If it didn't work, tell the broker to forcibly terminate the host process. 
-            try {
-                await brokerClient.TerminateSessionAsync(hostName);
-            } catch (Exception) { }
+            if (hostName != null) {
+                try {
+                    await brokerClient.TerminateSessionAsync(hostName);
+                } catch (Exception) { }
 
-            if (hostRunTask.IsCompleted) {
-                return;
+                if (hostRunTask.IsCompleted) {
+                    return;
+                }
             }
 
             // If nothing worked, then just disconnect.
@@ -739,7 +741,9 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
                 await _session.StartHostAsyncBackground(_hostToSwitch, _lockToken, cancellationToken);
 
                 // Shut down the old host, gracefully if possible, and wait for old hostRunTask to exit;
-                await StopHostAsync(brokerClient, startupInfo.Name, host, hostRunTask);
+                if (hostRunTask != null) {
+                    await StopHostAsync(brokerClient, startupInfo?.Name, host, hostRunTask);
+                }
                 host?.Dispose();
 
                 if (hostRunTask != null) {
