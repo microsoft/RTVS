@@ -24,7 +24,7 @@ namespace Microsoft.R.Components.ConnectionManager.Commands {
         public Task<CommandResult> InvokeAsync() {
             var connection = _connectionManager.ActiveConnection;
             if (connection != null && !_connectionManager.IsConnected) {
-                _shell.ShowProgressBar(_connectionManager.ReconnectAsync, Resources.ConnectionManager_ReconnectionToProgressBarMessage.FormatInvariant(connection.Name));
+                _shell.ProgressDialog.Show(_connectionManager.ReconnectAsync, Resources.ConnectionManager_ReconnectionToProgressBarMessage.FormatInvariant(connection.Name));
             }
             return Task.FromResult(CommandResult.Executed);
         }

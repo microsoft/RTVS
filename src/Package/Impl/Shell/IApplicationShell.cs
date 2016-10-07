@@ -20,9 +20,5 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// <param name="type">Service type if different from T, such as typeof(SVSUiShell)</param>
         /// <returns>Service instance of null if not found.</returns>
         T GetGlobalService<T>(Type type = null) where T : class;
-
-        string BrowseForFileOpen(IntPtr owner, string filter, string initialPath = null, string title = null);
-
-        string BrowseForFileSave(IntPtr owner, string filter, string initialPath = null, string title = null);
     }
 }

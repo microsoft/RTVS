@@ -204,6 +204,8 @@
     <Compile Include="ProjectSystem\Commands\SendFileCommandBase.cs" />
     <Compile Include="ProjectSystem\Commands\SendToRemoteCommand.cs" />
     <Compile Include="Shell\ApplicationConstants.cs" />
+    <Compile Include="Shell\VsFileDialog.cs" />
+    <Compile Include="Shell\VsProgressDialog.cs" />
     <Compile Include="ToolWindows\PlotHistoryWindowPane.cs" />
     <Compile Include="ProjectSystem\Commands\CopyRemoteItemPathCommand.cs" />
     <Compile Include="ProjectSystem\Commands\SetAsStartUpRScriptCommand.cs" />
@@ -511,7 +513,6 @@
     <Compile Include="Windows\GotoSolutionExplorerCommand.cs" />
     <Compile Include="Windows\GotoEditorWindowCommand.cs" />
     <Compile Include="Windows\RToolWindowPane.cs" />
-    <Compile Include="Wpf\Commands.cs" />
     <Compile Include="Wpf\ConfigurationControl.cs" />
     <Compile Include="Wpf\Controls.cs" />
     <Compile Include="Wpf\Dialogs.cs" />

@@ -59,7 +59,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
 
             try {
                 statusBar.SetText(Resources.Status_WritingCSV);
-                appShell.ShowProgressBar(async (p, ct) => await CreateCsvAndStartProcess(result, session, file, fileSystem, p), Resources.Status_WritingCSV, 100, 500);
+                appShell.ProgressDialog.Show(async (p, ct) => await CreateCsvAndStartProcess(result, session, file, fileSystem, p), Resources.Status_WritingCSV, 100, 500);
                 if (fileSystem.FileExists(file)) {
                     processServices.Start(file);
                 }

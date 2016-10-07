@@ -21,6 +21,8 @@ namespace Microsoft.Languages.Editor.Test.Shell {
 
         public TestShellBase() {
             MainThread = Thread.CurrentThread;
+            FileDialog = new TestFileDialog();
+            ProgressDialog = new TestProgressDialog();
         }
 
         public void ShowErrorMessage(string msg) { }
@@ -31,25 +33,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
 
         public void ShowContextMenu(CommandID commandId, int x, int y, object commandTaget = null) { }
 
-        public void ShowProgressBar(Func<CancellationToken, Task> method, string waitMessage, int delayToShowDialogMs = 0)
-            => UIThreadHelper.Instance.Invoke(() => method(CancellationToken.None)).GetAwaiter().GetResult();
-
-        public TResult ShowProgressBar<TResult>(Func<CancellationToken, Task<TResult>> method, string waitMessage, int delayToShowDialogMs = 0)
-            => UIThreadHelper.Instance.Invoke(() => method(CancellationToken.None)).GetAwaiter().GetResult();
-
-        public void ShowProgressBar(Func<IProgress<ProgressDialogData>, CancellationToken, Task> method, string waitMessage, int totalSteps = 100, int delayToShowDialogMs = 0)
-            => UIThreadHelper.Instance.Invoke(() => method(new Progress<ProgressDialogData>(), CancellationToken.None)).GetAwaiter().GetResult();
-
-        public T ShowProgressBar<T>(Func<IProgress<ProgressDialogData>, CancellationToken, Task<T>> method, string waitMessage, int totalSteps = 100, int delayToShowDialogMs = 0)
-            => UIThreadHelper.Instance.Invoke(() => method(new Progress<ProgressDialogData>(), CancellationToken.None)).GetAwaiter().GetResult();
-
         public string SaveFileIfDirty(string fullPath) => fullPath;
-
-        public string ShowOpenFileDialog(string filter, string initialPath = null, string title = null) => null;
-
-        public string ShowBrowseDirectoryDialog(string initialPath = null, string title = null) => null;
-
-        public string ShowSaveFileDialog(string filter, string initialPath = null, string title = null) => null;
 
         public void UpdateCommandStatus(bool immediate) { }
 
@@ -107,6 +91,8 @@ namespace Microsoft.Languages.Editor.Test.Shell {
         public IApplicationConstants AppConstants => new TestAppConstants();
         public virtual ICoreServices Services => TestCoreServices.CreateReal();
         public virtual IWritableSettingsStorage SettingsStorage => Substitute.For<IWritableSettingsStorage>();
+        public IProgressDialog ProgressDialog { get; }
+        public IFileDialog FileDialog { get; }
         #endregion
     }
 }

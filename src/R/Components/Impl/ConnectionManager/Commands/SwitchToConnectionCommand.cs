@@ -48,7 +48,7 @@ namespace Microsoft.R.Components.ConnectionManager.Commands {
                 var progressBarMessage = _connectionManager.ActiveConnection != null
                     ? Resources.ConnectionManager_SwitchConnectionProgressBarMessage.FormatInvariant(_connectionManager.ActiveConnection.Name, connection.Name)
                     : Resources.ConnectionManager_ConnectionToProgressBarMessage.FormatInvariant(connection.Name);
-                _shell.ShowProgressBar(ct => _connectionManager.ConnectAsync(connection, ct), progressBarMessage);
+                _shell.ProgressDialog.Show(ct => _connectionManager.ConnectAsync(connection, ct), progressBarMessage);
             }
             return Task.FromResult(CommandResult.Executed);
         }

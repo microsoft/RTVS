@@ -37,7 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.History.Commands {
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             var initialPath = RToolsSettings.Current.WorkingDirectory != null ? PathHelper.EnsureTrailingSlash(RToolsSettings.Current.WorkingDirectory) : null;
-            var file = _appShell.BrowseForFileOpen(IntPtr.Zero, Resources.HistoryFileFilter, initialPath, Resources.LoadHistoryTitle);
+            var file = _appShell.FileDialog.ShowOpenFileDialog(Resources.HistoryFileFilter, initialPath, Resources.LoadHistoryTitle);
             if (file != null) {
                 _history.TryLoadFromFile(file);
             }

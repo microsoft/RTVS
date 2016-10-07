@@ -26,6 +26,8 @@ namespace Microsoft.Languages.Editor.Test.Fakes.Shell {
         private readonly CompositionContainer _container;
 
         public TestEditorShell(CompositionContainer container) {
+            FileDialog = new TestFileDialog();
+            ProgressDialog = new TestProgressDialog();
             _container = container;
         }
 
@@ -50,30 +52,12 @@ namespace Microsoft.Languages.Editor.Test.Fakes.Shell {
             LastShownContextMenu = commandId;
         }
 
-        public void ShowProgressBar(Func<CancellationToken, Task> method, string waitMessage, int delayToShowDialogMs = 0)
-            => UIThreadHelper.Instance.Invoke(() => method(CancellationToken.None)).GetAwaiter().GetResult();
-
-        public TResult ShowProgressBar<TResult>(Func<CancellationToken, Task<TResult>> method, string waitMessage, int delayToShowDialogMs = 0)
-            => UIThreadHelper.Instance.Invoke(() => method(CancellationToken.None)).GetAwaiter().GetResult();
-
-        public void ShowProgressBar(Func<IProgress<ProgressDialogData>, CancellationToken, Task> method, string waitMessage, int totalSteps = 100, int delayToShowDialogMs = 0)
-            => UIThreadHelper.Instance.Invoke(() => method(new Progress<ProgressDialogData>(), CancellationToken.None)).GetAwaiter().GetResult();
-
-        public T ShowProgressBar<T>(Func<IProgress<ProgressDialogData>, CancellationToken, Task<T>> method, string waitMessage, int totalSteps = 100, int delayToShowDialogMs = 0)
-            => UIThreadHelper.Instance.Invoke(() => method(new Progress<ProgressDialogData>(), CancellationToken.None)).GetAwaiter().GetResult();
-
         public MessageButtons ShowMessage(string message, MessageButtons buttons) {
             LastShownMessage = message;
             return MessageButtons.OK;
         }
 
         public string SaveFileIfDirty(string fullPath) => fullPath;
-
-        public string ShowOpenFileDialog(string filter, string initialPath = null, string title = null) => OpenFilePath;
-
-        public string ShowBrowseDirectoryDialog(string initialPath = null, string title = null) => BrowseDirectoryPath;
-
-        public string ShowSaveFileDialog(string filter, string initialPath = null, string title = null) => SaveFilePath;
 
         public void UpdateCommandStatus(bool immediate) { }
 
@@ -82,10 +66,9 @@ namespace Microsoft.Languages.Editor.Test.Fakes.Shell {
         public string LastShownMessage { get; private set; }
         public string LastShownErrorMessage { get; private set; }
         public CommandID LastShownContextMenu { get; private set; }
-        public string OpenFilePath { get; set; }
-        public string BrowseDirectoryPath { get; set; }
-        public string SaveFilePath { get; set; }
         public IApplicationConstants AppConstants => new TestAppConstants();
+        public IProgressDialog ProgressDialog { get; }
+        public IFileDialog FileDialog { get; }
         public ICoreServices Services => TestCoreServices.CreateReal();
         public IWritableSettingsStorage SettingsStorage => Substitute.For<IWritableSettingsStorage>();
 

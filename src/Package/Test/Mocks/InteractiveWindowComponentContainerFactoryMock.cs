@@ -18,7 +18,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.Mocks {
 
         public InteractiveWindowComponentContainerFactoryMock(ICoreShell shell) {
             _shell = shell;
-            throw new System.NotImplementedException();
         }
 
         public IInteractiveWindowVisualComponent Create(int instanceId, IInteractiveEvaluator evaluator, IRSessionProvider sessionProvider) {

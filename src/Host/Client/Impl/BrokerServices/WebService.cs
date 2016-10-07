@@ -70,7 +70,15 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             }, cancellationToken);
 
         public async Task<TResponse> HttpGetAsync<TResponse>(Uri uri, CancellationToken cancellationToken = default(CancellationToken)) {
-            using (var response = await RepeatUntilAuthenticatedAsync(async ct => EnsureSuccessStatusCode(await HttpClient.GetAsync(uri, ct)), cancellationToken)) {
+            Func<CancellationToken, Task<HttpResponseMessage>> func = async ct => {
+                try {
+                    return EnsureSuccessStatusCode(await HttpClient.GetAsync(uri, ct));
+                } catch (Exception) {
+                    throw;
+                }
+            };
+
+            using (var response = await RepeatUntilAuthenticatedAsync(func, cancellationToken)) {
                 return JsonConvert.DeserializeObject<TResponse>(await response.Content.ReadAsStringAsync());
             }
         }
