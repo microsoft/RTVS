@@ -15,6 +15,10 @@ using Newtonsoft.Json;
 
 namespace Microsoft.R.Host.UserProfile {
     partial class RUserProfileService : ServiceBase {
+
+        private static int ServiceShutdownTimeoutMs => 5000;
+        private static int ClientResponseReadTimeoutMs => 3000;
+
         public RUserProfileService() {
             InitializeComponent();
         }
@@ -40,7 +44,7 @@ namespace Microsoft.R.Host.UserProfile {
         protected override void OnStop() {
             base.OnStop();
             _cts.Cancel();
-            _workerdone.WaitOne(TimeSpan.FromSeconds(5));
+            _workerdone.WaitOne(TimeSpan.FromMilliseconds(ServiceShutdownTimeoutMs));
         }
 
         async Task CreateProfileWorkerAsync(CancellationToken ct) {
@@ -72,8 +76,14 @@ namespace Microsoft.R.Host.UserProfile {
                         await server.WriteAsync(respData, 0, respData.Length, ct);
                         await server.FlushAsync(ct);
 
-                        server.WaitForPipeDrain();
+                        // Waiting here to allow client to finish reading 
+                        // client should disconnect after reading.
+                        while (bytesRead == 0 && !ct.IsCancellationRequested) {
+                            bytesRead = await server.ReadAsync(requestRaw, 0, requestRaw.Length, ct);
+                        }
 
+                        // if there was an attempt to write, disconnect.
+                        server.Disconnect();
                     } catch (Exception ex) when (!ex.IsCriticalException()) {
                         _logger?.LogError(Resources.Error_UserProfileCreationError, ex.Message);
                     } 

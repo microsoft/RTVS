@@ -7,6 +7,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Extensions.Logging;
+using Microsoft.Common.Core.Threading;
 
 namespace Microsoft.R.Host.Monitor {
     public class BrokerManager {
@@ -31,9 +32,12 @@ namespace Microsoft.R.Host.Monitor {
             AutoRestart = true;
         }
 
-        public static Task<int> CreateOrAttachToBrokerInstanceAsync(ILogger logger = null) {
-            return Task.Run(async () => {
-                await StopBrokerInstanceAsync();
+        private static object _createOrAttachToBrokerInstanceLock = new object();
+        public static async Task<int> CreateOrAttachToBrokerInstanceAsync(ILogger logger = null) {
+            await TaskUtilities.SwitchToBackgroundThread();
+            await StopBrokerInstanceAsync();
+
+            lock (_createOrAttachToBrokerInstanceLock) {
                 Process[] processes = Process.GetProcessesByName(RHostBroker);
                 if (processes.Length > 0) {
                     _brokerProcess = processes[0];
@@ -54,7 +58,7 @@ namespace Microsoft.R.Host.Monitor {
                     psi.WorkingDirectory = assemblyRoot;
 
                     if (Properties.Settings.Default.UseDifferentBrokerUser) {
-                        await CredentialManager.SetCredentialsOnProcessAsync(psi, logger);
+                        CredentialManager.SetCredentialsOnProcess(psi, logger);
                     }
 
                     _brokerProcess = new Process() { StartInfo = psi };
@@ -68,7 +72,7 @@ namespace Microsoft.R.Host.Monitor {
 
                 AutoRestart = true;
                 return _brokerProcess.Id;
-            });
+            }
         }
 
         public static void ResetAutoStart() {
@@ -85,18 +89,22 @@ namespace Microsoft.R.Host.Monitor {
             }
         }
 
+        private static object _stopBrokerInstanceLock = new object();
         public static async Task<int> StopBrokerInstanceAsync(ILogger logger = null) {
-            int id = _brokerProcess?.Id ?? 0;
             await TaskUtilities.SwitchToBackgroundThread();
-            try {
-                AutoRestart = false;
-                _brokerProcess?.Kill();
-                _brokerProcess = null;
-            } catch (Exception ex) when (!ex.IsCriticalException()) {
-                logger?.LogError(Resources.Error_StopBrokerFailed, ex.Message);
-            }
 
-            return id;
+            lock (_stopBrokerInstanceLock) {
+                int id = _brokerProcess?.Id ?? 0;
+                try {
+                    AutoRestart = false;
+                    _brokerProcess?.Kill();
+                    _brokerProcess = null;
+                } catch (Exception ex) when (!ex.IsCriticalException()) {
+                    logger?.LogError(Resources.Error_StopBrokerFailed, ex.Message);
+                }
+
+                return id;
+            }
         }
     }
 }
