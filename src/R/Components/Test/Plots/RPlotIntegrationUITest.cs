@@ -3,18 +3,14 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media.Imaging;
+using System.Windows.Media;
 using FluentAssertions;
-using Microsoft.Common.Core;
 using Microsoft.Common.Core.Test.Fakes.Shell;
-using Microsoft.Common.Wpf.Imaging;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Plots;
-using Microsoft.R.Components.Plots.Commands;
 using Microsoft.R.Components.Plots.Implementation;
 using Microsoft.R.Components.Plots.Implementation.ViewModel;
 using Microsoft.R.Components.Test.Fakes.InteractiveWindow;
@@ -28,6 +24,7 @@ using Xunit;
 
 namespace Microsoft.R.Components.Test.Plots {
     [ExcludeFromCodeCoverage]
+    [Collection(CollectionNames.NonParallel)]
     public class RPlotIntegrationUITest : IAsyncLifetime {
         private readonly ContainerHostMethodFixture _containerHost;
         private readonly IExportProvider _exportProvider;
@@ -85,15 +82,16 @@ namespace Microsoft.R.Components.Test.Plots {
         [Test(ThreadType.UI)]
         [Category.Plots]
         public async Task ResizePlot() {
-            // TODO: Make this test pass when running at > 100% scaling (>96dpi)
             await InitializeGraphicsDevice();
             await ExecuteAndWaitForPlotsAsync(new string[] {
                 "plot(1:10)",
             });
 
             var plotVC = _workflow.Plots.GetPlotVisualComponent(_workflow.Plots.ActiveDevice);
-            _workflow.Plots.ActiveDevice.ActivePlot.Image.PixelWidth.Should().Be(600);
-            _workflow.Plots.ActiveDevice.ActivePlot.Image.PixelHeight.Should().Be(500);
+
+            var expectedSize = GetPixelSize(600, 500);
+            _workflow.Plots.ActiveDevice.ActivePlot.Image.PixelWidth.Should().Be((int)expectedSize.Width);
+            _workflow.Plots.ActiveDevice.ActivePlot.Image.PixelHeight.Should().Be((int)expectedSize.Height);
 
             var plotReceivedTask = EventTaskSources.IRPlotDevice.PlotAddedOrUpdated.Create(_workflow.Plots.ActiveDevice);
 
@@ -101,14 +99,14 @@ namespace Microsoft.R.Components.Test.Plots {
 
             await plotReceivedTask;
 
-            _workflow.Plots.ActiveDevice.ActivePlot.Image.PixelWidth.Should().Be(600);
-            _workflow.Plots.ActiveDevice.ActivePlot.Image.PixelHeight.Should().Be(450);
+            var expectedModifiedSize = GetPixelSize(600, 450);
+            _workflow.Plots.ActiveDevice.ActivePlot.Image.PixelWidth.Should().Be((int)expectedModifiedSize.Width);
+            _workflow.Plots.ActiveDevice.ActivePlot.Image.PixelHeight.Should().Be((int)expectedModifiedSize.Height);
         }
 
         [Test(ThreadType.UI)]
         [Category.Plots]
         public async Task ResizePlotError() {
-            // TODO: Make this test pass when running at > 100% scaling (>96dpi)
             using (_workflow.Plots.GetOrCreateVisualComponent(_plotHistoryVisualComponentContainerFactory, 0)) {
                 await InitializeGraphicsDevice();
                 await ExecuteAndWaitForPlotsAsync(new string[] {
@@ -116,12 +114,14 @@ namespace Microsoft.R.Components.Test.Plots {
                 });
 
                 var plotVC = _workflow.Plots.GetPlotVisualComponent(_workflow.Plots.ActiveDevice);
-                _workflow.Plots.ActiveDevice.ActivePlot.Image.PixelWidth.Should().Be(600);
-                _workflow.Plots.ActiveDevice.ActivePlot.Image.PixelHeight.Should().Be(500);
+
+                var expectedSize = GetPixelSize(600, 500);
+                _workflow.Plots.ActiveDevice.ActivePlot.Image.PixelWidth.Should().Be((int)expectedSize.Width);
+                _workflow.Plots.ActiveDevice.ActivePlot.Image.PixelHeight.Should().Be((int)expectedSize.Height);
 
                 var plotReceivedTask = EventTaskSources.IRPlotDevice.PlotAddedOrUpdated.Create(_workflow.Plots.ActiveDevice);
 
-                // mtcars cannot be rendered at 200 pixels
+                // mtcars cannot be rendered at 200
                 _plotVisualComponent.Control.Width = 200;
 
                 await plotReceivedTask;
@@ -132,6 +132,7 @@ namespace Microsoft.R.Components.Test.Plots {
                 var historyVC = (RPlotHistoryVisualComponent)_workflow.Plots.HistoryVisualComponent;
                 var historyVM = (RPlotHistoryViewModel)historyVC.Control.DataContext;
                 historyVM.Entries.Count.Should().Be(1);
+                historyVM.Entries[0].PlotImage.Should().NotBeNull();
             }
         }
 
@@ -162,6 +163,11 @@ namespace Microsoft.R.Components.Test.Plots {
 
                 await plotReceivedTask;
             }
+        }
+
+        private Size GetPixelSize(int width, int height) {
+            var source = PresentationSource.FromVisual(_plotVisualComponent.Control as Visual);
+            return WpfUnitsConversion.ToPixels(source, new Size(width, height));
         }
     }
 }
