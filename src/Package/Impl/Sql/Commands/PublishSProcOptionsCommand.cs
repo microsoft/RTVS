@@ -41,8 +41,10 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
 
         public async Task<bool> TryHandleCommandAsync(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, long commandExecuteOptions, IntPtr variantArgIn, IntPtr variantArgOut) {
             if (commandId == RPackageCommandId.icmdPublishSProcOptions) {
-                var dlg = await SqlPublshOptionsDialog.CreateAsync(_appShell, _pss, _pcsp);
-                dlg.ShowModal();
+                if (SqlTools.CheckInstalled(_appShell)) {
+                    var dlg = await SqlPublshOptionsDialog.CreateAsync(_appShell, _pss, _pcsp);
+                    dlg.ShowModal();
+                }
                 return true;
             }
             return false;

@@ -50,7 +50,9 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
 
         public bool TryHandleCommand(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, long commandExecuteOptions, IntPtr variantArgIn, IntPtr variantArgOut) {
             if (commandId == RPackageCommandId.icmdPublishSProc) {
-                Handle();
+                if (SqlTools.CheckInstalled(_appShell)) {
+                    Handle();
+                }
                 return true;
             }
             return false;
