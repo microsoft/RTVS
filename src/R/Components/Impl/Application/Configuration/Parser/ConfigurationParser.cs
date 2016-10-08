@@ -165,7 +165,7 @@ namespace Microsoft.R.Components.Application.Configuration.Parser {
         }
 
         private bool IsEnvNew(ConfigurationSetting s) {
-            return s.Name == "settings" && s.Value == "new.env()" && s.ValueType == ConfigurationSettingValueType.Expression;
+            return s.Name == "settings" && s.Value == "as.environment(list())" && s.ValueType == ConfigurationSettingValueType.Expression;
         }
 
         private bool ReadAttributeValue(string line, ConfigurationSetting s) {

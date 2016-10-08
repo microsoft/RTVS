@@ -35,7 +35,7 @@ namespace Microsoft.R.Components.Application.Configuration {
         /// </summary>
         public void SaveSettings(IEnumerable<IConfigurationSetting> settings) {
             WriteHeader();
-            _writer.WriteLine("settings <- new.env()");
+            _writer.WriteLine("settings <- as.environment(list())");
             _writer.WriteLine(string.Empty);
             foreach (var s in settings) {
                 var v = FormatValue(s);

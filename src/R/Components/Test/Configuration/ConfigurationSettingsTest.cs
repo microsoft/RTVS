@@ -184,7 +184,7 @@ c1 <- 'DSN'
         [Test]
         public void Rewrite() {
             string content = string.Format(
-@"settings <- new.env()
+@"settings <- as.environment(list())
 
 # [Category] SQL
 # [Description] Database connection string
@@ -223,7 +223,7 @@ x <- 1
 ";
 
             string updatedContent =
-@"settings <- new.env()
+@"settings <- as.environment(list())
 
 # [Category] SQL
 # [Description] Database connection string
