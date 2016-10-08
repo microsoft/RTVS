@@ -206,7 +206,8 @@
     <Compile Include="Shell\ApplicationConstants.cs" />
     <Compile Include="Shell\VsFileDialog.cs" />
     <Compile Include="Shell\VsProgressDialog.cs" />
-    <Compile Include="Sql\Commands\SqlTools.cs" />
+    <Compile Include="Sql\Services\DacPackageServicesProvider.cs" />
+    <Compile Include="Sql\Services\SqlTools.cs" />
     <Compile Include="ToolWindows\PlotHistoryWindowPane.cs" />
     <Compile Include="ProjectSystem\Commands\CopyRemoteItemPathCommand.cs" />
     <Compile Include="ProjectSystem\Commands\SetAsStartUpRScriptCommand.cs" />
@@ -287,14 +288,10 @@
     <Compile Include="Sql\ConnectionStringEditor.cs" />
     <Compile Include="Sql\Commands\AddDbConnectionCommand.cs" />
     <Compile Include="Sql\Extensions\ProjectExtensions.cs" />
-    <Compile Include="Sql\Publish\DacPacBuilder.cs" />
     <Compile Include="Sql\DragDrop\DataObject.cs" />
     <Compile Include="Sql\DragDrop\DropHandler.cs" />
     <Compile Include="Sql\DragDrop\DropHandlerProvider.cs" />
     <Compile Include="Sql\NativeMethods.cs" />
-    <Compile Include="Sql\Publish\DacPackageServices.cs" />
-    <Compile Include="Sql\Publish\Definitions\IDacPacBuilder.cs" />
-    <Compile Include="Sql\Publish\Definitions\IDacPackageServices.cs" />
     <Compile Include="Sql\Publish\PublishTargetType.cs" />
     <Compile Include="Sql\Publish\RCodePlacement.cs" />
     <Compile Include="Sql\Publish\SProcMap.cs" />
@@ -1103,6 +1100,10 @@
     <ProjectReference Include="..\..\R\Interpreters\Impl\Microsoft.R.Interpreters.csproj">
       <Project>{8445A4FB-4443-432C-94E8-1408559B7F58}</Project>
       <Name>Microsoft.R.Interpreters</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\R\Sql\Impl\Microsoft.VisualStudio.R.Sql.csproj">
+      <Project>{b0c3a5c2-f713-40c9-bf08-20a1014d74de}</Project>
+      <Name>Microsoft.VisualStudio.R.Sql</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\R\Support\Impl\Microsoft.R.Support.csproj">
       <Project>{c1957d47-b0b4-42e0-bc08-0d5e96e47fe4}</Project>

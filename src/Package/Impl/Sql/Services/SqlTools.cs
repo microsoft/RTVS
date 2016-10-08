@@ -20,15 +20,6 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
                 ct = ctrs.GetContentType("SQL Server Tools");
                 installed = ct != null && ct != ctrs.UnknownContentType;
             }
-
-            if(!installed) {
-#if VS14
-                var message = Resources.SqlPublish_NoSqlToolsVS14;
-#else
-                var message = Resources.SqlPublish_NoSqlToolsVS15;
-#endif
-                coreShell.ShowErrorMessage(message);
-            }
             return installed;
         }
     }
