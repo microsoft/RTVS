@@ -273,6 +273,7 @@
     <Compile Include="Sql\Commands\AddDsnCommand.cs" />
     <Compile Include="Sql\Commands\ConfigurationSettingCommand.cs" />
     <Compile Include="Sql\Commands\PublishSProcOptionsCommand.cs" />
+    <Compile Include="Sql\Services\SqlTools.cs" />
     <Compile Include="Sql\ConnectionStringEditor.cs" />
     <Compile Include="Sql\Commands\AddDbConnectionCommand.cs" />
     <Compile Include="Sql\DragDrop\DataObject.cs" />
@@ -280,10 +281,7 @@
     <Compile Include="Sql\DragDrop\DropHandlerProvider.cs" />
     <Compile Include="Sql\Extensions\ProjectExtensions.cs" />
     <Compile Include="Sql\NativeMethods.cs" />
-    <Compile Include="Sql\Publish\DacPacBuilder.cs" />
-    <Compile Include="Sql\Publish\DacPackageServices.cs" />
-    <Compile Include="Sql\Publish\Definitions\IDacPacBuilder.cs" />
-    <Compile Include="Sql\Publish\Definitions\IDacPackageServices.cs" />
+    <Compile Include="Sql\Services\DacPackageServicesProvider.cs" />
     <Compile Include="Sql\Publish\PublishTargetType.cs" />
     <Compile Include="Sql\Publish\RCodePlacement.cs" />
     <Compile Include="Sql\Extensions\SqlQuoteType.cs" />
@@ -1373,6 +1371,7 @@
       <VSIXSourceItem Include="$(OutputPath)\websocket-sharp.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Data.ConnectionUI.Dialog.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Data.ConnectionUI.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Microsoft.VisualStudio.R.Sql.dll" />
       <VSIXSourceItem Include="$(OutputPath)\ItemTemplates\**\*.*">
         <VSIXSubPath>ItemTemplates</VSIXSubPath>
       </VSIXSourceItem>
@@ -1426,5 +1425,5 @@
     </XamlRuleToCode>
   </Target>
   <Import Project="$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\14.2.25201\tools\vssdk\Microsoft.VsSDK.targets" Condition="'$(VisualStudioVersion)'=='14.0' AND Exists('$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\14.2.25201\tools\vssdk\Microsoft.VsSDK.targets')" />
-  <Import Project="$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\15.0.25201-Dev15Preview2\tools\vssdk\Microsoft.VsSDK.targets" Condition="'$(VisualStudioVersion)'=='15.0' AND Exists('$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\15.0.25201-Dev15Preview2\tools\vssdk\Microsoft.VsSDK.targets')" />
+  <Import Project="$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\15.0.25728-Preview5\tools\vssdk\Microsoft.VsSDK.targets" Condition="'$(VisualStudioVersion)'=='15.0' AND Exists('$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\15.0.25728-Preview5\tools\vssdk\Microsoft.VsSDK.targets')" />
 </Project>

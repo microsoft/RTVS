@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.VisualStudio.R.Package", "Package\Impl\Microsoft.VisualStudio.R.Package.csproj", "{26035FE3-25AB-45EC-BB45-7FD0B6C1D545}"
 EndProject
@@ -91,6 +91,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.UnitTests.References.15.0", "UnitTests\References.15.0\Microsoft.UnitTests.References.15.0.csproj", "{4297FA87-629A-4000-8169-D97E8E64890E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.UnitTests.References.14.0", "UnitTests\References.14.0\Microsoft.UnitTests.References.14.0.csproj", "{78203460-9937-45E5-81CC-3045DDC10527}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.VisualStudio.R.Sql", "R\Sql\Impl\Microsoft.VisualStudio.R.Sql.csproj", "{B0C3A5C2-F713-40C9-BF08-20A1014D74DE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -560,6 +562,18 @@ Global
 		{78203460-9937-45E5-81CC-3045DDC10527}.Release|x64.Build.0 = Release|Any CPU
 		{78203460-9937-45E5-81CC-3045DDC10527}.Release|x86.ActiveCfg = Release|Any CPU
 		{78203460-9937-45E5-81CC-3045DDC10527}.Release|x86.Build.0 = Release|Any CPU
+		{B0C3A5C2-F713-40C9-BF08-20A1014D74DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0C3A5C2-F713-40C9-BF08-20A1014D74DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0C3A5C2-F713-40C9-BF08-20A1014D74DE}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B0C3A5C2-F713-40C9-BF08-20A1014D74DE}.Debug|x64.Build.0 = Debug|Any CPU
+		{B0C3A5C2-F713-40C9-BF08-20A1014D74DE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B0C3A5C2-F713-40C9-BF08-20A1014D74DE}.Debug|x86.Build.0 = Debug|Any CPU
+		{B0C3A5C2-F713-40C9-BF08-20A1014D74DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0C3A5C2-F713-40C9-BF08-20A1014D74DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0C3A5C2-F713-40C9-BF08-20A1014D74DE}.Release|x64.ActiveCfg = Release|Any CPU
+		{B0C3A5C2-F713-40C9-BF08-20A1014D74DE}.Release|x64.Build.0 = Release|Any CPU
+		{B0C3A5C2-F713-40C9-BF08-20A1014D74DE}.Release|x86.ActiveCfg = Release|Any CPU
+		{B0C3A5C2-F713-40C9-BF08-20A1014D74DE}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

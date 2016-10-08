@@ -166,6 +166,10 @@
       <Project>{9066522E-780E-4409-B410-2525E6A621FC}</Project>
       <Name>Microsoft.R.Editor.Test</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\R\Sql\Impl\Microsoft.VisualStudio.R.Sql.csproj">
+      <Project>{b0c3a5c2-f713-40c9-bf08-20a1014d74de}</Project>
+      <Name>Microsoft.VisualStudio.R.Sql</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\R\Support\Impl\Microsoft.R.Support.csproj">
       <Project>{c1957d47-b0b4-42e0-bc08-0d5e96e47fe4}</Project>
       <Name>Microsoft.R.Support</Name>

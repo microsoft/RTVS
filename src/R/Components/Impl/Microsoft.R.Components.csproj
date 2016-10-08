@@ -238,7 +238,11 @@
     <Compile Include="Settings\Mirrors\CranMirrorList.cs" />
     <Compile Include="Sql\ConnectionStringConverter.cs" />
     <Compile Include="Sql\DbConnectionService.cs" />
+    <Compile Include="Sql\Publish\IDacPackage.cs" />
+    <Compile Include="Sql\Publish\IDacPacBuilder.cs" />
+    <Compile Include="Sql\Publish\IDacPackageServices.cs" />
     <Compile Include="Sql\IDbConnectionService.cs" />
+    <Compile Include="Sql\Publish\IDacPackageServicesProvider.cs" />
     <Compile Include="TextBuffer\ITextBufferListener.cs" />
     <Compile Include="TextBuffer\TextBufferListenerEventArgs.cs" />
     <Compile Include="TextBuffer\TextBufferListenerEvents.cs" />

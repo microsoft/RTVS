@@ -929,4 +929,12 @@ Additional information:
   <data name="SqlPublish_PublishError" xml:space="preserve">
     <value>Publishing failed. Exception: {0}</value>
   </data>
+  <data name="SqlPublish_NoSqlToolsVS14" xml:space="preserve">
+    <value>This operation requires SQL Data Tools package. Please add SQL Data Tools to the Visual Studio 2015 setup or install SSDT from https://msdn.microsoft.com/en-us/mt186501.aspx.
+
+You can modify Visual Studio installation in Control Panel -&gt; Uninstall Program -&gt; Right click on Visual Studio 2015 and select Change.</value>
+  </data>
+  <data name="SqlPublish_NoSqlToolsVS15" xml:space="preserve">
+    <value>This operation requires SQL Data Tools package. Please add Data Storage and Processing workload to the Visual Studio installation.</value>
+  </data>
 </root>

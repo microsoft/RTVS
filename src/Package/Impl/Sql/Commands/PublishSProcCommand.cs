@@ -13,6 +13,7 @@ using Microsoft.VisualStudio.R.Package.Sql.Publish;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using EnvDTE;
+using Microsoft.R.Components.Sql.Publish;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
@@ -27,18 +28,18 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
         private readonly IApplicationShell _appShell;
         private readonly IProjectSystemServices _pss;
         private readonly IFileSystem _fs;
-        private readonly IDacPackageServices _dacServices;
+        private readonly IDacPackageServicesProvider _dacServicesProvider;
 
         [ImportingConstructor]
-        public PublishSProcCommand(IApplicationShell appShell, IProjectSystemServices pss) :
-            this(appShell, pss, new FileSystem(), new DacPackageServices()) {
+        public PublishSProcCommand(IApplicationShell appShell, IProjectSystemServices pss, IDacPackageServicesProvider dacServicesProvider) :
+            this(appShell, pss, new FileSystem(), dacServicesProvider) {
         }
 
-        public PublishSProcCommand(IApplicationShell appShell, IProjectSystemServices pss, IFileSystem fs, IDacPackageServices dacServices) {
+        public PublishSProcCommand(IApplicationShell appShell, IProjectSystemServices pss, IFileSystem fs, IDacPackageServicesProvider dacServicesProvider) {
             _appShell = appShell;
             _pss = pss;
             _fs = fs;
-            _dacServices = dacServices;
+            _dacServicesProvider = dacServicesProvider;
         }
 
         public CommandStatusResult GetCommandStatus(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus progressiveStatus) {
@@ -50,7 +51,16 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
 
         public bool TryHandleCommand(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, long commandExecuteOptions, IntPtr variantArgIn, IntPtr variantArgOut) {
             if (commandId == RPackageCommandId.icmdPublishSProc) {
-                Handle();
+                if (_dacServicesProvider.GetDacPackageServices() != null) {
+                    Handle();
+                } else {
+#if VS14
+                    var message = Resources.SqlPublish_NoSqlToolsVS14;
+#else
+                    var message = Resources.SqlPublish_NoSqlToolsVS15;
+#endif
+                    _appShell.ShowErrorMessage(message);
+                }
                 return true;
             }
             return false;
@@ -66,7 +76,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
                         var dte = _appShell.GetGlobalService<DTE>(typeof(DTE));
                         dte.ExecuteCommand("File.SaveAll");
 
-                        var publisher = new SProcPublisher(_appShell, _pss, _fs, _dacServices);
+                        var publisher = new SProcPublisher(_appShell, _pss, _fs, _dacServicesProvider.GetDacPackageServices());
                         var settings = new SqlSProcPublishSettings(_appShell.SettingsStorage);
                         publisher.Publish(settings, sprocFiles);
                     } catch (Exception ex) {

@@ -30,17 +30,19 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// Writes scripts to files and pushes files into the target database project.
         /// </summary>
         public void Generate(SqlSProcPublishSettings settings, EnvDTE.Project targetProject) {
-            var targetFolder = Path.Combine(Path.GetDirectoryName(targetProject.FullName), "R\\");
-            if (!_fs.DirectoryExists(targetFolder)) {
-                _fs.CreateDirectory(targetFolder);
-            }
+            if (targetProject != null) {
+                var targetFolder = Path.Combine(Path.GetDirectoryName(targetProject.FullName), "R\\");
+                if (!_fs.DirectoryExists(targetFolder)) {
+                    _fs.CreateDirectory(targetFolder);
+                }
 
-            var targetProjectItem = targetProject.ProjectItems.Item("R") ?? targetProject.ProjectItems.AddFolder("R");
+                var targetProjectItem = targetProject.ProjectItems.Item("R") ?? targetProject.ProjectItems.AddFolder("R");
 
-            var sprocMap = CreateStoredProcedureFiles(settings, targetProject, targetFolder, targetProjectItem);
-            if (settings.CodePlacement == RCodePlacement.Table) {
-                CreateRCodeTableFile(settings, targetProject, targetFolder, targetProjectItem);
-                CreatePostDeploymentScriptFile(settings, targetProject, targetFolder, targetProjectItem, sprocMap);
+                var sprocMap = CreateStoredProcedureFiles(settings, targetProject, targetFolder, targetProjectItem);
+                if (settings.CodePlacement == RCodePlacement.Table) {
+                    CreateRCodeTableFile(settings, targetProject, targetFolder, targetProjectItem);
+                    CreatePostDeploymentScriptFile(settings, targetProject, targetFolder, targetProjectItem, sprocMap);
+                }
             }
         }
 

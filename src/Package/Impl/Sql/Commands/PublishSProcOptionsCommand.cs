@@ -10,6 +10,7 @@ using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Sql.Publish;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration;
 using System.Threading.Tasks;
+using Microsoft.R.Components.Sql.Publish;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
@@ -24,12 +25,14 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
         private readonly IApplicationShell _appShell;
         private readonly IProjectSystemServices _pss;
         private readonly IProjectConfigurationSettingsProvider _pcsp;
+        private readonly IDacPackageServicesProvider _dacServicesProvider;
 
         [ImportingConstructor]
-        public PublishSProcOptionsCommand(IApplicationShell appShell, IProjectSystemServices pss, IProjectConfigurationSettingsProvider pcsp) {
+        public PublishSProcOptionsCommand(IApplicationShell appShell, IProjectSystemServices pss, IProjectConfigurationSettingsProvider pcsp, IDacPackageServicesProvider dacServicesProvider) {
             _appShell = appShell;
             _pss = pss;
             _pcsp = pcsp;
+            _dacServicesProvider = dacServicesProvider;
         }
 
         public Task<CommandStatusResult> GetCommandStatusAsync(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus progressiveStatus) {
@@ -41,8 +44,17 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
 
         public async Task<bool> TryHandleCommandAsync(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, long commandExecuteOptions, IntPtr variantArgIn, IntPtr variantArgOut) {
             if (commandId == RPackageCommandId.icmdPublishSProcOptions) {
-                var dlg = await SqlPublshOptionsDialog.CreateAsync(_appShell, _pss, _pcsp);
-                dlg.ShowModal();
+                if (_dacServicesProvider.GetDacPackageServices() != null) {
+                    var dlg = await SqlPublshOptionsDialog.CreateAsync(_appShell, _pss, _pcsp);
+                    dlg.ShowModal();
+                } else {
+#if VS14
+                    var message = Resources.SqlPublish_NoSqlToolsVS14;
+#else
+                    var message = Resources.SqlPublish_NoSqlToolsVS15;
+#endif
+                    _appShell.ShowErrorMessage(message);
+                }
                 return true;
             }
             return false;
