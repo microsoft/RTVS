@@ -1087,6 +1087,10 @@
       <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
     </ProjectReference>
+    <ProjectReference Include="..\..\R\Sql\Impl\Microsoft.VisualStudio.R.Sql.csproj">
+      <Project>{b0c3a5c2-f713-40c9-bf08-20a1014d74de}</Project>
+      <Name>Microsoft.VisualStudio.R.Sql</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\R\Support\Impl\Microsoft.R.Support.csproj">
       <Project>{c1957d47-b0b4-42e0-bc08-0d5e96e47fe4}</Project>
       <Name>Microsoft.R.Support</Name>
@@ -1371,7 +1375,6 @@
       <VSIXSourceItem Include="$(OutputPath)\websocket-sharp.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Data.ConnectionUI.Dialog.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Data.ConnectionUI.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Microsoft.VisualStudio.R.Sql.dll" />
       <VSIXSourceItem Include="$(OutputPath)\ItemTemplates\**\*.*">
         <VSIXSubPath>ItemTemplates</VSIXSubPath>
       </VSIXSourceItem>
