@@ -16,7 +16,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
     public sealed class ImportRSettingsCommand : MenuCommand {
         private const string _settingsFileName = "R.vssettings";
-        private const string _profilesFolder = @"Profiles\" + Toolset.Version;
+        private const string _profilesFolder = @"Profiles\";
 
         public ImportRSettingsCommand() :
             base(OnCommand, new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.icmdImportRSettings)) { }
@@ -27,10 +27,16 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
                 Guid group = VSConstants.CMDSETID.StandardCommandSet2K_guid;
 
                 string asmDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetAssemblyPath());
+                // Non-versioned setup
                 string settingsFilePath = Path.Combine(asmDirectory, _profilesFolder, _settingsFileName);
                 if (!File.Exists(settingsFilePath)) {
-                    string ideFolder = asmDirectory.Substring(0, asmDirectory.IndexOf(@"\Extensions", StringComparison.OrdinalIgnoreCase));
-                    settingsFilePath = Path.Combine(ideFolder, _profilesFolder, _settingsFileName);
+                    // Typically debug setup launched via F5 with profiles under 14.0/15.0 folder
+                    settingsFilePath = Path.Combine(asmDirectory, _profilesFolder, Toolset.Version, _settingsFileName);
+                    if (!File.Exists(settingsFilePath)) {
+                        // Release setup with settings in the IDE profiles folder
+                        string ideFolder = asmDirectory.Substring(0, asmDirectory.IndexOf(@"\Extensions", StringComparison.OrdinalIgnoreCase));
+                        settingsFilePath = Path.Combine(ideFolder, _profilesFolder, _settingsFileName);
+                    }
                 }
 
                 object arguments = string.Format(CultureInfo.InvariantCulture, "-import:\"{0}\"", settingsFilePath);
