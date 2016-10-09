@@ -1,12 +1,12 @@
 ﻿{
   "dependencies": {
     "MicroBuild.Core": "0.2.0",
+    "Microsoft.Tpl.Dataflow": "4.5.24",
     "Microsoft.VisualStudio.Debugger.Interop.10.0": "10.0.30319",
     "Microsoft.VisualStudio.Debugger.Interop.14.0": "14.2.25123",
-    "Microsoft.VisualStudio.SDK.EmbedInteropTypes": "14.1.2",
+    "Microsoft.VisualStudio.SDK.EmbedInteropTypes": "14.1.4",
     "Microsoft.VisualStudio.Shell.14.0": "14.2.25123",
-    "Microsoft.VisualStudio.Shell.Interop.10.0": "10.0.30319",
-    "Microsoft.Tpl.Dataflow": "4.5.24"
+    "Microsoft.VisualStudio.Shell.Interop.10.0": "10.0.30319"
   },
   "frameworks": {
     "net46": {}
