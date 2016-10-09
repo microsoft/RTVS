@@ -1380,9 +1380,7 @@
       <StrongName>StrongName</StrongName>
     </FilesToSign>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Plots\Commands\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\Common\BuildTasks\Microsoft.Common.BuildTasks.targets" />
   <Target Name="AddToVsixSources" AfterTargets="GetVsixSourceItems">
