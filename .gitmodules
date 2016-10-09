@@ -1,4 +1,3 @@
 [submodule "src/Host/Process"]
 	path = src/Host/Process
 	url = https://github.com/Microsoft/R-Host
-	branch = Release/0_5
