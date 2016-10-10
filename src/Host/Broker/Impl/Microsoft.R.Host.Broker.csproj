@@ -108,7 +108,6 @@
     <Compile Include="Security\SecurityManager.cs" />
     <Compile Include="Security\Policies.cs" />
     <Compile Include="Security\TlsConfiguration.cs" />
-    <Compile Include="Sessions\SessionState.cs" />
     <Compile Include="Sessions\SessionStateChangedEventArgs.cs" />
     <Compile Include="Startup\StartupOptions.cs" />
     <Compile Include="Startup\Program.cs" />
