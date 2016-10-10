@@ -48,6 +48,7 @@ namespace Microsoft.R.Host.Client.Session {
             _disposeToken.ThrowIfDisposed();
             return _sessions.GetOrAdd(guid, id => CreateRSession(guid));
         }
+
         public IEnumerable<IRSession> GetSessions() {
             return _sessions.Values;
         }
@@ -81,7 +82,14 @@ namespace Microsoft.R.Host.Client.Session {
                 return;
             }
 
-            foreach (var session in _sessions.Values) {
+            var sessions = GetSessions();
+            var stopHostTasks = sessions.Select(session => session.StopHostAsync());
+            try {
+                Task.WhenAll(stopHostTasks).GetAwaiter().GetResult();
+            } catch (Exception ex) when (!ex.IsCriticalException()) {
+            }
+
+            foreach (var session in sessions) {
                 session.Dispose();
             }
 

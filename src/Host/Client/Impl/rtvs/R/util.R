@@ -4,11 +4,11 @@
 version <- 1
 
 call_embedded <- function(name, ...) {
-  .Call(paste0('Microsoft.R.Host::Call.', name, collapse = ''), ..., PACKAGE = '(embedding)')
+    .Call(paste0('Microsoft.R.Host::Call.', name, collapse = ''), ..., PACKAGE = '(embedding)')
 }
 
 external_embedded <- function(name, ...) {
-  .External(paste0('Microsoft.R.Host::External.', name, collapse = ''), ..., PACKAGE = '(embedding)')
+    .External(paste0('Microsoft.R.Host::External.', name, collapse = ''), ..., PACKAGE = '(embedding)')
 }
 
 send_notification <- function(name, ...) {
@@ -20,39 +20,39 @@ send_request_and_get_response <- function(name, ...) {
 }
 
 memory_connection <- function(max_length = NA, expected_length = NA, overflow_suffix = '', eof_marker = '') {
-  call_embedded('memory_connection', max_length, expected_length, overflow_suffix, eof_marker)
+    call_embedded('memory_connection', max_length, expected_length, overflow_suffix, eof_marker)
 }
 
 memory_connection_overflown <- function(con) {
-  call_embedded('memory_connection_overflown', con)
+    call_embedded('memory_connection_overflown', con)
 }
 
 memory_connection_tochar <- function(con) {
-  call_embedded('memory_connection_tochar', con)
+    call_embedded('memory_connection_tochar', con)
 }
 
 unevaluated_promise <- function(name, env) {
-  call_embedded("unevaluated_promise", name, env)
+    call_embedded("unevaluated_promise", name, env)
 }
 
 is_missing <- function(name, env) {
-  call_embedded("is_missing", name, env)
+    call_embedded("is_missing", name, env)
 }
 
 is_rdebug <- function(obj) {
-  call_embedded("is_rdebug", obj)
+    call_embedded("is_rdebug", obj)
 }
 
 set_rdebug <- function(obj, debug) {
-  call_embedded("set_rdebug", obj, debug)
+    call_embedded("set_rdebug", obj, debug)
 }
 
 browser_set_debug <- function(n = 1, skip_toplevel = 0) {
-  call_embedded("browser_set_debug", n, skip_toplevel)
+    call_embedded("browser_set_debug", n, skip_toplevel)
 }
 
 toJSON <- function(obj) {
-  call_embedded("toJSON", obj)
+    call_embedded("toJSON", obj)
 }
 
 create_blob <- function(obj) {
@@ -67,72 +67,76 @@ destroy_blob <- function(blob_id) {
     invisible(call_embedded("destroy_blob", blob_id))
 }
 
+set_disconnect_callback <- function(callback) {
+    invisible(call_embedded('set_disconnect_callback', callback))
+}
+
 NA_if_error <- function(expr) {
-  tryCatch(expr, error = function(e) { NA })
+    tryCatch(expr, error = function(e) { NA })
 }
 
 NULL_if_error <- function(expr) {
-  tryCatch(expr, error = function(e) { NULL })
+    tryCatch(expr, error = function(e) { NULL })
 }
 
 # Like toString, but guarantees that result is a single-element character vector.
 force_toString <- function(obj) {
-  if (is.null(obj) || (length(obj) == 1 && is.atomic(obj) && is.na(obj) && !is.nan(obj))) {
-    return('');
-  }
-  s <- paste0(toString(obj), collapse='');
-  if (!is.character(s) || length(s) != 1 || is.na(s)) '' else s;
+    if (is.null(obj) || (length(obj) == 1 && is.atomic(obj) && is.na(obj) && !is.nan(obj))) {
+        return('');
+    }
+    s <- paste0(toString(obj), collapse = '');
+    if (!is.character(s) || length(s) != 1 || is.na(s)) '' else s;
 }
 
 # Guarantees that result is a single-element numeric vector or NA.
 force_number <- function(x) {
-  if (!is.numeric(x) || length(x) != 1) NA else x;
+    if (!is.numeric(x) || length(x) != 1) NA else x;
 }
 
 # Like dput, but returns the value as string rather than printing it, and can limit
 # the output to a desired length.
 dput_str <- function(obj, max_length = NA, expected_length = NA, overflow_suffix = '...') {
-  con <- memory_connection(max_length, expected_length, overflow_suffix);
-  on.exit(close(con), add = TRUE);
-  
-  tryCatch({
-    dput(obj, con);
-  }, error = function(e) {
-  });
-  
+    con <- memory_connection(max_length, expected_length, overflow_suffix);
+    on.exit(close(con), add = TRUE);
+
+    tryCatch({
+        dput(obj, con);
+    }, error = function(e) {
+    });
+
   # Strip leading and trailing whitespace - it is never significant, and there's always
   # at least a trailing '\n' that dput always outputs.
-  gsub("^\\s+|\\s+$", "", memory_connection_tochar(con))
+    gsub("^\\s+|\\s+$", "", memory_connection_tochar(con))
 }
 
 # Like deparse, but always returns a single string.
 deparse_str <- function(x)
-    paste0(deparse(x), collapse = '')
+paste0(deparse(x), collapse = '')
 
 # Makes a symbol token (properly quoted with backticks if necessary) out of a symbol or a string.
 symbol_token <- function(name) {
-  s <- force_toString(name);
+    s <- force_toString(name);
 
   # If it's an empty string, it's not a valid symbol, even if quoted.
-  if (identical(s, '')) {
-      return(NULL);
-  }
+    if (identical(s, '')) {
+        return(NULL);
+    }
 
   # If it's a valid identifier, it's good to go as is. Because the definition of identifier in R
   # is locale-dependent, be conservative and match ASCII only; excessive quoting is always safe.
-  if (grepl('^[A-Za-z_.][A-Za-z0-9_.]*$', name)) {
-      return(s);
-  }
+    if (grepl('^[A-Za-z_.][A-Za-z0-9_.]*$', name)) {
+        return(s);
+    }
 
   # Deparse it - this will take care of all the necessary escaping for everything other than
   # backticks, but will also put double quotes around that we'll remove later.
-  s <- deparse_str(force_toString(s));
+    s <- deparse_str(force_toString(s));
 
   # Escape any backticks.
-  s <- gsub('`', '\\`', s, fixed = TRUE);
+    s <- gsub('`', '\\`', s, fixed = TRUE);
 
   # Replace surrounding quotes with backticks.
-  paste0('`', substr(s, 2, nchar(s) - 1), '`', collapse = '')
+    paste0('`', substr(s, 2, nchar(s) - 1), '`', collapse = '')
 }
 
 # Like eval, but will not enter Browse mode if env has its debug bit set
@@ -151,19 +155,19 @@ safe_eval <- function(expr, env) {
 export_to_csv <- function(expr, sep, dec) {
     res <- expr
     ln <- length(res) + 1
-    filepath <- tempfile('export_', fileext='.csv')
+    filepath <- tempfile('export_', fileext = '.csv')
     on.exit(unlink(filepath))
-    write.table(res, file=filepath, qmethod='double', col.names=NA, sep=sep, dec=dec)
+    write.table(res, file = filepath, qmethod = 'double', col.names = NA, sep = sep, dec = dec)
     create_blob(readBin(filepath, 'raw', file.info(filepath)$size))
 }
 
 # Helper to export current plot to image
 export_to_image <- function(device_id, plot_id, device, width, height, resolution) {
     prev_device_num <- dev.cur()
-    graphics.ide.selectplot(device_id, plot_id, force_render=FALSE)
-    filepath <- tempfile('plot_', fileext='.dat')
+    graphics.ide.selectplot(device_id, plot_id, force_render = FALSE)
+    filepath <- tempfile('plot_', fileext = '.dat')
     on.exit(unlink(filepath))
-    dev.copy(device=device,filename=filepath,width=width,height=height,res=resolution)
+    dev.copy(device = device, filename = filepath, width = width, height = height, res = resolution)
     dev.off()
     dev.set(prev_device_num)
     create_blob(readBin(filepath, 'raw', file.info(filepath)$size))
@@ -172,10 +176,10 @@ export_to_image <- function(device_id, plot_id, device, width, height, resolutio
 # Helper to export current plot to pdf
 export_to_pdf <- function(device_id, plot_id, width, height) {
     prev_device_num <- dev.cur()
-    graphics.ide.selectplot(device_id, plot_id, force_render=FALSE)
-    filepath <- tempfile('plot_',fileext='.pdf')
+    graphics.ide.selectplot(device_id, plot_id, force_render = FALSE)
+    filepath <- tempfile('plot_', fileext = '.pdf')
     on.exit(unlink(filepath))
-    dev.copy(device=pdf,file=filepath,width=width,height=height)
+    dev.copy(device = pdf, file = filepath, width = width, height = height)
     dev.off()
     dev.set(prev_device_num)
     create_blob(readBin(filepath, 'raw', file.info(filepath)$size))
@@ -203,7 +207,7 @@ rmarkdown_publish <- function(blob_id, output_format, encoding) {
     output_filepath <- tempfile('rmd_', fileext = fileext);
     on.exit(unlink(output_filepath));
 
-    rmarkdown::render(rmdpath, output_format = output_format, output_file = output_filepath,  output_dir = tempdir(), encoding = encoding);
+    rmarkdown::render(rmdpath, output_format = output_format, output_file = output_filepath, output_dir = tempdir(), encoding = encoding);
     create_blob(readBin(output_filepath, 'raw', file.info(output_filepath)$size));
 }
 
@@ -212,7 +216,7 @@ as.lock_state <- function(x) {
 }
 
 package_lock_state <- function(package_name, lib_path) {
-    files <- dir(path = paste0(lib_path,'/', package_name), pattern = '\\.', recursive = TRUE, ignore.case = TRUE, full.names = TRUE)
+    files <- dir(path = paste0(lib_path, '/', package_name), pattern = '\\.', recursive = TRUE, ignore.case = TRUE, full.names = TRUE)
     fstate <- call_embedded('get_file_lock_state', files);
     as.lock_state(fstate);
 }
@@ -241,4 +245,55 @@ fetch_file <- function(file_path) {
 save_to_project_folder <- function(blob_id, project_name, dest_dir) {
     temp_dir <- paste0(tempdir(), '/RTVSProjects');
     invisible(call_embedded('save_to_project_folder', blob_id, project_name, path.expand(dest_dir), temp_dir));
+}
+
+autosave_filename <- '~/.Autosave.RData';
+
+query_reload_autosave <- function() {
+    if (!file.exists(autosave_filename)) {
+        return(FALSE);
+    }
+
+    msg <- 'Previous R session terminated unexpectedly due to connectivity issues, and its global workspace has been saved to image "%s". Would you like to reload it?';
+    res <- winDialog('yesno', sprintf(msg, autosave_filename));
+
+    if (identical(res, 'YES')) {
+        # Use try instead of tryCatch, so that any errors are printed as usual.
+        loaded <- FALSE;
+        try({
+            load(autosave_filename, envir = .GlobalEnv);
+            loaded <- TRUE;
+        });
+
+        if (loaded) {
+            message(sprintf('Loaded workspace from autosaved image "%s".\n', autosave_filename));
+            # If we loaded the file successfully, it's safe to delete it - this session contains the reloaded
+            # state now, and if there's another disconnect, it will be autosaved again.
+            return(TRUE);
+        } else {
+            warning(sprintf('Failed to load workspace from autosaved image "%s".\n', autosave_filename), call. = FALSE, immediate. = TRUE);
+            return(FALSE);
+        }
+    } else {
+        msg <- 'Delete autosaved workspace image "%s"?';
+        res <- winDialog('yesno', sprintf(msg, autosave_filename));
+        return(identical(res, 'YES'));
+    }
+}
+
+disconnect_callback <- function() {
+    message(sprintf('Autosaving workspace to image "%s" ...', autosave_filename));
+    save.image(autosave_filename);
+    message(' workspace saved successfully.\n');
+}
+
+enable_autosave <- function(delete_existing) {
+    try({
+        set_disconnect_callback(disconnect_callback);
+
+        if (delete_existing) {
+            message(sprintf('Deleting autosaved workspace image "%s".\n', autosave_filename));
+            unlink(autosave_filename);
+        }
+    });
 }

@@ -288,27 +288,35 @@ namespace Microsoft.R.Host.Client.Session {
 
             ResetInitializationTcs();
 
-            // Try graceful shutdown with q() first.
-            try {
-                await Task.WhenAny(_hostRunTask, this.QuitAsync(), Task.Delay(500)).Unwrap();
-            } catch (Exception) { }
+            await StopHostAsync(BrokerClient, _startupInfo.Name, _host, _hostRunTask);
+        }
 
-            if (_hostRunTask.IsCompleted) {
-                return;
+        private static async Task StopHostAsync(IBrokerClient brokerClient, string hostName, RHost host, Task hostRunTask) {
+            // Try graceful shutdown with q() first.
+            if (host != null) {
+                try {
+                    await Task.WhenAny(hostRunTask, host.QuitAsync(), Task.Delay(500)).Unwrap();
+                } catch (Exception) { }
+
+                if (hostRunTask.IsCompleted) {
+                    return;
+                }
             }
 
             // If it didn't work, tell the broker to forcibly terminate the host process. 
-            try {
-                await BrokerClient.TerminateSessionAsync(_startupInfo.Name);
-            } catch (Exception) { }
+            if (hostName != null) {
+                try {
+                    await brokerClient.TerminateSessionAsync(hostName);
+                } catch (Exception) { }
 
-            if (_hostRunTask.IsCompleted) {
-                return;
+                if (hostRunTask.IsCompleted) {
+                    return;
+                }
             }
 
             // If nothing worked, then just disconnect.
-            await _host?.DisconnectAsync();
-            await _hostRunTask;
+            await host?.DisconnectAsync();
+            await hostRunTask;
         }
 
         public IDisposable DisableMutatedOnReadConsole() {
@@ -375,6 +383,15 @@ namespace Microsoft.R.Host.Client.Session {
                     await evaluation.OverrideFunctionAsync("setwd", "base");
                     await evaluation.SetFunctionRedirectionAsync();
                     await evaluation.OptionsSetWidthAsync(startupInfo.TerminalWidth);
+
+                    try {
+                        // Only enable autosave for this session after querying the user about any existing file.
+                        // This way, if they happen to disconnect while still querying, we don't save the new empty
+                        // session and overwrite the old file.
+                        bool deleteExisting = await evaluation.QueryReloadAutosaveAsync();
+                        await evaluation.EnableAutosaveAsync(deleteExisting);
+                    } catch (REvaluationException) {
+                    }
                 }
             }
         }
@@ -706,6 +723,8 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
                     return;
                 }
 
+                var brokerClient = _session.BrokerClient;
+                var startupInfo = _session._startupInfo;
                 var host = _session._host;
                 var hostRunTask = _session._hostRunTask;
 
@@ -721,8 +740,12 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
                 // Start new RHost
                 await _session.StartHostAsyncBackground(_hostToSwitch, _lockToken, cancellationToken);
 
-                // Don't send stop notification to broker - just dispose host and wait for old hostRunTask to exit;
+                // Shut down the old host, gracefully if possible, and wait for old hostRunTask to exit;
+                if (hostRunTask != null) {
+                    await StopHostAsync(brokerClient, startupInfo?.Name, host, hostRunTask);
+                }
                 host?.Dispose();
+
                 if (hostRunTask != null) {
                     await hostRunTask;
                 }

@@ -80,7 +80,7 @@ namespace Microsoft.R.Host.Broker.Pipes {
                 byte[] message;
                 try {
                     message = await pipe.ReadAsync(cancellationToken);
-                } catch (HostDisconnectedException) {
+                } catch (PipeDisconnectedException) {
                     break;
                 }
 
