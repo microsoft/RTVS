@@ -26,14 +26,14 @@ graphics.ide.clearplots <- function(device_id) {
 }
 
 graphics.ide.copyplot <- function(source_device_id, source_plot_id, target_device_id) {
-   invisible(external_embedded('ide_graphicsdevice_copy_plot', source_device_id, source_plot_id, target_device_id))
+    invisible(external_embedded('ide_graphicsdevice_copy_plot', source_device_id, source_plot_id, target_device_id))
 }
 
 graphics.ide.removeplot <- function(device_id, plot_id) {
     invisible(external_embedded('ide_graphicsdevice_remove_plot', device_id, plot_id))
 }
 
-graphics.ide.selectplot <- function(device_id, plot_id, force_render=TRUE) {
+graphics.ide.selectplot <- function(device_id, plot_id, force_render = TRUE) {
     invisible(external_embedded('ide_graphicsdevice_select_plot', device_id, plot_id, force_render))
 }
 

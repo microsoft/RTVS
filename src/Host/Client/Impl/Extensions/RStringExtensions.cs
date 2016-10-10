@@ -20,6 +20,9 @@ namespace Microsoft.R.Host.Client {
             return quote + s.Replace("\\", "\\\\").Replace("" + quote, "\\" + quote) + quote;
         }
 
+        public static string ToRBooleanLiteral(this bool b) =>
+            b ? "TRUE" : "FALSE";
+
         public static string FromRStringLiteral(this string s) {
             if (s.Length < 2) {
                 throw new FormatException("Not a quoted R string literal");

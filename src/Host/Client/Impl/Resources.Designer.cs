@@ -135,6 +135,15 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Web request has timed out..
+        /// </summary>
+        internal static string Error_OperationTimedOut {
+            get {
+                return ResourceManager.GetString("Error_OperationTimedOut", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R broker process did not start:  {0}.
         /// </summary>
         internal static string Error_UnableToStartBrokerException {

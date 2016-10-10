@@ -14,6 +14,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.R.Host.Broker.Interpreters;
 using Microsoft.R.Host.Broker.Logging;
 using Microsoft.R.Host.Broker.Pipes;
+using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Broker.Sessions {
     public class SessionManager {

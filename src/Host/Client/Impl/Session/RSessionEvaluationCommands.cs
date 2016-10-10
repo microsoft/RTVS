@@ -215,10 +215,15 @@ grDevices::deviceIsInteractive('ide')
             return evaluation.ExecuteAsync(script);
         }
 
-
         public static Task SetFunctionRedirectionAsync(this IRExpressionEvaluator evaluation) {
             var script = "rtvs:::redirect_functions()";
             return evaluation.ExecuteAsync(script);
         }
+
+        public static Task<bool> QueryReloadAutosaveAsync(this IRExpressionEvaluator evaluation) =>
+            evaluation.EvaluateAsync<bool>($"rtvs:::query_reload_autosave()", REvaluationKind.Reentrant);
+
+        public static Task EnableAutosaveAsync(this IRExpressionEvaluator evaluation, bool deleteExisting) =>
+            evaluation.ExecuteAsync($"rtvs:::enable_autosave({deleteExisting.ToRBooleanLiteral()})");
     }
 }

@@ -4,12 +4,12 @@
 using System;
 
 namespace Microsoft.R.Host.Broker.Pipes {
-    public class HostDisconnectedException : Exception {
-        public HostDisconnectedException()
+    public class PipeDisconnectedException : Exception {
+        public PipeDisconnectedException()
             : this("Host end of the message pipe was disconnected") {
         }
 
-        public HostDisconnectedException(string message)
+        public PipeDisconnectedException(string message)
             : base(message) {
         }
     }

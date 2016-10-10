@@ -61,6 +61,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
             Id = Id,
             InterpreterId = Interpreter.Id,
             CommandLineArguments = CommandLineArguments,
+            State = State,
         };
 
         internal Session(SessionManager manager, IIdentity user, string id, Interpreter interpreter, string commandLineArguments, ILogger sessionLogger, ILogger messageLogger) {
@@ -212,15 +213,23 @@ namespace Microsoft.R.Host.Broker.Sessions {
         }
 
         private async Task ClientToHostWorker(Stream stream, IMessagePipeEnd pipe) {
-            while (true) {
-                var message = await pipe.ReadAsync(Program.CancellationToken);
-                var sizeBuf = BitConverter.GetBytes(message.Length);
-                try {
-                    await stream.WriteAsync(sizeBuf, 0, sizeBuf.Length);
-                    await stream.WriteAsync(message, 0, message.Length);
-                    await stream.FlushAsync();
-                } catch (IOException) {
-                    break;
+            using (stream) {
+                while (true) {
+                    byte[] message;
+                    try {
+                        message = await pipe.ReadAsync(Program.CancellationToken);
+                    } catch (PipeDisconnectedException) {
+                        break;
+                    }
+
+                    var sizeBuf = BitConverter.GetBytes(message.Length);
+                    try {
+                        await stream.WriteAsync(sizeBuf, 0, sizeBuf.Length);
+                        await stream.WriteAsync(message, 0, message.Length);
+                        await stream.FlushAsync();
+                    } catch (IOException) {
+                        break;
+                    }
                 }
             }
         }
