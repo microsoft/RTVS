@@ -123,8 +123,6 @@
 
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Host.exe" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Host.Broker.exe" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Host.Monitor.exe" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Host.UserProfile.exe" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.Languages.Core.dll" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Core.dll" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Debugger.dll" />

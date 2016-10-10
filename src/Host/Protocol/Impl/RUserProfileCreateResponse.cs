@@ -1,11 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using Newtonsoft.Json;
 
 namespace Microsoft.R.Host.Protocol {
-    public struct RUserProfileCreateResponse {
+    public class RUserProfileCreateResponse {
+        [JsonConstructor]
+        private RUserProfileCreateResponse() { }
+
         public uint Error { get; set; }
         public bool ProfileExists { get; set; }
         public string ProfilePath { get; set; }

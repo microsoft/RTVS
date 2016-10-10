@@ -191,13 +191,13 @@ namespace Microsoft.R.Host.Monitor {
                         Marshal.Copy(credential.credentialBlob, passwordBytes, 0, credential.credentialBlobSize);
                         string passwordText = Encoding.Unicode.GetString(passwordBytes);
 
-                        var usernameBldr = new StringBuilder(257);
-                        var domainBldr = new StringBuilder(257);
+                        var usernameBldr = new StringBuilder(CRED_MAX_USERNAME_LENGTH + 1);
+                        var domainBldr = new StringBuilder(CRED_MAX_USERNAME_LENGTH + 1);
 
                         uint error = CredUIParseUserName(credential.userName, usernameBldr, usernameBldr.Capacity, domainBldr, domainBldr.Capacity);
                         if (error != 0) {
                             logger?.LogError(Resources.Error_UserNameParsing, error);
-                            throw new Win32Exception((int)error);
+                            throw new Win32Exception((int)error, string.Format(Resources.Error_UserNameParsing, error));
                         }
 
                         SecureString pass = new SecureString();

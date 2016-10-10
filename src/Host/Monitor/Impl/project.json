@@ -1,5 +1,6 @@
 ﻿{
   "dependencies": {
+    "MicroBuild.Core": "0.2.0",
     "Microsoft.Extensions.Logging": "1.0.0",
     "Microsoft.Extensions.Logging.Abstractions": "1.0.0",
     "Microsoft.Extensions.Logging.Debug": "1.0.0"

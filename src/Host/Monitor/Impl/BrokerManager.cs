@@ -4,10 +4,10 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Extensions.Logging;
-using Microsoft.Common.Core.Threading;
 
 namespace Microsoft.R.Host.Monitor {
     public class BrokerManager {
@@ -47,7 +47,7 @@ namespace Microsoft.R.Host.Monitor {
                     };
                     logger?.LogInformation(Resources.Info_BrokerAlreadyRunning, _brokerProcess.Id);
                 } else {
-                    string assemblyRoot = Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory);
+                    string assemblyRoot = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetAssemblyPath());
                     string rBrokerExePath = Path.Combine(assemblyRoot, RHostBrokerExe);
                     string configFilePath = Path.Combine(assemblyRoot, RHostBrokerConfig);
 

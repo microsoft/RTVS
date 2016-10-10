@@ -13,7 +13,7 @@ namespace Microsoft.R.Host.UserProfile {
 
         internal static RUserProfileCreateResponse Create(RUserProfileCreateRequest request, ILogger logger = null) {
             IntPtr token;
-            RUserProfileCreateResponse result = new RUserProfileCreateResponse() { Error=13, ProfileExists = false, ProfilePath = string.Empty};
+            RUserProfileCreateResponse result = RUserProfileCreateResponse.Create(13, false, string.Empty);
             uint error = 0;
             if (LogonUser(request.Username, request.Domain, request.Password, (int)LogonType.LOGON32_LOGON_NETWORK, (int)LogonProvider.LOGON32_PROVIDER_DEFAULT, out token)) {
                 WindowsIdentity winIdentity = new WindowsIdentity(token);
