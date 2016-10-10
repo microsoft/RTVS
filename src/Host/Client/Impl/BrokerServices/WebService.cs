@@ -57,6 +57,8 @@ namespace Microsoft.R.Host.Client.BrokerServices {
                         return await action(cancellationToken);
                     } catch (UnauthorizedAccessException) {
                         _credentialsDecorator.InvalidateCredentials();
+                    } catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested) {
+                        throw new HttpRequestException(Resources.Error_OperationTimedOut);
                     }
                 }
             }
@@ -69,15 +71,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             }, cancellationToken);
 
         public async Task<TResponse> HttpGetAsync<TResponse>(Uri uri, CancellationToken cancellationToken = default(CancellationToken)) {
-            Func<CancellationToken, Task<HttpResponseMessage>> func = async ct => {
-                try {
-                    return EnsureSuccessStatusCode(await HttpClient.GetAsync(uri, ct));
-                } catch (Exception) {
-                    throw;
-                }
-            };
-
-            using (var response = await RepeatUntilAuthenticatedAsync(func, cancellationToken)) {
+            using (var response = await RepeatUntilAuthenticatedAsync(async ct => EnsureSuccessStatusCode(await HttpClient.GetAsync(uri, ct)), cancellationToken)) {
                 return JsonConvert.DeserializeObject<TResponse>(await response.Content.ReadAsStringAsync());
             }
         }
