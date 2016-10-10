@@ -26,10 +26,19 @@
     <DirectoryRef Id="INSTALLFOLDER">
       <Component Id="ProductAssemblies" Guid="{9C717F8F-4A97-4FA5-8031-5A180467754D}" Win64="yes">
         <?include "$(var.SourceDir)\Setup\CommonAssemblies.wxi" ?>
+        <File Source="$(var.BinDir)\Microsoft.R.Host.Monitor.exe" />
       </Component>
     </DirectoryRef>
     <?include RtvsPackage.wxi ?>
-
+    <Component Id="RemoteRUserProfile" Directory="INSTALLFOLDER" Guid="{7C54EB44-130F-4D8A-A9C5-2EBB96F9F359}" Win64="yes">
+      <File Source="$(var.BinDir)\Microsoft.R.Host.UserProfile.exe" />
+      <File Source="$(var.BinDir)\Microsoft.R.Host.UserProfile.exe.config" />
+      <!-- Remote R User Profile service installer -->
+      <ServiceInstall Id="UserProfileServiceInstaller" Type="ownProcess" Vital="yes" Name="RUserProfileService" DisplayName="R User Profile Service"
+                      Description="Creates Windows User profile for users connecting via R Host Broker" Start="auto" Account="LocalSystem"
+                      ErrorControl="ignore" Interactive="no" />
+      <ServiceControl Id="UserProfileServiceStart" Start="install" Remove="uninstall" Stop="both" Name="RUserProfileService" Wait="yes"/>
+    </Component>
     <!--<?ifdef LabBuild?>
     <?include LocalizedResources.wxi ?>
     <?endif?>-->

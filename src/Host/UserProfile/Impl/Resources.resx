@@ -117,124 +117,25 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Critical_InvalidPipeHandle" xml:space="preserve">
-    <value>Requested to write server.urls to pipe '{0}', but it is not a valid pipe handle</value>
+  <data name="Error_UserLogonFailed" xml:space="preserve">
+    <value>Failed to logon user {0}\{1}, with Win32 error {2}.</value>
   </data>
-  <data name="Critical_NoTlsCertificate" xml:space="preserve">
-    <value>TLS certificate not found: {0}</value>
+  <data name="Error_UserProfileCreateFailed" xml:space="preserve">
+    <value>Failed to create user profile for user {0}\{1}, with Win32 error {2}.</value>
   </data>
-  <data name="Critical_ParentProcessNotFound" xml:space="preserve">
-    <value>Designated parent process {0} not found</value>
+  <data name="Error_UserProfileCreationError" xml:space="preserve">
+    <value>User profile service failed with exception: {0}.</value>
   </data>
-  <data name="Critical_PingTimeOut" xml:space="preserve">
-    <value>Ping timed out, terminating</value>
+  <data name="Error_UserProfileDirectoryWasNotFound" xml:space="preserve">
+    <value>User profile directory expected but not found for user {0}\{1}, Win32 error {0}</value>
   </data>
-  <data name="Critical_PipeConnectTimeOut" xml:space="preserve">
-    <value>Requested to write server.urls to pipe '{0}', but timed out while trying to connect to pipe</value>
+  <data name="Info_UserProfileAlreadyExists" xml:space="preserve">
+    <value>User profile already exists for user  {0}\{1}.</value>
   </data>
-  <data name="Critical_TimeOutShutdown" xml:space="preserve">
-    <value>Timed out waiting for graceful shutdown</value>
+  <data name="Info_UserProfileCreated" xml:space="preserve">
+    <value>Created user profile for user {0}\{1}.</value>
   </data>
-  <data name="Error_FailedRInstallationData" xml:space="preserve">
-    <value>Failed to retrieve R installation data for interpreter \"{0}\" at \"{1}\"</value>
-  </data>
-  <data name="Error_GetUserProfileDirectory" xml:space="preserve">
-    <value>Failed to get user profile directory for user {0} with WIN32 error code 0x{1}</value>
-  </data>
-  <data name="Error_LogOnFailed" xml:space="preserve">
-    <value>Log on failed for user: {0}</value>
-  </data>
-  <data name="Error_NoRInterpreters" xml:space="preserve">
-    <value>No compatible R interpreters found</value>
-  </data>
-  <data name="Error_ProfileCreationFailed" xml:space="preserve">
-    <value>Profile creation failed for user {0} with WIN32 error code 0x{1}</value>
-  </data>
-  <data name="Error_ProfileCreationFailedInvalidResponse" xml:space="preserve">
-    <value>Profile creation failed for user {0} with invalid response from the {1} service.</value>
-  </data>
-  <data name="Error_ProfileCreationFailedIO" xml:space="preserve">
-    <value>Profile creation failed for user {0}.</value>
-  </data>
-  <data name="Error_RHostFailedToStart" xml:space="preserve">
-    <value>R Host process failed to start. Error: {0}</value>
-  </data>
-  <data name="Error_SpecifiedRInterpreterNotFound" xml:space="preserve">
-    <value>Specified R interpreter does not exist</value>
-  </data>
-  <data name="Error_UserNameParse" xml:space="preserve">
-    <value>User name parsing failed for user {0} with WIN32 error code 0x{1}</value>
-  </data>
-  <data name="Exception_InvalidIdentityType" xml:space="preserve">
-    <value>Provided identity must be a {0}</value>
-  </data>
-  <data name="Exception_PipeHasClientEnd" xml:space="preserve">
-    <value>Pipe already has a client end</value>
-  </data>
-  <data name="Exception_PipeHasHostEnd" xml:space="preserve">
-    <value>Pipe already has a host end</value>
-  </data>
-  <data name="Info_BrokerName" xml:space="preserve">
-    <value>Broker name '{0}' assigned</value>
-  </data>
-  <data name="Info_MonitoringParentProcess" xml:space="preserve">
-    <value>Monitoring parent process {0}</value>
-  </data>
-  <data name="Info_ParentProcessExited" xml:space="preserve">
-    <value>Parent process {0} exited, shutting down</value>
-  </data>
-  <data name="Info_ProfileAlreadyExists" xml:space="preserve">
-    <value>Profile already exists for user: {0}</value>
-  </data>
-  <data name="Info_ProfileCreated" xml:space="preserve">
-    <value>Profile created for user: {0}</value>
-  </data>
-  <data name="Info_StartedRHost" xml:space="preserve">
-    <value>RHost started for session {0} of user {1}</value>
-  </data>
-  <data name="Info_StartingRHost" xml:space="preserve">
-    <value>Starting RHost for session {0} of user {1} with command line: {2} {3}</value>
-  </data>
-  <data name="Info_UserProfileServiceName" xml:space="preserve">
-    <value>Microsoft.R.Host.UserProfile</value>
-  </data>
-  <data name="Trace_AutoDetectingR" xml:space="preserve">
-    <value>Auto-detecting R ...</value>
-  </data>
-  <data name="Trace_CertificateIssuer" xml:space="preserve">
-    <value>Certificale issued by {0}</value>
-  </data>
-  <data name="Trace_CertificateSubject" xml:space="preserve">
-    <value>Certificale issued to {0}</value>
-  </data>
-  <data name="Trace_DetectedR" xml:space="preserve">
-    <value>R {0} detected at \"{1}\"</value>
-  </data>
-  <data name="Trace_EnvironmentVariable" xml:space="preserve">
-    <value>{0} = {1}</value>
-  </data>
-  <data name="Trace_EnvironmentVariableCreationBegin" xml:space="preserve">
-    <value>Creating user environment variables for user {0} with profile directory {1}</value>
-  </data>
-  <data name="Trace_ErrorDataReceived" xml:space="preserve">
-    <value>|{0}|: {1}</value>
-  </data>
-  <data name="Trace_LogOnSuccess" xml:space="preserve">
-    <value>Log on succeeded for user: {0}</value>
-  </data>
-  <data name="Trace_LogOnUserBegin" xml:space="preserve">
-    <value>Attempting log on for user: {0}</value>
-  </data>
-  <data name="Trace_ServerUrlsToPipeBegin" xml:space="preserve">
-    <value>Writing server.urls to pipe '{0}':{1}{2}</value>
-  </data>
-  <data name="Trace_ServerUrlsToPipeDone" xml:space="preserve">
-    <value>Wrote server.urls to pipe '{0}'</value>
-  </data>
-  <data name="Trace_UserProfileCreation" xml:space="preserve">
-    <value>Attempting to create profile for user: {0}</value>
-  </data>
-  <data name="Trace_UserProfileDirectory" xml:space="preserve">
-    <value>User {0} profile directory: {1}</value>
+  <data name="Info_UserProfileDirectoryFound" xml:space="preserve">
+    <value>User profile directory was found for user {0}\{1}, path: {2}</value>
   </data>
 </root>

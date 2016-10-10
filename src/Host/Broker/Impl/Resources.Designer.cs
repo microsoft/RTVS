@@ -160,6 +160,24 @@ namespace Microsoft.R.Host.Broker {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Profile creation failed for user {0} with invalid response from the {1} service..
+        /// </summary>
+        internal static string Error_ProfileCreationFailedInvalidResponse {
+            get {
+                return ResourceManager.GetString("Error_ProfileCreationFailedInvalidResponse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Profile creation failed for user {0}..
+        /// </summary>
+        internal static string Error_ProfileCreationFailedIO {
+            get {
+                return ResourceManager.GetString("Error_ProfileCreationFailedIO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R Host process failed to start. Error: {0}.
         /// </summary>
         internal static string Error_RHostFailedToStart {
@@ -273,6 +291,15 @@ namespace Microsoft.R.Host.Broker {
         internal static string Info_StartingRHost {
             get {
                 return ResourceManager.GetString("Info_StartingRHost", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Microsoft.R.Host.UserProfile.
+        /// </summary>
+        internal static string Info_UserProfileServiceName {
+            get {
+                return ResourceManager.GetString("Info_UserProfileServiceName", resourceCulture);
             }
         }
         

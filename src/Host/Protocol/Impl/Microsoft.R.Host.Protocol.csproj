@@ -49,6 +49,8 @@
     <Compile Include="InterpreterInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Message.cs" />
+    <Compile Include="RUserProfileCreateRequest.cs" />
+    <Compile Include="RUserProfileCreateResponse.cs" />
     <Compile Include="SessionCreateRequest.cs" />
     <Compile Include="SessionInfo.cs" />
   </ItemGroup>
