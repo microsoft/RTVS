@@ -24,6 +24,7 @@ using Xunit;
 
 namespace Microsoft.R.Components.Test.Plots {
     [ExcludeFromCodeCoverage]
+    [Category.Plots]
     [Collection(CollectionNames.NonParallel)]
     public class RPlotIntegrationUITest : IAsyncLifetime {
         private readonly ContainerHostMethodFixture _containerHost;
@@ -80,7 +81,6 @@ namespace Microsoft.R.Components.Test.Plots {
         }
 
         [Test(ThreadType.UI)]
-        [Category.Plots]
         public async Task ResizePlot() {
             await InitializeGraphicsDevice();
             await ExecuteAndWaitForPlotsAsync(new string[] {
@@ -105,7 +105,6 @@ namespace Microsoft.R.Components.Test.Plots {
         }
 
         [Test(ThreadType.UI)]
-        [Category.Plots]
         public async Task ResizePlotError() {
             using (_workflow.Plots.GetOrCreateVisualComponent(_plotHistoryVisualComponentContainerFactory, 0)) {
                 await InitializeGraphicsDevice();

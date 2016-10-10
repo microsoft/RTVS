@@ -18,6 +18,7 @@ using Task = System.Threading.Tasks.Task;
 
 namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
     internal sealed class RSessionCallback : IRSessionCallback {
+        private readonly IRInteractiveWorkflowProvider _workflowProvider;
         private readonly IInteractiveWindow _interactiveWindow;
         private readonly IRSession _session;
         private readonly IRSettings _settings;
@@ -30,6 +31,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             _settings = settings;
             _coreShell = coreShell;
             _fileSystem = fileSystem;
+            _workflowProvider = _coreShell.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
         }
 
         /// <summary>
@@ -60,37 +62,30 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         /// Displays R plot in the host app-provided window
         /// </summary>
         public async Task Plot(PlotMessage plot, CancellationToken ct) {
-            var provider = _coreShell.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
-            var workflow = provider.GetOrCreate();
+            var workflow = _workflowProvider.GetOrCreate();
 
             await _coreShell.SwitchToMainThreadAsync();
             await workflow.Plots.LoadPlotAsync(plot);
         }
 
         public async Task<LocatorResult> Locator(Guid deviceId, CancellationToken ct) {
-            var provider = _coreShell.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
-            var workflow = provider.GetOrCreate();
+            var workflow = _workflowProvider.GetOrCreate();
 
             await _coreShell.SwitchToMainThreadAsync();
-
             return await workflow.Plots.StartLocatorModeAsync(deviceId, ct);
         }
 
         public async Task<PlotDeviceProperties> PlotDeviceCreate(Guid deviceId, CancellationToken ct) {
-            var provider = _coreShell.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
-            var workflow = provider.GetOrCreate();
+            var workflow = _workflowProvider.GetOrCreate();
 
             await _coreShell.SwitchToMainThreadAsync();
-
             return await workflow.Plots.DeviceCreatedAsync(deviceId);
         }
 
         public async Task PlotDeviceDestroy(Guid deviceId, CancellationToken ct) {
-            var provider = _coreShell.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
-            var workflow = provider.GetOrCreate();
+            var workflow = _workflowProvider.GetOrCreate();
 
             await _coreShell.SwitchToMainThreadAsync();
-
             await workflow.Plots.DeviceDestroyedAsync(deviceId);
         }
 
@@ -117,8 +112,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
         public async Task ViewLibrary() {
             var containerFactory = _coreShell.ExportProvider.GetExportedValue<IRPackageManagerVisualComponentContainerFactory>();
-            var provider = _coreShell.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
-            var workflow = provider.GetOrCreate();
+            var workflow = _workflowProvider.GetOrCreate();
 
             await _coreShell.SwitchToMainThreadAsync();
             workflow.Packages.GetOrCreateVisualComponent(containerFactory, 0).Container.Show(focus: true, immediate: false);
