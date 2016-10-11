@@ -26,7 +26,6 @@ using Xunit;
 namespace Microsoft.R.Components.Test.Plots {
     [ExcludeFromCodeCoverage]
     [Category.Plots]
-    [Collection(CollectionNames.NonParallel)]
     public class RPlotIntegrationTest : IAsyncLifetime {
         private readonly IExportProvider _exportProvider;
         private readonly TestRInteractiveWorkflowProvider _workflowProvider;

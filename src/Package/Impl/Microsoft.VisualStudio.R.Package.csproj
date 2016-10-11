@@ -207,7 +207,6 @@
     <Compile Include="Shell\VsFileDialog.cs" />
     <Compile Include="Shell\VsProgressDialog.cs" />
     <Compile Include="Sql\Services\DacPackageServicesProvider.cs" />
-    <Compile Include="Sql\Services\SqlTools.cs" />
     <Compile Include="ToolWindows\PlotHistoryWindowPane.cs" />
     <Compile Include="ProjectSystem\Commands\CopyRemoteItemPathCommand.cs" />
     <Compile Include="ProjectSystem\Commands\SetAsStartUpRScriptCommand.cs" />
