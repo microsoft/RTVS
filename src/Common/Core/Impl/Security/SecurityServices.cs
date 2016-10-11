@@ -27,7 +27,7 @@ namespace Microsoft.Common.Core.Security {
 
                 // For password, use native memory so it can be securely freed.
                 passwordStorage = SecurityUtilities.CreatePasswordBuffer();
-                int err = CredUIPromptForWindowsCredentials(ref credui, authority, IntPtr.Zero, 0,
+                int err = CredUIPromptForCredentials(ref credui, authority, IntPtr.Zero, 0,
                                           userNameBuilder, userNameBuilder.Capacity,
                                           passwordStorage, CREDUI_MAX_PASSWORD_LENGTH, ref save, flags);
                 if (err != 0) {
