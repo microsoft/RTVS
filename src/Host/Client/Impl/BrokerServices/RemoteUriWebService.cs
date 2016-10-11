@@ -26,10 +26,9 @@ namespace Microsoft.R.Host.Client.BrokerServices {
 
         public async Task GetResponseAsync(HttpListenerContext context, string localBaseUrl, string remoteBaseUrl, CancellationToken ct) {
             string postUri = null;
-            bool https = new Uri(remoteBaseUrl, UriKind.Absolute).IsHttps();
 
             if (context.Request.IsWebSocketRequest) {
-                UriBuilder ub = new UriBuilder(PostUri) { Scheme = https ? "wss" : "ws" };
+                UriBuilder ub = new UriBuilder(PostUri) { Scheme ="wss" };
                 postUri = ub.Uri.ToString();
             } else {
                 postUri = PostUri.ToString();
