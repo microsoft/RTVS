@@ -15,6 +15,7 @@ using Microsoft.VisualStudio.Text.Editor;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
 #endif
+using CommandStatus = Microsoft.R.Components.Controller.CommandStatus;
 
 namespace Microsoft.VisualStudio.R.Package.History.Commands {
     internal class SaveHistoryCommand : ViewCommand {

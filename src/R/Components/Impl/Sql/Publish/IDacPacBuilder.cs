@@ -3,11 +3,11 @@
 
 using System.Collections.Generic;
 
-namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
+namespace Microsoft.R.Components.Sql.Publish {
     /// <summary>
     /// DACPAC building services
     /// </summary>
-    internal interface IDacPacBuilder {
+    public interface IDacPacBuilder {
         void Build(string dacpacPath, string packageName, IEnumerable<string> scripts);
     }
 }

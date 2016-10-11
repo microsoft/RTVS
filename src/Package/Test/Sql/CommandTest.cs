@@ -20,6 +20,7 @@ using Microsoft.VisualStudio.R.Package.Sql;
 using Microsoft.VisualStudio.Shell.Interop;
 using NSubstitute;
 using static System.FormattableString;
+using Microsoft.R.Components.Sql.Publish;
 
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
@@ -101,7 +102,9 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
 
         [Test(ThreadType.UI)]
         public void PublishSProcCommandStatus() {
-            var cmd = new PublishSProcCommand(_appShell, _pss);
+            var servicesProvider = Substitute.For<IDacPackageServicesProvider>();
+
+            var cmd = new PublishSProcCommand(_appShell, _pss, servicesProvider);
             cmd.GetCommandStatus(null, 0, true, null, CommandStatus.NotSupported).Should().Be(CommandStatusResult.Unhandled);
             cmd.GetCommandStatus(null, RPackageCommandId.icmdPublishSProc, true, null, CommandStatus.NotSupported)
                 .Should().Be(new CommandStatusResult(true, null, CommandStatus.Enabled | CommandStatus.Supported));
@@ -122,7 +125,9 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             });
             _pss.GetSelectedProject<IVsHierarchy>().Returns(hier);
 
-            var cmd = new PublishSProcCommand(_appShell, _pss);
+            var servicesProvider = Substitute.For<IDacPackageServicesProvider>();
+
+            var cmd = new PublishSProcCommand(_appShell, _pss, servicesProvider);
             cmd.TryHandleCommand(null, RPackageCommandId.icmdPublishSProc, false, 0, IntPtr.Zero, IntPtr.Zero).Should().BeTrue();
             //_appShell.Received().ShowErrorMessage(Resources.SqlPublishDialog_NoDbProject);
         }
@@ -148,7 +153,9 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             sol.Projects.Returns(projects);
             _pss.GetSolution().Returns(sol);
 
-            var cmd = new PublishSProcCommand(_appShell, _pss);
+            var servicesProvider = Substitute.For<IDacPackageServicesProvider>();
+
+            var cmd = new PublishSProcCommand(_appShell, _pss, servicesProvider);
             cmd.TryHandleCommand(null, RPackageCommandId.icmdPublishSProc, false, 0, IntPtr.Zero, IntPtr.Zero).Should().BeTrue();
             _appShell.Received().ShowErrorMessage(Resources.SqlPublishDialog_NoSProcFiles);
         }

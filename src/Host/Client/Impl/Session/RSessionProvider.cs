@@ -86,8 +86,7 @@ namespace Microsoft.R.Host.Client.Session {
             var stopHostTasks = sessions.Select(session => session.StopHostAsync());
             try {
                 Task.WhenAll(stopHostTasks).GetAwaiter().GetResult();
-            } catch (Exception ex) when (!ex.IsCriticalException()) {
-            }
+            } catch (Exception ex) when (!ex.IsCriticalException()) { }
 
             foreach (var session in sessions) {
                 session.Dispose();

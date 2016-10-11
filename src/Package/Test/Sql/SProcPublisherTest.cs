@@ -9,6 +9,7 @@ using System.Linq;
 using FluentAssertions;
 using Microsoft.Common.Core.IO;
 using Microsoft.R.Components.Sql;
+using Microsoft.R.Components.Sql.Publish;
 using Microsoft.SqlServer.Dac;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
@@ -56,41 +57,13 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
                 e.First().Should().StartWith("CREATE PROCEDURE ProcName");
             });
 
-            _dacServices.GetBuilder(null).ReturnsForAnyArgs(builder);
+            _dacServices.GetBuilder().Returns(builder);
 
             var files = new string[] { Path.Combine(_files.DestinationPath, rFile) };
             var publisher = new SProcPublisher(_appShell, _pss, fs, _dacServices);
             publisher.Publish(settings, files);
 
             builder.Received(1).Build(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<string>>());
-        }
-
-        [CompositeTest(ThreadType.UI)]
-        [InlineData("sqlcode1.r")]
-        public void PublishDatabase(string rFile) {
-            var fs = new FileSystem();
-            var settings = new SqlSProcPublishSettings();
-            settings.TargetType = PublishTargetType.Database;
-
-            var odbc = new OdbcConnectionStringBuilder();
-            odbc[ConnectionStringConverter.OdbcDriverKey] = "SQL Server";
-            odbc[ConnectionStringConverter.OdbcServerKey] = "(local)";
-            odbc[ConnectionStringConverter.OdbcDatabaseKey] = "AventureWorks";
-            settings.TargetDatabaseConnection = odbc.ConnectionString;
-
-            SetupProjectMocks("project.rproj");
-
-            var builder = Substitute.For<IDacPacBuilder>();
-            _dacServices.GetBuilder(null).ReturnsForAnyArgs(builder);
-            _dacServices.When(x => x.Deploy(Arg.Any<DacPackage>(), Arg.Any<string>(), Arg.Any<string>())).Do(c => {
-                ((string)c.Args()[1]).Should().Be("Data Source=(local);Initial Catalog=AventureWorks;Integrated Security=True");
-            });
-
-            var files = new string[] { Path.Combine(_files.DestinationPath, rFile) };
-            var publisher = new SProcPublisher(_appShell, _pss, fs, _dacServices);
-            publisher.Publish(settings, files);
-
-            _dacServices.Received(1).Deploy(Arg.Any<DacPackage>(), Arg.Any<string>(), Arg.Any<string>());
         }
 
         private void SetupProjectMocks(string fileName) {

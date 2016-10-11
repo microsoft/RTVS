@@ -25,6 +25,7 @@ using Xunit;
 
 namespace Microsoft.R.Components.Test.Plots {
     [ExcludeFromCodeCoverage]
+    [Category.Plots]
     public class RPlotIntegrationTest : IAsyncLifetime {
         private readonly IExportProvider _exportProvider;
         private readonly TestRInteractiveWorkflowProvider _workflowProvider;
@@ -54,8 +55,8 @@ namespace Microsoft.R.Components.Test.Plots {
         }
 
         public Task DisposeAsync() {
-            _exportProvider.Dispose();
             _replVisualComponent.Dispose();
+            _exportProvider.Dispose();
             return Task.CompletedTask;
         }
 
@@ -63,7 +64,6 @@ namespace Microsoft.R.Components.Test.Plots {
         private TestFileDialog FileDialog => _workflow.Shell.FileDialog as TestFileDialog;
 
         [Test(ThreadType.UI)]
-        [Category.Plots]
         public async Task AllCommandsDisabledWhenNoPlot() {
             await InitializeGraphicsDevice();
 
@@ -72,7 +72,6 @@ namespace Microsoft.R.Components.Test.Plots {
         }
 
         [Test(ThreadType.UI)]
-        [Category.Plots]
         public async Task SomeCommandsEnabledForSinglePlot() {
             var plot1to10 = await GetExpectedImageAsync("png", 600, 500, 96, "plot1-10", "plot(1:10)");
 
@@ -88,7 +87,6 @@ namespace Microsoft.R.Components.Test.Plots {
         }
 
         [Test(ThreadType.UI)]
-        [Category.Plots]
         public async Task SomeCommandsEnabledForLastPlot() {
             var plot10to20 = await GetExpectedImageAsync("png", 600, 500, 96, "plot10-20", "plot(10:20)");
 
@@ -105,7 +103,6 @@ namespace Microsoft.R.Components.Test.Plots {
         }
 
         [Test(ThreadType.UI)]
-        [Category.Plots]
         public async Task SomeCommandsEnabledForMiddlePlot() {
             var plot10to20 = await GetExpectedImageAsync("png", 600, 500, 96, "plot10-20", "plot(10:20)");
 
@@ -129,7 +126,6 @@ namespace Microsoft.R.Components.Test.Plots {
         }
 
         [Test(ThreadType.UI)]
-        [Category.Plots]
         public async Task SomeCommandsEnabledForFirstPlot() {
             var plot1to10 = await GetExpectedImageAsync("png", 600, 500, 96, "plot1-10", "plot(1:10)");
 
@@ -152,7 +148,6 @@ namespace Microsoft.R.Components.Test.Plots {
         }
 
         [Test(ThreadType.UI)]
-        [Category.Plots]
         public async Task DeviceCopyAsBitmap() {
             var plot1to10 = await GetExpectedImageAsync("bmp", 600, 500, 96, "plot1-10", "plot(1:10)");
 
@@ -177,7 +172,6 @@ namespace Microsoft.R.Components.Test.Plots {
         }
 
         [Test(ThreadType.UI)]
-        [Category.Plots]
         public async Task DeviceCopyAsMetafile() {
             await InitializeGraphicsDevice();
             await ExecuteAndWaitForPlotsAsync(new string[] {
@@ -197,7 +191,6 @@ namespace Microsoft.R.Components.Test.Plots {
         }
 
         [Test(ThreadType.UI)]
-        [Category.Plots]
         public async Task DeviceCopy() {
             var plot1to10 = await GetExpectedImageAsync("bmp", 600, 500, 96, "plot1-10", "plot(1:10)");
             var plot2to10 = await GetExpectedImageAsync("bmp", 600, 500, 96, "plot2-10", "plot(2:10)");
@@ -238,7 +231,6 @@ namespace Microsoft.R.Components.Test.Plots {
         }
 
         [Test(ThreadType.UI)]
-        [Category.Plots]
         public async Task DeviceCut() {
             var plot1to10 = await GetExpectedImageAsync("bmp", 600, 500, 96, "plot1-10", "plot(1:10)");
             var plot2to10 = await GetExpectedImageAsync("bmp", 600, 500, 96, "plot2-10", "plot(2:10)");
@@ -283,7 +275,6 @@ namespace Microsoft.R.Components.Test.Plots {
         }
 
         [Test(ThreadType.UI)]
-        [Category.Plots]
         public async Task DeviceRemoveAll() {
             await InitializeGraphicsDevice();
             await ExecuteAndWaitForPlotsAsync(new string[] {
@@ -318,7 +309,6 @@ namespace Microsoft.R.Components.Test.Plots {
         }
 
         [Test(ThreadType.UI)]
-        [Category.Plots]
         public async Task DeviceRemoveCurrent() {
             var plot1to10 = await GetExpectedImageAsync("bmp", 600, 500, 96, "plot1-10", "plot(1:10)");
             var plot2to10 = await GetExpectedImageAsync("bmp", 600, 500, 96, "plot2-10", "plot(2:10)");
@@ -356,7 +346,6 @@ namespace Microsoft.R.Components.Test.Plots {
         }
 
         [Test(ThreadType.UI)]
-        [Category.Plots]
         public async Task NewDevice() {
             var newCmd = new PlotDeviceNewCommand(_workflow);
             newCmd.Should().BeEnabled();
@@ -378,7 +367,6 @@ namespace Microsoft.R.Components.Test.Plots {
         }
 
         [Test(ThreadType.UI)]
-        [Category.Plots]
         public async Task ActivateDevice() {
             await InitializeGraphicsDevice();
             var device1 = _workflow.Plots.ActiveDevice;
@@ -416,7 +404,6 @@ namespace Microsoft.R.Components.Test.Plots {
         }
 
         [Test(ThreadType.UI)]
-        [Category.Plots]
         public async Task ExportAsPdf() {
             await InitializeGraphicsDevice();
             await ExecuteAndWaitForPlotsAsync(new string[] {
@@ -437,7 +424,6 @@ namespace Microsoft.R.Components.Test.Plots {
         }
 
         [Test(ThreadType.UI)]
-        [Category.Plots]
         public async Task ExportAsImage() {
             await InitializeGraphicsDevice();
             await ExecuteAndWaitForPlotsAsync(new string[] {
@@ -466,7 +452,6 @@ namespace Microsoft.R.Components.Test.Plots {
         }
 
         [Test(ThreadType.UI)]
-        [Category.Plots]
         public async Task ExportAsImageUnsupportedExtension() {
             await InitializeGraphicsDevice();
             await ExecuteAndWaitForPlotsAsync(new string[] {
@@ -490,7 +475,6 @@ namespace Microsoft.R.Components.Test.Plots {
         }
 
         [Test(ThreadType.UI)]
-        [Category.Plots]
         public async Task PlotBuiltinDatasets() {
             // Note that the following are not included, as they cause various errors:
             //   Harman23.cor, Harman74.cor, ability.cov, state.abb, state.name
@@ -624,7 +608,6 @@ namespace Microsoft.R.Components.Test.Plots {
         }
 
         [Test(ThreadType.UI)]
-        [Category.Plots]
         public async Task PlotError() {
             await InitializeGraphicsDevice();
             await ExecuteAndWaitForPlotsAsync(new string[] {
@@ -665,7 +648,6 @@ namespace Microsoft.R.Components.Test.Plots {
         }
 
         [Test(ThreadType.UI)]
-        [Category.Plots]
         public async Task LocatorCommand() {
             _plotDeviceVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(360, 360, 96);
 
@@ -738,7 +720,6 @@ namespace Microsoft.R.Components.Test.Plots {
         }
 
         [Test(ThreadType.UI)]
-        [Category.Plots]
         public async Task LocatorCommandNoClick() {
             await InitializeGraphicsDevice();
 
@@ -779,7 +760,6 @@ namespace Microsoft.R.Components.Test.Plots {
         }
 
         [Test(ThreadType.UI)]
-        [Category.Plots]
         public async Task HistoryActivate() {
             using (_workflow.Plots.GetOrCreateVisualComponent(_plotHistoryVisualComponentContainerFactory, 0)) {
                 var plot1to10 = await GetExpectedImageAsync("bmp", 600, 500, 96, "plot1-10", "plot(1:10)");
@@ -810,7 +790,6 @@ namespace Microsoft.R.Components.Test.Plots {
         }
 
         [Test(ThreadType.UI)]
-        [Category.Plots]
         public async Task HistoryCopy() {
             using (_workflow.Plots.GetOrCreateVisualComponent(_plotHistoryVisualComponentContainerFactory, 0)) {
                 await InitializeGraphicsDevice();
@@ -854,7 +833,6 @@ namespace Microsoft.R.Components.Test.Plots {
         }
 
         [Test(ThreadType.UI)]
-        [Category.Plots]
         public async Task HistoryRemove() {
             using (_workflow.Plots.GetOrCreateVisualComponent(_plotHistoryVisualComponentContainerFactory, 0)) {
                 await InitializeGraphicsDevice();
@@ -906,7 +884,6 @@ namespace Microsoft.R.Components.Test.Plots {
         }
 
         [Test(ThreadType.UI)]
-        [Category.Plots]
         public async Task HistoryZoom() {
             using (_workflow.Plots.GetOrCreateVisualComponent(_plotHistoryVisualComponentContainerFactory, 0)) {
                 var historyVC = _workflow.Plots.HistoryVisualComponent;
@@ -924,7 +901,6 @@ namespace Microsoft.R.Components.Test.Plots {
         }
 
         [Test(ThreadType.UI)]
-        [Category.Plots]
         public async Task HistoryAutoHide() {
             using (_workflow.Plots.GetOrCreateVisualComponent(_plotHistoryVisualComponentContainerFactory, 0)) {
                 var historyVC = _workflow.Plots.HistoryVisualComponent;

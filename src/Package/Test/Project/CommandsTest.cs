@@ -17,6 +17,7 @@ using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Test.Fakes.InteractiveWindow;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.UnitTests.Core.XUnit;
+using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -25,8 +26,6 @@ using NSubstitute;
 using Xunit;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
-#else
-using Microsoft.VisualStudio.ProjectSystem;
 #endif
 using static Microsoft.UnitTests.Core.Threading.UIThreadTools;
 

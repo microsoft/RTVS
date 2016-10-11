@@ -4,17 +4,18 @@
 using System;
 using System.Collections.Immutable;
 using System.ComponentModel.Composition;
+using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Sql.Publish;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration;
 using System.Threading.Tasks;
+using Microsoft.R.Components.Sql.Publish;
+using Microsoft.R.Components.Extensions;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
-#else
-using Microsoft.VisualStudio.ProjectSystem;
 #endif
 
 namespace Microsoft.VisualStudio.R.Package.Sql {
@@ -24,12 +25,14 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
         private readonly IApplicationShell _appShell;
         private readonly IProjectSystemServices _pss;
         private readonly IProjectConfigurationSettingsProvider _pcsp;
+        private readonly IDacPackageServicesProvider _dacServicesProvider;
 
         [ImportingConstructor]
-        public PublishSProcOptionsCommand(IApplicationShell appShell, IProjectSystemServices pss, IProjectConfigurationSettingsProvider pcsp) {
+        public PublishSProcOptionsCommand(IApplicationShell appShell, IProjectSystemServices pss, IProjectConfigurationSettingsProvider pcsp, IDacPackageServicesProvider dacServicesProvider) {
             _appShell = appShell;
             _pss = pss;
             _pcsp = pcsp;
+            _dacServicesProvider = dacServicesProvider;
         }
 
         public Task<CommandStatusResult> GetCommandStatusAsync(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus progressiveStatus) {
@@ -41,10 +44,12 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
 
         public async Task<bool> TryHandleCommandAsync(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, long commandExecuteOptions, IntPtr variantArgIn, IntPtr variantArgOut) {
             if (commandId == RPackageCommandId.icmdPublishSProcOptions) {
-                if (SqlTools.CheckInstalled(_appShell)) {
+                if (_dacServicesProvider.GetDacPackageServices(showMessage: true) != null) {
                     var dlg = await SqlPublshOptionsDialog.CreateAsync(_appShell, _pss, _pcsp);
+
+                    await _appShell.SwitchToMainThreadAsync();
                     dlg.ShowModal();
-                }
+                } 
                 return true;
             }
             return false;
