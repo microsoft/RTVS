@@ -456,9 +456,15 @@ namespace Microsoft.R.Core.Formatting {
             }
         }
 
-        private string AppendToken(bool leadingSpace, bool trailingSpace) {
+        private void AppendToken(bool leadingSpace, bool trailingSpace) {
             if (leadingSpace) {
                 _tb.AppendSpace();
+            }
+
+            if (_tokens.CurrentToken.TokenType == RTokenType.Comment &&
+                _tokens.Position > 0 &&
+                _tokens.IsLineBreakAfter(_textProvider, _tokens.Position - 1)) {
+                _tb.SoftIndent();
             }
 
             string text = _textProvider.GetText(_tokens.CurrentToken);
@@ -481,8 +487,6 @@ namespace Microsoft.R.Core.Formatting {
             if (trailingSpace) {
                 _tb.AppendSpace();
             }
-
-            return text;
         }
 
         private void HandleBrace() {
