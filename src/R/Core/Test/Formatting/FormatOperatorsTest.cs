@@ -19,6 +19,7 @@ namespace Microsoft.R.Core.Test.Formatting {
         [InlineData("??plot", "??plot")]
         [InlineData("?plot", "?plot")]
         [InlineData("x?plot", "x ? plot")]
+        [InlineData("x <-(-y+2)", "x <- (-y + 2)")]
         public void Formatter_FormatUnary(string original, string expected) {
             RFormatter f = new RFormatter();
             string actual = f.Format(original);
