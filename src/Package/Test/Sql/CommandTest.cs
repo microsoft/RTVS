@@ -103,7 +103,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
         [Test(ThreadType.UI)]
         public void PublishSProcCommandStatus() {
             var servicesProvider = Substitute.For<IDacPackageServicesProvider>();
-            servicesProvider.GetDacPackageServices().Returns(Substitute.For<IDacPackageServices>());
 
             var cmd = new PublishSProcCommand(_appShell, _pss, servicesProvider);
             cmd.GetCommandStatus(null, 0, true, null, CommandStatus.NotSupported).Should().Be(CommandStatusResult.Unhandled);
@@ -127,7 +126,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             _pss.GetSelectedProject<IVsHierarchy>().Returns(hier);
 
             var servicesProvider = Substitute.For<IDacPackageServicesProvider>();
-            servicesProvider.GetDacPackageServices().Returns(Substitute.For<IDacPackageServices>());
 
             var cmd = new PublishSProcCommand(_appShell, _pss, servicesProvider);
             cmd.TryHandleCommand(null, RPackageCommandId.icmdPublishSProc, false, 0, IntPtr.Zero, IntPtr.Zero).Should().BeTrue();
@@ -156,7 +154,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             _pss.GetSolution().Returns(sol);
 
             var servicesProvider = Substitute.For<IDacPackageServicesProvider>();
-            servicesProvider.GetDacPackageServices().Returns(Substitute.For<IDacPackageServices>());
 
             var cmd = new PublishSProcCommand(_appShell, _pss, servicesProvider);
             cmd.TryHandleCommand(null, RPackageCommandId.icmdPublishSProc, false, 0, IntPtr.Zero, IntPtr.Zero).Should().BeTrue();
