@@ -20,9 +20,16 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             _ctrs = ctrs;
         }
 
-        public IDacPackageServices GetDacPackageServices() {
+        public IDacPackageServices GetDacPackageServices(bool showMessage = false) {
             if(IsSqlToolsInstalled()) {
                 return _coreShell.ExportProvider.GetExportedValueOrDefault<IDacPackageServices>();
+            } else {
+#if VS14
+                var message = Resources.SqlPublish_NoSqlToolsVS14;
+#else
+                var message = Resources.SqlPublish_NoSqlToolsVS15;
+#endif
+                _coreShell.ShowErrorMessage(message);
             }
             return null;
         }

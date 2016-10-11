@@ -5,6 +5,6 @@ using Microsoft.Common.Core.Shell;
 
 namespace Microsoft.R.Components.Sql.Publish {
     public interface IDacPackageServicesProvider {
-        IDacPackageServices GetDacPackageServices();
+        IDacPackageServices GetDacPackageServices(bool showMessage = false);
     }
 }
