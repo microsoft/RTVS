@@ -440,10 +440,7 @@ namespace Microsoft.R.Core.Formatting {
         private void AppendOperator() {
             string text = _textProvider.GetText(_tokens.CurrentToken);
             if (_tokens.Position == 0 || TokenOperator.IsUnaryOperator(_tokens, _textProvider, TokenOperator.GetOperatorType(text), -1)) {
-                // Determine if we need to insert leading space. We do in 'x + -1' but not in x + (-y + 1)
-                var precedingTokenType = _tokens.LookAhead(-1).TokenType;
-                bool leadingSpace = precedingTokenType == RTokenType.Operator;
-                AppendToken(leadingSpace: leadingSpace, trailingSpace: false);
+                AppendToken(leadingSpace: false, trailingSpace: false);
             } else if (IsOperatorWithoutSpaces(text)) {
                 AppendToken(leadingSpace: false, trailingSpace: false);
             } else {
