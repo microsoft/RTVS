@@ -12,6 +12,7 @@ using Microsoft.Common.Core;
 using Microsoft.Extensions.Logging;
 using Microsoft.R.Host.Protocol;
 using Newtonsoft.Json;
+using System.Runtime.InteropServices;
 
 namespace Microsoft.R.Host.UserProfile {
     partial class RUserProfileService : ServiceBase {
@@ -28,8 +29,6 @@ namespace Microsoft.R.Host.UserProfile {
         private ILogger _logger;
         private ILoggerFactory _loggerFactory;
         protected override void OnStart(string[] args) {
-            base.OnStart(args);
-
             _loggerFactory = new LoggerFactory();
             _loggerFactory
                 .AddDebug()
@@ -42,7 +41,6 @@ namespace Microsoft.R.Host.UserProfile {
         }
 
         protected override void OnStop() {
-            base.OnStop();
             _cts.Cancel();
             _workerdone.WaitOne(TimeSpan.FromMilliseconds(ServiceShutdownTimeoutMs));
         }
