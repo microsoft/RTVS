@@ -19,5 +19,16 @@ namespace Microsoft.R.Core.Test.Formatting {
             string actual = f.Format(original);
             actual.Should().Be(expected);
         }
+
+        [CompositeTest]
+        [InlineData("x <-1\n# comment", "x <- 1\n# comment\n")]
+        [InlineData("{\nx <-1\n# comment\n}", "{\n  x <- 1\n  # comment\n}")]
+        [InlineData("{\nx <-1\n# comment\n # comment\n         # comment\n y<-2\n}",
+                    "{\n  x <- 1\n  # comment\n  # comment\n  # comment\n  y <- 2\n}")]
+        public void Comments(string original, string expected) {
+            RFormatter f = new RFormatter();
+            string actual = f.Format(original);
+            actual.Should().Be(expected);
+        }
     }
 }

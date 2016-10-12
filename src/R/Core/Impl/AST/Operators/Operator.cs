@@ -37,7 +37,18 @@ namespace Microsoft.R.Core.AST.Operators {
             }
 
             // If operator is preceded by an operator, it is then unary
-            return tokens.LookAhead(offset).TokenType == RTokenType.Operator;
+            var precedingTokenType = tokens.LookAhead(offset).TokenType;
+            switch (precedingTokenType) {
+                case RTokenType.Operator:
+                case RTokenType.OpenBrace:
+                case RTokenType.OpenCurlyBrace:
+                case RTokenType.OpenSquareBracket:
+                case RTokenType.OpenDoubleSquareBracket:
+                case RTokenType.Semicolon:
+                case RTokenType.Keyword:
+                    return true;
+            }
+            return false;
         }
 
         private static bool IsPossibleUnary(OperatorType operatorType) {
@@ -46,6 +57,7 @@ namespace Microsoft.R.Core.AST.Operators {
                 case OperatorType.Add:
                 case OperatorType.Tilde:
                 case OperatorType.Not:
+                case OperatorType.Help:
                     return true;
             }
             return false;
