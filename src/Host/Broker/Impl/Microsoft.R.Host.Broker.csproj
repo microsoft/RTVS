@@ -174,7 +174,7 @@
       <Visible>True</Visible>
     </Content>
     <None Include="Microsoft.R.Host.Broker.Config.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
