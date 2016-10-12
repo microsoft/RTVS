@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Debugger.PortSupplier;
 using Microsoft.R.ExecutionTracing;
 using Microsoft.R.Host.Client;
@@ -43,6 +44,9 @@ namespace Microsoft.R.Debugger {
         internal AD7Thread MainThread { get; private set; }
 
         [Import]
+        private IRInteractiveWorkflowProvider WorkflowProvider { get; set; }
+
+        [Import]
         internal IDebugGridViewProvider GridViewProvider { get; set; }
 
         public AD7Engine() {
@@ -62,6 +66,9 @@ namespace Microsoft.R.Debugger {
             Tracer.Browse -= Tracer_Browse;
             Session.AfterRequest -= Session_AfterRequest;
             Session.Disconnected -= Session_Disconnected;
+
+            var sessionProvider = WorkflowProvider.GetOrCreate().RSessions;
+            sessionProvider.BrokerChanged -= SessionProvider_BrokerChanged;
 
             _events = null;
             _program = null;
@@ -165,6 +172,9 @@ namespace Microsoft.R.Debugger {
             AD7ProgramCreateEvent.Send(this);
             Send(new AD7LoadCompleteEvent(), AD7LoadCompleteEvent.IID);
 
+            var sessionProvider = WorkflowProvider.GetOrCreate().RSessions;
+            sessionProvider.BrokerChanged += SessionProvider_BrokerChanged;
+                
             // Register event handlers after notifying VS that debug engine has loaded. This order is important because
             // we may get a Browse event immediately, and we want to raise a breakpoint notification in response to that
             // to pause the debugger - but it will be ignored unless the engine has reported its creation.
@@ -600,6 +610,11 @@ namespace Microsoft.R.Debugger {
         private void Session_Disconnected(object sender, EventArgs e) {
             IsConnected = false;
             DestroyProgram();
+        }
+
+        private void SessionProvider_BrokerChanged(object sender, EventArgs e) {
+            IsConnected = false;
+            Task.Run(() => DestroyProgram()).DoNotWait();
         }
     }
 }
