@@ -11,7 +11,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
-using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
@@ -23,9 +22,6 @@ using Microsoft.VisualStudio.R.Package.Shell;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
-#endif
-#if VS15
-using Microsoft.VisualStudio.ProjectSystem;
 #endif
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
