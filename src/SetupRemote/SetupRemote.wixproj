@@ -38,6 +38,10 @@
     <SuppressSpecificWarnings>1076</SuppressSpecificWarnings>
   </PropertyGroup>
   <ItemGroup>
+    <WixExtension Include="WixUtilExtension">
+      <HintPath>$(WixExtDir)\WixUtilExtension.dll</HintPath>
+      <Name>WixUtilExtension</Name>
+    </WixExtension>
     <WixExtension Include="WixVSExtension">
       <HintPath>$(WixInstallPath)\WixVSExtension.dll</HintPath>
       <Name>WixVSExtension</Name>
@@ -65,6 +69,12 @@
     <FilesToSign Include="$(OutputPath)$(OutputName).msi">
       <Authenticode>Microsoft400</Authenticode>
     </FilesToSign>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="..\" />
+    <Folder Include="..\..\" />
+    <Folder Include="..\..\bin\" />
+    <Folder Include="..\..\bin\Debug\" />
   </ItemGroup>
   <Import Project="$(WixTargetsPath)" />
   <Import Project="$(NuGetPackageRoot)\MicroBuild.Core\0.2.0\build\MicroBuild.Core.targets" Condition="Exists('$(NuGetPackageRoot)\MicroBuild.Core\0.2.0\build\MicroBuild.Core.targets')" />

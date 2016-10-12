@@ -12,6 +12,7 @@ using Microsoft.Common.Core;
 using Microsoft.Extensions.Logging;
 using Microsoft.R.Host.Protocol;
 using Newtonsoft.Json;
+using System.Runtime.InteropServices;
 
 namespace Microsoft.R.Host.UserProfile {
     partial class RUserProfileService : ServiceBase {
@@ -28,8 +29,7 @@ namespace Microsoft.R.Host.UserProfile {
         private ILogger _logger;
         private ILoggerFactory _loggerFactory;
         protected override void OnStart(string[] args) {
-            base.OnStart(args);
-
+            ServiceStartPending();
             _loggerFactory = new LoggerFactory();
             _loggerFactory
                 .AddDebug()
@@ -39,12 +39,17 @@ namespace Microsoft.R.Host.UserProfile {
             _cts = new CancellationTokenSource();
             _workerdone = new ManualResetEvent(false);
             CreateProfileWorkerAsync(_cts.Token).DoNotWait();
+
+            ServiceStarted();
         }
 
         protected override void OnStop() {
-            base.OnStop();
+            ServiceStopPending();
+
             _cts.Cancel();
             _workerdone.WaitOne(TimeSpan.FromMilliseconds(ServiceShutdownTimeoutMs));
+
+            ServiceStopped();
         }
 
         async Task CreateProfileWorkerAsync(CancellationToken ct) {
@@ -91,5 +96,56 @@ namespace Microsoft.R.Host.UserProfile {
             }
             _workerdone.Set();
         }
+
+        private void ServiceStartPending() {
+            SetServiceStatus(ServiceState.SERVICE_START_PENDING, 100000);
+        }
+
+        private void ServiceStarted() {
+            SetServiceStatus(ServiceState.SERVICE_RUNNING);
+        }
+
+        private void ServiceStopPending() {
+            SetServiceStatus(ServiceState.SERVICE_STOP_PENDING, 100000);
+        }
+
+        private void ServiceStopped() {
+            SetServiceStatus(ServiceState.SERVICE_STOPPED);
+        }
+
+        private void SetServiceStatus(ServiceState state, long wait = 0) {
+            ServiceStatus serviceStatus = new ServiceStatus();
+            serviceStatus.dwCurrentState = state;
+
+            if(wait > 0) {
+                serviceStatus.dwWaitHint = wait;
+            }
+            
+            SetServiceStatus(this.ServiceHandle, ref serviceStatus);
+        }
+
+        private enum ServiceState {
+            SERVICE_STOPPED = 0x00000001,
+            SERVICE_START_PENDING = 0x00000002,
+            SERVICE_STOP_PENDING = 0x00000003,
+            SERVICE_RUNNING = 0x00000004,
+            SERVICE_CONTINUE_PENDING = 0x00000005,
+            SERVICE_PAUSE_PENDING = 0x00000006,
+            SERVICE_PAUSED = 0x00000007,
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct ServiceStatus {
+            public long dwServiceType;
+            public ServiceState dwCurrentState;
+            public long dwControlsAccepted;
+            public long dwWin32ExitCode;
+            public long dwServiceSpecificExitCode;
+            public long dwCheckPoint;
+            public long dwWaitHint;
+        };
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        private static extern bool SetServiceStatus(IntPtr handle, ref ServiceStatus serviceStatus);
     }
 }
