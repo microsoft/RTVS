@@ -57,6 +57,7 @@ namespace Microsoft.R.Core.AST.Operators {
                 case OperatorType.Add:
                 case OperatorType.Tilde:
                 case OperatorType.Not:
+                case OperatorType.Help:
                     return true;
             }
             return false;
