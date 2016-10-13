@@ -7,7 +7,7 @@ using Microsoft.Common.Core.Telemetry;
 
 namespace Microsoft.Common.Core.Test.Telemetry {
     [ExcludeFromCodeCoverage]
-    public sealed class TelemetryTestService : TelemetryServiceBase, ITelemetryTestSupport {
+    public sealed class TelemetryTestService : TelemetryServiceBase<TestTelemetryRecorder>, ITelemetryTestSupport {
         public static readonly string EventNamePrefixString = "Test/RTVS/";
         public static readonly string PropertyNamePrefixString = "Test.RTVS.";
 
@@ -17,21 +17,13 @@ namespace Microsoft.Common.Core.Test.Telemetry {
         }
 
         public TelemetryTestService() :
-            this(TelemetryTestService.EventNamePrefixString, TelemetryTestService.PropertyNamePrefixString) {
+            this(EventNamePrefixString, PropertyNamePrefixString) {
         }
 
         #region ITelemetryTestSupport
-        public string SessionLog {
-            get {
-                ITelemetryTestSupport testSupport = this.TelemetryRecorder as ITelemetryTestSupport;
-                return testSupport.SessionLog;
-            }
-        }
+        public string SessionLog => TelemetryRecorder.SessionLog;
 
-        public void Reset() {
-            ITelemetryTestSupport testSupport = this.TelemetryRecorder as ITelemetryTestSupport;
-            testSupport.Reset();
-        }
+        public void Reset() => TelemetryRecorder.Reset();
         #endregion
     }
 }

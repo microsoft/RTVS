@@ -45,8 +45,8 @@ namespace Microsoft.R.Host.Client.Host {
             }
         }
 
-        public LocalBrokerClient(string name, string rHome, ICoreServices services, IntPtr appWindowHandle, string rhostDirectory = null)
-            : base(name, new Uri(rHome), InterpreterId, _credentials, services.Log, appWindowHandle) {
+        public LocalBrokerClient(string name, string rHome, ICoreServices services, string rhostDirectory = null)
+            : base(name, new Uri(rHome), InterpreterId, _credentials, services.Log) {
 
             _rhostDirectory = rhostDirectory ?? Path.GetDirectoryName(typeof(RHost).Assembly.GetAssemblyPath());
             _rHome = rHome;

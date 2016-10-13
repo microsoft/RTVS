@@ -3,10 +3,10 @@
 
 using System.ComponentModel.Design;
 using System.Windows;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.View;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.R.Components.Extensions;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
     public class VisualComponentToolWindowAdapter<T> : IVisualComponentContainer<T> where T : IVisualComponent {

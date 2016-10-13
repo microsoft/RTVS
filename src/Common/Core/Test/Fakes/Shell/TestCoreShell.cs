@@ -28,7 +28,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
         public ICompositionService CompositionService => _container;
 
         public void DispatchOnUIThread(Action action) {
-            UIThreadHelper.Instance.Invoke(action);
+            UIThreadHelper.Instance.InvokeAsync(action).DoNotWait();
         }
 
         public Task<TResult> DispatchOnMainThreadAsync<TResult>(Func<TResult> callback, CancellationToken cancellationToken = default(CancellationToken)) {

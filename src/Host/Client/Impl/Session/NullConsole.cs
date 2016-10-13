@@ -5,8 +5,7 @@ using System;
 using System.Threading.Tasks;
 
 namespace Microsoft.R.Host.Client.Session {
-    internal class NullRSessionProviderCallback : IRSessionProviderCallback {
-        public Task<IntPtr> GetApplicationWindowHandleAsync() => Task.FromResult(IntPtr.Zero);
-        public void WriteConsole(string text) {}
+    internal class NullConsole : IConsole {
+        public void Write(string text) {}
     }
 }

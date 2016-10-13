@@ -71,7 +71,7 @@
     <Compile Include="DataInspection\RPromiseInfo.cs" />
     <Compile Include="DataInspection\RSessionExtensions.cs" />
     <Compile Include="Definitions\IRBlobInfo.cs" />
-    <Compile Include="Definitions\IRSessionProviderCallback.cs" />
+    <Compile Include="Definitions\IConsole.cs" />
     <Compile Include="Definitions\IRSessionReconnectTransaction.cs" />
     <Compile Include="Definitions\IRSessionSwitchBrokerTransaction.cs" />
     <Compile Include="Host\LocalCredentialsDecorator.cs" />
@@ -139,7 +139,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Session\BrokerStateChangedEventArgs.cs" />
-    <Compile Include="Session\NullRSessionProviderCallback.cs" />
+    <Compile Include="Session\NullConsole.cs" />
     <Compile Include="Session\RAfterRequestEventArgs.cs" />
     <Compile Include="Session\RBeforeRequestEventArgs.cs" />
     <Compile Include="Context\RContext.cs" />

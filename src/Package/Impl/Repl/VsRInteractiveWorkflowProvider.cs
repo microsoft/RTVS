@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager;
-using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Implementation;
@@ -79,7 +79,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         public IRInteractiveWorkflow Active => (_instanceLazy != null && _instanceLazy.IsValueCreated) ? _instanceLazy.Value : null;
 
         private IRInteractiveWorkflow CreateRInteractiveWorkflow() {
-            var sessionProvider = new RSessionProvider(_services, new RSessionProviderCallback( _shell, _instanceLazy));
+            var sessionProvider = new RSessionProvider(_services, new InteractiveWindowConsole( _shell, _instanceLazy));
             var workflow = new RInteractiveWorkflow(sessionProvider, _connectionsProvider, _historyProvider, _packagesProvider, 
                                                     _plotsProvider, _activeTextViewTracker, _debuggerModeTracker, 
                                                     _shell, _settings, _wss, () => DisposeInstance(sessionProvider));

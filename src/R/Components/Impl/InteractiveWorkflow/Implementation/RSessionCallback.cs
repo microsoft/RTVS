@@ -44,7 +44,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         /// <summary>
         /// Displays message with specified buttons in a host-specific UI
         /// </summary>
-        public Task<MessageButtons> ShowMessage(string message, MessageButtons buttons) => _coreShell.ShowMessageAsync(message, buttons);
+        public Task<MessageButtons> ShowMessageAsync(string message, MessageButtons buttons) => _coreShell.ShowMessageAsync(message, buttons);
             
         /// <summary>
         /// Displays R help URL in a browser on in the host app-provided window

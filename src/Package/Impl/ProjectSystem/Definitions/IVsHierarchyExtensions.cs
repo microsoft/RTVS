@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using Microsoft.R.Components.Extensions;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using System.Linq;
+using Microsoft.Common.Core.Shell;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 #endif

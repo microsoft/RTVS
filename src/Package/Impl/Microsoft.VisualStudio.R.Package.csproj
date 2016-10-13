@@ -488,7 +488,6 @@
     <Compile Include="Telemetry\Data\RPackageType.cs" />
     <Compile Include="Telemetry\Data\ToolWindowData.cs" />
     <Compile Include="Telemetry\Definitions\IRtvsTelemetry.cs" />
-    <Compile Include="Telemetry\Definitions\ITelemetryLog.cs" />
     <Compile Include="Telemetry\StringTelemetryRecorder.cs" />
     <Compile Include="Telemetry\RtvsTelemetry.cs" />
     <Compile Include="Telemetry\VsTelemetryRecorder.cs" />

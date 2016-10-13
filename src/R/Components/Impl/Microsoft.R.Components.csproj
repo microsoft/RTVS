@@ -106,7 +106,6 @@
     <Compile Include="Controller\IAsyncCommand.cs" />
     <Compile Include="Controller\IAsyncCommandRange.cs" />
     <Compile Include="Controller\ICommandTarget.cs" />
-    <Compile Include="Extensions\CoreShellExtensions.cs" />
     <Compile Include="Extensions\TextBufferExtensions.cs" />
     <Compile Include="Extensions\TextViewExtensions.cs" />
     <Compile Include="Help\IHelpVisualComponent.cs" />
@@ -169,7 +168,7 @@
     <Compile Include="Plots\Implementation\Commands\PlotDeviceRemoveCurrentCommand.cs" />
     <Compile Include="Plots\RPlotDeviceCommands.cs" />
     <Compile Include="Plots\Implementation\PlotClipboardData.cs" />
-    <Compile Include="InteractiveWorkflow\Implementation\RSessionProviderCallback.cs" />
+    <Compile Include="InteractiveWorkflow\Implementation\InteractiveWindowConsole.cs" />
     <Compile Include="Plots\Implementation\PlotMessageExtensions.cs" />
     <Compile Include="Controller\AsyncCommandController.cs" />
     <Compile Include="Plots\Implementation\RPlotHistoryVisualComponent.cs" />
