@@ -202,4 +202,7 @@ Error: {0}</value>
   <data name="Trace_UntrustedCertificate" xml:space="preserve">
     <value>The supplied TLS certificate is not trusted: {0}</value>
   </data>
+  <data name="ConnectedUserCount" xml:space="preserve">
+    <value>Connected users: {0}</value>
+  </data>
 </root>

@@ -18,6 +18,7 @@ namespace Microsoft.R.Host.Protocol {
         public long FreeVirtualMemory { get; set; }
         public long TotalPhysicalMemory { get; set; }
         public long FreePhysicalMemory { get; set; }
+        public int ConnectedUserCount { get; set; }
 
         public string[] Interpreters { get; set; }
 

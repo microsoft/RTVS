@@ -88,6 +88,15 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Connected users: {0}.
+        /// </summary>
+        internal static string ConnectedUserCount {
+            get {
+                return ResourceManager.GetString("ConnectedUserCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The machine appears to be online, but the Remote R Service is not running..
         /// </summary>
         internal static string Error_BrokerNotRunning {
