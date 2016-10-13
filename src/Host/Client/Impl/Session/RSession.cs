@@ -316,7 +316,9 @@ namespace Microsoft.R.Host.Client.Session {
 
             // If nothing worked, then just disconnect.
             await host?.DisconnectAsync();
-            await hostRunTask;
+            if (hostRunTask.Status == TaskStatus.Running) {
+                await hostRunTask;
+            }
         }
 
         public IDisposable DisableMutatedOnReadConsole() {
@@ -746,7 +748,7 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
                 }
                 host?.Dispose();
 
-                if (hostRunTask != null) {
+                if (hostRunTask != null && hostRunTask.Status == TaskStatus.Running) {
                     await hostRunTask;
                 }
 
