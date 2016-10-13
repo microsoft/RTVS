@@ -3,7 +3,7 @@
     "MicroBuild.Core": "0.2.0",
     "Microsoft.VisualStudio.CoreUtility": "14.2.25123",
     "Microsoft.VisualStudio.Editor": "14.2.25123",
-    "Microsoft.VisualStudio.ProjectSystem": "15.0.183-pre",
+    "Microsoft.VisualStudio.ProjectSystem": "15.0.561-pre-g30afd8d890",
     "Microsoft.VisualStudio.SDK.EmbedInteropTypes": "14.1.2",
     "Microsoft.VisualStudio.Text.Data": "14.2.25123",
     "Microsoft.VisualStudio.Text.Logic": "14.2.25123",
