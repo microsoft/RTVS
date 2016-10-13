@@ -608,7 +608,7 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
 
             var callback = _callback;
             if (callback != null) {
-                return await callback.ShowMessage(s, buttons);
+                return await callback.ShowMessageAsync(s, buttons);
             }
 
             return MessageButtons.OK;

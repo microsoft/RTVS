@@ -12,24 +12,25 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Net;
+using Microsoft.Common.Core.Security;
 using Microsoft.R.Host.Client.BrokerServices;
 
 namespace Microsoft.R.Host.Client.Host {
     internal sealed class RemoteBrokerClient : BrokerClient {
-        private readonly IntPtr _applicationWindowHandle;
-        private readonly string _authority;
-        private int _certificateUIActive;
+        private readonly IConsole _console;
+        private readonly ISecurityService _securityService;
 
         static RemoteBrokerClient() {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
         }
 
-        public RemoteBrokerClient(string name, Uri brokerUri, IActionLog log, IntPtr applicationWindowHandle)
-            : base(name, brokerUri, brokerUri.Fragment, new RemoteCredentialsDecorator(applicationWindowHandle, brokerUri), log, applicationWindowHandle) {
-            _applicationWindowHandle = applicationWindowHandle;
+        public RemoteBrokerClient(string name, Uri brokerUri, IActionLog log, IConsole console, ISecurityService securityService)
+            : base(name, brokerUri, brokerUri.Fragment, new RemoteCredentialsDecorator(brokerUri, securityService), log) {
+            _console = console;
+            _securityService = securityService;
 
-            _authority = new UriBuilder { Scheme = brokerUri.Scheme, Host = brokerUri.Host, Port = brokerUri.Port }.ToString();
             CreateHttpClient(brokerUri);
+            HttpClientHandler.ServerCertificateValidationCallback = ValidateCertificate;
         }
 
         public override string HandleUrl(string url, CancellationToken ct) {
@@ -44,27 +45,17 @@ namespace Microsoft.R.Host.Client.Host {
                 : await base.HandleHttpRequestExceptionAsync(exception);
         }
 
-        protected override void CreateHttpClient(Uri baseAddress) {
-            base.CreateHttpClient(baseAddress);
-            HttpClientHandler.ServerCertificateValidationCallback += ValidateCertificate;
-        }
-
         private bool ValidateCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) {
             if (sslPolicyErrors == SslPolicyErrors.None) {
                 return true;
             }
 
-            if ((sslPolicyErrors & SslPolicyErrors.RemoteCertificateNotAvailable) != 0) {
+            if (sslPolicyErrors.HasFlag(SslPolicyErrors.RemoteCertificateNotAvailable)) {
                 Log.WriteAsync(LogVerbosity.Minimal, MessageCategory.Error, Resources.Error_NoBrokerCertificate);
-                Callbacks.WriteConsoleEx(Resources.Error_NoBrokerCertificate, OutputType.Error, CancellationToken.None).DoNotWait();
-            } else if (Interlocked.CompareExchange(ref _certificateUIActive, 1, 0) == 0) {
+                _console.Write(Resources.Error_NoBrokerCertificate);
+            } else {
                 Log.WriteAsync(LogVerbosity.Minimal, MessageCategory.Warning, Resources.Trace_UntrustedCertificate.FormatInvariant(certificate.Subject)).DoNotWait();
-
-                var certificate2 = certificate as X509Certificate2;
-                Debug.Assert(certificate2 != null);
-                X509Certificate2UI.DisplayCertificate(certificate2, _applicationWindowHandle);
-                Interlocked.Exchange(ref _certificateUIActive, 0);
-                certificate.Reset();
+                _securityService.ValidateX509CertificateAsync(certificate, chain).GetAwaiter().GetResult();
             }
 
             return false;

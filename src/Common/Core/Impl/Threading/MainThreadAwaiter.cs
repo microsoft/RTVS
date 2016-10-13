@@ -5,9 +5,8 @@ using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using Microsoft.Common.Core.Threading;
 
-namespace Microsoft.Common.Wpf.Threading {
+namespace Microsoft.Common.Core.Threading {
     public struct MainThreadAwaiter : ICriticalNotifyCompletion {
         private readonly IMainThread _mainThread;
 

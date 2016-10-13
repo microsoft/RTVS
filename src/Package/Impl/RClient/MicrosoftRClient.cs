@@ -5,7 +5,6 @@ using System;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
-using Microsoft.R.Components.Extensions;
 using Microsoft.R.Interpreters;
 using Microsoft.Win32;
 

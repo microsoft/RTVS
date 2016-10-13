@@ -17,7 +17,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
     /// for testing or for submitting telemetry as a file rather than via
     /// VS telemetry Web service.
     /// </summary>
-    public sealed class StringTelemetryRecorder : ITelemetryRecorder, ITelemetryLog, IDisposable {
+    public sealed class StringTelemetryRecorder : ITelemetryRecorder, IDisposable {
         private StringBuilder _stringBuilder = new StringBuilder();
 
         #region ITelemetryRecorder

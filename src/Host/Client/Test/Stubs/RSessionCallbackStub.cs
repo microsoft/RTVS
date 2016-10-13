@@ -23,7 +23,9 @@ namespace Microsoft.R.Host.Client.Test.Stubs {
         public IList<Tuple<string, string, bool>> ShowFileCalls { get; } = new List<Tuple<string, string, bool>>();
         public IList<Tuple<string, byte[]>> SaveFileCalls { get; } = new List<Tuple<string, byte[]>>();
 
-        public Func<string, MessageButtons, Task<MessageButtons>> ShowMessageCallsHandler { get; set; } = (m, b) => Task.FromResult(MessageButtons.OK);
+        public Func<string, MessageButtons, Task<MessageButtons>> ShowMessageCallsHandler { get; set; } = 
+            (m, b) => Task.FromResult(b.HasFlag(MessageButtons.Yes) ? MessageButtons.Yes : MessageButtons.OK);
+
         public Func<string, int, CancellationToken, Task<string>> ReadUserInputHandler { get; set; } = (m, l, ct) => Task.FromResult("\n");
         public Func<Guid, CancellationToken, Task<LocatorResult>> LocatorHandler { get; set; } = (deviceId, ct) => Task.FromResult(LocatorResult.CreateNotClicked());
         public Func<Guid, CancellationToken, Task<PlotDeviceProperties>> PlotDeviceCreateHandler { get; set; } = (deviceId, ct) => Task.FromResult(PlotDeviceProperties.Default);
@@ -40,7 +42,7 @@ namespace Microsoft.R.Host.Client.Test.Stubs {
             return Task.CompletedTask;
         }
 
-        public Task<MessageButtons> ShowMessage(string message, MessageButtons buttons) {
+        public Task<MessageButtons> ShowMessageAsync(string message, MessageButtons buttons) {
             ShowMessageCalls.Add(new Tuple<string, MessageButtons>(message, buttons));
             return ShowMessageCallsHandler != null ? ShowMessageCallsHandler(message, buttons) : Task.FromResult(default(MessageButtons));
         }

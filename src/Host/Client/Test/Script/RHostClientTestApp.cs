@@ -33,7 +33,7 @@ namespace Microsoft.R.Host.Client.Test.Script {
             return Task.CompletedTask;
         }
 
-        public virtual Task<MessageButtons> ShowMessage(string message, MessageButtons buttons) {
+        public virtual Task<MessageButtons> ShowMessageAsync(string message, MessageButtons buttons) {
             return Task.FromResult(MessageButtons.OK);
         }
 

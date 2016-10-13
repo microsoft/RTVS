@@ -4,11 +4,15 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Core.Threading;
@@ -17,7 +21,7 @@ using Microsoft.R.Interpreters;
 
 namespace Microsoft.R.Host.Client.Session {
     public class RSessionProvider : IRSessionProvider {
-        private readonly IRSessionProviderCallback _callback;
+        private readonly IConsole _callback;
         private readonly ConcurrentDictionary<Guid, RSession> _sessions = new ConcurrentDictionary<Guid, RSession>();
         private readonly DisposeToken _disposeToken = DisposeToken.Create<RSessionProvider>();
         private readonly BinaryAsyncLock _brokerDisconnectedLock = new BinaryAsyncLock();
@@ -38,8 +42,8 @@ namespace Microsoft.R.Host.Client.Session {
         public event EventHandler BrokerChanged;
         public event EventHandler<BrokerStateChangedEventArgs> BrokerStateChanged;
 
-        public RSessionProvider(ICoreServices services, IRSessionProviderCallback callback = null) {
-            _callback = callback ?? new NullRSessionProviderCallback();
+        public RSessionProvider(ICoreServices services, IConsole callback = null) {
+            _callback = callback ?? new NullConsole();
             _brokerProxy = new BrokerClientProxy(_connectArwl);
             _services = services;
         }
@@ -120,6 +124,10 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         private async Task RSessionOnDisconnectedAsync() {
+            if (_disposeToken.IsDisposed) {
+                OnBrokerDisconnected();
+            }
+
             var token = await _brokerDisconnectedLock.WaitAsync();
             try {
                 if (!token.IsSet) {
@@ -152,7 +160,7 @@ namespace Microsoft.R.Host.Client.Session {
 
             // Create random name to avoid collision with actual broker client
             name = name + Guid.NewGuid().ToString("N");
-            var brokerClient = await CreateBrokerClientAsync(name, path);
+            var brokerClient = CreateBrokerClient(name, path);
             if (brokerClient == null) {
                 throw new ArgumentException(nameof(path));
             }
@@ -180,7 +188,7 @@ namespace Microsoft.R.Host.Client.Session {
         public async Task<bool> TrySwitchBrokerAsync(string name, string path = null, CancellationToken cancellationToken = default(CancellationToken)) {
             await TaskUtilities.SwitchToBackgroundThread();
 
-            var brokerClient = await CreateBrokerClientAsync(name, path);
+            var brokerClient = CreateBrokerClient(name, path);
             if (brokerClient == null) {
                 return false;
             }
@@ -225,7 +233,7 @@ namespace Microsoft.R.Host.Client.Session {
                 oldBroker.Dispose();
 
                 if (brokerClient.IsRemote) {
-                    _callback.WriteConsole(Environment.NewLine + Resources.Connected + Environment.NewLine);
+                    _callback.Write(Environment.NewLine + Resources.Connected + Environment.NewLine);
                     PrintBrokerInformation();
                 }
             } catch (Exception ex) {
@@ -284,7 +292,7 @@ namespace Microsoft.R.Host.Client.Session {
                 } catch (OperationCanceledException ex) when (!(ex is RHostDisconnectedException)) {
                     throw;
                 } catch (Exception ex) {
-                    _callback.WriteConsole(Resources.RSessionProvider_ConnectionFailed.FormatInvariant(ex.Message));
+                    _callback.Write(Resources.RSessionProvider_ConnectionFailed.FormatInvariant(ex.Message));
                     throw;
                 } finally {
                     foreach (var transaction in transactions) {
@@ -299,25 +307,25 @@ namespace Microsoft.R.Host.Client.Session {
         public void PrintBrokerInformation() {
             var a = _brokerProxy.AboutHost;
 
-            _callback.WriteConsole(Environment.NewLine + Resources.RServices_Information);
-            _callback.WriteConsole("\t" + Resources.Version.FormatInvariant(a.Version));
-            _callback.WriteConsole("\t" + Resources.OperatingSystem.FormatInvariant(a.OS.VersionString));
-            _callback.WriteConsole("\t" + Resources.PlatformBits.FormatInvariant(a.Is64BitOperatingSystem ? Resources.Bits64 : Resources.Bits32));
-            _callback.WriteConsole("\t" + Resources.ProcessBits.FormatInvariant(a.Is64BitProcess ? Resources.Bits64 : Resources.Bits32));
-            _callback.WriteConsole("\t" + Resources.ProcessorCount.FormatInvariant(a.ProcessorCount));
-            _callback.WriteConsole("\t" + Resources.TotalPhysicalMemory.FormatInvariant(a.TotalPhysicalMemory));
-            _callback.WriteConsole("\t" + Resources.FreePhysicalMemory.FormatInvariant(a.FreePhysicalMemory));
-            _callback.WriteConsole("\t" + Resources.TotalVirtualMemory.FormatInvariant(a.TotalVirtualMemory));
-            _callback.WriteConsole("\t" + Resources.FreeVirtualMemory.FormatInvariant(a.FreeVirtualMemory));
+            _callback.Write(Environment.NewLine + Resources.RServices_Information);
+            _callback.Write("\t" + Resources.Version.FormatInvariant(a.Version));
+            _callback.Write("\t" + Resources.OperatingSystem.FormatInvariant(a.OS.VersionString));
+            _callback.Write("\t" + Resources.PlatformBits.FormatInvariant(a.Is64BitOperatingSystem ? Resources.Bits64 : Resources.Bits32));
+            _callback.Write("\t" + Resources.ProcessBits.FormatInvariant(a.Is64BitProcess ? Resources.Bits64 : Resources.Bits32));
+            _callback.Write("\t" + Resources.ProcessorCount.FormatInvariant(a.ProcessorCount));
+            _callback.Write("\t" + Resources.TotalPhysicalMemory.FormatInvariant(a.TotalPhysicalMemory));
+            _callback.Write("\t" + Resources.FreePhysicalMemory.FormatInvariant(a.FreePhysicalMemory));
+            _callback.Write("\t" + Resources.TotalVirtualMemory.FormatInvariant(a.TotalVirtualMemory));
+            _callback.Write("\t" + Resources.FreeVirtualMemory.FormatInvariant(a.FreeVirtualMemory));
 
             // TODO: activate when we support switching between remote R interpreters in UI.
-            //_callback.WriteConsole(Resources.InstalledInterpreters);
+            //_callback.Write(Resources.InstalledInterpreters);
             foreach (var name in a.Interpreters) {
                 _services.Telemetry.ReportEvent(TelemetryArea.Configuration, "Remote Interpteter", name);
                 _services.Telemetry.ReportEvent(TelemetryArea.Configuration, "Remote OS", a.OS.VersionString);
                 _services.Telemetry.ReportEvent(TelemetryArea.Configuration, "Remote CPUs", a.ProcessorCount);
                 _services.Telemetry.ReportEvent(TelemetryArea.Configuration, "Remote RAM", a.TotalPhysicalMemory);
-                //_callback.WriteConsole("\t" + name);
+                //_callback.Write("\t" + name);
             }
         }
 
@@ -327,7 +335,7 @@ namespace Microsoft.R.Host.Client.Session {
             } catch (OperationCanceledException ex) when (!(ex is RHostDisconnectedException)) {
                 throw;
             } catch (Exception ex) {
-                _callback.WriteConsole(Resources.RSessionProvider_ConnectionFailed.FormatInvariant(ex.Message));
+                _callback.Write(Resources.RSessionProvider_ConnectionFailed.FormatInvariant(ex.Message));
                 throw;
             }
         }
@@ -337,12 +345,12 @@ namespace Microsoft.R.Host.Client.Session {
                 await TaskUtilities.WhenAllCancelOnFailure(transactions, (t, ct) => t.CompleteSwitchingBrokerAsync(ct), cancellationToken);
             } catch (OperationCanceledException ex) when (!(ex is RHostDisconnectedException)) {
             } catch (Exception ex) {
-                _callback.WriteConsole(Resources.RSessionProvider_ConnectionFailed.FormatInvariant(ex.Message));
+                _callback.Write(Resources.RSessionProvider_ConnectionFailed.FormatInvariant(ex.Message));
                 throw;
             }
         }
 
-        private async Task<IBrokerClient> CreateBrokerClientAsync(string name, string path) {
+        private IBrokerClient CreateBrokerClient(string name, string path) {
             path = path ?? new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath;
 
             Uri uri;
@@ -350,11 +358,11 @@ namespace Microsoft.R.Host.Client.Session {
                 return null;
             }
 
-            var windowHandle = await _callback.GetApplicationWindowHandleAsync();
             if (uri.IsFile) {
-                return new LocalBrokerClient(name, uri.LocalPath, _services, windowHandle) as IBrokerClient;
+                return new LocalBrokerClient(name, uri.LocalPath, _services);
             }
-            return new RemoteBrokerClient(name, uri, _services.Log, windowHandle);
+
+            return new RemoteBrokerClient(name, uri, _services.Log, _callback, _services.Security);
         }
 
         private class IsolatedRSessionEvaluation : IRSessionEvaluation {

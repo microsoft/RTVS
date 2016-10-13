@@ -7,11 +7,8 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Design;
 using System.Diagnostics;
-using System.IO;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Threading;
-using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Settings;
 using Microsoft.Common.Core.Shell;
@@ -23,7 +20,6 @@ using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Controller;
-using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.Settings;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -51,7 +47,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private static VsAppShell _instance;
         private static IApplicationShell _testShell;
 
-        private readonly ITelemetryService _telemetryService;
         private readonly IRSettings _settings;
         private readonly ICoreServices _coreServices;
 
@@ -64,7 +59,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             , ICoreServices coreServices
             , IApplicationConstants appConstants) {
 
-            _telemetryService = telemetryService;
             _coreServices = coreServices;
             AppConstants = appConstants;
             ProgressDialog = new VsProgressDialog(this);
@@ -72,8 +66,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
             _settings = settings;
             _settings.PropertyChanged += OnSettingsChanged;
-
-            _coreServices.CoreShell = this;
         }
 
         public static void EnsureInitialized() {
@@ -358,10 +350,14 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         #region
         public int ThreadId => MainThread.ManagedThreadId;
-        public void Post(Action action) => ThreadHelper.JoinableTaskFactory
-                    .SwitchToMainThreadAsync()
-                    .GetAwaiter()
-                    .OnCompleted(action);
+        public void Post(Action action) {
+            var awaiter = ThreadHelper.JoinableTaskFactory
+                .SwitchToMainThreadAsync()
+                .GetAwaiter();
+
+            awaiter.OnCompleted(action);
+        }
+
         #endregion
 
         public void Dispose() {

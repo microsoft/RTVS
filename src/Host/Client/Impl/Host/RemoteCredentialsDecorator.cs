@@ -3,8 +3,6 @@
 
 using System;
 using System.Net;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Disposables;
@@ -15,15 +13,15 @@ using static Microsoft.R.Host.Client.NativeMethods;
 
 namespace Microsoft.R.Host.Client.Host {
     internal class RemoteCredentialsDecorator : ICredentialsDecorator {
-        private readonly IntPtr _applicationWindowHandle;
+        private readonly ISecurityService _securityService;
         private readonly Credentials _credentials = new Credentials();
         private readonly AutoResetEvent _credentialsValidated = new AutoResetEvent(true);
         private readonly string _authority;
         private readonly AsyncReaderWriterLock _lock;
         private bool _credentialsAreValid;
 
-        public RemoteCredentialsDecorator(IntPtr applicationWindowHandle, Uri brokerUri) {
-            _applicationWindowHandle = applicationWindowHandle;
+        public RemoteCredentialsDecorator(Uri brokerUri, ISecurityService securityService) {
+            _securityService = securityService;
             _authority = new UriBuilder { Scheme = brokerUri.Scheme, Host = brokerUri.Host, Port = brokerUri.Port }.ToString();
             _lock = new AsyncReaderWriterLock();
             _credentialsAreValid = true;
@@ -39,8 +37,8 @@ namespace Microsoft.R.Host.Client.Host {
             // the first prompt should be validated and saved, and then the same credentials will be reused for the second session.
             var token = await _lock.WriterLockAsync(cancellationToken);
             try {
-                var showUI = !Volatile.Read(ref _credentialsAreValid);
-                SecurityServices.GetUserCredentials(_authority, showUI, _applicationWindowHandle, out credentials);
+                var invalidateStoredCredentials = !Volatile.Read(ref _credentialsAreValid);
+                credentials = await _securityService.GetUserCredentialsAsync(_authority, invalidateStoredCredentials);
             } catch (Exception) {
                 token.Dispose();
                 throw;
