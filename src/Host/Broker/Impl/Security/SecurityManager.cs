@@ -138,8 +138,6 @@ namespace Microsoft.R.Host.Broker.Security {
                 var claims = new[] {
                     //new Claim(ClaimTypes.Name, context.Username),
                     new Claim(Claims.RUser, ""),
-                    // TODO: figure out how to avoid keeping raw credentials around. 
-                    new Claim(Claims.Password, context.Password),
                     new Claim(Claims.RUserProfileDir, profilePath)
                 };
 

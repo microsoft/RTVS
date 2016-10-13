@@ -8,7 +8,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Common.Core.Security;
 using Microsoft.R.Host.Broker.Interpreters;
 using Microsoft.R.Host.Broker.Pipes;
 using Microsoft.R.Host.Broker.Security;
@@ -36,7 +35,6 @@ namespace Microsoft.R.Host.Broker.Sessions {
             }
 
             string profilePath = User.FindFirst(Claims.RUserProfileDir)?.Value;
-            var password = User.FindFirst(Claims.Password)?.Value.ToSecureString();
 
             Interpreter interp;
             if (!string.IsNullOrEmpty(request.InterpreterId)) {
@@ -49,7 +47,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
             }
 
             try {
-                var session = _sessionManager.CreateSession(User.Identity, id, interp, password, profilePath, request.CommandLineArguments);
+                var session = _sessionManager.CreateSession(User.Identity, id, interp, profilePath, request.CommandLineArguments);
                 return Task.FromResult<IActionResult>(new ObjectResult(session.Info));
             } catch (Exception ex) {
                 return Task.FromResult<IActionResult>(new ApiErrorResult(BrokerApiError.UnableToStartRHost, ex.Message));

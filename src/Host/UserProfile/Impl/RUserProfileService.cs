@@ -48,7 +48,7 @@ namespace Microsoft.R.Host.UserProfile {
         async Task CreateProfileWorkerAsync(CancellationToken ct) {
             while (!ct.IsCancellationRequested) {
                 PipeSecurity ps = new PipeSecurity();
-                SecurityIdentifier sid = new SecurityIdentifier(WellKnownSidType.WorldSid, null);
+                SecurityIdentifier sid = new SecurityIdentifier(WellKnownSidType.NetworkServiceSid, null);
                 PipeAccessRule par = new PipeAccessRule(sid, PipeAccessRights.ReadWrite, System.Security.AccessControl.AccessControlType.Allow);
                 ps.AddAccessRule(par);
                 using (NamedPipeServerStream server = new NamedPipeServerStream("Microsoft.R.Host.UserProfile.Creator{b101cc2d-156e-472e-8d98-b9d999a93c7a}", PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous, 1024, 1024, ps)) {
