@@ -11,9 +11,10 @@ using FluentAssertions;
 using Microsoft.Common.Core.OS;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.PackageManager;
-using Microsoft.R.Components.Test.Fakes.InteractiveWindow;
-using Microsoft.R.Host.Client.Session;
+using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.XUnit;
+using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -21,8 +22,6 @@ using Microsoft.VisualStudio.R.Package.Test.FakeFactories;
 using Microsoft.VisualStudio.R.Package.Test.Utility;
 using NSubstitute;
 using Xunit;
-using Microsoft.R.Host.Client;
-using Microsoft.R.Components.InteractiveWorkflow;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 #endif

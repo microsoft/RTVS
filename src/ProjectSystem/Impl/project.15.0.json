@@ -1,6 +1,7 @@
 ﻿{
   "dependencies": {
     "MicroBuild.Core": "0.2.0",
+    "Microsoft.Build": "15.1.262-preview5",
     "Microsoft.VisualStudio.ProjectSystem": "15.0.561-pre-g30afd8d890",
     "Microsoft.VisualStudio.SDK.EmbedInteropTypes": "14.1.2",
     "Microsoft.VisualStudio.Shell.Immutable.10.0": "10.0.30319",
