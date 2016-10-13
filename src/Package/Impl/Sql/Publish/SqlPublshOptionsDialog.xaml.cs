@@ -7,7 +7,7 @@ using System.Windows.Controls;
 using EnvDTE;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
-using Microsoft.R.Components.Extensions;
+using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;

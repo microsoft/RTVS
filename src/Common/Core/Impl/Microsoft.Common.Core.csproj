@@ -40,6 +40,7 @@
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
@@ -72,11 +73,13 @@
     <Compile Include="Net\WebSocketHelper.cs" />
     <Compile Include="OS\ErrorCodeConverter.cs" />
     <Compile Include="Security\Credentials.cs" />
-    <Compile Include="Security\SecurityServices.cs" />
+    <Compile Include="Security\ISecurityService.cs" />
+    <Compile Include="Security\SecurityService.cs" />
     <Compile Include="Security\SecurityUtilities.cs" />
     <Compile Include="Services\ICoreServices.cs" />
     <Compile Include="Services\CoreServices.cs" />
     <Compile Include="Settings\ISettingsStorage.cs" />
+    <Compile Include="Shell\CoreShellExtensions.cs" />
     <Compile Include="Shell\IApplicationConstants.cs" />
     <Compile Include="Shell\IFileDialog.cs" />
     <Compile Include="Shell\IProgressDialog.cs" />
@@ -141,6 +144,8 @@
     <Compile Include="Threading\IAsyncReaderWriterLockToken.cs" />
     <Compile Include="Threading\IMainThread.cs" />
     <Compile Include="Threading\IReentrancyTokenFactory.cs" />
+    <Compile Include="Threading\MainThreadAwaitable.cs" />
+    <Compile Include="Threading\MainThreadAwaiter.cs" />
     <Compile Include="Threading\ReentrancyToken.cs" />
     <Compile Include="Versions\Toolset.cs" />
   </ItemGroup>

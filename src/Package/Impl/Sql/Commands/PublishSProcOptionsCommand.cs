@@ -11,8 +11,8 @@ using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Sql.Publish;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Sql.Publish;
-using Microsoft.R.Components.Extensions;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;

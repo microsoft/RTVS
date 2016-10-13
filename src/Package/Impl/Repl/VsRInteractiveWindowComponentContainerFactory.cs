@@ -5,7 +5,6 @@ using System;
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Implementation;
 using Microsoft.R.Host.Client;

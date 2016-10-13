@@ -20,7 +20,7 @@ namespace Microsoft.R.Host.Client {
         /// <summary>
         /// Displays message with specified buttons in a host-specific UI
         /// </summary>
-        Task<MessageButtons> ShowMessage(string message, MessageButtons buttons);
+        Task<MessageButtons> ShowMessageAsync(string message, MessageButtons buttons);
 
         /// <summary>
         /// Displays R help URL in a browser or in the host provided window

@@ -35,32 +35,28 @@ namespace Microsoft.R.Host.Client.Host {
         private readonly ICredentialsDecorator _credentials;
 
         private AboutHost _aboutHost;
-        private IntPtr _applicationWindowHandle;
 
         protected DisposableBag DisposableBag { get; } = DisposableBag.Create<BrokerClient>();
         protected IActionLog Log { get; }
         protected WebRequestHandler HttpClientHandler { get; private set; }
         protected HttpClient HttpClient { get; private set; }
-        protected IRCallbacks Callbacks { get; private set; }
 
         public string Name { get; }
         public Uri Uri { get; }
         public bool IsRemote => !Uri.IsFile;
         public AboutHost AboutHost => _aboutHost ?? AboutHost.Empty;
 
-        protected BrokerClient(string name, Uri brokerUri, string interpreterId, ICredentialsDecorator credentials, IActionLog log, IntPtr applicationWindowHandle) {
+        protected BrokerClient(string name, Uri brokerUri, string interpreterId, ICredentialsDecorator credentials, IActionLog log) {
             Name = name;
             Uri = brokerUri;
             Log = log;
 
-            _applicationWindowHandle = applicationWindowHandle;
             _interpreterId = interpreterId;
             _credentials = credentials;
         }
 
-        protected virtual void CreateHttpClient(Uri baseAddress) {
-
-            HttpClientHandler = new WebRequestHandler() {
+        protected void CreateHttpClient(Uri baseAddress) {
+            HttpClientHandler = new WebRequestHandler {
                 PreAuthenticate = true,
                 Credentials = _credentials
             };
@@ -92,7 +88,6 @@ namespace Microsoft.R.Host.Client.Host {
             CancellationToken cancellationToken = default(CancellationToken), ReentrancyToken reentrancyToken = default(ReentrancyToken)) {
 
             DisposableBag.ThrowIfDisposed();
-            Callbacks = callbacks;
 
             await TaskUtilities.SwitchToBackgroundThread();
 

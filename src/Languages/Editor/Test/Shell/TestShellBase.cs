@@ -47,7 +47,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
         }
 
         public void DispatchOnUIThread(Action action) {
-            UIThreadHelper.Instance.Invoke(action);
+            UIThreadHelper.Instance.InvokeAsync(action).DoNotWait(); 
         }
 
         public void DoEvents() {

@@ -7,6 +7,7 @@ using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Logging.Implementation;
 using Microsoft.Common.Core.OS;
+using Microsoft.Common.Core.Security;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
 
@@ -21,6 +22,7 @@ namespace Microsoft.Common.Core.Services {
               IApplicationConstants appConstants
             , ITelemetryService telemetry
             , ILoggingPermissions permissions
+            , ISecurityService security
             , [Import(AllowDefault = true)] IActionLog log = null
             , [Import(AllowDefault = true)] IFileSystem fs = null
             , [Import(AllowDefault = true)] IRegistry registry = null
@@ -31,6 +33,7 @@ namespace Microsoft.Common.Core.Services {
             _log = log;
 
             Telemetry = telemetry;
+            Security = security;
             ProcessServices = ps ?? new ProcessServices();
             Registry = registry ?? new RegistryImpl();
             FileSystem = fs ?? new FileSystem();
@@ -45,10 +48,10 @@ namespace Microsoft.Common.Core.Services {
             }
         }
 
-        public ICoreShell CoreShell { get; set; }
         public IFileSystem FileSystem { get; } 
         public IProcessServices ProcessServices { get; }
         public IRegistry Registry { get; } 
+        public ISecurityService Security { get; }
         public ITelemetryService Telemetry { get; }
         public ILoggingServices LoggingServices { get; }
     }

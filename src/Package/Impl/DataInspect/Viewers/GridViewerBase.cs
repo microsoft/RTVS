@@ -4,7 +4,7 @@
 using System;
 using System.Threading.Tasks;
 using EnvDTE;
-using Microsoft.R.Components.Extensions;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.DataInspection;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;

@@ -4,7 +4,7 @@
 using System;
 using System.ComponentModel.Composition;
 using System.Windows;
-using Microsoft.R.Components.Extensions;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Search;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;

@@ -18,8 +18,10 @@ namespace Microsoft.Common.Core.Logging {
         private readonly BinaryAsyncLock _initializationLock = new BinaryAsyncLock();
 
         public void Dispose() {
-            foreach (var log in _logs) {
-                (log as IDisposable)?.Dispose();
+            if (_logs != null) {
+                foreach (var log in _logs) {
+                    (log as IDisposable)?.Dispose();
+                }
             }
         }
 

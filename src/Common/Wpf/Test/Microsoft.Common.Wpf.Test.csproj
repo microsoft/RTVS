@@ -52,7 +52,6 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Controls\WatermarkTest.cs" />
-    <Compile Include="Threading\MainThreadAwaitableTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="project.json" />

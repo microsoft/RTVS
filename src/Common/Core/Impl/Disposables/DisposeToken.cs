@@ -14,7 +14,7 @@ namespace Microsoft.Common.Core.Disposables {
             return new DisposeToken(Invariant($"{typeof(T).Name} instance is disposed"));
         }
 
-        public bool IsDisposed => _disposed == 0;
+        public bool IsDisposed => _disposed == 1;
 
         public DisposeToken(string message = null) {
             _message = message;

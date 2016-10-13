@@ -44,8 +44,6 @@
     <Compile Include="LambdaConverter\LambdaExtension.cs" />
     <Compile Include="LambdaConverter\LambdaProperties.cs" />
     <Compile Include="Selectors\TypeDataTemplateSelector.cs" />
-    <Compile Include="Threading\MainThreadAwaitable.cs" />
-    <Compile Include="Threading\MainThreadAwaiter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="project.json" />

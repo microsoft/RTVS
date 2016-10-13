@@ -35,7 +35,7 @@ namespace Microsoft.Languages.Editor.Test.Fakes.Shell {
         public ICompositionService CompositionService => _container;
 
         public void DispatchOnUIThread(Action action) {
-            UIThreadHelper.Instance.Invoke(action);
+            UIThreadHelper.Instance.InvokeAsync(action).DoNotWait();
         }
 
         public Thread MainThread => UIThreadHelper.Instance.Thread;
