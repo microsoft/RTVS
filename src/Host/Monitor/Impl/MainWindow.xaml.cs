@@ -4,6 +4,7 @@
 using System;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 using Microsoft.Common.Core;
 using Microsoft.Extensions.Logging;
 using Microsoft.R.Host.Monitor.Logging;
@@ -38,10 +39,10 @@ namespace Microsoft.R.Host.Monitor {
                     if (await CredentialManager.IsBrokerUserCredentialSavedAsync(_logger)) {
                         id = await BrokerManager.CreateOrAttachToBrokerInstanceAsync(_logger);
                     } else {
-                        SetStatusText(Monitor.Resources.Info_DidNotFindSavedCredentails);
+                        await SetErrorTextAsync(Monitor.Resources.Info_DidNotFindSavedCredentails);
                         var count = await CredentialManager.GetAndSaveCredentialsFromUserAsync(_logger);
                         if (count >= CredentialManager.MaxCredUIAttempts) {
-                            SetStatusText(Monitor.Resources.Info_TooManyLoginAttempts);
+                            await SetErrorTextAsync(Monitor.Resources.Info_TooManyLoginAttempts);
                         }
                     }
                 } else {
@@ -49,11 +50,11 @@ namespace Microsoft.R.Host.Monitor {
                 }
 
                 if(id!= 0) {
-                    SetStatusText($"Broker Process running ... {id}");
+                    await SetStatusTextAsync(Monitor.Resources.Status_BrokerStarted.FormatInvariant(id));
                 }
             } catch (Exception ex) when (!ex.IsCriticalException()) {
                 _logger?.LogError(Monitor.Resources.Error_StartUpFailed, ex.Message);
-                SetStatusText(ex.Message);
+                await SetErrorTextAsync(ex.Message);
             }
         }
         private void StartBrokerBtn_Click(object sender, RoutedEventArgs e) {
@@ -62,7 +63,7 @@ namespace Microsoft.R.Host.Monitor {
         }
         private void StopBrokerBtn_Click(object sender, RoutedEventArgs e) {
             BrokerManager.StopBrokerInstanceAsync(_logger).DoNotWait();
-            SetStatusText($"Broker Process Stopped.");
+            SetStatusTextAsync(Monitor.Resources.Status_BrokerStopped).Task.DoNotWait();
         }
 
         private async void AddOrChangeBrokerUserBtn_Click(object sender, RoutedEventArgs e) {
@@ -72,20 +73,28 @@ namespace Microsoft.R.Host.Monitor {
                 }
                 var count = await CredentialManager.GetAndSaveCredentialsFromUserAsync(_logger);
                 if(count >= CredentialManager.MaxCredUIAttempts) {
-                    SetStatusText(Monitor.Resources.Info_TooManyLoginAttempts);
+                    await SetErrorTextAsync(Monitor.Resources.Info_TooManyLoginAttempts);
                 }
             } catch (Exception ex) when (!ex.IsCriticalException()) {
                 _logger?.LogError(Monitor.Resources.Error_AddOrChangeUserFailed, ex.Message);
-                SetStatusText(ex.Message);
+                await SetErrorTextAsync(ex.Message);
             }
         }
         private void RemoveBrokerUserBtn_Click(object sender, RoutedEventArgs e) {
             CredentialManager.RemoveCredentials(_logger);
         }
 
-        public void SetStatusText(string message) {
-            Dispatcher.Invoke(() => {
+        public System.Windows.Threading.DispatcherOperation SetStatusTextAsync(string message) {
+            return Dispatcher.InvokeAsync(() => {
                 StatusDetailsTextBox.Text = message;
+                StatusDetailsTextBox.Foreground = Brushes.Green;
+            });
+        }
+
+        public System.Windows.Threading.DispatcherOperation SetErrorTextAsync(string message) {
+            return Dispatcher.InvokeAsync(() => {
+                StatusDetailsTextBox.Text = message;
+                StatusDetailsTextBox.Foreground = Brushes.Red;
             });
         }
 

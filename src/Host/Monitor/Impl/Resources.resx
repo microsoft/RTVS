@@ -118,82 +118,86 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Btn_AddOrChangeBrokerUser" xml:space="preserve">
-    <value>Change User</value>
+    <value>Change User Credentials...</value>
   </data>
   <data name="Btn_RemoveBrokerUser" xml:space="preserve">
-    <value>Remove User</value>
+    <value>Remove User Credentials</value>
   </data>
   <data name="Btn_StartBroker" xml:space="preserve">
-    <value>Start Broker</value>
+    <value>Start R Remote Services</value>
   </data>
   <data name="Btn_StopBroker" xml:space="preserve">
-    <value>Stop Broker</value>
+    <value>Stop R Remote Services</value>
   </data>
   <data name="Text_AddOrChangeBrokerUser" xml:space="preserve">
-    <value>Add or change the credentials which will be used to run R Host Broker.</value>
+    <value>Add or change credentials under which to run R Remote Services.</value>
   </data>
   <data name="Text_RemoveBrokerUser" xml:space="preserve">
-    <value>Removes the credentials used for R Host Broker.</value>
+    <value>Removes the credentials used for the R Remote Services.</value>
   </data>
   <data name="Text_RHostBrokerCredentials" xml:space="preserve">
-    <value>R Host Broker Credentials</value>
+    <value>R Remote Services Credentials</value>
   </data>
   <data name="Text_RHostBrokerCredentialsDetail" xml:space="preserve">
-    <value>The credentials entered below will be used to start the R Host Broker Process. If you choose to save the credentials monitor will automatically start the broker process.</value>
+    <value>The credentials entered below will be used to start the R Remote Services.
+
+If you choose to save the credentials monitor will automatically start the the R Remote Services process.</value>
   </data>
   <data name="Text_StartBroker" xml:space="preserve">
-    <value>Starts and monitors an instance of the R Host Broker.</value>
+    <value>Starts and monitors R Remote Services process.</value>
   </data>
   <data name="Text_StopBroker" xml:space="preserve">
-    <value>Stops the monitored R Host Broker instance.</value>
+    <value>Stops the monitored R Remote Services process.</value>
   </data>
   <data name="Error_CredUIFailedToLoad" xml:space="preserve">
-    <value>CredUIPromptForWindowsCredentials failed to load, with error: {0}</value>
+    <value>CredUIPromptForWindowsCredentials failed to load. Error: {0}</value>
   </data>
   <data name="Text_RHostBrokerCredentialsInvalidTryAgain" xml:space="preserve">
-    <value>The user could not be logged in on this machine, please try again. The credentials entered below will be used to start the R Host Broker Process. If you choose to save the credentials monitor will automatically start the broker process.</value>
+    <value>The user could not be logged in on this machine, please try again.
+
+The credentials entered below will be used to start the R Remote Services. If you choose to save the credentials monitor will automatically start the broker process.</value>
   </data>
   <data name="Text_UseDifferentBroker" xml:space="preserve">
-    <value>Use a different user to run the Broker.</value>
+    <value>Use different user account to run the R Remote Services.</value>
   </data>
   <data name="Info_DidNotFindSavedCredentails" xml:space="preserve">
-    <value>Broker is configured to run as a different user than the Monitor. Broker user credential were not found.</value>
+    <value>R Remote Services is configured to run as a different user than the Monitor. R Remote Services user credentials were not found.</value>
   </data>
   <data name="Error_CredentialData" xml:space="preserve">
-    <value>Failed to parse credential data with Win32 error {0}.</value>
+    <value>Failed to parse credentials data. Win32 error {0}.</value>
   </data>
   <data name="Error_UserNameParsing" xml:space="preserve">
     <value>Failed to parse user name with Win32 error {0}.</value>
   </data>
   <data name="Info_TooManyLoginAttempts" xml:space="preserve">
-    <value>too many attempts to add Broker user login credentials.</value>
+    <value>Too many attempts adding user login credentials.</value>
   </data>
   <data name="Error_AddOrChangeUserFailed" xml:space="preserve">
-    <value>Add or change user failed with exception: {0}</value>
+    <value>Add or change user credentials failed. Exception: {0}</value>
   </data>
   <data name="Error_AutoRestartFailed" xml:space="preserve">
-    <value>Auto restart Broker failed , exception: {0}</value>
+    <value>Auto restart failed , exception: {0}</value>
   </data>
   <data name="Error_CredentialUnpackingFailed" xml:space="preserve">
-    <value>User credential unpacking failed with Win32 error {0}.</value>
+    <value>User credential unpacking failed. Win32 error {0}.</value>
   </data>
   <data name="Error_CredRetreiveFailed" xml:space="preserve">
-    <value>Failed to retrieve credentials from credential manager, with Win32 error {0}.</value>
+    <value>Failed to retrieve credentials from Window Credential Manager. Win32 error {0}.</value>
   </data>
   <data name="Error_CredSaveFailed" xml:space="preserve">
-    <value>Credential save failed with Win32 error {0}.</value>
+    <value>Credentials save failed with Win32 error {0}.</value>
   </data>
   <data name="Error_LogOnAttemptFailed" xml:space="preserve">
     <value>Log on attempt failed, with Win32 error {0}.</value>
   </data>
   <data name="Error_StartUpFailed" xml:space="preserve">
-    <value>Startup failed with exception: {0}</value>
+    <value>R Remote Services startup failed with exception: {0}</value>
   </data>
   <data name="Error_StopBrokerFailed" xml:space="preserve">
-    <value>Stop Broker failed , exception: {0}</value>
+    <value>R Remote Services could not be stopped. Exception: {0}</value>
   </data>
   <data name="Info_BrokerAlreadyRunning" xml:space="preserve">
-    <value>Broker is already running, process id {0}.</value>
+    <value>R Remote Services is already running, process id {0}.</value>
   </data>
   <data name="Info_CredAttempt" xml:space="preserve">
     <value>Trying to acquire credentials, attempt {0}.</value>
@@ -217,9 +221,15 @@
     <value>Log on attempt succeeded.</value>
   </data>
   <data name="Info_NewBrokerInstanceStarted" xml:space="preserve">
-    <value>New Broker instance started, process id {0}.</value>
+    <value>New R Remote Services instance started, process id {0}.</value>
   </data>
   <data name="Info_RemovedCredentials" xml:space="preserve">
     <value>Removed credentials from credential manager.</value>
+  </data>
+  <data name="Status_BrokerStarted" xml:space="preserve">
+    <value>R Remote Services process started, process Id: {0}</value>
+  </data>
+  <data name="Status_BrokerStopped" xml:space="preserve">
+    <value>R Remote Services process stopped.</value>
   </data>
 </root>
