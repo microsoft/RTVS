@@ -20,5 +20,17 @@ namespace Microsoft.R.Host.Client.Test {
             string target = "<U+4E2D><U+570B><U+8A9E>";
             target.ConvertCharacterCodes().Should().Be("中國語");
         }
+
+        [CompositeTest]
+        [InlineData("\t\n", "\"\\t\\n\"")]
+        [InlineData("\\t\n", "\"\\\\t\\n\"")]
+        [InlineData("\n", "\"\\n\"")]
+        [InlineData("\\n", "\"\\\\n\"")]
+        public void EscapeCharacterTest(string source, string expectedLiteral) {
+            string actualLiteral = source.ToRStringLiteral();
+            actualLiteral.Should().Be(expectedLiteral);
+            string actualSource = actualLiteral.FromRStringLiteral();
+            actualSource.Should().Be(source);
+        }
     }
 }
