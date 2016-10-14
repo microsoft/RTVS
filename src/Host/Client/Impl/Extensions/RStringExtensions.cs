@@ -108,9 +108,9 @@ namespace Microsoft.R.Host.Client {
 
         public static string ProjectRelativePathToRemoteProjectPath(this string path, string remoteRoot, string projectName) {
             if (string.IsNullOrWhiteSpace(projectName)) {
-                return ($"{remoteRoot}/{path}")?.ToRPath();
+                return ($"{remoteRoot}/{path}")?.ToRPath().Replace("//", "/");
             } else {
-                return ($"{remoteRoot}/{projectName}/{path}")?.ToRPath();
+                return ($"{remoteRoot}/{projectName}/{path}")?.ToRPath().Replace("//", "/");
             }
         }
 

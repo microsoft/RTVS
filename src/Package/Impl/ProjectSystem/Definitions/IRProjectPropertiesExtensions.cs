@@ -9,7 +9,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         public static async Task<string> ToRRemotePathAsync(this IRProjectProperties properties, string projectRelativeFilePath) {
             string remotePath = await properties.GetRemoteProjectPathAsync();
             string projectName = properties.GetProjectName();
-            return (remotePath + projectName + "/" + projectRelativeFilePath).ToRPath();
+            return ($"{remotePath}/{projectName}/{projectRelativeFilePath}").ToRPath().Replace("//","/");
         }
     }
 }
