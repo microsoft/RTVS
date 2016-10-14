@@ -519,6 +519,6 @@ Are you sure you want to terminate R session?</value>
     <value>Secure</value>
   </data>
   <data name="UntrustedConnection" xml:space="preserve">
-    <value>Untrusted</value>
+    <value>[Warning: UNTRUSTED]</value>
   </data>
 </root>

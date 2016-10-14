@@ -1228,7 +1228,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Untrusted.
+        ///   Looks up a localized string similar to [Warning: UNTRUSTED].
         /// </summary>
         public static string UntrustedConnection {
             get {
