@@ -11,7 +11,7 @@
            Version="$(var.MsiVersion)"
            Manufacturer="Microsoft Corporation"
            UpgradeCode="{15DD7544-D406-4329-BAE3-61014399DF93}">
-
+    
     <Package InstallerVersion="350" Compressed="yes" InstallScope="perMachine" Id="*" Platform="x64" />
     <MajorUpgrade AllowDowngrades="no" RemoveFeatures="ALL"
                   Schedule="afterInstallInitialize"
@@ -19,6 +19,9 @@
 
     <MediaTemplate EmbedCab="yes" />
     <?include Feature.wxi ?>
+    <InstallExecuteSequence>
+      <ScheduleReboot After="InstallFinalize"/>
+    </InstallExecuteSequence>
   </Product>
 
   <Fragment>
@@ -42,7 +45,6 @@
             ServiceInterrogate="yes" ServiceChangeConfig="yes" ServiceEnumerateDependents="yes" ServiceQueryConfig="yes"
             ServiceQueryStatus="yes" ServiceUserDefinedControl="yes" />
       </ServiceInstall>
-      <ServiceControl Id="UserProfileServiceStart" Start="install" Remove="uninstall" Stop="both" Name="RUserProfileService" Wait="yes"/>
     </Component>
 
     <Component Id="MonitorAutoStart" Directory="INSTALLFOLDER" Guid="{3502EC99-A511-4EC0-9E57-9868362D478D}" Win64="yes">
