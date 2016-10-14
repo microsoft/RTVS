@@ -59,7 +59,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             var userConnections = CreateConnectionList();
             _userConnections = new ConcurrentDictionary<Uri, IConnection>(userConnections);
 
-            UpdateRecentConnections();
+            UpdateRecentConnections(save: false);
             CompleteInitializationAsync().DoNotWait();
         }
 
@@ -168,9 +168,11 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 .ToArray();
         }
 
-        private void UpdateRecentConnections() {
+        private void UpdateRecentConnections(bool save = true) {
             RecentConnections = new ReadOnlyCollection<IConnection>(_userConnections.Values.OrderByDescending(c => c.LastUsed).ToList());
-            SaveConnectionsToSettings();
+            if (save) {
+                SaveConnectionsToSettings();
+            }
             RecentConnectionsChanged?.Invoke(this, new EventArgs());
         }
 
