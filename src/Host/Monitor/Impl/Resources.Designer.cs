@@ -61,7 +61,7 @@ namespace Microsoft.R.Host.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Change User.
+        ///   Looks up a localized string similar to Change User Credentials....
         /// </summary>
         public static string Btn_AddOrChangeBrokerUser {
             get {
@@ -70,7 +70,7 @@ namespace Microsoft.R.Host.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Remove User.
+        ///   Looks up a localized string similar to Remove User Credentials.
         /// </summary>
         public static string Btn_RemoveBrokerUser {
             get {
@@ -79,7 +79,7 @@ namespace Microsoft.R.Host.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Start Broker.
+        ///   Looks up a localized string similar to Start R Remote Services.
         /// </summary>
         public static string Btn_StartBroker {
             get {
@@ -88,7 +88,7 @@ namespace Microsoft.R.Host.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Stop Broker.
+        ///   Looks up a localized string similar to Stop R Remote Services.
         /// </summary>
         public static string Btn_StopBroker {
             get {
@@ -97,7 +97,7 @@ namespace Microsoft.R.Host.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add or change user failed with exception: {0}.
+        ///   Looks up a localized string similar to Add or change user credentials failed. Exception: {0}.
         /// </summary>
         public static string Error_AddOrChangeUserFailed {
             get {
@@ -106,7 +106,7 @@ namespace Microsoft.R.Host.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Auto restart Broker failed , exception: {0}.
+        ///   Looks up a localized string similar to Auto restart failed , exception: {0}.
         /// </summary>
         public static string Error_AutoRestartFailed {
             get {
@@ -115,7 +115,7 @@ namespace Microsoft.R.Host.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to parse credential data with Win32 error {0}..
+        ///   Looks up a localized string similar to Failed to parse credentials data. Win32 error {0}..
         /// </summary>
         public static string Error_CredentialData {
             get {
@@ -124,7 +124,7 @@ namespace Microsoft.R.Host.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to User credential unpacking failed with Win32 error {0}..
+        ///   Looks up a localized string similar to User credential unpacking failed. Win32 error {0}..
         /// </summary>
         public static string Error_CredentialUnpackingFailed {
             get {
@@ -133,7 +133,7 @@ namespace Microsoft.R.Host.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to retrieve credentials from credential manager, with Win32 error {0}..
+        ///   Looks up a localized string similar to Failed to retrieve credentials from Window Credential Manager. Win32 error {0}..
         /// </summary>
         public static string Error_CredRetreiveFailed {
             get {
@@ -142,7 +142,7 @@ namespace Microsoft.R.Host.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Credential save failed with Win32 error {0}..
+        ///   Looks up a localized string similar to Credentials save failed with Win32 error {0}..
         /// </summary>
         public static string Error_CredSaveFailed {
             get {
@@ -151,7 +151,7 @@ namespace Microsoft.R.Host.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CredUIPromptForWindowsCredentials failed to load, with error: {0}.
+        ///   Looks up a localized string similar to CredUIPromptForWindowsCredentials failed to load. Error: {0}.
         /// </summary>
         public static string Error_CredUIFailedToLoad {
             get {
@@ -169,7 +169,7 @@ namespace Microsoft.R.Host.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Startup failed with exception: {0}.
+        ///   Looks up a localized string similar to R Remote Services startup failed with exception: {0}.
         /// </summary>
         public static string Error_StartUpFailed {
             get {
@@ -178,7 +178,7 @@ namespace Microsoft.R.Host.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Stop Broker failed , exception: {0}.
+        ///   Looks up a localized string similar to R Remote Services could not be stopped. Exception: {0}.
         /// </summary>
         public static string Error_StopBrokerFailed {
             get {
@@ -196,7 +196,7 @@ namespace Microsoft.R.Host.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Broker is already running, process id {0}..
+        ///   Looks up a localized string similar to R Remote Services is already running, process id {0}..
         /// </summary>
         public static string Info_BrokerAlreadyRunning {
             get {
@@ -259,7 +259,7 @@ namespace Microsoft.R.Host.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Broker is configured to run as a different user than the Monitor. Broker user credential were not found..
+        ///   Looks up a localized string similar to R Remote Services is configured to run as a different user than the Monitor. R Remote Services user credentials were not found..
         /// </summary>
         public static string Info_DidNotFindSavedCredentails {
             get {
@@ -277,7 +277,7 @@ namespace Microsoft.R.Host.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to New Broker instance started, process id {0}..
+        ///   Looks up a localized string similar to New R Remote Services instance started, process id {0}..
         /// </summary>
         public static string Info_NewBrokerInstanceStarted {
             get {
@@ -295,7 +295,7 @@ namespace Microsoft.R.Host.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to too many attempts to add Broker user login credentials..
+        ///   Looks up a localized string similar to Too many attempts adding user login credentials..
         /// </summary>
         public static string Info_TooManyLoginAttempts {
             get {
@@ -304,7 +304,25 @@ namespace Microsoft.R.Host.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add or change the credentials which will be used to run R Host Broker..
+        ///   Looks up a localized string similar to R Remote Services process started, process Id: {0}.
+        /// </summary>
+        public static string Status_BrokerStarted {
+            get {
+                return ResourceManager.GetString("Status_BrokerStarted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R Remote Services process stopped..
+        /// </summary>
+        public static string Status_BrokerStopped {
+            get {
+                return ResourceManager.GetString("Status_BrokerStopped", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add or change credentials under which to run R Remote Services..
         /// </summary>
         public static string Text_AddOrChangeBrokerUser {
             get {
@@ -313,7 +331,7 @@ namespace Microsoft.R.Host.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Removes the credentials used for R Host Broker..
+        ///   Looks up a localized string similar to Removes the credentials used for the R Remote Services..
         /// </summary>
         public static string Text_RemoveBrokerUser {
             get {
@@ -322,7 +340,7 @@ namespace Microsoft.R.Host.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R Host Broker Credentials.
+        ///   Looks up a localized string similar to R Remote Services Credentials.
         /// </summary>
         public static string Text_RHostBrokerCredentials {
             get {
@@ -331,7 +349,9 @@ namespace Microsoft.R.Host.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The credentials entered below will be used to start the R Host Broker Process. If you choose to save the credentials monitor will automatically start the broker process..
+        ///   Looks up a localized string similar to The credentials entered below will be used to start the R Remote Services.
+        ///
+        ///If you choose to save the credentials monitor will automatically start the the R Remote Services process..
         /// </summary>
         public static string Text_RHostBrokerCredentialsDetail {
             get {
@@ -340,7 +360,9 @@ namespace Microsoft.R.Host.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The user could not be logged in on this machine, please try again. The credentials entered below will be used to start the R Host Broker Process. If you choose to save the credentials monitor will automatically start the broker process..
+        ///   Looks up a localized string similar to The user could not be logged in on this machine, please try again.
+        ///
+        ///The credentials entered below will be used to start the R Remote Services. If you choose to save the credentials monitor will automatically start the broker process..
         /// </summary>
         public static string Text_RHostBrokerCredentialsInvalidTryAgain {
             get {
@@ -349,7 +371,7 @@ namespace Microsoft.R.Host.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Starts and monitors an instance of the R Host Broker..
+        ///   Looks up a localized string similar to Starts and monitors R Remote Services process..
         /// </summary>
         public static string Text_StartBroker {
             get {
@@ -358,7 +380,7 @@ namespace Microsoft.R.Host.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Stops the monitored R Host Broker instance..
+        ///   Looks up a localized string similar to Stops the monitored R Remote Services process..
         /// </summary>
         public static string Text_StopBroker {
             get {
@@ -367,7 +389,7 @@ namespace Microsoft.R.Host.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Use a different user to run the Broker..
+        ///   Looks up a localized string similar to Use different user account to run the R Remote Services..
         /// </summary>
         public static string Text_UseDifferentBroker {
             get {

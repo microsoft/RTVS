@@ -47,7 +47,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
 
         public void ShowContextMenu(CommandID commandId, int x, int y, object commandTaget = null) => LastShownContextMenu = commandId;
 
-        public MessageButtons ShowMessage(string message, MessageButtons buttons) {
+        public MessageButtons ShowMessage(string message, MessageButtons buttons, MessageType messageType = MessageType.Information) {
             LastShownMessage = message;
             if (buttons == MessageButtons.YesNo || buttons == MessageButtons.YesNoCancel) {
                 return MessageButtons.Yes;

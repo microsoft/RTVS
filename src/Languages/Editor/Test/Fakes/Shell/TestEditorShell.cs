@@ -52,7 +52,7 @@ namespace Microsoft.Languages.Editor.Test.Fakes.Shell {
             LastShownContextMenu = commandId;
         }
 
-        public MessageButtons ShowMessage(string message, MessageButtons buttons) {
+        public MessageButtons ShowMessage(string message, MessageButtons buttons, MessageType messageType = MessageType.Information) {
             LastShownMessage = message;
             return MessageButtons.OK;
         }

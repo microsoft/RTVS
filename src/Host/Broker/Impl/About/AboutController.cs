@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.R.Host.Broker.Interpreters;
 using Microsoft.R.Host.Broker.Security;
+using Microsoft.R.Host.Broker.Sessions;
 using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Broker.About {
@@ -16,9 +17,11 @@ namespace Microsoft.R.Host.Broker.About {
     [Route("/about")]
     public class AboutController : Controller {
         private readonly InterpreterManager _interpManager;
+        private readonly SessionManager _sessionManager;
 
-        public AboutController(InterpreterManager interpManager) {
+        public AboutController(InterpreterManager interpManager, SessionManager sessionManager) {
             _interpManager = interpManager;
+            _sessionManager = sessionManager;
         }
 
         [HttpGet]
@@ -31,6 +34,7 @@ namespace Microsoft.R.Host.Broker.About {
             a.Is64BitProcess = Environment.Is64BitProcess;
             a.ProcessorCount = Environment.ProcessorCount;
             a.WorkingSet = Environment.WorkingSet;
+            a.ConnectedUserCount = _sessionManager.GetUsers().Count();
 
             var query = new SelectQuery(@"Select * from Win32_OperatingSystem");
             using (var search = new ManagementObjectSearcher(query)) {

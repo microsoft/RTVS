@@ -403,7 +403,9 @@ namespace Microsoft.R.Host.Client {
             }
 
             try {
-                await _runTask;
+                if (_runTask.Status == TaskStatus.Running) {
+                    await _runTask;
+                }
             } catch (OperationCanceledException) {
                 // Expected during disconnect.
             } catch (MessageTransportException) {

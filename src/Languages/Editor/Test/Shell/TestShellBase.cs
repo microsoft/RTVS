@@ -27,7 +27,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
 
         public void ShowErrorMessage(string msg) { }
 
-        public MessageButtons ShowMessage(string message, MessageButtons buttons) {
+        public MessageButtons ShowMessage(string message, MessageButtons buttons, MessageType messageType = MessageType.Information) {
             return MessageButtons.OK;
         }
 

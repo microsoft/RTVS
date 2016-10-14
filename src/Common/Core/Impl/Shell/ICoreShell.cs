@@ -58,7 +58,7 @@ namespace Microsoft.Common.Core.Shell {
         /// <summary>
         /// Displays message with specified buttons in a host-specific UI
         /// </summary>
-        MessageButtons ShowMessage(string message, MessageButtons buttons);
+        MessageButtons ShowMessage(string message, MessageButtons buttons, MessageType messageType = MessageType.Information);
 
         /// <summary>
         /// If the specified file is opened as a document, and it has unsaved changes, save those changes.

@@ -57,9 +57,15 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         private void UpdateWindowTitle(bool isConnected) {
             if (isConnected) {
                 var broker = _sessionProvider.Broker;
-                Container.CaptionText = broker.IsRemote
-                    ? Invariant($"{Resources.ReplWindowName} - {broker.Name} ({broker.Uri.ToString().TrimTrailingSlash()})")
-                    : Invariant($"{Resources.ReplWindowName} - {broker.Name}");
+                string text;
+                if(broker.IsRemote) {
+                    var verified = broker.IsVerified ? Resources.SecureConnection : Resources.UntrustedConnection;
+                    var machineUrl = broker.Uri.ToString().TrimTrailingSlash();
+                    text = Invariant($"{Resources.ReplWindowName} - {broker.Name} ({machineUrl}) : {verified}");
+                } else {
+                    text = Invariant($"{Resources.ReplWindowName} - {broker.Name}");
+                }
+                Container.CaptionText = text;
             } else {
                 Container.CaptionText = Invariant($"{Resources.ReplWindowName} - {Resources.ConnectionManager_Disconnected}");
             }

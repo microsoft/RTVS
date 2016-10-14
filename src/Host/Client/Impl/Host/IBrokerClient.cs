@@ -13,6 +13,7 @@ namespace Microsoft.R.Host.Client.Host {
         bool IsRemote { get; }
         Uri Uri { get; }
         AboutHost AboutHost { get; }
+        bool IsVerified { get; }
 
         Task PingAsync();
         Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000,

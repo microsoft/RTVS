@@ -30,6 +30,7 @@ namespace Microsoft.R.Host.Client.Host {
         public bool IsRemote => _broker.IsRemote;
         public Uri Uri => _broker.Uri;
         public AboutHost AboutHost => _broker?.AboutHost;
+        public bool IsVerified => _broker.IsVerified;
 
         public Task PingAsync() => _broker.PingAsync();
 

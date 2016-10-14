@@ -515,4 +515,10 @@ Are you sure you want to terminate R session?</value>
   <data name="ReplWindowName" xml:space="preserve">
     <value>R Interactive</value>
   </data>
+  <data name="SecureConnection" xml:space="preserve">
+    <value>Secure</value>
+  </data>
+  <data name="UntrustedConnection" xml:space="preserve">
+    <value>[Warning: UNTRUSTED]</value>
+  </data>
 </root>

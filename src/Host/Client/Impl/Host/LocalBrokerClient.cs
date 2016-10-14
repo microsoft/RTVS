@@ -51,6 +51,8 @@ namespace Microsoft.R.Host.Client.Host {
             _rhostDirectory = rhostDirectory ?? Path.GetDirectoryName(typeof(RHost).Assembly.GetAssemblyPath());
             _rHome = rHome;
             _services = services;
+
+            IsVerified = true;
         }
 
         public override async Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000,

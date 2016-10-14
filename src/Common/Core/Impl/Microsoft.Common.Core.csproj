@@ -83,6 +83,7 @@
     <Compile Include="Shell\IApplicationConstants.cs" />
     <Compile Include="Shell\IFileDialog.cs" />
     <Compile Include="Shell\IProgressDialog.cs" />
+    <Compile Include="Shell\MessageType.cs" />
     <Compile Include="Shell\ProgressDialogData.cs" />
     <Compile Include="Tasks\TaskCompletionSourceEx.cs" />
     <Compile Include="Threading\AsyncManualResetEvent.cs" />

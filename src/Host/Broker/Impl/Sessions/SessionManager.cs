@@ -49,7 +49,13 @@ namespace Microsoft.R.Host.Broker.Sessions {
             lock (_sessions) {
                 List<Session> userSessions;
                 _sessions.TryGetValue(user.Name, out userSessions);
-                return userSessions ?? Enumerable.Empty<Session>();
+                return userSessions.ToArray() ?? Enumerable.Empty<Session>();
+            }
+        }
+
+        public IEnumerable<string> GetUsers() {
+            lock (_sessions) {
+                return _sessions.Keys.ToArray();
             }
         }
 

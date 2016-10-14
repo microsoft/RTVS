@@ -153,7 +153,11 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project {
         /// </summary>
         private ProjectRootElement CreateEmptyMsBuildProject(string projectFilePath, ProjectCollection collection) {
             using (XmlReader reader = EmptyProject.CreateReader()) {
+#if VS14
                 ProjectRootElement importFile = ProjectRootElement.Create(reader, collection);
+#else
+                ProjectRootElement importFile = ProjectRootElement.Create(reader, collection, preserveFormatting: false);
+#endif
                 importFile.FullPath = projectFilePath;
                 return importFile;
             }

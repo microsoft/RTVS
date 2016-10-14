@@ -76,7 +76,6 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Condition="'$(VisualStudioVersion)'=='14.0'" Include="Microsoft.Build, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Condition="'$(VisualStudioVersion)'=='15.0'" Include="$(LibDirectory)\15.0\Microsoft.Build.dll" />
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />

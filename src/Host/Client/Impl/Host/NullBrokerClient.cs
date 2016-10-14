@@ -17,6 +17,7 @@ namespace Microsoft.R.Host.Client.Host {
         public string Name { get; } = string.Empty;
         public bool IsRemote { get; } = true;
         public AboutHost AboutHost => AboutHost.Empty;
+        public bool IsVerified => true;
 
         public Task PingAsync() => Result;
 

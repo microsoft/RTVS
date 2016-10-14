@@ -202,4 +202,14 @@ Error: {0}</value>
   <data name="Trace_UntrustedCertificate" xml:space="preserve">
     <value>The supplied TLS certificate is not trusted: {0}</value>
   </data>
+  <data name="ConnectedUserCount" xml:space="preserve">
+    <value>Connected users: {0}</value>
+  </data>
+  <data name="CertificateSecurityWarning" xml:space="preserve">
+    <value>The security certificate presented by the Remote R Services does not allow us to prove that you are indeed connecting to the machine {0}.
+
+This should never happen with a production Remote R Services, so please check with your server administrator.
+
+If you using a test Remote R Server with a self-signed certificate and are certain about the remote machine security, click OK, otherwise cancel the connection.</value>
+  </data>
 </root>
