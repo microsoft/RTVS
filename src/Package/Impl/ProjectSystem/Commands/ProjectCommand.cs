@@ -9,11 +9,11 @@ using Microsoft.VisualStudio.ProjectSystem.Designers;
 #endif
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
-    internal abstract class DisabledProjectCommand : ICommandGroupHandler {
+    internal abstract class ProjectCommand : ICommandGroupHandler {
         private readonly int _id;
         private readonly Func<IImmutableSet<IProjectTree>, bool> _nodesCheck;
 
-        public DisabledProjectCommand(int id, Func<IImmutableSet<IProjectTree>, bool> nodesCheck = null) {
+        public ProjectCommand(int id, Func<IImmutableSet<IProjectTree>, bool> nodesCheck = null) {
             _id = id;
             _nodesCheck = nodesCheck ?? new Func<IImmutableSet<IProjectTree>, bool>(
                 (IImmutableSet<IProjectTree>  nodes) => {

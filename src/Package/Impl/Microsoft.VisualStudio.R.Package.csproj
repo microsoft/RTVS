@@ -201,7 +201,7 @@
     <Compile Include="Options\Attributes\SurveyNewsPolicyTypeConverter.cs" />
     <Compile Include="Options\R\Commands\SetupRemoteCommand.cs" />
     <Compile Include="Options\R\Commands\SurveyNewsCommand.cs" />
-    <Compile Include="ProjectSystem\Commands\DisabledProjectCommand.cs" />
+    <Compile Include="ProjectSystem\Commands\ProjectCommand.cs" />
     <Compile Include="ProjectSystem\Commands\IncludeInProjectCommand.cs" />
     <Compile Include="ProjectSystem\Commands\SendFileCommandBase.cs" />
     <Compile Include="ProjectSystem\Commands\SendToRemoteCommand.cs" />

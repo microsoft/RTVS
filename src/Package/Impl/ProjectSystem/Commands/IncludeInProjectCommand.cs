@@ -9,7 +9,7 @@ using Microsoft.VisualStudio.ProjectSystem.Utilities;
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     [ExportCommandGroup("1496A755-94DE-11D0-8C3F-00C04FC2AAE2")]
     [AppliesTo(ProjectConstants.RtvsProjectCapability)]
-    internal sealed class IncludeInProjectCommand : DisabledProjectCommand {
+    internal sealed class IncludeInProjectCommand : ProjectCommand {
         public IncludeInProjectCommand(): base((int)VSConstants.VSStd2KCmdID.INCLUDEINPROJECT) { }
     }
 }
