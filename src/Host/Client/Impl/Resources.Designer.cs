@@ -24,7 +24,6 @@ namespace Microsoft.R.Host.Client {
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
         
-
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
@@ -76,6 +75,19 @@ namespace Microsoft.R.Host.Client {
         internal static string Bits64 {
             get {
                 return ResourceManager.GetString("Bits64", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The security certificate presented by the Remote R Services does not allow us to prove that you are indeed connecting to the machine {0}.
+        ///
+        ///This should never happen with a production Remote R Services, so please check with your server administrator.
+        ///
+        ///If you using a test Remote R Server with a self-signed certificate and are certain about the remote machine security, click OK, otherwise cancel the connection..
+        /// </summary>
+        internal static string CertificateSecurityWarning {
+            get {
+                return ResourceManager.GetString("CertificateSecurityWarning", resourceCulture);
             }
         }
         

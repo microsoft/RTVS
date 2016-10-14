@@ -1192,6 +1192,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Secure.
+        /// </summary>
+        public static string SecureConnection {
+            get {
+                return ResourceManager.GetString("SecureConnection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to # File content was generated on {0}..
         /// </summary>
         public static string SettingsFileGeneratedStamp {
@@ -1215,6 +1224,15 @@ namespace Microsoft.R.Components {
         public static string Uninstall {
             get {
                 return ResourceManager.GetString("Uninstall", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Untrusted.
+        /// </summary>
+        public static string UntrustedConnection {
+            get {
+                return ResourceManager.GetString("UntrustedConnection", resourceCulture);
             }
         }
         

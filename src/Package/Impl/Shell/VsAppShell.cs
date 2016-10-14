@@ -77,7 +77,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
 
         private void OnSettingsChanged(object sender, PropertyChangedEventArgs e) {
-            if(e.PropertyName == nameof(IRSettings.LogVerbosity)) {
+            if (e.PropertyName == nameof(IRSettings.LogVerbosity)) {
                 // Only set it once per session
                 _settings.PropertyChanged -= OnSettingsChanged;
                 _coreServices.LoggingServices.Permissions.CurrentVerbosity = _settings.LogVerbosity;
@@ -242,12 +242,24 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// <summary>
         /// Displays question in a host-specific UI
         /// </summary>
-        public MessageButtons ShowMessage(string message, MessageButtons buttons) {
+        public MessageButtons ShowMessage(string message, MessageButtons buttons, MessageType messageType = MessageType.Information) {
             var shell = GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
             int result;
 
             var oleButtons = GetOleButtonFlags(buttons);
-            var oleIcon = oleButtons == OLEMSGBUTTON.OLEMSGBUTTON_OK ? OLEMSGICON.OLEMSGICON_WARNING : OLEMSGICON.OLEMSGICON_QUERY;
+            OLEMSGICON oleIcon;
+
+            switch (messageType) {
+                case MessageType.Information:
+                    oleIcon = buttons == MessageButtons.OK ? OLEMSGICON.OLEMSGICON_INFO : OLEMSGICON.OLEMSGICON_QUERY;
+                    break;
+                case MessageType.Warning:
+                    oleIcon = OLEMSGICON.OLEMSGICON_WARNING;
+                    break;
+                default:
+                    oleIcon = OLEMSGICON.OLEMSGICON_CRITICAL;
+                    break;
+            }
 
             shell.ShowMessageBox(0, Guid.Empty, null, message, null, 0,
                 oleButtons, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, oleIcon, 0, out result);

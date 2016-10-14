@@ -4,15 +4,11 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Net.Security;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
-using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Core.Threading;
@@ -362,7 +358,7 @@ namespace Microsoft.R.Host.Client.Session {
                 return new LocalBrokerClient(name, uri.LocalPath, _services);
             }
 
-            return new RemoteBrokerClient(name, uri, _services.Log, _callback, _services.Security);
+            return new RemoteBrokerClient(name, uri, _services, _callback);
         }
 
         private class IsolatedRSessionEvaluation : IRSessionEvaluation {

@@ -45,6 +45,7 @@ namespace Microsoft.R.Host.Client.Host {
         public Uri Uri { get; }
         public bool IsRemote => !Uri.IsFile;
         public AboutHost AboutHost => _aboutHost ?? AboutHost.Empty;
+        public bool IsVerified { get; protected set; }
 
         protected BrokerClient(string name, Uri brokerUri, string interpreterId, ICredentialsDecorator credentials, IActionLog log) {
             Name = name;

@@ -61,12 +61,17 @@ namespace Microsoft.Common.Core.Security {
             return credentials;
         }
 
-        public async Task ValidateX509CertificateAsync(X509Certificate certificate, X509Chain chain) {
+        public async Task<bool> ValidateX509CertificateAsync(X509Certificate certificate, string message) {
             var certificate2 = certificate as X509Certificate2;
             Debug.Assert(certificate2 != null);
-            await _coreShellLazy.Value.SwitchToMainThreadAsync();
-            X509Certificate2UI.DisplayCertificate(certificate2, _coreShellLazy.Value.AppConstants.ApplicationWindowHandle);
-            certificate.Reset();
+            if (certificate2 == null || !certificate2.Verify()) {
+                await _coreShellLazy.Value.SwitchToMainThreadAsync();
+                if (_coreShellLazy.Value.ShowMessage(message, MessageButtons.OKCancel, MessageType.Warning) == MessageButtons.OK) {
+                    certificate2.Reset();
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

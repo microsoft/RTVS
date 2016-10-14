@@ -7,6 +7,6 @@ using System.Threading.Tasks;
 namespace Microsoft.Common.Core.Security {
     public interface ISecurityService {
         Task<Credentials> GetUserCredentialsAsync(string authority, bool invalidateStoredCredentials);
-        Task ValidateX509CertificateAsync(X509Certificate certificate, X509Chain chain);
+        Task<bool> ValidateX509CertificateAsync(X509Certificate certificate, string message);
     }
 }
