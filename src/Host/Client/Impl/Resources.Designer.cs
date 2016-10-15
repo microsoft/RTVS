@@ -166,6 +166,53 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The following exception occurred during initialization of R session, and the session has been terminated:
+        ///
+        ///{0}.
+        /// </summary>
+        internal static string Error_SessionInitialization {
+            get {
+                return ResourceManager.GetString("Error_SessionInitialization", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to enable workspace auto-saving: {0}.
+        /// </summary>
+        internal static string Error_SessionInitializationAutosave {
+            get {
+                return ResourceManager.GetString("Error_SessionInitializationAutosave", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to set R locale to codepage {0}: {1}.
+        /// </summary>
+        internal static string Error_SessionInitializationCodePage {
+            get {
+                return ResourceManager.GetString("Error_SessionInitializationCodePage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to set CRAN mirror to {0}: {1}.
+        /// </summary>
+        internal static string Error_SessionInitializationMirror {
+            get {
+                return ResourceManager.GetString("Error_SessionInitializationMirror", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to set options(): {0}.
+        /// </summary>
+        internal static string Error_SessionInitializationOptions {
+            get {
+                return ResourceManager.GetString("Error_SessionInitializationOptions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R broker process did not start:  {0}.
         /// </summary>
         internal static string Error_UnableToStartBrokerException {
