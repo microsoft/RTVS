@@ -180,8 +180,14 @@ namespace Microsoft.R.Editor.Outline {
                 }
 
                 if (end > startLine.Start) {
-                    var range = TextRange.FromBounds(startLine.Start, end);
                     ranges.Add(sections[i]);
+
+                    // Trim trailing whitespace in user-defined regions
+                    var range = TextRange.FromBounds(startLine.Start, end);
+                    text = snapshot.GetText(new Span(range.Start, range.Length));
+                    var trimBy = text.Length - text.TrimEnd().Length;
+                    range = TextRange.FromBounds(range.Start, range.End - trimBy);
+
                     context.Regions.Add(new ROutlineRegion(EditorDocument.TextBuffer, range, displayText));
                 }
             }
