@@ -484,5 +484,17 @@ CloseSquareBracketExpected AfterToken [14...15)
 ";
             ParserTest.VerifyParse(expected, "x[a()]");
         }
+
+        [Test]
+        [Category.R.Parser]
+        public void Indexer20() {
+            string expected =
+@"GlobalScope  [Global]
+
+RightOperandExpected AfterToken [3...4)
+RightOperandExpected Token [4...5)
+";
+            ParserTest.VerifyParse(expected, "[][][]");
+        }
     }
 }

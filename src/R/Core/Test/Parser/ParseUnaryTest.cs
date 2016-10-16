@@ -144,5 +144,21 @@ namespace Microsoft.R.Core.Test.Parser {
 
             ParserTest.VerifyParse(expected, content);
         }
+
+        [Test]
+        [Category.R.Parser]
+        public void MissingOperand() {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [a]
+        Expression  [a]
+            Variable  [a]
+
+RightOperandExpected Token [6...7)
+";
+            string content = "a - ---";
+
+            ParserTest.VerifyParse(expected, content);
+        }
     }
 }
