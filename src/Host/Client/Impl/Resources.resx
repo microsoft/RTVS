@@ -212,6 +212,23 @@ This should never happen with a production Remote R Services, so please check wi
 
 If you using a test Remote R Server with a self-signed certificate and are certain about the remote machine security, click OK, otherwise cancel the connection.</value>
   </data>
+  <data name="Error_SessionInitialization" xml:space="preserve">
+    <value>The following exception occurred during initialization of R session, and the session has been terminated:
+
+{0}</value>
+  </data>
+  <data name="Error_SessionInitializationAutosave" xml:space="preserve">
+    <value>Failed to enable workspace auto-saving: {0}</value>
+  </data>
+  <data name="Error_SessionInitializationCodePage" xml:space="preserve">
+    <value>Failed to set R locale to codepage {0}: {1}</value>
+  </data>
+  <data name="Error_SessionInitializationMirror" xml:space="preserve">
+    <value>Failed to set CRAN mirror to {0}: {1}</value>
+  </data>
+  <data name="Error_SessionInitializationOptions" xml:space="preserve">
+    <value>Failed to set options(): {0}</value>
+  </data>
   <data name="AbortRDataAutosave" xml:space="preserve">
     <value>Previous R session terminated unexpectedly, and its global workspace is currently being saved.
 Do you want to abort this operation and start current session immidiately?</value>
