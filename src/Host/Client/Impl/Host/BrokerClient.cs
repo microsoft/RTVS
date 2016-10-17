@@ -87,24 +87,24 @@ namespace Microsoft.R.Host.Client.Host {
             }
         }
 
-        public virtual async Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, bool preserveSessionData = false, CancellationToken cancellationToken = default(CancellationToken), ReentrancyToken reentrancyToken = default(ReentrancyToken)) {
+        public virtual async Task<RHost> ConnectAsync(BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken), ReentrancyToken reentrancyToken = default(ReentrancyToken)) {
             DisposableBag.ThrowIfDisposed();
             await TaskUtilities.SwitchToBackgroundThread();
 
             try {
-                var sessionExists = preserveSessionData && await IsSessionRunningAsync(name, cancellationToken);
+                var sessionExists = connectionInfo.PreserveSessionData && await IsSessionRunningAsync(connectionInfo.Name, cancellationToken);
                 if (sessionExists) {
                     var terminateRDataSave = await _console.PromptYesNoAsync(Resources.AbortRDataAutosave);
                     if (!terminateRDataSave) {
-                        while (await IsSessionRunningAsync(name, cancellationToken)) {
+                        while (await IsSessionRunningAsync(connectionInfo.Name, cancellationToken)) {
                             await Task.Delay(500, cancellationToken);
                         }
                     }
                 }
 
-                await CreateBrokerSessionAsync(name, rCommandLineArguments, cancellationToken);
-                var webSocket = await ConnectToBrokerAsync(name, cancellationToken);
-                var host = CreateRHost(name, callbacks, webSocket);
+                await CreateBrokerSessionAsync(connectionInfo.Name, connectionInfo.RCommandLineArguments, cancellationToken);
+                var webSocket = await ConnectToBrokerAsync(connectionInfo.Name, cancellationToken);
+                var host = CreateRHost(connectionInfo.Name, connectionInfo.Callbacks, webSocket);
                 await GetHostInformationAsync(cancellationToken);
                 return host;
             } catch (HttpRequestException ex) {
@@ -165,7 +165,6 @@ namespace Microsoft.R.Host.Client.Host {
                         return await wsClient.ConnectAsync(request, cancellationToken);
                     } catch (UnauthorizedAccessException) {
                         _credentials.InvalidateCredentials();
-                        continue;
                     } catch (Exception ex) when (ex is InvalidOperationException) {
                         throw new RHostDisconnectedException(Resources.HttpErrorCreatingSession.FormatInvariant(ex.Message), ex);
                     }

@@ -169,9 +169,9 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         private static async Task TestBrokerConnectionWithRHost(IBrokerClient brokerClient, CancellationToken cancellationToken, ReentrancyToken reentrancyToken) {
-
             var callbacks = new NullRCallbacks();
-            var rhost = await brokerClient.ConnectAsync(nameof(TestBrokerConnectionAsync), callbacks, cancellationToken: cancellationToken, reentrancyToken: reentrancyToken);
+            var connectionInfo = new BrokerConnectionInfo(nameof(TestBrokerConnectionAsync), callbacks);
+            var rhost = await brokerClient.ConnectAsync(connectionInfo, cancellationToken, reentrancyToken);
             try {
                 var rhostRunTask = rhost.Run(cancellationToken);
                 callbacks.SetReadConsoleInput("q()\n");

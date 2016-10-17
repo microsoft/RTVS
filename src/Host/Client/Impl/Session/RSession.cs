@@ -234,7 +234,8 @@ namespace Microsoft.R.Host.Client.Session {
             _startupInfo = startupInfo;
             RHost host;
             try {
-                host = await BrokerClient.ConnectAsync(startupInfo.Name, this, startupInfo.RHostCommandLineArguments, timeout);
+                var connectionInfo = new BrokerConnectionInfo(startupInfo.Name, this, startupInfo.RHostCommandLineArguments, timeout);
+                host = await BrokerClient.ConnectAsync(connectionInfo);
             } catch (OperationCanceledException ex) {
                 _initializationTcs.TrySetCanceled(ex);
                 lockToken.Reset();
@@ -708,7 +709,8 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
                 var startupInfo = _session._startupInfo;
                 if (startupInfo != null) {
                     // host requires _startupInfo, so proceed only if session was started at least once
-                    _hostToSwitch = await _session.BrokerClient.ConnectAsync(startupInfo.Name, _session, startupInfo.RHostCommandLineArguments, cancellationToken: cancellationToken, reentrancyToken: reentrancyToken);
+                    var connectionInfo = new BrokerConnectionInfo(startupInfo.Name, _session, startupInfo.RHostCommandLineArguments);
+                    _hostToSwitch = await _session.BrokerClient.ConnectAsync(connectionInfo, cancellationToken, reentrancyToken);
                 }
             }
 
@@ -784,8 +786,8 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
                     await _session._hostRunTask;
                 }
 
-                host = await _session.BrokerClient.ConnectAsync(_session._startupInfo.Name, _session, _session._startupInfo.RHostCommandLineArguments,
-                    cancellationToken: cancellationToken, reentrancyToken: reentrancyToken);
+                var connectionInfo = new BrokerConnectionInfo(_session._startupInfo.Name, _session, _session._startupInfo.RHostCommandLineArguments);
+                host = await _session.BrokerClient.ConnectAsync(connectionInfo, cancellationToken, reentrancyToken);
 
                 await _session.StartHostAsyncBackground(host, _lockToken, cancellationToken);
             }

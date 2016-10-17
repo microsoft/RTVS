@@ -54,9 +54,9 @@ namespace Microsoft.R.Host.Client.Host {
             IsVerified = true;
         }
 
-        public override async Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, bool preserveSessionData = false, CancellationToken cancellationToken = default(CancellationToken), ReentrancyToken reentrancyToken = default(ReentrancyToken)) {
+        public override async Task<RHost> ConnectAsync(BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken), ReentrancyToken reentrancyToken = default(ReentrancyToken)) {
             await EnsureBrokerStartedAsync();
-            return await base.ConnectAsync(name, callbacks, rCommandLineArguments, timeout, preserveSessionData, cancellationToken, reentrancyToken);
+            return await base.ConnectAsync(connectionInfo, cancellationToken, reentrancyToken);
         }
 
         private async Task EnsureBrokerStartedAsync() {
