@@ -237,4 +237,10 @@
   <data name="Trace_UserProfileDirectory" xml:space="preserve">
     <value>User {0} profile directory: {1}</value>
   </data>
+  <data name="Text_ServiceDescription" xml:space="preserve">
+    <value>Creates and manages R Host sessions.</value>
+  </data>
+  <data name="Text_ServiceDisplayName" xml:space="preserve">
+    <value>R Host Broker Service</value>
+  </data>
 </root>
