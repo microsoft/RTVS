@@ -313,12 +313,13 @@ namespace Microsoft.R.Host.Client.Session {
                     return;
                 }
             }
-
-            // If nothing worked, then just disconnect.
-            await host?.DisconnectAsync();
-            if (hostRunTask.Status == TaskStatus.Running) {
-                await hostRunTask;
+            
+            if (host != null) {
+                // If nothing worked, then just disconnect.
+                await host.DisconnectAsync();
             }
+
+            await hostRunTask;
         }
 
         public IDisposable DisableMutatedOnReadConsole() {
@@ -749,7 +750,7 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
                 }
                 host?.Dispose();
 
-                if (hostRunTask != null && hostRunTask.Status == TaskStatus.Running) {
+                if (hostRunTask != null) {
                     await hostRunTask;
                 }
 
