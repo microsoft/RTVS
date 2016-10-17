@@ -358,7 +358,7 @@ namespace Microsoft.R.Host.Client.Session {
                 return new LocalBrokerClient(name, uri.LocalPath, _services, _console);
             }
 
-            return new RemoteBrokerClient(name, uri, _services.Log, _console, _services.Security);
+            return new RemoteBrokerClient(name, uri, _services, _console);
         }
 
         private class IsolatedRSessionEvaluation : IRSessionEvaluation {
