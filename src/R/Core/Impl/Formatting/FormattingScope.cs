@@ -10,7 +10,9 @@ using Microsoft.R.Core.Tokens;
 
 namespace Microsoft.R.Core.Formatting {
     /// <summary>
-    /// Settings for formatting of { } scope.
+    /// Settings for formatting of { } scope. Scope is created when formatter
+    /// encounters one of the scope-defining statements such as if() or function()
+    /// with or without explicit scope or { }.
     /// </summary>
     internal sealed class FormattingScope : IDisposable {
         private readonly RFormatOptions _options;
@@ -19,7 +21,26 @@ namespace Microsoft.R.Core.Formatting {
 
         public int CloseBracePosition { get; private set; } = -1;
 
+        /// <summary>
+        /// Controls suppression of line break insertion. Used in formatting
+        /// constructs like single-line 'if(...) { } else { }`
+        /// <seealso cref="RFormatter.CloseFormattingScope"/>
+        /// </summary>
         public int SuppressLineBreakCount { get; set; }
+
+        /// <summary>
+        /// Defines if indentation should be based on user supplied indent
+        /// or if it should be calculated automatically by scope nesting level.
+        /// Set by formatter when it encounters construct that should be indented
+        /// as user specified such as scope-less functions: 
+        ///     x &lt;- function()
+        ///         return 1;
+        /// or
+        ///     x &lt;- 
+        ///         if(...)
+        ///             return 1;
+        /// </summary>
+        public int UserIndent { get; set; }
 
         public FormattingScope() { }
 
