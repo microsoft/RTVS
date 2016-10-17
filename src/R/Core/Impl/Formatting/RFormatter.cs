@@ -31,15 +31,6 @@ namespace Microsoft.R.Core.Formatting {
             set { _formattingScopes.Peek().SuppressLineBreakCount = value; }
         }
 
-        private int UserIndent {
-            get { return _formattingScopes.Peek().UserIndent; }
-            set {
-                if (_formattingScopes.Peek().UserIndent == 0) {
-                    _formattingScopes.Peek().UserIndent = value;
-                }
-            }
-        }
-
         public RFormatter() :
             this(new RFormatOptions()) {
         }
@@ -659,8 +650,6 @@ namespace Microsoft.R.Core.Formatting {
             int start = _tokens.Position > 0 ? _tokens.PreviousToken.End : 0;
             int end = _tokens.IsEndOfStream() ? _textProvider.Length : _tokens.CurrentToken.Start;
 
-            preserveUserIndent = UserIndent > 0;
-
             string text = _textProvider.GetText(TextRange.FromBounds(start, end));
             if (!preserveUserIndent && string.IsNullOrWhiteSpace(text)) {
                 // Append any user-entered whitespace. We preserve line breaks but trim 
@@ -712,11 +701,6 @@ namespace Microsoft.R.Core.Formatting {
                     if (lastLineBreakIndex >= 0) {
                         text = text.Substring(lastLineBreakIndex + 1);
                         int textIndentInSpaces = IndentBuilder.TextIndentInSpaces(text, _options.TabSize);
-                        if (UserIndent == 0) {
-                            UserIndent = textIndentInSpaces;
-                        } else {
-                            textIndentInSpaces += UserIndent;
-                        }
                         text = IndentBuilder.GetIndentString(textIndentInSpaces, _indentBuilder.IndentType, _indentBuilder.TabSize);
                         _tb.AppendPreformattedText(text);
                     }
