@@ -7,6 +7,7 @@ using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Security;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Tasks;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Core.Test.Telemetry;
 using NSubstitute;
@@ -19,6 +20,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
                 Substitute.For<ITelemetryService>(),
                 null,
                 Substitute.For<ISecurityService>(),
+                Substitute.For<ITaskService>(),
                 Substitute.For<IColorService>(),
                 Substitute.For<IActionLog>(),
                 fs ?? Substitute.For<IFileSystem>(),
@@ -32,6 +34,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
                 new TelemetryTestService(),
                 null,
                 Substitute.For<ISecurityService>(),
+                new TestTaskService(),
                 Substitute.For<IColorService>(),
                 Substitute.For<IActionLog>(),
                 new FileSystem(),

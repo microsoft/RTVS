@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
-using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.Help;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Settings;
@@ -64,23 +63,19 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         /// Displays R plot in the host app-provided window
         /// </summary>
         public async Task Plot(PlotMessage plot, CancellationToken ct) {
-            await _coreShell.SwitchToMainThreadAsync();
-            await _workflow.Plots.LoadPlotAsync(plot);
+            await _workflow.Plots.LoadPlotAsync(plot, ct);
         }
 
         public async Task<LocatorResult> Locator(Guid deviceId, CancellationToken ct) {
-            await _coreShell.SwitchToMainThreadAsync();
             return await _workflow.Plots.StartLocatorModeAsync(deviceId, ct);
         }
 
         public async Task<PlotDeviceProperties> PlotDeviceCreate(Guid deviceId, CancellationToken ct) {
-            await _coreShell.SwitchToMainThreadAsync();
-            return await _workflow.Plots.DeviceCreatedAsync(deviceId);
+            return await _workflow.Plots.DeviceCreatedAsync(deviceId, ct);
         }
 
         public async Task PlotDeviceDestroy(Guid deviceId, CancellationToken ct) {
-            await _coreShell.SwitchToMainThreadAsync();
-            await _workflow.Plots.DeviceDestroyedAsync(deviceId);
+            await _workflow.Plots.DeviceDestroyedAsync(deviceId, ct);
         }
 
         public Task<string> ReadUserInput(string prompt, int maximumLength, CancellationToken ct) {
@@ -105,9 +100,9 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         }
 
         public async Task ViewLibrary() {
-            var containerFactory = _coreShell.ExportProvider.GetExportedValue<IRPackageManagerVisualComponentContainerFactory>();
             await _coreShell.SwitchToMainThreadAsync();
-            _workflow.Packages.GetOrCreateVisualComponent(containerFactory, 0).Container.Show(focus: true, immediate: false);
+            var containerFactory = _coreShell.ExportProvider.GetExportedValue<IRPackageManagerVisualComponentContainerFactory>();
+            _workflow.Packages.GetOrCreateVisualComponent(containerFactory).Container.Show(focus: true, immediate: false);
         }
 
         public Task ViewFile(string fileName, string tabName, bool deleteFile) {

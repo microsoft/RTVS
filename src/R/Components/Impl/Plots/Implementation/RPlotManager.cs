@@ -28,6 +28,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
         private readonly Dictionary<int, IRPlotDeviceVisualComponent> _visualComponents = new Dictionary<int, IRPlotDeviceVisualComponent>();
         private readonly Dictionary<Guid, IRPlotDeviceVisualComponent> _assignedVisualComponents = new Dictionary<Guid, IRPlotDeviceVisualComponent>();
         private readonly List<IRPlotDeviceVisualComponent> _unassignedVisualComponents = new List<IRPlotDeviceVisualComponent>();
+        private readonly ICoreShell _shell;
 
         public event EventHandler<RPlotDeviceEventArgs> ActiveDeviceChanged;
         public event EventHandler<RPlotDeviceEventArgs> DeviceAdded;
@@ -36,6 +37,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
         public RPlotManager(IRSettings settings, IRInteractiveWorkflow interactiveWorkflow, IFileSystem fileSystem) {
             _interactiveWorkflow = interactiveWorkflow;
             _fileSystem = fileSystem;
+            _shell = _interactiveWorkflow.Shell;
 
             _disposableBag = DisposableBag.Create<RPlotManager>()
                 .Add(() => interactiveWorkflow.RSession.Connected -= RSession_Connected)
@@ -46,11 +48,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
         }
 
 
-        public IRInteractiveWorkflow InteractiveWorkflow {
-            get {
-                return _interactiveWorkflow;
-            }
-        }
+        public IRInteractiveWorkflow InteractiveWorkflow => _interactiveWorkflow;
 
         public IRPlotHistoryVisualComponent HistoryVisualComponent { get; private set; }
 
@@ -58,15 +56,10 @@ namespace Microsoft.R.Components.Plots.Implementation {
 
         public void Dispose() {
             _disposableBag.TryDispose();
-
-            var visualComponents = _visualComponents.Values.ToArray();
-            foreach (var visualComponent in visualComponents) {
-                visualComponent.Dispose();
-            }
         }
 
         public IRPlotDeviceVisualComponent GetOrCreateVisualComponent(IRPlotDeviceVisualComponentContainerFactory visualComponentContainerFactory, int instanceId) {
-            InteractiveWorkflow.Shell.AssertIsOnMainThread();
+            _shell.AssertIsOnMainThread();
 
             IRPlotDeviceVisualComponent component;
             if (_visualComponents.TryGetValue(instanceId, out component)) {
@@ -74,22 +67,19 @@ namespace Microsoft.R.Components.Plots.Implementation {
             }
 
             component = visualComponentContainerFactory.GetOrCreate(this, _interactiveWorkflow.RSession, instanceId).Component;
+            _disposableBag.Add(component);
             _visualComponents[instanceId] = component;
             return component;
         }
 
         public IRPlotHistoryVisualComponent GetOrCreateVisualComponent(IRPlotHistoryVisualComponentContainerFactory visualComponentContainerFactory, int instanceId) {
-            InteractiveWorkflow.Shell.AssertIsOnMainThread();
+            _shell.AssertIsOnMainThread();
 
-            if (HistoryVisualComponent == null) {
-                HistoryVisualComponent = visualComponentContainerFactory.GetOrCreate(this, instanceId).Component;
-            }
-
-            return HistoryVisualComponent;
+            return HistoryVisualComponent ?? (HistoryVisualComponent = visualComponentContainerFactory.GetOrCreate(this, instanceId).Component);
         }
 
         public IRPlotDeviceVisualComponent GetPlotVisualComponent(IRPlotDevice device) {
-            InteractiveWorkflow.Shell.AssertIsOnMainThread();
+            _shell.AssertIsOnMainThread();
 
             IRPlotDeviceVisualComponent visualComponent = null;
             _assignedVisualComponents.TryGetValue(device.DeviceId, out visualComponent);
@@ -97,13 +87,13 @@ namespace Microsoft.R.Components.Plots.Implementation {
         }
 
         public void RegisterVisualComponent(IRPlotDeviceVisualComponent visualComponent) {
-            InteractiveWorkflow.Shell.AssertIsOnMainThread();
+            _shell.AssertIsOnMainThread();
 
             _unassignedVisualComponents.Add(visualComponent);
         }
 
-        public async Task DeviceDestroyedAsync(Guid deviceId) {
-            InteractiveWorkflow.Shell.AssertIsOnMainThread();
+        public async Task DeviceDestroyedAsync(Guid deviceId, CancellationToken ct) {
+            await _shell.SwitchToMainThreadAsync();
 
             var device = FindDevice(deviceId);
             Debug.Assert(device != null, "List of devices is out of sync.");
@@ -125,8 +115,8 @@ namespace Microsoft.R.Components.Plots.Implementation {
             DeviceRemoved?.Invoke(this, new RPlotDeviceEventArgs(device));
         }
 
-        public async Task LoadPlotAsync(PlotMessage plot) {
-            InteractiveWorkflow.Shell.AssertIsOnMainThread();
+        public async Task LoadPlotAsync(PlotMessage plot, CancellationToken ct) {
+            await _shell.SwitchToMainThreadAsync();
 
             var device = FindDevice(plot.DeviceId);
             device.DeviceNum = plot.DeviceNum;
@@ -157,8 +147,8 @@ namespace Microsoft.R.Components.Plots.Implementation {
             }
         }
 
-        public async Task<PlotDeviceProperties> DeviceCreatedAsync(Guid deviceId) {
-            InteractiveWorkflow.Shell.AssertIsOnMainThread();
+        public async Task<PlotDeviceProperties> DeviceCreatedAsync(Guid deviceId, CancellationToken ct) {
+            await _shell.SwitchToMainThreadAsync();
 
             var device = new RPlotDevice(deviceId);
             _devices.Add(device);
@@ -184,13 +174,14 @@ namespace Microsoft.R.Components.Plots.Implementation {
         }
 
         public async Task<LocatorResult> StartLocatorModeAsync(Guid deviceId, CancellationToken ct) {
-            InteractiveWorkflow.Shell.AssertIsOnMainThread();
+            await _shell.SwitchToMainThreadAsync();
 
             var visualComponent = await GetVisualComponentForDevice(deviceId);
-            if (visualComponent != null) {
-                visualComponent.Container.Show(focus: false, immediate: true);
+            if (visualComponent == null) {
+                return default(LocatorResult);
             }
 
+            visualComponent.Container.Show(focus: false, immediate: true);
             return await visualComponent.StartLocatorModeAsync(ct);
         }
 

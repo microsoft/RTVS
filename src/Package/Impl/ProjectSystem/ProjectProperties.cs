@@ -108,7 +108,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// Gets the destination path for a project on the remote host.
         /// </summary>
         /// <remarks>
-        /// Default destination is ~/RTVSProjects/.
+        /// Default destination is ~/
         /// </remarks>
         public async Task<string> GetRemoteProjectPathAsync() {
             var runProps = await GetConfigurationRunPropertiesAsync();

@@ -234,7 +234,8 @@ namespace Microsoft.R.Host.Client.Session {
             _startupInfo = startupInfo;
             RHost host;
             try {
-                host = await BrokerClient.ConnectAsync(startupInfo.Name, this, startupInfo.RHostCommandLineArguments, timeout);
+                var connectionInfo = new BrokerConnectionInfo(startupInfo.Name, this, startupInfo.RHostCommandLineArguments, timeout);
+                host = await BrokerClient.ConnectAsync(connectionInfo);
             } catch (OperationCanceledException ex) {
                 _initializationTcs.TrySetCanceled(ex);
                 lockToken.Reset();
@@ -313,12 +314,13 @@ namespace Microsoft.R.Host.Client.Session {
                     return;
                 }
             }
-
-            // If nothing worked, then just disconnect.
-            await host?.DisconnectAsync();
-            if (hostRunTask.Status == TaskStatus.Running) {
-                await hostRunTask;
+            
+            if (host != null) {
+                // If nothing worked, then just disconnect.
+                await host.DisconnectAsync();
             }
+
+            await hostRunTask;
         }
 
         public IDisposable DisableMutatedOnReadConsole() {
@@ -360,41 +362,69 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         private async Task AfterHostStarted(RSessionEvaluationSource evaluationSource, RHostStartupInfo startupInfo) {
-            using (var evaluation = await evaluationSource.Task) {
-                // Load RTVS R package before doing anything in R since the calls
-                // below calls may depend on functions exposed from the RTVS package
-                var libPath = IsRemote ? "." : Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetAssemblyPath());
+            try {
+                using (var evaluation = await evaluationSource.Task) {
+                    // Load RTVS R package before doing anything in R since the calls
+                    // below calls may depend on functions exposed from the RTVS package
+                    var libPath = IsRemote ? "." : Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetAssemblyPath());
 
-                await LoadRtvsPackage(evaluation, libPath);
+                    await LoadRtvsPackage(evaluation, libPath);
 
-                if (!IsRemote && startupInfo.WorkingDirectory != null) {
-                    await evaluation.SetWorkingDirectoryAsync(startupInfo.WorkingDirectory);
-                } else {
-                    await evaluation.SetDefaultWorkingDirectoryAsync();
-                }
+                    if (!IsRemote && startupInfo.WorkingDirectory != null) {
+                        await evaluation.SetWorkingDirectoryAsync(startupInfo.WorkingDirectory);
+                    } else {
+                        await evaluation.SetDefaultWorkingDirectoryAsync();
+                    }
 
-                var callback = _callback;
-                if (callback != null) {
-                    await evaluation.SetVsGraphicsDeviceAsync();
+                    var callback = _callback;
+                    if (callback != null) {
+                        await evaluation.SetVsGraphicsDeviceAsync();
 
-                    string mirrorUrl = callback.CranUrlFromName(startupInfo.CranMirrorName);
-                    await evaluation.SetVsCranSelectionAsync(mirrorUrl);
+                        string mirrorUrl = callback.CranUrlFromName(startupInfo.CranMirrorName);
 
-                    await evaluation.SetCodePageAsync(startupInfo.CodePage);
-                    await evaluation.SetROptionsAsync();
-                    await evaluation.OverrideFunctionAsync("setwd", "base");
-                    await evaluation.SetFunctionRedirectionAsync();
-                    await evaluation.OptionsSetWidthAsync(startupInfo.TerminalWidth);
+                        try {
+                            await evaluation.SetVsCranSelectionAsync(mirrorUrl);
+                        } catch (REvaluationException ex) {
+                            await WriteErrorAsync(Resources.Error_SessionInitializationMirror, mirrorUrl, ex.Message);
+                        }
 
-                    try {
-                        // Only enable autosave for this session after querying the user about any existing file.
-                        // This way, if they happen to disconnect while still querying, we don't save the new empty
-                        // session and overwrite the old file.
-                        bool deleteExisting = await evaluation.QueryReloadAutosaveAsync();
-                        await evaluation.EnableAutosaveAsync(deleteExisting);
-                    } catch (REvaluationException) {
+                        try {
+                            await evaluation.SetCodePageAsync(startupInfo.CodePage);
+                        } catch (REvaluationException ex) {
+                            await WriteErrorAsync(Resources.Error_SessionInitializationCodePage, startupInfo.CodePage, ex.Message);
+                        }
+
+                        try {
+                            await evaluation.SetROptionsAsync();
+                        } catch (REvaluationException ex) {
+                            await WriteErrorAsync(Resources.Error_SessionInitializationOptions, ex.Message);
+                        }
+
+                        await evaluation.OverrideFunctionAsync("setwd", "base");
+                        await evaluation.SetFunctionRedirectionAsync();
+
+                        try {
+                            await evaluation.OptionsSetWidthAsync(startupInfo.TerminalWidth);
+                        } catch (REvaluationException ex) {
+                            await WriteErrorAsync(Resources.Error_SessionInitializationOptions, ex.Message);
+                        }
+
+                        if (startupInfo.EnableAutosave) {
+                            try {
+                                // Only enable autosave for this session after querying the user about any existing file.
+                                // This way, if they happen to disconnect while still querying, we don't save the new empty
+                                // session and overwrite the old file.
+                                bool deleteExisting = await evaluation.QueryReloadAutosaveAsync();
+                                await evaluation.EnableAutosaveAsync(deleteExisting);
+                            } catch (REvaluationException ex) {
+                                await WriteErrorAsync(Resources.Error_SessionInitializationAutosave, ex.Message);
+                            }
+                        }
                     }
                 }
+            } catch (Exception ex) when (!ex.IsCriticalException()) {
+                await WriteErrorAsync(Resources.Error_SessionInitialization, ex);
+                StopHostAsync().DoNotWait();
             }
         }
 
@@ -569,6 +599,12 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
             return mutated;
         }
 
+        private Task WriteErrorAsync(string text) =>
+            ((IRCallbacks)this).WriteConsoleEx(text + "\n", OutputType.Error, CancellationToken.None);
+
+        private Task WriteErrorAsync(string format, params object[] args) =>
+            WriteErrorAsync(string.Format(format, args));
+
         Task IRCallbacks.WriteConsoleEx(string buf, OutputType otype, CancellationToken ct) {
             Output?.Invoke(this, new ROutputEventArgs(otype, buf));
             return Task.CompletedTask;
@@ -706,7 +742,8 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
                 var startupInfo = _session._startupInfo;
                 if (startupInfo != null) {
                     // host requires _startupInfo, so proceed only if session was started at least once
-                    _hostToSwitch = await _session.BrokerClient.ConnectAsync(startupInfo.Name, _session, startupInfo.RHostCommandLineArguments, cancellationToken: cancellationToken, reentrancyToken: reentrancyToken);
+                    var connectionInfo = new BrokerConnectionInfo(startupInfo.Name, _session, startupInfo.RHostCommandLineArguments);
+                    _hostToSwitch = await _session.BrokerClient.ConnectAsync(connectionInfo, cancellationToken, reentrancyToken);
                 }
             }
 
@@ -748,7 +785,7 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
                 }
                 host?.Dispose();
 
-                if (hostRunTask != null && hostRunTask.Status == TaskStatus.Running) {
+                if (hostRunTask != null) {
                     await hostRunTask;
                 }
 
@@ -782,8 +819,8 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
                     await _session._hostRunTask;
                 }
 
-                host = await _session.BrokerClient.ConnectAsync(_session._startupInfo.Name, _session, _session._startupInfo.RHostCommandLineArguments,
-                    cancellationToken: cancellationToken, reentrancyToken: reentrancyToken);
+                var connectionInfo = new BrokerConnectionInfo(_session._startupInfo.Name, _session, _session._startupInfo.RHostCommandLineArguments);
+                host = await _session.BrokerClient.ConnectAsync(connectionInfo, cancellationToken, reentrancyToken);
 
                 await _session.StartHostAsyncBackground(host, _lockToken, cancellationToken);
             }

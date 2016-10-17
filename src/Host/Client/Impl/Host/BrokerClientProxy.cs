@@ -34,11 +34,10 @@ namespace Microsoft.R.Host.Client.Host {
 
         public Task PingAsync() => _broker.PingAsync();
 
-        public async Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000,
-            CancellationToken cancellationToken = default(CancellationToken), ReentrancyToken reentrancyToken = default(ReentrancyToken)) {
+        public async Task<RHost> ConnectAsync(BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken), ReentrancyToken reentrancyToken = default(ReentrancyToken)) {
 
             using (await _connectArwl.ReaderLockAsync(cancellationToken, reentrancyToken)) {
-                return await _broker.ConnectAsync(name, callbacks, rCommandLineArguments, timeout, cancellationToken);
+                return await _broker.ConnectAsync(connectionInfo, cancellationToken, reentrancyToken);
             }
         }
 
