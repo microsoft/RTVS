@@ -250,7 +250,7 @@ namespace Microsoft.R.Editor.Tree {
                 // of the tree. Note that there are no concurrent writers 
                 // since changes can only come from a background parser
                 // and are always applied from the main thread.
-                _editorTree.AcquireWriteLock();
+               _editorTree.AcquireWriteLock();
 
                 if (_pendingChanges.FullParseRequired) {
                     // When full parse is required, change is like replace the entire file

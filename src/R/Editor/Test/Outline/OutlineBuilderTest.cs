@@ -112,7 +112,11 @@ namespace Microsoft.R.Editor.Test.Outline {
             string content =
 @"# NAME1 -----
 x <- 1
+
+
 # NAME2 -----
+
+
 ";
             TextBufferMock textBuffer = null;
             int calls = 0;
@@ -129,6 +133,9 @@ x <- 1
                         rc1.Should().HaveCount(2);
                         rc1[0].DisplayText.Should().Be("# NAME1");
                         rc1[1].DisplayText.Should().Be("# NAME2");
+
+                        rc1[0].Length.Should().Be(21);
+                        rc1[1].Length.Should().Be(13);
 
                         ob.RegionsChanged += (s, e) => {
                             calls++;
@@ -152,6 +159,9 @@ x <- 1
 
                         args.Regions[0].DisplayText.Should().Be("# ANAME1");
                         args.Regions[1].DisplayText.Should().Be("# NAME2");
+
+                        args.Regions[0].Length.Should().Be(22);
+                        args.Regions[1].Length.Should().Be(13);
                     }
                 }
             }

@@ -360,7 +360,7 @@ namespace Microsoft.R.Core.AST.Expressions {
                     FunctionCall functionCall = new FunctionCall();
                     functionCall.Parse(context, null);
 
-                    errorType =  HandleOperatorPrecedence(context, functionCall);
+                    errorType = HandleOperatorPrecedence(context, functionCall);
                     return OperationType.Function;
                 }
             }
@@ -502,11 +502,11 @@ namespace Microsoft.R.Core.AST.Expressions {
                     // on the stack has lower precedence than the current one.
                     // Example: in 'a+b*c*d+e' before pushing last + on the stack
                     // we need to make subtree out of b*c*d.
-                    if (associativity == Associativity.Left && 
+                    if (associativity == Associativity.Left &&
                         nextOperatorNode.Precedence < currentOperator.Precedence) {
                         break;
                     }
-                 }
+                }
             } while (_operators.Count > 1 && errorType == ParseErrorType.None);
 
             return errorType;
@@ -529,7 +529,7 @@ namespace Microsoft.R.Core.AST.Expressions {
         private ParseErrorType MakeNode(ParseContext context) {
             IOperator operatorNode = _operators.Pop();
 
-            IRValueNode rightOperand = this.SafeGetOperand();
+            IRValueNode rightOperand = SafeGetOperand(operatorNode);
             if (rightOperand == null) {
                 // Oddly, no operands
                 return ParseErrorType.RightOperandExpected;
@@ -539,7 +539,7 @@ namespace Microsoft.R.Core.AST.Expressions {
                 operatorNode.AppendChild(rightOperand);
                 operatorNode.RightOperand = rightOperand;
             } else {
-                IRValueNode leftOperand = this.SafeGetOperand();
+                IRValueNode leftOperand = SafeGetOperand(operatorNode);
                 if (leftOperand == null) {
                     // Operand is missing in expression like x <- [].
                     // Operator on top of the stack is <- since [] was not
@@ -555,18 +555,13 @@ namespace Microsoft.R.Core.AST.Expressions {
 
                     operatorNode.AppendChild(leftOperand);
                     operatorNode.AppendChild(rightOperand);
-                }
-                else {
+                } else {
                     return ParseErrorType.UnexpectedToken;
                 }
             }
 
             _operands.Push(operatorNode);
             return ParseErrorType.None;
-        }
-
-        private IRValueNode SafeGetOperand() {
-            return _operands.Count > 0 ? _operands.Pop() : null;
         }
 
         private static IRValueNode CreateConstant(ParseContext context) {
@@ -605,6 +600,43 @@ namespace Microsoft.R.Core.AST.Expressions {
             Debug.Assert(term != null);
             term.Parse(context, null);
             return term;
+        }
+
+        private IRValueNode SafeGetOperand(IOperator operatorNode) {
+            if(!operatorNode.IsUnary) {
+                return _operands.Count > 0 ? _operands.Pop() : null;
+            }
+            // Indexer expects operand to the left of the indexing expression as in 'a[]`. 
+            // Unary minus expects operand to the right as in '-1'. Consider expression 
+            // like `x ---`. Unary minus will be on to of the stack but 'x' that appears 
+            // on top of the operand stack is not applicable. We need to filter operands
+            // by position depending on the operator type.
+            switch (operatorNode.OperatorType) {
+                case OperatorType.Index:
+                case OperatorType.FunctionCall:
+                    return SafeGetLeftOperand(operatorNode);
+            }
+            return SafeGetRightOperand(operatorNode);
+        }
+
+        private IRValueNode SafeGetLeftOperand(IOperator operatorNode) {
+            // Operand is on top the stack and must be to the left of the operator
+            if (_operands.Count > 0) {
+                if (_operands.Peek().End <= operatorNode.Start) {
+                    return _operands.Pop();
+                }
+            }
+            return null;
+        }
+
+        private IRValueNode SafeGetRightOperand(IOperator operatorNode) {
+            // Operand is on top the stack and must be to the right of the operator
+            if (_operands.Count > 0) {
+                if (_operands.Peek().Start >= operatorNode.End) {
+                    return _operands.Pop();
+                }
+            }
+            return null;
         }
     }
 }
