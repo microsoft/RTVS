@@ -10,6 +10,7 @@ using Microsoft.Common.Core.IO;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.R.Interpreters;
+using static System.FormattableString;
 
 namespace Microsoft.R.Host.Broker.Interpreters {
     public class InterpreterManager {
@@ -31,9 +32,9 @@ namespace Microsoft.R.Host.Broker.Interpreters {
         public void Initialize() {
             Interpreters = GetInterpreters().ToArray();
 
-            var sb = new StringBuilder($"{Interpreters.Count} interpreters configured:");
+            var sb = new StringBuilder(Invariant($"{Interpreters.Count} interpreters configured:"));
             foreach (var interp in Interpreters) {
-                sb.Append(Environment.NewLine + $"'{interp.Id}': {interp.Version} at \"{interp.Path}\"");
+                sb.Append(Environment.NewLine + Invariant($"'{interp.Id}': {interp.Version} at \"{interp.Path}\""));
             }
             _logger.LogInformation(sb.ToString());
         }

@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Text;
 using Microsoft.Common.Core;
+using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client {
     public static class RStringExtensions {
@@ -108,9 +109,9 @@ namespace Microsoft.R.Host.Client {
 
         public static string ProjectRelativePathToRemoteProjectPath(this string path, string remoteRoot, string projectName) {
             if (string.IsNullOrWhiteSpace(projectName)) {
-                return ($"{remoteRoot}/{path}")?.ToRPath().Replace("//", "/");
+                return Invariant($"{remoteRoot}/{path}")?.ToRPath().Replace("//", "/");
             } else {
-                return ($"{remoteRoot}/{projectName}/{path}")?.ToRPath().Replace("//", "/");
+                return Invariant($"{remoteRoot}/{projectName}/{path}")?.ToRPath().Replace("//", "/");
             }
         }
 

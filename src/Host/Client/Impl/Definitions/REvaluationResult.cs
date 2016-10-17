@@ -1,15 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
-using System.Diagnostics;
 using System.Globalization;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using static System.FormattableString;
-using System.Collections.Generic;
 
 namespace Microsoft.R.Host.Client {
     /// <summary>
@@ -76,7 +70,7 @@ namespace Microsoft.R.Host.Client {
             var sb = new StringBuilder();
 
             if (RawResult != null) {
-                sb.AppendFormat("<raw ({0} bytes)>", RawResult.Length);
+                sb.AppendFormat(CultureInfo.InvariantCulture, "<raw ({0} bytes)>", RawResult.Length);
             } else if (Result != null) {
                 sb.Append(Result);
             }

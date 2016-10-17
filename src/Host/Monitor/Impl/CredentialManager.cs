@@ -12,7 +12,7 @@ using Microsoft.Common.Core;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.R.Host.Monitor {
-    public class CredentialManager {
+    internal class CredentialManager {
         private const string BrokerUserCredName = "RHostBrokerUserCred";
 
         private static object _isBrokerUserCredentialSavedLock = new object();
@@ -197,7 +197,7 @@ namespace Microsoft.R.Host.Monitor {
                         uint error = CredUIParseUserName(credential.userName, usernameBldr, usernameBldr.Capacity, domainBldr, domainBldr.Capacity);
                         if (error != 0) {
                             logger?.LogError(Resources.Error_UserNameParsing, error);
-                            throw new Win32Exception((int)error, string.Format(Resources.Error_UserNameParsing, error));
+                            throw new Win32Exception((int)error, Resources.Error_UserNameParsing.FormatInvariant(error));
                         }
 
                         SecureString pass = new SecureString();
@@ -421,7 +421,7 @@ namespace Microsoft.R.Host.Monitor {
         private static extern bool CredDelete(string target, CredType type, int flags);
 
         [DllImport("credui.dll", CharSet = CharSet.Unicode)]
-        public static extern uint CredUIParseUserName(
+        internal static extern uint CredUIParseUserName(
                 string userName,
                 StringBuilder user,
                 int userMaxChars,

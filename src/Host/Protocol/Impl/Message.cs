@@ -13,12 +13,12 @@ using static System.FormattableString;
 namespace Microsoft.R.Host.Protocol {
     public class Message {
         private static readonly MD5 _hash = MD5.Create();
-        public readonly ulong Id;
-        public readonly ulong RequestId;
-        public readonly string Name;
+        public ulong Id { get; }
+        public ulong RequestId { get; }
+        public string Name { get; }
 
-        public readonly JArray Json;
-        public readonly byte[] Blob;
+        public JArray Json { get; }
+        public byte[] Blob { get; }
 
         public bool IsRequest => RequestId == ulong.MaxValue;
 
@@ -88,20 +88,20 @@ namespace Microsoft.R.Host.Protocol {
 
         public override string ToString() {
             string result;
-            result = $"#{Id}#";
+            result = Invariant($"#{Id}#");
             if (RequestId > 0 && RequestId < ulong.MaxValue) {
-                result += $":#{RequestId}#";
+                result += Invariant($":#{RequestId}#");
             }
 
             string blobString;
             if (Blob.Length > 100) {
                 var hashString = BitConverter.ToString(_hash.ComputeHash(Blob));
-                blobString = $"<blob length=\"{Blob.Length}\" md5=\"{hashString}\" />";
+                blobString = Invariant($"<blob length=\"{Blob.Length}\" md5=\"{hashString}\" />");
             } else {
-                blobString = $"<blob content=\"{BitConverter.ToString(Blob)}\" />";
+                blobString = Invariant($"<blob content=\"{BitConverter.ToString(Blob)}\" />");
             }
             
-            result += $" {Name} {Json} {blobString}";
+            result += Invariant($" {Name} {Json} {blobString}");
             return result;
         }
 
