@@ -61,6 +61,16 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Previous R session terminated unexpectedly, and its global workspace is currently being saved.
+        ///Do you want to abort this operation and start current session immidiately?.
+        /// </summary>
+        internal static string AbortRDataAutosave {
+            get {
+                return ResourceManager.GetString("AbortRDataAutosave", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 32 bit.
         /// </summary>
         internal static string Bits32 {

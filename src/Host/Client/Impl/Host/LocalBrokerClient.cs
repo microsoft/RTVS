@@ -15,7 +15,7 @@ using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Threading;
-using Microsoft.R.Host.Client.BrokerServices;
+using Microsoft.R.Host.Client.Session;
 using Newtonsoft.Json;
 
 namespace Microsoft.R.Host.Client.Host {
@@ -32,7 +32,6 @@ namespace Microsoft.R.Host.Client.Host {
         private readonly ICoreServices _services;
 
         private Process _brokerProcess;
-        private int _disposed;
 
         static LocalBrokerClient() {
             // Allow "true" and non-zero integer to enable, otherwise disable.
@@ -45,8 +44,8 @@ namespace Microsoft.R.Host.Client.Host {
             }
         }
 
-        public LocalBrokerClient(string name, string rHome, ICoreServices services, string rhostDirectory = null)
-            : base(name, new Uri(rHome), InterpreterId, _credentials, services.Log) {
+        public LocalBrokerClient(string name, string rHome, ICoreServices services, IConsole console, string rhostDirectory = null)
+            : base(name, new Uri(rHome), InterpreterId, _credentials, services.Log, console) {
 
             _rhostDirectory = rhostDirectory ?? Path.GetDirectoryName(typeof(RHost).Assembly.GetAssemblyPath());
             _rHome = rHome;
@@ -55,11 +54,9 @@ namespace Microsoft.R.Host.Client.Host {
             IsVerified = true;
         }
 
-        public override async Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000,
-            CancellationToken cancellationToken = default(CancellationToken), ReentrancyToken reentrancyToken = default(ReentrancyToken)) {
-
+        public override async Task<RHost> ConnectAsync(BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken), ReentrancyToken reentrancyToken = default(ReentrancyToken)) {
             await EnsureBrokerStartedAsync();
-            return await base.ConnectAsync(name, callbacks, rCommandLineArguments, timeout, cancellationToken);
+            return await base.ConnectAsync(connectionInfo, cancellationToken, reentrancyToken);
         }
 
         private async Task EnsureBrokerStartedAsync() {
@@ -70,8 +67,8 @@ namespace Microsoft.R.Host.Client.Host {
             try {
                 if (!lockToken.IsSet) {
                     await ConnectToBrokerWorker();
-                    lockToken.Set();
                 }
+                lockToken.Set();
             } finally {
                 lockToken.Reset();
             }
@@ -151,9 +148,8 @@ namespace Microsoft.R.Host.Client.Host {
                     CreateHttpClient(serverUri[0]);
                 }
 
-                if (_disposed == 0) {
+                if (DisposableBag.TryAdd(DisposeBrokerProcess)) {
                     _brokerProcess = process;
-                    DisposableBag.Add(DisposeBrokerProcess);
                 }
             } finally {
                 if (_brokerProcess == null) {
@@ -187,11 +183,6 @@ namespace Microsoft.R.Host.Client.Host {
             }
 
             _brokerProcess?.Dispose();
-        }
-
-        protected override void Dispose(bool disposing) {
-            Interlocked.CompareExchange(ref _disposed, 1, 0);
-            base.Dispose(disposing);
         }
     }
 }

@@ -9,5 +9,6 @@ namespace Microsoft.R.Host.Client {
         public string WorkingDirectory { get; set; }
         public int CodePage { get; set; }
         public int TerminalWidth { get; set; } = 80;
+        public bool EnableAutosave { get; set; }
     }
 }

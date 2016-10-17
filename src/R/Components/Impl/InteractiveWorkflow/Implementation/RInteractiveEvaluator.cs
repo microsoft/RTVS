@@ -57,6 +57,10 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         }
 
         public async Task<ExecutionResult> InitializeAsync() {
+            return await InitializeAsync(false);
+        }
+
+        private async Task<ExecutionResult> InitializeAsync(bool isResetting) {
             try {
                 if (!Session.IsHostRunning) {
                     var startupInfo = new RHostStartupInfo {
@@ -66,12 +70,14 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                         CodePage = _settings.RCodePage,
                         WorkingDirectory = _settings.WorkingDirectory,
                         TerminalWidth = _terminalWidth,
+                        EnableAutosave = !isResetting
                     };
 
                     if (CurrentWindow != null) {
                         CurrentWindow.TextView.VisualElement.SizeChanged += VisualElement_SizeChanged;
                         CurrentWindow.OutputBuffer.Changed += OutputBuffer_Changed;
                     }
+
                     await Session.EnsureHostStartedAsync(startupInfo, new RSessionCallback(CurrentWindow, Session, _settings, _coreShell, new FileSystem()));
                 }
                 return ExecutionResult.Success;
@@ -100,7 +106,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 }
 
                 CurrentWindow.WriteError(Environment.NewLine + Resources.MicrosoftRHostStarting + Environment.NewLine);
-                return await InitializeAsync();
+                return await InitializeAsync(true);
             } catch (Exception ex) {
                 Trace.Fail($"Exception in RInteractiveEvaluator.ResetAsync\n{ex}");
                 return ExecutionResult.Failure;

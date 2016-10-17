@@ -69,7 +69,7 @@ namespace Microsoft.Common.Core.Test.Tasks {
             var index = 0;
 
             Func<CancellationToken, Task> function1 = async ct => {
-                await Task.Delay(150, ct);
+                await Task.Delay(350, ct);
                 Interlocked.Exchange(ref index, 1);
                 throw new InvalidOperationException("1");
             };
@@ -80,7 +80,7 @@ namespace Microsoft.Common.Core.Test.Tasks {
                 throw new InvalidOperationException("2");
             };
 
-            var cts = new CancellationTokenSource(100);
+            var cts = new CancellationTokenSource(200);
             Func<Task> f = () => TaskUtilities.WhenAllCancelOnFailure(new [] { function1, function2 }, cts.Token);
             (await f.ShouldThrowAsync<InvalidOperationException>()).WithMessage("2");
             index.Should().Be(2);

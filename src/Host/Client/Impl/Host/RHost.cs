@@ -396,16 +396,16 @@ namespace Microsoft.R.Host.Client {
                     await _transport.CloseAsync();
                     token.Set();
                 } catch (OperationCanceledException) {
+                    token.Set();
                 } catch (MessageTransportException) {
+                    token.Set();
                 } finally {
                     token.Reset();
                 }
             }
 
             try {
-                if (_runTask.Status == TaskStatus.Running) {
-                    await _runTask;
-                }
+                await _runTask;
             } catch (OperationCanceledException) {
                 // Expected during disconnect.
             } catch (MessageTransportException) {
