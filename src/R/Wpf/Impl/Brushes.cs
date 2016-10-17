@@ -78,5 +78,8 @@ namespace Microsoft.R.Wpf {
 
         public static object SelectedItemActiveBrushKey { get; set; } = SystemColors.ControlTextBrushKey;
         public static object SelectedItemActiveColorKey { get; set; } = SystemColors.ControlTextColorKey;
+
+        public static object SuccessMessageTextBrushKey { get; set; } = SystemColors.ControlTextBrushKey;
+        public static object FailMessageTextBrushKey { get; set; } = SystemColors.ControlTextBrushKey;
     }
 }

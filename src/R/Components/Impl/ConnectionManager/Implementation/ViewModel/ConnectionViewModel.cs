@@ -124,20 +124,6 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             set { SetProperty(ref _testConnectionResult, value); }
         }
 
-        public Brush TestConnectionFailedTextColor {
-            get {
-                // Similar to 'error squiggly' editor color
-                return new SolidColorBrush(_colorService.IsDarkTheme ? Color.FromArgb(0xFF, 0xBD, 0x35, 0x2F) : Color.FromArgb(0xFF, 0xFF, 0x40, 0x40));
-            }
-        }
-
-        public Brush TestConnectionSucceededTextColor {
-            get {
-                // Similar to 'comment' editor color
-                return new SolidColorBrush(_colorService.IsDarkTheme  ? Color.FromArgb(0xFF, 0x49, 0x8B, 0x4E) : Color.FromArgb(0xFF, 0x34, 0x80, 0x63));
-            }
-        }
-
         /// <summary>
         /// Tooltip when hovered over connection name
         /// </summary>
