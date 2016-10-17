@@ -386,13 +386,14 @@ namespace Microsoft.R.Host.Client.Session {
                     await evaluation.SetFunctionRedirectionAsync();
                     await evaluation.OptionsSetWidthAsync(startupInfo.TerminalWidth);
 
-                    try {
-                        // Only enable autosave for this session after querying the user about any existing file.
-                        // This way, if they happen to disconnect while still querying, we don't save the new empty
-                        // session and overwrite the old file.
-                        bool deleteExisting = await evaluation.QueryReloadAutosaveAsync();
-                        await evaluation.EnableAutosaveAsync(deleteExisting);
-                    } catch (REvaluationException) {
+                    if (startupInfo.EnableAutosave) {
+                        try {
+                            // Only enable autosave for this session after querying the user about any existing file.
+                            // This way, if they happen to disconnect while still querying, we don't save the new empty
+                            // session and overwrite the old file.
+                            bool deleteExisting = await evaluation.QueryReloadAutosaveAsync();
+                            await evaluation.EnableAutosaveAsync(deleteExisting);
+                        } catch (REvaluationException) {}
                     }
                 }
             }

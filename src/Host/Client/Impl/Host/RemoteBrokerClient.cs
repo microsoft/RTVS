@@ -24,8 +24,8 @@ namespace Microsoft.R.Host.Client.Host {
             ServicePointManager.ServerCertificateValidationCallback += new RemoteCertificateValidationCallback(ValidateCertificateServicePoint);
         }
 
-        public RemoteBrokerClient(string name, Uri brokerUri, ICoreServices services, IConsole console)
-            : base(name, brokerUri, brokerUri.Fragment, new RemoteCredentialsDecorator(brokerUri, services.Security), services.Log) {
+        public RemoteBrokerClient(string name, Uri brokerUri, IActionLog log, IConsole console, ISecurityService securityService)
+            : base(name, brokerUri, brokerUri.Fragment, new RemoteCredentialsDecorator(brokerUri, securityService), log, console) {
             _console = console;
             _services = services;
 

@@ -33,6 +33,7 @@ namespace Microsoft.R.Host.Client.Host {
 
         private readonly string _interpreterId;
         private readonly ICredentialsDecorator _credentials;
+        private readonly IConsole _console;
 
         private AboutHost _aboutHost;
 
@@ -47,13 +48,14 @@ namespace Microsoft.R.Host.Client.Host {
         public AboutHost AboutHost => _aboutHost ?? AboutHost.Empty;
         public bool IsVerified { get; protected set; }
 
-        protected BrokerClient(string name, Uri brokerUri, string interpreterId, ICredentialsDecorator credentials, IActionLog log) {
+        protected BrokerClient(string name, Uri brokerUri, string interpreterId, ICredentialsDecorator credentials, IActionLog log, IConsole console) {
             Name = name;
             Uri = brokerUri;
             Log = log;
 
             _interpreterId = interpreterId;
             _credentials = credentials;
+            _console = console;
         }
 
         protected void CreateHttpClient(Uri baseAddress) {
@@ -85,35 +87,23 @@ namespace Microsoft.R.Host.Client.Host {
             }
         }
 
-        public virtual async Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000,
-            CancellationToken cancellationToken = default(CancellationToken), ReentrancyToken reentrancyToken = default(ReentrancyToken)) {
-
+        public virtual async Task<RHost> ConnectAsync(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, bool preserveSessionData = false, CancellationToken cancellationToken = default(CancellationToken), ReentrancyToken reentrancyToken = default(ReentrancyToken)) {
             DisposableBag.ThrowIfDisposed();
-
             await TaskUtilities.SwitchToBackgroundThread();
 
             try {
-                bool sessionExists = false; //await IsSessionRunningAsync(name, cancellationToken);
-
-                WebSocket webSocket;
-                while (true) {
-                    if (!sessionExists) {
-                        await CreateBrokerSessionAsync(name, rCommandLineArguments, cancellationToken);
-                    }
-
-                    try {
-                        webSocket = await ConnectToBrokerAsync(name, cancellationToken);
-                        break;
-                    } catch (RHostDisconnectedException ex) when (
-                        sessionExists && ((ex.InnerException as WebException)?.Response as HttpWebResponse)?.StatusCode == HttpStatusCode.NotFound
-                    ) {
-                        // If we believed the session to be running, but failed to connect to its pipe, it probably terminated
-                        // between our check and our attempt to connect. Retry, but recreate the session this time.
-                        sessionExists = false;
-                        continue;
+                var sessionExists = preserveSessionData && await IsSessionRunningAsync(name, cancellationToken);
+                if (sessionExists) {
+                    var terminateRDataSave = await _console.PromptYesNoAsync(Resources.AbortRDataAutosave);
+                    if (!terminateRDataSave) {
+                        while (await IsSessionRunningAsync(name, cancellationToken)) {
+                            await Task.Delay(500, cancellationToken);
+                        }
                     }
                 }
 
+                await CreateBrokerSessionAsync(name, rCommandLineArguments, cancellationToken);
+                var webSocket = await ConnectToBrokerAsync(name, cancellationToken);
                 var host = CreateRHost(name, callbacks, webSocket);
                 await GetHostInformationAsync(cancellationToken);
                 return host;

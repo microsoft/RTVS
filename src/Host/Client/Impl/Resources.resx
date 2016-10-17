@@ -212,4 +212,8 @@ This should never happen with a production Remote R Services, so please check wi
 
 If you using a test Remote R Server with a self-signed certificate and are certain about the remote machine security, click OK, otherwise cancel the connection.</value>
   </data>
+  <data name="AbortRDataAutosave" xml:space="preserve">
+    <value>Previous R session terminated unexpectedly, and its global workspace is currently saving.
+Do you want to abort this operation and start current session immidiately?</value>
+  </data>
 </root>

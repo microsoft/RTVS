@@ -396,7 +396,9 @@ namespace Microsoft.R.Host.Client {
                     await _transport.CloseAsync();
                     token.Set();
                 } catch (OperationCanceledException) {
+                    token.Set();
                 } catch (MessageTransportException) {
+                    token.Set();
                 } finally {
                     token.Reset();
                 }
