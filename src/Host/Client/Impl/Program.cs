@@ -22,7 +22,7 @@ namespace Microsoft.R.Host.Client {
             Console.CancelKeyPress += Console_CancelKeyPress;
 
             using (var logger = new Logger("Program", new MaxLoggingPermissions(), FileLogWriter.InTempFolder("Microsoft.R.Host.Client.Program"))) {
-                var services = new CoreServices(new AppConstants(), null, null, null, null, null);
+                var services = new CoreServices(new AppConstants(), null, null, null, null);
                 var localConnector = new LocalBrokerClient("Program", args[0], services, new NullConsole());
                 var host = localConnector.ConnectAsync(new BrokerConnectionInfo("Program", new Program())).GetAwaiter().GetResult();
                 _evaluator = host;
@@ -196,6 +196,7 @@ namespace Microsoft.R.Host.Client {
             public IntPtr ApplicationWindowHandle => IntPtr.Zero;
             public uint LocaleId => 1033;
             public string LocalMachineHive => null;
+            public UIColorTheme UIColorTheme => UIColorTheme.Light;
         }
     }
 }

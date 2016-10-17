@@ -206,7 +206,6 @@
     <Compile Include="ProjectSystem\Commands\SendFileCommandBase.cs" />
     <Compile Include="ProjectSystem\Commands\SendToRemoteCommand.cs" />
     <Compile Include="Shell\ApplicationConstants.cs" />
-    <Compile Include="Shell\ColorService.cs" />
     <Compile Include="Shell\VsFileDialog.cs" />
     <Compile Include="Shell\VsProgressDialog.cs" />
     <Compile Include="Shell\VsTaskService.cs" />

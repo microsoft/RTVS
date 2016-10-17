@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Shell;
+using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
@@ -43,5 +44,12 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// features such as level of logging permitted.
         /// </summary>
         public string LocalMachineHive => @"Software\Microsoft\R Tools";
+
+        public UIColorTheme UIColorTheme {
+            get {
+                var defaultBackground = VSColorTheme.GetThemedColor(EnvironmentColors.ToolWindowBackgroundColorKey);
+                return defaultBackground.GetBrightness() < 0.5 ? UIColorTheme.Dark : UIColorTheme.Light;
+            }
+        }
     }
 }

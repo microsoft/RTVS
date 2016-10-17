@@ -104,7 +104,8 @@ namespace Microsoft.VisualStudio.R.Package.Wpf {
             Brushes.SelectedItemActiveBrushKey = TreeViewColors.SelectedItemActiveColorKey;
 
             Brushes.FailMessageTextBrushKey = TreeViewColors.ValidationSquigglesBrushKey;
-            Brushes.SuccessMessageTextBrushKey = ProgressBarColors.IndicatorFillBrushKey;
+            // TODO: may need to pick a better color of specify custom key
+            Brushes.SuccessMessageTextBrushKey = ProgressBarColors.IndicatorFillBrushKey; 
         }
 
         private static void OverrideFontKeys() {

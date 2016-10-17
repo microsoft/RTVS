@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Reflection;
 using System.Windows;
@@ -20,7 +19,6 @@ using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.View;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.Browsers;
@@ -41,13 +39,13 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         /// </summary>
         private readonly ContentControl _windowContentControl;
         private readonly IVignetteCodeColorBuilder _codeColorBuilder;
-        private readonly IColorService _colorService;
+        private readonly ICoreShell _coreShell;
         private IRSession _session;
         private WindowsFormsHost _host;
 
         public HelpVisualComponent() {
             _codeColorBuilder = VsAppShell.Current.ExportProvider.GetExportedValue<IVignetteCodeColorBuilder>();
-            _colorService = VsAppShell.Current.ExportProvider.GetExportedValue<IColorService>();
+            _coreShell = VsAppShell.Current.ExportProvider.GetExportedValue<ICoreShell>();
 
             var workflow = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
             workflow.RSessions.BrokerStateChanged += OnBrokerStateChanged;
@@ -199,7 +197,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                 cssfileName = VisualTheme;
             } else {
                 // TODO: We can generate CSS from specific VS colors. For now, just do Dark and Light.
-                cssfileName = _colorService.IsDarkTheme ? "Dark.css" : "Light.css";
+                cssfileName = _coreShell.AppConstants.UIColorTheme == UIColorTheme.Dark ? "Dark.css" : "Light.css";
             }
 
             if (!string.IsNullOrEmpty(cssfileName)) {

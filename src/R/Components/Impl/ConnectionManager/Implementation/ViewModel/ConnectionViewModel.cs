@@ -13,7 +13,6 @@ using Microsoft.R.Components.ConnectionManager.ViewModel;
 namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
     internal sealed class ConnectionViewModel : BindableBase, IConnectionViewModel {
         private readonly IConnection _connection;
-        private readonly IColorService _colorService;
 
         private string _name;
         private string _path;
@@ -35,9 +34,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             UpdateCalculated();
         }
 
-        public ConnectionViewModel(IConnection connection, IColorService colorService) {
+        public ConnectionViewModel(IConnection connection) {
             _connection = connection;
-            _colorService = colorService;
 
             Id = _connection.Id;
             Reset();

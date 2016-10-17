@@ -81,7 +81,7 @@
     <Compile Include="Settings\ISettingsStorage.cs" />
     <Compile Include="Shell\CoreShellExtensions.cs" />
     <Compile Include="Shell\IApplicationConstants.cs" />
-    <Compile Include="Shell\IColorService.cs" />
+    <Compile Include="Shell\UIColorTheme.cs" />
     <Compile Include="Shell\IFileDialog.cs" />
     <Compile Include="Shell\IProgressDialog.cs" />
     <Compile Include="Shell\MessageType.cs" />
