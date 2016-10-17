@@ -136,7 +136,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                     return string.Format(CultureInfo.InvariantCulture, Resources.ConnectionManager_InformationTooltipFormatRemote,
                         IsActive ? Resources.ConnectionManager_Connected : Resources.ConnectionManager_Disconnected,
                         uri != null ? uri.Host : Resources.ConnectionManager_Unknown,
-                        uri != null ? uri.Port.ToString() : Resources.ConnectionManager_Default, cmdLineInfo);
+                        uri != null ? uri.Port.ToString(CultureInfo.InvariantCulture) : Resources.ConnectionManager_Default, cmdLineInfo);
                 } else {
                     return string.Format(CultureInfo.InvariantCulture, Resources.ConnectionManager_InformationTooltipFormatLocal,
                         IsActive ? Resources.ConnectionManager_Active : Resources.ConnectionManager_Inactive,

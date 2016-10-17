@@ -20,6 +20,7 @@ using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Editor.OptionsExtensionMethods;
+using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
     internal class RInteractiveWorkflowOperations : IRInteractiveWorkflowOperations {
@@ -184,7 +185,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             string func = _debuggerModeTracker.IsDebugging && !echo ? "rtvs::debug_source" : "source";
             string echoArg = echo ? ", echo = TRUE" : "";
             string encodingArg = encoding != null ? ", encoding = " + encoding.WebName.ToRStringLiteral() : "";
-            return $"{func}({file.ToRStringLiteral()}{echoArg}{encodingArg})";
+            return Invariant($"{func}({file.ToRStringLiteral()}{echoArg}{encodingArg})");
         }
 
         public void TryRunShinyApp () {
