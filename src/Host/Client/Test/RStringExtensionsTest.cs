@@ -2,11 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
@@ -31,6 +27,31 @@ namespace Microsoft.R.Host.Client.Test {
             actualLiteral.Should().Be(expectedLiteral);
             string actualSource = actualLiteral.FromRStringLiteral();
             actualSource.Should().Be(source);
+        }
+
+        [CompositeTest]
+        [InlineData("\"hello\"", "hello")]
+        [InlineData("\"z\\xa\"", "z\n")]
+        [InlineData("\"z\\xA\"", "z\n")]
+        [InlineData("\"z\\xAz\"", "z\nz")]
+        [InlineData("\"z\\x0a\"", "z\n")]
+        [InlineData("\"z\\x0A\"", "z\n")]
+        [InlineData("\"z\\x20\"", "z ")]
+        [InlineData("\"z\\x200\"", "z 0")]
+        [InlineData("\"z\\40\"", "z ")]
+        [InlineData("\"z\\40a\"", "z a")]
+        [InlineData("\"z\\101\"", "zA")]
+        [InlineData("\"z\\7\"", "z\x7")]
+        public void FromRStringLiteral(string source, string expected) {
+            string actual = source.FromRStringLiteral();
+            actual.Should().Be(expected);
+        }
+
+        [CompositeTest]
+        [InlineData("\"hello\\x\"")]
+        [InlineData("\"hello\\xg\"")]
+        public void FromRStringLiteralError(string source) {
+            Assert.Throws<FormatException>(() => source.FromRStringLiteral());
         }
     }
 }
