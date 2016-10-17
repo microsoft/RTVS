@@ -4,13 +4,16 @@
 using System;
 using System.Globalization;
 using System.Threading;
+using System.Windows.Media;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Wpf;
 using Microsoft.R.Components.ConnectionManager.ViewModel;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
     internal sealed class ConnectionViewModel : BindableBase, IConnectionViewModel {
         private readonly IConnection _connection;
+        private readonly IColorService _colorService;
 
         private string _name;
         private string _path;
@@ -32,8 +35,10 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             UpdateCalculated();
         }
 
-        public ConnectionViewModel(IConnection connection) {
+        public ConnectionViewModel(IConnection connection, IColorService colorService) {
             _connection = connection;
+            _colorService = colorService;
+
             Id = _connection.Id;
             Reset();
         }
@@ -119,6 +124,20 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             set { SetProperty(ref _testConnectionResult, value); }
         }
 
+        public Brush TestConnectionFailedTextColor {
+            get {
+                // Similar to 'error squiggly' editor color
+                return new SolidColorBrush(_colorService.IsDarkTheme ? Color.FromArgb(0xFF, 0xBD, 0x35, 0x2F) : Color.FromArgb(0xFF, 0xFF, 0x40, 0x40));
+            }
+        }
+
+        public Brush TestConnectionSucceededTextColor {
+            get {
+                // Similar to 'comment' editor color
+                return new SolidColorBrush(_colorService.IsDarkTheme  ? Color.FromArgb(0xFF, 0x49, 0x8B, 0x4E) : Color.FromArgb(0xFF, 0x34, 0x80, 0x63));
+            }
+        }
+
         /// <summary>
         /// Tooltip when hovered over connection name
         /// </summary>
@@ -134,7 +153,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                         IsActive ? Resources.ConnectionManager_Connected : Resources.ConnectionManager_Disconnected,
                         uri != null ? uri.Host : Resources.ConnectionManager_Unknown,
                         uri != null ? uri.Port.ToString() : Resources.ConnectionManager_Default, cmdLineInfo);
-                } else { 
+                } else {
                     return string.Format(CultureInfo.InvariantCulture, Resources.ConnectionManager_InformationTooltipFormatLocal,
                         IsActive ? Resources.ConnectionManager_Active : Resources.ConnectionManager_Inactive,
                         Path, cmdLineInfo);

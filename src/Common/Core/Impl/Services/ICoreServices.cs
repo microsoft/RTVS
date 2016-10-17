@@ -5,6 +5,7 @@ using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Security;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
 
 namespace Microsoft.Common.Core.Services {
@@ -16,5 +17,6 @@ namespace Microsoft.Common.Core.Services {
         IRegistry Registry { get; }
         ISecurityService Security { get; }
         ITelemetryService Telemetry { get; }
+        IColorService ColorService { get; }
     }
 }

@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Components.Controller;
@@ -40,11 +41,13 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         /// </summary>
         private readonly ContentControl _windowContentControl;
         private readonly IVignetteCodeColorBuilder _codeColorBuilder;
+        private readonly IColorService _colorService;
         private IRSession _session;
         private WindowsFormsHost _host;
 
         public HelpVisualComponent() {
             _codeColorBuilder = VsAppShell.Current.ExportProvider.GetExportedValue<IVignetteCodeColorBuilder>();
+            _colorService = VsAppShell.Current.ExportProvider.GetExportedValue<IColorService>();
 
             var workflow = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
             workflow.RSessions.BrokerStateChanged += OnBrokerStateChanged;
@@ -195,9 +198,8 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             if (VisualTheme != null) {
                 cssfileName = VisualTheme;
             } else {
-                Color defaultBackground = VSColorTheme.GetThemedColor(EnvironmentColors.ToolWindowBackgroundColorKey);
                 // TODO: We can generate CSS from specific VS colors. For now, just do Dark and Light.
-                cssfileName = defaultBackground.GetBrightness() < 0.5 ? "Dark.css" : "Light.css";
+                cssfileName = _colorService.IsDarkTheme ? "Dark.css" : "Light.css";
             }
 
             if (!string.IsNullOrEmpty(cssfileName)) {

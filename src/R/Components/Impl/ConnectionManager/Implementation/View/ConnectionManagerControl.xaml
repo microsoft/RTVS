@@ -128,9 +128,11 @@
                                        Visibility="{Binding Path=TestingConnectionCts, Converter={x:Static rwpf:Converters.NullIsCollapsed}}" />
                             <TextBlock Margin="0,4,6,5" Text="{x:Static components:Resources.ConnectionManager_TestingConnection}"
                                        Visibility="{Binding Path=TestingConnectionCts, Converter={x:Static rwpf:Converters.NullIsCollapsed}}"/>
-                            <TextBlock Margin="0,4,6,5" Text="{x:Static components:Resources.ConnectionManager_TestConnectionPassed}" Foreground="#FF50F033" FontWeight="SemiBold"
+                            <TextBlock Margin="0,4,6,5" Text="{x:Static components:Resources.ConnectionManager_TestConnectionPassed}" 
+                                       Foreground="{Binding Path=TestConnectionSucceededTextColor}" FontWeight="SemiBold"
                                        Visibility="{Binding Path=IsTestConnectionSucceeded, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}"/>
-                            <TextBlock Margin="0,4,6,5" Text="{Binding Path=TestConnectionFailedText}" Foreground="#FFF05033" FontWeight="SemiBold" TextWrapping="Wrap"
+                            <TextBlock Margin="0,4,6,5" Text="{Binding Path=TestConnectionFailedText}" 
+                                       Foreground="{Binding Path=TestConnectionFailedTextColor}" FontWeight="SemiBold" TextWrapping="Wrap"
                                        Visibility="{Binding Path=TestConnectionFailedText, Converter={x:Static rwpf:Converters.NullOrEmptyIsCollapsed}}"/>
 
                             <Button VerticalAlignment="Center" Click="ButtonCancelTestConnection_Click"

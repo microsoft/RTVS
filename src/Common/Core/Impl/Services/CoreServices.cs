@@ -23,6 +23,7 @@ namespace Microsoft.Common.Core.Services {
             , ITelemetryService telemetry
             , ILoggingPermissions permissions
             , ISecurityService security
+            , IColorService colorService
             , [Import(AllowDefault = true)] IActionLog log = null
             , [Import(AllowDefault = true)] IFileSystem fs = null
             , [Import(AllowDefault = true)] IRegistry registry = null
@@ -34,6 +35,8 @@ namespace Microsoft.Common.Core.Services {
 
             Telemetry = telemetry;
             Security = security;
+            ColorService = colorService;
+
             ProcessServices = ps ?? new ProcessServices();
             Registry = registry ?? new RegistryImpl();
             FileSystem = fs ?? new FileSystem();
@@ -54,5 +57,6 @@ namespace Microsoft.Common.Core.Services {
         public ISecurityService Security { get; }
         public ITelemetryService Telemetry { get; }
         public ILoggingServices LoggingServices { get; }
+        public IColorService ColorService { get; }
     }
 }

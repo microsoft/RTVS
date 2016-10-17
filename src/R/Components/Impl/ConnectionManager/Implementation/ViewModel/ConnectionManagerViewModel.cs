@@ -249,7 +249,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         private ConnectionViewModel CreateConnectionViewModel(IConnection connection) {
             var isActive = connection == _connectionManager.ActiveConnection;
-            return new ConnectionViewModel(connection) {
+            return new ConnectionViewModel(connection, _shell.Services.ColorService) {
                 IsActive = isActive,
                 IsConnected = isActive && IsConnected
             };
