@@ -3,11 +3,11 @@
 
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Markdown.Editor.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.R.Package.Browsers;
 using Microsoft.VisualStudio.R.Package.Publishing.Definitions;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Text.Editor;
 using static System.FormattableString;
 
@@ -18,12 +18,12 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
         public PreviewHtmlCommand(
             ITextView textView,
             IRInteractiveWorkflowProvider workflowProvider,
-            ICoreShell coreShell,
+            IApplicationShell appShell,
             IProcessServices pss,
             IFileSystem fs,
             IWebBrowserServices wbs)
             : base(textView, (int)MdPackageCommandId.icmdPreviewHtml,
-                  workflowProvider, coreShell, pss, fs) {
+                  workflowProvider, appShell, pss, fs) {
             _wbs = wbs;
         }
 

@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Markdown.Editor.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.R.Package.Publishing.Definitions;
@@ -16,10 +15,10 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
         public PreviewPdfCommand(
             ITextView textView,
             IRInteractiveWorkflowProvider workflowProvider,
-            ICoreShell coreShell,
+            IApplicationShell appShell,
             IProcessServices pss,
             IFileSystem fs)
-            : base(textView, (int)MdPackageCommandId.icmdPreviewPdf, workflowProvider, coreShell, pss, fs) { }
+            : base(textView, (int)MdPackageCommandId.icmdPreviewPdf, workflowProvider, appShell, pss, fs) { }
 
         protected override string FileExtension => "pdf";
          protected override PublishFormat Format => PublishFormat.Pdf;
