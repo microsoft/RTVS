@@ -81,10 +81,9 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
             _lastCommandTask = Task.Run(async () => {
                 // Get list of installed packages and verify that all the required ones are installed
                 var packages = await workflow.Packages.GetInstalledPackagesAsync();
+                // Text buffer operations should be performed in UI thread
+                await _coreShell.SwitchToMainThreadAsync();
                 if (packages.Any(p => p.Package.EqualsIgnoreCase(flavorHandler.RequiredPackageName)) && CheckPrerequisites()) {
-                    // Text buffer operations should be performed in UI thread
-                    await _coreShell.SwitchToMainThreadAsync();
-                    
                     // Save the file
                     var document = EditorExtensions.FindInProjectedBuffers<MdEditorDocument>(TextView.TextBuffer, MdContentTypeDefinition.ContentType);
                     var tb = document.TextBuffer;
