@@ -37,32 +37,6 @@
                 <TextBlock Grid.Row="0" Grid.Column="1" Text="{x:Static local:Resources.Text_StartBroker}" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="5"/>
                 <TextBlock Grid.Row="1" Grid.Column="1" Text="{x:Static local:Resources.Text_StopBroker}" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="5"/>
             </Grid>
-            <Separator/>
-            <CheckBox x:Name="UseBrokerUserCheckBox" Content="{x:Static local:Resources.Text_UseDifferentBroker}" Margin="5" Checked="UseBrokerUserCheckBox_Checked" Unchecked="UseBrokerUserCheckBox_Unchecked" />
-            <Grid Margin="0,8,0,8">
-                <Grid.RowDefinitions>
-                    <RowDefinition />
-                    <RowDefinition />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
-                <Button Grid.Row="0" Grid.Column="0" 
-                        x:Name="AddOrChangeBrokerUserBtn" 
-                        Click="AddOrChangeBrokerUserBtn_Click" 
-                        Content="{x:Static local:Resources.Btn_AddOrChangeBrokerUser}" 
-                        VerticalAlignment="Center" HorizontalAlignment="Stretch"  Margin="4" Padding="6,3,6,3"/>
-                <Button Grid.Row="1" Grid.Column="0" 
-                        x:Name="RemoveBrokerUserBtn"
-                        Click="RemoveBrokerUserBtn_Click" 
-                        Content="{x:Static local:Resources.Btn_RemoveBrokerUser}" 
-                        VerticalAlignment="Center" HorizontalAlignment="Stretch"  Margin="4" Padding="6,3,6,3"/>
-
-                <TextBlock Grid.Row="0" Grid.Column="1" Text="{x:Static local:Resources.Text_AddOrChangeBrokerUser}" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="5"/>
-                <TextBlock Grid.Row="1" Grid.Column="1" Text="{x:Static local:Resources.Text_RemoveBrokerUser}" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="5"/>
-            </Grid>
         </StackPanel>
-
     </Grid>
 </Window>

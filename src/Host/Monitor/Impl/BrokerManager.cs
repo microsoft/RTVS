@@ -58,10 +58,6 @@ namespace Microsoft.R.Host.Monitor {
                     psi.CreateNoWindow = false;
                     psi.WorkingDirectory = assemblyRoot;
 
-                    if (Properties.Settings.Default.UseDifferentBrokerUser) {
-                        CredentialManager.SetCredentialsOnProcess(psi, logger);
-                    }
-
                     _brokerProcess = new Process() { StartInfo = psi };
                     _brokerProcess.EnableRaisingEvents = true;
                     _brokerProcess.Exited += async (object sender, EventArgs e) => {

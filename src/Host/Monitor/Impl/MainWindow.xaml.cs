@@ -19,7 +19,6 @@ namespace Microsoft.R.Host.Monitor {
         public MainWindow() {
             InitializeComponent();
             Loaded += MainWindow_Loaded;
-            UseBrokerUserCheckBox.IsChecked = Properties.Settings.Default.UseDifferentBrokerUser;
 
             _loggerFactory = new LoggerFactory();
             _loggerFactory
@@ -34,22 +33,9 @@ namespace Microsoft.R.Host.Monitor {
 
         public async Task StartUpAsync() {
             try {
-                int id = 0;
-                if (Properties.Settings.Default.UseDifferentBrokerUser) {
-                    if (await CredentialManager.IsBrokerUserCredentialSavedAsync(_logger)) {
-                        id = await BrokerManager.CreateOrAttachToBrokerInstanceAsync(_logger);
-                    } else {
-                        await SetErrorTextAsync(Monitor.Resources.Info_DidNotFindSavedCredentails);
-                        var count = await CredentialManager.GetAndSaveCredentialsFromUserAsync(_logger);
-                        if (count >= CredentialManager.MaxCredUIAttempts) {
-                            await SetErrorTextAsync(Monitor.Resources.Info_TooManyLoginAttempts);
-                        }
-                    }
-                } else {
-                    id = await BrokerManager.CreateOrAttachToBrokerInstanceAsync(_logger);
-                }
+                int id = await BrokerManager.CreateOrAttachToBrokerInstanceAsync(_logger);
 
-                if(id!= 0) {
+                if (id!= 0) {
                     await SetStatusTextAsync(Monitor.Resources.Status_BrokerStarted.FormatInvariant(id));
                 }
             } catch (Exception ex) when (!ex.IsCriticalException()) {
@@ -66,24 +52,6 @@ namespace Microsoft.R.Host.Monitor {
             SetStatusTextAsync(Monitor.Resources.Status_BrokerStopped).Task.DoNotWait();
         }
 
-        private async void AddOrChangeBrokerUserBtn_Click(object sender, RoutedEventArgs e) {
-            try {
-                if (await CredentialManager.IsBrokerUserCredentialSavedAsync(_logger)) {
-                    CredentialManager.RemoveCredentials(_logger);
-                }
-                var count = await CredentialManager.GetAndSaveCredentialsFromUserAsync(_logger);
-                if(count >= CredentialManager.MaxCredUIAttempts) {
-                    await SetErrorTextAsync(Monitor.Resources.Info_TooManyLoginAttempts);
-                }
-            } catch (Exception ex) when (!ex.IsCriticalException()) {
-                _logger?.LogError(Monitor.Resources.Error_AddOrChangeUserFailed, ex.Message);
-                await SetErrorTextAsync(ex.Message);
-            }
-        }
-        private void RemoveBrokerUserBtn_Click(object sender, RoutedEventArgs e) {
-            CredentialManager.RemoveCredentials(_logger);
-        }
-
         public System.Windows.Threading.DispatcherOperation SetStatusTextAsync(string message) {
             return Dispatcher.InvokeAsync(() => {
                 StatusDetailsTextBox.Text = message;
@@ -96,16 +64,6 @@ namespace Microsoft.R.Host.Monitor {
                 StatusDetailsTextBox.Text = message;
                 StatusDetailsTextBox.Foreground = Brushes.Red;
             });
-        }
-
-        private void UseBrokerUserCheckBox_Checked(object sender, RoutedEventArgs e) {
-            Properties.Settings.Default.UseDifferentBrokerUser = true;
-            Properties.Settings.Default.Save();
-        }
-
-        private void UseBrokerUserCheckBox_Unchecked(object sender, RoutedEventArgs e) {
-            Properties.Settings.Default.UseDifferentBrokerUser = false;
-            Properties.Settings.Default.Save();
         }
     }
 }
