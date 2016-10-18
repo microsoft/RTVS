@@ -23,6 +23,10 @@ namespace Microsoft.Common.Core {
             yield return item;
         }
 
+        public static IEnumerable<T> ExcludeDefault<T>(this IEnumerable<T> source) {
+            return source.Where(i => !Equals(i, default(T)));
+        }
+
         public static void Split<T>(this IEnumerable<T> source, Func<T, bool> predicate, out IList<T> first, out IList<T> second) {
             first = new List<T>();
             second = new List<T>();
