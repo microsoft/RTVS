@@ -6,6 +6,7 @@ using System.ComponentModel.Composition;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Markdown.Editor.Flavor;
@@ -51,13 +52,13 @@ namespace Microsoft.VisualStudio.R.Package.Publishing {
                 statusBar.Progress(ref cookie, 1, "", 0, 0);
 
                 try {
-                    statusBar.Progress(ref cookie, 1, string.Format(Resources.Info_MarkdownSendingInputFile, Path.GetFileName(inputFilePath)), 0, 3);
+                    statusBar.Progress(ref cookie, 1, Resources.Info_MarkdownSendingInputFile.FormatInvariant(Path.GetFileName(inputFilePath)), 0, 3);
                     var rmd = await fts.SendFileAsync(inputFilePath);
-                    statusBar.Progress(ref cookie, 1, string.Format(Resources.Info_MarkdownPublishingFile, Path.GetFileName(inputFilePath)), 1, 3);
+                    statusBar.Progress(ref cookie, 1, Resources.Info_MarkdownPublishingFile.FormatInvariant(Path.GetFileName(inputFilePath)), 1, 3);
                     var publishResult = await session.EvaluateAsync<ulong>($"rtvs:::rmarkdown_publish(blob_id = {rmd.Id}, output_format = {format.ToRStringLiteral()}, encoding = 'cp{codePage}')", REvaluationKind.Normal);
-                    statusBar.Progress(ref cookie, 1, string.Format(Resources.Info_MarkdownGetOutputFile, Path.GetFileName(inputFilePath)), 2, 3);
+                    statusBar.Progress(ref cookie, 1, Resources.Info_MarkdownGetOutputFile.FormatInvariant(Path.GetFileName(outputFilePath)), 2, 3);
                     await fts.FetchFileAsync(new RBlobInfo(publishResult), outputFilePath);
-                    statusBar.Progress(ref cookie, 1, string.Format(Resources.Info_MarkdownPublishComplete, Path.GetFileName(inputFilePath)), 3, 3);
+                    statusBar.Progress(ref cookie, 1, Resources.Info_MarkdownPublishComplete.FormatInvariant(Path.GetFileName(outputFilePath)), 3, 3);
                 } finally {
                     statusBar.Progress(ref cookie, 0, "", 0, 0);
                     statusBar.SetText(currentStatusText);
