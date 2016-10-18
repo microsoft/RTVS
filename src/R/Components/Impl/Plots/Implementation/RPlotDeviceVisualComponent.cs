@@ -181,7 +181,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
         private void UpdateCaption() {
             if (!string.IsNullOrEmpty(_viewModel.DeviceName)) {
                 string format = _viewModel.LocatorMode ? Resources.Plots_WindowCaptionLocatorActive : _viewModel.IsDeviceActive ? format = Resources.Plots_WindowCaptionDeviceActive : Resources.Plots_WindowCaptionDevice;
-                Container.CaptionText = string.Format(CultureInfo.CurrentUICulture, format, _viewModel.DeviceName);
+                Container.CaptionText = string.Format(CultureInfo.CurrentCulture, format, _viewModel.DeviceName);
             } else {
                 Container.CaptionText = Resources.Plots_WindowCaptionNoDevice;
             }

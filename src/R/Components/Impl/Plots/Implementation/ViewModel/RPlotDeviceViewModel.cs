@@ -74,7 +74,7 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
         public string DeviceName {
             get {
                 if (_device != null) {
-                    return string.Format(CultureInfo.CurrentUICulture, Resources.Plots_DeviceName, _device.DeviceNum);
+                    return string.Format(CultureInfo.CurrentCulture, Resources.Plots_DeviceName, _device.DeviceNum);
                 } else {
                     return string.Empty;
                 }

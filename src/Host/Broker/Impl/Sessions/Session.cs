@@ -17,6 +17,7 @@ using Microsoft.R.Host.Broker.Interpreters;
 using Microsoft.R.Host.Broker.Pipes;
 using Microsoft.R.Host.Broker.Startup;
 using Microsoft.R.Host.Protocol;
+using static System.FormattableString;
 
 namespace Microsoft.R.Host.Broker.Sessions {
     public class Session {
@@ -82,7 +83,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
 
             string brokerPath = Path.GetDirectoryName(typeof(Program).Assembly.GetAssemblyPath());
             string rhostExePath = Path.Combine(brokerPath, RHostExe);
-            string arguments = $"--rhost-name \"{Id}\" --rhost-log-verbosity {(int)verbosity} {CommandLineArguments}";
+            string arguments = Invariant($"--rhost-name \"{Id}\" --rhost-log-verbosity {(int)verbosity} {CommandLineArguments}");
             var username = new StringBuilder(NativeMethods.CREDUI_MAX_USERNAME_LENGTH + 1);
             var domain = new StringBuilder(NativeMethods.CREDUI_MAX_PASSWORD_LENGTH + 1);
 
@@ -101,7 +102,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
                 uint error = NativeMethods.CredUIParseUserName(User.Name, username, username.Capacity, domain, domain.Capacity);
                 if (error != 0) {
                     _sessionLogger.LogError(Resources.Error_UserNameParse, User.Name, error);
-                    throw new ArgumentException(string.Format(Resources.Error_UserNameParse, User.Name, error));
+                    throw new ArgumentException(Resources.Error_UserNameParse.FormatInvariant(User.Name, error));
                 }
 
                 psi.Domain = domain.ToString();
@@ -119,19 +120,19 @@ namespace Microsoft.R.Host.Broker.Sessions {
                 psi.EnvironmentVariables["HOMEPATH"] = profilePath.Substring(2);
                 _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "HOMEPATH", psi.EnvironmentVariables["HOMEPATH"]);
 
-                psi.EnvironmentVariables["USERPROFILE"] = $"{psi.EnvironmentVariables["HOMEDRIVE"]}{psi.EnvironmentVariables["HOMEPATH"]}";
+                psi.EnvironmentVariables["USERPROFILE"] = Invariant($"{psi.EnvironmentVariables["HOMEDRIVE"]}{psi.EnvironmentVariables["HOMEPATH"]}");
                 _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "USERPROFILE", psi.EnvironmentVariables["USERPROFILE"]);
 
-                psi.EnvironmentVariables["APPDATA"] = $"{psi.EnvironmentVariables["USERPROFILE"]}\\AppData\\Roaming";
+                psi.EnvironmentVariables["APPDATA"] = Invariant($"{psi.EnvironmentVariables["USERPROFILE"]}\\AppData\\Roaming");
                 _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "APPDATA", psi.EnvironmentVariables["APPDATA"]);
 
-                psi.EnvironmentVariables["LOCALAPPDATA"] = $"{psi.EnvironmentVariables["USERPROFILE"]}\\AppData\\Local";
+                psi.EnvironmentVariables["LOCALAPPDATA"] = Invariant($"{psi.EnvironmentVariables["USERPROFILE"]}\\AppData\\Local");
                 _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "LOCALAPPDATA", psi.EnvironmentVariables["LOCALAPPDATA"]);
 
-                psi.EnvironmentVariables["TEMP"] = $"{psi.EnvironmentVariables["LOCALAPPDATA"]}\\Temp";
+                psi.EnvironmentVariables["TEMP"] = Invariant($"{psi.EnvironmentVariables["LOCALAPPDATA"]}\\Temp");
                 _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "TEMP", psi.EnvironmentVariables["TEMP"]);
 
-                psi.EnvironmentVariables["TMP"] = $"{psi.EnvironmentVariables["LOCALAPPDATA"]}\\Temp";
+                psi.EnvironmentVariables["TMP"] = Invariant($"{psi.EnvironmentVariables["LOCALAPPDATA"]}\\Temp");
                 _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "TMP", psi.EnvironmentVariables["TMP"]);
             }
 
@@ -206,7 +207,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
 
             if (_pipe == null) {
                 _sessionLogger.LogError("Session '{0}' already has a client pipe connected.", Id);
-                throw new InvalidOperationException(string.Format(Resources.Error_RHostFailedToStart, Id));
+                throw new InvalidOperationException(Resources.Error_RHostFailedToStart.FormatInvariant(Id));
             }
 
             return _pipe.ConnectClient();

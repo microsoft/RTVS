@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.Languages.Core.Text {
     /// <summary>
@@ -17,6 +18,7 @@ namespace Microsoft.Languages.Core.Text {
     /// <typeparam name="T">A class or an interface that derives from <seealso cref="ITextRange"/></typeparam>
     [DebuggerDisplay("Count={Count}")]
     public class TextRangeCollection<T> : ITextRangeCollection<T> where T : ITextRange {
+        [SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         public static readonly IReadOnlyTextRangeCollection<T> EmptyCollection = new TextRangeCollection<T>();
 
         private static readonly IList<T> _emptyList = new T[0];

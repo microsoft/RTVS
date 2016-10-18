@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Microsoft.Common.Core;
 
@@ -15,7 +16,7 @@ namespace Microsoft.R.Components.Application.Configuration {
             }
             if (names.Count > 0) {
                 for (int i = 1; i < 1000; i++) {
-                    var candidate = nameTemplate + i.ToString();
+                    var candidate = nameTemplate + i.ToString(CultureInfo.InvariantCulture);
                     if (!names.Contains(candidate)) {
                         return candidate;
                     }

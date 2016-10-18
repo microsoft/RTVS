@@ -34,7 +34,7 @@ namespace Microsoft.R.Support.Help.Packages {
         private readonly ConcurrentDictionary<string, PackageInfo> _packages = new ConcurrentDictionary<string, PackageInfo>();
         private readonly BinaryAsyncLock _buildIndexLock = new BinaryAsyncLock();
         
-        public static readonly IEnumerable<string> PreloadedPackages = new string[]
+        public static IEnumerable<string> PreloadedPackages { get; } = new string[]
             { "base", "stats", "utils", "graphics", "datasets", "methods" };
 
         [ImportingConstructor]

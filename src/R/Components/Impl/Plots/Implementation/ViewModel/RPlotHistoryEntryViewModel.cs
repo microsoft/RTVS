@@ -53,8 +53,7 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
 
         public void RefreshDeviceName() {
             _shell.AssertIsOnMainThread();
-
-            DeviceName = string.Format(CultureInfo.CurrentUICulture, Resources.Plots_DeviceName, _plot.ParentDevice.DeviceNum);
+            DeviceName = string.Format(CultureInfo.CurrentCulture, Resources.Plots_DeviceName, _plot.ParentDevice.DeviceNum);
         }
 
         public async Task ActivatePlotAsync() {

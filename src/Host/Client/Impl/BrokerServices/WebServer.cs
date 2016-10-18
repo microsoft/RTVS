@@ -7,6 +7,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client.BrokerServices {
     public class WebServer {
@@ -36,7 +37,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             while(true) {
                 _listener = new HttpListener();
                 LocalPort = r.Next(localPortMin, localPortMax);
-                _listener.Prefixes.Add($"http://{LocalHost}:{LocalPort}/");
+                _listener.Prefixes.Add(Invariant($"http://{LocalHost}:{LocalPort}/"));
                 try {
                     _listener.Start();
                 } catch (HttpListenerException) {

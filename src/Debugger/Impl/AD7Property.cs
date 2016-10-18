@@ -77,7 +77,7 @@ namespace Microsoft.R.Debugger {
             });
 
         private string GetReprToString() {
-            var code = $"rtvs:::repr_toString(eval(quote({EvaluationResult.Expression}), envir = {EvaluationResult.EnvironmentExpression}))";
+            var code = Invariant($"rtvs:::repr_toString(eval(quote({EvaluationResult.Expression}), envir = {EvaluationResult.EnvironmentExpression}))");
             return TaskExtensions.RunSynchronouslyOnUIThread(ct => StackFrame.Engine.Tracer.Session.EvaluateAsync<string>(code, REvaluationKind.Normal, ct));
         }
 

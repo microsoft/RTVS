@@ -72,7 +72,7 @@ namespace Microsoft.Common.Core {
             var pathLength = GetTrailingSlashTrimmedPathLength(path);
             var otherPathLength = GetTrailingSlashTrimmedPathLength(otherPath);
 
-            return pathLength == otherPathLength && (pathLength == 0 || string.Compare(path, 0, otherPath, 0, otherPathLength, true, CultureInfo.InvariantCulture) == 0);
+            return pathLength == otherPathLength && (pathLength == 0 || string.Compare(path, 0, otherPath, 0, otherPathLength, StringComparison.OrdinalIgnoreCase) == 0);
         }
 
         private static int GetTrailingSlashTrimmedPathLength(string path) {

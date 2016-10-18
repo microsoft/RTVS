@@ -185,7 +185,7 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    public class MapiMessage {
+    class MapiMessage {
         public int reserved;
         public string subject;
         public string noteText;
@@ -204,7 +204,7 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    public class MapiFileDesc {
+    class MapiFileDesc {
         public int reserved;
         public int flags;
         public int position;
@@ -215,7 +215,7 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    public class MapiRecipDesc {
+    class MapiRecipDesc {
         public int reserved;
         public int recipClass;
         public string name;
@@ -226,7 +226,7 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
     }
 
     // MAPI error codes
-    public enum MapiErrorCode {
+    enum MapiErrorCode {
         /// <summary>
         /// A recipient matched more than one of the recipient descriptor structures and MAPI_DIALOG was not set. No message was sent.
         /// </summary>

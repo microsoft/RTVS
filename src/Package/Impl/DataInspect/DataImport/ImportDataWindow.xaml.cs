@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -111,7 +112,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             }
 
             var val = ((KeyValuePair<string, int?>)comboBox.SelectedItem).Value;
-            return val?.ToString() ?? "NULL";
+            return val?.ToString(CultureInfo.InvariantCulture) ?? "NULL";
         }
 
         private static int GetSelectedValueAsInt(ComboBox comboBox) {

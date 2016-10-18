@@ -171,7 +171,7 @@ namespace Microsoft.R.Host.Client.Host {
                 if (!string.IsNullOrEmpty(message)) {
                     throw new RHostDisconnectedException(Resources.Error_UnableToStartBrokerException.FormatInvariant(message), new Win32Exception(message));
                 }
-                throw new RHostDisconnectedException(Resources.Error_UnableToStartBrokerException.FormatInvariant(process.ExitCode.ToString()), new Win32Exception(process.ExitCode));
+                throw new RHostDisconnectedException(Resources.Error_UnableToStartBrokerException.FormatInvariant(process.ExitCode), new Win32Exception(process.ExitCode));
             }
             return process;
         }

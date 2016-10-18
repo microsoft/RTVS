@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using Microsoft.Extensions.Logging;
+using static System.FormattableString;
 
 namespace Microsoft.R.Host.Broker.Logging {
     internal sealed class FileLoggerProvider : ILoggerProvider {
@@ -24,7 +25,7 @@ namespace Microsoft.R.Host.Broker.Logging {
             if (!string.IsNullOrEmpty(name)) {
                 name = "_" + name;
             }
-            return Path.Combine(Path.GetTempPath(), $@"Microsoft.R.Host.Broker{name}_{DateTime.Now:yyyyMdd_HHmmss}_pid{Process.GetCurrentProcess().Id}.log");
+            return Path.Combine(Path.GetTempPath(), Invariant($@"Microsoft.R.Host.Broker{name}_{DateTime.Now:yyyyMdd_HHmmss}_pid{Process.GetCurrentProcess().Id}.log"));
         }
 
         public ILogger CreateLogger(string categoryName) {

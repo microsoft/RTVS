@@ -36,6 +36,7 @@ namespace Microsoft.Common.Core.Services {
             Telemetry = telemetry;
             Security = security;
             Tasks = tasks;
+
             ProcessServices = ps ?? new ProcessServices();
             Registry = registry ?? new RegistryImpl();
             FileSystem = fs ?? new FileSystem();

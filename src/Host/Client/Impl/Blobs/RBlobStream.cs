@@ -6,6 +6,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client {
     public class RBlobStream : Stream {
@@ -113,7 +114,8 @@ namespace Microsoft.R.Host.Client {
 
         private void ThrowIfDisposed([CallerMemberName] string callerName = "") {
             if (_isDisposed) {
-                throw new ObjectDisposedException($"{nameof(RBlobStream)} for Blob {_blob.Id} has been disposed, cannot call '{callerName}' after disposing.");
+                throw new ObjectDisposedException(
+                    Invariant($"{nameof(RBlobStream)} for Blob {_blob.Id} has been disposed, cannot call '{callerName}' after disposing."));
             }
         }
 

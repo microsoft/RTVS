@@ -13,13 +13,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebSockets.Protocol;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Net;
 using Microsoft.R.Host.Protocol;
+using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client.BrokerServices {
     public class RemoteUriWebService : IRemoteUriWebService {
         public RemoteUriWebService(string baseUri) {
-            PostUri = new Uri(new Uri(baseUri), "/remoteuri");
+            PostUri = new Uri(new Uri(baseUri), new Uri("/remoteuri", UriKind.Relative));
         }
 
         private Uri PostUri { get; }
@@ -82,7 +82,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
         }
 
         private string GetRemoteUrl(Uri url, string remoteBase) {
-            Uri remote = new Uri($"http://{remoteBase}");
+            Uri remote = new Uri(Invariant($"http://{remoteBase}"));
             UriBuilder ub = new UriBuilder(url);
             ub.Host = remote.Host;
             ub.Port = remote.Port;
