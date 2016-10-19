@@ -7,11 +7,13 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using Microsoft.Common.Core;
+using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Core.AST.Scopes;
 using Microsoft.R.Core.AST.Statements;
 using Microsoft.R.Core.AST.Variables;
 using Microsoft.R.Core.Parser;
+using Microsoft.R.Host.Client;
 using static System.FormattableString;
 
 namespace Microsoft.R.Components.Application.Configuration.Parser {
@@ -39,6 +41,11 @@ namespace Microsoft.R.Components.Application.Configuration.Parser {
                         int startingLineNumber = _lineNumber;
                         var text = line + ReadRemainingExpressionText();
                         if (ParseSetting(text, startingLineNumber, setting)) {
+                            if (IsEnvNew(setting)) {
+                                // Skip, as it's not a real setting, it's the creation of the environment
+                                setting = new ConfigurationSetting();
+                                continue;
+                            }
                             return setting;
                         }
                         break;
@@ -84,6 +91,57 @@ namespace Microsoft.R.Components.Application.Configuration.Parser {
             if (string.IsNullOrWhiteSpace(text)) {
                 return false;
             }
+
+            IRValueNode leftOperand;
+            IRValueNode rightOperand;
+            if (ParseAssignment(text, out leftOperand, out rightOperand)) {
+                var listOp = leftOperand as IOperator;
+                if (listOp != null) {
+                    // Look for assignment on settings environment:
+                    //   settings$name1 <- "value1"
+                    //   settings$name1 <- expr1
+                    if (listOp.OperatorType == OperatorType.ListIndex && listOp.LeftOperand != null && listOp.RightOperand != null) {
+                        var value = text.Substring(rightOperand.Start, rightOperand.Length);
+                        var listName = (listOp.LeftOperand as Variable)?.Name;
+                        var settingsName = (listOp.RightOperand as Variable)?.Name;
+                        var result = !string.IsNullOrEmpty(settingsName) && !string.IsNullOrEmpty(value);
+                        if (result && listName == "settings") {
+                            try {
+                                s.Name = settingsName;
+                                s.ValueType = value[0] == '\'' || value[0] == '\"' ? ConfigurationSettingValueType.String : ConfigurationSettingValueType.Expression;
+                                s.Value = s.ValueType == ConfigurationSettingValueType.String ? value.FromRStringLiteral() : value;
+                                return true;
+                            } catch (FormatException) {
+                            }
+                        }
+                    }
+                } else {
+                    // Look for assignment with no environment
+                    // (backwards compat with RTVS 0.5 + creation of settings environment):
+                    //   name1 <- "value1"
+                    //   name1 <- expr1
+                    var name = (leftOperand as Variable)?.Name;
+                    var value = text.Substring(rightOperand.Start, rightOperand.Length);
+                    var result = !string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(value);
+                    if (result) {
+                        try {
+                            s.Name = name;
+                            s.ValueType = value[0] == '\'' || value[0] == '\"' ? ConfigurationSettingValueType.String : ConfigurationSettingValueType.Expression;
+                            s.Value = s.ValueType == ConfigurationSettingValueType.String ? value.FromRStringLiteral() : value;
+                            return true;
+                        } catch (FormatException) {
+                        }
+                    }
+                }
+            }
+            _errors.Add(new ConfigurationError(lineNumber, Resources.ConfigurationError_Syntax));
+            return false;
+        }
+
+        private bool ParseAssignment(string text, out IRValueNode leftOperand, out IRValueNode rightOperand) {
+            leftOperand = null;
+            rightOperand = null;
+
             // Parse the expression
             var ast = RParser.Parse(text);
             if (ast.Errors.Count == 0) {
@@ -95,22 +153,19 @@ namespace Microsoft.R.Components.Application.Configuration.Parser {
                         var op = exp.Children[0] as IOperator;
                         if (op != null) {
                             if (op.OperatorType == OperatorType.LeftAssign && op.LeftOperand != null && op.RightOperand != null) {
-                                var name = (op.LeftOperand as Variable)?.Name;
-                                var value = text.Substring(op.RightOperand.Start, op.RightOperand.Length);
-                                var result = !string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(value);
-                                if (result) {
-                                    s.Name = name;
-                                    s.Value = value.TrimQuotes();
-                                    s.ValueType = value[0] == '\'' || value[0] == '\"' ? ConfigurationSettingValueType.String : ConfigurationSettingValueType.Expression;
-                                    return true;
-                                }
+                                leftOperand = op.LeftOperand;
+                                rightOperand = op.RightOperand;
+                                return true;
                             }
                         }
                     }
                 }
             }
-            _errors.Add(new ConfigurationError(lineNumber, Resources.ConfigurationError_Syntax));
             return false;
+        }
+
+        private bool IsEnvNew(ConfigurationSetting s) {
+            return s.Name == "settings" && s.Value == "as.environment(list())" && s.ValueType == ConfigurationSettingValueType.Expression;
         }
 
         private bool ReadAttributeValue(string line, ConfigurationSetting s) {
@@ -139,6 +194,5 @@ namespace Microsoft.R.Components.Application.Configuration.Parser {
         public static string GetPersistentKey(string attribute) {
             return Invariant($"[{attribute}]");
         }
-
     }
 }
