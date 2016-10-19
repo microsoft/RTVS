@@ -85,9 +85,12 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         public async Task<AboutHost> GetHostInformationAsync(CancellationToken cancellationToken) {
-            var response = await HttpClient.GetAsync("/about", cancellationToken);
-            var s = await response.Content.ReadAsStringAsync();
-            return !string.IsNullOrEmpty(s) ? JsonConvert.DeserializeObject<AboutHost>(s) : AboutHost.Empty;
+            string result = null;
+            try {
+                var response = await HttpClient.GetAsync("/about", cancellationToken);
+                result = await response.Content.ReadAsStringAsync();
+            } catch (OperationCanceledException) { }
+            return !string.IsNullOrEmpty(result) ? JsonConvert.DeserializeObject<AboutHost>(result) : AboutHost.Empty;
         }
 
         public virtual async Task<RHost> ConnectAsync(BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken), ReentrancyToken reentrancyToken = default(ReentrancyToken)) {
@@ -120,7 +123,7 @@ namespace Microsoft.R.Host.Client.Host {
             return sessionsService.DeleteAsync(name, cancellationToken);
         }
 
-        protected virtual Task<Exception> HandleHttpRequestExceptionAsync(HttpRequestException exception) 
+        protected virtual Task<Exception> HandleHttpRequestExceptionAsync(HttpRequestException exception)
             => Task.FromResult<Exception>(new RHostDisconnectedException(Resources.Error_HostNotResponding.FormatInvariant(exception.Message), exception));
 
         private async Task<bool> IsSessionRunningAsync(string name, CancellationToken cancellationToken) {
