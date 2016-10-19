@@ -19,7 +19,7 @@ namespace Microsoft.R.Debugger {
                 return VSConstants.E_FAIL;
             }
 
-            property.StackFrame.Engine.GridViewProvider.ShowDataGrid(property.EvaluationResult);
+            property.StackFrame.Engine.GridViewProvider.ShowDataGrid(property.EvaluationResult.ToEnvironmentIndependentResult());
             return VSConstants.S_OK;
         }
     }

@@ -16,5 +16,8 @@ namespace Microsoft.R.DataInspection {
         public override string ToString() {
             return Invariant($"PROMISE: {Code}");
         }
+
+        public override IREvaluationResultInfo ToEnvironmentIndependentResult() =>
+            new RPromiseInfo(Session, EnvironmentExpression, this.GetEnvironmentIndependentExpression(), Name, Code);
     }
 }

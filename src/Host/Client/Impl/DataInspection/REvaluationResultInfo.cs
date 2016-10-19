@@ -42,5 +42,7 @@ namespace Microsoft.R.DataInspection {
 
             return new RValueInfo(session, environmentExpression, expression, name, json);
         }
+
+        public abstract IREvaluationResultInfo ToEnvironmentIndependentResult();
     }
 }
