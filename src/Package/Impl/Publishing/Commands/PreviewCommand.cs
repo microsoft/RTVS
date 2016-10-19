@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -21,9 +20,11 @@ using Microsoft.Markdown.Editor.Flavor;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Publishing.Definitions;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
     internal abstract class PreviewCommand : ViewCommand {
@@ -33,7 +34,8 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
         protected readonly IRInteractiveWorkflowProvider _workflowProvider;
         private readonly IProcessServices _pss;
         private readonly IFileSystem _fs;
-        private readonly ICoreShell _coreShell;
+
+        protected ICoreShell CoreShell { get; }
 
         public PreviewCommand(ITextView textView, int id,
             IRInteractiveWorkflowProvider workflowProvider,
@@ -42,11 +44,11 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
             IFileSystem fs)
             : base(textView, new CommandId[] { new CommandId(MdPackageCommandId.MdCmdSetGuid, id) }, false) {
             _workflowProvider = workflowProvider;
-            _coreShell = coreShell;
+            CoreShell = coreShell;
             _pss = pss;
             _fs = fs;
 
-            IEnumerable<Lazy<IMarkdownFlavorPublishHandler>> handlers = _coreShell.ExportProvider.GetExports<IMarkdownFlavorPublishHandler>();
+            IEnumerable<Lazy<IMarkdownFlavorPublishHandler>> handlers = CoreShell.ExportProvider.GetExports<IMarkdownFlavorPublishHandler>();
             foreach (var h in handlers) {
                 _flavorHandlers[h.Value.Flavor] = h.Value;
             }
@@ -82,13 +84,13 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
                 // Get list of installed packages and verify that all the required ones are installed
                 var packages = await workflow.Packages.GetInstalledPackagesAsync();
                 // Text buffer operations should be performed in UI thread
-                await _coreShell.SwitchToMainThreadAsync();
-                if (packages.Any(p => p.Package.EqualsIgnoreCase(flavorHandler.RequiredPackageName)) && CheckPrerequisites()) {
+                if (packages.Any(p => p.Package.EqualsIgnoreCase(flavorHandler.RequiredPackageName)) && await CheckPrerequisitesAsync()) {
                     // Save the file
+                    await CoreShell.SwitchToMainThreadAsync();
                     var document = EditorExtensions.FindInProjectedBuffers<MdEditorDocument>(TextView.TextBuffer, MdContentTypeDefinition.ContentType);
                     var tb = document.TextBuffer;
                     if (!tb.CanBeSavedInCurrentEncoding()) {
-                        if (MessageButtons.No == _coreShell.ShowMessage(Resources.Warning_SaveInUtf8, MessageButtons.YesNo)) {
+                        if (MessageButtons.No == await CoreShell.ShowMessageAsync(Resources.Warning_SaveInUtf8, MessageButtons.YesNo)) {
                             return;
                         }
                         tb.Save(new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
@@ -102,23 +104,23 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
                     try {
                         _fs.DeleteFile(_outputFilePath);
                     } catch (IOException ex) {
-                        _coreShell.ShowErrorMessage(ex.Message);
+                        await CoreShell.ShowErrorMessageAsync(ex.Message);
                         return;
                     }
 
                     var session = workflow.RSession;
-                    await flavorHandler.PublishAsync(session, _coreShell, _fs, inputFilePath, _outputFilePath, Format, tb.GetEncoding()).ContinueWith(t => LaunchViewer());
+                    await flavorHandler.PublishAsync(session, CoreShell, _fs, inputFilePath, _outputFilePath, Format, tb.GetEncoding()).ContinueWith(t => LaunchViewer());
                 } else {
-                    await _coreShell.ShowErrorMessageAsync(Resources.Error_PackageMissing.FormatInvariant(flavorHandler.RequiredPackageName));
+                    await CoreShell.ShowErrorMessageAsync(Resources.Error_PackageMissing.FormatInvariant(flavorHandler.RequiredPackageName));
                 }
             });
 
             return CommandResult.Executed;
         }
 
-        protected virtual bool CheckPrerequisites() {
-            if (!IOExtensions.ExistsOnPath("pandoc.exe")) {
-                _coreShell.ShowErrorMessage(Resources.Error_PandocMissing);
+        protected virtual async Task<bool> CheckPrerequisitesAsync() {
+            if (!await CheckExistsOnPathAsync("pandoc.exe")) {
+                await CoreShell.ShowErrorMessageAsync(Resources.Error_PandocMissing);
                 _pss.Start("http://pandoc.org/installing.html");
                 return false;
             }
@@ -172,6 +174,11 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
                 }
             }
             return false;
+        }
+
+        protected Task<bool> CheckExistsOnPathAsync(string fileName) {
+            var session = _workflowProvider.GetOrCreate().RSession;
+            return session.EvaluateAsync<bool>(Invariant($"rtvs:::exists_on_path({fileName})"), REvaluationKind.Normal);
         }
     }
 }

@@ -297,3 +297,16 @@ enable_autosave <- function(delete_existing) {
         }
     });
 }
+
+exists_on_path <- function(filename) {
+    folders <- strsplit(Sys.getenv('PATH'), ';')[[1]];
+    for (f in folders) {
+        f1 <- gsub("\\", "/", f, fixed = TRUE);
+        f2 <- sub("(\\/$)", "", f1);
+        f3 <- paste0(f2, "/", filename);
+        if (file.exists(f3)) {
+            return(TRUE);
+        }
+    }
+    return(FALSE);
+}
