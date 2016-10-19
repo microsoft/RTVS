@@ -29,7 +29,9 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
                 return false;
             }
             if (!await CheckExistsOnPathAsync("pdflatex.exe")) {
-                await CoreShell.ShowErrorMessageAsync(Resources.Error_PdfLatexMissing);
+                var session = _workflowProvider.GetOrCreate().RSession;
+                var message = session.IsRemote ? Resources.Error_PdfLatexMissingRemote : Resources.Error_PdfLatexMissingLocal;
+                await CoreShell.ShowErrorMessageAsync(message);
                 Process.Start("http://miktex.org/2.9/setup");
                 return false;
             }

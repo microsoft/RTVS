@@ -120,7 +120,9 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
 
         protected virtual async Task<bool> CheckPrerequisitesAsync() {
             if (!await CheckExistsOnPathAsync("pandoc.exe")) {
-                await CoreShell.ShowErrorMessageAsync(Resources.Error_PandocMissing);
+                var session = _workflowProvider.GetOrCreate().RSession;
+                var message = session.IsRemote ? Resources.Error_PandocMissingRemote : Resources.Error_PandocMissingLocal;
+                await CoreShell.ShowErrorMessageAsync(message);
                 _pss.Start("http://pandoc.org/installing.html");
                 return false;
             }
