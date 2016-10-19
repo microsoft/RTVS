@@ -178,7 +178,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
 
         protected Task<bool> CheckExistsOnPathAsync(string fileName) {
             var session = _workflowProvider.GetOrCreate().RSession;
-            return session.EvaluateAsync<bool>(Invariant($"rtvs:::exists_on_path({fileName})"), REvaluationKind.Normal);
+            return session.EvaluateAsync<bool>(Invariant($"rtvs:::exists_on_path('{fileName}')"), REvaluationKind.Normal);
         }
     }
 }
