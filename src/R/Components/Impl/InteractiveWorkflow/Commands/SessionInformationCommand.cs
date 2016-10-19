@@ -35,7 +35,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
 
         private void OnBrokerChanged(object sender, EventArgs e) {
             if (_interactiveWorkflow.RSession.IsRemote) {
-                PrintBrokerInformationAsync().DoNotWait();
+                PrintBrokerInformationAsync(reportTelemetry: true).DoNotWait();
             }
         }
 
