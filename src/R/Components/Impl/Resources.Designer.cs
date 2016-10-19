@@ -79,6 +79,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Connected users: {0}.
+        /// </summary>
+        public static string ConnectedUserCount {
+            get {
+                return ResourceManager.GetString("ConnectedUserCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Active.
         /// </summary>
         public static string ConnectionManager_Active {
@@ -598,6 +607,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Operating System: {0}.
+        /// </summary>
+        public static string OperatingSystem {
+            get {
+                return ResourceManager.GetString("OperatingSystem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Authors:.
         /// </summary>
         public static string Package_Authors {
@@ -1021,6 +1039,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Physical Memory: {0} MB, {1} MB free.
+        /// </summary>
+        public static string PhysicalMemory {
+            get {
+                return ResourceManager.GetString("PhysicalMemory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error copying plot to the clipboard.\n{0}.
         /// </summary>
         public static string Plots_CopyToClipboardError {
@@ -1174,6 +1201,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to CPU Count: {0}.
+        /// </summary>
+        public static string ProcessorCount {
+            get {
+                return ResourceManager.GetString("ProcessorCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ready.
         /// </summary>
         public static string Ready {
@@ -1188,6 +1224,15 @@ namespace Microsoft.R.Components {
         public static string ReplWindowName {
             get {
                 return ResourceManager.GetString("ReplWindowName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R Services Information:.
+        /// </summary>
+        public static string RServices_Information {
+            get {
+                return ResourceManager.GetString("RServices_Information", resourceCulture);
             }
         }
         
@@ -1242,6 +1287,24 @@ namespace Microsoft.R.Components {
         public static string Update {
             get {
                 return ResourceManager.GetString("Update", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Version: {0}.
+        /// </summary>
+        public static string Version {
+            get {
+                return ResourceManager.GetString("Version", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Virtual Memory: {0} MB, {1} MB free.
+        /// </summary>
+        public static string VirtualMemory {
+            get {
+                return ResourceManager.GetString("VirtualMemory", resourceCulture);
             }
         }
         

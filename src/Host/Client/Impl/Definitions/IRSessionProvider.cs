@@ -16,6 +16,7 @@ namespace Microsoft.R.Host.Client {
 
         bool IsConnected { get; }
         IBrokerClient Broker { get; }
+        IConsole Console { get; }
 
         IRSession GetOrCreate(Guid guid);
         IEnumerable<IRSession> GetSessions();
@@ -45,10 +46,5 @@ namespace Microsoft.R.Host.Client {
         /// <param name="path">Either a local path to the R binary or a URL to the broker.</param>
         /// <param name="cancellationToken"></param>
         Task<bool> TrySwitchBrokerAsync(string name, string path = null, CancellationToken cancellationToken = default(CancellationToken));
-
-        /// <summary>
-        /// Displays broker machine and process information
-        /// </summary>
-        void PrintBrokerInformation();
     }
 }

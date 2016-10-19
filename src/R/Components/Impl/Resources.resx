@@ -521,4 +521,25 @@ Are you sure you want to terminate R session?</value>
   <data name="UntrustedConnection" xml:space="preserve">
     <value>[Warning: UNTRUSTED]</value>
   </data>
+  <data name="ConnectedUserCount" xml:space="preserve">
+    <value>Connected users: {0}</value>
+  </data>
+  <data name="OperatingSystem" xml:space="preserve">
+    <value>Operating System: {0}</value>
+  </data>
+  <data name="PhysicalMemory" xml:space="preserve">
+    <value>Physical Memory: {0} MB, {1} MB free</value>
+  </data>
+  <data name="ProcessorCount" xml:space="preserve">
+    <value>CPU Count: {0}</value>
+  </data>
+  <data name="RServices_Information" xml:space="preserve">
+    <value>R Services Information:</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Version: {0}</value>
+  </data>
+  <data name="VirtualMemory" xml:space="preserve">
+    <value>Virtual Memory: {0} MB, {1} MB free</value>
+  </data>
 </root>

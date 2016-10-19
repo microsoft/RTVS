@@ -12,9 +12,9 @@ namespace Microsoft.R.Host.Client.Host {
         string Name { get; }
         bool IsRemote { get; }
         Uri Uri { get; }
-        AboutHost AboutHost { get; }
         bool IsVerified { get; }
 
+        Task<AboutHost> GetHostInformationAsync(CancellationToken cancellationToken = default(CancellationToken));
         Task PingAsync();
         Task<RHost> ConnectAsync(BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken), ReentrancyToken reentrancyToken = default(ReentrancyToken));
         Task TerminateSessionAsync(string name, CancellationToken cancellationToken = default(CancellationToken));
