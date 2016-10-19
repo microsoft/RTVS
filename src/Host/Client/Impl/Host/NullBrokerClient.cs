@@ -16,9 +16,9 @@ namespace Microsoft.R.Host.Client.Host {
         public Uri Uri { get; } = new Uri("http://localhost");
         public string Name { get; } = string.Empty;
         public bool IsRemote { get; } = true;
-        public AboutHost AboutHost => AboutHost.Empty;
         public bool IsVerified => true;
 
+        public Task<AboutHost> GetHostInformationAsync(CancellationToken cancellationToken = default(CancellationToken)) => Task.FromResult(AboutHost.Empty);
         public Task PingAsync() => Result;
 
         public Task<RHost> ConnectAsync(BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken), ReentrancyToken reentrancyToken = default(ReentrancyToken)) => Result;

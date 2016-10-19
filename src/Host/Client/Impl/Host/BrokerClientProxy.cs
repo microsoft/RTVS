@@ -29,10 +29,10 @@ namespace Microsoft.R.Host.Client.Host {
         public string Name => _broker.Name;
         public bool IsRemote => _broker.IsRemote;
         public Uri Uri => _broker.Uri;
-        public AboutHost AboutHost => _broker?.AboutHost;
         public bool IsVerified => _broker.IsVerified;
 
         public Task PingAsync() => _broker.PingAsync();
+        public Task<AboutHost> GetHostInformationAsync(CancellationToken cancellationToken) => _broker.GetHostInformationAsync(cancellationToken);
 
         public async Task<RHost> ConnectAsync(BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken), ReentrancyToken reentrancyToken = default(ReentrancyToken)) {
 

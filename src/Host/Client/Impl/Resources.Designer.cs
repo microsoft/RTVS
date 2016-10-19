@@ -71,24 +71,6 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 32 bit.
-        /// </summary>
-        internal static string Bits32 {
-            get {
-                return ResourceManager.GetString("Bits32", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 64 bit.
-        /// </summary>
-        internal static string Bits64 {
-            get {
-                return ResourceManager.GetString("Bits64", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The security certificate presented by the Remote R Services does not allow us to prove that you are indeed connecting to the machine {0}.
         ///
         ///This should never happen with a production Remote R Services, so please check with your server administrator.
@@ -98,24 +80,6 @@ namespace Microsoft.R.Host.Client {
         internal static string CertificateSecurityWarning {
             get {
                 return ResourceManager.GetString("CertificateSecurityWarning", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to *** Connected ***.
-        /// </summary>
-        internal static string Connected {
-            get {
-                return ResourceManager.GetString("Connected", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Connected users: {0}.
-        /// </summary>
-        internal static string ConnectedUserCount {
-            get {
-                return ResourceManager.GetString("ConnectedUserCount", resourceCulture);
             }
         }
         
@@ -250,74 +214,11 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Free Physical Memory: {0} MB.
-        /// </summary>
-        internal static string FreePhysicalMemory {
-            get {
-                return ResourceManager.GetString("FreePhysicalMemory", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Free Virtual Memory: {0} MB.
-        /// </summary>
-        internal static string FreeVirtualMemory {
-            get {
-                return ResourceManager.GetString("FreeVirtualMemory", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to HTTP error while creating session: {0}.
         /// </summary>
         internal static string HttpErrorCreatingSession {
             get {
                 return ResourceManager.GetString("HttpErrorCreatingSession", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Installed R:.
-        /// </summary>
-        internal static string InstalledInterpreters {
-            get {
-                return ResourceManager.GetString("InstalledInterpreters", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Operating System: {0}.
-        /// </summary>
-        internal static string OperatingSystem {
-            get {
-                return ResourceManager.GetString("OperatingSystem", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Platform: {0}.
-        /// </summary>
-        internal static string PlatformBits {
-            get {
-                return ResourceManager.GetString("PlatformBits", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to R Process: {0}.
-        /// </summary>
-        internal static string ProcessBits {
-            get {
-                return ResourceManager.GetString("ProcessBits", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to CPU Count: {0}.
-        /// </summary>
-        internal static string ProcessorCount {
-            get {
-                return ResourceManager.GetString("ProcessorCount", resourceCulture);
             }
         }
         
@@ -332,15 +233,6 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R Services Information:.
-        /// </summary>
-        internal static string RServices_Information {
-            get {
-                return ResourceManager.GetString("RServices_Information", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Connecting to R Workspace failed.
         ///Reason: {0}.
         /// </summary>
@@ -351,38 +243,11 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Total Physical Memory: {0} MB.
-        /// </summary>
-        internal static string TotalPhysicalMemory {
-            get {
-                return ResourceManager.GetString("TotalPhysicalMemory", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Total Virtual Memory: {0} MB.
-        /// </summary>
-        internal static string TotalVirtualMemory {
-            get {
-                return ResourceManager.GetString("TotalVirtualMemory", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The supplied TLS certificate is not trusted: {0}.
         /// </summary>
         internal static string Trace_UntrustedCertificate {
             get {
                 return ResourceManager.GetString("Trace_UntrustedCertificate", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Version: {0}.
-        /// </summary>
-        internal static string Version {
-            get {
-                return ResourceManager.GetString("Version", resourceCulture);
             }
         }
     }

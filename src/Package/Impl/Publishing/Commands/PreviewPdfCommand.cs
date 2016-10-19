@@ -2,14 +2,13 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Diagnostics;
-using Microsoft.Common.Core;
+using System.Threading.Tasks;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Markdown.Editor.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.R.Package.Publishing.Definitions;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
@@ -25,12 +24,14 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
         protected override string FileExtension => "pdf";
          protected override PublishFormat Format => PublishFormat.Pdf;
 
-        protected override bool CheckPrerequisites() {
-            if (!base.CheckPrerequisites()) {
+        protected override async Task<bool> CheckPrerequisitesAsync() {
+            if (!await base.CheckPrerequisitesAsync()) {
                 return false;
             }
-            if (!IOExtensions.ExistsOnPath("pdflatex.exe")) {
-                VsAppShell.Current.ShowErrorMessage(Resources.Error_PdfLatexMissing);
+            if (!await CheckExistsOnPathAsync("pdflatex.exe")) {
+                var session = _workflowProvider.GetOrCreate().RSession;
+                var message = session.IsRemote ? Resources.Error_PdfLatexMissingRemote : Resources.Error_PdfLatexMissingLocal;
+                await CoreShell.ShowErrorMessageAsync(message);
                 Process.Start("http://miktex.org/2.9/setup");
                 return false;
             }

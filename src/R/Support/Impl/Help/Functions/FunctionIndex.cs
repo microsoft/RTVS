@@ -155,7 +155,9 @@ namespace Microsoft.R.Support.Help.Functions {
                     // as workaround, add the first info with functionName
                     _functionToInfoMap[functionName] = functionInfos[0];
                 } else {
-                    // TODO: add some stub function info here to prevent subsequent calls for the same function as we already know the call will fail.
+                    // Add stub function info here to prevent subsequent calls
+                    // for the same function as we already know the call will fail.
+                    _functionToInfoMap[functionName] = new FunctionInfo(functionName);
                 }
             }
         }

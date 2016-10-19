@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.R.Host.Client.Host;
+using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Mocks;
 
 namespace Microsoft.R.Host.Client.Mocks {
@@ -13,7 +14,6 @@ namespace Microsoft.R.Host.Client.Mocks {
         private readonly Dictionary<Guid, IRSession> _sessions = new Dictionary<Guid, IRSession>();
 
         public void Dispose() { }
-
         public bool IsConnected { get; } = true;
         public IBrokerClient Broker { get; } = new NullBrokerClient();
 
@@ -38,8 +38,6 @@ namespace Microsoft.R.Host.Client.Mocks {
         public Task<bool> TrySwitchBrokerAsync(string name, string path = null, CancellationToken cancellationToken = default(CancellationToken)) {
             return Task.FromResult(true);
         }
-
-        public void PrintBrokerInformation() { }
 
 #pragma warning disable 67
         public event EventHandler BrokerChanging;
