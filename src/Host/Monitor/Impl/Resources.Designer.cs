@@ -61,24 +61,6 @@ namespace Microsoft.R.Host.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Change User Credentials....
-        /// </summary>
-        public static string Btn_AddOrChangeBrokerUser {
-            get {
-                return ResourceManager.GetString("Btn_AddOrChangeBrokerUser", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Remove User Credentials.
-        /// </summary>
-        public static string Btn_RemoveBrokerUser {
-            get {
-                return ResourceManager.GetString("Btn_RemoveBrokerUser", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Start R Remote Services.
         /// </summary>
         public static string Btn_StartBroker {
@@ -97,74 +79,11 @@ namespace Microsoft.R.Host.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add or change user credentials failed. Exception: {0}.
-        /// </summary>
-        public static string Error_AddOrChangeUserFailed {
-            get {
-                return ResourceManager.GetString("Error_AddOrChangeUserFailed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Auto restart failed , exception: {0}.
         /// </summary>
         public static string Error_AutoRestartFailed {
             get {
                 return ResourceManager.GetString("Error_AutoRestartFailed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Failed to parse credentials data. Win32 error {0}..
-        /// </summary>
-        public static string Error_CredentialData {
-            get {
-                return ResourceManager.GetString("Error_CredentialData", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to User credential unpacking failed. Win32 error {0}..
-        /// </summary>
-        public static string Error_CredentialUnpackingFailed {
-            get {
-                return ResourceManager.GetString("Error_CredentialUnpackingFailed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Failed to retrieve credentials from Window Credential Manager. Win32 error {0}..
-        /// </summary>
-        public static string Error_CredRetreiveFailed {
-            get {
-                return ResourceManager.GetString("Error_CredRetreiveFailed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Credentials save failed with Win32 error {0}..
-        /// </summary>
-        public static string Error_CredSaveFailed {
-            get {
-                return ResourceManager.GetString("Error_CredSaveFailed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to CredUIPromptForWindowsCredentials failed to load. Error: {0}.
-        /// </summary>
-        public static string Error_CredUIFailedToLoad {
-            get {
-                return ResourceManager.GetString("Error_CredUIFailedToLoad", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Log on attempt failed, with Win32 error {0}..
-        /// </summary>
-        public static string Error_LogOnAttemptFailed {
-            get {
-                return ResourceManager.GetString("Error_LogOnAttemptFailed", resourceCulture);
             }
         }
         
@@ -187,15 +106,6 @@ namespace Microsoft.R.Host.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to parse user name with Win32 error {0}..
-        /// </summary>
-        public static string Error_UserNameParsing {
-            get {
-                return ResourceManager.GetString("Error_UserNameParsing", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to R Remote Services is already running, process id {0}..
         /// </summary>
         public static string Info_BrokerAlreadyRunning {
@@ -205,101 +115,11 @@ namespace Microsoft.R.Host.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Trying to acquire credentials, attempt {0}..
-        /// </summary>
-        public static string Info_CredAttempt {
-            get {
-                return ResourceManager.GetString("Info_CredAttempt", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Successfully retrieved credentials from credential manager..
-        /// </summary>
-        public static string Info_CredRetreiveSucceeded {
-            get {
-                return ResourceManager.GetString("Info_CredRetreiveSucceeded", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Credential save succeeded..
-        /// </summary>
-        public static string Info_CredSaveSucceeded {
-            get {
-                return ResourceManager.GetString("Info_CredSaveSucceeded", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to User entered credentials..
-        /// </summary>
-        public static string Info_CredUICredsReceived {
-            get {
-                return ResourceManager.GetString("Info_CredUICredsReceived", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to User dismissed Credential UI without entering credentials..
-        /// </summary>
-        public static string Info_CredUIDismissed {
-            get {
-                return ResourceManager.GetString("Info_CredUIDismissed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to User credentials were successfully unpacked..
-        /// </summary>
-        public static string Info_CredUnpacked {
-            get {
-                return ResourceManager.GetString("Info_CredUnpacked", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to R Remote Services is configured to run as a different user than the Monitor. R Remote Services user credentials were not found..
-        /// </summary>
-        public static string Info_DidNotFindSavedCredentails {
-            get {
-                return ResourceManager.GetString("Info_DidNotFindSavedCredentails", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Log on attempt succeeded..
-        /// </summary>
-        public static string Info_LogOnAttemptSucceeded {
-            get {
-                return ResourceManager.GetString("Info_LogOnAttemptSucceeded", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to New R Remote Services instance started, process id {0}..
         /// </summary>
         public static string Info_NewBrokerInstanceStarted {
             get {
                 return ResourceManager.GetString("Info_NewBrokerInstanceStarted", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Removed credentials from credential manager..
-        /// </summary>
-        public static string Info_RemovedCredentials {
-            get {
-                return ResourceManager.GetString("Info_RemovedCredentials", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Too many attempts adding user login credentials..
-        /// </summary>
-        public static string Info_TooManyLoginAttempts {
-            get {
-                return ResourceManager.GetString("Info_TooManyLoginAttempts", resourceCulture);
             }
         }
         
@@ -322,55 +142,6 @@ namespace Microsoft.R.Host.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add or change credentials under which to run R Remote Services..
-        /// </summary>
-        public static string Text_AddOrChangeBrokerUser {
-            get {
-                return ResourceManager.GetString("Text_AddOrChangeBrokerUser", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Removes the credentials used for the R Remote Services..
-        /// </summary>
-        public static string Text_RemoveBrokerUser {
-            get {
-                return ResourceManager.GetString("Text_RemoveBrokerUser", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to R Remote Services Credentials.
-        /// </summary>
-        public static string Text_RHostBrokerCredentials {
-            get {
-                return ResourceManager.GetString("Text_RHostBrokerCredentials", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The credentials entered below will be used to start the R Remote Services.
-        ///
-        ///If you choose to save the credentials monitor will automatically start the the R Remote Services process..
-        /// </summary>
-        public static string Text_RHostBrokerCredentialsDetail {
-            get {
-                return ResourceManager.GetString("Text_RHostBrokerCredentialsDetail", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The user could not be logged in on this machine, please try again.
-        ///
-        ///The credentials entered below will be used to start the R Remote Services. If you choose to save the credentials monitor will automatically start the broker process..
-        /// </summary>
-        public static string Text_RHostBrokerCredentialsInvalidTryAgain {
-            get {
-                return ResourceManager.GetString("Text_RHostBrokerCredentialsInvalidTryAgain", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Starts and monitors R Remote Services process..
         /// </summary>
         public static string Text_StartBroker {
@@ -385,15 +156,6 @@ namespace Microsoft.R.Host.Monitor {
         public static string Text_StopBroker {
             get {
                 return ResourceManager.GetString("Text_StopBroker", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Use different user account to run the R Remote Services..
-        /// </summary>
-        public static string Text_UseDifferentBroker {
-            get {
-                return ResourceManager.GetString("Text_UseDifferentBroker", resourceCulture);
             }
         }
     }

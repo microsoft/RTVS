@@ -25,18 +25,6 @@ namespace Microsoft.R.Host.Monitor.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool UseDifferentBrokerUser {
-            get {
-                return ((bool)(this["UseDifferentBrokerUser"]));
-            }
-            set {
-                this["UseDifferentBrokerUser"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("5")]
         public int AutoRestartMaxCount {
             get {

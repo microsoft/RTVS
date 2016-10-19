@@ -100,7 +100,6 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="BrokerManager.cs" />
-    <Compile Include="CredentialManager.cs" />
     <Compile Include="Logging\MonitorLogger.cs" />
     <Compile Include="Logging\MonitorLoggerProvider.cs" />
     <Compile Include="Resources.Designer.cs">

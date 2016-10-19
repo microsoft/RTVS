@@ -1003,4 +1003,16 @@ Click OK to open the Pandoc download page in default browser. R Remote Services 
 Click OK to open MiKTeX download page in the default browser. R Remote Services process may need to be restarted when the MiKTeX setup completes.
 </value>
   </data>
+  <data name="Info_MarkdownGetOutputFile" xml:space="preserve">
+    <value>Saving published output file: {0}</value>
+  </data>
+  <data name="Info_MarkdownPublishComplete" xml:space="preserve">
+    <value>Finished publishing markdown file: {0}</value>
+  </data>
+  <data name="Info_MarkdownPublishingFile" xml:space="preserve">
+    <value>Publishing markdown file: {0}</value>
+  </data>
+  <data name="Info_MarkdownSendingInputFile" xml:space="preserve">
+    <value>Sending markdown input file to R: {0}</value>
+  </data>
 </root>

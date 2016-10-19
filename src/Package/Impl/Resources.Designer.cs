@@ -764,6 +764,42 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Saving published output file: {0}.
+        /// </summary>
+        public static string Info_MarkdownGetOutputFile {
+            get {
+                return ResourceManager.GetString("Info_MarkdownGetOutputFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Finished publishing markdown file: {0}.
+        /// </summary>
+        public static string Info_MarkdownPublishComplete {
+            get {
+                return ResourceManager.GetString("Info_MarkdownPublishComplete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publishing markdown file: {0}.
+        /// </summary>
+        public static string Info_MarkdownPublishingFile {
+            get {
+                return ResourceManager.GetString("Info_MarkdownPublishingFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sending markdown input file to R: {0}.
+        /// </summary>
+        public static string Info_MarkdownSendingInputFile {
+            get {
+                return ResourceManager.GetString("Info_MarkdownSendingInputFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Preparing project for transfer..
         /// </summary>
         public static string Info_PreparingProjectForTransfer {
