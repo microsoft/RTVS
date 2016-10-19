@@ -791,7 +791,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Sending markdown input file to R Host: {0}.
+        ///   Looks up a localized string similar to Sending markdown input file to R: {0}.
         /// </summary>
         public static string Info_MarkdownSendingInputFile {
             get {

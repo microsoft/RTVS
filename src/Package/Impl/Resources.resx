@@ -1013,6 +1013,6 @@ Click OK to open MiKTeX download page in the default browser. R Remote Services 
     <value>Publishing markdown file: {0}</value>
   </data>
   <data name="Info_MarkdownSendingInputFile" xml:space="preserve">
-    <value>Sending markdown input file to R Host: {0}</value>
+    <value>Sending markdown input file to R: {0}</value>
   </data>
 </root>
