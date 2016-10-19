@@ -283,7 +283,7 @@ namespace Microsoft.R.Host.Client.Session {
                 } catch (OperationCanceledException ex) when (!(ex is RHostDisconnectedException)) {
                     throw;
                 } catch (Exception ex) {
-                    Console.Write(Resources.RSessionProvider_ConnectionFailed.FormatInvariant(ex.Message));
+                    _console.Write(Resources.RSessionProvider_ConnectionFailed.FormatInvariant(ex.Message));
                     throw;
                 } finally {
                     foreach (var transaction in transactions) {
@@ -301,7 +301,7 @@ namespace Microsoft.R.Host.Client.Session {
             } catch (OperationCanceledException ex) when (!(ex is RHostDisconnectedException)) {
                 throw;
             } catch (Exception ex) {
-                Console.Write(Resources.RSessionProvider_ConnectionFailed.FormatInvariant(ex.Message));
+                _console.Write(Resources.RSessionProvider_ConnectionFailed.FormatInvariant(ex.Message));
                 throw;
             }
         }
@@ -311,7 +311,7 @@ namespace Microsoft.R.Host.Client.Session {
                 await TaskUtilities.WhenAllCancelOnFailure(transactions, (t, ct) => t.CompleteSwitchingBrokerAsync(ct), cancellationToken);
             } catch (OperationCanceledException ex) when (!(ex is RHostDisconnectedException)) {
             } catch (Exception ex) {
-                Console.Write(Resources.RSessionProvider_ConnectionFailed.FormatInvariant(ex.Message));
+                _console.Write(Resources.RSessionProvider_ConnectionFailed.FormatInvariant(ex.Message));
                 throw;
             }
         }
