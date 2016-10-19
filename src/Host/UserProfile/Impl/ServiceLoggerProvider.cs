@@ -10,24 +10,13 @@ using static System.FormattableString;
 
 namespace Microsoft.R.Host.UserProfile {
     class ServiceLoggerProvider : ILoggerProvider {
-
-        private readonly StreamWriter _writer;
         private readonly List<ServiceLogger> _loggers = new List<ServiceLogger>();
 
-        public ServiceLoggerProvider()
-                : this(File.CreateText(GetLogFileName())) {
-        }
-
-        public ServiceLoggerProvider(StreamWriter writer) {
-            _writer = writer;
-        }
-
-        private static string GetLogFileName() {
-            return Path.Combine(Path.GetTempPath(), Invariant($@"Microsoft.R.Host.UserProfile_{DateTime.Now:yyyyMdd_HHmmss}_pid{Process.GetCurrentProcess().Id}.log"));
+        public ServiceLoggerProvider() {
         }
 
         public ILogger CreateLogger(string categoryName) {
-            var logger = new ServiceLogger(categoryName, _writer);
+            var logger = new ServiceLogger(categoryName);
             _loggers.Add(logger);
             return logger;
         }
@@ -36,7 +25,6 @@ namespace Microsoft.R.Host.UserProfile {
             foreach (var logger in _loggers) {
                 logger.Dispose();
             }
-            _writer.Dispose();
         }
     }
 }

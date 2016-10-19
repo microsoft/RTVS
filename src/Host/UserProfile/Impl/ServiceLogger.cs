@@ -10,15 +10,13 @@ using Microsoft.Extensions.Logging;
 namespace Microsoft.R.Host.UserProfile {
     internal sealed class ServiceLogger : ILogger, IDisposable {
         private readonly string _category;
-        private volatile StreamWriter _writer;
+        private object _logLock = new object();
 
-        public ServiceLogger(string category, StreamWriter writer) {
+        public ServiceLogger(string category) {
             _category = category;
-            _writer = writer;
         }
 
         public void Dispose() {
-            _writer = null;
         }
 
         public IDisposable BeginScope<TState>(TState state) {
@@ -29,23 +27,10 @@ namespace Microsoft.R.Host.UserProfile {
             return true;
         }
 
+        
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter) {
-            var writer = _writer;
-            if (writer == null) {
-                return;
-            }
-
-            string message = formatter(state, exception);
-            lock (writer) {
-                writer.WriteLine("[{0:u}] <{1}> ({2}):", DateTime.Now, _category, logLevel.ToString()[0]);
-                writer.WriteLine(message);
-
-                if (exception != null) {
-                    writer.WriteLine("Exception: " + exception);
-                }
-
-                writer.WriteLine();
-                writer.Flush();
+            lock (_logLock) {
+                string message = formatter(state, exception);
                 using (EventLog eventLog = new EventLog("Application")) {
                     EventLogEntryType logType = GetLogType(logLevel);
                     eventLog.Source = "Application";
