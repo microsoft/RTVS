@@ -16,7 +16,6 @@ namespace Microsoft.R.Host.Client {
 
         bool IsConnected { get; }
         IBrokerClient Broker { get; }
-        IConsole Console { get; }
 
         IRSession GetOrCreate(Guid guid);
         IEnumerable<IRSession> GetSessions();

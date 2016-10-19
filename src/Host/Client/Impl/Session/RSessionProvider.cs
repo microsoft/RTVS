@@ -24,6 +24,7 @@ namespace Microsoft.R.Host.Client.Session {
 
         private readonly BrokerClientProxy _brokerProxy;
         private readonly ICoreServices _services;
+        private readonly IConsole _console;
 
         private int _sessionCounter;
         private int _isConnected;
@@ -31,7 +32,6 @@ namespace Microsoft.R.Host.Client.Session {
         public bool IsConnected => _isConnected == 1;
 
         public IBrokerClient Broker => _brokerProxy;
-        public IConsole Console { get; }
 
         public event EventHandler BrokerChanging;
         public event EventHandler BrokerChangeFailed;
@@ -39,7 +39,7 @@ namespace Microsoft.R.Host.Client.Session {
         public event EventHandler<BrokerStateChangedEventArgs> BrokerStateChanged;
 
         public RSessionProvider(ICoreServices services, IConsole callback = null) {
-            Console = callback ?? new NullConsole();
+            _console = callback ?? new NullConsole();
             _brokerProxy = new BrokerClientProxy(_connectArwl);
             _services = services;
         }
@@ -325,10 +325,10 @@ namespace Microsoft.R.Host.Client.Session {
             }
 
             if (uri.IsFile) {
-                return new LocalBrokerClient(name, uri.LocalPath, _services, Console);
+                return new LocalBrokerClient(name, uri.LocalPath, _services, _console);
             }
 
-            return new RemoteBrokerClient(name, uri, _services, Console);
+            return new RemoteBrokerClient(name, uri, _services, _console);
         }
 
         private class IsolatedRSessionEvaluation : IRSessionEvaluation {

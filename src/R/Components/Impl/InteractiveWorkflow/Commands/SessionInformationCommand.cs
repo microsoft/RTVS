@@ -41,16 +41,16 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
 
         private async Task PrintBrokerInformationAsync(bool reportTelemetry = false) {
             var a = await _interactiveWorkflow.RSessions.Broker.GetHostInformationAsync();
-            var console = _interactiveWorkflow.RSessions.Console;
+            var window = _interactiveWorkflow.ActiveWindow.InteractiveWindow;
 
-            console.Write(Environment.NewLine + Resources.RServices_Information);
-            console.Write("\t" + Resources.Version.FormatInvariant(a.Version));
-            console.Write("\t" + Resources.OperatingSystem.FormatInvariant(a.OS.VersionString));
-            console.Write("\t" + Resources.ProcessorCount.FormatInvariant(a.ProcessorCount));
-            console.Write("\t" + Resources.PhysicalMemory.FormatInvariant(a.TotalPhysicalMemory, a.FreePhysicalMemory));
-            console.Write("\t" + Resources.VirtualMemory.FormatInvariant(a.TotalVirtualMemory, a.FreeVirtualMemory));
-            console.Write("\t" + Resources.ConnectedUserCount.FormatInvariant(a.ConnectedUserCount));
-            console.Write(string.Empty);
+            window.WriteErrorLine(Environment.NewLine + Resources.RServices_Information);
+            window.WriteErrorLine("\t" + Resources.Version.FormatInvariant(a.Version));
+            window.WriteErrorLine("\t" + Resources.OperatingSystem.FormatInvariant(a.OS.VersionString));
+            window.WriteErrorLine("\t" + Resources.ProcessorCount.FormatInvariant(a.ProcessorCount));
+            window.WriteErrorLine("\t" + Resources.PhysicalMemory.FormatInvariant(a.TotalPhysicalMemory, a.FreePhysicalMemory));
+            window.WriteErrorLine("\t" + Resources.VirtualMemory.FormatInvariant(a.TotalVirtualMemory, a.FreeVirtualMemory));
+            window.WriteErrorLine("\t" + Resources.ConnectedUserCount.FormatInvariant(a.ConnectedUserCount));
+            window.WriteErrorLine(string.Empty);
 
             if (reportTelemetry) {
                 var services = _interactiveWorkflow.Shell.Services;

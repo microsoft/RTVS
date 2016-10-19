@@ -14,10 +14,8 @@ namespace Microsoft.R.Host.Client.Mocks {
         private readonly Dictionary<Guid, IRSession> _sessions = new Dictionary<Guid, IRSession>();
 
         public void Dispose() { }
-
         public bool IsConnected { get; } = true;
         public IBrokerClient Broker { get; } = new NullBrokerClient();
-        public IConsole Console { get; } = new NullConsole();
 
         public IRSession GetOrCreate(Guid guid) {
             IRSession session;
