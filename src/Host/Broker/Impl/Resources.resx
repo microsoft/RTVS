@@ -237,4 +237,7 @@
   <data name="Trace_UserProfileDirectory" xml:space="preserve">
     <value>User {0} profile directory: {1}</value>
   </data>
+  <data name="Exception_MaxAllowedUsers" xml:space="preserve">
+    <value>Broker has reached maximum allowed concurrent user limit.</value>
+  </data>
 </root>

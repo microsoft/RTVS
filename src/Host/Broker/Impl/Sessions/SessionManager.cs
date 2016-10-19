@@ -77,10 +77,47 @@ namespace Microsoft.R.Host.Broker.Sessions {
             }
         }
 
+        private const int MaximumConcurrentClientWindowsUsers = 1;
+        private bool IsUserAllowedToCreateSession(IIdentity user) {
+            lock (_sessions) {
+                int activeUsers = _sessions.Keys.Where((k) => _sessions[k].Count > 0).Count();
+                bool userHasARecord = _sessions.Keys.Contains(user.Name);
+
+                bool userHasActiveSession = false;
+                if (userHasARecord) {
+                    List<Session> userSessions;
+                    _sessions.TryGetValue(user.Name, out userSessions);
+
+                    userHasActiveSession = userSessions?.Count > 0;
+                }
+
+                if (userHasActiveSession) {
+                    // This user's session already exists
+                    return true;
+                }
+
+                if (activeUsers < MaximumConcurrentClientWindowsUsers) {
+                    // User session doesn't exist AND there are slot(s) available for user session
+                    // Allow user to create a session on Client Windows
+                    return true;
+                } 
+
+                // user session doesn't exist AND there are NO slots available for user session
+                // Do NOT allow user to create a session on Client Windows
+                return false;
+                
+            }
+        }
+
         public Session CreateSession(IIdentity user, string id, Interpreter interpreter, SecureString password, string profilePath, string commandLineArguments) {
             Session session;
 
             lock (_sessions) {
+                if (!NativeMethods.IsWindowsServer() && !IsUserAllowedToCreateSession(user)) {
+                    // This is Client Windows, only 1 user is allowed to create sessions at a time.
+                    throw new ArgumentOutOfRangeException(user.Name, Resources.Exception_MaxAllowedUsers);
+                }
+
                 var userSessions = GetOrCreateSessionList(user);
 
                 var oldSession = userSessions.FirstOrDefault(s => s.Id == id);
