@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
@@ -47,7 +48,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                     await inter.RespondAsync("library()" + Environment.NewLine);
                 }
             }
-            await cb.Received().ViewLibraryAsync();
+            await cb.Received().ViewLibraryAsync(Arg.Any<CancellationToken>());
         }
 
         [Test]
