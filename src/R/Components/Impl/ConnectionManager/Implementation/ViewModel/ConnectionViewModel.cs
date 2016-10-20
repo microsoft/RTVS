@@ -4,18 +4,19 @@
 using System;
 using System.Globalization;
 using System.Threading;
-using System.Windows.Media;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Wpf;
 using Microsoft.R.Components.ConnectionManager.ViewModel;
+using static System.FormattableString;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
     internal sealed class ConnectionViewModel : BindableBase, IConnectionViewModel {
+        private const int DefaultPort = 5444;
+
         private readonly IConnection _connection;
 
         private string _name;
-        private string _path;
+        private string _userProvidedPath;
         private string _rCommandLineArguments;
         private bool _isUserCreated;
         private string _saveButtonTooltip;
@@ -43,6 +44,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public Uri Id { get; }
 
+        /// <summary>
+        /// User-friendly name of the connection.
+        /// </summary>
         public string Name {
             get { return _name; }
             set {
@@ -51,14 +55,27 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             }
         }
 
-        public string Path {
-            get { return _path; }
+        /// <summary>
+        /// Remote machine name or URL as entered by the user. In the local case 
+        /// it is same as <see cref="Path"/>. In the remote case user can enter 
+        /// just the machine name and assume default protocol and port are suppied.
+        /// </summary>
+        public string UserProvidedPath {
+            get { return _userProvidedPath; }
             set {
-                SetProperty(ref _path, value);
-                UpdateCalculated();
+                SetProperty(ref _userProvidedPath, value);
+                Path = ToCompletePath(_userProvidedPath);
             }
         }
 
+        /// <summary>
+        /// Path to local interpreter installation or URL to remote machine.
+        /// </summary>
+        public string Path { get; private set; }
+
+        /// <summary>
+        /// Optional command line arguments to R interpreter.
+        /// </summary>
         public string RCommandLineArguments {
             get { return _rCommandLineArguments; }
             set {
@@ -148,11 +165,13 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         public DateTime LastUsed => _connection.LastUsed;
 
         public void Reset() {
-            Name = _connection?.Name;
-            Path = _connection?.Path;
-            RCommandLineArguments = _connection?.RCommandLineArguments;
-            IsUserCreated = _connection?.IsUserCreated ?? false;
+            // Make sure user path and remoteness are set first
             IsRemote = _connection?.IsRemote ?? false;
+            IsUserCreated = _connection?.IsUserCreated ?? false;
+            UserProvidedPath = _connection?.UserProvidedPath;
+
+            Name = _connection?.Name;
+            RCommandLineArguments = _connection?.RCommandLineArguments;
             IsEditing = false;
             IsTestConnectionSucceeded = false;
             TestConnectionFailedText = null;
@@ -179,6 +198,39 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             }
 
             IsRemote = !(uri?.IsFile ?? true);
+        }
+
+        private string ToCompletePath(string path) {
+            // https://foo:5444 -> https://foo:5444 (no change)
+            // https://foo -> https://foo (no change)
+            // http://foo -> http://foo (no change)
+            // foo->https://foo:5444
+            // foo: 5000->https://foo:5000
+            // username: password @foo -> https://username:password@foo:5444
+            if (IsRemote) {
+                Uri uri = null;
+                try {
+                    Uri.TryCreate(path, UriKind.Absolute, out uri);
+                } catch (InvalidOperationException) { } catch (ArgumentException) { } catch(UriFormatException) { }
+
+                if (uri == null || !(uri.IsFile || string.IsNullOrEmpty(uri.Host))) {
+                    bool hasScheme = uri != null && !string.IsNullOrEmpty(uri.Scheme);
+                    bool hasPort = uri != null && uri.Port >= 0;
+
+                    if (hasScheme) {
+                        if (hasPort) {
+                            return Invariant($"{uri.Scheme}{Uri.SchemeDelimiter}{uri.Host}:{uri.Port}");
+                        }
+                        return Invariant($"{uri.Scheme}{Uri.SchemeDelimiter}{uri.Host}");
+                    } else {
+                        if (Uri.CheckHostName(path) != UriHostNameType.Unknown) {
+                            var port = hasPort ? uri.Port : DefaultPort;
+                            return Invariant($"{Uri.UriSchemeHttps}{Uri.SchemeDelimiter}{path}:{port}");
+                        }
+                    }
+                }
+            }
+            return path;
         }
     }
 }

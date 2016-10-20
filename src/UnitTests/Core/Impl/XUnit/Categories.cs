@@ -44,6 +44,11 @@ namespace Microsoft.UnitTests.Core.XUnit {
         }
 
         [ExcludeFromCodeCoverage]
+        public class ConnectionsAttribute : CategoryAttribute {
+            public ConnectionsAttribute() : base("Connections") { }
+        }
+
+        [ExcludeFromCodeCoverage]
         public static class Md {
             [ExcludeFromCodeCoverage]
             public class ClassifierAttribute : CategoryAttribute {

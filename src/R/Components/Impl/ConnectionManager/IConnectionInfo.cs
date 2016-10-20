@@ -11,9 +11,16 @@ namespace Microsoft.R.Components.ConnectionManager {
         string Name { get; }
 
         /// <summary>
+        /// Remote machine name or URL as entered by the user. In the local case 
+        /// it is same as <see cref="Path"/>. In the remote case user can enter 
+        /// just the machine name and assume default protocol and port are suppied.
+        /// </summary>
+        string UserProvidedPath { get; set; }
+
+        /// <summary>
         /// Path to local interpreter installation or URL to remote machine.
         /// </summary>
-        string Path { get; set; }
+        string Path { get; }
 
         /// <summary>
         /// Optional command line arguments to R interpreter.
