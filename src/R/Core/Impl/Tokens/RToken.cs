@@ -56,6 +56,7 @@ namespace Microsoft.R.Core.Tokens {
                 case RTokenType.Infinity:
                 case RTokenType.Missing:
                 case RTokenType.Identifier:
+                case RTokenType.Ellipsis:
                     return true;
             }
             return false;
