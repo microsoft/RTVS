@@ -10,13 +10,21 @@ namespace Microsoft.R.DataInspection {
         public IRValueInfo ComputedValue { get; }
 
         internal RActiveBindingInfo(IRSession session, string environmentExpression, string expression, string name, JObject json)
-            : base(session, environmentExpression, expression, name) {
+            : this(session, environmentExpression, expression, name, (IRValueInfo)null) {
+
             JObject bindingResultJson = json.Value<JObject>(FieldNames.ComputedValue);
-            if(bindingResultJson == null) {
-                ComputedValue = null;
-            } else {
+            if (bindingResultJson != null) {
                 ComputedValue = new RValueInfo(session, environmentExpression, expression, name, bindingResultJson);
-            }    
+            }
         }
+
+        internal RActiveBindingInfo(IRSession session, string environmentExpression, string expression, string name, IRValueInfo computedValue)
+            : base(session, environmentExpression, expression, name) {
+
+            ComputedValue = computedValue;
+        }
+
+        public override IREvaluationResultInfo ToEnvironmentIndependentResult() =>
+            new RActiveBindingInfo(Session, EnvironmentExpression, this.GetEnvironmentIndependentExpression(), Name, ComputedValue);
     }
 }

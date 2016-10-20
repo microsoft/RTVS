@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.R.ExecutionTracing;
 using Microsoft.R.Host.Client;
 using static System.FormattableString;
 
@@ -39,7 +38,7 @@ namespace Microsoft.R.DataInspection {
         string Expression { get; }
 
         /// <summary>
-        /// Name of the result. This corresponds to the <c>name</c> parameter of <see cref="RTracer.EvaluateAsync"/>.
+        /// Name of the result. This corresponds to the <c>name</c> parameter of <see cref="RSessionExtensions.TryEvaluateAndDescribeAsync"/>.
         /// </summary>
         /// <remarks>
         /// <para>
@@ -47,6 +46,16 @@ namespace Microsoft.R.DataInspection {
         /// and is primarily useful in that scenario. See the documentation of that method for more information.
         /// </para>
         string Name { get; }
+
+        /// <summary>
+        /// Creates a copy of this result that can be evaluated in any environment (rather than just the one designated by
+        /// <see cref="EnvironmentExpression"/>) to produce the same value.
+        /// </summary>
+        /// <remarks>
+        /// No evaluation takes place. The new result is identical to the one on which the method was called, except that
+        /// <see cref="EnvironmentExpression"/> is incorporated directly into <see cref="Expression"/>. 
+        /// </remarks>
+        IREvaluationResultInfo ToEnvironmentIndependentResult();
     }
 
     public static class REvaluationResultInfoExtensions {
@@ -90,5 +99,11 @@ namespace Microsoft.R.DataInspection {
         /// <exception cref="RException">Evaluation of the expression produced an error.</exception>
         public static Task<IRValueInfo> GetValueAsync(this IREvaluationResultInfo info, REvaluationResultProperties properties, string repr, CancellationToken cancellationToken = default(CancellationToken)) =>
             info.Session.EvaluateAndDescribeAsync(info.EnvironmentExpression, info.Expression, info.Name, properties, repr, cancellationToken);
+
+        /// <summary>
+        /// Computes the expression that can be used to produce the same value in any environment.
+        /// </summary>
+        public static string GetEnvironmentIndependentExpression(this IREvaluationResultInfo info) =>
+            info.EnvironmentExpression + "$" + info.Expression;
     }
 }

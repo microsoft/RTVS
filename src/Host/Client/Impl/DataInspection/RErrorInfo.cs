@@ -16,5 +16,8 @@ namespace Microsoft.R.DataInspection {
         public override string ToString() {
             return Invariant($"ERROR: {ErrorText}");
         }
+
+        public override IREvaluationResultInfo ToEnvironmentIndependentResult() =>
+            new RErrorInfo(Session, EnvironmentExpression, this.GetEnvironmentIndependentExpression(), Name, ErrorText);
     }
 }

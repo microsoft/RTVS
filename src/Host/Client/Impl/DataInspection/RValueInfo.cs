@@ -9,7 +9,7 @@ using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 using static Microsoft.R.Host.Client.REvaluationResult;
 
-    namespace Microsoft.R.DataInspection {
+namespace Microsoft.R.DataInspection {
     internal sealed class RValueInfo : REvaluationResultInfo, IRValueInfo {
         public string Representation { get; }
 
@@ -60,6 +60,37 @@ using static Microsoft.R.Host.Client.REvaluationResult;
 
                 return false;
             }
+        }
+
+        internal RValueInfo(
+            IRSession session,
+            string environmentExpression,
+            string expression,
+            string name,
+            string representation,
+            RChildAccessorKind accessorKind,
+            string typeName,
+            IReadOnlyList<string> classes,
+            int? length,
+            int? attributeCount,
+            int? slotCount,
+            int? nameCount,
+            IReadOnlyList<int> dim,
+            RValueFlags flags,
+            bool canCoerceToDataFrame
+        ) : base(session, environmentExpression, expression, name) {
+
+            Representation = representation;
+            AccessorKind = accessorKind;
+            TypeName = typeName;
+            Classes = classes;
+            Length = length;
+            AttributeCount = attributeCount;
+            SlotCount = slotCount;
+            NameCount = nameCount;
+            Dim = dim;
+            Flags = flags;
+            CanCoerceToDataFrame = canCoerceToDataFrame;
         }
 
         internal RValueInfo(IRSession session, string environmentExpression, string expression, string name, JObject json)
@@ -120,5 +151,9 @@ using static Microsoft.R.Host.Client.REvaluationResult;
                 }
             }
         }
+
+        public override IREvaluationResultInfo ToEnvironmentIndependentResult() =>
+            new RValueInfo(Session, EnvironmentExpression, this.GetEnvironmentIndependentExpression(), Name, Representation,
+                AccessorKind, TypeName, Classes, Length, AttributeCount, SlotCount, NameCount, Dim, Flags, CanCoerceToDataFrame);
     }
 }

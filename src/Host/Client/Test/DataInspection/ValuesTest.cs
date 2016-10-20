@@ -184,9 +184,73 @@ namespace Microsoft.R.DataInspection.Test {
                     .Which.Should().BeAssignableTo<IRValueInfo>()
                     .Which;
 
-                var p = children.Should().ContainSingle(er => er.Name == "p")
+                children.Should().ContainSingle(er => er.Name == "p")
                     .Which.Should().BeAssignableTo<IRPromiseInfo>()
                     .Which.Code.Should().Be(d.Representation);
+            }
+        }
+
+        [Test]
+        [Category.R.DataInspection]
+        public async Task EnvironmentIndependentResult() {
+            const string code =
+@"(function(p) {
+    v <- 42
+    makeActiveBinding('a', function() 42, environment())
+    browser()
+  })(42)";
+
+            var tracer = await _session.TraceExecutionAsync();
+            using (var sf = new SourceFile(code)) {
+                await tracer.EnableBreakpointsAsync(true);
+
+                await sf.Source(_session);
+                await _session.NextPromptShouldBeBrowseAsync();
+
+                var stackFrames = (await _session.TracebackAsync()).ToArray();
+                stackFrames.Should().NotBeEmpty();
+
+                var env = stackFrames.Last();
+                var children = (await env.DescribeChildrenAsync(ExpressionProperty | ComputedValueProperty, RValueRepresentations.Deparse()));
+
+                var v = children.Should().ContainSingle(er => er.Name == "v")
+                    .Which.Should().BeAssignableTo<IRValueInfo>()
+                    .Which;
+
+                var p = children.Should().ContainSingle(er => er.Name == "p")
+                    .Which.Should().BeAssignableTo<IRPromiseInfo>()
+                    .Which;
+
+                var a = children.Should().ContainSingle(er => er.Name == "a")
+                    .Which.Should().BeAssignableTo<IRActiveBindingInfo>()
+                    .Which;
+
+                var e = (await env.TryEvaluateAndDescribeAsync("non_existing_variable", None, null))
+                    .Should().BeAssignableTo<IRErrorInfo>()
+                    .Which;
+
+                var iv = v.ToEnvironmentIndependentResult().Should().BeAssignableTo<IRValueInfo>().Which;
+                (await _session.EvaluateAndDescribeAsync(iv.Expression, ExpressionProperty, RValueRepresentations.Deparse()))
+                    .Should().BeAssignableTo<IRValueInfo>().Which.Representation.Should().Be(v.Representation);
+
+                // When a promise expression is evaluated directly, rather than via children, the promise is forced
+                // and becomes a value. To have something to compare it against, evaluate the original promise in
+                // its original environment as well.
+                var pv = await v.GetValueAsync(ExpressionProperty, RValueRepresentations.Deparse());
+                var ipv = p.ToEnvironmentIndependentResult().Should().BeAssignableTo<IRPromiseInfo>().Which;
+                (await _session.EvaluateAndDescribeAsync(ipv.Expression, ExpressionProperty, RValueRepresentations.Deparse()))
+                    .Should().BeAssignableTo<IRValueInfo>()
+                    .Which.Representation.Should().Be(pv.Representation);
+
+                // When an active binding expression is evaluated directly, rather than via children, its active
+                // binding nature is not discoverable, and it produces a value result.
+                var iav = a.ToEnvironmentIndependentResult().Should().BeAssignableTo<IRActiveBindingInfo>().Which;
+                (await _session.EvaluateAndDescribeAsync(iav.Expression, ExpressionProperty | ComputedValueProperty, RValueRepresentations.Deparse()))
+                    .Should().BeAssignableTo<IRValueInfo>().Which.Representation.Should().Be(a.ComputedValue.Representation);
+
+                var ie = e.ToEnvironmentIndependentResult().Should().BeAssignableTo<IRErrorInfo>().Which;
+                (await _session.TryEvaluateAndDescribeAsync(ie.Expression, ExpressionProperty, RValueRepresentations.Deparse()))
+                    .Should().BeAssignableTo<IRErrorInfo>();
             }
         }
 
