@@ -113,6 +113,15 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Windows Workstation only allows a singe user session..
+        /// </summary>
+        internal static string Error_MaxUsersAllowed {
+            get {
+                return ResourceManager.GetString("Error_MaxUsersAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Remote machine does not have certificate installed for the TLS with the Remote R Service..
         /// </summary>
         internal static string Error_NoBrokerCertificate {
@@ -139,6 +148,15 @@ namespace Microsoft.R.Host.Client {
             }
         }
         
+        /// <summary>
+        ///   Looks up a localized string similar to This session already has an active client connection.
+        /// </summary>
+        internal static string Error_PipeAlreadyConnected {
+            get {
+                return ResourceManager.GetString("Error_PipeAlreadyConnected", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to The following exception occurred during initialization of R session, and the session has been terminated:
         ///

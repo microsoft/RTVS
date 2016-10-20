@@ -115,7 +115,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
             lock (_sessions) {
                 if (!NativeMethods.IsWindowsServer() && !IsUserAllowedToCreateSession(user)) {
                     // This is Client Windows, only 1 user is allowed to create sessions at a time.
-                    throw new ArgumentOutOfRangeException(user.Name, Resources.Exception_MaxAllowedUsers);
+                    throw new BrokerMaxedUsersException(Resources.Exception_MaxAllowedUsers);
                 }
 
                 var userSessions = GetOrCreateSessionList(user);
