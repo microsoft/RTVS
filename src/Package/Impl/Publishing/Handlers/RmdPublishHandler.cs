@@ -6,11 +6,14 @@ using System.ComponentModel.Composition;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Markdown.Editor.Flavor;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Publishing.Definitions;
+using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Publishing {
 
@@ -28,22 +31,42 @@ namespace Microsoft.VisualStudio.R.Package.Publishing {
             return true;
         }
 
-        public async Task PublishAsync(IRSession session, ICoreShell coreShell,  IFileSystem fs, string inputFilePath, string outputFilePath, PublishFormat publishFormat, Encoding encoding) {
+        public async Task PublishAsync(IRSession session, IApplicationShell appShell,  IFileSystem fs, string inputFilePath, string outputFilePath, PublishFormat publishFormat, Encoding encoding) {
             try {
-                await RMarkdownRenderAsync(session, fs, inputFilePath, outputFilePath, GetDocumentTypeString(publishFormat), encoding.CodePage);
+                await RMarkdownRenderAsync(session, fs, inputFilePath, outputFilePath, GetDocumentTypeString(publishFormat), encoding.CodePage, appShell);
             } catch (IOException ex) {
-                coreShell.ShowErrorMessage(ex.Message);
+                await appShell.ShowErrorMessageAsync(ex.Message);
             } catch (RException ex) {
-                coreShell.ShowErrorMessage(ex.Message);
+                await appShell.ShowErrorMessageAsync(ex.Message);
             } catch (OperationCanceledException) {
             } 
         }
 
-        private async Task RMarkdownRenderAsync(IRSession session, IFileSystem fs, string inputFilePath, string outputFilePath, string format, int codePage) {
+        private async Task RMarkdownRenderAsync(IRSession session, IFileSystem fs, string inputFilePath, string outputFilePath, string format, int codePage, IApplicationShell appShell) {
             using (var fts = new DataTransferSession(session, fs)) {
-                var rmd = await fts.SendFileAsync(inputFilePath);
-                var publishResult = await session.EvaluateAsync<ulong>($"rtvs:::rmarkdown_publish(blob_id = {rmd.Id}, output_format = {format.ToRStringLiteral()}, encoding = 'cp{codePage}')", REvaluationKind.Normal);
-                await fts.FetchFileAsync(new RBlobInfo(publishResult), outputFilePath);
+                string currentStatusText = string.Empty;
+                uint cookie = 0;
+                IVsStatusbar statusBar = null;
+                appShell.DispatchOnUIThread(() => {
+                    statusBar = appShell.GetGlobalService<IVsStatusbar>(typeof(SVsStatusbar));
+                    statusBar.GetText(out currentStatusText);
+                    statusBar.Progress(ref cookie, 1, "", 0, 0);
+                });
+                
+                try {
+                    appShell.DispatchOnUIThread(() => { statusBar?.Progress(ref cookie, 1, Resources.Info_MarkdownSendingInputFile.FormatInvariant(Path.GetFileName(inputFilePath)), 0, 3); });
+                    var rmd = await fts.SendFileAsync(inputFilePath);
+                    appShell.DispatchOnUIThread(() => { statusBar?.Progress(ref cookie, 1, Resources.Info_MarkdownPublishingFile.FormatInvariant(Path.GetFileName(inputFilePath)), 1, 3); });
+                    var publishResult = await session.EvaluateAsync<ulong>($"rtvs:::rmarkdown_publish(blob_id = {rmd.Id}, output_format = {format.ToRStringLiteral()}, encoding = 'cp{codePage}')", REvaluationKind.Normal);
+                    appShell.DispatchOnUIThread(() => { statusBar?.Progress(ref cookie, 1, Resources.Info_MarkdownGetOutputFile.FormatInvariant(Path.GetFileName(outputFilePath)), 2, 3); });
+                    await fts.FetchFileAsync(new RBlobInfo(publishResult), outputFilePath);
+                    appShell.DispatchOnUIThread(() => { statusBar?.Progress(ref cookie, 1, Resources.Info_MarkdownPublishComplete.FormatInvariant(Path.GetFileName(outputFilePath)), 3, 3); });
+                } finally {
+                    appShell.DispatchOnUIThread(() => {
+                        statusBar?.Progress(ref cookie, 0, "", 0, 0);
+                        statusBar?.SetText(currentStatusText);
+                    });
+                }
             }
         }
 

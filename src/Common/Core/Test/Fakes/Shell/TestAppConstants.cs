@@ -10,5 +10,6 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
         public uint LocaleId => 1033;
         public string LocalMachineHive => null;
         public IntPtr ApplicationWindowHandle => IntPtr.Zero;
+        public UIColorTheme UIColorTheme => UIColorTheme.Light;
     }
 }

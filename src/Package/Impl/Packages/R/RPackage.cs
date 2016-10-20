@@ -109,7 +109,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 return;
             }
 
-            VsWpfOverrides.Apply(VsAppShell.Current);
+            VsWpfOverrides.Apply();
             CranMirrorList.Download();
 
             using (var p = Current.GetDialogPage(typeof(RToolsOptionsPage)) as RToolsOptionsPage) {

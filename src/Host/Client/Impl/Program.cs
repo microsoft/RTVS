@@ -196,6 +196,7 @@ namespace Microsoft.R.Host.Client {
             public IntPtr ApplicationWindowHandle => IntPtr.Zero;
             public uint LocaleId => 1033;
             public string LocalMachineHive => null;
+            public UIColorTheme UIColorTheme => UIColorTheme.Light;
         }
     }
 }

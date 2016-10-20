@@ -3,6 +3,7 @@
 
 using System;
 using System.ComponentModel.Composition;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -54,6 +55,8 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             return installed;
         }
 
+        [SuppressMessage("Microsoft.Reliability", "CA2001:AvoidCallingProblematicMethods", MessageId = "System.Reflection.Assembly.LoadFrom", 
+                          Justification = "Need to be able to load dynamically since SQL Tools may not be present")]
         private IDacPackageServices TryGetDacServices() {
             var thisAssemblyPath = Assembly.GetExecutingAssembly().GetAssemblyPath();
             var directory = Path.GetDirectoryName(thisAssemblyPath);

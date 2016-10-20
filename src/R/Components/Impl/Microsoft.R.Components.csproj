@@ -294,6 +294,10 @@
       <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
       <Name>Microsoft.R.Host.Client</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Host\Protocol\Impl\Microsoft.R.Host.Protocol.csproj">
+      <Project>{c46e5f53-4caf-4c65-b173-ca8140fb41e0}</Project>
+      <Name>Microsoft.R.Host.Protocol</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Languages\Core\Impl\Microsoft.Languages.Core.csproj">
       <Project>{25CD8690-6208-4740-B123-6DBCE6B9444A}</Project>
       <Name>Microsoft.Languages.Core</Name>

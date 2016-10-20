@@ -18,7 +18,6 @@ using Microsoft.R.Interpreters;
 
 namespace Microsoft.R.Host.Client.Session {
     public class RSessionProvider : IRSessionProvider {
-        private readonly IConsole _console;
         private readonly ConcurrentDictionary<Guid, RSession> _sessions = new ConcurrentDictionary<Guid, RSession>();
         private readonly DisposeToken _disposeToken = DisposeToken.Create<RSessionProvider>();
         private readonly BinaryAsyncLock _brokerDisconnectedLock = new BinaryAsyncLock();
@@ -26,6 +25,7 @@ namespace Microsoft.R.Host.Client.Session {
 
         private readonly BrokerClientProxy _brokerProxy;
         private readonly ICoreServices _services;
+        private readonly IConsole _console;
 
         private int _sessionCounter;
         private int _isConnected;
@@ -228,12 +228,6 @@ namespace Microsoft.R.Host.Client.Session {
                 try {
                     BrokerChanging?.Invoke(this, EventArgs.Empty);
                     await SwitchBrokerAsync(cancellationToken, lockToken.Reentrancy);
-
-                    if (brokerClient.IsRemote) {
-                        _console.Write(Environment.NewLine + Resources.Connected + Environment.NewLine);
-                        PrintBrokerInformation();
-                    }
-
                     oldBroker.Dispose();
                 } catch (Exception ex) {
                     _brokerProxy.Set(oldBroker);
@@ -284,7 +278,7 @@ namespace Microsoft.R.Host.Client.Session {
             if (transactions.Any()) {
                 try {
                     await WhenAllCancelOnFailure(transactions, (t, ct) => t.AcquireLockAsync(ct), cancellationToken);
-                    await WhenAllCancelOnFailure(transactions, (t, ct)=> t.ReconnectAsync(ct, reentrancyToken), cancellationToken);
+                    await WhenAllCancelOnFailure(transactions, (t, ct) => t.ReconnectAsync(ct, reentrancyToken), cancellationToken);
                 } catch (OperationCanceledException ex) when (!(ex is RHostDisconnectedException)) {
                     throw;
                 } catch (Exception ex) {
@@ -297,31 +291,6 @@ namespace Microsoft.R.Host.Client.Session {
                 }
             } else {
                 await TestBrokerConnectionWithRHost(_brokerProxy, cancellationToken, reentrancyToken);
-            }
-        }
-
-        public void PrintBrokerInformation() {
-            var a = _brokerProxy.AboutHost;
-
-            _console.Write(Environment.NewLine + Resources.RServices_Information);
-            _console.Write("\t" + Resources.Version.FormatInvariant(a.Version));
-            _console.Write("\t" + Resources.OperatingSystem.FormatInvariant(a.OS.VersionString));
-            _console.Write("\t" + Resources.PlatformBits.FormatInvariant(a.Is64BitOperatingSystem ? Resources.Bits64 : Resources.Bits32));
-            _console.Write("\t" + Resources.ProcessBits.FormatInvariant(a.Is64BitProcess ? Resources.Bits64 : Resources.Bits32));
-            _console.Write("\t" + Resources.ProcessorCount.FormatInvariant(a.ProcessorCount));
-            _console.Write("\t" + Resources.TotalPhysicalMemory.FormatInvariant(a.TotalPhysicalMemory));
-            _console.Write("\t" + Resources.FreePhysicalMemory.FormatInvariant(a.FreePhysicalMemory));
-            _console.Write("\t" + Resources.TotalVirtualMemory.FormatInvariant(a.TotalVirtualMemory));
-            _console.Write("\t" + Resources.FreeVirtualMemory.FormatInvariant(a.FreeVirtualMemory));
-
-            // TODO: activate when we support switching between remote R interpreters in UI.
-            //_console.Write(Resources.InstalledInterpreters);
-            foreach (var name in a.Interpreters) {
-                _services.Telemetry.ReportEvent(TelemetryArea.Configuration, "Remote Interpteter", name);
-                _services.Telemetry.ReportEvent(TelemetryArea.Configuration, "Remote OS", a.OS.VersionString);
-                _services.Telemetry.ReportEvent(TelemetryArea.Configuration, "Remote CPUs", a.ProcessorCount);
-                _services.Telemetry.ReportEvent(TelemetryArea.Configuration, "Remote RAM", a.TotalPhysicalMemory);
-                //_console.Write("\t" + name);
             }
         }
 

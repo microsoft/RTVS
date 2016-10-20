@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Microsoft.Extensions.Logging;
 using Microsoft.R.Host.Protocol;
+using static System.FormattableString;
 
 namespace Microsoft.R.Host.Broker.Pipes {
     public class MessagePipe {
@@ -185,7 +186,7 @@ namespace Microsoft.R.Host.Broker.Pipes {
                 message = new Message(messageData);
             } catch (InvalidDataException ex) {
                 _logger.Log(LogLevel.Error, 0, messageData, ex, delegate {
-                    return $"Malformed {origin.ToString().ToLowerInvariant()} message:{Environment.NewLine}{BitConverter.ToString(messageData)}";
+                    return Invariant($"Malformed {origin.ToString().ToLowerInvariant()} message:{Environment.NewLine}{BitConverter.ToString(messageData)}");
                 });
                 return;
             }
@@ -193,16 +194,16 @@ namespace Microsoft.R.Host.Broker.Pipes {
             _logger.Log(LogLevel.Trace, 0, message, null, delegate {
                 var sb = new StringBuilder(replay ? "(replay) " : "");
 
-                sb.Append($"|{_pid}|{(origin == MessageOrigin.Host ? ">" : "<")} #{message.Id}# {message.Name} ");
+                sb.Append(Invariant($"|{_pid}|{(origin == MessageOrigin.Host ? ">" : "<")} #{message.Id}# {message.Name} "));
 
                 if (message.IsResponse) {
-                    sb.Append($"#{message.RequestId}# ");
+                    sb.Append(Invariant($"#{message.RequestId}# "));
                 }
 
                 sb.Append(message.Json);
 
                 if (message.Blob != null && message.Blob.Length != 0) {
-                    sb.Append($" <raw ({message.Blob.Length} bytes)>");
+                    sb.Append(Invariant($" <raw ({message.Blob.Length} bytes)>"));
                 }
 
                 return sb.ToString();

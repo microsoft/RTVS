@@ -100,7 +100,7 @@ namespace Microsoft.Common.Core.IO {
         }
 
         public string CompressDirectory(string path) {
-            Matcher matcher = new Matcher(StringComparison.InvariantCultureIgnoreCase);
+            Matcher matcher = new Matcher(StringComparison.OrdinalIgnoreCase);
             matcher.AddInclude("*.*");
             return CompressDirectory(path, matcher, new Progress<string>((p) => { }), CancellationToken.None);
         }

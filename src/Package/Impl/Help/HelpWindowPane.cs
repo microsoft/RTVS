@@ -16,6 +16,7 @@ using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Task = System.Threading.Tasks.Task;
+using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.Help {
     [Guid(WindowGuidString)]
@@ -74,7 +75,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
             private Task SearchAsync(string searchString) {
                 var session = _workflowProvider.GetOrCreate().RSession;
-                return session.ExecuteAsync($"rtvs:::show_help({searchString.ToRStringLiteral()})");
+                return session.ExecuteAsync(Invariant($"rtvs:::show_help({searchString.ToRStringLiteral()})"));
             }
 
 

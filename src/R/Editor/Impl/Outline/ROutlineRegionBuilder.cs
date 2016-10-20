@@ -168,7 +168,7 @@ namespace Microsoft.R.Editor.Outline {
                 int end = -1;
 
                 var text = snapshot.GetText(new Span(sections[i].Start, sections[i].Length));
-                var displayText = text.Substring(0, text.IndexOf("---")).Trim();
+                var displayText = text.Substring(0, text.IndexOfOrdinal("---")).Trim();
 
                 if (i < sections.Length - 1) {
                     var endLineNumber = snapshot.GetLineNumberFromPosition(sections[i + 1].Start);

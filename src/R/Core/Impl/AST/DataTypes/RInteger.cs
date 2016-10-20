@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Diagnostics;
+using System.Globalization;
 
 namespace Microsoft.R.Core.AST.DataTypes {
     /// <summary>
@@ -62,7 +63,7 @@ namespace Microsoft.R.Core.AST.DataTypes {
             return this.Value.GetHashCode();
         }
         public override string ToString() {
-            return Value.ToString();
+            return Value.ToString(CultureInfo.CurrentCulture);
         }
     }
 }

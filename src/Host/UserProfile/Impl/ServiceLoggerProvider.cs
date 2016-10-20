@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using Microsoft.Extensions.Logging;
+using static System.FormattableString;
 
 namespace Microsoft.R.Host.UserProfile {
     class ServiceLoggerProvider : ILoggerProvider {
@@ -22,7 +23,7 @@ namespace Microsoft.R.Host.UserProfile {
         }
 
         private static string GetLogFileName() {
-            return Path.Combine(Path.GetTempPath(), $@"Microsoft.R.Host.UserProfile_{DateTime.Now:yyyyMdd_HHmmss}_pid{Process.GetCurrentProcess().Id}.log");
+            return Path.Combine(Path.GetTempPath(), Invariant($@"Microsoft.R.Host.UserProfile_{DateTime.Now:yyyyMdd_HHmmss}_pid{Process.GetCurrentProcess().Id}.log"));
         }
 
         public ILogger CreateLogger(string categoryName) {

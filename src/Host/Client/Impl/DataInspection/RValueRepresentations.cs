@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using Microsoft.R.Host.Client;
+using static System.FormattableString;
 
 namespace Microsoft.R.DataInspection {
     /// <seealso cref="RSessionExtensions.TryEvaluateAndDescribeAsync"/>
@@ -31,7 +32,7 @@ namespace Microsoft.R.DataInspection {
         /// If <see langword="null"/>, the represnetation is not truncated.
         /// </param>
         public static string Deparse(int? maxLength = null) =>
-            $"rtvs:::make_repr_deparse({maxLength})";
+            Invariant($"rtvs:::make_repr_deparse({maxLength})");
 
         /// <summary>
         /// Returns an R expression that evaluates to a function that is suitable for use as the <c>repr</c> argument
@@ -59,6 +60,6 @@ namespace Microsoft.R.DataInspection {
         /// will produce <c>"num 42"</c>, the function produced by this helper will return <c>"42"</c>.
         /// </remarks>
         public static string Str(int? maxLength = null, int? expectedLength = null, string overflowSuffix = null) =>
-            $"rtvs:::make_repr_str({maxLength}, {expectedLength}, {overflowSuffix.ToRStringLiteral()})";
+            Invariant($"rtvs:::make_repr_str({maxLength}, {expectedLength}, {overflowSuffix.ToRStringLiteral()})");
     }
 }

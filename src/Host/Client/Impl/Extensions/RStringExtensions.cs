@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Text;
 using Microsoft.Common.Core;
+using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client {
     public static class RStringExtensions {
@@ -17,7 +18,17 @@ namespace Microsoft.R.Host.Client {
                 return nullValue;
             }
 
-            return quote + s.Replace("\\", "\\\\").Replace("" + quote, "\\" + quote) + quote;
+            return quote +
+                s.Replace("\\", "\\\\")
+                .Replace("" + quote, "\\" + quote)
+                .Replace("\n", "\\n")
+                .Replace("\r", "\\r")
+                .Replace("\t", "\\t")
+                .Replace("\b", "\\b")
+                .Replace("\a", "\\a")
+                .Replace("\f", "\\f")
+                .Replace("\v", "\\v") +
+                quote;
         }
 
         public static string ToRBooleanLiteral(this bool b) =>
@@ -38,7 +49,85 @@ namespace Microsoft.R.Host.Client {
             for (int i = 1; i < s.Length - 1; ++i) {
                 char c = s[i];
                 if (escape) {
-                    sb.Append(c);
+                    // https://stat.ethz.ch/R-manual/R-devel/library/base/html/Quotes.html
+                    switch (c) {
+                        case 'n':
+                            sb.Append("\n");
+                            break;
+                        case 'r':
+                            sb.Append("\r");
+                            break;
+                        case 't':
+                            sb.Append("\t");
+                            break;
+                        case 'b':
+                            sb.Append("\b");
+                            break;
+                        case 'a':
+                            sb.Append("\a");
+                            break;
+                        case 'f':
+                            sb.Append("\f");
+                            break;
+                        case 'v':
+                            sb.Append("\v");
+                            break;
+                        case 'x':
+                            // 1 to 2 hex digits, lowercase or uppercase
+                            if (i < s.Length - 1) {
+                                int val;
+                                if (HexCharToDecimal(s[i + 1], out val)) {
+                                    i++;
+                                    if (i < s.Length - 1) {
+                                        int nextVal;
+                                        if (HexCharToDecimal(s[i + 1], out nextVal)) {
+                                            i++;
+                                            val = (val << 4) | nextVal;
+                                        }
+                                    }
+
+                                    sb.Append(Char.ConvertFromUtf32(val));
+                                } else {
+                                    throw new FormatException("Expected hex character");
+                                }
+                            } else {
+                                throw new FormatException("Unexpected end of string");
+                            }
+                            break;
+                        case '\\':
+                            sb.Append(c);
+                            break;
+                        case '"':
+                            sb.Append(c);
+                            break;
+                        case '\'':
+                            sb.Append(c);
+                            break;
+                        default:
+                            if (c >= '0' && c <= '7') {
+                                // 1 to 3 octal digits
+                                int val = c - '0';
+                                if (i < s.Length - 1) {
+                                    char next = s[i + 1];
+                                    if (next >= '0' && next <= '7') {
+                                        i++;
+                                        val = (val << 3) | (next - '0');
+                                        if (i < s.Length - 1) {
+                                            next = s[i + 1];
+                                            if (next >= '0' && next <= '7') {
+                                                i++;
+                                                val = (val << 3) | (next - '0');
+                                            }
+                                        }
+                                    }
+                                }
+
+                                sb.Append(char.ConvertFromUtf32(val));
+                                break;
+                            }
+
+                            throw new FormatException("Unrecognized escape sequence");
+                    }
                     escape = false;
                 } else {
                     if (c == quote) {
@@ -52,6 +141,21 @@ namespace Microsoft.R.Host.Client {
             }
 
             return sb.ToString();
+        }
+
+        private static bool HexCharToDecimal(char c, out int val) {
+            if (c >= 'a' && c <= 'f') {
+                val = c - 'a' + 10;
+                return true;
+            } else if (c >= 'A' && c <= 'F') {
+                val = c - 'A' + 10;
+                return true;
+            } else if (c >= '0' && c <= '9') {
+                val = c - '0';
+                return true;
+            }
+            val = -1;
+            return false;
         }
 
         /// <summary>
@@ -108,9 +212,9 @@ namespace Microsoft.R.Host.Client {
 
         public static string ProjectRelativePathToRemoteProjectPath(this string path, string remoteRoot, string projectName) {
             if (string.IsNullOrWhiteSpace(projectName)) {
-                return ($"{remoteRoot}/{path}")?.ToRPath().Replace("//", "/");
+                return Invariant($"{remoteRoot}/{path}")?.ToRPath().Replace("//", "/");
             } else {
-                return ($"{remoteRoot}/{projectName}/{path}")?.ToRPath().Replace("//", "/");
+                return Invariant($"{remoteRoot}/{projectName}/{path}")?.ToRPath().Replace("//", "/");
             }
         }
 

@@ -7,14 +7,11 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 using Microsoft.Common.Core;
 using Microsoft.R.Wpf;
-using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.PlatformUI;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Brushes = Microsoft.R.Wpf.Brushes;
@@ -23,10 +20,10 @@ namespace Microsoft.VisualStudio.R.Package.Wpf {
     public static class VsWpfOverrides {
         private static readonly Lazy<Assembly> ExtensionsExplorerUIAssemblyLazy = Lazy.Create(() => AppDomain.CurrentDomain.Load("Microsoft.VisualStudio.ExtensionsExplorer.UI"));
 
-        public static void Apply(IApplicationShell current) {
+        public static void Apply() {
             OverrideBrushes();
             OverrideFontKeys();
-            OverrideImageSources(current);
+            OverrideImageSources();
             OverrideStyleKeys();
         }
 
@@ -105,6 +102,10 @@ namespace Microsoft.VisualStudio.R.Package.Wpf {
 
             Brushes.SelectedItemActiveBrushKey = TreeViewColors.SelectedItemActiveBrushKey;
             Brushes.SelectedItemActiveBrushKey = TreeViewColors.SelectedItemActiveColorKey;
+
+            Brushes.FailMessageTextBrushKey = TreeViewColors.ValidationSquigglesBrushKey;
+            // TODO: may need to pick a better color of specify custom key
+            Brushes.SuccessMessageTextBrushKey = ProgressBarColors.IndicatorFillBrushKey; 
         }
 
         private static void OverrideFontKeys() {
@@ -116,7 +117,7 @@ namespace Microsoft.VisualStudio.R.Package.Wpf {
             FontKeys.EnvironmentBoldFontWeightKey = VsFonts.EnvironmentBoldFontWeightKey;
         }
 
-        private static void OverrideImageSources(IApplicationShell shell) {
+        private static void OverrideImageSources() {
             var color = VSColorTheme.GetThemedColor(EnvironmentColors.ToolWindowBackgroundColorKey);
             ImageSources.ImageBackground = new SolidColorBrush(Color.FromArgb(color.A, color.R, color.G, color.B));
         }
@@ -142,11 +143,11 @@ namespace Microsoft.VisualStudio.R.Package.Wpf {
         private static ImageSource GetImage(IVsImageService2 imageService, ImageMoniker imageMoniker) {
             var imageAttributes = new ImageAttributes {
                 ImageType = (uint)_UIImageType.IT_Bitmap,
-                Flags = (uint) _ImageAttributesFlags.IAF_RequiredFlags,
-                Format = (uint) _UIDataFormat.DF_WPF,
+                Flags = (uint)_ImageAttributesFlags.IAF_RequiredFlags,
+                Format = (uint)_UIDataFormat.DF_WPF,
                 LogicalHeight = 16,
                 LogicalWidth = 16,
-                StructSize = Marshal.SizeOf(typeof (ImageAttributes))
+                StructSize = Marshal.SizeOf(typeof(ImageAttributes))
             };
 
             IVsUIObject uiObject = imageService.GetImage(imageMoniker, imageAttributes);

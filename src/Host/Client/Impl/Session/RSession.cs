@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Threading;
@@ -607,7 +608,7 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
             ((IRCallbacks)this).WriteConsoleEx(text + "\n", OutputType.Error, CancellationToken.None);
 
         private Task WriteErrorAsync(string format, params object[] args) =>
-            WriteErrorAsync(string.Format(format, args));
+            WriteErrorAsync(string.Format(CultureInfo.CurrentCulture, format, args));
 
         Task IRCallbacks.WriteConsoleEx(string buf, OutputType otype, CancellationToken ct) {
             Output?.Invoke(this, new ROutputEventArgs(otype, buf));

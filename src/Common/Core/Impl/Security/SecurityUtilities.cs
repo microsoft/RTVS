@@ -24,7 +24,7 @@ namespace Microsoft.Common.Core.Security {
 
         public static IntPtr CreateSecureStringBuffer(int length) {
             var sec = new SecureString();
-            for (int i = 0; i < length + 1; i++) {
+            for (int i = 0; i <= length; i++) {
                 sec.AppendChar('\0');
             }
             return Marshal.SecureStringToGlobalAllocUnicode(sec);

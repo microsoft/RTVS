@@ -35,8 +35,6 @@ namespace Microsoft.R.Host.Client.Host {
         private readonly ICredentialsDecorator _credentials;
         private readonly IConsole _console;
 
-        private AboutHost _aboutHost;
-
         protected DisposableBag DisposableBag { get; } = DisposableBag.Create<BrokerClient>();
         protected IActionLog Log { get; }
         protected WebRequestHandler HttpClientHandler { get; private set; }
@@ -45,7 +43,6 @@ namespace Microsoft.R.Host.Client.Host {
         public string Name { get; }
         public Uri Uri { get; }
         public bool IsRemote => !Uri.IsFile;
-        public AboutHost AboutHost => _aboutHost ?? AboutHost.Empty;
         public bool IsVerified { get; protected set; }
 
         protected BrokerClient(string name, Uri brokerUri, string interpreterId, ICredentialsDecorator credentials, IActionLog log, IConsole console) {
@@ -87,6 +84,15 @@ namespace Microsoft.R.Host.Client.Host {
             }
         }
 
+        public async Task<AboutHost> GetHostInformationAsync(CancellationToken cancellationToken) {
+            string result = null;
+            try {
+                var response = await HttpClient.GetAsync("/about", cancellationToken);
+                result = await response.Content.ReadAsStringAsync();
+            } catch (OperationCanceledException) { }
+            return !string.IsNullOrEmpty(result) ? JsonConvert.DeserializeObject<AboutHost>(result) : AboutHost.Empty;
+        }
+
         public virtual async Task<RHost> ConnectAsync(BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken), ReentrancyToken reentrancyToken = default(ReentrancyToken)) {
             DisposableBag.ThrowIfDisposed();
             await TaskUtilities.SwitchToBackgroundThread();
@@ -117,7 +123,7 @@ namespace Microsoft.R.Host.Client.Host {
             return sessionsService.DeleteAsync(name, cancellationToken);
         }
 
-        protected virtual Task<Exception> HandleHttpRequestExceptionAsync(HttpRequestException exception) 
+        protected virtual Task<Exception> HandleHttpRequestExceptionAsync(HttpRequestException exception)
             => Task.FromResult<Exception>(new RHostDisconnectedException(Resources.Error_HostNotResponding.FormatInvariant(exception.Message), exception));
 
         private async Task<bool> IsSessionRunningAsync(string name, CancellationToken cancellationToken) {
@@ -179,14 +185,6 @@ namespace Microsoft.R.Host.Client.Host {
             cts.Token.Register(() => { Log.RHostProcessExited(); });
 
             return new RHost(name, callbacks, transport, Log, cts);
-        }
-
-        private async Task GetHostInformationAsync(CancellationToken cancellationToken) {
-            if (_aboutHost == null) {
-                var response = await HttpClient.GetAsync("/about", cancellationToken);
-                var s = await response.Content.ReadAsStringAsync();
-                _aboutHost = !string.IsNullOrEmpty(s) ? JsonConvert.DeserializeObject<AboutHost>(s) : AboutHost.Empty;
-            }
         }
 
         public virtual string HandleUrl(string url, CancellationToken ct) {

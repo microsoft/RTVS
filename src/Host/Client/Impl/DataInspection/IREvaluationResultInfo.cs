@@ -75,7 +75,7 @@ namespace Microsoft.R.DataInspection {
             if (string.IsNullOrEmpty(info.Expression)) {
                 throw new InvalidOperationException(Invariant($"{nameof(AssignAsync)} is not supported for this {nameof(REvaluationResultInfo)} because it doesn't have an associated {nameof(info.Expression)}."));
             }
-            return info.Session.ExecuteAsync($"{info.Expression} <- {value}", cancellationToken);
+            return info.Session.ExecuteAsync(Invariant($"{info.Expression} <- {value}"), cancellationToken);
         }
 
         /// <summary>

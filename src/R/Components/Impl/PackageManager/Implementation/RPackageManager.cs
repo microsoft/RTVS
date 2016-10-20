@@ -15,6 +15,7 @@ using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
 using Newtonsoft.Json.Linq;
+using static System.FormattableString;
 
 namespace Microsoft.R.Components.PackageManager.Implementation {
     internal class RPackageManager : IRPackageManager {
@@ -59,9 +60,13 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             }
         }
 
-        public Task<PackageLockState> UninstallPackageAsync(string name, string libraryPath) => _interactiveWorkflow.RSession.EvaluateAsync<PackageLockState>($"rtvs:::package_uninstall({name.ToRStringLiteral()}, {libraryPath.ToRStringLiteral()})", REvaluationKind.Normal);
+        public Task<PackageLockState> UninstallPackageAsync(string name, string libraryPath) => 
+            _interactiveWorkflow.RSession.EvaluateAsync<PackageLockState>(
+                Invariant($"rtvs:::package_uninstall({name.ToRStringLiteral()}, {libraryPath.ToRStringLiteral()})"), REvaluationKind.Normal);
 
-        public Task<PackageLockState> UpdatePackageAsync(string name, string libraryPath) => _interactiveWorkflow.RSession.EvaluateAsync<PackageLockState>($"rtvs:::package_update({name.ToRStringLiteral()}, {libraryPath.ToRStringLiteral()})", REvaluationKind.Normal);
+        public Task<PackageLockState> UpdatePackageAsync(string name, string libraryPath) => 
+            _interactiveWorkflow.RSession.EvaluateAsync<PackageLockState>(
+                Invariant($"rtvs:::package_update({name.ToRStringLiteral()}, {libraryPath.ToRStringLiteral()})"), REvaluationKind.Normal);
 
         public async Task LoadPackageAsync(string name, string libraryPath) {
             using (var request = await _interactiveWorkflow.RSession.BeginInteractionAsync()) {
@@ -91,7 +96,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
         }
 
         public Task<PackageLockState> GetPackageLockStateAsync(string name, string libraryPath) 
-            => _interactiveWorkflow.RSession.EvaluateAsync<PackageLockState>($"rtvs:::package_lock_state({name.ToRStringLiteral()}, {libraryPath.ToRStringLiteral()})", REvaluationKind.Normal);
+            => _interactiveWorkflow.RSession.EvaluateAsync<PackageLockState>(
+                 Invariant($"rtvs:::package_lock_state({name.ToRStringLiteral()}, {libraryPath.ToRStringLiteral()})"), REvaluationKind.Normal);
 
         private async Task<IReadOnlyList<RPackage>> GetPackagesAsync(Func<IRExpressionEvaluator, Task<JArray>> queryFunc) {
             // Fetching of installed and available packages is done in a

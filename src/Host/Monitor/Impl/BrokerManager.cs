@@ -8,12 +8,13 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Extensions.Logging;
+using static System.FormattableString;
 
 namespace Microsoft.R.Host.Monitor {
     public class BrokerManager {
         private const string RHostBroker = "Microsoft.R.Host.Broker";
-        private static string RHostBrokerExe = $"{RHostBroker}.exe";
-        private static string RHostBrokerConfig = $"{RHostBroker}.Config.json";
+        private static string RHostBrokerExe = Invariant($"{RHostBroker}.exe");
+        private static string RHostBrokerConfig = Invariant($"{RHostBroker}.Config.json");
         private static Process _brokerProcess;
 
         public static bool AutoRestart { get; set; }
@@ -56,10 +57,6 @@ namespace Microsoft.R.Host.Monitor {
                     psi.UseShellExecute = false;
                     psi.CreateNoWindow = false;
                     psi.WorkingDirectory = assemblyRoot;
-
-                    if (Properties.Settings.Default.UseDifferentBrokerUser) {
-                        CredentialManager.SetCredentialsOnProcess(psi, logger);
-                    }
 
                     _brokerProcess = new Process() { StartInfo = psi };
                     _brokerProcess.EnableRaisingEvents = true;

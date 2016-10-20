@@ -10,7 +10,7 @@ namespace Microsoft.R.Support.Help.Functions {
         /// <summary>
         /// Function signatures
         /// </summary>
-        public IReadOnlyList<ISignatureInfo> Signatures { get; set; }
+        public IReadOnlyList<ISignatureInfo> Signatures { get; set; } = new List<ISignatureInfo>();
 
         /// <summary>
         /// Return value description
@@ -25,11 +25,8 @@ namespace Microsoft.R.Support.Help.Functions {
         #endregion
 
         public FunctionInfo(string name, string description) :
-            base(name, description, NamedItemType.Function) {
-        }
+            base(name, description, NamedItemType.Function) { }
 
-        public FunctionInfo(string name) :
-            base(name, NamedItemType.Function) {
-        }
+        public FunctionInfo(string name) : this(name, string.Empty) { }
     }
 }

@@ -7,6 +7,7 @@ using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Packages.R;
+using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.Help {
     /// <summary>
@@ -28,7 +29,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         protected override void Handle(string item) {
-            _workflow.RSession.ExecuteAsync($"rtvs:::show_help({item.ToRStringLiteral()})")
+            _workflow.RSession.ExecuteAsync(Invariant($"rtvs:::show_help({item.ToRStringLiteral()})"))
                 .SilenceException<RException>()
                 .DoNotWait();
         }
