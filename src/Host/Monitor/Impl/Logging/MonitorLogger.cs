@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using Microsoft.Common.Core.Disposables;
-using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
+using Microsoft.Common.Core.Disposables;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.R.Host.Monitor.Logging {
     internal sealed class MonitorLogger : ILogger, IDisposable {
