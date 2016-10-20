@@ -44,8 +44,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             // https://foo -> https://foo (no change)
             // http://foo -> http://foo (no change)
             // foo->https://foo:5444
-            // foo: 5000->https://foo:5000
-            // username: password @foo -> https://username:password@foo:5444
+
             Uri uri = null;
             try {
                 Uri.TryCreate(path, UriKind.Absolute, out uri);
