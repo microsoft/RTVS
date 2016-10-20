@@ -119,7 +119,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             string latestLocalPath;
             Uri latestLocalPathUri;
 
-            if (connection.UserProvidedPath != null && Uri.TryCreate(connection.UserProvidedPath, UriKind.Absolute, out latestLocalPathUri) && latestLocalPathUri.IsFile && !latestLocalPathUri.IsUnc) {
+            if (connection.Path != null && Uri.TryCreate(connection.Path, UriKind.Absolute, out latestLocalPathUri) && latestLocalPathUri.IsFile && !latestLocalPathUri.IsUnc) {
                 latestLocalPath = latestLocalPathUri.LocalPath;
             } else {
                 latestLocalPath = Environment.SystemDirectory;
