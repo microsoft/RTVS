@@ -55,12 +55,12 @@ namespace Microsoft.Common.Core.Test.Threading {
         public async Task InvokeTwice_DuringTimeout_ChangeAction() {
             var count1 = 0;
             var count2 = 0;
-            var action = new DelayedAsyncAction(200);
+            var action = new DelayedAsyncAction(250);
 
             action.Invoke(() => Task.FromResult(Interlocked.Increment(ref count1)));
-            await Task.Delay(100);
+            await Task.Delay(50);
             action.Invoke(() => Task.FromResult(Interlocked.Increment(ref count2)));
-            await Task.Delay(300);
+            await Task.Delay(450);
 
             count1.Should().Be(0, "DelayedAction should not be called for the first action");
             count2.Should().Be(1, "DelayedAction should be called only once for the second action");
@@ -69,12 +69,12 @@ namespace Microsoft.Common.Core.Test.Threading {
         [Test]
         public async Task Invoke_Concurrent_ChangeAction() {
             var counts = new int[4];
-            var action = new DelayedAsyncAction(100);
+            var action = new DelayedAsyncAction(200);
 
             ParallelTools.Invoke(4, i => {
                 action.Invoke(() => Task.FromResult(Interlocked.Increment(ref counts[i])));
             });
-            await Task.Delay(200);
+            await Task.Delay(400);
 
             counts.Should().ContainSingle(i => i == 1, "DelayedAction should be called only once")
                 .And.OnlyContain(i => i <= 1, "DelayedAction should be called more than once");
@@ -89,7 +89,7 @@ namespace Microsoft.Common.Core.Test.Threading {
             });
 
             await InUI(() => action.Invoke());
-            await Task.Delay(50);
+            await Task.Delay(200);
 
             threadId.Should().NotBe(UIThreadHelper.Instance.Thread.ManagedThreadId);
         }

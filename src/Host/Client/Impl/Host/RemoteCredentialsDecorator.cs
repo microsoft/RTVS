@@ -38,7 +38,7 @@ namespace Microsoft.R.Host.Client.Host {
             var token = await _lock.WriterLockAsync(cancellationToken);
             try {
                 var invalidateStoredCredentials = !Volatile.Read(ref _credentialsAreValid);
-                credentials = await _securityService.GetUserCredentialsAsync(_authority, invalidateStoredCredentials);
+                credentials = await _securityService.GetUserCredentialsAsync(_authority, invalidateStoredCredentials, cancellationToken);
             } catch (Exception) {
                 token.Dispose();
                 throw;

@@ -97,7 +97,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
                 Name = _testMethod.Name
             }, null, 50000);
 
-            var tasks = await ParallelTools.InvokeAsync(4, i => start());
+            var tasks = await ParallelTools.InvokeAsync(4, i => start(), 50000);
             tasks.Should().ContainSingle(t => t.Status == TaskStatus.RanToCompletion);
 
             await session.HostStarted;
@@ -116,10 +116,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
                 return session;
             };
 
-            var sessionsTasks = await ParallelTools.InvokeAsync(4, start);
-            if (sessionsTasks.Any(t => t.Status != TaskStatus.RanToCompletion)) {
-                Debugger.Launch();
-            }
+            var sessionsTasks = await ParallelTools.InvokeAsync(4, start, 50000);
 
             sessionsTasks.Should().OnlyContain(t => t.Status == TaskStatus.RanToCompletion);
             var sessions = sessionsTasks.Select(t => t.Result).ToList();

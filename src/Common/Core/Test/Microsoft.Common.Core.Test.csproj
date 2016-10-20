@@ -53,6 +53,7 @@
     <Compile Include="Controls\ControlWindow.cs" />
     <Compile Include="Disposables\CountdownDisposableTest.cs" />
     <Compile Include="Disposables\DisposableTest.cs" />
+    <Compile Include="Disposables\DisposeTokenTest.cs" />
     <Compile Include="EnumerableExtensionsTest.cs" />
     <Compile Include="Extensions\IOExtensionsTest.cs" />
     <Compile Include="Fakes\Shell\TestFileDialog.cs" />

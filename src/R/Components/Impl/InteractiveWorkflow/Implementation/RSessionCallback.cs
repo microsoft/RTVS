@@ -38,18 +38,18 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         /// <summary>
         /// Displays error message in the host-specific UI
         /// </summary>
-        public Task ShowErrorMessage(string message) => _coreShell.ShowErrorMessageAsync(message);
+        public Task ShowErrorMessage(string message, CancellationToken cancellationToken = default(CancellationToken)) => _coreShell.ShowErrorMessageAsync(message, cancellationToken);
 
         /// <summary>
         /// Displays message with specified buttons in a host-specific UI
         /// </summary>
-        public Task<MessageButtons> ShowMessageAsync(string message, MessageButtons buttons) => _coreShell.ShowMessageAsync(message, buttons);
+        public Task<MessageButtons> ShowMessageAsync(string message, MessageButtons buttons, CancellationToken cancellationToken) => _coreShell.ShowMessageAsync(message, buttons);
             
         /// <summary>
         /// Displays R help URL in a browser on in the host app-provided window
         /// </summary>
-        public async Task ShowHelp(string url) {
-            await _coreShell.SwitchToMainThreadAsync();
+        public async Task ShowHelpAsync(string url, CancellationToken cancellationToken) {
+            await _coreShell.SwitchToMainThreadAsync(cancellationToken);
             if (_settings.HelpBrowserType == HelpBrowserType.External) {
                 Process.Start(url);
             } else {
@@ -99,8 +99,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             viewer?.ViewObjectDetails(_session, REnvironments.GlobalEnv, expression, title);
         }
 
-        public async Task ViewLibrary() {
-            await _coreShell.SwitchToMainThreadAsync();
+        public async Task ViewLibraryAsync(CancellationToken cancellationToken = default(CancellationToken)) {
+            await _coreShell.SwitchToMainThreadAsync(cancellationToken);
             var containerFactory = _coreShell.ExportProvider.GetExportedValue<IRPackageManagerVisualComponentContainerFactory>();
             _workflow.Packages.GetOrCreateVisualComponent(containerFactory).Container.Show(focus: true, immediate: false);
         }

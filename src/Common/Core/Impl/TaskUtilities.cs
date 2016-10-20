@@ -65,12 +65,12 @@ namespace Microsoft.Common.Core {
 
         public static Task WhenAllCancelOnFailure(IEnumerable<Func<CancellationToken, Task>> functions, CancellationToken cancellationToken) {
             var functionsList = functions.ToList();
-            var cts = new CancellationTokenSource();
+            var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
             var tcs = new TaskCompletionSourceEx<bool>();
             var state = new WhenAllCancelOnFailureContinuationState(functionsList.Count, tcs, cts);
 
             foreach (var function in functionsList) {
-                var task = function(CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken).Token);
+                var task = function(cts.Token);
                 task.ContinueWith(WhenAllCancelOnFailureContinuation, state, default(CancellationToken), TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
             }
             
@@ -100,6 +100,8 @@ namespace Microsoft.Common.Core {
                     }
                     break;
             }
+
+            continuationState.CancellationTokenSource.Dispose();
         }
 
         private class WhenAllCancelOnFailureContinuationState {

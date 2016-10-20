@@ -32,15 +32,18 @@ namespace Microsoft.R.Editor.SuggestedActions.Actions {
         }
 
         private async Task SubmitToInteractiveAsync(string command, CancellationToken cancellationToken) {
-            await TaskUtilities.SwitchToBackgroundThread();
             try {
-                using (var eval = await _workflow.RSession.BeginInteractionAsync(isVisible: true, cancellationToken: cancellationToken)) {
-                    await eval.RespondAsync(command);
-                }
+                await SubmitAsync(command, cancellationToken);
             } catch(OperationCanceledException) {
             } finally {
-                await _workflow.Shell.SwitchToMainThreadAsync();
                 _runningAction = null;
+            }
+        }
+
+        private async Task SubmitAsync(string command, CancellationToken cancellationToken) {
+            await TaskUtilities.SwitchToBackgroundThread();
+            using (var eval = await _workflow.RSession.BeginInteractionAsync(isVisible: true, cancellationToken: cancellationToken)) {
+                await eval.RespondAsync(command);
             }
         }
     }

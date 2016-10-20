@@ -108,7 +108,7 @@ namespace Microsoft.R.Host.Client {
             await Console.Error.WriteLineAsync(plot.FilePath);
         }
 
-        public async Task WebBrowser(string url) {
+        public async Task WebBrowser(string url, CancellationToken ct) {
             await Console.Error.WriteLineAsync("Browser: " + url);
         }
 
@@ -120,7 +120,7 @@ namespace Microsoft.R.Host.Client {
             Console.Error.WriteLineAsync(Invariant($"ViewObject({title}): {x}"));
         }
 
-        public async Task ViewLibrary() {
+        public async Task ViewLibrary(CancellationToken cancellationToken) {
             await Console.Error.WriteLineAsync("ViewLibrary");
         }
 

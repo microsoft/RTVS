@@ -90,13 +90,13 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
         public void FlushLog() {
         }
 
-        public Task StartHostAsync(RHostStartupInfo startupInfo, IRSessionCallback callback, int timeout = 3000) {
+        public Task StartHostAsync(RHostStartupInfo startupInfo, IRSessionCallback callback, int timeout = 3000, CancellationToken cancellationToken = default(CancellationToken)) {
             IsHostRunning = true;
             Connected?.Invoke(this, new RConnectedEventArgs(string.Empty));
             return Task.CompletedTask;
         }
 
-        public Task EnsureHostStartedAsync(RHostStartupInfo startupInfo, IRSessionCallback callback, int timeout = 3000) {
+        public Task EnsureHostStartedAsync(RHostStartupInfo startupInfo, IRSessionCallback callback, int timeout = 3000, CancellationToken cancellationToken = default(CancellationToken)) {
             IsHostRunning = true;
             Connected?.Invoke(this, new RConnectedEventArgs(string.Empty));
             return Task.CompletedTask;

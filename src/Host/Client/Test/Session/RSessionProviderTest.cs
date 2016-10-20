@@ -5,6 +5,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.UnitTests.Core.FluentAssertions;
@@ -219,6 +220,58 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
                 result.Should().BeFalse();
             }
+        }
+
+        [InlineData(0)]
+        [InlineData(10)]
+        [InlineData(50)]
+        [InlineData(100)]
+        [InlineData(200)]
+        [InlineData(400)]
+        [InlineData(600)]
+        [InlineData(800)]
+        [CompositeTest]
+        public async Task SwitchBroker_DisposeSession(int timeout) {
+            using (var sessionProvider = new RSessionProvider(TestCoreServices.CreateReal())) {
+                var guid = new Guid();
+                var session = sessionProvider.GetOrCreate(guid);
+                await sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(SwitchBrokerWithCancellation));
+                await session.EnsureHostStartedAsync(new RHostStartupInfo {
+                    Name = nameof(session)
+                }, null, 5000);
+
+                var sessionDisposeTask = Task.Delay(timeout).ContinueWith(t => session.Dispose());
+                var result = await sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(SwitchBrokerWithCancellation) + "1");
+                await sessionDisposeTask;
+
+                result.Should().BeTrue();
+            }
+        }
+
+        [InlineData(0)]
+        [InlineData(10)]
+        [InlineData(50)]
+        [InlineData(100)]
+        [InlineData(200)]
+        [InlineData(400)]
+        [InlineData(600)]
+        [InlineData(800)]
+        [CompositeTest]
+        public async Task SwitchBroker_DisposeSessionProvider(int timeout) {
+            var sessionProvider = new RSessionProvider(TestCoreServices.CreateReal());
+            var guid = new Guid();
+            var session = sessionProvider.GetOrCreate(guid);
+            await sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(SwitchBrokerWithCancellation));
+            await session.EnsureHostStartedAsync(new RHostStartupInfo
+            {
+                Name = nameof(session)
+            }, null, 5000);
+
+            var sessionDisposeTask = Task.Delay(timeout).ContinueWith(t => sessionProvider.Dispose());
+            var result = await sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(SwitchBrokerWithCancellation) + "1");
+            await sessionDisposeTask;
+
+            result.Should().BeFalse();
         }
     }
 }

@@ -2,8 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Runtime.Serialization;
 using System.Threading;
+using Microsoft.Common.Core.Exceptions;
 
 namespace Microsoft.Common.Core {
     public static class ExceptionExtensions {
@@ -17,17 +17,5 @@ namespace Microsoft.Common.Core {
                 ex is AccessViolationException ||
                 ex is CriticalException;
         }
-    }
-
-    /// <summary>
-    /// An exception that should not be silently handled and logged.
-    /// </summary>
-    [Serializable]
-    class CriticalException : Exception {
-        public CriticalException() { }
-        public CriticalException(string message) : base(message) { }
-        public CriticalException(string message, Exception inner) : base(message, inner) { }
-        protected CriticalException(SerializationInfo info, StreamingContext context)
-            : base(info, context) { }
     }
 }

@@ -43,7 +43,7 @@ namespace Microsoft.UnitTests.Core.Test.Threading {
         [Test]
         public void ControlledTaskScheduler_WaitForUpcomingTasks_ThrowException() {
             Task.Delay(100).ContinueWith(t => Task.Factory.StartNew(SleepAndThrow, CancellationToken.None, TaskCreationOptions.None, _scheduler));
-            Action a = () => _scheduler.WaitForUpcomingTasks(200);
+            Action a = () => _scheduler.WaitForUpcomingTasks(400);
             a.ShouldThrow<CustomException>();
         }
 

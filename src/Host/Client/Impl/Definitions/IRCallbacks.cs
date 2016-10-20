@@ -64,13 +64,15 @@ namespace Microsoft.R.Host.Client {
         /// Asks VS to open specified URL in the help window browser
         /// </summary>
         /// <param name="url"></param>
+        /// <param name="ct"></param>
         /// <returns></returns>
-        Task WebBrowser(string url);
+        Task WebBrowser(string url, CancellationToken ct);
 
         /// <summary>
         /// Invoked in response of parameter-less library call
         /// </summary>
-        Task ViewLibrary();
+        /// <param name="cancellationToken"></param>
+        Task ViewLibrary(CancellationToken cancellationToken);
 
         /// <summary>
         /// Invoked when R calls 'pager'

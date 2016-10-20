@@ -7,33 +7,62 @@ using static System.FormattableString;
 
 namespace Microsoft.Common.Core.Disposables {
     public sealed class DisposeToken {
-        private readonly string _message;
+        private readonly Type _type;
+        private readonly CancellationTokenSource _cts;
         private int _disposed;
 
         public static DisposeToken Create<T>() where T : IDisposable {
-            return new DisposeToken(Invariant($"{typeof(T).Name} instance is disposed"));
+            return new DisposeToken(typeof(T));
         }
 
-        public bool IsDisposed => _disposed == 1;
-
-        public DisposeToken(string message = null) {
-            _message = message;
+        private DisposeToken(Type type) {
+            _type = type;
+            _cts = new CancellationTokenSource();
         }
+
+        public bool IsDisposed => _cts.IsCancellationRequested;
 
         public void ThrowIfDisposed() {
-            if (_disposed == 0) {
+            if (!_cts.IsCancellationRequested) {
                 return;
             }
 
-            if (_message == null) {
-                throw new InvalidOperationException();
+            throw CreateException();
+        }
+
+        public IDisposable Link(ref CancellationToken token) {
+            if (!token.CanBeCanceled) {
+                token = _cts.Token;
+                token.ThrowIfCancellationRequested();
+                return Disposable.Empty;
             }
 
-            throw new InvalidOperationException(_message);
+            CancellationTokenSource linkedCts;
+            try {
+                linkedCts = CancellationTokenSource.CreateLinkedTokenSource(_cts.Token, token);
+            } catch (ObjectDisposedException) {
+                throw CreateException();
+            }
+
+            token = linkedCts.Token;
+            if (token.IsCancellationRequested) {
+                linkedCts.Dispose();
+                token.ThrowIfCancellationRequested();
+            }
+
+            return linkedCts;
         }
 
         public bool TryMarkDisposed() {
-            return Interlocked.Exchange(ref _disposed, 1) == 0;
+            if (Interlocked.Exchange(ref _disposed, 1) == 1) {
+                return false;
+            }
+
+            _cts.Cancel();
+            _cts.Dispose();
+            return true;
         }
+    
+        private ObjectDisposedException CreateException() => new ObjectDisposedException(_type.Name, Invariant($"{_type.Name} instance is disposed"));
     }
 }

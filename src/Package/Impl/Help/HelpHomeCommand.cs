@@ -37,9 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             var session = workflow.RSession;
             if (session.IsHostRunning) {
                 try {
-                    using (IRSessionEvaluation evaluation = await session.BeginEvaluationAsync()) {
-                        await evaluation.EvaluateAsync("help.start()", REvaluationKind.Normal);
-                    }
+                    await session.EvaluateAsync("help.start()", REvaluationKind.Normal);
                 } catch (OperationCanceledException) { }
             }
         }

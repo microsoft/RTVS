@@ -54,27 +54,27 @@ namespace Microsoft.R.Components.Plots {
         /// Process an incoming plot message from the host.
         /// </summary>
         /// <param name="plot"></param>
-        /// <param name="ct"></param>
-        Task LoadPlotAsync(PlotMessage plot, CancellationToken ct);
+        /// <param name="cancellationToken"></param>
+        Task LoadPlotAsync(PlotMessage plot, CancellationToken cancellationToken);
 
         /// <summary>
         /// Process an incoming locator message from the host.
         /// </summary>
         /// <param name="deviceId">Id of device whose locator function was called.</param>
-        /// <param name="ct"></param>
-        Task<LocatorResult> StartLocatorModeAsync(Guid deviceId, CancellationToken ct);
+        /// <param name="cancellationToken"></param>
+        Task<LocatorResult> StartLocatorModeAsync(Guid deviceId, CancellationToken cancellationToken);
 
         /// <summary>
         /// Process an incoming device creation message from the host.
         /// This assigns the new device to an available visual component (creating one if necessary).
         /// </summary>
         /// <param name="deviceId">Id of device that is being created.</param>
-        /// <param name="ct"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns>
         /// Properties of the visual component assigned to the device. The host
         /// uses this to set the device size and resolution.
         /// </returns>
-        Task<PlotDeviceProperties> DeviceCreatedAsync(Guid deviceId, CancellationToken ct);
+        Task<PlotDeviceProperties> DeviceCreatedAsync(Guid deviceId, CancellationToken cancellationToken);
 
         /// <summary>
         /// Process an incoming device destroy message from the host.
@@ -82,8 +82,8 @@ namespace Microsoft.R.Components.Plots {
         /// recycled for the next device that is created.
         /// </summary>
         /// <param name="deviceId">Id of device that is being destroyed.</param>
-        /// <param name="ct"></param>
-        Task DeviceDestroyedAsync(Guid deviceId, CancellationToken ct);
+        /// <param name="cancellationToken"></param>
+        Task DeviceDestroyedAsync(Guid deviceId, CancellationToken cancellationToken);
 
         /// <summary>
         /// Execute code in the session to remove all plots.

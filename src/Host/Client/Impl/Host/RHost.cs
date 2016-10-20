@@ -495,7 +495,7 @@ namespace Microsoft.R.Host.Client {
                                 break;
 
                             case "!Library":
-                                await _callbacks.ViewLibrary();
+                                await _callbacks.ViewLibrary(ct);
                                 break;
 
                             case "!ShowFile":
@@ -541,7 +541,7 @@ namespace Microsoft.R.Host.Client {
                                 break;
 
                             case "!WebBrowser":
-                                await _callbacks.WebBrowser(message.GetString(0, "url"));
+                                await _callbacks.WebBrowser(message.GetString(0, "url"), ct);
                                 break;
 
                             case "!PackagesInstalled":

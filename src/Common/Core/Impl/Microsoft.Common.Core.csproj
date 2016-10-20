@@ -52,6 +52,7 @@
     <Compile Include="Disposables\DisposableBag.cs" />
     <Compile Include="Extensions\ArraySegmentExtensions.cs" />
     <Compile Include="Extensions\ClipboardExtensions.cs" />
+    <Compile Include="Exceptions\CriticalException.cs" />
     <Compile Include="Extensions\MathExtensions.cs" />
     <Compile Include="Extensions\StreamExtensions.cs" />
     <Compile Include="IO\KnownFolderGuids.cs" />
@@ -161,6 +162,7 @@
       <StrongName>StrongName</StrongName>
     </FilesToSign>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\..\R.Build.Version.targets" />
 </Project>
