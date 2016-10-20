@@ -20,14 +20,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataSource {
             string rowSelector = (sortOrder != null && !sortOrder.IsEmpty) ? sortOrder.GetRowSelector() : "";
             string expr = Invariant($"rtvs:::grid_data({expression}, {rows}, {columns}, {rowSelector})");
 
-            using (var evaluator = await rSession.BeginEvaluationAsync()) {
-                try {
-                    return await evaluator.EvaluateAsync<GridData>(expr, REvaluationKind.Normal);
-                } catch (RException ex) {
-                    var message = Invariant($"Grid data evaluation failed:{Environment.NewLine}{ex.Message}");
-                    await VsAppShell.Current.Services.Log.WriteAsync(LogVerbosity.Normal, MessageCategory.Error, message);
-                    return null;
-                }
+            try {
+                return await rSession.EvaluateAsync<GridData>(expr, REvaluationKind.Normal);
+            } catch (RException ex) {
+                var message = Invariant($"Grid data evaluation failed:{Environment.NewLine}{ex.Message}");
+                await VsAppShell.Current.Services.Log.WriteAsync(LogVerbosity.Normal, MessageCategory.Error, message);
+                return null;
             }
         }
 

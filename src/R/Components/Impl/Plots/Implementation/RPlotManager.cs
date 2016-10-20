@@ -92,8 +92,8 @@ namespace Microsoft.R.Components.Plots.Implementation {
             _unassignedVisualComponents.Add(visualComponent);
         }
 
-        public async Task DeviceDestroyedAsync(Guid deviceId, CancellationToken ct) {
-            await _shell.SwitchToMainThreadAsync();
+        public async Task DeviceDestroyedAsync(Guid deviceId, CancellationToken cancellationToken) {
+            await _shell.SwitchToMainThreadAsync(cancellationToken);
 
             var device = FindDevice(deviceId);
             Debug.Assert(device != null, "List of devices is out of sync.");
@@ -115,8 +115,8 @@ namespace Microsoft.R.Components.Plots.Implementation {
             DeviceRemoved?.Invoke(this, new RPlotDeviceEventArgs(device));
         }
 
-        public async Task LoadPlotAsync(PlotMessage plot, CancellationToken ct) {
-            await _shell.SwitchToMainThreadAsync();
+        public async Task LoadPlotAsync(PlotMessage plot, CancellationToken cancellationToken) {
+            await _shell.SwitchToMainThreadAsync(cancellationToken);
 
             var device = FindDevice(plot.DeviceId);
             device.DeviceNum = plot.DeviceNum;
@@ -147,8 +147,8 @@ namespace Microsoft.R.Components.Plots.Implementation {
             }
         }
 
-        public async Task<PlotDeviceProperties> DeviceCreatedAsync(Guid deviceId, CancellationToken ct) {
-            await _shell.SwitchToMainThreadAsync();
+        public async Task<PlotDeviceProperties> DeviceCreatedAsync(Guid deviceId, CancellationToken cancellationToken) {
+            await _shell.SwitchToMainThreadAsync(cancellationToken);
 
             var device = new RPlotDevice(deviceId);
             _devices.Add(device);
@@ -173,8 +173,8 @@ namespace Microsoft.R.Components.Plots.Implementation {
             return props;
         }
 
-        public async Task<LocatorResult> StartLocatorModeAsync(Guid deviceId, CancellationToken ct) {
-            await _shell.SwitchToMainThreadAsync();
+        public async Task<LocatorResult> StartLocatorModeAsync(Guid deviceId, CancellationToken cancellationToken) {
+            await _shell.SwitchToMainThreadAsync(cancellationToken);
 
             var visualComponent = await GetVisualComponentForDevice(deviceId);
             if (visualComponent == null) {
@@ -182,7 +182,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
             }
 
             visualComponent.Container.Show(focus: false, immediate: true);
-            return await visualComponent.StartLocatorModeAsync(ct);
+            return await visualComponent.StartLocatorModeAsync(cancellationToken);
         }
 
         public async Task RemoveAllPlotsAsync(IRPlotDevice device) {
@@ -452,7 +452,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
         }
 
         private async Task RSessionMutatedAsync() {
-            await InteractiveWorkflow.Shell.SwitchToMainThreadAsync();
+            await _shell.SwitchToMainThreadAsync();
 
             try {
                 var deviceId = await InteractiveWorkflow.RSession.GetActivePlotDeviceAsync();
@@ -462,7 +462,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
                 ActiveDevice = device;
 
                 // Update all the devices in parallel
-                var tasks = _devices.Select(d => RefreshDeviceNum(d));
+                var tasks = _devices.Select(RefreshDeviceNum);
                 await Task.WhenAll(tasks);
 
                 _interactiveWorkflow.ActiveWindow?.Container.UpdateCommandStatus(false);
@@ -485,7 +485,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
         }
 
         private async Task RSessionConnectedAsync() {
-            await InteractiveWorkflow.Shell.SwitchToMainThreadAsync();
+            await _shell.SwitchToMainThreadAsync();
 
             RemoveAllDevices();
 

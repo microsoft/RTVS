@@ -362,9 +362,9 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         #region
         public int ThreadId => MainThread.ManagedThreadId;
-        public void Post(Action action) {
+        public void Post(Action action, CancellationToken cancellationToken) {
             var awaiter = ThreadHelper.JoinableTaskFactory
-                .SwitchToMainThreadAsync()
+                .SwitchToMainThreadAsync(cancellationToken)
                 .GetAwaiter();
 
             awaiter.OnCompleted(action);

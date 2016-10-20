@@ -2,12 +2,12 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.R.Components.Help;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.Threading;
-using Microsoft.VisualStudio.R.Package.Help;
 
 namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
     class RHostClientHelpTestApp : RHostClientTestApp {
@@ -26,11 +26,10 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
             Uri = _component.Browser.Url;
         }
 
-        public override Task ShowHelp(string url) {
-            UIThreadHelper.Instance.Invoke(() => {
+        public override Task ShowHelpAsync(string url, CancellationToken cancellationToken) {
+            return UIThreadHelper.Instance.InvokeAsync(() => {
                 Component.Navigate(url);
-            });
-            return Task.CompletedTask;
+            }, cancellationToken);
         }
     }
 }

@@ -74,7 +74,7 @@ namespace Microsoft.Languages.Editor.Test.Fakes.Shell {
 
         #region IMainThread
         public int ThreadId => MainThread.ManagedThreadId;
-        public void Post(Action action) => UIThreadHelper.Instance.InvokeAsync(action).DoNotWait();
+        public void Post(Action action, CancellationToken cancellationToken) => UIThreadHelper.Instance.InvokeAsync(action, cancellationToken).DoNotWait();
         #endregion
 
         #region IEditorShell

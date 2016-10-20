@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
 using static Microsoft.Common.Core.NativeMethods;
@@ -21,7 +22,7 @@ namespace Microsoft.Common.Core.Security {
             _coreShellLazy = coreShellLazy;
         }
 
-        public async Task<Credentials> GetUserCredentialsAsync(string authority, bool invalidateStoredCredentials) {
+        public async Task<Credentials> GetUserCredentialsAsync(string authority, bool invalidateStoredCredentials, CancellationToken cancellationToken = default(CancellationToken)) {
             var showDialog = invalidateStoredCredentials;
             var credentials = new Credentials();
 
@@ -36,7 +37,7 @@ namespace Microsoft.Common.Core.Security {
                     flags |= CREDUI_FLAGS_ALWAYS_SHOW_UI;
                 }
 
-                await _coreShellLazy.Value.SwitchToMainThreadAsync();
+                await _coreShellLazy.Value.SwitchToMainThreadAsync(cancellationToken);
                 var credui = new CREDUI_INFO {
                     cbSize = Marshal.SizeOf(typeof(CREDUI_INFO)),
                     hwndParent = _coreShellLazy.Value.AppConstants.ApplicationWindowHandle
@@ -61,11 +62,11 @@ namespace Microsoft.Common.Core.Security {
             return credentials;
         }
 
-        public async Task<bool> ValidateX509CertificateAsync(X509Certificate certificate, string message) {
+        public async Task<bool> ValidateX509CertificateAsync(X509Certificate certificate, string message, CancellationToken cancellationToken = default(CancellationToken)) {
             var certificate2 = certificate as X509Certificate2;
             Debug.Assert(certificate2 != null);
             if (certificate2 == null || !certificate2.Verify()) {
-                await _coreShellLazy.Value.SwitchToMainThreadAsync();
+                await _coreShellLazy.Value.SwitchToMainThreadAsync(cancellationToken);
                 if (_coreShellLazy.Value.ShowMessage(message, MessageButtons.OKCancel, MessageType.Warning) == MessageButtons.OK) {
                     certificate2.Reset();
                     return true;

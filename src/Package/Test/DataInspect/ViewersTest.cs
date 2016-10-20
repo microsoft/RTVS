@@ -41,13 +41,13 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         [Category.Viewers]
         public async Task ViewLibraryTest() {
             var cb = Substitute.For<IRSessionCallback>();
-            cb.ViewLibrary().Returns(Task.CompletedTask);
+            cb.ViewLibraryAsync().Returns(Task.CompletedTask);
             using (var hostScript = new RHostScript(_workflow.RSessions, cb)) {
                 using (var inter = await hostScript.Session.BeginInteractionAsync()) {
                     await inter.RespondAsync("library()" + Environment.NewLine);
                 }
             }
-            await cb.Received().ViewLibrary();
+            await cb.Received().ViewLibraryAsync();
         }
 
         [Test]

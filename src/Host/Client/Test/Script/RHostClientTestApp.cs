@@ -25,15 +25,15 @@ namespace Microsoft.R.Host.Client.Test.Script {
             throw new NotImplementedException();
         }
 
-        public virtual Task ShowErrorMessage(string message) {
+        public virtual Task ShowErrorMessage(string message, CancellationToken cancellationToken = default(CancellationToken)) {
             return Task.CompletedTask;
         }
 
-        public virtual Task ShowHelp(string url) {
+        public virtual Task ShowHelpAsync(string url, CancellationToken cancellationToken = default(CancellationToken)) {
             return Task.CompletedTask;
         }
 
-        public virtual Task<MessageButtons> ShowMessageAsync(string message, MessageButtons buttons) {
+        public virtual Task<MessageButtons> ShowMessageAsync(string message, MessageButtons buttons, CancellationToken cancellationToken) {
             return Task.FromResult(MessageButtons.OK);
         }
 
@@ -43,7 +43,7 @@ namespace Microsoft.R.Host.Client.Test.Script {
 
         public void ViewObject(string expression, string title) { }
 
-        public Task ViewLibrary() {
+        public Task ViewLibraryAsync(CancellationToken cancellationToken) {
             return Task.CompletedTask;
         }
 

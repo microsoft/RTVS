@@ -37,17 +37,17 @@ namespace Microsoft.R.Host.Client.Test.Stubs {
         public Func<string, string, bool, Task> ShowFileHandler { get; set; } = (f, t, d) => Task.CompletedTask;
         public Func<string, byte[], Task<string>> SaveFileHandler { get; set; } = (f, d) => Task.FromResult(string.Empty);
 
-        public Task ShowErrorMessage(string message) {
+        public Task ShowErrorMessage(string message, CancellationToken cancellationToken = default(CancellationToken)) {
             ShowErrorMessageCalls.Add(message);
             return Task.CompletedTask;
         }
 
-        public Task<MessageButtons> ShowMessageAsync(string message, MessageButtons buttons) {
+        public Task<MessageButtons> ShowMessageAsync(string message, MessageButtons buttons, CancellationToken cancellationToken = default(CancellationToken)) {
             ShowMessageCalls.Add(new Tuple<string, MessageButtons>(message, buttons));
             return ShowMessageCallsHandler != null ? ShowMessageCallsHandler(message, buttons) : Task.FromResult(default(MessageButtons));
         }
 
-        public Task ShowHelp(string url) {
+        public Task ShowHelpAsync(string url, CancellationToken cancellationToken) {
             HelpUrlCalls.Add(url);
             return Task.CompletedTask;
         }
@@ -87,7 +87,7 @@ namespace Microsoft.R.Host.Client.Test.Stubs {
             ViewObjectHandler?.Invoke(expression, title);
         }
 
-        public Task ViewLibrary() {
+        public Task ViewLibraryAsync(CancellationToken cancellationToken) {
             ViewLibraryCalls.Add(0);
             ViewLibraryHandler?.Invoke();
             return Task.CompletedTask;

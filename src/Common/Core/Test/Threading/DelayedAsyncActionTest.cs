@@ -89,7 +89,7 @@ namespace Microsoft.Common.Core.Test.Threading {
             });
 
             await InUI(() => action.Invoke());
-            await Task.Delay(50);
+            await Task.Delay(200);
 
             threadId.Should().NotBe(UIThreadHelper.Instance.Thread.ManagedThreadId);
         }

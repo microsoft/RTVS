@@ -66,15 +66,13 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             }
 
             var session = _workflowProvider.GetOrCreate().RSession;
-            using (var evaluation = await session.BeginEvaluationAsync()) {
-                try {
-                    await evaluation.LoadWorkspaceAsync(rDataNode.FilePath);
-                } catch (RException ex) {
-                    var message = string.Format(CultureInfo.CurrentCulture, Resources.LoadWorkspaceFailedMessageFormat,
-                        rDataNode.FilePath, ex.Message);
-                    VsAppShell.Current.ShowErrorMessage(message);
-                } catch (OperationCanceledException) {
-                }
+            try {
+                await session.LoadWorkspaceAsync(rDataNode.FilePath);
+            } catch (RException ex) {
+                var message = string.Format(CultureInfo.CurrentCulture, Resources.LoadWorkspaceFailedMessageFormat,
+                    rDataNode.FilePath, ex.Message);
+                VsAppShell.Current.ShowErrorMessage(message);
+            } catch (OperationCanceledException) {
             }
 
             return true;

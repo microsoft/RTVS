@@ -71,7 +71,7 @@ namespace Microsoft.Common.Core.Test.Threading {
             }
 
             public int ThreadId => _threadHelper.Thread.ManagedThreadId;
-            public void Post(Action action) => _threadHelper.InvokeAsync(action).DoNotWait();
+            public void Post(Action action, CancellationToken cancellationToken) => _threadHelper.InvokeAsync(action, cancellationToken).DoNotWait();
         }
     }
 }

@@ -9,21 +9,23 @@ using System.Threading;
 namespace Microsoft.Common.Core.Threading {
     public struct MainThreadAwaiter : ICriticalNotifyCompletion {
         private readonly IMainThread _mainThread;
+        private readonly CancellationToken _cancellationToken;
 
-        public MainThreadAwaiter(IMainThread mainThread) {
+        public MainThreadAwaiter(IMainThread mainThread, CancellationToken cancellationToken) {
             _mainThread = mainThread;
+            _cancellationToken = cancellationToken;
         }
 
         public bool IsCompleted => Thread.CurrentThread.ManagedThreadId == _mainThread.ThreadId;
 
         public void OnCompleted(Action continuation) {
             Trace.Assert(continuation != null);
-            _mainThread.Post(continuation);
+            _mainThread.Post(continuation, _cancellationToken);
         }
 
         public void UnsafeOnCompleted(Action continuation) {
             Trace.Assert(continuation != null);
-            _mainThread.Post(continuation);
+            _mainThread.Post(continuation, _cancellationToken);
         }
 
         public void GetResult() {
