@@ -466,30 +466,19 @@
   <data name="ConnectionManager_EditRemoteTooltip" xml:space="preserve">
     <value>Edit remote connection information</value>
   </data>
-  <data name="ConnectionManager_Active" xml:space="preserve">
-    <value>Active</value>
-  </data>
   <data name="ConnectionManager_Connected" xml:space="preserve">
     <value>Connected</value>
-  </data>
-  <data name="ConnectionManager_Default" xml:space="preserve">
-    <value>default</value>
   </data>
   <data name="ConnectionManager_Disconnected" xml:space="preserve">
     <value>Disconnected</value>
   </data>
-  <data name="ConnectionManager_Inactive" xml:space="preserve">
-    <value>Inactive</value>
-  </data>
   <data name="ConnectionManager_InformationTooltipFormatLocal" xml:space="preserve">
-    <value>{0}
-Path: {1}
-Arguments: {2}</value>
+    <value>Path: {0}
+Arguments: {1}</value>
   </data>
   <data name="ConnectionManager_InformationTooltipFormatRemote" xml:space="preserve">
-    <value>Host: {1}
-Port: {2}
-Arguments: {3}
+    <value>Host: {0}
+Arguments: {1}
     </value>
   </data>
   <data name="ConnectionManager_SwitchConnectionProgressBarMessage" xml:space="preserve">
@@ -503,9 +492,6 @@ Arguments: {3}
   </data>
   <data name="ConnectionManager_None" xml:space="preserve">
     <value>none specified</value>
-  </data>
-  <data name="ConnectionManager_Unknown" xml:space="preserve">
-    <value>unknown</value>
   </data>
   <data name="Warning_TerminateR" xml:space="preserve">
     <value>Terminating R will immediately abort calculations and all workspace objects will be discarded. This action cannot be undone.

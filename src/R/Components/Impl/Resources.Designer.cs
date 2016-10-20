@@ -88,15 +88,6 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Active.
-        /// </summary>
-        public static string ConnectionManager_Active {
-            get {
-                return ResourceManager.GetString("ConnectionManager_Active", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Add.
         /// </summary>
         public static string ConnectionManager_Add {
@@ -147,15 +138,6 @@ namespace Microsoft.R.Components {
         public static string ConnectionManager_ConnectTooltip {
             get {
                 return ResourceManager.GetString("ConnectionManager_ConnectTooltip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to default.
-        /// </summary>
-        public static string ConnectionManager_Default {
-            get {
-                return ResourceManager.GetString("ConnectionManager_Default", resourceCulture);
             }
         }
         
@@ -214,18 +196,8 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Inactive.
-        /// </summary>
-        public static string ConnectionManager_Inactive {
-            get {
-                return ResourceManager.GetString("ConnectionManager_Inactive", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0}
-        ///Path: {1}
-        ///Arguments: {2}.
+        ///   Looks up a localized string similar to Path: {0}
+        ///Arguments: {1}.
         /// </summary>
         public static string ConnectionManager_InformationTooltipFormatLocal {
             get {
@@ -234,9 +206,8 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Host: {1}
-        ///Port: {2}
-        ///Arguments: {3}
+        ///   Looks up a localized string similar to Host: {0}
+        ///Arguments: {1}
         ///    .
         /// </summary>
         public static string ConnectionManager_InformationTooltipFormatRemote {
@@ -432,15 +403,6 @@ namespace Microsoft.R.Components {
         public static string ConnectionManager_TestingConnection {
             get {
                 return ResourceManager.GetString("ConnectionManager_TestingConnection", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to unknown.
-        /// </summary>
-        public static string ConnectionManager_Unknown {
-            get {
-                return ResourceManager.GetString("ConnectionManager_Unknown", resourceCulture);
             }
         }
         

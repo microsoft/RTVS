@@ -4,7 +4,9 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.Common.Core;
 using Microsoft.R.Components.ConnectionManager;
+using Microsoft.R.Components.ConnectionManager.Implementation;
 using Microsoft.R.Components.ConnectionManager.Implementation.ViewModel;
 using Microsoft.UnitTests.Core.XUnit;
 using NSubstitute;
@@ -67,6 +69,16 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
             cm.SaveButtonTooltip.Should().Be(Resources.ConnectionManager_Save);
         }
 
+        [Test]
+        public void Compatibility() {
+            var uri = new Uri("http://microsoft.com");
+            var conn = Substitute.For<IConnection>();
+            conn.Path.Returns("http://host");
+
+            var cm = new ConnectionViewModel(conn);
+            cm.UserProvidedPath.Should().Be("http://host");
+        }
+
         [CompositeTest]
         [InlineData("http://host", "http://host:80")]
         [InlineData("https://host", "https://host:443")]
@@ -75,14 +87,32 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
         [InlineData("host", "https://host:5444")]
         [InlineData("host:4000", "host:4000")] // host == scheme in this case and 4000 is actually a host name
         [InlineData("c:\\", "c:\\")]
-        [InlineData("..", "..")]
-        [InlineData("~~~", "~~~")]
         public void UrlCompletion(string original, string expected) {
             var conn = Substitute.For<IConnection>();
             conn.IsRemote.Returns(true);
             conn.UserProvidedPath.Returns(original);
             var cm = new ConnectionViewModel(conn);
             cm.Path.Should().Be(expected);
+
+            var c = new Connection("name", original, null, DateTime.Now, false);
+            c.UserProvidedPath.Should().Be(original);
+            c.Path.Should().Be(expected);
+        }
+
+        [Test]
+        public void ConnectionTooltip() {
+            var conn = Substitute.For<IConnection>();
+            conn.IsRemote.Returns(true);
+            conn.UserProvidedPath.Returns("http://host");
+            var cm = new ConnectionViewModel(conn);
+            cm.ConnectionTooltip.Should().Be(
+                Resources.ConnectionManager_InformationTooltipFormatRemote.FormatInvariant(cm.Path, Resources.ConnectionManager_None));
+
+            conn = Substitute.For<IConnection>();
+            conn.UserProvidedPath.Returns("C:\\");
+            cm = new ConnectionViewModel(conn);
+            cm.ConnectionTooltip.Should().Be(
+                Resources.ConnectionManager_InformationTooltipFormatLocal.FormatInvariant(cm.Path, Resources.ConnectionManager_None));
         }
     }
 }

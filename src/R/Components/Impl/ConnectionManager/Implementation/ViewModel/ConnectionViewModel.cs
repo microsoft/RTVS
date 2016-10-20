@@ -2,16 +2,13 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Globalization;
 using System.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Common.Wpf;
 using Microsoft.R.Components.ConnectionManager.ViewModel;
-using static System.FormattableString;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
     internal sealed class ConnectionViewModel : BindableBase, IConnectionViewModel {
-        private const int DefaultPort = 5444;
 
         private readonly IConnection _connection;
 
@@ -64,14 +61,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             get { return _userProvidedPath; }
             set {
                 SetProperty(ref _userProvidedPath, value);
-                Path = ToCompletePath(_userProvidedPath);
+                UpdateCalculated();
             }
         }
-
-        /// <summary>
-        /// Path to local interpreter installation or URL to remote machine.
-        /// </summary>
-        public string Path { get; private set; }
 
         /// <summary>
         /// Optional command line arguments to R interpreter.
@@ -145,20 +137,10 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         public string ConnectionTooltip {
             get {
                 var cmdLineInfo = !string.IsNullOrWhiteSpace(RCommandLineArguments) ? RCommandLineArguments : Resources.ConnectionManager_None;
-
-                if (IsRemote) {
-                    Uri uri;
-                    Uri.TryCreate(Path, UriKind.Absolute, out uri);
-
-                    return string.Format(CultureInfo.InvariantCulture, Resources.ConnectionManager_InformationTooltipFormatRemote,
-                        IsActive ? Resources.ConnectionManager_Connected : Resources.ConnectionManager_Disconnected,
-                        uri != null ? uri.Host : Resources.ConnectionManager_Unknown,
-                        uri != null ? uri.Port.ToString(CultureInfo.InvariantCulture) : Resources.ConnectionManager_Default, cmdLineInfo);
-                } else {
-                    return string.Format(CultureInfo.InvariantCulture, Resources.ConnectionManager_InformationTooltipFormatLocal,
-                        IsActive ? Resources.ConnectionManager_Active : Resources.ConnectionManager_Inactive,
-                        Path, cmdLineInfo);
-                }
+                var format = IsRemote
+                                ? Resources.ConnectionManager_InformationTooltipFormatRemote
+                                : Resources.ConnectionManager_InformationTooltipFormatLocal;
+                return format.FormatInvariant(Path, cmdLineInfo);
             }
         }
 
@@ -170,6 +152,10 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             IsUserCreated = _connection?.IsUserCreated ?? false;
             UserProvidedPath = _connection?.UserProvidedPath;
 
+            if (string.IsNullOrEmpty(UserProvidedPath) && !string.IsNullOrEmpty(_connection?.Path)) {
+                UserProvidedPath = _connection?.Path;
+            }
+
             Name = _connection?.Name;
             RCommandLineArguments = _connection?.RCommandLineArguments;
             IsEditing = false;
@@ -177,11 +163,13 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             TestConnectionFailedText = null;
             TestingConnectionCts?.Cancel();
             TestingConnectionCts = null;
+
+            HasChanges = false;
         }
 
         private void UpdateCalculated() {
             HasChanges = !Name.EqualsIgnoreCase(_connection?.Name)
-                || !Path.EqualsIgnoreCase(_connection?.Path)
+                || !UserProvidedPath.EqualsIgnoreCase(_connection?.UserProvidedPath)
                 || !RCommandLineArguments.EqualsIgnoreCase(_connection?.RCommandLineArguments);
 
             Uri uri = null;
@@ -200,37 +188,6 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             IsRemote = !(uri?.IsFile ?? true);
         }
 
-        private string ToCompletePath(string path) {
-            // https://foo:5444 -> https://foo:5444 (no change)
-            // https://foo -> https://foo (no change)
-            // http://foo -> http://foo (no change)
-            // foo->https://foo:5444
-            // foo: 5000->https://foo:5000
-            // username: password @foo -> https://username:password@foo:5444
-            if (IsRemote) {
-                Uri uri = null;
-                try {
-                    Uri.TryCreate(path, UriKind.Absolute, out uri);
-                } catch (InvalidOperationException) { } catch (ArgumentException) { } catch(UriFormatException) { }
-
-                if (uri == null || !(uri.IsFile || string.IsNullOrEmpty(uri.Host))) {
-                    bool hasScheme = uri != null && !string.IsNullOrEmpty(uri.Scheme);
-                    bool hasPort = uri != null && uri.Port >= 0;
-
-                    if (hasScheme) {
-                        if (hasPort) {
-                            return Invariant($"{uri.Scheme}{Uri.SchemeDelimiter}{uri.Host}:{uri.Port}");
-                        }
-                        return Invariant($"{uri.Scheme}{Uri.SchemeDelimiter}{uri.Host}");
-                    } else {
-                        if (Uri.CheckHostName(path) != UriHostNameType.Unknown) {
-                            var port = hasPort ? uri.Port : DefaultPort;
-                            return Invariant($"{Uri.UriSchemeHttps}{Uri.SchemeDelimiter}{path}:{port}");
-                        }
-                    }
-                }
-            }
-            return path;
-        }
+        public string Path => Connection.ToCompletePath(UserProvidedPath);
     }
 }

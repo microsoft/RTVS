@@ -6,16 +6,16 @@ using System;
 namespace Microsoft.R.Components.ConnectionManager.Implementation {
     public class ConnectionInfo : IConnectionInfo {
         public string Name { get; set; }
-        public string UserProvidedPath { get; set; }
+        public virtual string UserProvidedPath { get; set; }
         public string Path { get; set; }
         public string RCommandLineArguments { get; set; }
         public bool IsUserCreated { get; set; }
         public DateTime LastUsed { get; set; }
 
         public ConnectionInfo() { }
-        public ConnectionInfo(string name, string path, string rCommandLineArguments, DateTime lastUsed, bool isUserCreated) {
+        public ConnectionInfo(string name, string userProvidedPath, string rCommandLineArguments, DateTime lastUsed, bool isUserCreated) {
             Name = name;
-            Path = path;
+            UserProvidedPath = userProvidedPath;
             RCommandLineArguments = rCommandLineArguments;
             IsUserCreated = isUserCreated;
             LastUsed = lastUsed;
