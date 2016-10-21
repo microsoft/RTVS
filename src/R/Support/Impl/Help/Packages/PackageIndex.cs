@@ -142,6 +142,7 @@ namespace Microsoft.R.Support.Help.Packages {
             foreach (var p in packages) {
                 _packages[p.Package] = new PackageInfo(_host, p.Package, p.Description, p.Version);
             }
+            _packages["rtvs"] = new PackageInfo(_host, "rtvs", "R Tools", "1.0");
         }
 
         private async Task BuildPreloadedPackagesFunctionListAsync() {
@@ -163,25 +164,18 @@ namespace Microsoft.R.Support.Help.Packages {
         }
 
         private async Task<IPackageInfo> TryAddNewPackageAsync(string packageName) {
-            PackageInfo packageInfo = null;
             try {
-                if (packageName.EqualsOrdinal("rtvs")) {
-                    packageInfo = new PackageInfo(_host, packageName, "R Tools", "1.0");
-                } else {
-                    var packages = await GetPackagesAsync();
-                    var package = packages.FirstOrDefault(p => p.Package.EqualsOrdinal(packageName));
-                    if (package != null) {
-                        packageInfo = new PackageInfo(_host, package.Package, package.Description, package.Version);
-                    }
-                }
-
-                if (packageInfo != null) {
-                    await packageInfo.LoadFunctionsIndexAsync();
-                    _packages[packageName] = packageInfo;
-                    _functionIndex.RegisterPackageFunctions(packageInfo);
+                var packages = await GetPackagesAsync();
+                var package = packages.FirstOrDefault(p => p.Package.EqualsOrdinal(packageName));
+                if (package != null) {
+                    var p = new PackageInfo(_host, package.Package, package.Description, package.Version);
+                    await p.LoadFunctionsIndexAsync();
+                    _packages[packageName] = p;
+                    _functionIndex.RegisterPackageFunctions(p);
+                    return p;
                 }
             } catch (RHostDisconnectedException) { }
-            return packageInfo;
+            return null;
         }
 
         private async Task<IEnumerable<RPackage>> GetPackagesAsync() {
