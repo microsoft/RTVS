@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -125,6 +126,26 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
                 await session.HostStarted;
                 session.HostStarted.Should().BeRanToCompletion();
+            }
+        }
+
+        [Test]
+        public async Task SwitchMultipleSessions() {
+            using (var sessionProvider = new RSessionProvider(TestCoreServices.CreateReal())) {
+                await sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(SwitchMultipleSessions));
+
+                var sessions = new IRSession[4];
+                for (var i = 0; i < sessions.Length; i++) {
+                    sessions[i] = sessionProvider.GetOrCreate(new Guid());
+                }
+
+                await Task.WhenAll(sessions.Select((s, i) => s.EnsureHostStartedAsync(new RHostStartupInfo {
+                    Name = nameof(sessions) + i
+                }, null, 30000)));
+
+                await sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(SwitchMultipleSessions) + "1");
+
+                sessions.Should().OnlyContain(s => s.IsHostRunning);
             }
         }
 
