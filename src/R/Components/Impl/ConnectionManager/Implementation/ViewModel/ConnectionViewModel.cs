@@ -148,13 +148,11 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         public DateTime LastUsed => _connection.LastUsed;
 
         public void Reset() {
-            // Make sure user path and remoteness are set first
-            IsRemote = _connection?.IsRemote ?? false;
-            IsUserCreated = _connection?.IsUserCreated ?? false;
-            Path = _connection?.Path;
-
             Name = _connection?.Name;
+            Path = _connection?.Path;
             RCommandLineArguments = _connection?.RCommandLineArguments;
+            IsUserCreated = _connection?.IsUserCreated ?? false;
+            IsRemote = _connection?.IsRemote ?? false;
             IsEditing = false;
             IsTestConnectionSucceeded = false;
             TestConnectionFailedText = null;
