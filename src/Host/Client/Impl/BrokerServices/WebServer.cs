@@ -29,7 +29,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             _remoteUriService = new RemoteUriWebService(baseAddress);
         }
 
-        public Task InitializeAsync() {
+        public Task InitializeAsync(CancellationToken ct) {
             return Task.Run(() => {
                 Random r = new Random();
 
@@ -39,6 +39,8 @@ namespace Microsoft.R.Host.Client.BrokerServices {
                 int localPortMax = (RemotePort >= 10000 && RemotePort <= 32000) ? 32000 : 65535;
 
                 while (true) {
+                    ct.ThrowIfCancellationRequested();
+
                     _listener = new HttpListener();
                     LocalPort = r.Next(localPortMin, localPortMax);
                     _listener.Prefixes.Add(Invariant($"http://{LocalHost}:{LocalPort}/"));
@@ -47,6 +49,9 @@ namespace Microsoft.R.Host.Client.BrokerServices {
                     } catch (HttpListenerException) {
                         _listener.Close();
                         continue;
+                    } catch(ObjectDisposedException) {
+                        // Socket got closed
+                        throw new OperationCanceledException();
                     }
                     break;
                 }
@@ -97,7 +102,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
                 server = Servers[remoteUri.Port];
             } else {
                 server = new WebServer(remoteUri.Host, remoteUri.Port, baseAddress);
-                await server.InitializeAsync();
+                await server.InitializeAsync(ct);
                 Servers.Add(remoteUri.Port, server);
             }
 
