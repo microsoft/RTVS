@@ -132,6 +132,53 @@ namespace Microsoft.Common.Core.Test.Tasks {
             index.Should().Be(2);
         }
 
+        [Test]
+        public async Task WhenAllCancelOnFailure_SyncCompleted() {
+            Func<CancellationToken, Task> function1 = ct => Task.CompletedTask;
+            Func<CancellationToken, Task> function2 = ct => Task.Delay(200, ct);
+
+            Func<Task> f = () => TaskUtilities.WhenAllCancelOnFailure(function1, function2);
+            await f.ShouldNotThrowAsync();
+        }
+
+        [Test]
+        public async Task WhenAllCancelOnFailure_SyncFailure() {
+            Func<CancellationToken, Task> function1 = 
+                ct => Task.FromException<InvalidOperationException>(new InvalidOperationException());
+
+            Func<CancellationToken, Task> function2 = async ct => {
+                await Task.Delay(200, ct);
+                ct.ThrowIfCancellationRequested();
+            };
+
+            Func<Task> f = () => TaskUtilities.WhenAllCancelOnFailure(function1, function2);
+            await f.ShouldThrowAsync<InvalidOperationException>();
+        }
+        
+        [Test]
+        public async Task WhenAllCancelOnFailure_SyncCompletedThenCancellationThenFailure() {
+            var index = 0;
+
+            Func<CancellationToken, Task> function1 = ct => Task.CompletedTask;
+
+            Func<CancellationToken, Task> function2 = async ct => {
+                await Task.Delay(350, ct);
+                Interlocked.Exchange(ref index, 1);
+                throw new InvalidOperationException("1");
+            };
+
+            Func<CancellationToken, Task> function3 = async ct => {
+                await Task.Delay(200, ct);
+                Interlocked.Exchange(ref index, 2);
+                throw new InvalidOperationException("2");
+            };
+
+            var cts = new CancellationTokenSource(50);
+            Func<Task> f = () => TaskUtilities.WhenAllCancelOnFailure(new[] { function1, function2, function3 }, cts.Token);
+            await f.ShouldThrowAsync<OperationCanceledException>();
+            index.Should().Be(0);
+        }
+
         private class CustomOperationCanceledException : OperationCanceledException { }
     }
 }

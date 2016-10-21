@@ -64,7 +64,8 @@ namespace Microsoft.R.Host.Client.Session {
                         Name = "IsolatedRHost" + session.Id,
                         CranMirrorName = startupInfo.CranMirrorName,
                         CodePage = startupInfo.CodePage
-                    }, null);
+                    }, null, cancellationToken: cancellationToken);
+
                     cancellationToken.ThrowIfCancellationRequested();
 
                     var evaluation = await session.BeginEvaluationAsync(cancellationToken);

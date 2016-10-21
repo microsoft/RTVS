@@ -69,19 +69,20 @@ namespace Microsoft.Common.Core {
             var tcs = new TaskCompletionSourceEx<bool>();
             var state = new WhenAllCancelOnFailureContinuationState(functionsList.Count, tcs, cts);
 
-            foreach (var function in functionsList) {
+            Parallel.ForEach(functionsList, function => {
                 var task = function(cts.Token);
                 task.ContinueWith(WhenAllCancelOnFailureContinuation, state, default(CancellationToken), TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
-            }
-            
+            });
+
             return tcs.Task;
         }
 
         private static void WhenAllCancelOnFailureContinuation(Task task, object state) {
             var continuationState = (WhenAllCancelOnFailureContinuationState) state;
+            var isLast = Interlocked.Decrement(ref continuationState.Count) == 0;
             switch (task.Status) {
                 case TaskStatus.RanToCompletion:
-                    if (Interlocked.Decrement(ref continuationState.Count) == 0) {
+                    if (isLast) {
                         continuationState.TaskCompletionSource.TrySetResult(true);
                     }
                     break;
@@ -101,7 +102,9 @@ namespace Microsoft.Common.Core {
                     break;
             }
 
-            continuationState.CancellationTokenSource.Dispose();
+            if (isLast) {
+                continuationState.CancellationTokenSource.Dispose();
+            }
         }
 
         private class WhenAllCancelOnFailureContinuationState {
