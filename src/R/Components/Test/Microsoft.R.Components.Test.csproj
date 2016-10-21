@@ -49,6 +49,7 @@
     <Compile Include="Assertions\AsyncCommandAssertions.cs" />
     <Compile Include="Configuration\ConfigurationSettingsTest.cs" />
     <Compile Include="Configuration\ConfigurationSettingsCollectionTest.cs" />
+    <Compile Include="ConnectionManager\ConnectionViewModelTest.cs" />
     <Compile Include="EventTaskSources.cs" />
     <Compile Include="Fakes\InteractiveWindow\TestInteractiveWindowEditorsFactoryService.cs" />
     <Compile Include="Fakes\InteractiveWindow\TestRInteractiveWorkflowProvider.cs" />

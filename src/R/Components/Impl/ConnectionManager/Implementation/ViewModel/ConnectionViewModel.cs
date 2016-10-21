@@ -2,20 +2,18 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Globalization;
 using System.Threading;
-using System.Windows.Media;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Wpf;
 using Microsoft.R.Components.ConnectionManager.ViewModel;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
     internal sealed class ConnectionViewModel : BindableBase, IConnectionViewModel {
+
         private readonly IConnection _connection;
 
         private string _name;
-        private string _path;
+        private string _userProvidedPath;
         private string _rCommandLineArguments;
         private bool _isUserCreated;
         private string _saveButtonTooltip;
@@ -43,6 +41,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public Uri Id { get; }
 
+        /// <summary>
+        /// User-friendly name of the connection.
+        /// </summary>
         public string Name {
             get { return _name; }
             set {
@@ -51,14 +52,22 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             }
         }
 
-        public string Path {
-            get { return _path; }
+        /// <summary>
+        /// Remote machine name or URL as entered by the user. In the local case 
+        /// it is same as <see cref="Path"/>. In the remote case user can enter 
+        /// just the machine name and assume default protocol and port are suppied.
+        /// </summary>
+        public string UserProvidedPath {
+            get { return _userProvidedPath; }
             set {
-                SetProperty(ref _path, value);
+                SetProperty(ref _userProvidedPath, value);
                 UpdateCalculated();
             }
         }
 
+        /// <summary>
+        /// Optional command line arguments to R interpreter.
+        /// </summary>
         public string RCommandLineArguments {
             get { return _rCommandLineArguments; }
             set {
@@ -128,41 +137,39 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         public string ConnectionTooltip {
             get {
                 var cmdLineInfo = !string.IsNullOrWhiteSpace(RCommandLineArguments) ? RCommandLineArguments : Resources.ConnectionManager_None;
-
-                if (IsRemote) {
-                    Uri uri;
-                    Uri.TryCreate(Path, UriKind.Absolute, out uri);
-
-                    return string.Format(CultureInfo.InvariantCulture, Resources.ConnectionManager_InformationTooltipFormatRemote,
-                        IsActive ? Resources.ConnectionManager_Connected : Resources.ConnectionManager_Disconnected,
-                        uri != null ? uri.Host : Resources.ConnectionManager_Unknown,
-                        uri != null ? uri.Port.ToString(CultureInfo.InvariantCulture) : Resources.ConnectionManager_Default, cmdLineInfo);
-                } else {
-                    return string.Format(CultureInfo.InvariantCulture, Resources.ConnectionManager_InformationTooltipFormatLocal,
-                        IsActive ? Resources.ConnectionManager_Active : Resources.ConnectionManager_Inactive,
-                        Path, cmdLineInfo);
-                }
+                var format = IsRemote
+                                ? Resources.ConnectionManager_InformationTooltipFormatRemote
+                                : Resources.ConnectionManager_InformationTooltipFormatLocal;
+                return format.FormatInvariant(Path, cmdLineInfo);
             }
         }
 
         public DateTime LastUsed => _connection.LastUsed;
 
         public void Reset() {
-            Name = _connection?.Name;
-            Path = _connection?.Path;
-            RCommandLineArguments = _connection?.RCommandLineArguments;
-            IsUserCreated = _connection?.IsUserCreated ?? false;
+            // Make sure user path and remoteness are set first
             IsRemote = _connection?.IsRemote ?? false;
+            IsUserCreated = _connection?.IsUserCreated ?? false;
+            UserProvidedPath = _connection?.UserProvidedPath;
+
+            if (string.IsNullOrEmpty(UserProvidedPath) && !string.IsNullOrEmpty(_connection?.Path)) {
+                UserProvidedPath = _connection?.Path;
+            }
+
+            Name = _connection?.Name;
+            RCommandLineArguments = _connection?.RCommandLineArguments;
             IsEditing = false;
             IsTestConnectionSucceeded = false;
             TestConnectionFailedText = null;
             TestingConnectionCts?.Cancel();
             TestingConnectionCts = null;
+
+            HasChanges = false;
         }
 
         private void UpdateCalculated() {
             HasChanges = !Name.EqualsIgnoreCase(_connection?.Name)
-                || !Path.EqualsIgnoreCase(_connection?.Path)
+                || !UserProvidedPath.EqualsIgnoreCase(_connection?.UserProvidedPath)
                 || !RCommandLineArguments.EqualsIgnoreCase(_connection?.RCommandLineArguments);
 
             Uri uri = null;
@@ -180,5 +187,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
             IsRemote = !(uri?.IsFile ?? true);
         }
+
+        public string Path => Connection.ToCompletePath(UserProvidedPath);
     }
 }

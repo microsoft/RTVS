@@ -11,6 +11,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View.DesignTim
     internal class DesignTimeConnectionViewModel : IConnectionViewModel {
         public Uri Id { get; }
         public string Name { get; set; }
+        public string UserProvidedPath { get; set; }
         public string Path { get; set; }
         public string RCommandLineArguments { get; set; }
         public bool IsUserCreated { get; set; }

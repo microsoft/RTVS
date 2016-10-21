@@ -84,16 +84,16 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             return VisualComponent;
         }
 
-        public IConnection AddOrUpdateConnection(string name, string path, string rCommandLineArguments, bool isUserCreated) {
-            var newConnection = new Connection(name, path, rCommandLineArguments, DateTime.Now, isUserCreated);
+        public IConnection AddOrUpdateConnection(string name, string userSuppliedPath, string rCommandLineArguments, bool isUserCreated) {
+            var newConnection = new Connection(name, userSuppliedPath, rCommandLineArguments, DateTime.Now, isUserCreated);
             var connection = _userConnections.AddOrUpdate(newConnection.Id, newConnection, (k, v) => UpdateConnectionFactory(v, newConnection));
 
             UpdateRecentConnections();
             return connection;
         }
 
-        public IConnection GetOrAddConnection(string name, string path, string rCommandLineArguments, bool isUserCreated) {
-            var newConnection = CreateConnection(name, path, rCommandLineArguments, isUserCreated);
+        public IConnection GetOrAddConnection(string name, string userSuppliedPath, string rCommandLineArguments, bool isUserCreated) {
+            var newConnection = CreateConnection(name, userSuppliedPath, rCommandLineArguments, isUserCreated);
             var connection = _userConnections.GetOrAdd(newConnection.Id, newConnection);
             UpdateRecentConnections();
             return connection;
@@ -127,7 +127,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         private Task<bool> TrySwitchBrokerAsync(IConnectionInfo info, CancellationToken cancellationToken = default(CancellationToken)) {
-            var connection = GetOrCreateConnection(info.Name, info.Path, info.RCommandLineArguments, info.IsUserCreated);
+            var connection = GetOrCreateConnection(info.Name, info.UserProvidedPath, info.RCommandLineArguments, info.IsUserCreated);
             return TrySwitchBrokerAsync(connection, cancellationToken);
         }
 
@@ -140,11 +140,11 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             return brokerSwitched;
         }
 
-        private IConnection CreateConnection(string name, string path, string rCommandLineArguments, bool isUserCreated) =>
-            new Connection(name, path, rCommandLineArguments, DateTime.Now, isUserCreated);
+        private IConnection CreateConnection(string name, string userProvidedPath, string rCommandLineArguments, bool isUserCreated) =>
+            new Connection(name, userProvidedPath, rCommandLineArguments, DateTime.Now, isUserCreated);
 
-        private IConnection GetOrCreateConnection(string name, string path, string rCommandLineArguments, bool isUserCreated) {
-            var newConnection = CreateConnection(name, path, rCommandLineArguments, isUserCreated);
+        private IConnection GetOrCreateConnection(string name, string userProvidedPath, string rCommandLineArguments, bool isUserCreated) {
+            var newConnection = CreateConnection(name, userProvidedPath, rCommandLineArguments, isUserCreated);
             IConnection connection;
             return _userConnections.TryGetValue(newConnection.Id, out connection) ? connection : newConnection;
         }
@@ -159,12 +159,17 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         private Dictionary<Uri, IConnection> GetConnectionsFromSettings() => _settings.Connections
-            .Select(c => CreateConnection(c.Name, c.Path, c.RCommandLineArguments, c.IsUserCreated))
+            .Select(c => CreateConnection(c.Name, c.UserProvidedPath ?? c.Path, c.RCommandLineArguments, c.IsUserCreated))
             .ToDictionary(k => k.Id);
 
         private void SaveConnectionsToSettings() {
             _settings.Connections = RecentConnections
-                .Select(c => new ConnectionInfo { Name = c.Name, Path = c.Path, RCommandLineArguments = c.RCommandLineArguments, IsUserCreated = c.IsUserCreated })
+                .Select(c => new ConnectionInfo {
+                    Name = c.Name,
+                    UserProvidedPath = c.UserProvidedPath,
+                    Path = c.Path,
+                    RCommandLineArguments = c.RCommandLineArguments,
+                    IsUserCreated = c.IsUserCreated })
                 .ToArray();
         }
 

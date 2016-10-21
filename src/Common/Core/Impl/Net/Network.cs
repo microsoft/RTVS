@@ -35,7 +35,7 @@ namespace Microsoft.Common.Core.Net {
         }
 
         public static bool IsHttps(this Uri url) {
-            return url.Scheme.EqualsIgnoreCase("https");
+            return url.Scheme.EqualsIgnoreCase(Uri.UriSchemeHttps);
         }
     }
 }

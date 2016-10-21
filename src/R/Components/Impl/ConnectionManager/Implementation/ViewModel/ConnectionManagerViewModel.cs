@@ -138,7 +138,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                 // Verify path
                 var ri = new RInterpreterInfo(string.Empty, path);
                 if (ri.VerifyInstallation(null, null, _shell)) {
-                    connection.Path = path;
+                    connection.UserProvidedPath = path;
                 }
             }
         }
@@ -192,7 +192,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
             var connection = _connectionManager.AddOrUpdateConnection(
                 connectionViewModel.Name,
-                connectionViewModel.Path,
+                connectionViewModel.UserProvidedPath,
                 connectionViewModel.RCommandLineArguments,
                 connectionViewModel.IsUserCreated);
 
