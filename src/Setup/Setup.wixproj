@@ -48,6 +48,7 @@
     <Content Include="Assemblies.wxi" />
     <Content Include="Associations.wxi" />
     <Content Include="CommonAssemblies.wxi" />
+    <Content Include="RtvsPackageFiles3.wxi" />
     <Content Include="RtvsPackageFiles2.wxi" />
     <Content Include="RtvsPackageFiles1.wxi" />
     <Content Include="SqlTemplates.wxi" />
@@ -90,6 +91,12 @@
     <FilesToSign Include="$(OutputPath)$(OutputName).msi">
       <Authenticode>Microsoft400</Authenticode>
     </FilesToSign>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="..\" />
+    <Folder Include="..\..\" />
+    <Folder Include="..\..\bin\" />
+    <Folder Include="..\..\bin\Debug\" />
   </ItemGroup>
   <Import Project="$(WixTargetsPath)" />
   <Import Project="$(NuGetPackageRoot)\MicroBuild.Core\0.2.0\build\MicroBuild.Core.targets" Condition="Exists('$(NuGetPackageRoot)\MicroBuild.Core\0.2.0\build\MicroBuild.Core.targets')" />
