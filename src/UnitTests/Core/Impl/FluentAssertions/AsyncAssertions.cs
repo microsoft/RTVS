@@ -16,6 +16,15 @@ namespace Microsoft.UnitTests.Core.FluentAssertions {
             _asyncAction = asyncAction;
         }
 
+        public async Task ShouldNotThrowAsync(string because, object[] becauseArgs) {
+            var exceptions = await InvokeAction();
+
+            Execute.Assertion
+                .ForCondition(exceptions.Count == 0)
+                .BecauseOf(because, becauseArgs)
+                .FailWith("Did not expect any exception{reason}, but found:{0}.", exceptions.Select(e => $"\n\t{e.GetType()} with message {e.Message}"));
+        }
+
         public async Task<ExceptionAssertions<TException>> ShouldThrowAsync<TException>(string because, object[] becauseArgs)
             where TException : Exception {
             var exceptions = await InvokeAction();

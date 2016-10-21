@@ -986,7 +986,7 @@ namespace Microsoft.Common.Core.Test.Threading {
                 } else {
                     using (await _arwl.ReaderLockAsync()) { }
                 }
-            });
+            }, 50000);
 
             writersCount.Should().Be(12);
         }
