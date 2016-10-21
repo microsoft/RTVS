@@ -32,7 +32,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
             var conn = Substitute.For<IConnection>();
             conn.Id.Returns(uri);
             conn.Name.Returns("name");
-            conn.UserProvidedPath.Returns("path");
+            conn.Path.Returns("path");
             conn.RCommandLineArguments.Returns("arg");
             conn.IsRemote.Returns(true);
 
@@ -48,7 +48,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
             cm.IsEditing.Should().BeFalse();
             cm.IsTestConnectionSucceeded.Should().BeFalse();
             cm.Name.Should().Be(conn.Name);
-            cm.UserProvidedPath.Should().Be(conn.UserProvidedPath);
+            cm.Path.Should().Be(conn.Path);
             cm.RCommandLineArguments.Should().Be(conn.RCommandLineArguments);
         }
 
@@ -64,19 +64,9 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
             cm = new ConnectionViewModel(conn);
             cm.SaveButtonTooltip.Should().Be(Resources.ConnectionManager_ShouldHavePath);
 
-            conn.UserProvidedPath.Returns("c:\\path");
+            conn.Path.Returns("c:\\path");
             cm = new ConnectionViewModel(conn);
             cm.SaveButtonTooltip.Should().Be(Resources.ConnectionManager_Save);
-        }
-
-        [Test]
-        public void Compatibility() {
-            var uri = new Uri("http://microsoft.com");
-            var conn = Substitute.For<IConnection>();
-            conn.Path.Returns("http://host");
-
-            var cm = new ConnectionViewModel(conn);
-            cm.UserProvidedPath.Should().Be("http://host");
         }
 
         [CompositeTest]
@@ -90,26 +80,22 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
         public void UrlCompletion(string original, string expected) {
             var conn = Substitute.For<IConnection>();
             conn.IsRemote.Returns(true);
-            conn.UserProvidedPath.Returns(original);
+            conn.Path.Returns(original);
             var cm = new ConnectionViewModel(conn);
-            cm.Path.Should().Be(expected);
-
-            var c = new Connection("name", original, null, DateTime.Now, false);
-            c.UserProvidedPath.Should().Be(original);
-            c.Path.Should().Be(expected);
+            cm.GetCompletePath().Should().Be(expected);
         }
 
         [Test]
         public void ConnectionTooltip() {
             var conn = Substitute.For<IConnection>();
             conn.IsRemote.Returns(true);
-            conn.UserProvidedPath.Returns("http://host");
+            conn.Path.Returns("http://host");
             var cm = new ConnectionViewModel(conn);
             cm.ConnectionTooltip.Should().Be(
                 Resources.ConnectionManager_InformationTooltipFormatRemote.FormatInvariant(cm.Path, Resources.ConnectionManager_None));
 
             conn = Substitute.For<IConnection>();
-            conn.UserProvidedPath.Returns("C:\\");
+            conn.Path.Returns("C:\\");
             cm = new ConnectionViewModel(conn);
             cm.ConnectionTooltip.Should().Be(
                 Resources.ConnectionManager_InformationTooltipFormatLocal.FormatInvariant(cm.Path, Resources.ConnectionManager_None));

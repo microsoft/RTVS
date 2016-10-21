@@ -127,7 +127,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         private Task<bool> TrySwitchBrokerAsync(IConnectionInfo info, CancellationToken cancellationToken = default(CancellationToken)) {
-            var connection = GetOrCreateConnection(info.Name, info.UserProvidedPath, info.RCommandLineArguments, info.IsUserCreated);
+            var connection = GetOrCreateConnection(info.Name, info.Path, info.RCommandLineArguments, info.IsUserCreated);
             return TrySwitchBrokerAsync(connection, cancellationToken);
         }
 
@@ -159,14 +159,13 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         private Dictionary<Uri, IConnection> GetConnectionsFromSettings() => _settings.Connections
-            .Select(c => CreateConnection(c.Name, c.UserProvidedPath ?? c.Path, c.RCommandLineArguments, c.IsUserCreated))
+            .Select(c => CreateConnection(c.Name, c.Path, c.RCommandLineArguments, c.IsUserCreated))
             .ToDictionary(k => k.Id);
 
         private void SaveConnectionsToSettings() {
             _settings.Connections = RecentConnections
                 .Select(c => new ConnectionInfo {
                     Name = c.Name,
-                    UserProvidedPath = c.UserProvidedPath,
                     Path = c.Path,
                     RCommandLineArguments = c.RCommandLineArguments,
                     IsUserCreated = c.IsUserCreated })

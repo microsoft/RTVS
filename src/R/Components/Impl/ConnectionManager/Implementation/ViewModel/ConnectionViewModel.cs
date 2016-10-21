@@ -6,14 +6,15 @@ using System.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Common.Wpf;
 using Microsoft.R.Components.ConnectionManager.ViewModel;
+using static System.FormattableString;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
     internal sealed class ConnectionViewModel : BindableBase, IConnectionViewModel {
-
+        private const int DefaultPort = 5444;
         private readonly IConnection _connection;
 
         private string _name;
-        private string _userProvidedPath;
+        private string _path;
         private string _rCommandLineArguments;
         private bool _isUserCreated;
         private string _saveButtonTooltip;
@@ -57,10 +58,10 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         /// it is same as <see cref="Path"/>. In the remote case user can enter 
         /// just the machine name and assume default protocol and port are suppied.
         /// </summary>
-        public string UserProvidedPath {
-            get { return _userProvidedPath; }
+        public string Path {
+            get { return _path; }
             set {
-                SetProperty(ref _userProvidedPath, value);
+                SetProperty(ref _path, value);
                 UpdateCalculated();
             }
         }
@@ -150,11 +151,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             // Make sure user path and remoteness are set first
             IsRemote = _connection?.IsRemote ?? false;
             IsUserCreated = _connection?.IsUserCreated ?? false;
-            UserProvidedPath = _connection?.UserProvidedPath;
-
-            if (string.IsNullOrEmpty(UserProvidedPath) && !string.IsNullOrEmpty(_connection?.Path)) {
-                UserProvidedPath = _connection?.Path;
-            }
+            Path = _connection?.Path;
 
             Name = _connection?.Name;
             RCommandLineArguments = _connection?.RCommandLineArguments;
@@ -169,11 +166,11 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         private void UpdateCalculated() {
             HasChanges = !Name.EqualsIgnoreCase(_connection?.Name)
-                || !UserProvidedPath.EqualsIgnoreCase(_connection?.UserProvidedPath)
+                || !Path.EqualsIgnoreCase(_connection?.Path)
                 || !RCommandLineArguments.EqualsIgnoreCase(_connection?.RCommandLineArguments);
 
             Uri uri = null;
-            var isPathValid = Uri.TryCreate(Path, UriKind.Absolute, out uri);
+            var isPathValid = Uri.TryCreate(GetCompletePath(), UriKind.Absolute, out uri);
             if (string.IsNullOrEmpty(Name)) {
                 IsValid = false;
                 SaveButtonTooltip = Resources.ConnectionManager_ShouldHaveName;
@@ -188,6 +185,34 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             IsRemote = !(uri?.IsFile ?? true);
         }
 
-        public string Path => Connection.ToCompletePath(UserProvidedPath);
+       public string GetCompletePath() {
+            // https://foo:5444 -> https://foo:5444 (no change)
+            // https://foo -> https://foo (no change)
+            // http://foo -> http://foo (no change)
+            // foo->https://foo:5444
+
+            Uri uri = null;
+            try {
+                Uri.TryCreate(Path, UriKind.Absolute, out uri);
+            } catch (InvalidOperationException) { } catch (ArgumentException) { } catch (UriFormatException) { }
+
+            if (uri == null || !(uri.IsFile || string.IsNullOrEmpty(uri.Host))) {
+                bool hasScheme = uri != null && !string.IsNullOrEmpty(uri.Scheme);
+                bool hasPort = uri != null && uri.Port >= 0;
+
+                if (hasScheme) {
+                    if (hasPort) {
+                        return Invariant($"{uri.Scheme}{Uri.SchemeDelimiter}{uri.Host}:{uri.Port}");
+                    }
+                    return Invariant($"{uri.Scheme}{Uri.SchemeDelimiter}{uri.Host}");
+                } else {
+                    if (Uri.CheckHostName(Path) != UriHostNameType.Unknown) {
+                        var port = hasPort ? uri.Port : DefaultPort;
+                        return Invariant($"{Uri.UriSchemeHttps}{Uri.SchemeDelimiter}{Path}:{port}");
+                    }
+                }
+            }
+            return Path;
+        }
     }
 }

@@ -11,7 +11,6 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View.DesignTim
     internal class DesignTimeConnectionViewModel : IConnectionViewModel {
         public Uri Id { get; }
         public string Name { get; set; }
-        public string UserProvidedPath { get; set; }
         public string Path { get; set; }
         public string RCommandLineArguments { get; set; }
         public bool IsUserCreated { get; set; }
@@ -30,6 +29,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View.DesignTim
         public void Reset() { }
         public void Dispose() { }
         public string ConnectionTooltip => string.Empty;
+        public string GetCompletePath() => Path;
 #pragma warning disable 67
         public event PropertyChangedEventHandler PropertyChanged;
     }

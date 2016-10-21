@@ -80,7 +80,7 @@
                                  controls:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_Name}"/>
 
                         <TextBox Grid.Row="1" Grid.Column="0" Style="{StaticResource InputTextBoxStyle}" 
-                                 Text="{Binding Path=UserProvidedPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 Text="{Binding Path=Path, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                  controls:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_Path}" 
                                  IsReadOnly="{Binding Path=IsUserCreated, Converter={x:Static rwpf:Converters.Not}}" />
 
@@ -193,7 +193,7 @@
                                    ToolTip="{Binding Path=ConnectionTooltip}"/>
                         <Separator Grid.Row="0" Grid.Column="3" Margin="0,1,6,2" Style="{StaticResource VerticalSeparator}"
                                    Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"/>
-                        <TextBlock Grid.Row="0" Grid.Column="4" Margin="0,1,3,2" Text="{Binding Path=UserProvidedPath, Mode=OneWay}"
+                        <TextBlock Grid.Row="0" Grid.Column="4" Margin="0,1,3,2" Text="{Binding Path=Path, Mode=OneWay}"
                                    TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"
                                    Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"/>
 
