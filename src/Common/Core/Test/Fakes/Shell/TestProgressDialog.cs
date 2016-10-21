@@ -2,12 +2,14 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
 using Microsoft.UnitTests.Core.Threading;
 
 namespace Microsoft.Common.Core.Test.Fakes.Shell {
+    [ExcludeFromCodeCoverage]
     public class TestProgressDialog : IProgressDialog {
         public void Show(Func<CancellationToken, Task> method, string waitMessage, int delayToShowDialogMs = 0)
             => UIThreadHelper.Instance.Invoke(() => method(CancellationToken.None)).GetAwaiter().GetResult();

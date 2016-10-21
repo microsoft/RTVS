@@ -3,9 +3,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace Microsoft.Common.Core.Test.Match {
+    [ExcludeFromCodeCoverage]
     public class MatchElements<T> : IEquatable<IEnumerable<T>> {
         private readonly bool _exactOrder;
         private readonly List<IEquatable<T>> _expected = new List<IEquatable<T>>();

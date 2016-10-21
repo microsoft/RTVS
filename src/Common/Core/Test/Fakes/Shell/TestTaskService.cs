@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 using Microsoft.Common.Core.Tasks;
 
 namespace Microsoft.Common.Core.Test.Fakes.Shell {
+    [ExcludeFromCodeCoverage]
     public class TestTaskService : ITaskService {
         public bool Wait(Task task, CancellationToken cancellationToken = default(CancellationToken), int ms = Timeout.Infinite) 
             => TaskUtilities.IsOnBackgroundThread() ? task.Wait(ms, cancellationToken) : WaitOnMainThread(task, cancellationToken, ms);

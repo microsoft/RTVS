@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
@@ -13,6 +14,7 @@ using Microsoft.Common.Core.Test.Telemetry;
 using NSubstitute;
 
 namespace Microsoft.Common.Core.Test.Fakes.Shell {
+    [ExcludeFromCodeCoverage]
     public static class TestCoreServices {
         public static ICoreServices CreateSubstitute(IFileSystem fs = null, IRegistry registry = null, IProcessServices ps = null) {
             return new CoreServices(

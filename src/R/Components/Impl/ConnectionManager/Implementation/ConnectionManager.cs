@@ -84,16 +84,16 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             return VisualComponent;
         }
 
-        public IConnection AddOrUpdateConnection(string name, string userSuppliedPath, string rCommandLineArguments, bool isUserCreated) {
-            var newConnection = new Connection(name, userSuppliedPath, rCommandLineArguments, DateTime.Now, isUserCreated);
+        public IConnection AddOrUpdateConnection(string name, string path, string rCommandLineArguments, bool isUserCreated) {
+            var newConnection = new Connection(name, path, rCommandLineArguments, DateTime.Now, isUserCreated);
             var connection = _userConnections.AddOrUpdate(newConnection.Id, newConnection, (k, v) => UpdateConnectionFactory(v, newConnection));
 
             UpdateRecentConnections();
             return connection;
         }
 
-        public IConnection GetOrAddConnection(string name, string userSuppliedPath, string rCommandLineArguments, bool isUserCreated) {
-            var newConnection = CreateConnection(name, userSuppliedPath, rCommandLineArguments, isUserCreated);
+        public IConnection GetOrAddConnection(string name, string path, string rCommandLineArguments, bool isUserCreated) {
+            var newConnection = CreateConnection(name, path, rCommandLineArguments, isUserCreated);
             var connection = _userConnections.GetOrAdd(newConnection.Id, newConnection);
             UpdateRecentConnections();
             return connection;
@@ -140,11 +140,11 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             return brokerSwitched;
         }
 
-        private IConnection CreateConnection(string name, string userProvidedPath, string rCommandLineArguments, bool isUserCreated) =>
-            new Connection(name, userProvidedPath, rCommandLineArguments, DateTime.Now, isUserCreated);
+        private IConnection CreateConnection(string name, string path, string rCommandLineArguments, bool isUserCreated) =>
+            new Connection(name, path, rCommandLineArguments, DateTime.Now, isUserCreated);
 
-        private IConnection GetOrCreateConnection(string name, string userProvidedPath, string rCommandLineArguments, bool isUserCreated) {
-            var newConnection = CreateConnection(name, userProvidedPath, rCommandLineArguments, isUserCreated);
+        private IConnection GetOrCreateConnection(string name, string path, string rCommandLineArguments, bool isUserCreated) {
+            var newConnection = CreateConnection(name, path, rCommandLineArguments, isUserCreated);
             IConnection connection;
             return _userConnections.TryGetValue(newConnection.Id, out connection) ? connection : newConnection;
         }

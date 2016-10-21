@@ -3,11 +3,13 @@
 
 using System;
 using System.ComponentModel.Design;
+using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.R.Components.View;
 
 namespace Microsoft.R.Components.Test.Fakes.VisualComponentFactories {
+    [ExcludeFromCodeCoverage]
     internal class Container<T> : ContentControl, IDisposable, IVisualComponentContainer<T> where T : IVisualComponent {
         private readonly Action _onDispose;
 
