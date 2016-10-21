@@ -33,7 +33,7 @@ namespace Microsoft.R.Support.Help.Packages {
         private readonly IFunctionIndex _functionIndex;
         private readonly ConcurrentDictionary<string, PackageInfo> _packages = new ConcurrentDictionary<string, PackageInfo>();
         private readonly BinaryAsyncLock _buildIndexLock = new BinaryAsyncLock();
-        
+
         public static IEnumerable<string> PreloadedPackages { get; } = new string[]
             { "base", "stats", "utils", "graphics", "datasets", "methods" };
 
@@ -163,18 +163,25 @@ namespace Microsoft.R.Support.Help.Packages {
         }
 
         private async Task<IPackageInfo> TryAddNewPackageAsync(string packageName) {
+            PackageInfo packageInfo = null;
             try {
-                var packages = await GetPackagesAsync();
-                var package = packages.FirstOrDefault(p => p.Package.EqualsOrdinal(packageName));
-                if (package != null) {
-                    var p = new PackageInfo(_host, package.Package, package.Description, package.Version);
-                    await p.LoadFunctionsIndexAsync();
-                    _packages[packageName] = p;
-                    _functionIndex.RegisterPackageFunctions(p);
-                    return p;
+                if (packageName.EqualsOrdinal("rtvs")) {
+                    packageInfo = new PackageInfo(_host, packageName, "R Tools", "1.0");
+                } else {
+                    var packages = await GetPackagesAsync();
+                    var package = packages.FirstOrDefault(p => p.Package.EqualsOrdinal(packageName));
+                    if (package != null) {
+                        packageInfo = new PackageInfo(_host, package.Package, package.Description, package.Version);
+                    }
                 }
-            } catch(RHostDisconnectedException) { }
-            return null;
+
+                if (packageInfo != null) {
+                    await packageInfo.LoadFunctionsIndexAsync();
+                    _packages[packageName] = packageInfo;
+                    _functionIndex.RegisterPackageFunctions(packageInfo);
+                }
+            } catch (RHostDisconnectedException) { }
+            return packageInfo;
         }
 
         private async Task<IEnumerable<RPackage>> GetPackagesAsync() {
@@ -201,7 +208,7 @@ namespace Microsoft.R.Support.Help.Packages {
         }
 
         private async Task RebuildIndexAsync() {
-            if(!_buildIndexLock.IsSet) {
+            if (!_buildIndexLock.IsSet) {
                 // Still building, try again later
                 ScheduleIdleTimeRebuild();
                 return;
