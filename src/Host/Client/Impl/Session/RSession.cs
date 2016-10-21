@@ -687,10 +687,12 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
         /// <param name="url"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task IRCallbacks.WebBrowser(string url, CancellationToken cancellationToken) {
-            var newUrl = BrokerClient.HandleUrl(url, cancellationToken);
+        async Task IRCallbacks.WebBrowser(string url, CancellationToken cancellationToken) {
+            var newUrl = await BrokerClient.HandleUrlAsync(url, cancellationToken);
             var callback = _callback;
-            return callback != null ? callback.ShowHelpAsync(newUrl, cancellationToken) : Task.CompletedTask;
+            if (callback != null) {
+                await callback.ShowHelpAsync(newUrl, cancellationToken);
+            }
         }
 
         Task IRCallbacks.ViewLibrary(CancellationToken cancellationToken) {

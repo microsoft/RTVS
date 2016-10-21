@@ -18,6 +18,6 @@ namespace Microsoft.R.Host.Client.Host {
         Task PingAsync();
         Task<RHost> ConnectAsync(BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken), ReentrancyToken reentrancyToken = default(ReentrancyToken));
         Task TerminateSessionAsync(string name, CancellationToken cancellationToken = default(CancellationToken));
-        string HandleUrl(string url, CancellationToken ct);
+        Task<string> HandleUrlAsync(string url, CancellationToken ct);
     }
 }

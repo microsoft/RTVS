@@ -187,8 +187,6 @@ namespace Microsoft.R.Host.Client.Host {
             return new RHost(name, callbacks, transport, Log, cts);
         }
 
-        public virtual string HandleUrl(string url, CancellationToken ct) {
-            return url;
-        }
+        public virtual Task<string> HandleUrlAsync(string url, CancellationToken ct)  => Task.FromResult(url);
     }
 }
