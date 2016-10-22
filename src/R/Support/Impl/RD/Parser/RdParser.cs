@@ -40,7 +40,9 @@ namespace Microsoft.R.Support.RD.Parser {
             bool isInternal = false;
             string returnValue = null;
 
-            while (!context.Tokens.IsEndOfStream() && argumentDescriptions == null) {
+            while (!context.Tokens.IsEndOfStream() &&
+                   (functionDescription == null || argumentDescriptions == null ||
+                    signatureInfos == null || returnValue == null)) {
                 RdToken token = context.Tokens.CurrentToken;
 
                 if (context.IsAtKeywordWithParameters()) {

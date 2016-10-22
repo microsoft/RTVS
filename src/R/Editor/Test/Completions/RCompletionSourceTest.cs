@@ -74,7 +74,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         [CompositeTest]
         [InlineData("utils::", 7, "adist", "approximate string distance")]
         [InlineData("lm(utils::)", 10, "adist", "approximate string distance")]
-        [InlineData("rtvs::", 6, "fetch_file", "Fetches file")]
+        [InlineData("rtvs::", 6, "fetch_file", "used to download")]
         public void SpecificPackage(string content, int position, string expectedEntry, string expectedDescription) {
             var completionSets = new List<CompletionSet>();
             GetCompletions(content, position, completionSets);
