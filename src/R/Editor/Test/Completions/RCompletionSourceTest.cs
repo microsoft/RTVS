@@ -38,6 +38,7 @@ namespace Microsoft.R.Editor.Test.Completions {
             completionSets[0].Completions[1].DisplayText.Should().Be("factor");
         }
 
+
         [Test]
         public void Keywords01() {
             var completionSets = new List<CompletionSet>();
@@ -60,9 +61,20 @@ namespace Microsoft.R.Editor.Test.Completions {
                 .Which.Description.Should().Be("Base R functions.");
         }
 
+        [Test]
+        public void RtvsPackage() {
+            var completionSets = new List<CompletionSet>();
+            GetCompletions("rtv", 3, completionSets, new TextRange(0, 3));
+
+            completionSets.Should().ContainSingle();
+            completionSets[0].Filter();
+            completionSets[0].Completions[0].DisplayText.Should().Be("rtvs");
+        }
+
         [CompositeTest]
         [InlineData("utils::", 7, "adist", "approximate string distance")]
         [InlineData("lm(utils::)", 10, "adist", "approximate string distance")]
+        [InlineData("rtvs::", 6, "fetch_file", "Fetches file")]
         public void SpecificPackage(string content, int position, string expectedEntry, string expectedDescription) {
             var completionSets = new List<CompletionSet>();
             GetCompletions(content, position, completionSets);

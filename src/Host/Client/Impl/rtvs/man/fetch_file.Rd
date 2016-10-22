@@ -1,6 +1,6 @@
-﻿\name{fetch_file}
+﻿\title{Fetches file from remote machine}
+\name{fetch_file}
 \alias{fetch_file}
-\title{Fetch file from remote}
 \usage{
 fetch_file(path)
 }
@@ -8,7 +8,7 @@ fetch_file(path)
   \item{path}{Path to the file on remote machine}
 }
 \description{
-Fetches file from a remote machine and brings it down to the local file system. The file is saved to the local project folder.
+\code{fetch_file} is used to download file from a remote machine. The file is saved to the local project folder.
 }
 \examples{
 fetch_file('data.csv')
