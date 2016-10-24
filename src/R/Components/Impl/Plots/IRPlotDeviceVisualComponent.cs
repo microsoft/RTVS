@@ -23,6 +23,8 @@ namespace Microsoft.R.Components.Plots {
         IRPlot ActivePlot { get; }
         Task<LocatorResult> StartLocatorModeAsync(CancellationToken ct);
         void EndLocatorMode();
+        // Functions below are for use by tests
         void ClickPlot(int x, int y);
+        Task ResizePlotAsync(int pixelWidth, int pixelHeight, int resolution);
     }
 }
