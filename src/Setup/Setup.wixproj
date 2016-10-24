@@ -53,6 +53,7 @@
     <Content Include="Assemblies.wxi" />
     <Content Include="Associations.wxi" />
     <Content Include="CommonAssemblies.wxi" />
+    <Content Include="RtvsPackageFiles3.wxi" />
     <Content Include="RtvsPackageFiles2.wxi" />
     <Content Include="RtvsPackageFiles1.wxi" />
     <Content Include="SqlTemplates.wxi" />

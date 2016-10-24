@@ -11,41 +11,51 @@ using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client.BrokerServices {
     public class WebServer {
+        private static Dictionary<int, WebServer> Servers { get; } = new Dictionary<int, WebServer>();
+
+        private readonly IRemoteUriWebService _remoteUriService;
+        private HttpListener _listener;
+
         public string LocalHost { get; }
-        public int LocalPort { get; }
+        public int LocalPort { get; private set; }
         public string RemoteHost { get; }
         public int RemotePort { get; }
 
-        private readonly HttpListener _listener;
-        private readonly IRemoteUriWebService _remoteUriService;
-
-        private static Dictionary<int, WebServer> Servers { get; } = new Dictionary<int, WebServer>();
-
-        private WebServer(string remoteHostIp, int remotePort,  string baseAddress) {
+        private WebServer(string remoteHostIp, int remotePort, string baseAddress) {
             LocalHost = IPAddress.Loopback.ToString();
             RemoteHost = remoteHostIp;
             RemotePort = remotePort;
 
             _remoteUriService = new RemoteUriWebService(baseAddress);
-            Random r = new Random();
+        }
 
-            // if remote port is between 10000 and 32000, select a port in the same range.
-            // R Help uses ports in that range.
-            int localPortMin = (RemotePort >= 10000 && RemotePort <= 32000)? 10000: 49152;
-            int localPortMax = (RemotePort >= 10000 && RemotePort <= 32000) ? 32000 : 65535;
+        public Task InitializeAsync(CancellationToken ct) {
+            return Task.Run(() => {
+                Random r = new Random();
 
-            while(true) {
-                _listener = new HttpListener();
-                LocalPort = r.Next(localPortMin, localPortMax);
-                _listener.Prefixes.Add(Invariant($"http://{LocalHost}:{LocalPort}/"));
-                try {
-                    _listener.Start();
-                } catch (HttpListenerException) {
-                    _listener.Close();
-                    continue;
+                // if remote port is between 10000 and 32000, select a port in the same range.
+                // R Help uses ports in that range.
+                int localPortMin = (RemotePort >= 10000 && RemotePort <= 32000) ? 10000 : 49152;
+                int localPortMax = (RemotePort >= 10000 && RemotePort <= 32000) ? 32000 : 65535;
+
+                while (true) {
+                    ct.ThrowIfCancellationRequested();
+
+                    _listener = new HttpListener();
+                    LocalPort = r.Next(localPortMin, localPortMax);
+                    _listener.Prefixes.Add(Invariant($"http://{LocalHost}:{LocalPort}/"));
+                    try {
+                        _listener.Start();
+                    } catch (HttpListenerException) {
+                        _listener.Close();
+                        continue;
+                    } catch(ObjectDisposedException) {
+                        // Socket got closed
+                        throw new OperationCanceledException();
+                    }
+                    break;
                 }
-                break;
-            }
+            });
         }
 
         private void Stop() {
@@ -79,7 +89,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             }
         }
 
-        public static string CreateWebServer(string remoteUrl, string baseAddress, CancellationToken ct) {
+        public static async Task<string> CreateWebServerAsync(string remoteUrl, string baseAddress, CancellationToken ct) {
             Uri remoteUri = new Uri(remoteUrl);
             UriBuilder localUri = new UriBuilder(remoteUri);
 
@@ -92,10 +102,11 @@ namespace Microsoft.R.Host.Client.BrokerServices {
                 server = Servers[remoteUri.Port];
             } else {
                 server = new WebServer(remoteUri.Host, remoteUri.Port, baseAddress);
+                await server.InitializeAsync(ct);
                 Servers.Add(remoteUri.Port, server);
             }
-            
-            server.DoWorkAsync(ct).DoNotWait();
+
+            await server.DoWorkAsync(ct);
 
             localUri.Host = server.LocalHost;
             localUri.Port = server.LocalPort;

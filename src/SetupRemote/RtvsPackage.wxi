@@ -10,11 +10,17 @@
           <?include "$(var.SourceDir)\Setup\RtvsPackageFiles2.wxi"?>
         </Component>
       </Directory>
+      <Directory Id="RtvsPackageManFolder" Name="Man">
+        <Component Id="RtvsPackageMan" Guid="{73B91862-00A1-4215-BB0B-1EDC2E3C404D}" Win64="yes">
+          <?include "$(var.SourceDir)\Setup\RtvsPackageFiles3.wxi"?>
+        </Component>
+      </Directory>
     </Directory>
   </DirectoryRef>
 
   <ComponentGroup Id="RtvsPackage">
     <ComponentRef Id="RtvsPackageMetadata" />
     <ComponentRef Id="RtvsPackageR"/>
+    <ComponentRef Id="RtvsPackageMan"/>
   </ComponentGroup>
 </Include>

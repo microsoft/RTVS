@@ -33,7 +33,7 @@ namespace Microsoft.R.Support.Help.Packages {
         private readonly IFunctionIndex _functionIndex;
         private readonly ConcurrentDictionary<string, PackageInfo> _packages = new ConcurrentDictionary<string, PackageInfo>();
         private readonly BinaryAsyncLock _buildIndexLock = new BinaryAsyncLock();
-        
+
         public static IEnumerable<string> PreloadedPackages { get; } = new string[]
             { "base", "stats", "utils", "graphics", "datasets", "methods" };
 
@@ -142,6 +142,7 @@ namespace Microsoft.R.Support.Help.Packages {
             foreach (var p in packages) {
                 _packages[p.Package] = new PackageInfo(_host, p.Package, p.Description, p.Version);
             }
+            _packages["rtvs"] = new PackageInfo(_host, "rtvs", "R Tools", "1.0");
         }
 
         private async Task BuildPreloadedPackagesFunctionListAsync() {
@@ -173,7 +174,7 @@ namespace Microsoft.R.Support.Help.Packages {
                     _functionIndex.RegisterPackageFunctions(p);
                     return p;
                 }
-            } catch(RHostDisconnectedException) { }
+            } catch (RHostDisconnectedException) { }
             return null;
         }
 
@@ -201,7 +202,7 @@ namespace Microsoft.R.Support.Help.Packages {
         }
 
         private async Task RebuildIndexAsync() {
-            if(!_buildIndexLock.IsSet) {
+            if (!_buildIndexLock.IsSet) {
                 // Still building, try again later
                 ScheduleIdleTimeRebuild();
                 return;

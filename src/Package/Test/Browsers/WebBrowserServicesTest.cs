@@ -3,11 +3,9 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading;
-using FluentAssertions;
 using Microsoft.Common.Core.OS;
-using Microsoft.R.Components.Settings.Mirrors;
 using Microsoft.R.Support.Settings.Definitions;
+using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.Browsers;
 using Microsoft.VisualStudio.R.Packages.R;
@@ -66,6 +64,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
             ps.ClearReceivedCalls();
             wbs = new WebBrowserServices(vswbs, ps, internalSettings);
             wbs.OpenBrowser(role, _url);
+
+            UIThreadHelper.Instance.DoEvents();
             ps.DidNotReceive().Start(_url);
 
             IVsWebBrowser vswb;

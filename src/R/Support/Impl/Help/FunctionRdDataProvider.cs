@@ -3,6 +3,8 @@
 
 using System;
 using System.ComponentModel.Composition;
+using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.R.Support.Help;
@@ -36,6 +38,10 @@ namespace Microsoft.R.Host.Client.Signatures {
         /// Asynchronously fetches RD data on the function from R.
         /// </summary>
         public async Task<string> GetFunctionRdDataAsync(string functionName, string packageName) {
+            if(packageName.EqualsOrdinal("rtvs")) {
+                return GetRtvsFunctionRdData(functionName);
+            }
+
             await TaskUtilities.SwitchToBackgroundThread();
             await _host.CreateSessionAsync();
 
@@ -60,6 +66,16 @@ namespace Microsoft.R.Host.Client.Signatures {
                 return "rtvs:::signature.help1('" + functionName + "')";
             }
             return "rtvs:::signature.help2('" + functionName + "', '" + packageName + "')";
+        }
+
+        private string GetRtvsFunctionRdData(string functionName) {
+            var asmPath = Assembly.GetExecutingAssembly().GetAssemblyPath();
+            var asmFolder = Path.GetDirectoryName(asmPath);
+            var dataFilePath = Path.Combine(asmFolder, @"rtvs\man", Path.ChangeExtension(functionName, "rd"));
+            if(File.Exists(dataFilePath)) {
+                return File.ReadAllText(dataFilePath);
+            }
+            return string.Empty;
         }
     }
 }

@@ -33,8 +33,8 @@ namespace Microsoft.R.Host.Client.Host {
             HttpClientHandler.ServerCertificateValidationCallback = ValidateCertificateHttpHandler;
         }
 
-        public override string HandleUrl(string url, CancellationToken ct) {
-            return WebServer.CreateWebServer(url, HttpClient.BaseAddress.ToString(), ct);
+        public override Task<string> HandleUrlAsync(string url, CancellationToken ct) {
+            return WebServer.CreateWebServerAsync(url, HttpClient.BaseAddress.ToString(), ct);
         }
 
         protected override async Task<Exception> HandleHttpRequestExceptionAsync(HttpRequestException exception) {
