@@ -688,9 +688,9 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         async Task IRCallbacks.WebBrowser(string url, CancellationToken cancellationToken) {
-            var newUrl = await BrokerClient.HandleUrlAsync(url, cancellationToken);
             var callback = _callback;
             if (callback != null) {
+                var newUrl = await BrokerClient.HandleUrlAsync(url, cancellationToken);
                 await callback.ShowHelpAsync(newUrl, cancellationToken);
             }
         }
