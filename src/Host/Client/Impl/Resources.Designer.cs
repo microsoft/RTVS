@@ -62,7 +62,7 @@ namespace Microsoft.R.Host.Client {
         
         /// <summary>
         ///   Looks up a localized string similar to Previous R session terminated unexpectedly, and its global workspace is currently being saved.
-        ///Do you want to abort this operation and start current session immidiately?.
+        ///Do you want to abort this operation and start current session immediately?.
         /// </summary>
         internal static string AbortRDataAutosave {
             get {
@@ -113,7 +113,7 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Windows Workstation only allows a singe user session..
+        ///   Looks up a localized string similar to Windows Workstation only allows a single user session..
         /// </summary>
         internal static string Error_MaxUsersAllowed {
             get {
@@ -156,7 +156,7 @@ namespace Microsoft.R.Host.Client {
                 return ResourceManager.GetString("Error_PipeAlreadyConnected", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to The following exception occurred during initialization of R session, and the session has been terminated:
         ///

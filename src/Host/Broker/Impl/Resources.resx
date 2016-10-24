@@ -238,6 +238,6 @@
     <value>User {0} profile directory: {1}</value>
   </data>
   <data name="Exception_MaxAllowedUsers" xml:space="preserve">
-    <value>Windows Workstation only allows a singe user session.</value>
+    <value>Windows Workstation only allows a single user session.</value>
   </data>
 </root>
