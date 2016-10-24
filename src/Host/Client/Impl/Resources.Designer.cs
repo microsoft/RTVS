@@ -62,7 +62,7 @@ namespace Microsoft.R.Host.Client {
         
         /// <summary>
         ///   Looks up a localized string similar to Previous R session terminated unexpectedly, and its global workspace is currently being saved.
-        ///Do you want to abort this operation and start current session immidiately?.
+        ///Do you want to abort this operation and start current session immediately?.
         /// </summary>
         internal static string AbortRDataAutosave {
             get {
@@ -113,6 +113,15 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Windows Workstation only allows a single user session..
+        /// </summary>
+        internal static string Error_MaxUsersAllowed {
+            get {
+                return ResourceManager.GetString("Error_MaxUsersAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Remote machine does not have certificate installed for the TLS with the Remote R Service..
         /// </summary>
         internal static string Error_NoBrokerCertificate {
@@ -136,6 +145,15 @@ namespace Microsoft.R.Host.Client {
         internal static string Error_OperationTimedOut {
             get {
                 return ResourceManager.GetString("Error_OperationTimedOut", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This session already has an active client connection.
+        /// </summary>
+        internal static string Error_PipeAlreadyConnected {
+            get {
+                return ResourceManager.GetString("Error_PipeAlreadyConnected", resourceCulture);
             }
         }
         

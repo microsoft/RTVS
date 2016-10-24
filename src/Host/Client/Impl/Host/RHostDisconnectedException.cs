@@ -41,7 +41,9 @@ namespace Microsoft.R.Host.Client.Host {
                     }
                     return Resources.Error_UnknownError;
                 case BrokerApiError.PipeAlreadyConnected:
-                    return "This session already has an active client connection";
+                    return Resources.Error_PipeAlreadyConnected;
+                case BrokerApiError.BrokerMaxUsers:
+                    return Resources.Error_MaxUsersAllowed.FormatInvariant(ex.Message);
             }
 
             Debug.Fail("No localized resources for broker API error" + ex.ApiError.ToString());
