@@ -4,7 +4,9 @@
 using System.Linq;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
+using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.ContainedLanguage;
+using Microsoft.Languages.Editor.Extensions;
 using Microsoft.Languages.Editor.Projection;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Tasks;
@@ -75,14 +77,37 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
             foreach (var t in rCodeTokens) {
                 // Verify that code block is properly terminated.
                 // If not, it ends at the end of the buffer.
-                _separators.Add(new TextRange(t.Start, 5));
+                var text = t.GetText(TextBuffer.CurrentSnapshot);
+                var leadingBackticks = LeadingBackTickCount(text);
+                var trailingBackticks = TrailingBackTickCount(text);
+
+                _separators.Add(new TextRange(t.Start, leadingBackticks > 1 ? leadingBackticks + 2 : leadingBackticks + 1)); // ```r{ or `r
                 if (t.IsWellFormed) {
-                    Blocks.Add(TextRange.FromBounds(t.Start + 3, t.End - 3));
-                    _separators.Add(new TextRange(t.End - 3, 3));
+                    // Count backticks
+                    Blocks.Add(TextRange.FromBounds(t.Start + leadingBackticks, t.End - trailingBackticks));
+                    _separators.Add(new TextRange(t.End - trailingBackticks, trailingBackticks));
                 } else {
-                    Blocks.Add(TextRange.FromBounds(t.Start + 3, t.End));
+                    Blocks.Add(TextRange.FromBounds(t.Start + leadingBackticks, t.End));
                 }
             }
+        }
+
+        private int LeadingBackTickCount(string s) {
+            for (int i = 0; i < s.Length; i++) {
+                if (s[i] != '`') {
+                    return i;
+                }
+            }
+            return s.Length;
+        }
+
+        private int TrailingBackTickCount(string s) {
+            for (int i = s.Length - 1; i >= 0; i--) {
+                if (s[i] != '`') {
+                    return s.Length - 1 - i;
+                }
+            }
+            return s.Length;
         }
     }
 }

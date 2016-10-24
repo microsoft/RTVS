@@ -82,16 +82,6 @@ namespace Microsoft.Languages.Editor.Projection {
                 return;
             }
 
-            // Some text was replaced in the inert buffer. In the usual case we will be presented with two replacement spans, 
-            // one for the inert buffer and another for the html buffer. Sometimes there will be three. To get more than three, 
-            // the compiler would have to be doing some inter-nugget replacement, which isn't supported (and couldn't possibly
-            // have worked reasonably with the Orcas buffer coordinator).
-            //
-            // If the insertion text is shorter than the amount of text replaced in inert buffers, the caller is not being
-            // well behaved and it's likely that we will hit errors later on, but again we'll be defensive.
-
-            Debug.Assert(sourceReplacementSpans.Count <= 3, "Unexpected source replacement span count in LanguageProjectionBuffer");
-
             // we want to find the source from the html buffer, and try to find it's location in insertionText.
             string htmlSourceText = sourceReplacementSpans[htmlPos].GetText().ToLowerInvariant();
             string priorInertSource = (htmlPos > 0 ? sourceReplacementSpans[htmlPos - 1].GetText().ToLowerInvariant() : null);
