@@ -2,10 +2,10 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Media;
 using Microsoft.Common.Wpf.Controls;
 using Microsoft.UnitTests.Core.XUnit;
@@ -13,6 +13,7 @@ using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 using Xunit;
 
 namespace Microsoft.Common.Wpf.Test.Controls {
+    [ExcludeFromCodeCoverage]
     public class WatermarkTest : IAsyncLifetime {
         private readonly ContainerHostMethodFixture _containerHost;
         private readonly TextBox _textBox;

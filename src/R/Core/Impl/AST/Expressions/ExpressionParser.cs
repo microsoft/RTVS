@@ -85,6 +85,7 @@ namespace Microsoft.R.Core.AST.Expressions {
 
                     // Variables and function calls
                     case RTokenType.Identifier:
+                    case RTokenType.Ellipsis:
                         currentOperationType = HandleIdentifier(context);
                         break;
 

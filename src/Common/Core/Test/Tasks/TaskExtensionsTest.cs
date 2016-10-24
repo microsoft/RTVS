@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -10,6 +11,7 @@ using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
 
 namespace Microsoft.Common.Core.Test.Tasks {
+    [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
     public class TaskExtensionsTest {
         [Test]

@@ -2,8 +2,10 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.Common.Core.Test.Match {
+    [ExcludeFromCodeCoverage]
     public class MatchNull<T> : IEquatable<T> {
         public static readonly MatchNull<T> Instance = new MatchNull<T>();
 

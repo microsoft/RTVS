@@ -189,5 +189,20 @@ namespace Microsoft.R.Core.Test.Parser {
 ";
             ParserTest.VerifyParse(expected, "FALSE & TRUE");
         }
+
+        [Test]
+        [Category.R.Parser]
+        public void ParseSimpleExpressions11() {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [x <- ...]
+        Expression  [x <- ...]
+            TokenOperator  [<- [2...4)]
+                Variable  [x]
+                TokenNode  [<- [2...4)]
+                Variable  [...]
+";
+            ParserTest.VerifyParse(expected, "x <- ...");
+        }
     }
 }

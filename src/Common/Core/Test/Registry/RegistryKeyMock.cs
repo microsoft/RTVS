@@ -2,10 +2,12 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.Common.Core.OS;
 
 namespace Microsoft.Common.Core.Test.Registry {
+    [ExcludeFromCodeCoverage]
     public sealed class RegistryKeyMock : IRegistryKey {
         private readonly RegistryKeyMock[] _subkeys;
         private Dictionary<string, string> _values = new Dictionary<string, string>();

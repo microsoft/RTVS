@@ -164,7 +164,11 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
         private void SaveConnectionsToSettings() {
             _settings.Connections = RecentConnections
-                .Select(c => new ConnectionInfo { Name = c.Name, Path = c.Path, RCommandLineArguments = c.RCommandLineArguments, IsUserCreated = c.IsUserCreated })
+                .Select(c => new ConnectionInfo {
+                    Name = c.Name,
+                    Path = c.Path,
+                    RCommandLineArguments = c.RCommandLineArguments,
+                    IsUserCreated = c.IsUserCreated })
                 .ToArray();
         }
 

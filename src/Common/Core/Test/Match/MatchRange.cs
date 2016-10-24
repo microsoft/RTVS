@@ -2,9 +2,11 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using static System.FormattableString;
 
 namespace Microsoft.Common.Core.Test.Match {
+    [ExcludeFromCodeCoverage]
     public class MatchRange<T> : IEquatable<T> where T : IComparable<T> {
         private readonly IComparable<T> _from, _to;
 

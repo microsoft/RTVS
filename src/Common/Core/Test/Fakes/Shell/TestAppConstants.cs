@@ -2,9 +2,11 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core.Shell;
 
 namespace Microsoft.Common.Core.Test.Fakes.Shell {
+    [ExcludeFromCodeCoverage]
     public sealed class TestAppConstants : IApplicationConstants {
         public string ApplicationName => "TestApplication";
         public uint LocaleId => 1033;

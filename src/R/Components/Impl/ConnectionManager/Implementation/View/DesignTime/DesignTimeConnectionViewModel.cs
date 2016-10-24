@@ -29,6 +29,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View.DesignTim
         public void Reset() { }
         public void Dispose() { }
         public string ConnectionTooltip => string.Empty;
+        public string GetCompletePath() => Path;
 #pragma warning disable 67
         public event PropertyChangedEventHandler PropertyChanged;
     }

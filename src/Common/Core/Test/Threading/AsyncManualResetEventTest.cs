@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Threading;
@@ -9,6 +10,7 @@ using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.Common.Core.Test.Threading {
+    [ExcludeFromCodeCoverage]
     public class AsyncManualResetEventTest {
         [Test]
         public async Task WaitAsync_CancellationToken_Canceled() {

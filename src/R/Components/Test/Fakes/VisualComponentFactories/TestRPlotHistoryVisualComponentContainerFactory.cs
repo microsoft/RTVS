@@ -3,6 +3,7 @@
 
 using System;
 using System.ComponentModel.Composition;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Plots.Implementation;
@@ -10,6 +11,7 @@ using Microsoft.R.Components.View;
 using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Components.Test.Fakes.VisualComponentFactories {
+    [ExcludeFromCodeCoverage]
     [Export(typeof (IRPlotHistoryVisualComponentContainerFactory))]
     internal sealed class TestRPlotHistoryVisualComponentContainerFactory : ContainerFactoryBase<IRPlotHistoryVisualComponent>, IRPlotHistoryVisualComponentContainerFactory {
         private readonly ICoreShell _coreShell;

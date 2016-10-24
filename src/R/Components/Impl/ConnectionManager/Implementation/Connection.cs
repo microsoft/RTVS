@@ -8,7 +8,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         public Connection(IConnectionInfo ci) :
             this(ci.Name, ci.Path, ci.RCommandLineArguments, ci.LastUsed, ci.IsUserCreated) { }
 
-        public Connection(string name, string path, string rCommandLineArguments, DateTime lastUsed, bool isUserCreated): 
+        public Connection(string name, string path, string rCommandLineArguments, DateTime lastUsed, bool isUserCreated) :
             base(name, path, rCommandLineArguments, lastUsed, isUserCreated) {
             Id = new Uri(path);
             IsRemote = !Id.IsFile;

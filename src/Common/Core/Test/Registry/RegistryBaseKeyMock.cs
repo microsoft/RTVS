@@ -3,10 +3,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.Common.Core.OS;
 
 namespace Microsoft.Common.Core.Test.Registry {
+    [ExcludeFromCodeCoverage]
     public sealed class RegistryBaseKeyMock : IRegistryKey {
         RegistryKeyMock[] _subkeys;
         Dictionary<string, object> _values = new Dictionary<string, object>();

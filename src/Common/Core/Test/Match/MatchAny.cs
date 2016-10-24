@@ -3,10 +3,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using FluentAssertions.Formatting;
 
 namespace Microsoft.Common.Core.Test.Match {
+    [ExcludeFromCodeCoverage]
     public class MatchAny<T> : IEquatable<T> {
         public static readonly MatchAny<T> Instance = new MatchAny<T>();
 

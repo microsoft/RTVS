@@ -3,11 +3,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Text;
 using FluentAssertions.Formatting;
 
 namespace Microsoft.Common.Core.Test.Match {
+    [ExcludeFromCodeCoverage]
     public class MatchMembers<T> : IEquatable<T> {
         private readonly MatchMembers<T> _next;
         private readonly string _memberName;

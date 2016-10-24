@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -9,6 +10,7 @@ using Microsoft.Common.Core.Tasks;
 using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.Common.Core.Test.Tasks {
+    [ExcludeFromCodeCoverage]
     public class EventTaskSourceTest {
         private readonly EventTaskSource<ObjectWithEvent> _eas;
 

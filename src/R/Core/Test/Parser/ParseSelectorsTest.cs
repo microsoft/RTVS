@@ -60,5 +60,23 @@ namespace Microsoft.R.Core.Test.Parser {
 ";
             ParserTest.VerifyParse(expected, "1:a()");
         }
+
+        [Test]
+        [Category.R.Parser]
+        public void Selector4() {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [x()$...]
+        Expression  [x()$...]
+            TokenOperator  [$ [3...4)]
+                FunctionCall  [0...3)
+                    Variable  [x]
+                    TokenNode  [( [1...2)]
+                    TokenNode  [) [2...3)]
+                TokenNode  [$ [3...4)]
+                Variable  [...]
+";
+            ParserTest.VerifyParse(expected, "x()$...");
+        }
     }
 }
