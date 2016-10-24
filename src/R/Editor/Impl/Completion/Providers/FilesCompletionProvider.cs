@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Media;
@@ -15,34 +16,38 @@ using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.Language.Intellisense;
+using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 
 namespace Microsoft.R.Editor.Completion.Providers {
     /// <summary>
     /// Provides list of files and folder in the current directory
     /// </summary>
-    public class FilesCompletionProvider : IRCompletionListProvider {
-        private readonly ICoreShell _shell;
+    internal sealed class FilesCompletionProvider : IRCompletionListProvider {
         private readonly IImagesProvider _imagesProvider;
-        private readonly IRInteractiveWorkflowProvider _workflowProvider;
+        private readonly IRInteractiveWorkflow _workflow;
+        private readonly IGlyphService _glyphService;
 
         private Task<string> _userDirectoryFetchingTask;
         private string _directory;
         private string _cachedUserDirectory;
+        private bool _forceR; // for tests
 
-        public FilesCompletionProvider(string directoryCandidate, ICoreShell shell) {
-            _shell = shell;
+        public FilesCompletionProvider(string directoryCandidate, IRInteractiveWorkflow workflow, IImagesProvider imagesProvider, IGlyphService glyphService, bool forceR = false) {
             if (directoryCandidate == null) {
                 throw new ArgumentNullException(nameof(directoryCandidate));
             }
 
-            _imagesProvider = shell.ExportProvider.GetExportedValueOrDefault<IImagesProvider>();
-            _workflowProvider = shell.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
+            _imagesProvider = imagesProvider;
+            _workflow = workflow;
+            _glyphService = glyphService;
+            _forceR = forceR;
+
             _directory = ExtractDirectory(directoryCandidate);
 
             if (_directory.StartsWithOrdinal("~\\")) {
                 _directory = _directory.Substring(2);
-                _userDirectoryFetchingTask = _workflowProvider.GetOrCreate().RSession.GetRUserDirectoryAsync();
+                _userDirectoryFetchingTask = _workflow.RSession.GetRUserDirectoryAsync();
             }
         }
 
@@ -55,8 +60,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
             string userDirectory = null;
 
             if (_userDirectoryFetchingTask != null) {
-                _userDirectoryFetchingTask.Wait(500);
-                userDirectory = _userDirectoryFetchingTask.IsCompleted ? _userDirectoryFetchingTask.Result : null;
+                userDirectory = _userDirectoryFetchingTask.WaitTimeout(500);
                 userDirectory = userDirectory ?? _cachedUserDirectory;
             }
 
@@ -64,15 +68,16 @@ namespace Microsoft.R.Editor.Completion.Providers {
                 if (!string.IsNullOrEmpty(userDirectory)) {
                     _cachedUserDirectory = userDirectory;
                     directory = Path.Combine(userDirectory, _directory);
+                } else {
+                    directory = _directory;
                 }
 
                 if (!string.IsNullOrEmpty(directory)) {
                     IEnumerable<RCompletion> entries = null;
 
-                    if (_workflowProvider.GetOrCreate().RSession.IsRemote) {
+                    if (_forceR || _workflow.RSession.IsRemote) {
                         var t = GetRemoteDirectoryItemsAsync(directory);
-                        t.Wait(500);
-                        entries = t.IsCompleted ? t.Result : new List<RCompletion>();
+                        entries = t.WaitTimeout(500);
                     } else {
                         entries = GetLocalDirectoryItems(directory);
                     }
@@ -84,22 +89,26 @@ namespace Microsoft.R.Editor.Completion.Providers {
         }
         #endregion
 
-        private async Task<IEnumerable<RCompletion>> GetRemoteDirectoryItemsAsync(string directory) {
-            var session = _workflowProvider.GetOrCreate().RSession;
-            var completions = new List<RCompletion>();
+        private Task<List<RCompletion>> GetRemoteDirectoryItemsAsync(string directory) {
+            return Task.Run(async () => {
+                var session = _workflow.RSession;
+                var completions = new List<RCompletion>();
 
-            try {
-                var rPath = directory.ToRPath();
-                var files = await session.EvaluateAsync<IEnumerable<string>>(Invariant($"list.files(path = {rPath})"), REvaluationKind.Normal);
-                var dirs = await session.EvaluateAsync<IEnumerable<string>>(Invariant($"list.dirs(path = {rPath}, full.names = FALSE, recursive = FALSE)"), REvaluationKind.Normal);
-                var folderGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphClosedFolder, StandardGlyphItem.GlyphItemPublic, _shell);
+                try {
+                    var rPath = directory.ToRPath();
+                    var s = DateTime.Now;
+                    var files = await session.EvaluateAsync<JArray>(Invariant($"as.list(list.files(path = '{rPath}', include.dirs = FALSE))"), REvaluationKind.Normal);
+                    var dirs = await session.EvaluateAsync<JArray>(Invariant($"as.list(list.dirs(path = '{rPath}', full.names = FALSE, recursive = FALSE))"), REvaluationKind.Normal);
+                    Debug.WriteLine($"Dir time:{(DateTime.Now - s).TotalMilliseconds}");
 
-                dirs.ForEach(d => completions.Add(new RCompletion(d, d + "/", string.Empty, folderGlyph)));
-                files.ForEach(f => completions.Add(new RCompletion(f, f, string.Empty, folderGlyph)));
+                    var folderGlyph = _glyphService.GetGlyphThreadSafe(StandardGlyphGroup.GlyphClosedFolder, StandardGlyphItem.GlyphItemPublic);
+                    dirs.ForEach(d => completions.Add(new RCompletion((string)d, (string)d + "/", string.Empty, folderGlyph)));
+                    files.ForEach(f => completions.Add(new RCompletion((string)f, (string)f, string.Empty, folderGlyph)));
 
-            } catch (RException) { } catch (OperationCanceledException) { }
+                } catch (RException) { } catch (OperationCanceledException) { }
 
-            return completions;
+                return completions;
+            });
         }
 
         private IEnumerable<RCompletion> GetLocalDirectoryItems(string userDirectory) {
@@ -113,7 +122,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
             }
 
             if (Directory.Exists(directory)) {
-                var folderGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphClosedFolder, StandardGlyphItem.GlyphItemPublic, _shell);
+                var folderGlyph = _glyphService.GetGlyphThreadSafe(StandardGlyphGroup.GlyphClosedFolder, StandardGlyphItem.GlyphItemPublic);
 
                 foreach (string dir in Directory.GetDirectories(directory)) {
                     DirectoryInfo di = new DirectoryInfo(dir);
