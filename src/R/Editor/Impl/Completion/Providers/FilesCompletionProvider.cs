@@ -3,12 +3,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Imaging;
