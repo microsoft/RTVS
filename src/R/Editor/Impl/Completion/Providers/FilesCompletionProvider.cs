@@ -98,8 +98,12 @@ namespace Microsoft.R.Editor.Completion.Providers {
                     var dirs = await session.EvaluateAsync<JArray>(Invariant($"as.list(list.dirs(path = {rPath}, full.names = FALSE, recursive = FALSE))"), REvaluationKind.Normal);
 
                     var folderGlyph = _glyphService.GetGlyphThreadSafe(StandardGlyphGroup.GlyphClosedFolder, StandardGlyphItem.GlyphItemPublic);
-                    dirs.ForEach(d => completions.Add(new RCompletion((string)d, (string)d + "/", string.Empty, folderGlyph)));
-                    files.ForEach(f => completions.Add(new RCompletion((string)f, (string)f, string.Empty, folderGlyph)));
+                    foreach (var d in dirs) {
+                        completions.Add(new RCompletion((string)d, (string)d + "/", string.Empty, folderGlyph));
+                    }
+                    foreach (var f in files) {
+                        completions.Add(new RCompletion((string)f, (string)f, string.Empty, folderGlyph));
+                    }
 
                 } catch (RException) { } catch (OperationCanceledException) { }
 
