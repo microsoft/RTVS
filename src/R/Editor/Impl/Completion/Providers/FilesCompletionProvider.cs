@@ -81,7 +81,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
                     } else {
                         entries = GetLocalDirectoryItems(directory);
                     }
-                    entries.ForEach(e => completions.Add(e));
+                    completions.AddRange(entries);
                 }
             } catch (IOException) { } catch (UnauthorizedAccessException) { }
 
@@ -95,7 +95,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
                 var completions = new List<RCompletion>();
 
                 try {
-                    var rPath = directory.ToRPath();
+                    var rPath = directory.ToRPath().ToRStringLiteral();
                     var files = await session.EvaluateAsync<JArray>(Invariant($"as.list(list.files(path = '{rPath}', include.dirs = FALSE))"), REvaluationKind.Normal);
                     var dirs = await session.EvaluateAsync<JArray>(Invariant($"as.list(list.dirs(path = '{rPath}', full.names = FALSE, recursive = FALSE))"), REvaluationKind.Normal);
 
