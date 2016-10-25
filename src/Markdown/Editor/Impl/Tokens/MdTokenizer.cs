@@ -147,14 +147,19 @@ namespace Microsoft.Markdown.Editor.Tokens {
 
         protected bool HandleCode(bool block) {
             int ticksStart = _cs.Position;
-            int ticksLength;
+            int leadingSeparatorLength;
+            int trailingSeparatorLength;
 
-            ticksLength = block ? 3 : 1;
-            _cs.Advance(ticksLength);
+            leadingSeparatorLength = block ? 3 : 1;
+            _cs.Advance(leadingSeparatorLength);
 
             // block in R: '''{r qplot, x=y, ...}
             bool rLanguage = block && (_cs.CurrentChar == '{' && (_cs.NextChar == 'r' || _cs.NextChar == 'R'));
-            rLanguage |= !block && (_cs.CurrentChar == 'r' || _cs.CurrentChar == 'R');
+            bool rInline = !block && (_cs.CurrentChar == 'r' || _cs.CurrentChar == 'R');
+            if (rInline) {
+                leadingSeparatorLength = 2; // include 'R'
+            }
+            rLanguage |= rInline;
 
             // Move past {
             _cs.MoveToNextChar();
@@ -166,19 +171,21 @@ namespace Microsoft.Markdown.Editor.Tokens {
 
                 if (endOfBlock) {
                     _cs.SkipLineBreak();
+                    trailingSeparatorLength = 3;
                 } else {
                     // inline code `r 1 + 1`
                     endOfBlock = !block && _cs.CurrentChar == '`';
+                    trailingSeparatorLength = 1;
                 }
 
                 if (endOfBlock) {
-                    _cs.Advance(ticksLength); // past the end of block now
+                    _cs.Advance(trailingSeparatorLength); // past the end of block now
 
                     // Opening ticks
                     if (rLanguage) {
                         // Code is inside ``` and after the language name.
                         // We still want to colorize numbers in ```{r, x = 1.0, ...}
-                        AddCodeToken(ticksStart, _cs.Position - ticksStart, ticksLength, eof ? 0 : ticksLength);
+                        AddCodeToken(ticksStart, _cs.Position - ticksStart, leadingSeparatorLength, eof ? 0 : trailingSeparatorLength);
                     } else {
                         AddToken(MarkdownTokenType.Monospace, ticksStart, _cs.Position - ticksStart);
                     }

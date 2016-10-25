@@ -656,8 +656,6 @@ namespace Microsoft.R.Core.AST.Expressions {
                         // line break - whitespace  - {r
                         return true;
                     }
-
-                    // Now need to handle inline like `r x=y`
                 }
             }
             return false;
