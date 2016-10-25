@@ -73,6 +73,9 @@
     <Compile Include="Net\Network.cs" />
     <Compile Include="Net\WebSocketHelper.cs" />
     <Compile Include="OS\ErrorCodeConverter.cs" />
+    <Compile Include="OS\IUserCredentials.cs" />
+    <Compile Include="OS\IUserProfileCreatorResult.cs" />
+    <Compile Include="OS\IUserProfileServices.cs" />
     <Compile Include="Security\Credentials.cs" />
     <Compile Include="Security\ISecurityService.cs" />
     <Compile Include="Security\SecurityService.cs" />

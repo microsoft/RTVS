@@ -117,7 +117,22 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Error_UserProfileCreationError" xml:space="preserve">
-    <value>User profile service failed with exception: {0}.</value>
+  <data name="Error_UserLogonFailed" xml:space="preserve">
+    <value>Failed to logon user {0}\{1}, with Win32 error {2}.</value>
+  </data>
+  <data name="Error_UserProfileCreateFailed" xml:space="preserve">
+    <value>Failed to create user profile for user {0}\{1}, with Win32 error {2}.</value>
+  </data>
+  <data name="Error_UserProfileDirectoryWasNotFound" xml:space="preserve">
+    <value>User profile directory expected but not found for user {0}\{1}, Win32 error {0}</value>
+  </data>
+  <data name="Info_UserProfileAlreadyExists" xml:space="preserve">
+    <value>User profile already exists for user  {0}\{1}.</value>
+  </data>
+  <data name="Info_UserProfileCreated" xml:space="preserve">
+    <value>Created user profile for user {0}\{1}.</value>
+  </data>
+  <data name="Info_UserProfileDirectoryFound" xml:space="preserve">
+    <value>User profile directory was found for user {0}\{1}, path: {2}</value>
   </data>
 </root>

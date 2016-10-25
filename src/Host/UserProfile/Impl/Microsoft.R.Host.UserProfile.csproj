@@ -92,7 +92,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="RUserProfileCreator.cs" />
     <Compile Include="RUserProfileInstaller.cs">
       <SubType>Component</SubType>
     </Compile>

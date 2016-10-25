@@ -1,10 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using Microsoft.Common.Core.OS;
 using Newtonsoft.Json;
 
 namespace Microsoft.R.Host.Protocol {
-    public class RUserProfileCreateRequest {
+    public class RUserProfileCreateRequest : IUserCredentials {
         [JsonConstructor]
         private RUserProfileCreateRequest() { }
 
