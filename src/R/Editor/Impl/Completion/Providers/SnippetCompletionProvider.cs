@@ -4,7 +4,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Windows.Media;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Editor.Snippets;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -16,12 +15,12 @@ namespace Microsoft.R.Editor.Completion.Providers {
     [Export(typeof(IRCompletionListProvider))]
     public class SnippetCompletionProvider : IRCompletionListProvider {
         private readonly ISnippetInformationSourceProvider _snippetInformationSource;
-        private readonly ICoreShell _shell;
+        private readonly ImageSource _snippetGlyph;
 
         [ImportingConstructor]
-        public SnippetCompletionProvider([Import(AllowDefault = true)] ISnippetInformationSourceProvider snippetInformationSource, ICoreShell shell) {
+        public SnippetCompletionProvider([Import(AllowDefault = true)] ISnippetInformationSourceProvider snippetInformationSource, IGlyphService glyphService) {
             _snippetInformationSource = snippetInformationSource;
-            _shell = shell;
+            _snippetGlyph = glyphService.GetGlyphThreadSafe(StandardGlyphGroup.GlyphCSharpExpansion, StandardGlyphItem.GlyphItemPublic);
         }
 
         #region IRCompletionListProvider
@@ -32,9 +31,8 @@ namespace Microsoft.R.Editor.Completion.Providers {
             var infoSource = _snippetInformationSource?.InformationSource;
 
             if (!context.IsInNameSpace() && infoSource != null) {
-                ImageSource snippetGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphCSharpExpansion, StandardGlyphItem.GlyphItemPublic, _shell);
                 foreach (ISnippetInfo info in infoSource.Snippets) {
-                    completions.Add(new RCompletion(info.Name, info.Name, info.Description, snippetGlyph));
+                    completions.Add(new RCompletion(info.Name, info.Name, info.Description, _snippetGlyph));
                 }
             }
             return completions;

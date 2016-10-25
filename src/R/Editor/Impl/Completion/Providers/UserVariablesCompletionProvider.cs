@@ -4,7 +4,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Windows.Media;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.DataTypes;
@@ -19,11 +18,13 @@ namespace Microsoft.R.Editor.Completion.Providers {
     /// </summary>
     [Export(typeof(IRCompletionListProvider))]
     public class UserVariablesCompletionProvider : IRCompletionListProvider {
-        private readonly ICoreShell _coreShell;
+        private readonly ImageSource _functionGlyph;
+        private readonly ImageSource _variableGlyph;
 
         [ImportingConstructor]
-        public UserVariablesCompletionProvider(ICoreShell coreShell) {
-            _coreShell = coreShell;
+        public UserVariablesCompletionProvider(IGlyphService glyphService) {
+            _functionGlyph = glyphService.GetGlyphThreadSafe(StandardGlyphGroup.GlyphGroupMethod, StandardGlyphItem.GlyphItemPublic);
+            _variableGlyph = glyphService.GetGlyphThreadSafe(StandardGlyphGroup.GlyphGroupVariable, StandardGlyphItem.GlyphItemPublic);
         }
 
         #region IRCompletionListProvider
@@ -31,8 +32,6 @@ namespace Microsoft.R.Editor.Completion.Providers {
 
         public IReadOnlyCollection<RCompletion> GetEntries(RCompletionContext context) {
             List<RCompletion> completions = new List<RCompletion>();
-            ImageSource functionGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupMethod, StandardGlyphItem.GlyphItemPublic, _coreShell);
-            ImageSource variableGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupVariable, StandardGlyphItem.GlyphItemPublic, _coreShell);
 
             var ast = context.AstRoot;
             // First try simple scope like in 'for(x in 1:10) x|'
@@ -44,7 +43,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
             foreach (var v in variables) {
                 RCompletion completion;
                 RFunction f = v.Value as RFunction;
-                completion = new RCompletion(v.Name, CompletionUtilities.BacktickName(v.Name), string.Empty, f != null ? functionGlyph : variableGlyph);
+                completion = new RCompletion(v.Name, CompletionUtilities.BacktickName(v.Name), string.Empty, f != null ? _functionGlyph : _variableGlyph);
                 completions.Add(completion);
             }
 

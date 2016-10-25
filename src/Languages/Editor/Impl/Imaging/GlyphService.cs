@@ -3,7 +3,6 @@
 
 using System.Windows.Media;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.VisualStudio.Language.Intellisense;
 
 namespace Microsoft.Languages.Editor.Imaging {
@@ -11,12 +10,11 @@ namespace Microsoft.Languages.Editor.Imaging {
     /// Equivalent of IGlyphService but allows concurrent access to glyphs
     /// from multiple threads which is normal in unit test environment.
     /// </summary>
-    public static class GlyphService {
+    public static class GlyphServiceExtensions {
         private static readonly object _lock = new object();
 
-        public static ImageSource GetGlyph(StandardGlyphGroup @group, StandardGlyphItem item, ICompositionCatalog compositionCatalog) {
+        public static ImageSource GetGlyphThreadSafe(this IGlyphService glyphService, StandardGlyphGroup @group, StandardGlyphItem item) {
             lock (_lock) {
-                var glyphService = compositionCatalog.ExportProvider.GetExportedValue<IGlyphService>();
                 return glyphService.GetGlyph(group, item);
             }
         }

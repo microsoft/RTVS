@@ -4,7 +4,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Media;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Support.Help;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -16,12 +15,12 @@ namespace Microsoft.R.Editor.Completion.Providers {
     /// ~\Program Files\R and from ~\Documents\R folders
     /// </summary>
     public sealed class WorkspaceVariableCompletionProvider : IRCompletionListProvider {
-        private readonly ICoreShell _shell;
         private readonly IVariablesProvider _variablesProvider;
+        private readonly IGlyphService _glyphService;
 
-        public WorkspaceVariableCompletionProvider(ICoreShell shell, IVariablesProvider provider) {
-            _shell = shell;
+        public WorkspaceVariableCompletionProvider(IVariablesProvider provider, IGlyphService glyphService) {
             _variablesProvider = provider;
+            _glyphService = glyphService;
         }
 
         #region IRCompletionListProvider
@@ -29,8 +28,8 @@ namespace Microsoft.R.Editor.Completion.Providers {
 
         public IReadOnlyCollection<RCompletion> GetEntries(RCompletionContext context) {
             List<RCompletion> completions = new List<RCompletion>();
-            ImageSource functionGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupMethod, StandardGlyphItem.GlyphItemPublic, _shell);
-            ImageSource variableGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupVariable, StandardGlyphItem.GlyphItemPublic, _shell);
+            ImageSource functionGlyph = _glyphService.GetGlyphThreadSafe(StandardGlyphGroup.GlyphGroupMethod, StandardGlyphItem.GlyphItemPublic);
+            ImageSource variableGlyph = _glyphService.GetGlyphThreadSafe(StandardGlyphGroup.GlyphGroupVariable, StandardGlyphItem.GlyphItemPublic);
 
             string variableName = context.Session.TextView.GetVariableNameBeforeCaret();
 

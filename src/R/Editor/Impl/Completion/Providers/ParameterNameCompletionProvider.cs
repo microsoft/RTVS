@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Arguments;
@@ -22,10 +21,12 @@ namespace Microsoft.R.Editor.Completion.Providers {
     /// to a function name, user can choose either subset() or subset=
     /// </summary>
     public class ParameterNameCompletionProvider : IRCompletionListProvider {
-        private readonly ICoreShell _shell;
+        private readonly IFunctionIndex _functionIndex;
+        private readonly IGlyphService _glyphService;
 
-        public ParameterNameCompletionProvider(ICoreShell shell) {
-            _shell = shell;
+        public ParameterNameCompletionProvider(IFunctionIndex functionIndex, IGlyphService glyphService) {
+            _functionIndex = functionIndex;
+            _glyphService = glyphService;
         }
 
         #region IRCompletionListProvider
@@ -34,7 +35,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
         public IReadOnlyCollection<RCompletion> GetEntries(RCompletionContext context) {
             List<RCompletion> completions = new List<RCompletion>();
             FunctionCall funcCall;
-            ImageSource functionGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupValueType, StandardGlyphItem.GlyphItemPublic, _shell);
+            ImageSource functionGlyph = _glyphService.GetGlyphThreadSafe(StandardGlyphGroup.GlyphGroupValueType, StandardGlyphItem.GlyphItemPublic);
 
             // Safety checks
             if (!ShouldProvideCompletions(context, out funcCall)) {
@@ -96,9 +97,8 @@ namespace Microsoft.R.Editor.Completion.Providers {
                 // User-declared functions take priority
                 functionInfo = context.AstRoot.GetUserFunctionInfo(parametersInfo.FunctionName, context.Position);
                 if (functionInfo == null) {
-                    var functionIndex = _shell.ExportProvider.GetExportedValue<IFunctionIndex>();
                     // Get collection of function signatures from documentation (parsed RD file)
-                    functionInfo = functionIndex.GetFunctionInfo(parametersInfo.FunctionName, o => { }, context.Session.TextView);
+                    functionInfo = _functionIndex.GetFunctionInfo(parametersInfo.FunctionName, o => { }, context.Session.TextView);
                 }
             }
             return functionInfo;
