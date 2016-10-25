@@ -67,7 +67,11 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
             var tokenizer = new MdTokenizer();
             var tokens = tokenizer.Tokenize(TextBuffer.CurrentSnapshot.GetText());
 
-            var rCodeTokens = tokens.Where(t => t is MarkdownCodeToken);
+            var rCodeTokens = tokens.Where(t => {
+                var mct = t as MarkdownCodeToken;
+                return mct != null && mct.LeadingSeparatorLength > 1;
+            });
+
             // TODO: incremental updates
             Blocks.Clear();
             _separators.Clear();
