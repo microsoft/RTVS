@@ -30,7 +30,7 @@ namespace Microsoft.Common.Core.Threading {
 
         public void GetResult() {
             if (Thread.CurrentThread.ManagedThreadId != _mainThread.ThreadId) {
-                throw new InvalidOperationException();
+                _cancellationToken.ThrowIfCancellationRequested();
             }
         }
     }
