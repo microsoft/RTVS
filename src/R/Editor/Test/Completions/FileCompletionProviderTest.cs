@@ -37,7 +37,7 @@ namespace Microsoft.R.Editor.Test.Completions {
             _glyphService = Substitute.For<IGlyphService>();
 
             var myDocs = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            var _testFolder = Path.Combine(myDocs, _testFolderName);
+            _testFolder = Path.Combine(myDocs, _testFolderName);
             if (!Directory.Exists(_testFolder)) {
                 Directory.CreateDirectory(_testFolder);
             }
