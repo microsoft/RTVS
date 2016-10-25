@@ -8,6 +8,10 @@ using Microsoft.R.Components.PackageManager.Model;
 
 namespace Microsoft.R.Components.PackageManager {
     public interface IRPackageManager : IDisposable {
+        event EventHandler LoadedPackagesInvalidated;
+        event EventHandler InstalledPackagesInvalidated;
+        event EventHandler AvailablePackagesInvalidated;
+
         IRPackageManagerVisualComponent VisualComponent { get; }
 
         IRPackageManagerVisualComponent GetOrCreateVisualComponent(IRPackageManagerVisualComponentContainerFactory visualComponentContainerFactory, int instanceId = 0);

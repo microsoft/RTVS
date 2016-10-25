@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.Common.Core.Events;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Components.Settings;
@@ -23,6 +24,24 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
         private readonly IRSettings _settings;
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
         private readonly DisposableBag _disposableBag;
+        private readonly DirtyEventSource _loadedPackagesEvent;
+        private readonly DirtyEventSource _installedPackagesEvent;
+        private readonly DirtyEventSource _availablePackagesEvent;
+
+        public event EventHandler LoadedPackagesInvalidated {
+            add { _loadedPackagesEvent.Event += value; }
+            remove { _loadedPackagesEvent.Event -= value; }
+        }
+
+        public event EventHandler InstalledPackagesInvalidated {
+            add { _installedPackagesEvent.Event += value; }
+            remove { _installedPackagesEvent.Event -= value; }
+        }
+
+        public event EventHandler AvailablePackagesInvalidated {
+            add { _availablePackagesEvent.Event += value; }
+            remove { _availablePackagesEvent.Event -= value; }
+        }
 
         public IRPackageManagerVisualComponent VisualComponent { get; private set; }
 
@@ -30,7 +49,20 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             _sessionProvider = interactiveWorkflow.RSessions;
             _settings = settings;
             _interactiveWorkflow = interactiveWorkflow;
-            _disposableBag = DisposableBag.Create<RPackageManager>(dispose);
+            _loadedPackagesEvent = new DirtyEventSource(this);
+            _installedPackagesEvent = new DirtyEventSource(this);
+            _availablePackagesEvent = new DirtyEventSource(this);
+
+            _disposableBag = DisposableBag.Create<RPackageManager>(dispose)
+                .Add(() => _interactiveWorkflow.RSessions.BrokerChanged -= BrokerChanged)
+                .Add(() => _interactiveWorkflow.RSession.Mutated -= RSessionMutated)
+                .Add(() => _interactiveWorkflow.RSession.PackagesInstalled -= PackagesInstalled)
+                .Add(() => _interactiveWorkflow.RSession.PackagesRemoved -= PackagesRemoved);
+
+            _interactiveWorkflow.RSessions.BrokerChanged += BrokerChanged;
+            _interactiveWorkflow.RSession.Mutated += RSessionMutated;
+            _interactiveWorkflow.RSession.PackagesInstalled += PackagesInstalled;
+            _interactiveWorkflow.RSession.PackagesRemoved += PackagesRemoved;
         }
 
         public IRPackageManagerVisualComponent GetOrCreateVisualComponent(IRPackageManagerVisualComponentContainerFactory visualComponentContainerFactory, int instanceId = 0) {
@@ -38,15 +70,17 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
                 return VisualComponent;
             }
 
-            VisualComponent = visualComponentContainerFactory.GetOrCreate(this, _interactiveWorkflow.RSession, instanceId).Component;
+            VisualComponent = visualComponentContainerFactory.GetOrCreate(this, instanceId).Component;
             return VisualComponent;
         }
 
         public async Task<IReadOnlyList<RPackage>> GetInstalledPackagesAsync() {
+            _installedPackagesEvent.IsDirty = false;
             return await GetPackagesAsync(async eval => await eval.InstalledPackagesAsync());
         }
 
         public async Task<IReadOnlyList<RPackage>> GetAvailablePackagesAsync() {
+            _availablePackagesEvent.IsDirty = false;
             return await GetPackagesAsync(async eval => await eval.AvailablePackagesAsync());
         }
 
@@ -85,6 +119,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
         }
 
         public async Task<string[]> GetLoadedPackagesAsync() {
+            _loadedPackagesEvent.IsDirty = false;
             var result = await WrapRException(_interactiveWorkflow.RSession.LoadedPackagesAsync());
             return result.Select(p => (string)((JValue)p).Value).ToArray();
         }
@@ -164,6 +199,26 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             } catch (RException ex) {
                 throw new RPackageManagerException(string.Format(CultureInfo.InvariantCulture, Resources.PackageManager_EvalError, ex.Message), ex);
             }
+        }
+
+        private void BrokerChanged(object sender, EventArgs e) {
+            _availablePackagesEvent.IsDirty = true;
+            _installedPackagesEvent.IsDirty = true;
+            _loadedPackagesEvent.IsDirty = true;
+        }
+
+        private void PackagesInstalled(object sender, EventArgs e) {
+            _installedPackagesEvent.IsDirty = true;
+            _loadedPackagesEvent.IsDirty = true;
+        }
+
+        private void PackagesRemoved(object sender, EventArgs e) {
+            _installedPackagesEvent.IsDirty = true;
+            _loadedPackagesEvent.IsDirty = true;
+        }
+        
+        private void RSessionMutated(object sender, EventArgs e) {
+            _loadedPackagesEvent.IsDirty = true;
         }
     }
 }
