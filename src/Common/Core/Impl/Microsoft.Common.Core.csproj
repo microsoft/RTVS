@@ -87,6 +87,7 @@
     <Compile Include="Shell\IProgressDialog.cs" />
     <Compile Include="Shell\MessageType.cs" />
     <Compile Include="Shell\ProgressDialogData.cs" />
+    <Compile Include="Events\DirtyEventSource.cs" />
     <Compile Include="Tasks\TaskCompletionSourceEx.cs" />
     <Compile Include="Threading\AsyncManualResetEvent.cs" />
     <Compile Include="Threading\AsyncReaderWriterLock.cs" />

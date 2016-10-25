@@ -19,7 +19,7 @@ namespace Microsoft.R.Components.PackageManager.ViewModel {
         Task SwitchToAvailablePackagesAsync();
         Task SwitchToInstalledPackagesAsync();
         Task SwitchToLoadedPackagesAsync();
-        Task ReloadItemsAsync();
+        Task ReloadCurrentTabAsync();
         void SelectPackage(IRPackageViewModel package);
         Task InstallAsync(IRPackageViewModel package);
         Task UpdateAsync(IRPackageViewModel package);

@@ -175,6 +175,12 @@ namespace Microsoft.Common.Core {
         public static string FormatInvariant(this string format, params object[] args) =>
             string.Format(CultureInfo.InvariantCulture, format, args);
 
+        public static string FormatCurrent(this string format, object arg) =>
+            string.Format(CultureInfo.CurrentCulture, format, arg);
+
+        public static string FormatCurrent(this string format, params object[] args) =>
+            string.Format(CultureInfo.CurrentCulture, format, args);
+
         public static long ToLongOrDefault(this string value) {
             long ret;
             long.TryParse(value, out ret);

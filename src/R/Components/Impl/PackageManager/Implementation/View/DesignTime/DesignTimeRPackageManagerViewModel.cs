@@ -25,7 +25,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View.DesignTime {
         public Task SwitchToAvailablePackagesAsync() => Task.CompletedTask;
         public Task SwitchToInstalledPackagesAsync() => Task.CompletedTask;
         public Task SwitchToLoadedPackagesAsync() => Task.CompletedTask;
-        public Task ReloadItemsAsync() => Task.CompletedTask;
+        public Task ReloadCurrentTabAsync() => Task.CompletedTask;
         public void SelectPackage(IRPackageViewModel package) { }
         public Task InstallAsync(IRPackageViewModel package) => Task.CompletedTask;
         public Task UpdateAsync(IRPackageViewModel package) => Task.CompletedTask;
