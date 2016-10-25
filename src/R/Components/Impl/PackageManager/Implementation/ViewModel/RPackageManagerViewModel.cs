@@ -28,7 +28,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         private readonly BinaryAsyncLock _availableLock;
         private readonly BinaryAsyncLock _installedAndLoadedLock;
         private readonly BatchObservableCollection<object> _items;
-        private readonly List<ErrorMessage> _errorMessages;
+        private readonly ErrorMessageCollection _errorMessages;
 
         private volatile IList<IRPackageViewModel> _availablePackages;
         private volatile IList<IRPackageViewModel> _installedPackages;
@@ -38,7 +38,6 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         private Tab _selectedTab;
         private bool _isLoading;
         private string _firstError;
-        private ErrorMessageType _firstErrorType;
         private bool _hasMultipleErrors;
         private IRPackageViewModel _selectedPackage;
 
@@ -53,7 +52,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             _availableLock = new BinaryAsyncLock();
             _installedAndLoadedLock = new BinaryAsyncLock();
             _items = new BatchObservableCollection<object>();
-            _errorMessages = new List<ErrorMessage>();
+            _errorMessages = new ErrorMessageCollection(this);
             Items = new ReadOnlyObservableCollection<object>(_items);
 
             _packageManager.AvailablePackagesInvalidated += AvailablePackagesInvalidated;
@@ -95,12 +94,13 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             await _coreShell.SwitchToMainThreadAsync();
 
             var selectedTab = _selectedTab;
+            IsLoading = true;
             switch (selectedTab) {
                 case Tab.AvailablePackages:
-                    await ReloadAvailablePackagesAsync();
+                    await EnsureAvailablePackagesLoadedAsync(true);
                     break;
                 case Tab.InstalledPackages:
-                    await ReloadInstalledAndLoadedPackagesAsync();
+                    await EnsureInstalledAndLoadedPackagesAsync(true);
                     break;
                 case Tab.LoadedPackages:
                     await ReloadLoadedPackagesAsync();
@@ -151,12 +151,12 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 var libPath = await _packageManager.GetLibraryPathAsync();
                 await _packageManager.InstallPackageAsync(package.Name, libPath);
             } catch (RHostDisconnectedException) {
-                AddErrorMessage(Resources.PackageManager_CantInstallPackageNoRSession.FormatCurrent(package.Name), ErrorMessageType.PackageOperations);
+                _errorMessages.Add(Resources.PackageManager_CantInstallPackageNoRSession.FormatCurrent(package.Name), ErrorMessageType.PackageOperations);
             } catch (RPackageManagerException ex) {
-                AddErrorMessage(ex.Message, ErrorMessageType.PackageOperations);
+                _errorMessages.Add(ex.Message, ErrorMessageType.PackageOperations);
             }
 
-            await ReloadInstalledAndLoadedPackagesAsync();
+            await EnsureInstalledAndLoadedPackagesAsync(true);
             await AfterLoadUnloadAsync(package, startingTab);
         }
 
@@ -202,9 +202,9 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 try {
                     await _packageManager.UnloadPackageAsync(package.Name);
                 } catch (RHostDisconnectedException) {
-                    AddErrorMessage(Resources.PackageManager_CantUnloadPackageNoRSession.FormatCurrent(package.Name), ErrorMessageType.PackageOperations);
+                    _errorMessages.Add(Resources.PackageManager_CantUnloadPackageNoRSession.FormatCurrent(package.Name), ErrorMessageType.PackageOperations);
                 } catch (RPackageManagerException ex) {
-                    AddErrorMessage(ex.Message, ErrorMessageType.PackageOperations);
+                    _errorMessages.Add(ex.Message, ErrorMessageType.PackageOperations);
                 }
                 await ReloadLoadedPackagesAsync();
             }
@@ -218,14 +218,14 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                             ShowPackageLockedMessage(packageLockState, package.Name);
                         }
                     } catch (RHostDisconnectedException) {
-                        AddErrorMessage(Resources.PackageManager_CantUpdatePackageNoRSession.FormatCurrent(package.Name), ErrorMessageType.PackageOperations);
+                        _errorMessages.Add(Resources.PackageManager_CantUpdatePackageNoRSession.FormatCurrent(package.Name), ErrorMessageType.PackageOperations);
                     }
                 } catch (RPackageManagerException ex) {
-                    AddErrorMessage(ex.Message, ErrorMessageType.PackageOperations);
+                    _errorMessages.Add(ex.Message, ErrorMessageType.PackageOperations);
                 }
             }
 
-            await ReloadInstalledAndLoadedPackagesAsync();
+            await EnsureInstalledAndLoadedPackagesAsync(true);
         }
 
         public async Task UninstallAsync(IRPackageViewModel package) {
@@ -246,9 +246,9 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 try {
                     await _packageManager.UnloadPackageAsync(package.Name);
                 } catch (RHostDisconnectedException) {
-                    AddErrorMessage(Resources.PackageManager_CantUnloadPackageNoRSession.FormatCurrent(package.Name), ErrorMessageType.PackageOperations);
+                    _errorMessages.Add(Resources.PackageManager_CantUnloadPackageNoRSession.FormatCurrent(package.Name), ErrorMessageType.PackageOperations);
                 } catch (RPackageManagerException ex) {
-                    AddErrorMessage(ex.Message, ErrorMessageType.PackageOperations);
+                    _errorMessages.Add(ex.Message, ErrorMessageType.PackageOperations);
                 }
                 await ReloadLoadedPackagesAsync();
             }
@@ -261,12 +261,12 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                         ShowPackageLockedMessage(packageLockState, package.Name);
                     }
                 } catch (RHostDisconnectedException) {
-                    AddErrorMessage(Resources.PackageManager_CantUninstallPackageNoRSession.FormatCurrent(package.Name), ErrorMessageType.PackageOperations);
+                    _errorMessages.Add(Resources.PackageManager_CantUninstallPackageNoRSession.FormatCurrent(package.Name), ErrorMessageType.PackageOperations);
                 } catch (RPackageManagerException ex) {
-                    AddErrorMessage(ex.Message, ErrorMessageType.PackageOperations);
+                    _errorMessages.Add(ex.Message, ErrorMessageType.PackageOperations);
                 }
 
-                await ReloadInstalledAndLoadedPackagesAsync();
+                await EnsureInstalledAndLoadedPackagesAsync(true);
             }
 
             await AfterLoadUnloadAsync(package, startingTab);
@@ -284,9 +284,9 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             try {
                 await _packageManager.LoadPackageAsync(package.Name, package.LibraryPath.ToRPath());
             } catch (RHostDisconnectedException) {
-                AddErrorMessage(Resources.PackageManager_CantLoadPackageNoRSession.FormatCurrent(package.Name), ErrorMessageType.PackageOperations);
+                _errorMessages.Add(Resources.PackageManager_CantLoadPackageNoRSession.FormatCurrent(package.Name), ErrorMessageType.PackageOperations);
             } catch (RPackageManagerException ex) {
-                AddErrorMessage(ex.Message, ErrorMessageType.PackageOperations);
+                _errorMessages.Add(ex.Message, ErrorMessageType.PackageOperations);
             }
 
             await ReloadLoadedPackagesAsync();
@@ -306,9 +306,9 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             try {
                 await _packageManager.UnloadPackageAsync(package.Name);
             } catch (RHostDisconnectedException) {
-                AddErrorMessage(Resources.PackageManager_CantUnloadPackageNoRSession.FormatCurrent(package.Name), ErrorMessageType.PackageOperations);
+                _errorMessages.Add(Resources.PackageManager_CantUnloadPackageNoRSession.FormatCurrent(package.Name), ErrorMessageType.PackageOperations);
             } catch (RPackageManagerException ex) {
-                AddErrorMessage(ex.Message, ErrorMessageType.PackageOperations);
+                _errorMessages.Add(ex.Message, ErrorMessageType.PackageOperations);
             }
 
             await ReloadLoadedPackagesAsync();
@@ -328,46 +328,11 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         }
 
         public void DismissErrorMessage() {
-            _coreShell.AssertIsOnMainThread();
-            if (HasMultipleErrors) {
-                HasMultipleErrors = _errorMessages.Count > 0;
-                FirstError = _errorMessages[0].Message;
-                _firstErrorType = _errorMessages[0].Type;
-                _errorMessages.RemoveAt(0);
-            } else {
-                FirstError = null;
-                _firstErrorType = ErrorMessageType.NoError;
-                HasMultipleErrors = false;
-            }
+            _errorMessages.RemoveCurrent();
         }
         
-        private void DismissErrorMessages(ErrorMessageType messageType) {
-            _coreShell.AssertIsOnMainThread();
-            _errorMessages.RemoveWhere(e => e.Type == messageType);
-            HasMultipleErrors = _errorMessages.Count > 0;
-
-            if (_firstErrorType == messageType) {
-                DismissErrorMessage();
-            }
-        }
-
         public void DismissAllErrorMessages() {
-            _coreShell.AssertIsOnMainThread();
-            FirstError = null;
-            _firstErrorType = ErrorMessageType.NoError;
-            HasMultipleErrors = false;
             _errorMessages.Clear();
-        }
-
-        private void AddErrorMessage(string message, ErrorMessageType messageType) {
-            _coreShell.AssertIsOnMainThread();
-            if (FirstError == null) {
-                FirstError = message;
-                _firstErrorType = messageType;
-            } else {
-                _errorMessages.Add(new ErrorMessage(message, messageType));
-                HasMultipleErrors = true;
-            }
         }
         
         private void ShowPackageLockedMessage(PackageLockState packageLockState, string packageName) {
@@ -383,21 +348,21 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         
         public async Task SwitchToAvailablePackagesAsync() {
             if (await SetTabAsync(Tab.AvailablePackages)) {
-                await EnsureAvailablePackagesLoadedAsync();
+                await EnsureAvailablePackagesLoadedAsync(false);
                 await ReplaceItemsAsync(Tab.AvailablePackages);
             }
         }
 
-        private async Task EnsureAvailablePackagesLoadedAsync() {
-            var lockToken = await _availableLock.WaitAsync();
+        private async Task EnsureAvailablePackagesLoadedAsync(bool reload) {
+            var lockToken = reload ? await _availableLock.ResetAsync() : await _availableLock.WaitAsync();
             try {
                 if (!lockToken.IsSet) {
                     await LoadAvailablePackagesAsync();
-                    _coreShell.DispatchOnUIThread(() => DismissErrorMessages(ErrorMessageType.Connection));
+                    _errorMessages.Remove(ErrorMessageType.Connection);
                     lockToken.Set();
                 }
             } catch (RPackageManagerException ex) {
-                _coreShell.DispatchOnUIThread(() => AddErrorMessage(ex.Message, ErrorMessageType.Connection));
+                _errorMessages.Add(ex.Message, ErrorMessageType.Connection);
             } finally {
                 lockToken.Reset();
             }
@@ -425,7 +390,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
 
         public async Task SwitchToInstalledPackagesAsync() {
             if (await SetTabAsync(Tab.InstalledPackages)) {
-                await ReloadInstalledAndLoadedPackagesAsync();
+                await EnsureInstalledAndLoadedPackagesAsync(true);
                 await ReplaceItemsAsync(Tab.InstalledPackages);
             }
         }
@@ -447,20 +412,17 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             }
         }
 
-        private async Task ReloadAvailablePackagesAsync() {
-            IsLoading = true;
-            await ReloadInstalledAndLoadedPackagesAsync();
-            await ReplaceItemsAsync(Tab.AvailablePackages);
-        }
+        private async Task EnsureInstalledAndLoadedPackagesAsync(bool reload) {
+            var lockToken = reload 
+                ? await _installedAndLoadedLock.ResetAsync()
+                : await _installedAndLoadedLock.WaitAsync();
 
-        private async Task ReloadInstalledAndLoadedPackagesAsync() {
-            var lockToken = await _installedAndLoadedLock.ResetAsync();
             try {
                 await LoadInstalledAndLoadedPackagesAsync();
-                _coreShell.DispatchOnUIThread(() => DismissErrorMessages(ErrorMessageType.Connection));
+                _errorMessages.Remove(ErrorMessageType.Connection);
                 lockToken.Set();
             } catch (RPackageManagerException ex) {
-                _coreShell.DispatchOnUIThread(() => AddErrorMessage(ex.Message, ErrorMessageType.Connection));
+                _errorMessages.Add(ex.Message, ErrorMessageType.Connection);
             } finally {
                 lockToken.Reset();
             }
@@ -485,7 +447,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 await UpdateLoadedPackages(vmInstalledPackages);
                 _installedPackages = vmInstalledPackages;
 
-                EnsureAvailablePackagesLoadedAsync().DoNotWait();
+                EnsureAvailablePackagesLoadedAsync(false).DoNotWait();
             } else {
                 var vmAvailablePackages = _availablePackages.ToDictionary(k => k.Name);
                 var vmInstalledPackages = new List<IRPackageViewModel>();
@@ -527,9 +489,9 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 List<string> loadedPackageNames;
                 try {
                     loadedPackageNames = (await _packageManager.GetLoadedPackagesAsync()).OrderBy(n => n).ToList();
-                    _coreShell.DispatchOnUIThread(() => DismissErrorMessages(ErrorMessageType.NoRSession));
+                    _errorMessages.Remove(ErrorMessageType.NoRSession);
                 } catch (RHostDisconnectedException) {
-                    _coreShell.DispatchOnUIThread(() => AddErrorMessage(Resources.PackageManager_NoLoadedPackagesNoRSession, ErrorMessageType.NoRSession));
+                    _errorMessages.Add(Resources.PackageManager_NoLoadedPackagesNoRSession, ErrorMessageType.NoRSession);
                     loadedPackageNames = new List<string>();
                 }
 
@@ -538,18 +500,18 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 }
 
                 await UpdateLoadedPackages(currentInstalledPackages, loadedPackageNames);
-                _coreShell.DispatchOnUIThread(() => DismissErrorMessages(ErrorMessageType.Connection));
+                _errorMessages.Remove(ErrorMessageType.Connection);
             } catch (RPackageManagerException ex) {
-                _coreShell.DispatchOnUIThread(() => AddErrorMessage(ex.Message, ErrorMessageType.Connection));
+                _errorMessages.Add(ex.Message, ErrorMessageType.Connection);
             }
         }
 
         private async Task UpdateLoadedPackages(IList<IRPackageViewModel> installedPackages, IList<string> loadedPackageNames = null) {
             try {
                 loadedPackageNames = loadedPackageNames ?? await _packageManager.GetLoadedPackagesAsync();
-                _coreShell.DispatchOnUIThread(() => DismissErrorMessages(ErrorMessageType.NoRSession));
+                _errorMessages.Remove(ErrorMessageType.NoRSession);
             } catch (RHostDisconnectedException) {
-                _coreShell.DispatchOnUIThread(() => AddErrorMessage(Resources.PackageManager_NoLoadedPackagesNoRSession, ErrorMessageType.NoRSession));
+                _errorMessages.Add(Resources.PackageManager_NoLoadedPackagesNoRSession, ErrorMessageType.NoRSession);
                 loadedPackageNames = new List<string>();
             }
 
@@ -576,9 +538,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
 
         public async Task SwitchToLoadedPackagesAsync() {
             if (await SetTabAsync(Tab.LoadedPackages)) {
-                if (!_installedAndLoadedLock.IsSet) {
-                    await ReloadInstalledAndLoadedPackagesAsync();
-                }
+                await EnsureInstalledAndLoadedPackagesAsync(false);
                 await ReplaceItemsAsync(Tab.LoadedPackages);
             }
         }
@@ -615,10 +575,10 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             _searchString = searchString;
             switch (_selectedTab) {
                 case Tab.AvailablePackages:
-                    await EnsureAvailablePackagesLoadedAsync();
+                    await EnsureAvailablePackagesLoadedAsync(false);
                     return Search(_availablePackages, searchString, cancellationToken);
                 case Tab.InstalledPackages:
-                    await ReloadInstalledAndLoadedPackagesAsync();
+                    await EnsureInstalledAndLoadedPackagesAsync(true);
                     return Search(_installedPackages, searchString, cancellationToken);
                 case Tab.LoadedPackages:
                     return Search(_loadedPackages, searchString, cancellationToken);
@@ -701,7 +661,6 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         }
 
         private enum ErrorMessageType {
-            NoError,
             Connection,
             PackageOperations,
             NoRSession,
@@ -714,6 +673,53 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             public ErrorMessage(string message, ErrorMessageType type) {
                 Message = message;
                 Type = type;
+            }
+        }
+
+        private class ErrorMessageCollection {
+            private readonly RPackageManagerViewModel _viewModel;
+            private readonly List<ErrorMessage> _errorMessages;
+
+            public ErrorMessageCollection(RPackageManagerViewModel viewModel) {
+                _viewModel = viewModel;
+                _errorMessages = new List<ErrorMessage>();
+            }
+
+            public void Add(string message, ErrorMessageType type) {
+                lock (_errorMessages) {
+                    _errorMessages.Add(new ErrorMessage(message, type));
+                    if (_errorMessages.Count == 1) {
+                        _viewModel.FirstError = message;
+                    }
+                    _viewModel.HasMultipleErrors = _errorMessages.Count > 1;
+                }
+            }
+
+            public void RemoveCurrent() {
+                lock (_errorMessages) {
+                    if (_errorMessages.Count > 0) {
+                        _errorMessages.RemoveAt(0);
+                        _viewModel.FirstError = _errorMessages.Count > 0 ? _errorMessages[0].Message : null;
+                    }
+
+                    _viewModel.HasMultipleErrors = _errorMessages.Count > 1;
+                }
+            }
+
+            public void Remove(ErrorMessageType type) {
+                lock (_errorMessages) {
+                    _errorMessages.RemoveWhere(e => e.Type == type);
+                    _viewModel.FirstError = _errorMessages.Count > 0 ? _errorMessages[0].Message : null;
+                    _viewModel.HasMultipleErrors = _errorMessages.Count > 1;
+                }
+            }
+
+            public void Clear() {
+                lock (_errorMessages) {
+                    _errorMessages.Clear();
+                    _viewModel.FirstError = null;
+                    _viewModel.HasMultipleErrors = false;
+                }
             }
         }
     }

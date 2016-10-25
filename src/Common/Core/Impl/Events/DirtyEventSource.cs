@@ -15,12 +15,13 @@ namespace Microsoft.Common.Core.Events {
             _source = source;
         }
 
-        public bool IsDirty {
-            get { return _dirty == 1; }
-            set {
-                if (Interlocked.Exchange(ref _dirty, value ? 1 : 0) == 0 && value) {
-                    Event?.Invoke(_source, new EventArgs());
-                }
+        public void Reset() {
+            Interlocked.Exchange(ref _dirty, 0);
+        }
+
+        public void FireOnce() {
+            if (Interlocked.Exchange(ref _dirty, 1) == 0) {
+                Event?.Invoke(_source, new EventArgs());
             }
         }
     }

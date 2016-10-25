@@ -75,12 +75,12 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
         }
 
         public async Task<IReadOnlyList<RPackage>> GetInstalledPackagesAsync() {
-            _installedPackagesEvent.IsDirty = false;
+            _installedPackagesEvent.Reset();
             return await GetPackagesAsync(async eval => await eval.InstalledPackagesAsync());
         }
 
         public async Task<IReadOnlyList<RPackage>> GetAvailablePackagesAsync() {
-            _availablePackagesEvent.IsDirty = false;
+            _availablePackagesEvent.Reset();
             return await GetPackagesAsync(async eval => await eval.AvailablePackagesAsync());
         }
 
@@ -119,7 +119,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
         }
 
         public async Task<string[]> GetLoadedPackagesAsync() {
-            _loadedPackagesEvent.IsDirty = false;
+            _loadedPackagesEvent.Reset();
             var result = await WrapRException(_interactiveWorkflow.RSession.LoadedPackagesAsync());
             return result.Select(p => (string)((JValue)p).Value).ToArray();
         }
@@ -202,23 +202,23 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
         }
 
         private void BrokerChanged(object sender, EventArgs e) {
-            _availablePackagesEvent.IsDirty = true;
-            _installedPackagesEvent.IsDirty = true;
-            _loadedPackagesEvent.IsDirty = true;
+            _availablePackagesEvent.FireOnce();
+            _installedPackagesEvent.FireOnce();
+            _loadedPackagesEvent.FireOnce();
         }
 
         private void PackagesInstalled(object sender, EventArgs e) {
-            _installedPackagesEvent.IsDirty = true;
-            _loadedPackagesEvent.IsDirty = true;
+            _installedPackagesEvent.FireOnce();
+            _loadedPackagesEvent.FireOnce();
         }
 
         private void PackagesRemoved(object sender, EventArgs e) {
-            _installedPackagesEvent.IsDirty = true;
-            _loadedPackagesEvent.IsDirty = true;
+            _installedPackagesEvent.FireOnce();
+            _loadedPackagesEvent.FireOnce();
         }
         
         private void RSessionMutated(object sender, EventArgs e) {
-            _loadedPackagesEvent.IsDirty = true;
+            _loadedPackagesEvent.FireOnce();
         }
     }
 }
