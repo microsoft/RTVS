@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.Diagnostics;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
@@ -177,12 +178,10 @@ namespace Microsoft.Markdown.Editor.Tokens {
                     if (rLanguage) {
                         // Code is inside ``` and after the language name.
                         // We still want to colorize numbers in ```{r, x = 1.0, ...}
-                        AddToken(MarkdownTokenType.Code, ticksStart, _cs.Position - ticksStart);
-
+                        AddCodeToken(ticksStart, _cs.Position - ticksStart, ticksLength, eof ? 0 : ticksLength);
                     } else {
                         AddToken(MarkdownTokenType.Monospace, ticksStart, _cs.Position - ticksStart);
                     }
-                    _tokens[_tokens.Count - 1].IsWellFormed = !eof;
                     return true;
                 }
                 _cs.MoveToNextChar();
@@ -368,8 +367,16 @@ namespace Microsoft.Markdown.Editor.Tokens {
         }
 
         protected void AddToken(MarkdownTokenType type, int start, int length) {
+            Debug.Assert(type != MarkdownTokenType.Code, "Use AddCodeToken instead");
             if (length > 0) {
                 var token = new MarkdownToken(type, new TextRange(start, length));
+                _tokens.Add(token);
+            }
+        }
+
+        private void AddCodeToken(int start, int length, int leadingSeparatorLength, int trailingSeparatorLength) {
+            if (length > 0) {
+                var token = new MarkdownCodeToken(new TextRange(start, length), leadingSeparatorLength, trailingSeparatorLength);
                 _tokens.Add(token);
             }
         }

@@ -69,6 +69,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Tokens\MarkdownCodeToken.cs" />
     <Compile Include="Tokens\MarkdownToken.cs" />
     <Compile Include="Tokens\MdTokenizer.cs" />
     <Compile Include="Tokens\MarkdownTokenType.cs" />
