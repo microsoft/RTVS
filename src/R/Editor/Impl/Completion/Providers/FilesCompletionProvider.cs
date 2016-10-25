@@ -96,10 +96,8 @@ namespace Microsoft.R.Editor.Completion.Providers {
 
                 try {
                     var rPath = directory.ToRPath();
-                    var s = DateTime.Now;
                     var files = await session.EvaluateAsync<JArray>(Invariant($"as.list(list.files(path = '{rPath}', include.dirs = FALSE))"), REvaluationKind.Normal);
                     var dirs = await session.EvaluateAsync<JArray>(Invariant($"as.list(list.dirs(path = '{rPath}', full.names = FALSE, recursive = FALSE))"), REvaluationKind.Normal);
-                    Debug.WriteLine($"Dir time:{(DateTime.Now - s).TotalMilliseconds}");
 
                     var folderGlyph = _glyphService.GetGlyphThreadSafe(StandardGlyphGroup.GlyphClosedFolder, StandardGlyphItem.GlyphItemPublic);
                     dirs.ForEach(d => completions.Add(new RCompletion((string)d, (string)d + "/", string.Empty, folderGlyph)));
