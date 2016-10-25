@@ -3,12 +3,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Imaging;
@@ -77,11 +75,11 @@ namespace Microsoft.R.Editor.Completion.Providers {
 
                     if (_forceR || _workflow.RSession.IsRemote) {
                         var t = GetRemoteDirectoryItemsAsync(directory);
-                        entries = t.WaitTimeout(500);
+                        entries = t.WaitTimeout(_forceR ? 5000 : 1000);
                     } else {
                         entries = GetLocalDirectoryItems(directory);
                     }
-                    entries.ForEach(e => completions.Add(e));
+                    completions.AddRange(entries);
                 }
             } catch (IOException) { } catch (UnauthorizedAccessException) { }
 
@@ -95,15 +93,17 @@ namespace Microsoft.R.Editor.Completion.Providers {
                 var completions = new List<RCompletion>();
 
                 try {
-                    var rPath = directory.ToRPath();
-                    var s = DateTime.Now;
-                    var files = await session.EvaluateAsync<JArray>(Invariant($"as.list(list.files(path = '{rPath}', include.dirs = FALSE))"), REvaluationKind.Normal);
-                    var dirs = await session.EvaluateAsync<JArray>(Invariant($"as.list(list.dirs(path = '{rPath}', full.names = FALSE, recursive = FALSE))"), REvaluationKind.Normal);
-                    Debug.WriteLine($"Dir time:{(DateTime.Now - s).TotalMilliseconds}");
+                    var rPath = directory.ToRPath().ToRStringLiteral();
+                    var files = await session.EvaluateAsync<JArray>(Invariant($"as.list(list.files(path = {rPath}, include.dirs = FALSE))"), REvaluationKind.Normal);
+                    var dirs = await session.EvaluateAsync<JArray>(Invariant($"as.list(list.dirs(path = {rPath}, full.names = FALSE, recursive = FALSE))"), REvaluationKind.Normal);
 
                     var folderGlyph = _glyphService.GetGlyphThreadSafe(StandardGlyphGroup.GlyphClosedFolder, StandardGlyphItem.GlyphItemPublic);
-                    dirs.ForEach(d => completions.Add(new RCompletion((string)d, (string)d + "/", string.Empty, folderGlyph)));
-                    files.ForEach(f => completions.Add(new RCompletion((string)f, (string)f, string.Empty, folderGlyph)));
+                    foreach (var d in dirs) {
+                        completions.Add(new RCompletion((string)d, (string)d + "/", string.Empty, folderGlyph));
+                    }
+                    foreach (var f in files) {
+                        completions.Add(new RCompletion((string)f, (string)f, string.Empty, folderGlyph));
+                    }
 
                 } catch (RException) { } catch (OperationCanceledException) { }
 
