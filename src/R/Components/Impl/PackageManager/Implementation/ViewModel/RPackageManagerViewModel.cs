@@ -383,9 +383,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         
         public async Task SwitchToAvailablePackagesAsync() {
             if (await SetTabAsync(Tab.AvailablePackages)) {
-                if (!_availableLock.IsSet) {
-                    await EnsureAvailablePackagesLoadedAsync();
-                }
+                await EnsureAvailablePackagesLoadedAsync();
                 await ReplaceItemsAsync(Tab.AvailablePackages);
             }
         }
@@ -396,11 +394,12 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 if (!lockToken.IsSet) {
                     await LoadAvailablePackagesAsync();
                     _coreShell.DispatchOnUIThread(() => DismissErrorMessages(ErrorMessageType.Connection));
+                    lockToken.Set();
                 }
             } catch (RPackageManagerException ex) {
                 _coreShell.DispatchOnUIThread(() => AddErrorMessage(ex.Message, ErrorMessageType.Connection));
             } finally {
-                lockToken.Set();
+                lockToken.Reset();
             }
         }
 
@@ -457,14 +456,13 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         private async Task ReloadInstalledAndLoadedPackagesAsync() {
             var lockToken = await _installedAndLoadedLock.ResetAsync();
             try {
-                if (!lockToken.IsSet) {
-                    await LoadInstalledAndLoadedPackagesAsync();
-                    _coreShell.DispatchOnUIThread(() => DismissErrorMessages(ErrorMessageType.Connection));
-                }
+                await LoadInstalledAndLoadedPackagesAsync();
+                _coreShell.DispatchOnUIThread(() => DismissErrorMessages(ErrorMessageType.Connection));
+                lockToken.Set();
             } catch (RPackageManagerException ex) {
                 _coreShell.DispatchOnUIThread(() => AddErrorMessage(ex.Message, ErrorMessageType.Connection));
             } finally {
-                lockToken.Set();
+                lockToken.Reset();
             }
         }
 
