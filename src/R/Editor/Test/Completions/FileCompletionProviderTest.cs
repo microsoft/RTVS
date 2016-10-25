@@ -4,32 +4,30 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Threading.Tasks;
+using System.IO;
 using FluentAssertions;
-using Microsoft.Languages.Core.Text;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Completion.Providers;
 using Microsoft.R.Editor.Imaging;
-using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Language.Intellisense;
 using NSubstitute;
-using Xunit;
 
 namespace Microsoft.R.Editor.Test.Completions {
     [ExcludeFromCodeCoverage]
     [Category.R.Completion]
-    public class FileCompletionProviderTest {
+    public class FileCompletionProviderTest: IDisposable {
+        private const string _testFolderName = "_Rtvs_FileCompletionTest_";
+
         private readonly REditorMefCatalogFixture _catalog;
         private readonly IExportProvider _exportProvider;
 
         private readonly IImagesProvider _imagesProvider;
         private readonly IGlyphService _glyphService;
+        private readonly string _testFolder;
 
         public FileCompletionProviderTest(REditorMefCatalogFixture catalog) {
             _catalog = catalog;
@@ -37,6 +35,18 @@ namespace Microsoft.R.Editor.Test.Completions {
 
             _imagesProvider = Substitute.For<IImagesProvider>();
             _glyphService = Substitute.For<IGlyphService>();
+
+            var myDocs = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            var _testFolder = Path.Combine(myDocs, _testFolderName);
+            if (!Directory.Exists(_testFolder)) {
+                Directory.CreateDirectory(_testFolder);
+            }
+        }
+
+        public void Dispose() {
+            if (Directory.Exists(_testFolder)) {
+                Directory.Delete(_testFolder);
+            }
         }
 
         [Test]
@@ -46,7 +56,7 @@ namespace Microsoft.R.Editor.Test.Completions {
             var provider = new FilesCompletionProvider(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), workflow, _imagesProvider, _glyphService);
             var entries = provider.GetEntries(null);
             entries.Should().NotBeEmpty();
-            entries.Should().Contain(e => e.DisplayText == "MyLibrary");
+            entries.Should().Contain(e => e.DisplayText == _testFolderName);
         }
 
         [Test]
@@ -57,7 +67,7 @@ namespace Microsoft.R.Editor.Test.Completions {
                 var provider = new FilesCompletionProvider(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), workflowProvider, _imagesProvider, _glyphService, forceR: true);
                 var entries = provider.GetEntries(null);
                 entries.Should().NotBeEmpty();
-                entries.Should().Contain(e => e.DisplayText == "MyLibrary");
+                entries.Should().Contain(e => e.DisplayText == _testFolderName);
             }
         }
     }

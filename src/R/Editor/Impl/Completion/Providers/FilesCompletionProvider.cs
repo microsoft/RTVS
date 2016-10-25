@@ -75,7 +75,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
 
                     if (_forceR || _workflow.RSession.IsRemote) {
                         var t = GetRemoteDirectoryItemsAsync(directory);
-                        entries = t.WaitTimeout(500);
+                        entries = t.WaitTimeout(_forceR ? 5000 : 1000);
                     } else {
                         entries = GetLocalDirectoryItems(directory);
                     }
@@ -94,8 +94,8 @@ namespace Microsoft.R.Editor.Completion.Providers {
 
                 try {
                     var rPath = directory.ToRPath().ToRStringLiteral();
-                    var files = await session.EvaluateAsync<JArray>(Invariant($"as.list(list.files(path = '{rPath}', include.dirs = FALSE))"), REvaluationKind.Normal);
-                    var dirs = await session.EvaluateAsync<JArray>(Invariant($"as.list(list.dirs(path = '{rPath}', full.names = FALSE, recursive = FALSE))"), REvaluationKind.Normal);
+                    var files = await session.EvaluateAsync<JArray>(Invariant($"as.list(list.files(path = {rPath}, include.dirs = FALSE))"), REvaluationKind.Normal);
+                    var dirs = await session.EvaluateAsync<JArray>(Invariant($"as.list(list.dirs(path = {rPath}, full.names = FALSE, recursive = FALSE))"), REvaluationKind.Normal);
 
                     var folderGlyph = _glyphService.GetGlyphThreadSafe(StandardGlyphGroup.GlyphClosedFolder, StandardGlyphItem.GlyphItemPublic);
                     dirs.ForEach(d => completions.Add(new RCompletion((string)d, (string)d + "/", string.Empty, folderGlyph)));
