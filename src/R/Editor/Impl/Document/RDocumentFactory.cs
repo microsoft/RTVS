@@ -25,7 +25,7 @@ namespace Microsoft.R.Editor.Document {
         }
 
         public IEditorDocument CreateDocument(IEditorInstance editorInstance) {
-            return new REditorDocument(editorInstance.DiskBuffer, _shell);
+            return new REditorDocument(editorInstance.DiskBuffer, _shell, editorInstance.IsProjected);
         }
     }
 }

@@ -5,13 +5,12 @@ using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.EditorFactory;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.Languages.Editor.Application.Host {
     [ExcludeFromCodeCoverage]
     internal class EditorInstanceFactory {
-        public static IEditorInstance CreateEditorInstance(ITextBuffer textBuffer, ICompositionService compositionService) {
+        public static IEditorInstance CreateEditorInstance(ITextBuffer textBuffer, ICompositionService compositionService, bool projected) {
             var importComposer = new ContentTypeImportComposer<IEditorFactory>(compositionService);
             var factory = importComposer.GetImport(textBuffer.ContentType.TypeName);
 
@@ -20,7 +19,7 @@ namespace Microsoft.Languages.Editor.Application.Host {
 
             // Debug.Assert(factory != null, String.Format("No editor factory found for content type {0}", textBuffer.ContentType.TypeName));
             if(factory != null) // may be null if file type only support colorization, like VBScript
-                return factory.CreateEditorInstance(textBuffer, documentFactory);
+                return factory.CreateEditorInstance(textBuffer, documentFactory, projected);
 
             return null;
         }

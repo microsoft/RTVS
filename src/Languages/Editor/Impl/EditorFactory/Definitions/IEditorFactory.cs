@@ -13,6 +13,6 @@ namespace Microsoft.Languages.Editor.EditorFactory {
         /// <summary>
         /// Creates an instance of an editor over the text buffer.
         /// </summary>
-        IEditorInstance CreateEditorInstance(ITextBuffer textBuffer, IEditorDocumentFactory documentFactory);
+        IEditorInstance CreateEditorInstance(ITextBuffer textBuffer, IEditorDocumentFactory documentFactory, bool projected);
     }
 }

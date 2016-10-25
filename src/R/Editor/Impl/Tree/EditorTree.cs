@@ -116,6 +116,8 @@ namespace Microsoft.R.Editor.Tree {
                 }
             }
         }
+
+        public bool IsProjected { get; internal set; }
         #endregion
 
         /// <summary>
@@ -145,7 +147,6 @@ namespace Microsoft.R.Editor.Tree {
         /// Async tree update task
         /// </summary>
         internal TreeUpdateTask TreeUpdateTask { get; private set; }
-
         #endregion
 
         #region Private members
@@ -178,14 +179,14 @@ namespace Microsoft.R.Editor.Tree {
         #endregion
 
         #region Constructors
-
         /// <summary>
         /// Creates document tree on a given text buffer.
         /// </summary>
         /// <param name="textBuffer">Text buffer</param>
         /// <param name="shell"></param>
-        public EditorTree(ITextBuffer textBuffer, ICoreShell shell) {
+        public EditorTree(ITextBuffer textBuffer, ICoreShell shell, bool projected = false) {
             _ownerThread = Thread.CurrentThread.ManagedThreadId;
+            IsProjected = projected;
 
             TextBuffer = textBuffer;
             TextBuffer.ChangedHighPriority += OnTextBufferChanged;
@@ -209,7 +210,7 @@ namespace Microsoft.R.Editor.Tree {
 
             if (TextBuffer != null) {
                 TextSnapshot = TextBuffer.CurrentSnapshot;
-                _astRoot = RParser.Parse(new TextProvider(TextBuffer.CurrentSnapshot));
+                _astRoot = RParser.Parse(new TextProvider(TextBuffer.CurrentSnapshot), IsProjected);
             }
 
             TreeUpdateTask.ClearChanges();

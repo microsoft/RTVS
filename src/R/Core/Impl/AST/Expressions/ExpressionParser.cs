@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Microsoft.Common.Core;
+using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Core.AST.Functions;
@@ -41,17 +43,6 @@ namespace Microsoft.R.Core.AST.Expressions {
         private Stack<IOperator> _operators = new Stack<IOperator>();
         private OperationType _previousOperationType = OperationType.None;
 
-        internal bool IsGroupOpen() {
-            IOperator[] ops = _operators.ToArray();
-            for (int i = ops.Length - 1; i >= 1; i--) {
-                if (ops[i].OperatorType == OperatorType.Group) {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
         private bool ParseExpression(ParseContext context) {
             // https://en.wikipedia.org/wiki/Shunting-yard_algorithm
             // http://www.engr.mun.ca/~theo/Misc/exp_parsing.htm
@@ -85,6 +76,18 @@ namespace Microsoft.R.Core.AST.Expressions {
 
                     // Variables and function calls
                     case RTokenType.Identifier:
+                        if (ShouldSkipIdentifier(context)) {
+                            // This is a workaround for constructs like ```{r x = 1, y = FALSE} where the { }
+                            // block is treated as R fragment. The fragment is syntactually incorrect since
+                            // 'r' is indentifier and there is an operator expected between 'r' and 'x'.
+                            // In order to avoid parsing errors expression parser will use this flag and
+                            // allow standalone indentifier 'r' or 'R' right after the opening curly brace.
+                            context.Tokens.MoveToNextToken();
+                            continue;
+                        }
+                        currentOperationType = HandleIdentifier(context);
+                        break;
+
                     case RTokenType.Ellipsis:
                         currentOperationType = HandleIdentifier(context);
                         break;
@@ -604,7 +607,7 @@ namespace Microsoft.R.Core.AST.Expressions {
         }
 
         private IRValueNode SafeGetOperand(IOperator operatorNode) {
-            if(!operatorNode.IsUnary) {
+            if (!operatorNode.IsUnary) {
                 return _operands.Count > 0 ? _operands.Pop() : null;
             }
             // Indexer expects operand to the left of the indexing expression as in 'a[]`. 
@@ -638,6 +641,26 @@ namespace Microsoft.R.Core.AST.Expressions {
                 }
             }
             return null;
+        }
+
+        private bool ShouldSkipIdentifier(ParseContext context) {
+            if (context.IsInMarkdown && _operands.Count == 0 && _operators.Count == 1) {
+                // Start of the expression. Check that this is '<line break><ws>{R' or '<line break><ws>{r'
+                var ct = context.Tokens.CurrentToken;
+                var pt = context.Tokens.PreviousToken;
+
+                var currentTokenText = context.TextProvider.GetText(ct);
+                if (currentTokenText.EqualsIgnoreCase("R")) {
+                    if (pt.TokenType == RTokenType.OpenCurlyBrace && pt.End == ct.Start &&
+                        Whitespace.IsNewLineBeforePosition(context.TextProvider, pt.Start)) {
+                        // line break - whitespace  - {r
+                        return true;
+                    }
+
+                    // Now need to handle inline like `r x=y`
+                }
+            }
+            return false;
         }
     }
 }

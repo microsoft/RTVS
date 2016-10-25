@@ -56,14 +56,27 @@ namespace Microsoft.R.Core.Parser {
         /// </summary>
         public IReadOnlyCollection<RToken> Comments { get; private set; }
 
-        public ParseContext(ITextProvider textProvider, ITextRange range, TokenStream<RToken> tokens, IReadOnlyList<RToken> comments) {
-            this.AstRoot = new AstRoot(textProvider);
-            this.TextProvider = textProvider;
-            this.Tokens = tokens;
-            this.TextRange = range;
-            this.Scopes = new Stack<IScope>();
-            this.Expressions = new Stack<Expression>();
-            this.Comments = comments;
+        /// <summary>
+        /// Indicates if parsing is performed on R fragment that is projected from R markdown. 
+        /// </summary>
+        /// <remarks>
+        /// This is a workaround for constructs like ```{r x = 1, y = FALSE} where the { }
+        /// block is treated as R fragment. The fragment is syntactually incorrect since
+        /// 'r' is indentifier and there is an operator expected between 'r' and 'x'.
+        /// In order to avoid parsing errors expression parser will use this flag and
+        /// allow standalone indentifier 'r' or 'R' right after the opening curly brace.
+        /// </remarks>
+        public bool IsInMarkdown { get; }
+
+        public ParseContext(ITextProvider textProvider, ITextRange range, TokenStream<RToken> tokens, IReadOnlyList<RToken> comments, bool inMarkdown = false) {
+            AstRoot = new AstRoot(textProvider);
+            TextProvider = textProvider;
+            Tokens = tokens;
+            TextRange = range;
+            Scopes = new Stack<IScope>();
+            Expressions = new Stack<Expression>();
+            Comments = comments;
+            IsInMarkdown = inMarkdown;
         }
 
         public void AddError(ParseError error) {

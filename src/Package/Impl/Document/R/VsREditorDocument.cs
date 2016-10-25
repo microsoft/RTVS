@@ -11,7 +11,7 @@ namespace Microsoft.VisualStudio.R.Package.Document.R {
         private IEditorInstance _editorInstance;
 
         public VsREditorDocument(IEditorInstance editorInstance, ICoreShell shell)
-            : base(editorInstance.ViewBuffer, shell) {
+            : base(editorInstance.ViewBuffer, shell, editorInstance.IsProjected) {
 
             _editorInstance = editorInstance;
             ServiceManager.AddService<VsREditorDocument>(this, TextBuffer, shell);

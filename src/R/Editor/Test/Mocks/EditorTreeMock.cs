@@ -9,50 +9,27 @@ using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Test.Mocks {
     [ExcludeFromCodeCoverage]
-    public sealed class EditorTreeMock : IEditorTree
-    {
-        public EditorTreeMock(ITextBuffer textBuffer, AstRoot ast)
-        {
+    public sealed class EditorTreeMock : IEditorTree {
+        public EditorTreeMock(ITextBuffer textBuffer, AstRoot ast) {
             TextBuffer = textBuffer;
             AstRoot = ast;
         }
-        public AstRoot AstRoot { get; private set; }
-        public AstRoot PreviousAstRoot  { get; private set; }
+        public AstRoot AstRoot { get; }
+        public AstRoot PreviousAstRoot { get; private set; }
 
-        public bool IsReady
-        {
-            get { return true; }
-        }
+        public bool IsReady => true;
 
-        public ITextBuffer TextBuffer { get; private set; }
+        public ITextBuffer TextBuffer { get; }
+        public ITextSnapshot TextSnapshot => TextBuffer.CurrentSnapshot;
 
-        public ITextSnapshot TextSnapshot
-        {
-            get { return TextBuffer.CurrentSnapshot; }
-        }
-
-        public AstRoot AcquireReadLock(Guid treeUserId)
-        {
-            return AstRoot;
-        }
-
-        public void Invalidate()
-        {
-        }
-
-        public void EnsureTreeReady()
-        {
-        }
-
-        public bool ReleaseReadLock(Guid treeUserId)
-        {
-            return true;
-        }
-
-        public void ProcessChangesAsync(Action completeCallback) {
-        }
+        public AstRoot AcquireReadLock(Guid treeUserId) => AstRoot;
+        public void Invalidate() { }
+        public void EnsureTreeReady() { }
+        public bool ReleaseReadLock(Guid treeUserId) => true;
+        public void ProcessChangesAsync(Action completeCallback) { }
 
         public void InvokeWhenReady(Action<object> action, object p, Type type, bool processNow = false) { }
+        public bool IsProjected => false;
 
 #pragma warning disable 67
         public event EventHandler<EventArgs> Closing;

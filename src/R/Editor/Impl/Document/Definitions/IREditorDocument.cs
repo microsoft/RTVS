@@ -41,6 +41,11 @@ namespace Microsoft.R.Editor.Document {
         bool IsMassiveChangeInProgress { get; }
 
         /// <summary>
+        /// Indicates if the document is projected into another document view.
+        /// </summary>
+        bool IsProjected { get; }
+
+        /// <summary>
         /// Fires when massive change begins
         /// </summary>
         event EventHandler<EventArgs> MassiveChangeBegun;

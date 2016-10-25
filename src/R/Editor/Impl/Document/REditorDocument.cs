@@ -29,6 +29,7 @@ namespace Microsoft.R.Editor.Document {
     public class REditorDocument : IREditorDocument {
         private readonly ICoreShell _shell;
         private readonly ITextDocumentFactoryService _textDocumentFactoryService;
+        private bool _isProjected;
 
         #region IEditorDocument
         public ITextBuffer TextBuffer { get; private set; }
@@ -56,6 +57,8 @@ namespace Microsoft.R.Editor.Document {
             }
         }
 
+        public bool IsProjected { get; }
+
 #pragma warning disable 67
         public event EventHandler<EventArgs> DocumentClosing;
 #pragma warning restore 67
@@ -80,17 +83,18 @@ namespace Microsoft.R.Editor.Document {
         private TreeValidator _validator;
 
         #region Constructors
-        public REditorDocument(ITextBuffer textBuffer, ICoreShell shell) {
+        public REditorDocument(ITextBuffer textBuffer, ICoreShell shell, bool projected) {
             _shell = shell;
             _textDocumentFactoryService = _shell.ExportProvider.GetExportedValue<ITextDocumentFactoryService>();
             _textDocumentFactoryService.TextDocumentDisposed += OnTextDocumentDisposed;
 
-            this.TextBuffer = textBuffer;
+            IsProjected = projected;
+            TextBuffer = textBuffer;
             IsClosed = false;
 
             ServiceManager.AddService(this, TextBuffer, shell);
 
-            _editorTree = new EditorTree(textBuffer, shell);
+            _editorTree = new EditorTree(textBuffer, shell, projected);
             if (REditorSettings.SyntaxCheckInRepl) {
                 _validator = new TreeValidator(EditorTree, shell);
             }

@@ -28,5 +28,10 @@ namespace Microsoft.Languages.Editor.EditorFactory {
         /// Retrieves editor instance command target for a particular view
         /// </summary>
         ICommandTarget GetCommandTarget(ITextView textView);
+
+        /// <summary>
+        /// Indicates if document is projected into a view of another document.
+        /// </summary>
+        bool IsProjected { get; }
     }
 }

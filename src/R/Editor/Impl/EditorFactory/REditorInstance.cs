@@ -13,8 +13,8 @@ namespace Microsoft.R.Editor.EditorFactory {
     /// Represents instance of the editor to the host application
     /// </summary>
     public sealed class REditorInstance : EditorInstance {
-        public REditorInstance(ITextBuffer diskBuffer, IEditorDocumentFactory documentFactory, ICoreShell coreShell): 
-            base(diskBuffer, documentFactory, coreShell) {
+        public REditorInstance(ITextBuffer diskBuffer, IEditorDocumentFactory documentFactory, ICoreShell coreShell, bool projected) : 
+            base(diskBuffer, documentFactory, coreShell, projected) {
         }
 
         #region IEditorInstance

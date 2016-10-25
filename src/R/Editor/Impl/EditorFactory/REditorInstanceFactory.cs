@@ -20,14 +20,14 @@ namespace Microsoft.R.Editor.EditorFactory {
             _coreShell = coreShell;
         }
 
-        public IEditorInstance CreateEditorInstance(ITextBuffer textBuffer, IEditorDocumentFactory documentFactory) {
+        public IEditorInstance CreateEditorInstance(ITextBuffer textBuffer, IEditorDocumentFactory documentFactory, bool projected) {
             if (textBuffer == null) {
                 throw new ArgumentNullException(nameof(textBuffer));
             }
             if (documentFactory == null) {
                 throw new ArgumentNullException(nameof(documentFactory));
             }
-            return new REditorInstance(textBuffer, documentFactory, _coreShell);
+            return new REditorInstance(textBuffer, documentFactory, _coreShell, projected);
         }
     }
 }
