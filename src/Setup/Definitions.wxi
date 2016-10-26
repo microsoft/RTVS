@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Include>
-  <?define ProductNamePart1="R Tools " ?>
-  <?if $(var.VsVersion) = 14.0?>
-  <?define ProductNamePart2=" for Visual Studio 2015" ?>
-  <?endif?>
-  <?if $(var.VsVersion) = 15.0?>
-  <?define ProductNamePart2=" for Visual Studio 15 Preview" ?>
-  <?endif?>
-  <?define ProductName="$(var.ProductNamePart1)$(var.ProductVersion)$(var.ProductNamePart2)" ?>
+  <?define ProductName="R Tools for Visual Studio 2015" ?>
 
   <?define BinDir="$(var.OutDir)" ?>
   <?define SourceDir=".." ?>
