@@ -23,12 +23,19 @@
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\$(AssemblyName)\</IntermediateOutputPath>
     <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
   </PropertyGroup>
+  <PropertyGroup>
+    <DefineConstants Condition="'$(VisualStudioVersion)'=='14.0'">VS14;$(DefineConstants)</DefineConstants>
+    <DefineConstants Condition="'$(VisualStudioVersion)'=='15.0'">VS15;$(DefineConstants)</DefineConstants>
+    <PreBuildEvent>copy /y "$(MSBuildProjectDirectory)\project.$(VisualStudioVersion).json" "$(MSBuildProjectDirectory)\project.json"</PreBuildEvent>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="project.15.0.json" />
+    <None Include="project.14.0.json" />
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
