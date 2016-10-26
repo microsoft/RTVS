@@ -1,0 +1,18 @@
+﻿{
+  "dependencies": {
+    "MicroBuild.Core": "0.2.0",
+    "DataConnectionDialog": "1.2.0",
+    "Microsoft.VisualStudio.CoreUtility": "14.2.25123",
+    "Microsoft.VisualStudio.Text.Data": "14.2.25123",
+    "Microsoft.VisualStudio.Text.Logic": "14.2.25123",
+    "Microsoft.VisualStudio.Text.UI": "14.2.25123",
+    "Microsoft.VisualStudio.Text.UI.Wpf": "14.2.25123",
+    "Newtonsoft.Json": "8.0.3"
+  },
+  "frameworks": {
+    "net46": { }
+  },
+  "runtimes": {
+    "win": { }
+  }
+}
