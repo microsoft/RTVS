@@ -43,8 +43,12 @@ namespace Microsoft.R.Host.Broker.Security {
             var certName = _securityOptions.X509CertificateName ?? Invariant($"CN={Environment.MachineName}");
             certificate = Certificates.GetCertificateForEncryption(certName);
             if (certificate == null) {
+#if DEBUG
+                return null;
+#else
                 _logger.LogCritical(Resources.Critical_NoTlsCertificate, certName);
                 Environment.Exit((int)BrokerExitCodes.NoCertificate);
+#endif
             }
 
             _logger.LogInformation(Resources.Trace_CertificateIssuer, certificate.Issuer);
