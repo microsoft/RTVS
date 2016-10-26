@@ -531,19 +531,33 @@
     </Content>
     <None Include="Resources\DatabaseProject.ico" />
     <None Include="Resources\DatabaseProject1.ico" />
-    <VSTemplate Include="Templates\ItemTemplates\SqlSProc\SqlSProc.vstemplate">
+    <Content Include="Templates\ItemTemplates\SqlSProc\SqlSProc.vstemplate">
       <SubType>Designer</SubType>
-    </VSTemplate>
-    <VSTemplate Include="Templates\ItemTemplates\RSettings\rsettings.vstemplate">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\ItemTemplates\RSettings\rsettings.vstemplate">
       <SubType>Designer</SubType>
-    </VSTemplate>
-    <VSTemplate Include="Templates\ItemTemplates\SqlQuery\SqlQuery.vstemplate">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\ItemTemplates\SqlQuery\SqlQuery.vstemplate">
       <SubType>Designer</SubType>
-    </VSTemplate>
-    <None Include="Templates\ItemTemplates\SqlSProc\SqlSProc.R" />
-    <None Include="Templates\ItemTemplates\SqlQuery\SqlQuery.sql" />
-    <None Include="Templates\ItemTemplates\SqlSProc\SqlSProc.Template.sql" />
-    <None Include="Templates\ItemTemplates\SqlSProc\SqlSProc.Query.sql" />
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\ItemTemplates\SqlSProc\SqlSProc.R">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\ItemTemplates\SqlQuery\SqlQuery.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\ItemTemplates\SqlSProc\SqlSProc.Template.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\ItemTemplates\SqlSProc\SqlSProc.Query.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\ItemTemplates\WebStyleSheet\WebStyleSheet.vstemplate">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Templates\NewItem\SqlQuery.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -555,6 +569,7 @@
     <Content Include="Templates\Sql\Create Procedure R.vstemplate">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
+      <SubType>Designer</SubType>
     </Content>
     <Content Include="vstheme.pkgdef">
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -991,12 +1006,12 @@
     <Reference Include="Microsoft.VisualStudio.InteractiveWindow">
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(LibDirectory)\Microsoft.VisualStudio.InteractiveWindow.dll</HintPath>
+      <HintPath>$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.InteractiveWindow.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.VsInteractiveWindow">
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(LibDirectory)\Microsoft.VisualStudio.VsInteractiveWindow.dll</HintPath>
+      <HintPath>$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.VsInteractiveWindow.dll</HintPath>
     </Reference>
     <Reference Include="$(PrivateAssembliesFolderPath)\Microsoft.VisualStudio.Telemetry.dll">
       <SpecificVersion>False</SpecificVersion>
@@ -1132,17 +1147,31 @@
     </Content>
     <Content Include="SurveyNews\NoSurveyNewsFeed.html" />
     <Content Include="SurveyNews\ReadmeStyle.css" />
-    <Content Include="Templates\ItemTemplates\EmptyRMD\RmdFile.ico" />
-    <Content Include="Templates\ProjectTemplates\EmptyProject\REmptyProject.png" />
+    <Content Include="Templates\ItemTemplates\EmptyRMD\RmdFile.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\ProjectTemplates\EmptyProject\REmptyProject.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <EmbeddedResource Include="Resources\RInteractiveWindow_16x.png" />
     <Content Include="Images\RDataNode.png" />
     <Content Include="Images\RProjectNode.png" />
     <Content Include="Images\RFileNode.png" />
-    <Content Include="Templates\ItemTemplates\DatasetRD\RdFile.png" />
-    <Content Include="Templates\ItemTemplates\EmptyRD\RdFile.png" />
-    <Content Include="Templates\ItemTemplates\FunctionRD\RdFile.png" />
-    <Content Include="Templates\ProjectTemplates\EmptyProject\script.R" />
-    <Content Include="Templates\ItemTemplates\EmptyMD\MdFile.png" />
+    <Content Include="Templates\ItemTemplates\DatasetRD\RdFile.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\ItemTemplates\EmptyRD\RdFile.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\ItemTemplates\FunctionRD\RdFile.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\ProjectTemplates\EmptyProject\script.R">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\ItemTemplates\EmptyMD\MdFile.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Profiles\14.0\R.vssettings">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -1184,7 +1213,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <None Include="Templates\ItemTemplates\RSettings\Settings.R" />
+    <Content Include="Templates\ItemTemplates\RSettings\Settings.R">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Templates\NewItem\SqlRScript.R">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -1196,79 +1227,118 @@
     </Page>
     <Content Include="Images\pdf.bmp" />
     <Content Include="Resources\Package.ico" />
-    <VSTemplate Include="Templates\ItemTemplates\EmptyMD\emptymd.vstemplate">
+    <Content Include="Templates\ItemTemplates\EmptyMD\emptymd.vstemplate">
       <SubType>Designer</SubType>
-    </VSTemplate>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Templates\ItemTemplates\EmptyMD\markdown.md" />
-    <None Include="Templates\ProjectTemplates\EmptyProject\.Rhistory" />
-    <None Include="Templates\ProjectTemplates\EmptyProject\rproject.Rproj" />
-    <VSTemplate Include="Templates\ProjectTemplates\EmptyProject\EmptyProject.vstemplate" />
+    <None Include="Templates\ItemTemplates\EmptyMD\markdown.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Content Include="Templates\ProjectTemplates\EmptyProject\.Rhistory">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\ProjectTemplates\EmptyProject\rproject.Rproj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\ProjectTemplates\EmptyProject\EmptyProject.vstemplate">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Templates\ItemTemplates\RScript\script.R" />
-    <VSTemplate Include="Templates\ItemTemplates\RScript\rscript.vstemplate">
+    <Content Include="Templates\ItemTemplates\RScript\script.R">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\ItemTemplates\RScript\rscript.vstemplate">
       <SubType>Designer</SubType>
-    </VSTemplate>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Templates\ItemTemplates\FunctionRD\function.rd" />
-    <VSTemplate Include="Templates\ItemTemplates\FunctionRD\functionrd.vstemplate">
+    <Content Include="Templates\ItemTemplates\FunctionRD\function.rd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\ItemTemplates\FunctionRD\functionrd.vstemplate">
       <SubType>Designer</SubType>
-    </VSTemplate>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Templates\ItemTemplates\DatasetRD\dataset.rd" />
-    <VSTemplate Include="Templates\ItemTemplates\DatasetRD\datasetrd.vstemplate" />
+    <Content Include="Templates\ItemTemplates\DatasetRD\dataset.rd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\ItemTemplates\DatasetRD\datasetrd.vstemplate">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Templates\ItemTemplates\EmptyRD\document.rd" />
-    <VSTemplate Include="Templates\ItemTemplates\EmptyRD\emptyrd.vstemplate">
+    <Content Include="Templates\ItemTemplates\EmptyRD\document.rd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\ItemTemplates\EmptyRD\emptyrd.vstemplate">
       <SubType>Designer</SubType>
-    </VSTemplate>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Templates\ItemTemplates\EmptyRMD\markdown.rmd" />
-    <VSTemplate Include="Templates\ItemTemplates\EmptyRMD\emptyrmd.vstemplate">
+    <Content Include="Templates\ItemTemplates\EmptyRMD\markdown.rmd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\ItemTemplates\EmptyRMD\emptyrmd.vstemplate">
       <SubType>Designer</SubType>
-    </VSTemplate>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Templates\ItemTemplates\WebHtmlPage\HtmlPage.html" />
-    <VSTemplate Include="Templates\ItemTemplates\WebHtmlPage\WebHtmlPage.vstemplate">
+    <Content Include="Templates\ItemTemplates\WebHtmlPage\HtmlPage.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\ItemTemplates\WebHtmlPage\WebHtmlPage.vstemplate">
       <SubType>Designer</SubType>
-    </VSTemplate>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Templates\ItemTemplates\WebStyleSheet\StyleSheet.css" />
-    <VSTemplate Include="Templates\ItemTemplates\WebStyleSheet\WebStyleSheet.vstemplate">
-      <SubType>Designer</SubType>
-    </VSTemplate>
+    <Content Include="Templates\ItemTemplates\WebStyleSheet\StyleSheet.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Templates\ItemTemplates\TextFile\textfile.txt" />
-    <VSTemplate Include="Templates\ItemTemplates\TextFile\TextFile.vstemplate">
+    <Content Include="Templates\ItemTemplates\TextFile\textfile.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\ItemTemplates\TextFile\TextFile.vstemplate">
       <SubType>Designer</SubType>
-    </VSTemplate>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Templates\ItemTemplates\XMLFile\XMLFile.xml" />
-    <VSTemplate Include="Templates\ItemTemplates\XMLFile\XMLFile.vstemplate">
+    <Content Include="Templates\ItemTemplates\XMLFile\XMLFile.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\ItemTemplates\XMLFile\XMLFile.vstemplate">
       <SubType>Designer</SubType>
-    </VSTemplate>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Templates\ItemTemplates\XMLSchema\XMLSchema.xsd" />
-    <VSTemplate Include="Templates\ItemTemplates\XMLSchema\XMLSchema.vstemplate">
+    <Content Include="Templates\ItemTemplates\XMLSchema\XMLSchema.xsd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\ItemTemplates\XMLSchema\XMLSchema.vstemplate">
       <SubType>Designer</SubType>
-    </VSTemplate>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Templates\ItemTemplates\XSLTFile\XSLTFile.xslt" />
-    <VSTemplate Include="Templates\ItemTemplates\XSLTFile\XSLTFile.vstemplate">
+    <Content Include="Templates\ItemTemplates\XSLTFile\XSLTFile.xslt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\ItemTemplates\XSLTFile\XSLTFile.vstemplate">
       <SubType>Designer</SubType>
-    </VSTemplate>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <VSCTCompile Include="Package.vsct">
