@@ -96,7 +96,7 @@
               <Directory Id="CommonIdeFolder" Name="IDE">
                 <Directory Id="ExtensionsFolder" Name="Extensions">
                   <Directory Id="MicrosoftFolder" Name="Microsoft">
-                    
+
                     <Directory Id="SqlFolder" Name="SQLDB">
                       <Directory Id="SqlExtensionsFolder" Name="Extensions">
                         <Directory Id="SqlServerFolder" Name="SqlServer">
@@ -107,7 +107,7 @@
                         </Directory>
                       </Directory>
                     </Directory>
-                    
+
                     <Directory Id="INSTALLFOLDER" Name="R Tools for Visual Studio">
 
                       <?ifdef LabBuild?>
@@ -160,17 +160,27 @@
 
                 <Directory Id="ItemTemplatesFolder" Name="ItemTemplates">
                   <Directory Id="ItemTemplatesInstallFolder" Name="R">
-                    <!--<?foreach Lcid in $(var.LcidList)?>
-                    <Directory Id="ItemTemplatesInstallFolder_$(var.Lcid)" Name="$(var.Lcid)" />
-                    <?endforeach?>-->
+                    <Directory Id="ItemTemplatesInstallFolder_DatasetRD" Name="DatasetRD" />
+                    <Directory Id="ItemTemplatesInstallFolder_EmptyMD" Name="EmptyMD" />
+                    <Directory Id="ItemTemplatesInstallFolder_EmptyRD" Name="EmptyRD" />
+                    <Directory Id="ItemTemplatesInstallFolder_EmptyRMD" Name="EmptyRMD" />
+                    <Directory Id="ItemTemplatesInstallFolder_FunctionRD" Name="FunctionRD" />
+                    <Directory Id="ItemTemplatesInstallFolder_RScript" Name="RScript" />
+                    <Directory Id="ItemTemplatesInstallFolder_RSettings" Name="RSettings" />
+                    <Directory Id="ItemTemplatesInstallFolder_SqlQuery" Name="SqlQuery" />
+                    <Directory Id="ItemTemplatesInstallFolder_SqlSProc" Name="SqlSProc" />
+                    <Directory Id="ItemTemplatesInstallFolder_TextFile" Name="TextFile" />
+                    <Directory Id="ItemTemplatesInstallFolder_WebHtmlPage" Name="WebHtmlPage" />
+                    <Directory Id="ItemTemplatesInstallFolder_WebStyleSheet" Name="WebStyleSheet" />
+                    <Directory Id="ItemTemplatesInstallFolder_XMLFile" Name="XMLFile" />
+                    <Directory Id="ItemTemplatesInstallFolder_XMLSchema" Name="XMLSchema" />
+                    <Directory Id="ItemTemplatesInstallFolder_XSLTFile" Name="XSLTFile" />
                   </Directory>
                 </Directory>
 
                 <Directory Id="ProjectTemplatesFolder" Name="ProjectTemplates">
                   <Directory Id="ProjectTemplatesInstallFolder" Name="R">
-                    <!--<?foreach Lcid in $(var.LcidList)?>
-                    <Directory Id="ProjectTemplatesInstallFolder_$(var.Lcid)" Name="$(var.Lcid)" />
-                    <?endforeach?>-->
+                    <Directory Id="ProjectTemplatesInstallFolder_EmptyProject" Name="EmptyProject" />
                   </Directory>
                 </Directory>
 
