@@ -99,4 +99,6 @@ src/R.VC.db
 .Rproj.user
 src/R.VC.opendb
 TestFiles/
+*.db
+*.opendb
 *.vstman
