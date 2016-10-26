@@ -3,11 +3,6 @@
 
 using Microsoft.Common.Core.OS;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Microsoft.R.Host.Protocol.Test.UserProfileServicePipe {
     internal class UserProfileCreatorFuzzTestMock : IUserProfileServices {

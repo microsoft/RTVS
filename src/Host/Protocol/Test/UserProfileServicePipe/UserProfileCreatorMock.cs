@@ -1,12 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using Microsoft.Common.Core.OS;
 using FluentAssertions;
-using Microsoft.UnitTests.Core.Threading;
-using Microsoft.UnitTests.Core.XUnit;
+using Microsoft.Common.Core.OS;
 using Microsoft.Extensions.Logging;
-using System;
 
 namespace Microsoft.R.Host.Protocol.Test.UserProfileServicePipe {
     internal class UserProfileCreatorMock : IUserProfileServices {
@@ -23,8 +20,8 @@ namespace Microsoft.R.Host.Protocol.Test.UserProfileServicePipe {
 
         public IUserProfileCreatorResult CreateUserProfile(IUserCredentials credMock, ILogger logger) {
             if (!TestingValidParse) {
-                // if parse failed, then we should never get here.
-                // if we do it should be creds should be null.
+                // If parse succeeded but did not generate an object,
+                // for example, JSON parse of white spaces.
                 credMock.Should().BeNull();
                 return UserProfileResultMock.Create(false, false);
             }

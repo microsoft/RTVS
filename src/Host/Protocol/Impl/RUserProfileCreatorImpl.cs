@@ -2,12 +2,12 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using Microsoft.Common.Core.OS;
-using Microsoft.Extensions.Logging;
-using static Microsoft.R.Host.Protocol.NativeMethods;
 using System.Security.Principal;
 using System.Text;
 using System.Runtime.InteropServices;
+using Microsoft.Common.Core.OS;
+using Microsoft.Extensions.Logging;
+using static Microsoft.R.Host.Protocol.NativeMethods;
 
 namespace Microsoft.R.Host.Protocol {
     class RUserProfileCreatorImpl : IUserProfileServices {

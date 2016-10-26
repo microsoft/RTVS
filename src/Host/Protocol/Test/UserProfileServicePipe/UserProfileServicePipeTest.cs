@@ -1,21 +1,20 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System.Threading.Tasks;
-using Microsoft.UnitTests.Core.XUnit;
-using Microsoft.Common.Core;
-using Xunit;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.IO.Pipes;
 using System.Text;
 using System.Threading;
-using Newtonsoft.Json;
+using System.Threading.Tasks;
 using FluentAssertions;
-using System;
-using Microsoft.UnitTests.Core.FluentAssertions;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.OS;
-using System.Diagnostics;
-using System.Collections.Generic;
-using System.IO;
+using Microsoft.UnitTests.Core.FluentAssertions;
+using Microsoft.UnitTests.Core.XUnit;
+using Newtonsoft.Json;
+using Xunit;
 
 namespace Microsoft.R.Host.Protocol.Test.UserProfileServicePipe {
     public class UserProfileServicePipeTest {
@@ -118,14 +117,13 @@ namespace Microsoft.R.Host.Protocol.Test.UserProfileServicePipe {
                 string json = "{" + string.Format(inner, username, domain, password) + "}";
                 
                 string testResult = string.Empty;
-                // invalid user name characters: " / \ [ ] : ; | = , + * ? < >
                 UserProfileCreatorFuzzTestMock creator = new UserProfileCreatorFuzzTestMock();
 
                 try {
                     await CreateProfileTestRunnerAsync(creator, json, false, false, false, true);
                 } catch (IOException) {
                     // expect pipe to fail. The client side pipe throws an IOException when the server side pipe 
-                    // closes due to either IO error, unauthorized access, 
+                    // closes due to IO error or attempt to access unauthorized memory.
                 }
             }
         }
