@@ -171,6 +171,11 @@ grDevices::deviceIsInteractive('ide')
             return evaluation.EvaluateAsync<JArray>(script, REvaluationKind.Normal);
         }
 
+        public static Task<JArray> UserLibraryPathsAsync(this IRExpressionEvaluator evaluation) {
+            var script = @"rtvs:::packages.userlibpaths()";
+            return evaluation.EvaluateAsync<JArray>(script, REvaluationKind.Normal);
+        }
+
         public static Task<ulong> ExportPlotToBitmapAsync(this IRExpressionEvaluator evaluation, Guid deviceId, Guid plotId, string deviceName, string outputFilePath, int widthInPixels, int heightInPixels, int resolution) {
             string script = Invariant($"rtvs:::export_to_image({deviceId.ToString().ToRStringLiteral()}, {plotId.ToString().ToRStringLiteral()}, {deviceName}, {widthInPixels}, {heightInPixels}, {resolution})");
             return evaluation.EvaluateAsync<ulong>(script, REvaluationKind.Normal);

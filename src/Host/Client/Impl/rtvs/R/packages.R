@@ -16,6 +16,12 @@ packages.libpaths <- function() {
     as.list(.libPaths())
 }
 
+packages.userlibpaths <- function() {
+    paths <- .libPaths()
+    condition <- startsWith(paths, gsub("\\\\", "/", Sys.getenv("USERPROFILE")))
+    as.list(paths[condition])
+}
+
 download.packages.rds <- function(repo.url) {
   # download the repository's packages.rds and return path to the temp file
     pkg.rds.url <- gsub("src/contrib", "web/packages/packages.rds", repo.url)
