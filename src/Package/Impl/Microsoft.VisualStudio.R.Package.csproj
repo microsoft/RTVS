@@ -2,6 +2,9 @@
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <Import Project="..\..\R.Settings.targets" />
+  <PropertyGroup Condition="'$(NuGetPackageRoot)' == ''">
+    <NuGetPackageRoot>$(UserProfile)\.nuget\packages\</NuGetPackageRoot>
+  </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -55,6 +58,7 @@
     <DefineConstants Condition="'$(VisualStudioVersion)'=='14.0'">VS14;$(DefineConstants)</DefineConstants>
     <DefineConstants Condition="'$(VisualStudioVersion)'=='15.0'">VS15;$(DefineConstants)</DefineConstants>
     <PreBuildEvent>copy /y "$(MSBuildProjectDirectory)\project.$(VisualStudioVersion).json" "$(MSBuildProjectDirectory)\project.json"</PreBuildEvent>
+    <KnownReferencePaths Condition="'$(VisualStudioVersion)'=='15.0'">$(KnownReferencePaths);$(NuGetPackageRoot)\microsoft.visualstudio.shell.15.0\15.0.25824-rc\lib</KnownReferencePaths>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
@@ -1657,9 +1661,6 @@
   <!-- The target needs to run so the task can populate the output items correctly. 
     The task does an up to date check on the files themselves
    -->
-  <!--<PropertyGroup Condition="'$(NuGetPackageRoot)' == ''">
-    <NuGetPackageRoot>$(UserProfile)\.nuget\packages\</NuGetPackageRoot>
-  </PropertyGroup>-->
   <UsingTask Condition="'$(VisualStudioVersion)'=='14.0'" TaskName="XamlRuleToCode" AssemblyFile="$(NuGetPackageRoot)\Microsoft.VisualStudio.ProjectSystem.SDK.Tools\14.0.50617-pre\build\net451\Microsoft.VisualStudio.ProjectSystem.Sdk.Tasks.dll" />
   <UsingTask Condition="'$(VisualStudioVersion)'=='15.0'" TaskName="XamlRuleToCode" AssemblyFile="$(NuGetPackageRoot)\Microsoft.VisualStudio.ProjectSystem.SDK.Tools\15.0.183-pre\build\net451\Microsoft.VisualStudio.ProjectSystem.Sdk.Tasks.dll" />
   <Target Name="GenerateRuleSourceFromXaml" DependsOnTargets="GenerateRulePrep" Condition="'@(XamlPropertyRule)' != ''">
@@ -1668,5 +1669,5 @@
     </XamlRuleToCode>
   </Target>
   <Import Project="$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\14.2.25201\tools\vssdk\Microsoft.VsSDK.targets" Condition="'$(VisualStudioVersion)'=='14.0' AND Exists('$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\14.2.25201\tools\vssdk\Microsoft.VsSDK.targets')" />
-  <Import Project="$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\15.0.25728-Preview5\tools\vssdk\Microsoft.VsSDK.targets" Condition="'$(VisualStudioVersion)'=='15.0' AND Exists('$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\15.0.25728-Preview5\tools\vssdk\Microsoft.VsSDK.targets')" />
+  <Import Project="$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\15.0.25824-RC\tools\vssdk\Microsoft.VsSDK.targets" Condition="'$(VisualStudioVersion)'=='15.0' AND Exists('$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\15.0.25824-RC\tools\vssdk\Microsoft.VsSDK.targets')" />
 </Project>
