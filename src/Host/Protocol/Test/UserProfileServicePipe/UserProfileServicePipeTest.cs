@@ -38,30 +38,27 @@ namespace Microsoft.R.Host.Protocol.Test.UserProfileServicePipe {
         private async Task CreateProfileTestRunnerAsync(IUserProfileServices creator, string input, bool isValidParse, bool isValidAccount, bool isExistingAccount, bool isFuzzTest = false) {
             ManualResetEventSlim testDone = new ManualResetEventSlim(false);
             Task.Run(async () => {
-                using (CancellationTokenSource cts1 = new CancellationTokenSource(TimeSpan.FromSeconds(TestServerTimeoutSeconds))) {
-                    if (isFuzzTest) {
-                        try {
-                            await RUserProfileCreator.CreateProfileAsync(creator, cts1.Token);
-                        } catch (JsonReaderException) {
-                            // expecting json parsing to fail
-                            // JSON parsing may fail due to randomly generated strings as input.
-                        } 
+                if (isFuzzTest) {
+                    try {
+                        await RUserProfileCreator.CreateProfileAsync(serverTimeOutms: TestServerTimeoutMS, clientTimeOutms: TestClientTimeoutMS, userProfileService:creator);
+                    } catch (JsonReaderException) {
+                        // expecting JSON parsing to fail
+                        // JSON parsing may fail due to randomly generated strings as input.
+                    } 
+                } else {
+                    if (isValidParse) {
+                        Func<Task> f = async () => await RUserProfileCreator.CreateProfileAsync(serverTimeOutms: TestServerTimeoutMS, clientTimeOutms: TestClientTimeoutMS, userProfileService: creator);
+                        f.ShouldNotThrow();
                     } else {
-                        if (isValidParse) {
-                            Func<Task> f = async () => await RUserProfileCreator.CreateProfileAsync(creator, cts1.Token);
-                            f.ShouldNotThrow();
-                        } else {
-                            Func<Task> f = () => RUserProfileCreator.CreateProfileAsync(creator, cts1.Token);
-                            await f.ShouldThrowAsync<Exception>();
-                        }
+                        Func<Task> f = () => RUserProfileCreator.CreateProfileAsync(serverTimeOutms: TestServerTimeoutMS, clientTimeOutms: TestClientTimeoutMS, userProfileService: creator);
+                        await f.ShouldThrowAsync<Exception>();
                     }
                 }
-
                 testDone.Set();
             }).DoNotWait();
 
-            using (CancellationTokenSource cts2 = new CancellationTokenSource(TimeSpan.FromSeconds(TestClientTimeoutSeconds))) {
-                UserProfileResultMock result = await CreateProfileClientTestWorkerAsync(input, cts2.Token);
+            using (CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(TestClientTimeoutMS))) {
+                UserProfileResultMock result = await CreateProfileClientTestWorkerAsync(input, cts.Token);
                 if (isFuzzTest) {
                     // fuzz test parsing succeeded, the creator always fails for this test.
                     result?.Error.Should().Be(13);
@@ -77,8 +74,8 @@ namespace Microsoft.R.Host.Protocol.Test.UserProfileServicePipe {
 
             testDone.Wait();
         }
-        private int TestServerTimeoutSeconds => 1;
-        private int TestClientTimeoutSeconds => 1;
+        private int TestServerTimeoutMS => 5000;
+        private int TestClientTimeoutMS => 5000;
 
         [CompositeTest]
         // valid test data

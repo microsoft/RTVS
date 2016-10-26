@@ -13,7 +13,7 @@ using Newtonsoft.Json;
 
 namespace Microsoft.R.Host.Protocol {
     public class RUserProfileCreator {
-        public static async Task CreateProfileAsync(IUserProfileServices userProfileService = null, CancellationToken ct = default(CancellationToken), ILogger logger = null) {
+        public static async Task CreateProfileAsync(int serverTimeOutms = 0, int clientTimeOutms = 0, IUserProfileServices userProfileService = null,  CancellationToken ct = default(CancellationToken), ILogger logger = null) {
             userProfileService = userProfileService ?? new RUserProfileCreatorImpl();
             PipeSecurity ps = new PipeSecurity();
             SecurityIdentifier sid = new SecurityIdentifier(WellKnownSidType.WorldSid, null);
@@ -21,18 +21,34 @@ namespace Microsoft.R.Host.Protocol {
             ps.AddAccessRule(par);
             using (NamedPipeServerStream server = new NamedPipeServerStream("Microsoft.R.Host.UserProfile.Creator{b101cc2d-156e-472e-8d98-b9d999a93c7a}", PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous, 1024, 1024, ps)) {
                 await server.WaitForConnectionAsync(ct);
-                await CreateProfileHandleUserCredentails(userProfileService, server, ct, logger);
 
-                // Waiting here to allow client to finish reading 
-                // client should disconnect after reading.
-                byte[] requestRaw = new byte[1024];
-                int bytesRead = 0;
-                while (bytesRead == 0 && !ct.IsCancellationRequested) {
-                    bytesRead = await server.ReadAsync(requestRaw, 0, requestRaw.Length, ct);
+                using (CancellationTokenSource serverTimedCTS = new CancellationTokenSource(serverTimeOutms))
+                using (CancellationTokenSource combinedServerCTS = CancellationTokenSource.CreateLinkedTokenSource(serverTimedCTS.Token, ct)) {
+                    CancellationToken serverCT = ct;
+                    if (serverTimeOutms > 0) {
+                        serverCT = combinedServerCTS.Token;
+                    }
+
+                    await CreateProfileHandleUserCredentails(userProfileService, server, serverCT, logger);
                 }
 
-                // if there was an attempt to write, disconnect.
-                server.Disconnect();
+                using (CancellationTokenSource clientTimedCTS = new CancellationTokenSource(clientTimeOutms))
+                using(CancellationTokenSource combinedClientCTS = CancellationTokenSource.CreateLinkedTokenSource(clientTimedCTS.Token, ct)) {
+                    CancellationToken clientCT = ct;
+                    if (clientTimeOutms > 0) {
+                        clientCT = combinedClientCTS.Token;
+                    }
+
+                    // Waiting here to allow client to finish reading client should disconnect after reading.
+                    byte[] requestRaw = new byte[1024];
+                    int bytesRead = 0;
+                    while (bytesRead == 0 && !clientCT.IsCancellationRequested) {
+                        bytesRead = await server.ReadAsync(requestRaw, 0, requestRaw.Length, clientCT);
+                    }
+
+                    // if there was an attempt to write, disconnect.
+                    server.Disconnect();
+                }
             }
         }
 

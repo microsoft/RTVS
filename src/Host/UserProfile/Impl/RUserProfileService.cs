@@ -13,7 +13,9 @@ namespace Microsoft.R.Host.UserProfile {
     partial class RUserProfileService : ServiceBase {
 
         private static int ServiceShutdownTimeoutMs => 5000;
-        private static int ClientResponseReadTimeoutMs => 3000;
+
+        private static int ServiceReadAfterConnectTimeoutMs => 5000;
+        private static int ClientResponseReadTimeoutMs => 5000;
 
         public RUserProfileService() {
             InitializeComponent();
@@ -43,7 +45,7 @@ namespace Microsoft.R.Host.UserProfile {
         async Task CreateProfileWorkerAsync(CancellationToken ct) {
             while (!ct.IsCancellationRequested) {
                 try {
-                    await RUserProfileCreator.CreateProfileAsync(ct: ct, logger: _logger);
+                    await RUserProfileCreator.CreateProfileAsync(serverTimeOutms: ServiceReadAfterConnectTimeoutMs, clientTimeOutms: ClientResponseReadTimeoutMs, ct: ct, logger: _logger);
                 } catch (Exception ex) when (!ex.IsCriticalException()) {
                     _logger?.LogError(Resources.Error_UserProfileCreationError, ex.Message);
                 }
