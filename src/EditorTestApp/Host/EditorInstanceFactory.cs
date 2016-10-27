@@ -10,7 +10,7 @@ using Microsoft.VisualStudio.Text;
 namespace Microsoft.Languages.Editor.Application.Host {
     [ExcludeFromCodeCoverage]
     internal class EditorInstanceFactory {
-        public static IEditorInstance CreateEditorInstance(ITextBuffer textBuffer, ICompositionService compositionService, bool projected) {
+        public static IEditorInstance CreateEditorInstance(ITextBuffer textBuffer, ICompositionService compositionService) {
             var importComposer = new ContentTypeImportComposer<IEditorFactory>(compositionService);
             var factory = importComposer.GetImport(textBuffer.ContentType.TypeName);
 
