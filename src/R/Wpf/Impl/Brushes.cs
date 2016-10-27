@@ -35,12 +35,15 @@ namespace Microsoft.R.Wpf {
         public static object HeaderColorsMouseOverBrushKey { get; set; } = SystemColors.WindowBrushKey;
         public static object HeaderColorsMouseOverTextBrushKey { get; set; } = SystemColors.WindowTextBrushKey;
         public static object HeaderColorsSeparatorLineBrushKey { get; set; } = SystemColors.ActiveBorderBrushKey;
+
         public static object IndicatorFillBrushKey { get; set; } = SystemColors.WindowFrameColorKey;
         public static object InfoBackgroundKey { get; set; } = SystemColors.InfoBrushKey;
         public static object InfoTextKey { get; set; } = SystemColors.InfoTextBrushKey;
         public static object LegalMessageBackgroundKey { get; set; } = SystemColors.ControlBrushKey;
         public static object ListPaneBackgroundKey { get; set; } = SystemColors.WindowBrushKey;
         public static object SplitterBackgroundKey { get; set; } = SystemColors.WindowBrushKey;
+
+        public static object ToolWindowBackgroundKey { get; set; } = SystemColors.WindowBrushKey;
         public static object ToolWindowBorderKey { get; set; } = SystemColors.WindowBrushKey;
         public static object ToolWindowButtonDownBorderKey { get; set; } = SystemColors.WindowBrushKey;
         public static object ToolWindowButtonDownKey { get; set; } = SystemColors.WindowBrushKey;
@@ -81,5 +84,15 @@ namespace Microsoft.R.Wpf {
 
         public static object SuccessMessageTextBrushKey { get; set; } = SystemColors.ControlTextBrushKey;
         public static object FailMessageTextBrushKey { get; set; } = SystemColors.ControlTextBrushKey;
+        public static object ScrollBarBackgroundBrushKey { get; set; } = SystemColors.WindowBrushKey;
+
+        public static object TreeViewBackgroundBrushKey { get; set; } = SystemColors.WindowBrushKey;
+        public static object TreeViewBackgroundTextBrushKey { get; set; } = SystemColors.WindowTextBrushKey;
+        public static object TreeViewSelectedItemActiveBrushKey { get; set; } = SystemColors.WindowBrushKey;
+        public static object TreeViewSelectedItemActiveTextBrushKey { get; set; } = SystemColors.WindowTextBrushKey;
+        public static object TreeViewGlyphBrushKey { get; set; } = SystemColors.WindowTextBrushKey;
+        public static object TreeViewGlyphMouseOverBrushKey { get; set; } = SystemColors.WindowTextBrushKey;
+
+        public static object GridLineBrushKey { get; set; } = SystemColors.WindowTextBrushKey;
     }
 }

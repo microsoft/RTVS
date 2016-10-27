@@ -28,6 +28,7 @@ using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 using static System.FormattableString;
 using static Microsoft.R.DataInspection.REvaluationResultProperties;
+using Microsoft.VisualStudio.PlatformUI;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public partial class VariableView : UserControl, ICommandTarget, IDisposable {
@@ -55,8 +56,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             SortDirection = ListSortDirection.Ascending;
             RootTreeGrid.Sorting += RootTreeGrid_Sorting;
 
-            var workflow = _shell.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
-            _session = workflow.RSession;
+            ImageThemingUtilities.SetThemeScrollBars(RootTreeGrid, true);
+
+            var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+            _session = sessionProvider.GetInteractiveWindowRSession();
 
             _environmentProvider = new REnvironmentProvider(_session);
             EnvironmentComboBox.DataContext = _environmentProvider;

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PackageManifest Version="3.0.0" 
+                 xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" 
+                 xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011"
+                 xmlns:p="http://schemas.microsoft.com/developer/vsx-schema/2011:Prerequisites">
+  <Metadata>
+    <Identity Id="Microsoft.RTVS" Version="0.5" Language="en-US" Publisher="Microsoft" />
+    <DisplayName>R Tools for Visual Studio</DisplayName>
+    <Description xml:space="preserve">R Tools for Visual Studio</Description>
+  </Metadata>
+  <Prerequisites>
+    <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.0.25824.6,16.0)" DisplayName="Visual Studio core editor" />
+    <Prerequisite Id="Microsoft.Component.MSBuild" Version="[15.0.25824.6,16.0)" DisplayName="MSBuild" />
+  </Prerequisites>
+  <Assets>
+    <Asset Type="Microsoft.VisualStudio.Assembly" Path="websocket-sharp.dll" />
+    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Newtonsoft.Json.dll" />
+    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Host.exe" />
+    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.Languages.Core.dll" />
+    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Core.dll" />
+    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Debugger.dll" />
+    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Wpf.dll" />
+    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.dll" />
+    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.VisualStudio.ImageCatalog.dll" />
+    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.Data.ConnectionUI.dll" />
+    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.Data.ConnectionUI.Dialog.dll" />
+    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Debugger.dll" />
+    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Host.Client.dll" />
+    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Common.Core.dll" />
+    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Components.dll" />
+    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.Languages.Editor.dll" />
+    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Editor.dll" />
+    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Support.dll" />
+    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.Markdown.Editor.dll" />
+    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.VisualStudio.R.Package.dll" />
+    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.VisualStudio.R.Sql.dll" />
+    <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="Templates\ItemTemplates\DatasetRD" />
+    <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="Templates\ItemTemplates\EmptyMD" />
+    <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="Templates\ItemTemplates\EmptyRD" />
+    <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="Templates\ItemTemplates\EmptyRMD" />
+    <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="Templates\ItemTemplates\FunctionRD" />
+    <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="Templates\ItemTemplates\RScript" />
+    <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="Templates\ItemTemplates\RSettings" />
+    <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="Templates\ItemTemplates\SqlQuery" />
+    <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="Templates\ItemTemplates\SqlSProc" />
+    <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="Templates\ItemTemplates\TextFile" />
+    <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="Templates\ItemTemplates\WebHtmlPage" />
+    <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="Templates\ItemTemplates\WebStyleSheet" />
+    <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="Templates\ItemTemplates\XMLFile" />
+    <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="Templates\ItemTemplates\XMLSchema" />
+    <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="Templates\ItemTemplates\XSLTFile" />
+    <Asset Type="Microsoft.VisualStudio.ProjectTemplate" Path="Templates\ProjectTemplates\EmptyProject" />
+    <Asset Type="Microsoft.VisualStudio.VsPackage" Path="Microsoft.VisualStudio.R.Package.dll" />
+  </Assets>
+</PackageManifest>

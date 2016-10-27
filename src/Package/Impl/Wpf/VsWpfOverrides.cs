@@ -16,18 +16,22 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Brushes = Microsoft.R.Wpf.Brushes;
 
-namespace Microsoft.VisualStudio.R.Package.Wpf {
-    public static class VsWpfOverrides {
+namespace Microsoft.VisualStudio.R.Package.Wpf
+{
+    public static class VsWpfOverrides
+    {
         private static readonly Lazy<Assembly> ExtensionsExplorerUIAssemblyLazy = Lazy.Create(() => AppDomain.CurrentDomain.Load("Microsoft.VisualStudio.ExtensionsExplorer.UI"));
 
-        public static void Apply() {
+        public static void Apply()
+        {
             OverrideBrushes();
             OverrideFontKeys();
             OverrideImageSources();
             OverrideStyleKeys();
         }
 
-        private static void OverrideBrushes() {
+        private static void OverrideBrushes()
+        {
             Brushes.ActiveBorderKey = VsBrushes.ActiveBorderKey;
             Brushes.BorderBrushKey = VsBrushes.BrandedUIBorderKey;
             Brushes.ButtonFaceBrushKey = VsBrushes.ButtonFaceKey;
@@ -47,6 +51,8 @@ namespace Microsoft.VisualStudio.R.Package.Wpf {
             Brushes.LegalMessageBackgroundKey = VsBrushes.BrandedUIBackgroundKey;
             Brushes.ListPaneBackgroundKey = VsBrushes.BrandedUIBackgroundKey;
             Brushes.SplitterBackgroundKey = VsBrushes.CommandShelfBackgroundGradientKey;
+
+            Brushes.ToolWindowBackgroundKey = VsBrushes.ToolWindowBackgroundKey;
             Brushes.ToolWindowBorderKey = VsBrushes.ToolWindowBorderKey;
             Brushes.ToolWindowButtonDownBorderKey = VsBrushes.ToolWindowButtonDownBorderKey;
             Brushes.ToolWindowButtonDownKey = VsBrushes.ToolWindowButtonDownKey;
@@ -105,7 +111,17 @@ namespace Microsoft.VisualStudio.R.Package.Wpf {
 
             Brushes.FailMessageTextBrushKey = TreeViewColors.ValidationSquigglesBrushKey;
             // TODO: may need to pick a better color of specify custom key
-            Brushes.SuccessMessageTextBrushKey = ProgressBarColors.IndicatorFillBrushKey; 
+            Brushes.SuccessMessageTextBrushKey = ProgressBarColors.IndicatorFillBrushKey;
+            Brushes.ScrollBarBackgroundBrushKey = EnvironmentColors.ScrollBarBackgroundBrushKey;
+
+            Brushes.TreeViewBackgroundBrushKey = TreeViewColors.BackgroundBrushKey;
+            Brushes.TreeViewBackgroundTextBrushKey = TreeViewColors.BackgroundTextBrushKey;
+            Brushes.TreeViewSelectedItemActiveBrushKey = TreeViewColors.SelectedItemActiveBrushKey;
+            Brushes.TreeViewSelectedItemActiveTextBrushKey = TreeViewColors.SelectedItemActiveTextBrushKey;
+            Brushes.TreeViewGlyphBrushKey = TreeViewColors.GlyphBrushKey;
+            Brushes.TreeViewGlyphMouseOverBrushKey = TreeViewColors.GlyphMouseOverBrushKey;
+
+            Brushes.GridLineBrushKey = EnvironmentColors.GridLineBrushKey;
         }
 
         private static void OverrideFontKeys() {
@@ -122,7 +138,8 @@ namespace Microsoft.VisualStudio.R.Package.Wpf {
             ImageSources.ImageBackground = new SolidColorBrush(Color.FromArgb(color.A, color.R, color.G, color.B));
         }
 
-        private static void OverrideStyleKeys() {
+        private static void OverrideStyleKeys()
+        {
             var comboBoxType = ExtensionsExplorerUIAssemblyLazy.Value.GetType("Microsoft.VisualStudio.ExtensionsExplorer.UI.AutomationComboBox");
             StyleKeys.ThemedComboStyleKey = new ComponentResourceKey(comboBoxType, "ThemedComboBoxStyle");
             StyleKeys.ScrollBarStyleKey = VsResourceKeys.ScrollBarStyleKey;
@@ -131,7 +148,8 @@ namespace Microsoft.VisualStudio.R.Package.Wpf {
             StyleKeys.TextBoxStyleKey = VsResourceKeys.TextBoxStyleKey;
         }
 
-        private static IDictionary<string, ThemeResourceKey> GetColorResources() {
+        private static IDictionary<string, ThemeResourceKey> GetColorResources()
+        {
             // use colors of VisualStudio UI.
             var colorResources = ExtensionsExplorerUIAssemblyLazy.Value.GetType("Microsoft.VisualStudio.ExtensionsExplorer.UI.ColorResources");
 
