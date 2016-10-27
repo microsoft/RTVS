@@ -8,12 +8,14 @@ using System.Globalization;
 using System.Linq;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
+using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.Extensions;
 using Microsoft.Languages.Editor.Projection;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Extensions;
+using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Classification;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Editor.Tree;
@@ -29,7 +31,6 @@ namespace Microsoft.R.Editor.Document {
     public class REditorDocument : IREditorDocument {
         private readonly ICoreShell _shell;
         private readonly ITextDocumentFactoryService _textDocumentFactoryService;
-        private bool _isProjected;
 
         #region IEditorDocument
         public ITextBuffer TextBuffer { get; private set; }
@@ -57,8 +58,6 @@ namespace Microsoft.R.Editor.Document {
             }
         }
 
-        public bool IsProjected { get; }
-
 #pragma warning disable 67
         public event EventHandler<EventArgs> DocumentClosing;
 #pragma warning restore 67
@@ -83,18 +82,18 @@ namespace Microsoft.R.Editor.Document {
         private TreeValidator _validator;
 
         #region Constructors
-        public REditorDocument(ITextBuffer textBuffer, ICoreShell shell, bool projected) {
+        public REditorDocument(ITextBuffer textBuffer, ICoreShell shell) {
             _shell = shell;
             _textDocumentFactoryService = _shell.ExportProvider.GetExportedValue<ITextDocumentFactoryService>();
             _textDocumentFactoryService.TextDocumentDisposed += OnTextDocumentDisposed;
 
-            IsProjected = projected;
             TextBuffer = textBuffer;
             IsClosed = false;
 
             ServiceManager.AddService(this, TextBuffer, shell);
+            var clh = ServiceManager.GetService<IContainedLanguageHost>(textBuffer);
 
-            _editorTree = new EditorTree(textBuffer, shell, projected);
+            _editorTree = new EditorTree(textBuffer, shell, new ExpressionTermFilter(clh));
             if (REditorSettings.SyntaxCheckInRepl) {
                 _validator = new TreeValidator(EditorTree, shell);
             }
@@ -319,5 +318,15 @@ namespace Microsoft.R.Editor.Document {
         public event EventHandler<EventArgs> MassiveChangeEnded;
 #pragma warning restore 67
         #endregion
+
+        private class ExpressionTermFilter : IExpressionTermFilter {
+            private readonly IContainedLanguageHost _clh;
+            public ExpressionTermFilter(IContainedLanguageHost clh) {
+                _clh = clh;
+            }
+            public bool IsInertRange(ITextRange range) {
+                return _clh != null ? _clh.IsInertRange(range) : false;
+            }
+        }
     }
 }

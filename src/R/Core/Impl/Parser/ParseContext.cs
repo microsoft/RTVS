@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Languages.Core.Text;
@@ -56,19 +57,9 @@ namespace Microsoft.R.Core.Parser {
         /// </summary>
         public IReadOnlyCollection<RToken> Comments { get; private set; }
 
-        /// <summary>
-        /// Indicates if parsing is performed on R fragment that is projected from R markdown. 
-        /// </summary>
-        /// <remarks>
-        /// This is a workaround for constructs like ```{r x = 1, y = FALSE} where the { }
-        /// block is treated as R fragment. The fragment is syntactually incorrect since
-        /// 'r' is indentifier and there is an operator expected between 'r' and 'x'.
-        /// In order to avoid parsing errors expression parser will use this flag and
-        /// allow standalone indentifier 'r' or 'R' right after the opening curly brace.
-        /// </remarks>
-        public bool IsInMarkdown { get; }
+        public IExpressionTermFilter ExpressionTermFilter { get; }
 
-        public ParseContext(ITextProvider textProvider, ITextRange range, TokenStream<RToken> tokens, IReadOnlyList<RToken> comments, bool inMarkdown = false) {
+        public ParseContext(ITextProvider textProvider, ITextRange range, TokenStream<RToken> tokens, IReadOnlyList<RToken> comments, IExpressionTermFilter filter = null) {
             AstRoot = new AstRoot(textProvider);
             TextProvider = textProvider;
             Tokens = tokens;
@@ -76,7 +67,7 @@ namespace Microsoft.R.Core.Parser {
             Scopes = new Stack<IScope>();
             Expressions = new Stack<Expression>();
             Comments = comments;
-            IsInMarkdown = inMarkdown;
+            ExpressionTermFilter = filter ?? new DefaultExpressionTermFilter();
         }
 
         public void AddError(ParseError error) {
@@ -92,6 +83,10 @@ namespace Microsoft.R.Core.Parser {
             if (!found) {
                 _errors.Add(error);
             }
+        }
+
+        class DefaultExpressionTermFilter : IExpressionTermFilter {
+            public bool IsInertRange(ITextRange range) => false;
         }
     }
 }

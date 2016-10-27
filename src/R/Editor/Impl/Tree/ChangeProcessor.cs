@@ -99,11 +99,11 @@ namespace Microsoft.R.Editor.Tree {
 
             if (!(commonParent is AstRoot)) {
                 Debug.Assert(commonParent is IScope);
-                AstRoot subTree = RParser.Parse(newSnapshot, commonParent, _editorTree.IsProjected);
+                AstRoot subTree = RParser.Parse(newSnapshot, commonParent, _editorTree.ExpressionTermFilter);
                 return;
             }
 
-            AstRoot newTree = RParser.Parse(newSnapshot, _editorTree.IsProjected);
+            AstRoot newTree = RParser.Parse(newSnapshot, _editorTree.ExpressionTermFilter);
             treeChanges.ChangeQueue.Enqueue(new EditorTreeChange_NewTree(newTree));
         }
 
@@ -122,7 +122,7 @@ namespace Microsoft.R.Editor.Tree {
         /// Invokes full parse pass. Called from a background tree updating task.
         /// </summary>
         public void FullParse(EditorTreeChangeCollection changes, ITextProvider newSnapshot) {
-            AstRoot newTree = RParser.Parse(newSnapshot, _editorTree.IsProjected);
+            AstRoot newTree = RParser.Parse(newSnapshot, _editorTree.ExpressionTermFilter);
             changes.ChangeQueue.Enqueue(new EditorTreeChange_NewTree(newTree));
         }
     }

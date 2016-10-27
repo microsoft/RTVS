@@ -79,7 +79,7 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
                     var documentFactory = documentFactoryImportComposer.GetImport(diskBuffer.ContentType.TypeName);
                     Debug.Assert(documentFactory != null);
 
-                    editorInstance = instancefactory.CreateEditorInstance(diskBuffer, documentFactory, projected: false);
+                    editorInstance = instancefactory.CreateEditorInstance(diskBuffer, documentFactory);
                 }
 
                 Debug.Assert(editorInstance != null);
