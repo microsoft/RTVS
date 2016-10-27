@@ -20,6 +20,7 @@
   <PropertyGroup>
     <DefineConstants Condition="'$(VisualStudioVersion)'=='14.0'">VS14;$(DefineConstants)</DefineConstants>
     <DefineConstants Condition="'$(VisualStudioVersion)'=='15.0'">VS15;$(DefineConstants)</DefineConstants>
+    <PreBuildEvent>copy /y "$(MSBuildProjectDirectory)\project.$(VisualStudioVersion).json" "$(MSBuildProjectDirectory)\project.json"</PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <BaseIntermediateOutputPath>$(ObjDirectory)</BaseIntermediateOutputPath>
@@ -37,7 +38,7 @@
     <Reference Include="Microsoft.VisualStudio.InteractiveWindow">
       <Private>True</Private>
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(LibDirectory)\Microsoft.VisualStudio.InteractiveWindow.dll</HintPath>
+      <HintPath>$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.InteractiveWindow.dll</HintPath>
     </Reference>
     <Reference Include="$(PrivateAssembliesFolderPath)\Microsoft.VisualStudio.Text.Internal.dll">
       <Private>False</Private>
@@ -129,6 +130,8 @@
     <None Include="Files\Repos\Repo1\bin\windows\contrib\3.3\rtvslib1_0.1.0.zip" />
     <None Include="Files\Repos\Repo1\src\contrib\PACKAGES" />
     <None Include="Files\Repos\Repo1\src\contrib\rtvslib1_0.1.0.tar.gz" />
+    <None Include="project.15.0.json" />
+    <None Include="project.14.0.json" />
     <None Include="project.json" />
   </ItemGroup>
   <Choose>

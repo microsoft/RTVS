@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Include>
-  <!--<?foreach Lcid in $(var.LcidList)?>-->
-    <!--<DirectoryRef Id="ProjectTemplatesInstallFolder_$(var.Lcid)">-->
-  <DirectoryRef Id="ProjectTemplatesInstallFolder">
-    <Component Id="ProjectTemplates_$(var.Lcid)" Guid="{AF4E5560-7AD1-47AC-B888-C64522EB530A}">
-        <File Id="ProjectTemplates_EmptyProject_$(var.Lcid)" Source="$(var.ProjectTemplatesDir)\$(var.Lcid)\EmptyProject.zip" />
-      </Component>
-    </DirectoryRef>
-  <!--<?endforeach?>-->
+  <DirectoryRef Id="ProjectTemplatesInstallFolder_EmptyProject">
+    <Component Id="ProjectTemplates_EmptyProject" Guid="{AF4E5560-7AD1-47AC-B888-C64522EB530A}">
+      <File Id="ProjectTemplates_EmptyProject_EmptyProject_vstemplate" Source="$(var.TemplatesDir)\ProjectTemplates\EmptyProject\EmptyProject.vstemplate" />
+      <File Id="ProjectTemplates_EmptyProject_REmptyProject_png" Source="$(var.TemplatesDir)\ProjectTemplates\EmptyProject\REmptyProject.png" />
+      <File Id="ProjectTemplates_EmptyProject_RProject_RProj" Source="$(var.TemplatesDir)\ProjectTemplates\EmptyProject\RProject.rproj" />
+      <File Id="ProjectTemplates_EmptyProject_Script_R" Source="$(var.TemplatesDir)\ProjectTemplates\EmptyProject\Script.R" />
+      <File Id="ProjectTemplates_EmptyProject_RHistory" Source="$(var.TemplatesDir)\ProjectTemplates\EmptyProject\.RHistory" />
+    </Component>
+  </DirectoryRef>
 </Include>

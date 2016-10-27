@@ -32,6 +32,9 @@
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\$(AssemblyName)\</IntermediateOutputPath>
     <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
   </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>copy /y "$(MSBuildProjectDirectory)\project.$(VisualStudioVersion).json" "$(MSBuildProjectDirectory)\project.json"</PreBuildEvent>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -48,6 +51,8 @@
     <None Include="Files\Tokenization\01.md" />
     <None Include="Files\Tokenization\01.md.tokens" />
     <None Include="Files\Tokenization\01.md.tokens" />
+    <None Include="project.15.0.json" />
+    <None Include="project.14.0.json" />
     <None Include="project.json" />
   </ItemGroup>
   <Choose>

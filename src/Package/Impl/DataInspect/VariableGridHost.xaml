@@ -4,17 +4,17 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Microsoft.VisualStudio.R.Package.DataInspect"
-             xmlns:vsui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0"
-             Foreground="{DynamicResource {x:Static vsui:CommonControlsColors.TextBoxTextBrushKey}}"
+             xmlns:rwpf="clr-namespace:Microsoft.R.Wpf;assembly=Microsoft.R.Wpf"
+             Foreground="{DynamicResource {x:Static rwpf:Brushes.WindowTextKey}}"
              HorizontalAlignment="Stretch"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
         <TextBlock x:Name="ErrorTextBlock" Visibility="Collapsed" />
         <local:MatrixView x:Name="VariableGrid"
-                          GridLinesBrush="{DynamicResource {x:Static vsui:EnvironmentColors.GridLineBrushKey}}"
-                          HeaderLinesBrush="{DynamicResource {x:Static vsui:HeaderColors.SeparatorLineBrushKey}}"
-                          GridBackground="{DynamicResource {x:Static vsui:TreeViewColors.BackgroundBrushKey}}"
-                          HeaderBackground="{DynamicResource {x:Static vsui:HeaderColors.DefaultBrushKey}}"/>
+                          GridLinesBrush="{DynamicResource {x:Static rwpf:Brushes.GridLineBrushKey}}"
+                          HeaderLinesBrush="{DynamicResource {x:Static rwpf:Brushes.HeaderColorsSeparatorLineBrushKey}}"
+                          GridBackground="{DynamicResource {x:Static rwpf:Brushes.TreeViewBackgroundBrushKey}}"
+                          HeaderBackground="{DynamicResource {x:Static rwpf:Brushes.HeaderColorsDefaultBrushKey}}"/>
     </Grid>
 </UserControl>

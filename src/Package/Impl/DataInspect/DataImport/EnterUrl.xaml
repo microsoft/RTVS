@@ -1,10 +1,10 @@
-﻿<ui:DialogWindow x:Class="Microsoft.VisualStudio.R.Package.DataInspect.DataImport.EnterUrl"
+﻿<ui:PlatformDialogWindow x:Class="Microsoft.VisualStudio.R.Package.DataInspect.DataImport.EnterUrl"
                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                 xmlns:ui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0"
                  xmlns:pkg="clr-namespace:Microsoft.VisualStudio.R.Package"
+                 xmlns:ui="clr-namespace:Microsoft.VisualStudio.R.Package.Wpf"
                  xmlns:wpf="clr-namespace:Microsoft.R.Wpf;assembly=Microsoft.R.Wpf"
                  xmlns:components="clr-namespace:Microsoft.R.Components;assembly=Microsoft.R.Components"
                  ShowInTaskbar="False" WindowStyle="SingleBorderWindow"
@@ -13,13 +13,13 @@
                  Foreground="{DynamicResource {x:Static wpf:Brushes.UITextKey}}"
                  Title="{x:Static pkg:Resources.ImportData_EnterUrlTitle}"
                  FocusManager.FocusedElement="{Binding ElementName=UrlTextBox}">
-    <ui:DialogWindow.Resources>
+    <ui:PlatformDialogWindow.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <wpf:CommonResources />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
-    </ui:DialogWindow.Resources>
+    </ui:PlatformDialogWindow.Resources>
     <Grid VerticalAlignment="Top">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -60,4 +60,4 @@
                     PreviewKeyUp="CancelButton_KeyUp" IsCancel="True" />
         </Grid>
     </Grid>
-</ui:DialogWindow>
+</ui:PlatformDialogWindow>

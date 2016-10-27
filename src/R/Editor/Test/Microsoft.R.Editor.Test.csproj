@@ -24,6 +24,7 @@
   <PropertyGroup>
     <DefineConstants Condition="'$(VisualStudioVersion)'=='14.0'">VS14;$(DefineConstants)</DefineConstants>
     <DefineConstants Condition="'$(VisualStudioVersion)'=='15.0'">VS15;$(DefineConstants)</DefineConstants>
+    <PreBuildEvent>copy /y "$(MSBuildProjectDirectory)\project.$(VisualStudioVersion).json" "$(MSBuildProjectDirectory)\project.json"</PreBuildEvent>
   </PropertyGroup>
   <Import Project="..\..\..\R.Settings.targets" />
   <PropertyGroup>
@@ -132,6 +133,8 @@
     <None Include="Files\01.r" />
     <None Include="Files\01.r.outline" />
     <None Include="Files\02.r.outline" />
+    <None Include="project.15.0.json" />
+    <None Include="project.14.0.json" />
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>

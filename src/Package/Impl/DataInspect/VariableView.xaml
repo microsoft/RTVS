@@ -8,15 +8,14 @@
              xmlns:imaging="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.Imaging"
              xmlns:img="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Imaging"
              xmlns:imagecatalog="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.ImageCatalog"
-             xmlns:vsui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0"
              xmlns:core="clr-namespace:System;assembly=mscorlib"
              xmlns:wpf="clr-namespace:Microsoft.Common.Wpf;assembly=Microsoft.R.Common.Wpf"
              xmlns:rwpf="clr-namespace:Microsoft.R.Wpf;assembly=Microsoft.R.Wpf"
              wpf:LambdaProperties.ImportedNamespaces="System.Linq Microsoft.VisualStudio.Imaging Microsoft.R.DataInspection"
              mc:Ignorable="d" x:Name="Self"
              d:DesignHeight="300" d:DesignWidth="300"
-             img:ImageThemingUtilities.ImageBackgroundColor="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowBackgroundColorKey}}"
-             Foreground="{DynamicResource {x:Static vsui:CommonControlsColors.TextBoxTextBrushKey}}"
+             img:ImageThemingUtilities.ImageBackgroundColor="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundKey}}"
+             Foreground="{DynamicResource {x:Static rwpf:Brushes.WindowTextKey}}"
              HorizontalAlignment="Stretch"
              FocusManager.FocusedElement="{Binding ElementName=RootTreeGrid}">
 
@@ -40,7 +39,7 @@
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type ToggleButton}">
                             <Border Background="Transparent" Height="{TemplateBinding Height}" Padding="5" Width="{TemplateBinding Width}">
-                                <Path x:Name="ExpandPath" Data="M0,0 L0,6 L6,0 z" Stroke="{DynamicResource {x:Static vsui:TreeViewColors.GlyphBrushKey}}">
+                                <Path x:Name="ExpandPath" Data="M0,0 L0,6 L6,0 z" Stroke="{DynamicResource {x:Static rwpf:Brushes.TreeViewGlyphBrushKey}}">
                                     <Path.RenderTransform>
                                         <RotateTransform Angle="135" CenterY="3" CenterX="3"/>
                                     </Path.RenderTransform>
@@ -53,19 +52,19 @@
                                             <RotateTransform Angle="180" CenterY="3" CenterX="3"/>
                                         </Setter.Value>
                                     </Setter>
-                                    <Setter Property="Fill" TargetName="ExpandPath" Value="{DynamicResource {x:Static vsui:TreeViewColors.GlyphBrushKey}}"/>
-                                    <Setter Property="Stroke" TargetName="ExpandPath" Value="{DynamicResource {x:Static vsui:TreeViewColors.GlyphBrushKey}}"/>
+                                    <Setter Property="Fill" TargetName="ExpandPath" Value="{DynamicResource {x:Static rwpf:Brushes.TreeViewGlyphBrushKey}}"/>
+                                    <Setter Property="Stroke" TargetName="ExpandPath" Value="{DynamicResource {x:Static rwpf:Brushes.TreeViewGlyphBrushKey}}"/>
                                 </Trigger>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Fill" TargetName="ExpandPath" Value="{DynamicResource {x:Static vsui:TreeViewColors.GlyphMouseOverBrushKey}}"/>
+                                    <Setter Property="Fill" TargetName="ExpandPath" Value="{DynamicResource {x:Static rwpf:Brushes.TreeViewGlyphMouseOverBrushKey}}"/>
                                 </Trigger>
                                 <MultiTrigger>
                                     <MultiTrigger.Conditions>
                                         <Condition Property="IsMouseOver" Value="True"/>
                                         <Condition Property="IsChecked" Value="True"/>
                                     </MultiTrigger.Conditions>
-                                    <Setter Property="Stroke" TargetName="ExpandPath" Value="{DynamicResource {x:Static vsui:TreeViewColors.GlyphMouseOverBrushKey}}"/>
-                                    <Setter Property="Fill" TargetName="ExpandPath" Value="{DynamicResource {x:Static vsui:TreeViewColors.GlyphMouseOverBrushKey}}"/>
+                                    <Setter Property="Stroke" TargetName="ExpandPath" Value="{DynamicResource {x:Static rwpf:Brushes.TreeViewGlyphMouseOverBrushKey}}"/>
+                                    <Setter Property="Fill" TargetName="ExpandPath" Value="{DynamicResource {x:Static rwpf:Brushes.TreeViewGlyphMouseOverBrushKey}}"/>
                                 </MultiTrigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -110,9 +109,9 @@
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="true">
                                         <Setter Property="BorderBrush"
-                                Value="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowButtonHoverActiveBorderBrushKey}}" />
+                                Value="{DynamicResource {x:Static rwpf:Brushes.ToolWindowButtonHoverActiveBorderKey}}" />
                                         <Setter Property="Background"
-                                Value="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowButtonHoverActiveBrushKey}}" />
+                                Value="{DynamicResource {x:Static rwpf:Brushes.ToolWindowButtonHoverActiveKey}}" />
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
@@ -192,8 +191,7 @@
                   AutoGenerateColumns="False"
                   ScrollViewer.VerticalScrollBarVisibility="Visible"
                   IsReadOnly="True"
-                  RowHeight="{Binding Path=FontSize, ElementName=Self, Converter={x:Static rwpf:Converters.Scale190}}"
-                  vsui:ImageThemingUtilities.ThemeScrollBars="True">
+                  RowHeight="{Binding Path=FontSize, ElementName=Self, Converter={x:Static rwpf:Converters.Scale190}}">
             <DataGrid.RowStyle>
                 <Style TargetType="{x:Type DataGridRow}">
                     <EventSetter Event="MouseDoubleClick" Handler="GridRow_MouseDoubleClick" />
