@@ -162,7 +162,7 @@ namespace Microsoft.Common.Core {
             return "\n"; // default
         }
 
-        public static string GetMD5Hash(this string input) {
+        public static string GetSHA512Hash(this string input) {
             SHA512 sha = SHA512.Create();
             byte[] inputBytes = Encoding.Unicode.GetBytes(input);
             byte[] hash = sha.ComputeHash(inputBytes);
