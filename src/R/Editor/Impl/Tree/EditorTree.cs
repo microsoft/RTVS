@@ -117,7 +117,7 @@ namespace Microsoft.R.Editor.Tree {
             }
         }
 
-        public bool IsProjected { get; internal set; }
+        public IExpressionTermFilter ExpressionTermFilter { get; }
         #endregion
 
         /// <summary>
@@ -184,9 +184,9 @@ namespace Microsoft.R.Editor.Tree {
         /// </summary>
         /// <param name="textBuffer">Text buffer</param>
         /// <param name="shell"></param>
-        public EditorTree(ITextBuffer textBuffer, ICoreShell shell, bool projected = false) {
+        public EditorTree(ITextBuffer textBuffer, ICoreShell shell, IExpressionTermFilter filter = null) {
             _ownerThread = Thread.CurrentThread.ManagedThreadId;
-            IsProjected = projected;
+            ExpressionTermFilter = filter;
 
             TextBuffer = textBuffer;
             TextBuffer.ChangedHighPriority += OnTextBufferChanged;
@@ -210,7 +210,7 @@ namespace Microsoft.R.Editor.Tree {
 
             if (TextBuffer != null) {
                 TextSnapshot = TextBuffer.CurrentSnapshot;
-                _astRoot = RParser.Parse(new TextProvider(TextBuffer.CurrentSnapshot), IsProjected);
+                _astRoot = RParser.Parse(new TextProvider(TextBuffer.CurrentSnapshot), ExpressionTermFilter);
             }
 
             TreeUpdateTask.ClearChanges();

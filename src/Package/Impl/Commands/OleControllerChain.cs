@@ -51,7 +51,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
              }
         }
 
-        public static void InitEditorInstance(ITextBuffer textBuffer, bool projected) {
+        public static void InitEditorInstance(ITextBuffer textBuffer) {
             if (ServiceManager.GetService<IEditorInstance>(textBuffer) == null) {
                 var importComposer1 = new ContentTypeImportComposer<IEditorFactory>(VsAppShell.Current.CompositionService);
                 var editorInstanceFactory = importComposer1.GetImport(textBuffer.ContentType.TypeName);
@@ -59,7 +59,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
                 var importComposer2 = new ContentTypeImportComposer<IVsEditorDocumentFactory>(VsAppShell.Current.CompositionService);
                 var documentFactory = importComposer2.GetImport(textBuffer.ContentType.TypeName);
 
-                var editorInstance = editorInstanceFactory.CreateEditorInstance(textBuffer, documentFactory, projected);
+                var editorInstance = editorInstanceFactory.CreateEditorInstance(textBuffer, documentFactory);
             }
         }
     }

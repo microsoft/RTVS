@@ -87,8 +87,7 @@ namespace Microsoft.Languages.Editor.Controller {
                 viewData.AddView(textView);
 
                 if (newBuffer) {
-                    bool projected = textBuffer != textView.TextBuffer;
-                    OnTextBufferCreated(textBuffer, projected);
+                     OnTextBufferCreated(textView, textBuffer);
                 }
 
                 OnTextViewConnected(textView, textBuffer);
@@ -237,7 +236,7 @@ namespace Microsoft.Languages.Editor.Controller {
         /// <summary>
         /// Called once for every new text buffer.
         /// </summary>
-        protected virtual void OnTextBufferCreated(ITextBuffer textBuffer, bool projected) {
+        protected virtual void OnTextBufferCreated(ITextView textView, ITextBuffer textBuffer) {
             IContentType contentType = textBuffer.ContentType;
 
             _bufferToOriginalContentType.Add(textBuffer, contentType);

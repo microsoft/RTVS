@@ -166,26 +166,27 @@ namespace Microsoft.Markdown.Editor.Tokens {
             while (!_cs.IsEndOfStream()) {
                 // End of R block: <line_break>```
                 bool endOfBlock = block && _cs.IsAtNewLine() && _cs.NextChar == '`' && _cs.LookAhead(2) == '`' && _cs.LookAhead(3) == '`';
+                bool endOfInline = !block && _cs.CurrentChar == '`';
                 bool eof = _cs.Position == _cs.Length - 1; // handle unclosed code block as if it ends at EOF
-                endOfBlock |= eof;
 
                 if (endOfBlock) {
                     _cs.SkipLineBreak();
                     trailingSeparatorLength = 3;
-                } else {
+                } else if (endOfInline) {
                     // inline code `r 1 + 1`
-                    endOfBlock = !block && _cs.CurrentChar == '`';
                     trailingSeparatorLength = 1;
+                } else { // eof
+                    trailingSeparatorLength = 0;
                 }
 
-                if (endOfBlock) {
+                if (endOfBlock || endOfInline || eof) {
                     _cs.Advance(trailingSeparatorLength); // past the end of block now
 
                     // Opening ticks
                     if (rLanguage) {
                         // Code is inside ``` and after the language name.
                         // We still want to colorize numbers in ```{r, x = 1.0, ...}
-                        AddCodeToken(ticksStart, _cs.Position - ticksStart, leadingSeparatorLength, eof ? 0 : trailingSeparatorLength);
+                        AddCodeToken(ticksStart, _cs.Position - ticksStart, leadingSeparatorLength, trailingSeparatorLength);
                     } else {
                         AddToken(MarkdownTokenType.Monospace, ticksStart, _cs.Position - ticksStart);
                     }

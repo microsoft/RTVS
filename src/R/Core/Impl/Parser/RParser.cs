@@ -9,11 +9,11 @@ using Microsoft.R.Core.Tokens;
 namespace Microsoft.R.Core.Parser {
     public sealed partial class RParser {
         public static AstRoot Parse(string text) {
-            return RParser.Parse(new TextStream(text), inMarkdown: false);
+            return RParser.Parse(new TextStream(text), null);
         }
 
-        public static AstRoot Parse(ITextProvider textProvider, bool inMarkdown = false) {
-            return RParser.Parse(textProvider, new TextRange(0, textProvider.Length), inMarkdown);
+        public static AstRoot Parse(ITextProvider textProvider, IExpressionTermFilter filter = null) {
+            return RParser.Parse(textProvider, new TextRange(0, textProvider.Length), filter);
         }
 
         /// <summary>
@@ -21,13 +21,13 @@ namespace Microsoft.R.Core.Parser {
         /// </summary>
         /// <param name="textProvider">Text provider</param>
         /// <param name="range">Range to parse</param>
-        public static AstRoot Parse(ITextProvider textProvider, ITextRange range, bool inMarkdown) {
+        public static AstRoot Parse(ITextProvider textProvider, ITextRange range, IExpressionTermFilter filter) {
             var tokenizer = new RTokenizer(separateComments: true);
 
             IReadOnlyTextRangeCollection<RToken> tokens = tokenizer.Tokenize(textProvider, range.Start, range.Length);
             TokenStream<RToken> tokenStream = new TokenStream<RToken>(tokens, new RToken(RTokenType.EndOfStream, TextRange.EmptyRange));
 
-            ParseContext context = new ParseContext(textProvider, range, tokenStream, tokenizer.CommentTokens, inMarkdown);
+            ParseContext context = new ParseContext(textProvider, range, tokenStream, tokenizer.CommentTokens, filter);
 
             context.AstRoot.Parse(context, context.AstRoot);
             context.AstRoot.Errors = new TextRangeCollection<IParseError>(context.Errors);

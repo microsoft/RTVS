@@ -149,7 +149,7 @@ namespace Microsoft.Languages.Editor.Application.Core {
                 text = string.Empty;
 
             var diskBuffer = TextBufferFactoryService.CreateTextBuffer(text, ContentType);
-            _editorIntance = EditorInstanceFactory.CreateEditorInstance(diskBuffer, _compositionService, projected: false);
+            _editorIntance = EditorInstanceFactory.CreateEditorInstance(diskBuffer, _compositionService);
 
             ITextDataModel textDataModel;
 

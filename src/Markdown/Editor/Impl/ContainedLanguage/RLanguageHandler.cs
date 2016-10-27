@@ -91,23 +91,5 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
                 }
             }
         }
-
-        private int LeadingBackTickCount(string s) {
-            for (int i = 0; i < s.Length; i++) {
-                if (s[i] != '`') {
-                    return i;
-                }
-            }
-            return s.Length;
-        }
-
-        private int TrailingBackTickCount(string s) {
-            for (int i = s.Length - 1; i >= 0; i--) {
-                if (s[i] != '`') {
-                    return s.Length - 1 - i;
-                }
-            }
-            return s.Length;
-        }
     }
 }

@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.R.Core.AST;
+using Microsoft.R.Core.Parser;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Tree {
@@ -127,8 +128,8 @@ namespace Microsoft.R.Editor.Tree {
         void InvokeWhenReady(Action<object> action, object p, Type type, bool processNow = false);
 
         /// <summary>
-        /// Indicates if tree originating code is inside markdown document
+        /// Allows primary language to filter expression terms
         /// </summary>
-        bool IsProjected { get; }
+        IExpressionTermFilter ExpressionTermFilter { get; }
     }
 }

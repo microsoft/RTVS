@@ -15,7 +15,7 @@ namespace Microsoft.Languages.Editor.EditorFactory {
     public abstract class EditorInstance : IEditorInstance {
         IEditorDocument _document;
 
-        public EditorInstance(ITextBuffer diskBuffer, IEditorDocumentFactory documentFactory, ICoreShell coreShell, bool projected) {
+        public EditorInstance(ITextBuffer diskBuffer, IEditorDocumentFactory documentFactory, ICoreShell coreShell) {
             if (diskBuffer == null) {
                 throw new ArgumentNullException(nameof(diskBuffer));
             }
@@ -23,7 +23,6 @@ namespace Microsoft.Languages.Editor.EditorFactory {
                 throw new ArgumentNullException(nameof(documentFactory));
             }
 
-            IsProjected = projected;
             ViewBuffer = DiskBuffer = diskBuffer;
             _document = documentFactory.CreateDocument(this);
 
@@ -45,11 +44,6 @@ namespace Microsoft.Languages.Editor.EditorFactory {
         public ITextBuffer DiskBuffer { get; }
 
         public abstract ICommandTarget GetCommandTarget(ITextView textView);
-
-        /// <summary>
-        /// Indicates if document is projected into a view of another document.
-        /// </summary>
-        public bool IsProjected { get; }
         #endregion
 
         #region IDisposable

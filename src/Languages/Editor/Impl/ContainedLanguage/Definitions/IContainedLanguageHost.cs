@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information
 
 using System;
+using Microsoft.Languages.Core.Text;
 using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -43,5 +44,12 @@ namespace Microsoft.Languages.Editor.ContainedLanguage {
         /// <param name="lineNumber">Line number in the contained language buffer</param>
         /// <returns></returns>
         bool CanFormatLine(ITextView textView, ITextBuffer containedLanguageBuffer, int lineNumber);
+
+        /// <summary>
+        /// Detemines if particular range should not be treated as contained language and 
+        /// instead should be ignored or 'skipped over'. Used by R parser to ignore 'R' in
+        /// ```{R ... }
+        /// </summary>
+        bool IsInertRange(ITextRange range);
     }
 }

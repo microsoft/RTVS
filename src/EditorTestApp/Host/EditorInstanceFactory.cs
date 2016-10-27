@@ -10,7 +10,7 @@ using Microsoft.VisualStudio.Text;
 namespace Microsoft.Languages.Editor.Application.Host {
     [ExcludeFromCodeCoverage]
     internal class EditorInstanceFactory {
-        public static IEditorInstance CreateEditorInstance(ITextBuffer textBuffer, ICompositionService compositionService, bool projected) {
+        public static IEditorInstance CreateEditorInstance(ITextBuffer textBuffer, ICompositionService compositionService) {
             var importComposer = new ContentTypeImportComposer<IEditorFactory>(compositionService);
             var factory = importComposer.GetImport(textBuffer.ContentType.TypeName);
 
@@ -19,7 +19,7 @@ namespace Microsoft.Languages.Editor.Application.Host {
 
             // Debug.Assert(factory != null, String.Format("No editor factory found for content type {0}", textBuffer.ContentType.TypeName));
             if(factory != null) // may be null if file type only support colorization, like VBScript
-                return factory.CreateEditorInstance(textBuffer, documentFactory, projected);
+                return factory.CreateEditorInstance(textBuffer, documentFactory);
 
             return null;
         }

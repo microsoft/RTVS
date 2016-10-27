@@ -76,7 +76,7 @@ namespace Microsoft.R.Core.AST.Expressions {
 
                     // Variables and function calls
                     case RTokenType.Identifier:
-                        if (ShouldSkipIdentifier(context)) {
+                        if (context.ExpressionTermFilter.IsInertRange(context.Tokens.CurrentToken)) {
                             // This is a workaround for constructs like ```{r x = 1, y = FALSE} where the { }
                             // block is treated as R fragment. The fragment is syntactually incorrect since
                             // 'r' is indentifier and there is an operator expected between 'r' and 'x'.
@@ -641,24 +641,6 @@ namespace Microsoft.R.Core.AST.Expressions {
                 }
             }
             return null;
-        }
-
-        private bool ShouldSkipIdentifier(ParseContext context) {
-            if (context.IsInMarkdown && _operands.Count == 0 && _operators.Count == 1) {
-                // Start of the expression. Check that this is '<line break><ws>{R' or '<line break><ws>{r'
-                var ct = context.Tokens.CurrentToken;
-                var pt = context.Tokens.PreviousToken;
-
-                var currentTokenText = context.TextProvider.GetText(ct);
-                if (currentTokenText.EqualsIgnoreCase("R")) {
-                    if (pt.TokenType == RTokenType.OpenCurlyBrace && pt.End == ct.Start &&
-                        Whitespace.IsNewLineBeforePosition(context.TextProvider, pt.Start)) {
-                        // line break - whitespace  - {r
-                        return true;
-                    }
-                }
-            }
-            return false;
         }
     }
 }

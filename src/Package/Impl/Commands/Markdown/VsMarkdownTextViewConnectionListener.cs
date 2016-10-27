@@ -64,11 +64,11 @@ namespace Microsoft.VisualStudio.R.Package.Commands.Markdown {
             base.OnTextViewDisconnected(textView, textBuffer);
         }
 
-        protected override void OnTextBufferCreated(ITextBuffer textBuffer, bool projected) {
+        protected override void OnTextBufferCreated(ITextView textView, ITextBuffer textBuffer) {
             // Force creations
             var appShell = VsAppShell.Current;
-            OleControllerChain.InitEditorInstance(textBuffer, projected);
-            base.OnTextBufferCreated(textBuffer, projected);
+            OleControllerChain.InitEditorInstance(textBuffer);
+            base.OnTextBufferCreated(textView, textBuffer);
         }
     }
 }

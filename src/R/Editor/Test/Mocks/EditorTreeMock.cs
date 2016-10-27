@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.R.Core.AST;
+using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Tree;
 using Microsoft.VisualStudio.Text;
 
@@ -29,7 +30,7 @@ namespace Microsoft.R.Editor.Test.Mocks {
         public void ProcessChangesAsync(Action completeCallback) { }
 
         public void InvokeWhenReady(Action<object> action, object p, Type type, bool processNow = false) { }
-        public bool IsProjected => false;
+        public IExpressionTermFilter ExpressionTermFilter => null;
 
 #pragma warning disable 67
         public event EventHandler<EventArgs> Closing;

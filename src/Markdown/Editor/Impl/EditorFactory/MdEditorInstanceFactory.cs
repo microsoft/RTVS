@@ -25,7 +25,7 @@ namespace Microsoft.Markdown.Editor.EditorFactory {
             _coreShell = coreShell;
         }
 
-        public IEditorInstance CreateEditorInstance(ITextBuffer textBuffer, IEditorDocumentFactory documentFactory, bool projected) {
+        public IEditorInstance CreateEditorInstance(ITextBuffer textBuffer, IEditorDocumentFactory documentFactory) {
             if (textBuffer == null) {
                 throw new ArgumentNullException(nameof(textBuffer));
             }

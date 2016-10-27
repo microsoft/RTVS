@@ -30,16 +30,16 @@ namespace Microsoft.Languages.Editor.Application.Packages {
             _shell = shell;
         }
 
-        protected override void OnTextBufferCreated(ITextBuffer textBuffer, bool projected) {
-            InitEditorInstance(textBuffer, projected);
-            base.OnTextBufferCreated(textBuffer, projected);
+        protected override void OnTextBufferCreated(ITextView textView, ITextBuffer textBuffer) {
+            InitEditorInstance(textBuffer);
+            base.OnTextBufferCreated(textView, textBuffer);
         }
 
-        private void InitEditorInstance(ITextBuffer textBuffer, bool projected) {
+        private void InitEditorInstance(ITextBuffer textBuffer) {
             if (ServiceManager.GetService<IEditorInstance>(textBuffer) == null) {
                 ContentTypeImportComposer<IEditorFactory> importComposer = new ContentTypeImportComposer<IEditorFactory>(_shell.CompositionService);
                 IEditorFactory factory = importComposer.GetImport(textBuffer.ContentType.TypeName);
-                IEditorInstance editorInstance = factory.CreateEditorInstance(textBuffer, new RDocumentFactory(_shell), projected);
+                IEditorInstance editorInstance = factory.CreateEditorInstance(textBuffer, new RDocumentFactory(_shell));
             }
         }
     }
