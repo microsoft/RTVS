@@ -61,6 +61,15 @@ namespace Microsoft.R.Host.Protocol {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Client took too long to respond..
+        /// </summary>
+        internal static string Error_ClientTimedOut {
+            get {
+                return ResourceManager.GetString("Error_ClientTimedOut", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to logon user {0}\{1}, with Win32 error {2}..
         /// </summary>
         internal static string Error_UserLogonFailed {

@@ -35,29 +35,32 @@ namespace Microsoft.R.Host.Protocol.Test.UserProfileServicePipe {
             return JsonConvert.DeserializeObject<UserProfileResultMock>(jsonResp);
         }
 
-        private async Task CreateProfileTestRunnerAsync(IUserProfileServices creator, string input, bool isValidParse, bool isValidAccount, bool isExistingAccount, bool isFuzzTest = false) {
+        private async Task CreateProfileTestRunnerAsync(IUserProfileServices creator, string input, bool isValidParse, bool isValidAccount, bool isExistingAccount, int serverTimeOut, int clientTimeOut, bool isFuzzTest = false) {
             ManualResetEventSlim testDone = new ManualResetEventSlim(false);
             Task.Run(async () => {
-                if (isFuzzTest) {
-                    try {
-                        await RUserProfileCreator.CreateProfileAsync(serverTimeOutms: TestServerTimeoutMS, clientTimeOutms: TestClientTimeoutMS, userProfileService:creator);
-                    } catch (JsonReaderException) {
-                        // expecting JSON parsing to fail
-                        // JSON parsing may fail due to randomly generated strings as input.
-                    } 
-                } else {
-                    if (isValidParse) {
-                        Func<Task> f = async () => await RUserProfileCreator.CreateProfileAsync(serverTimeOutms: TestServerTimeoutMS, clientTimeOutms: TestClientTimeoutMS, userProfileService: creator);
-                        f.ShouldNotThrow();
+                try {
+                    if (isFuzzTest) {
+                        try {
+                            await RUserProfileCreator.CreateProfileAsync(serverTimeOutms: serverTimeOut, clientTimeOutms: clientTimeOut, userProfileService: creator);
+                        } catch (JsonReaderException) {
+                            // expecting JSON parsing to fail
+                            // JSON parsing may fail due to randomly generated strings as input.
+                        }
                     } else {
-                        Func<Task> f = () => RUserProfileCreator.CreateProfileAsync(serverTimeOutms: TestServerTimeoutMS, clientTimeOutms: TestClientTimeoutMS, userProfileService: creator);
-                        await f.ShouldThrowAsync<Exception>();
+                        if (isValidParse) {
+                            Func<Task> f = async () => await RUserProfileCreator.CreateProfileAsync(serverTimeOutms: serverTimeOut, clientTimeOutms: clientTimeOut, userProfileService: creator);
+                            f.ShouldNotThrow();
+                        } else {
+                            Func<Task> f = () => RUserProfileCreator.CreateProfileAsync(serverTimeOutms: serverTimeOut, clientTimeOutms: clientTimeOut, userProfileService: creator);
+                            await f.ShouldThrowAsync<Exception>();
+                        }
                     }
+                } finally {
+                    testDone.Set();
                 }
-                testDone.Set();
             }).DoNotWait();
 
-            using (CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(TestClientTimeoutMS))) {
+            using (CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(clientTimeOut))) {
                 UserProfileResultMock result = await CreateProfileClientTestWorkerAsync(input, cts.Token);
                 if (isFuzzTest) {
                     // fuzz test parsing succeeded, the creator always fails for this test.
@@ -74,15 +77,13 @@ namespace Microsoft.R.Host.Protocol.Test.UserProfileServicePipe {
 
             testDone.Wait();
         }
-        private int TestServerTimeoutMS => 5000;
-        private int TestClientTimeoutMS => 5000;
 
         [CompositeTest]
         // valid test data
         [InlineData("{\"Username\":\"testname\", \"Domain\":\"testdomain\", \"Password\":\"testPassword\"}", "testname", "testdomain", "testPassword", true, true, false)]
         // Missing quote
         [InlineData("{Username\":\"testname\", \"Domain\":\"testdomain\", \"Password\":\"testPassword\"}", null, null, null, false, false, false)]
-        // Missing closing paren
+        // Missing closing parenthesis
         [InlineData("{", null, null, null, false, false, false)]
         // empty json object
         [InlineData("{}", null, null, null, false, false, false)]
@@ -92,15 +93,17 @@ namespace Microsoft.R.Host.Protocol.Test.UserProfileServicePipe {
         [InlineData("{\"Username\": \"\", \"Domain\": \"\", \"Password\": \"\"}", "", "", "", true, false, false)]
         // whitespace input string
         [InlineData("                     ", null, null, null, true, false, false)]
+        // empty string
+        [InlineData("", null, null, null, false, false, false)]
         public async Task CreateProfileTest(string input, string username, string domain, string password, bool isValidParse, bool isValidAccount, bool isExistingAccount) {
             var creator = UserProfileCreatorMock.Create(username, domain, password, isValidParse, isValidAccount, isExistingAccount);
-            await CreateProfileTestRunnerAsync(creator, input, isValidParse, isValidAccount, isExistingAccount);
+            await CreateProfileTestRunnerAsync(creator, input, isValidParse, isValidAccount, isExistingAccount, 500, 500);
         }
 
         [Test]
+        [Category.FuzzTest]
         public async Task CreateProfileFuzzTest() {
             string inner = "\"Username\": {0}, \"Domain\": {1}, \"Password\":{2}";
-            List<string> testResults = new List<string>();
             for (int i = 0; i < 100000; ++i) {
 
                 byte[] usernameBytes = GenerateBytes();
@@ -117,16 +120,18 @@ namespace Microsoft.R.Host.Protocol.Test.UserProfileServicePipe {
                 UserProfileCreatorFuzzTestMock creator = new UserProfileCreatorFuzzTestMock();
 
                 try {
-                    await CreateProfileTestRunnerAsync(creator, json, false, false, false, true);
+                    await CreateProfileTestRunnerAsync(creator, json, false, false, false, 100, 100, true);
                 } catch (IOException) {
                     // expect pipe to fail. The client side pipe throws an IOException when the server side pipe 
                     // closes due to IO error or attempt to access unauthorized memory.
+                } catch (TaskCanceledException) {
+                } catch (OperationCanceledException) {
                 }
             }
         }
 
         private byte[] GenerateBytes() {
-            Random rd = new Random((int)DateTime.Now.Ticks);
+            Random rd = new Random();
             byte[] data = new byte[rd.Next(0, 1024)];
             rd.NextBytes(data);
             return data;

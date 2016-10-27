@@ -286,5 +286,10 @@ namespace Microsoft.UnitTests.Core.XUnit {
         public class HtmlAttribute : CategoryAttribute {
             public HtmlAttribute() : base("Html") { }
         }
+
+        [ExcludeFromCodeCoverage]
+        public class FuzzTestAttribute : CategoryAttribute {
+            public FuzzTestAttribute() : base("FuzzTest") { }
+        }
     }
 }
