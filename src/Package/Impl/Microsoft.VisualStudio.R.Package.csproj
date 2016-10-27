@@ -55,7 +55,7 @@
     <DefineConstants Condition="'$(VisualStudioVersion)'=='14.0'">VS14;$(DefineConstants)</DefineConstants>
     <DefineConstants Condition="'$(VisualStudioVersion)'=='15.0'">VS15;$(DefineConstants)</DefineConstants>
     <PreBuildEvent>
-      call $(MSBuildProjectDirectory)\UpdateReferences.cmd "$(MSBuildProjectDirectory)" $(VisualStudioVersion)
+      "$(MSBuildProjectDirectory)\UpdateReferences.cmd" "$(MSBuildProjectDirectory)" $(VisualStudioVersion)
     </PreBuildEvent>
   </PropertyGroup>
   <ItemGroup>
