@@ -5,7 +5,6 @@ using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.EditorFactory;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.Languages.Editor.Application.Host {

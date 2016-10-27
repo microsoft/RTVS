@@ -30,9 +30,9 @@ namespace Microsoft.Languages.Editor.Application.Packages {
             _shell = shell;
         }
 
-        protected override void OnTextBufferCreated(ITextBuffer textBuffer) {
+        protected override void OnTextBufferCreated(ITextView textView, ITextBuffer textBuffer) {
             InitEditorInstance(textBuffer);
-            base.OnTextBufferCreated(textBuffer);
+            base.OnTextBufferCreated(textView, textBuffer);
         }
 
         private void InitEditorInstance(ITextBuffer textBuffer) {

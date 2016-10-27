@@ -3,6 +3,7 @@
 
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Commands;
 using Microsoft.VisualStudio.Editor;
@@ -59,11 +60,13 @@ namespace Microsoft.VisualStudio.R.Package.Commands.R {
             base.OnTextViewDisconnected(textView, textBuffer);
         }
 
-        protected override void OnTextBufferCreated(ITextBuffer textBuffer) {
+        protected override void OnTextBufferCreated(ITextView textView, ITextBuffer textBuffer) {
             // Force creations
             var appShell = VsAppShell.Current;
+            var clh = ContainedLanguageHost.GetHost(textView, textBuffer, appShell);
+
             OleControllerChain.InitEditorInstance(textBuffer);
-            base.OnTextBufferCreated(textBuffer);
+            base.OnTextBufferCreated(textView, textBuffer);
         }
     }
 }

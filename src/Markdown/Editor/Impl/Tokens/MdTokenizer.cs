@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.Diagnostics;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
@@ -146,43 +147,49 @@ namespace Microsoft.Markdown.Editor.Tokens {
 
         protected bool HandleCode(bool block) {
             int ticksStart = _cs.Position;
-            int ticksLength;
+            int leadingSeparatorLength;
+            int trailingSeparatorLength;
 
-            ticksLength = block ? 3 : 1;
-            _cs.Advance(ticksLength);
+            leadingSeparatorLength = block ? 3 : 1;
+            _cs.Advance(leadingSeparatorLength);
 
             // block in R: '''{r qplot, x=y, ...}
             bool rLanguage = block && (_cs.CurrentChar == '{' && (_cs.NextChar == 'r' || _cs.NextChar == 'R'));
-            rLanguage |= !block && (_cs.CurrentChar == 'r' || _cs.CurrentChar == 'R');
+            bool rInline = !block && (_cs.CurrentChar == 'r' || _cs.CurrentChar == 'R');
+            if (rInline) {
+                leadingSeparatorLength = 2; // include 'R'
+            }
+            rLanguage |= rInline;
 
             // Move past {
             _cs.MoveToNextChar();
             while (!_cs.IsEndOfStream()) {
                 // End of R block: <line_break>```
                 bool endOfBlock = block && _cs.IsAtNewLine() && _cs.NextChar == '`' && _cs.LookAhead(2) == '`' && _cs.LookAhead(3) == '`';
+                bool endOfInline = !block && _cs.CurrentChar == '`';
                 bool eof = _cs.Position == _cs.Length - 1; // handle unclosed code block as if it ends at EOF
-                endOfBlock |= eof;
 
                 if (endOfBlock) {
                     _cs.SkipLineBreak();
-                } else {
+                    trailingSeparatorLength = 3;
+                } else if (endOfInline) {
                     // inline code `r 1 + 1`
-                    endOfBlock = !block && _cs.CurrentChar == '`';
+                    trailingSeparatorLength = 1;
+                } else { // eof
+                    trailingSeparatorLength = 0;
                 }
 
-                if (endOfBlock) {
-                    _cs.Advance(ticksLength); // past the end of block now
+                if (endOfBlock || endOfInline || eof) {
+                    _cs.Advance(trailingSeparatorLength); // past the end of block now
 
                     // Opening ticks
                     if (rLanguage) {
                         // Code is inside ``` and after the language name.
                         // We still want to colorize numbers in ```{r, x = 1.0, ...}
-                        AddToken(MarkdownTokenType.Code, ticksStart, _cs.Position - ticksStart);
-
+                        AddCodeToken(ticksStart, _cs.Position - ticksStart, leadingSeparatorLength, trailingSeparatorLength);
                     } else {
                         AddToken(MarkdownTokenType.Monospace, ticksStart, _cs.Position - ticksStart);
                     }
-                    _tokens[_tokens.Count - 1].IsWellFormed = !eof;
                     return true;
                 }
                 _cs.MoveToNextChar();
@@ -368,8 +375,16 @@ namespace Microsoft.Markdown.Editor.Tokens {
         }
 
         protected void AddToken(MarkdownTokenType type, int start, int length) {
+            Debug.Assert(type != MarkdownTokenType.Code, "Use AddCodeToken instead");
             if (length > 0) {
                 var token = new MarkdownToken(type, new TextRange(start, length));
+                _tokens.Add(token);
+            }
+        }
+
+        private void AddCodeToken(int start, int length, int leadingSeparatorLength, int trailingSeparatorLength) {
+            if (length > 0) {
+                var token = new MarkdownCodeToken(new TextRange(start, length), leadingSeparatorLength, trailingSeparatorLength);
                 _tokens.Add(token);
             }
         }

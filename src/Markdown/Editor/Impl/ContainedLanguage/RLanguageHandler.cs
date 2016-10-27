@@ -4,9 +4,9 @@
 using System.Linq;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
+using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.Projection;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.Markdown.Editor.Tokens;
@@ -67,20 +67,27 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
             var tokenizer = new MdTokenizer();
             var tokens = tokenizer.Tokenize(TextBuffer.CurrentSnapshot.GetText());
 
-            var rCodeTokens = tokens.Where(t => t.TokenType == MarkdownTokenType.Code);
+            var rCodeTokens = tokens.Where(t => {
+                var mct = t as MarkdownCodeToken;
+                return mct != null && mct.LeadingSeparatorLength > 1;
+            });
+
             // TODO: incremental updates
             Blocks.Clear();
             _separators.Clear();
 
-            foreach (var t in rCodeTokens) {
+            foreach (MarkdownCodeToken t in rCodeTokens) {
                 // Verify that code block is properly terminated.
                 // If not, it ends at the end of the buffer.
-                _separators.Add(new TextRange(t.Start, 5));
+                var text = t.GetText(TextBuffer.CurrentSnapshot);
+
+                _separators.Add(new TextRange(t.Start, t.LeadingSeparatorLength)); // ```r{ or `r
                 if (t.IsWellFormed) {
-                    Blocks.Add(TextRange.FromBounds(t.Start + 3, t.End - 3));
-                    _separators.Add(new TextRange(t.End - 3, 3));
+                    // Count backticks
+                    Blocks.Add(TextRange.FromBounds(t.Start + t.LeadingSeparatorLength, t.End - t.TrailingSeparatorLength));
+                    _separators.Add(new TextRange(t.End - t.TrailingSeparatorLength, t.TrailingSeparatorLength));
                 } else {
-                    Blocks.Add(TextRange.FromBounds(t.Start + 3, t.End));
+                    Blocks.Add(TextRange.FromBounds(t.Start + t.LeadingSeparatorLength, t.End));
                 }
             }
         }

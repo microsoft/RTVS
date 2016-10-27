@@ -113,7 +113,7 @@ namespace Microsoft.R.Editor.Formatting {
                 document.EditorTree.EnsureTreeReady();
                 return document.EditorTree.AstRoot;
             }
-            return RParser.Parse(new TextProvider(textBuffer.CurrentSnapshot));
+            return RParser.Parse(new TextProvider(textBuffer.CurrentSnapshot), document.EditorTree.ExpressionTermFilter);
         }
 
         /// <summary>

@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.R.Core.AST;
+using Microsoft.R.Core.Parser;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Tree {
@@ -125,5 +126,10 @@ namespace Microsoft.R.Editor.Tree {
         /// <param name="p">Parameter to pass to the action</param>
         /// <param name="type">Action identifier</param>
         void InvokeWhenReady(Action<object> action, object p, Type type, bool processNow = false);
+
+        /// <summary>
+        /// Allows primary language to filter expression terms
+        /// </summary>
+        IExpressionTermFilter ExpressionTermFilter { get; }
     }
 }

@@ -20,7 +20,6 @@ namespace Microsoft.Languages.Editor.Projection {
         private const string _inertContentTypeName = "inert";
 
         private readonly IContentTypeRegistryService _contentTypeRegistryService;
-        private readonly IProjectionEditResolver _editResolver;
         private int? _savedCaretPosition;
 
         public ProjectionBufferManager(ITextBuffer diskBuffer,
@@ -32,13 +31,12 @@ namespace Microsoft.Languages.Editor.Projection {
             DiskBuffer = diskBuffer;
 
             _contentTypeRegistryService = contentTypeRegistryService;
-            _editResolver = new LanguageEditResolver(diskBuffer);
 
             var contentType = _contentTypeRegistryService.GetContentType(topLevelContentTypeName);
-            ViewBuffer = projectionBufferFactoryService.CreateProjectionBuffer(_editResolver, new List<object>(0), ProjectionBufferOptions.None, contentType);
+            ViewBuffer = projectionBufferFactoryService.CreateProjectionBuffer(null, new List<object>(0), ProjectionBufferOptions.None, contentType);
 
             contentType = _contentTypeRegistryService.GetContentType(secondaryContentTypeName);
-            ContainedLanguageBuffer = projectionBufferFactoryService.CreateProjectionBuffer(_editResolver, new List<object>(0), ProjectionBufferOptions.WritableLiteralSpans, contentType);
+            ContainedLanguageBuffer = projectionBufferFactoryService.CreateProjectionBuffer(null, new List<object>(0), ProjectionBufferOptions.WritableLiteralSpans, contentType);
 
             ServiceManager.AddService<IProjectionBufferManager>(this, DiskBuffer, coreShell);
             ServiceManager.AddService<IProjectionBufferManager>(this, ViewBuffer, coreShell);

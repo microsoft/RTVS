@@ -38,6 +38,7 @@ namespace Microsoft.R.Editor.Test.Mocks {
         public bool IsClosed { get; private set; }
 
         public bool IsMassiveChangeInProgress => false;
+        public bool IsProjected { get; set; }
 
         public ITextBuffer TextBuffer => EditorTree.TextBuffer;
 

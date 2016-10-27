@@ -106,7 +106,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
                 Servers.Add(remoteUri.Port, server);
             }
 
-            await server.DoWorkAsync(ct);
+            server.DoWorkAsync(ct).DoNotWait();
 
             localUri.Host = server.LocalHost;
             localUri.Port = server.LocalPort;

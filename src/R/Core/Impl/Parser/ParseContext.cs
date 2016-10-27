@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Languages.Core.Text;
@@ -56,14 +57,17 @@ namespace Microsoft.R.Core.Parser {
         /// </summary>
         public IReadOnlyCollection<RToken> Comments { get; private set; }
 
-        public ParseContext(ITextProvider textProvider, ITextRange range, TokenStream<RToken> tokens, IReadOnlyList<RToken> comments) {
-            this.AstRoot = new AstRoot(textProvider);
-            this.TextProvider = textProvider;
-            this.Tokens = tokens;
-            this.TextRange = range;
-            this.Scopes = new Stack<IScope>();
-            this.Expressions = new Stack<Expression>();
-            this.Comments = comments;
+        public IExpressionTermFilter ExpressionTermFilter { get; }
+
+        public ParseContext(ITextProvider textProvider, ITextRange range, TokenStream<RToken> tokens, IReadOnlyList<RToken> comments, IExpressionTermFilter filter = null) {
+            AstRoot = new AstRoot(textProvider);
+            TextProvider = textProvider;
+            Tokens = tokens;
+            TextRange = range;
+            Scopes = new Stack<IScope>();
+            Expressions = new Stack<Expression>();
+            Comments = comments;
+            ExpressionTermFilter = filter ?? new DefaultExpressionTermFilter();
         }
 
         public void AddError(ParseError error) {
@@ -79,6 +83,10 @@ namespace Microsoft.R.Core.Parser {
             if (!found) {
                 _errors.Add(error);
             }
+        }
+
+        class DefaultExpressionTermFilter : IExpressionTermFilter {
+            public bool IsInertRange(ITextRange range) => false;
         }
     }
 }
