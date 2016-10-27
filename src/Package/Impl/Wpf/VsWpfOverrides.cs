@@ -11,16 +11,20 @@ using Microsoft.R.Wpf;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell;
 
-namespace Microsoft.VisualStudio.R.Package.Wpf {
-    public static class VsWpfOverrides {
+namespace Microsoft.VisualStudio.R.Package.Wpf
+{
+    public static class VsWpfOverrides
+    {
         private static readonly Lazy<Assembly> ExtensionsExplorerUIAssemblyLazy = Lazy.Create(() => AppDomain.CurrentDomain.Load("Microsoft.VisualStudio.ExtensionsExplorer.UI"));
 
-        public static void Apply() {
+        public static void Apply()
+        {
             OverrideBrushes();
             OverrideStyleKeys();
         }
 
-        private static void OverrideBrushes() {
+        private static void OverrideBrushes()
+        {
             Brushes.ActiveBorderKey = VsBrushes.ActiveBorderKey;
             Brushes.BorderBrushKey = VsBrushes.BrandedUIBorderKey;
             Brushes.ButtonFaceBrushKey = VsBrushes.ButtonFaceKey;
@@ -36,6 +40,8 @@ namespace Microsoft.VisualStudio.R.Package.Wpf {
             Brushes.LegalMessageBackgroundKey = VsBrushes.BrandedUIBackgroundKey;
             Brushes.ListPaneBackgroundKey = VsBrushes.BrandedUIBackgroundKey;
             Brushes.SplitterBackgroundKey = VsBrushes.CommandShelfBackgroundGradientKey;
+
+            Brushes.ToolWindowBackgroundKey = VsBrushes.ToolWindowBackgroundKey;
             Brushes.ToolWindowBorderKey = VsBrushes.ToolWindowBorderKey;
             Brushes.ToolWindowButtonDownBorderKey = VsBrushes.ToolWindowButtonDownBorderKey;
             Brushes.ToolWindowButtonDownKey = VsBrushes.ToolWindowButtonDownKey;
@@ -64,15 +70,28 @@ namespace Microsoft.VisualStudio.R.Package.Wpf {
             Brushes.ContentSelectedBrushKey = colorResources.TryGetThemeKey("ContentSelectedBrushKey");
             Brushes.ContentSelectedTextBrushKey = colorResources.TryGetThemeKey("ContentSelectedTextBrushKey");
             Brushes.ContentBrushKey = colorResources.TryGetThemeKey("ContentBrushKey");
+
+            Brushes.ScrollBarBackgroundBrushKey = EnvironmentColors.ScrollBarBackgroundBrushKey;
+
+            Brushes.TreeViewBackgroundBrushKey = TreeViewColors.BackgroundBrushKey;
+            Brushes.TreeViewBackgroundTextBrushKey = TreeViewColors.BackgroundTextBrushKey;
+            Brushes.TreeViewSelectedItemActiveBrushKey = TreeViewColors.SelectedItemActiveBrushKey;
+            Brushes.TreeViewSelectedItemActiveTextBrushKey = TreeViewColors.SelectedItemActiveTextBrushKey;
+            Brushes.TreeViewGlyphBrushKey = TreeViewColors.GlyphBrushKey;
+            Brushes.TreeViewGlyphMouseOverBrushKey = TreeViewColors.GlyphMouseOverBrushKey;
+
+            Brushes.GridLineBrushKey = EnvironmentColors.GridLineBrushKey;
         }
 
-        private static object TryGetThemeKey(this IDictionary<string, ThemeResourceKey> dict, string name) {
+        private static object TryGetThemeKey(this IDictionary<string, ThemeResourceKey> dict, string name)
+        {
             ThemeResourceKey k;
             dict.TryGetValue(name, out k);
             return k;
         }
 
-        private static void OverrideStyleKeys() {
+        private static void OverrideStyleKeys()
+        {
             var comboBoxType = ExtensionsExplorerUIAssemblyLazy.Value.GetType("Microsoft.VisualStudio.ExtensionsExplorer.UI.AutomationComboBox");
             StyleKeys.ThemedComboStyleKey = new ComponentResourceKey(comboBoxType, "ThemedComboBoxStyle");
             StyleKeys.ScrollBarStyleKey = VsResourceKeys.ScrollBarStyleKey;
@@ -81,7 +100,8 @@ namespace Microsoft.VisualStudio.R.Package.Wpf {
             StyleKeys.TextBoxStyleKey = VsResourceKeys.TextBoxStyleKey;
         }
 
-        private static IDictionary<string, ThemeResourceKey> GetColorResources() {
+        private static IDictionary<string, ThemeResourceKey> GetColorResources()
+        {
             // use colors of VisualStudio UI.
             var colorResources = ExtensionsExplorerUIAssemblyLazy.Value.GetType("Microsoft.VisualStudio.ExtensionsExplorer.UI.ColorResources");
 

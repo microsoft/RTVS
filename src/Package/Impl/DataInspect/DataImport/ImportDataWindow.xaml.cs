@@ -15,16 +15,17 @@ using Microsoft.Common.Core;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
-using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.DataInspect.DataSource;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Package.Wpf;
 using static System.FormattableString;
 
-namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
+namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport
+{
     /// <summary>
     /// Interaction logic for ImportDataWindow.xaml
     /// </summary>
-    public partial class ImportDataWindow : DialogWindow {
+    public partial class ImportDataWindow : PlatformDialogWindow {
         private const int MaxPreviewLines = 20;
         private string _utf8FilePath;
 

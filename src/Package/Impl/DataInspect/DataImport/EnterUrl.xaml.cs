@@ -8,13 +8,14 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using Microsoft.Common.Core;
-using Microsoft.VisualStudio.PlatformUI;
+using Microsoft.VisualStudio.R.Package.Wpf;
 
-namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
+namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport
+{
     /// <summary>
     /// Interaction logic for ImportDataWindow.xaml
     /// </summary>
-    public partial class EnterUrl : DialogWindow {
+    public partial class EnterUrl : PlatformDialogWindow {
         private WebClient _client;
 
         public EnterUrl() {

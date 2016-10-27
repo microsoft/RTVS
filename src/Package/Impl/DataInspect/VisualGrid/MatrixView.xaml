@@ -5,7 +5,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Microsoft.VisualStudio.R.Package.DataInspect"
-             xmlns:vsui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0"
+             xmlns:rwpf="clr-namespace:Microsoft.R.Wpf;assembly=Microsoft.R.Wpf"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
@@ -45,7 +45,7 @@
                           Grid.Row="0" Grid.Column="1" Header="{Binding CanSort}" />
         <Rectangle x:Name="RightTopCorner"
                    Grid.Row="0" Grid.Column="2" MinWidth="10" MinHeight="10"
-                   Fill="{DynamicResource {x:Static vsui:EnvironmentColors.ScrollBarBackgroundBrushKey}}"/>
+                   Fill="{DynamicResource {x:Static rwpf:Brushes.ScrollBarBackgroundBrushKey}}"/>
         
         <!-- Row 1 -->
         <local:VisualGrid x:Name="RowHeader" ScrollDirection="Vertical" FocusVisualStyle="{StaticResource EmptyFocusVisualStyle}"
@@ -60,13 +60,13 @@
         <!-- Row 2 -->
         <Rectangle x:Name="LeftBottomCorner"
                    Grid.Row="2" Grid.Column="0" MinWidth="10" MinHeight="10"
-                   Fill="{DynamicResource {x:Static vsui:EnvironmentColors.ScrollBarBackgroundBrushKey}}" />
+                   Fill="{DynamicResource {x:Static rwpf:Brushes.ScrollBarBackgroundBrushKey}}" />
         <ScrollBar x:Name="HorizontalScrollBar" Orientation="Horizontal"
                    Grid.Row="2" Grid.Column="1"
                    Minimum="0"
                    Scroll="HorizontalScrollBar_Scroll"/>
         <Rectangle x:Name="RightBottomCorner"
                    Grid.Row="2" Grid.Column="2" MinWidth="10" MinHeight="10"
-                   Fill="{DynamicResource {x:Static vsui:EnvironmentColors.ScrollBarBackgroundBrushKey}}" />
+                   Fill="{DynamicResource {x:Static rwpf:Brushes.ScrollBarBackgroundBrushKey}}" />
     </Grid>
 </UserControl>
