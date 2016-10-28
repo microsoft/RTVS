@@ -3,6 +3,7 @@
 
 using FluentAssertions;
 using Microsoft.Common.Core.OS;
+using Microsoft.Common.Core.Security;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.R.Host.Protocol.Test.UserProfileServicePipe {
@@ -28,7 +29,7 @@ namespace Microsoft.R.Host.Protocol.Test.UserProfileServicePipe {
 
             ValidateUsername(credMock?.Username);
             ValidateDomain(credMock?.Domain);
-            ValidatePassword(credMock?.Password);
+            ValidatePassword(credMock?.Password.ToUnsecureString());
 
             return UserProfileResultMock.Create(TestingValidAccount, TestingExistingAccount);
         }

@@ -83,7 +83,7 @@ namespace Microsoft.R.Host.Protocol {
 
             string json = Encoding.Unicode.GetString(requestRaw, 0, bytesRead);
 
-            var requestData = JsonConvert.DeserializeObject<RUserProfileCreateRequest>(json);
+            var requestData = JsonConvert.DeserializeObject<RUserProfileCreateRequest>(json, new SecureStringJsonConverter());
 
             var result = userProfileService.CreateUserProfile(requestData, logger);
 

@@ -57,7 +57,7 @@ namespace Microsoft.R.Host.Broker.Security {
                 try {
                     await client.ConnectAsync(ct);
 
-                    string jsonReq = JsonConvert.SerializeObject(request);
+                    string jsonReq = JsonConvert.SerializeObject(request, new SecureStringJsonConverter());
                     byte[] data = Encoding.Unicode.GetBytes(jsonReq.ToString());
 
                     await client.WriteAsync(data, 0, data.Length, ct);
