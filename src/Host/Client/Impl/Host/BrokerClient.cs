@@ -87,7 +87,7 @@ namespace Microsoft.R.Host.Client.Host {
             try {
                 var response = await HttpClient.GetAsync("/about", cancellationToken);
                 result = await response.Content.ReadAsStringAsync();
-            } catch (OperationCanceledException) { }
+            } catch (OperationCanceledException) { } catch(HttpRequestException) { } 
             return !string.IsNullOrEmpty(result) ? JsonConvert.DeserializeObject<AboutHost>(result) : AboutHost.Empty;
         }
 
