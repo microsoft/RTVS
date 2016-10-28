@@ -29,7 +29,7 @@ namespace Microsoft.R.Host.Protocol {
         internal static extern bool LogonUser(
             string lpszUsername,
             string lpszDomain,
-            string lpszPassword,
+            IntPtr lpszPassword,
             int dwLogonType,
             int dwLogonProvider,
             out IntPtr phToken);

@@ -13,6 +13,8 @@ namespace Microsoft.R.Host.Protocol {
 
         public string Username { get; set; }
         public string Domain { get; set; }
+
+        [JsonConverter(typeof(SecureStringJsonConverter))]
         public SecureString Password { get; set; }
 
         public static RUserProfileCreateRequest Create(string username, string domain, string password) {

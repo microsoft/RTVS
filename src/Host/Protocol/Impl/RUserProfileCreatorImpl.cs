@@ -14,10 +14,12 @@ namespace Microsoft.R.Host.Protocol {
     class RUserProfileCreatorImpl : IUserProfileServices {
         public IUserProfileCreatorResult CreateUserProfile(IUserCredentials credentails, ILogger logger) {
             IntPtr token = IntPtr.Zero;
+            IntPtr password = IntPtr.Zero;
             RUserProfileCreateResponse result = RUserProfileCreateResponse.Create(13, false, string.Empty);
             uint error = 0;
             try {
-                if (LogonUser(credentails.Username, credentails.Domain, credentails.Password.ToUnsecureString(), (int)LogonType.LOGON32_LOGON_NETWORK, (int)LogonProvider.LOGON32_PROVIDER_DEFAULT, out token)) {
+                password = Marshal.SecureStringToGlobalAllocUnicode(credentails.Password);
+                if (LogonUser(credentails.Username, credentails.Domain, password, (int)LogonType.LOGON32_LOGON_NETWORK, (int)LogonProvider.LOGON32_PROVIDER_DEFAULT, out token)) {
                     WindowsIdentity winIdentity = new WindowsIdentity(token);
                     StringBuilder profileDir = new StringBuilder(MAX_PATH);
                     uint size = (uint)profileDir.Capacity;
@@ -52,6 +54,10 @@ namespace Microsoft.R.Host.Protocol {
             } finally {
                 if (token != IntPtr.Zero) {
                     CloseHandle(token);
+                }
+
+                if(password != IntPtr.Zero) {
+                    Marshal.ZeroFreeGlobalAllocUnicode(password);
                 }
             }
             return result;
