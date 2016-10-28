@@ -147,6 +147,10 @@ namespace Microsoft.R.Components.Plots.Implementation {
             _viewModel.ClickPlot(x, y);
         }
 
+        public async Task ResizePlotAsync(int pixelWidth, int pixelHeight, int resolution) {
+            await _viewModel.ResizePlotAsync(pixelWidth, pixelHeight, resolution);
+        }
+
         public void Dispose() {
             _disposableBag.TryDispose();
         }

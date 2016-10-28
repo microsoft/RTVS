@@ -92,26 +92,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
 
         public async Task ReloadCurrentTabAsync() {
             await _coreShell.SwitchToMainThreadAsync();
-
-            var selectedTab = _selectedTab;
-            IsLoading = true;
-            switch (selectedTab) {
-                case Tab.AvailablePackages:
-                    await EnsureAvailablePackagesLoadedAsync(true);
-                    break;
-                case Tab.InstalledPackages:
-                    await EnsureInstalledAndLoadedPackagesAsync(true);
-                    break;
-                case Tab.LoadedPackages:
-                    await ReloadLoadedPackagesAsync();
-                    break;
-                case Tab.None:
-                    return;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-
-            await ReplaceItemsAsync(selectedTab);
+            await ReloadTabContentAsync(_selectedTab);
         }
 
         public void SelectPackage(IRPackageViewModel package) {
@@ -405,11 +386,29 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             return false;
         }
 
-        private async Task ReloadCurrentTabAsync(Tab tab) {
+        private async Task ReloadTabContentAsync(Tab tab) {
             await _coreShell.SwitchToMainThreadAsync();
             if (tab == _selectedTab) {
-                await ReloadCurrentTabAsync();
+                IsLoading = true;
             }
+
+            switch (tab) {
+                case Tab.AvailablePackages:
+                    await EnsureAvailablePackagesLoadedAsync(true);
+                    break;
+                case Tab.InstalledPackages:
+                    await EnsureInstalledAndLoadedPackagesAsync(true);
+                    break;
+                case Tab.LoadedPackages:
+                    await ReloadLoadedPackagesAsync();
+                    break;
+                case Tab.None:
+                    return;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            await ReplaceItemsAsync(tab);
         }
 
         private async Task EnsureInstalledAndLoadedPackagesAsync(bool reload) {
@@ -634,17 +633,17 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
 
         private void AvailablePackagesInvalidated(object sender, EventArgs e) {
             _availableLock.EnqueueReset();
-            ReloadCurrentTabAsync(Tab.AvailablePackages).DoNotWait();
+            ReloadTabContentAsync(Tab.AvailablePackages).DoNotWait();
         }
 
         private void InstalledPackagesInvalidated(object sender, EventArgs e) {
             _installedAndLoadedLock.EnqueueReset();
-            ReloadCurrentTabAsync(Tab.InstalledPackages).DoNotWait();
+            ReloadTabContentAsync(Tab.InstalledPackages).DoNotWait();
         }
         
         private void LoadedPackagesInvalidated(object sender, EventArgs e) {
             _installedAndLoadedLock.EnqueueReset();
-            ReloadCurrentTabAsync(Tab.LoadedPackages).DoNotWait();
+            ReloadTabContentAsync(Tab.LoadedPackages).DoNotWait();
         }
 
         public void Dispose() {

@@ -156,13 +156,27 @@ namespace Microsoft.R.Components.Test.Plots {
                 "plot(1:10)",
             });
 
+            var device1 = _workflow.Plots.ActiveDevice;
+            var device1VC = _workflow.Plots.GetPlotVisualComponent(device1);
+            var device1Commands = new RPlotDeviceCommands(_workflow, device1VC);
+            var plot1 = device1.ActivePlot;
+
+            await InitializeGraphicsDevice();
+            await ExecuteAndWaitForPlotsAsync(new string[] {
+                "plot(2:10)",
+            });
+
+            var device2 = _workflow.Plots.ActiveDevice;
+
             Clipboard.Clear();
 
-            var deviceVC = _workflow.Plots.GetPlotVisualComponent(_workflow.Plots.ActiveDevice);
-            var deviceCommands = new RPlotDeviceCommands(_workflow, deviceVC);
+            var deviceCommands = new RPlotDeviceCommands(_workflow, device1VC);
 
             deviceCommands.CopyAsBitmap.Should().BeEnabled();
             await deviceCommands.CopyAsBitmap.InvokeAsync();
+
+            // Exporting plot from device 1 should not have changed the active device
+            _workflow.Plots.ActiveDevice.Should().Be(device2);
 
             Clipboard.ContainsImage().Should().BeTrue();
             CoreShell.LastShownErrorMessage.Should().BeNullOrEmpty();
@@ -172,19 +186,66 @@ namespace Microsoft.R.Components.Test.Plots {
         }
 
         [Test(ThreadType.UI)]
+        public async Task DeviceResize() {
+            var plot1to10 = await GetExpectedImageAsync("bmp", 600, 500, 96, "plot1-10", "plot(1:10)");
+            var plot1to10larger = await GetExpectedImageAsync("bmp", 650, 550, 96, "plot1-10larger", "plot(1:10)");
+
+            await InitializeGraphicsDevice();
+            await ExecuteAndWaitForPlotsAsync(new string[] {
+                "plot(1:10)",
+            });
+
+            var device1 = _workflow.Plots.ActiveDevice;
+            var device1VC = _workflow.Plots.GetPlotVisualComponent(device1);
+            var device1Commands = new RPlotDeviceCommands(_workflow, device1VC);
+            var plot1 = device1.ActivePlot;
+
+            await InitializeGraphicsDevice();
+            await ExecuteAndWaitForPlotsAsync(new string[] {
+                "plot(2:10)",
+            });
+
+            var device2 = _workflow.Plots.ActiveDevice;
+
+            var plotReceivedTask = EventTaskSources.IRPlotDevice.PlotAddedOrUpdated.Create(device1);
+
+            await device1VC.ResizePlotAsync(650, 550, 96);
+            await plotReceivedTask;
+
+            // Resizing device 1 should not have changed the active device
+            _workflow.Plots.ActiveDevice.Should().Be(device2);
+
+            device1.ActivePlot.Image.Should().HaveSamePixels(plot1to10larger);
+        }
+
+        [Test(ThreadType.UI)]
         public async Task DeviceCopyAsMetafile() {
             await InitializeGraphicsDevice();
             await ExecuteAndWaitForPlotsAsync(new string[] {
                 "plot(1:10)",
             });
 
+            var device1 = _workflow.Plots.ActiveDevice;
+            var device1VC = _workflow.Plots.GetPlotVisualComponent(device1);
+            var device1Commands = new RPlotDeviceCommands(_workflow, device1VC);
+            var plot1 = device1.ActivePlot;
+
+            await InitializeGraphicsDevice();
+            await ExecuteAndWaitForPlotsAsync(new string[] {
+                "plot(2:10)",
+            });
+
+            var device2 = _workflow.Plots.ActiveDevice;
+
             Clipboard.Clear();
 
-            var deviceVC = _workflow.Plots.GetPlotVisualComponent(_workflow.Plots.ActiveDevice);
-            var deviceCommands = new RPlotDeviceCommands(_workflow, deviceVC);
+            var deviceCommands = new RPlotDeviceCommands(_workflow, device1VC);
 
             deviceCommands.CopyAsMetafile.Should().BeEnabled();
             await deviceCommands.CopyAsMetafile.InvokeAsync();
+
+            // Exporting plot from device 1 should not have changed the active device
+            _workflow.Plots.ActiveDevice.Should().Be(device2);
 
             Clipboard.ContainsData(DataFormats.EnhancedMetafile).Should().BeTrue();
             CoreShell.LastShownErrorMessage.Should().BeNullOrEmpty();
@@ -302,6 +363,9 @@ namespace Microsoft.R.Components.Test.Plots {
             await device1Commands.RemoveAllPlots.InvokeAsync();
             await plotClearedTask;
 
+            // Deleting the plots from device 1 should not have changed the active device
+            _workflow.Plots.ActiveDevice.Should().Be(device2);
+
             CoreShell.LastShownErrorMessage.Should().BeNullOrEmpty();
 
             device1.ActivePlot.Should().BeNull();
@@ -338,6 +402,9 @@ namespace Microsoft.R.Components.Test.Plots {
             var plotRemovedTask = EventTaskSources.IRPlotDevice.PlotRemoved.Create(device1);
             await device1Commands.RemoveCurrentPlot.InvokeAsync();
             await plotRemovedTask;
+
+            // Deleting the plot from device 1 should not have changed the active device
+            _workflow.Plots.ActiveDevice.Should().Be(device2);
 
             CoreShell.LastShownErrorMessage.Should().BeNullOrEmpty();
 
@@ -869,6 +936,9 @@ namespace Microsoft.R.Components.Test.Plots {
                 device1.ActivePlot.Should().BeNull();
                 device1.PlotCount.Should().Be(0);
                 device1.ActiveIndex.Should().Be(-1);
+
+                // Deleting the plot from device 1 should not have changed the active device
+                _workflow.Plots.ActiveDevice.Should().Be(device2);
 
                 // Select the only plot in device 2 and remove it
                 historyVC.SelectedPlot = plot2;

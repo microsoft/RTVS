@@ -18,6 +18,8 @@ using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Broker.Sessions {
     public class SessionManager {
+        private const int MaximumConcurrentClientWindowsUsers = 1;
+
         private readonly InterpreterManager _interpManager;
         private readonly LoggingOptions _loggingOptions;
         private readonly ILogger _hostOutputLogger, _messageLogger, _sessionLogger;
@@ -77,7 +79,6 @@ namespace Microsoft.R.Host.Broker.Sessions {
             }
         }
 
-        private const int MaximumConcurrentClientWindowsUsers = 1;
         private bool IsUserAllowedToCreateSession(IIdentity user) {
             lock (_sessions) {
                 int activeUsers = _sessions.Keys.Where((k) => _sessions[k].Count > 0).Count();
@@ -150,6 +151,10 @@ namespace Microsoft.R.Host.Broker.Sessions {
                 lock (_sessions) {
                     var userSessions = GetOrCreateSessionList(session.User);
                     userSessions.Remove(session);
+
+                    if (userSessions.Count == 0) {
+                        _sessions.Remove(session.User.Name);
+                    }
                 }
             }
         }

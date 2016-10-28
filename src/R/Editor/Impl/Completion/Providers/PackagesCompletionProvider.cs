@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Windows.Media;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Support.Help;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -18,23 +17,21 @@ namespace Microsoft.R.Editor.Completion.Providers {
     /// </summary>
     [Export(typeof(IRHelpSearchTermProvider))]
     public class PackagesCompletionProvider : IRCompletionListProvider, IRHelpSearchTermProvider {
-        private readonly ICoreShell _shell;
+        private readonly ImageSource _glyph;
         private readonly IPackageIndex _packageIndex;
 
         [ImportingConstructor]
-        public PackagesCompletionProvider(ICoreShell shell) {
-            _shell = shell;
-            _packageIndex = shell.ExportProvider.GetExportedValue<IPackageIndex>();
+        public PackagesCompletionProvider(IPackageIndex packageIndex, IGlyphService glyphService) {
+            _packageIndex = packageIndex;
+            _glyph = glyphService.GetGlyphThreadSafe(StandardGlyphGroup.GlyphLibrary, StandardGlyphItem.GlyphItemPublic);
         }
 
         #region IRCompletionListProvider
         public bool AllowSorting { get; } = true;
 
         public IReadOnlyCollection<RCompletion> GetEntries(RCompletionContext context) {
-            ImageSource glyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphLibrary, StandardGlyphItem.GlyphItemPublic, _shell);
-
             return _packageIndex.Packages
-                .Select(p => new RCompletion(p.Name, p.Name, p.Description, glyph))
+                .Select(p => new RCompletion(p.Name, p.Name, p.Description, _glyph))
                 .ToList();
         }
         #endregion

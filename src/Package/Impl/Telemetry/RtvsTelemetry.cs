@@ -113,7 +113,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
 
             if (_packageIndex != null) {
                 foreach(var p in _packageIndex.Packages) {
-                    TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RPackages, p.Name.GetMD5Hash());
+                    TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RPackages, p.Name.GetSHA512Hash());
                 }
             }
         }
@@ -127,7 +127,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
                         if (uri.IsFile) {
                             TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.LocalConnection, uri.ToString());
                         } else {
-                            TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RemoteConnection, uri.ToString().GetMD5Hash());
+                            TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RemoteConnection, uri.ToString().GetSHA512Hash());
                         }
                     }
                 }

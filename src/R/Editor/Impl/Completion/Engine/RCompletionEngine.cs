@@ -7,12 +7,16 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
 using Microsoft.Languages.Editor.Composition;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Arguments;
 using Microsoft.R.Core.AST.Functions;
 using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Completion.Providers;
+using Microsoft.R.Editor.Imaging;
+using Microsoft.R.Support.Help;
+using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Completion.Engine {
@@ -26,6 +30,7 @@ namespace Microsoft.R.Editor.Completion.Engine {
         /// <returns>List of completion entries for a given location in the AST</returns>
         public static IReadOnlyCollection<IRCompletionListProvider> GetCompletionForLocation(RCompletionContext context, bool autoShownCompletion, ICoreShell shell) {
             List<IRCompletionListProvider> providers = new List<IRCompletionListProvider>();
+            var glyphService = shell.ExportProvider.GetExportedValue<IGlyphService>();
 
             if (context.AstRoot.Comments.Contains(context.Position)) {
                 // No completion in comments
@@ -36,7 +41,9 @@ namespace Microsoft.R.Editor.Completion.Engine {
             string directory;
             if (CanShowFileCompletion(context.AstRoot, context.Position, out directory)) {
                 if (!string.IsNullOrEmpty(directory)) {
-                    providers.Add(new FilesCompletionProvider(directory, shell));
+                    var workflowProvider = shell.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
+                    var imagesProvider = shell.ExportProvider.GetExportedValue<IImagesProvider>();
+                    providers.Add(new FilesCompletionProvider(directory, workflowProvider.GetOrCreate(), imagesProvider, glyphService));
                 }
                 return providers;
             }
@@ -81,16 +88,20 @@ namespace Microsoft.R.Editor.Completion.Engine {
                 return providers;
             }
 
+            var variablesProvider = shell.ExportProvider.GetExportedValue<IVariablesProvider>();
+            var packageIndex = shell.ExportProvider.GetExportedValue<IPackageIndex>();
+
             if (IsInObjectMemberName(context.AstRoot.TextProvider, context.Position)) {
-                providers.Add(new WorkspaceVariableCompletionProvider(shell, shell.ExportProvider.GetExportedValue<IVariablesProvider>()));
+                providers.Add(new WorkspaceVariableCompletionProvider(variablesProvider, glyphService));
                 return providers;
             }
 
             if (IsPackageListCompletion(context.TextBuffer, context.Position)) {
-                providers.Add(new PackagesCompletionProvider(shell));
+                providers.Add(new PackagesCompletionProvider(packageIndex, glyphService));
             } else {
                 if (IsInFunctionArgumentName<FunctionCall>(context.AstRoot, context.Position)) {
-                    providers.Add(new ParameterNameCompletionProvider(shell));
+                    var functionIndex = shell.ExportProvider.GetExportedValue<IFunctionIndex>();
+                    providers.Add(new ParameterNameCompletionProvider(functionIndex, glyphService));
                 }
 
                 foreach (var p in GetCompletionProviders(shell)) {
@@ -98,12 +109,12 @@ namespace Microsoft.R.Editor.Completion.Engine {
                 }
 
                 if (!context.IsInNameSpace()) {
-                    providers.Add(new PackagesCompletionProvider(shell));
+                    providers.Add(new PackagesCompletionProvider(packageIndex, glyphService));
                 }
             }
 
             if (!context.IsInNameSpace()) {
-                providers.Add(new WorkspaceVariableCompletionProvider(shell, shell.ExportProvider.GetExportedValue<IVariablesProvider>()));
+                providers.Add(new WorkspaceVariableCompletionProvider(variablesProvider, glyphService));
             }
 
             return providers;

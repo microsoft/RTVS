@@ -126,8 +126,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
 
         public async Task<string> GetLibraryPathAsync() {
             var result = await WrapRException(_interactiveWorkflow.RSession.LibraryPathsAsync());
-            var rBasePath = _interactiveWorkflow.Connections.ActiveConnection.Id.LocalPath.ToRPath();
-            return result.Select(p => ((string)((JValue)p).Value).ToRPath()).FirstOrDefault(s => !s.StartsWithIgnoreCase(rBasePath));
+            return result.Select(p => p.ToRPath()).FirstOrDefault();
         }
 
         public Task<PackageLockState> GetPackageLockStateAsync(string name, string libraryPath) 

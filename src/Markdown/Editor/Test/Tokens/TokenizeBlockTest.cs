@@ -46,17 +46,25 @@ block
             var tokens = Tokenize(text, new MdTokenizer());
             tokens.Should().HaveCount(1);
             tokens[0].Should().HaveType(MarkdownTokenType.Code);
+            tokens[0].Should().BeOfType(typeof(MarkdownCodeToken));
             tokens[0].Length.Should().Be(21);
         }
 
         [CompositeTest]
         [Category.Md.Tokenizer]
-        [InlineData(@"`r x <- 1`")]
-        [InlineData(@"`rtoken`")]
-        public void CodeBlock03(string content) {
+        [InlineData(@"`r x <- 1`", 2, 1)]
+        [InlineData(@"`rtoken`", 0, 0)]
+        public void CodeBlock03(string content, int leadingSeparatorLength, int trailingSeparatorLength) {
             var tokens = Tokenize(@"`r x <- 1`", new MdTokenizer());
             tokens.Should().HaveCount(1);
             tokens[0].Should().HaveType(MarkdownTokenType.Code);
+            tokens[0].Should().BeOfType(typeof(MarkdownCodeToken));
+
+            if (leadingSeparatorLength > 0) {
+                var mdct = tokens[0] as MarkdownCodeToken;
+                mdct.LeadingSeparatorLength.Should().Be(leadingSeparatorLength);
+                mdct.TrailingSeparatorLength.Should().Be(trailingSeparatorLength);
+            }
         }
 
         [CompositeTest]
@@ -67,6 +75,9 @@ block
         public void CodeBlock04(string text) {
             var tokens = Tokenize(text, new MdTokenizer());
             tokens.Should().HaveCount(1);
+
+            var mdct = tokens[0] as MarkdownCodeToken;
+            mdct.Should().BeNull();
         }
     }
 }

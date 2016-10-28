@@ -48,6 +48,8 @@ namespace Microsoft.Languages.Editor.EditorFactory {
         /// Retrieves editor instance command target for a particular view
         /// </summary>
         public abstract ICommandTarget GetCommandTarget(ITextView textView);
+
+        public bool IsProjected => false;
         #endregion
 
         #region IDisposable

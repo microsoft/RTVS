@@ -30,18 +30,23 @@ namespace Microsoft.R.Editor.Completion.Providers {
         private readonly IPackageIndex _packageIndex;
         private readonly IFunctionIndex _functionIndex;
 
+        private readonly ImageSource _functionGlyph;
+        private readonly ImageSource _constantGlyph;
+
         [ImportingConstructor]
         public PackageFunctionCompletionProvider(
             ILoadedPackagesProvider loadedPackagesProvider, 
             [Import(AllowDefault = true)] ISnippetInformationSourceProvider snippetInformationSource, 
             IPackageIndex packageIndex,
             IFunctionIndex functionIndex,
-            ICoreShell shell) {
+            IGlyphService glyphService) {
             _loadedPackagesProvider = loadedPackagesProvider;
             _snippetInformationSource = snippetInformationSource;
-            _shell = shell;
             _packageIndex = packageIndex;
             _functionIndex = functionIndex;
+
+            _functionGlyph = glyphService.GetGlyphThreadSafe(StandardGlyphGroup.GlyphGroupMethod, StandardGlyphItem.GlyphItemPublic);
+            _constantGlyph = glyphService.GetGlyphThreadSafe(StandardGlyphGroup.GlyphGroupConstant, StandardGlyphItem.GlyphItemPublic);
         }
 
         #region IRCompletionListProvider
@@ -49,9 +54,6 @@ namespace Microsoft.R.Editor.Completion.Providers {
 
         public IReadOnlyCollection<RCompletion> GetEntries(RCompletionContext context) {
             List<RCompletion> completions = new List<RCompletion>();
-            ImageSource functionGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupMethod, StandardGlyphItem.GlyphItemPublic, _shell);
-            ImageSource constantGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupConstant, StandardGlyphItem.GlyphItemPublic, _shell);
-            ImageSource snippetGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphCSharpExpansion, StandardGlyphItem.GlyphItemPublic, _shell);
             var infoSource = _snippetInformationSource?.InformationSource;
 
             // TODO: this is different in the console window where 
@@ -72,7 +74,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
                             isSnippet = infoSource.IsSnippet(function.Name);
                         }
                         if (!isSnippet) {
-                            ImageSource glyph = function.ItemType == NamedItemType.Constant ? constantGlyph : functionGlyph;
+                            ImageSource glyph = function.ItemType == NamedItemType.Constant ? _constantGlyph : _functionGlyph;
                             var completion = new RFunctionCompletion(function.Name, CompletionUtilities.BacktickName(function.Name), function.Description, glyph, _functionIndex, context.Session);
                             completions.Add(completion);
                         }

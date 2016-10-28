@@ -146,6 +146,7 @@
     </Compile>
     <Compile Include="BraceMatch\GotoBraceCommandTest.cs" />
     <Compile Include="Completions\PackageInstallTest.cs" />
+    <Compile Include="Completions\FileCompletionProviderTest.cs" />
     <Compile Include="Completions\RCompletionSourceTestBase.cs" />
     <Compile Include="Documentation\RoxygenTest.cs" />
     <Compile Include="DragDrop\DragDropTest.cs" />

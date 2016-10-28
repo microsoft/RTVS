@@ -4,6 +4,7 @@
 using System;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Extensions;
@@ -56,7 +57,7 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
             get { return _document != null ? _document.TextBuffer.GetTextDocument().FilePath : string.Empty; }
         }
 
-        public ICommandTarget SetContainedCommandTarget(ITextView textView, ICommandTarget containedCommandTarget) { 
+        public ICommandTarget SetContainedCommandTarget(ITextView textView, ICommandTarget containedCommandTarget) {
             ContainedCommandTarget = containedCommandTarget;
             return GetBaseCommandTarget(textView);
         }
@@ -75,6 +76,38 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
             return false;
         }
 
+        #endregion
+
+        #region IMdContainedLanguageHost
+        /// <summary>
+        /// Detemines if particular range should not be treated as contained language and 
+        /// instead should be ignored or 'skipped over'. Used by R parser to ignore 'R' in
+        /// ```{R ... }
+        /// </summary>
+        public bool IsInertRange(ITextRange range) {
+            // This is a workaround for constructs like ```{r x = 1, y = FALSE} where the { }
+            // block is treated as R fragment. The fragment is syntactually incorrect since
+            // 'r' is indentifier and there is an operator expected between 'r' and 'x'.
+            // In order to avoid parsing errors expression parser will use this flag and
+            // allow standalone indentifier 'r' or 'R' right after the opening curly brace.
+            if (range.Length == 1 && range.Start > 0) {
+                // Map range up from contained language
+                var view = _textBuffer.GetFirstView();
+                if (view != null) {
+                    var viewPoint = view.MapUpToView(new SnapshotPoint(_textBuffer.CurrentSnapshot, range.Start));
+                    if (viewPoint.HasValue) {
+                        var snapshot = view.TextBuffer.CurrentSnapshot;
+                        if (snapshot.Length >= 2 && snapshot.GetText(viewPoint.Value - 1, 2).EqualsIgnoreCase("`r")) {
+                            return true;
+                        }
+                        if (snapshot.Length >= 5 && viewPoint.Value > 3 && snapshot.GetText(viewPoint.Value - 4, 5).EqualsIgnoreCase("```{r")) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
         #endregion
 
         /// <summary>
