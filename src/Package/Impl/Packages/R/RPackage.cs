@@ -112,23 +112,27 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             VsWpfOverrides.Apply();
             CranMirrorList.Download();
 
-            using (var p = Current.GetDialogPage(typeof(RToolsOptionsPage)) as RToolsOptionsPage) {
-                p?.LoadSettings();
-            }
-
-            RtvsTelemetry.Initialize(_packageIndex, VsAppShell.Current.ExportProvider.GetExportedValue<IRSettings>());
             base.Initialize();
 
             ProjectIconProvider.LoadProjectImages();
             LogCleanup.DeleteLogsAsync(DiagnosticLogs.DaysToRetain);
 
+            IdleTimeAction.Create(CompleteInit, 20, typeof(ExpansionsCache), VsAppShell.Current);
+            IdleTimeAction.Create(ExpansionsCache.Load, 200, typeof(ExpansionsCache), VsAppShell.Current);
+            IdleTimeAction.Create(() => RtvsTelemetry.Current.ReportConfiguration(), 5000, typeof(RtvsTelemetry), VsAppShell.Current);
+        }
+
+        private void CompleteInit() {
+            using (var p = Current.GetDialogPage(typeof(RToolsOptionsPage)) as RToolsOptionsPage) {
+                p?.LoadSettings();
+            }
+
+            RtvsTelemetry.Initialize(_packageIndex, VsAppShell.Current.ExportProvider.GetExportedValue<IRSettings>());
+
             BuildFunctionIndex();
             AdviseExportedWindowFrameEvents<ActiveWpfTextViewTracker>();
             AdviseExportedWindowFrameEvents<VsActiveRInteractiveWindowTracker>();
             AdviseExportedDebuggerEvents<VsDebuggerModeTracker>();
-
-            IdleTimeAction.Create(ExpansionsCache.Load, 200, typeof(ExpansionsCache), VsAppShell.Current);
-            IdleTimeAction.Create(() => RtvsTelemetry.Current.ReportConfiguration(), 5000, typeof(RtvsTelemetry), VsAppShell.Current);
         }
 
         protected override void Dispose(bool disposing) {
