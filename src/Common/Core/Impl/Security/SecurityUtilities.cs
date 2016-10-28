@@ -40,5 +40,19 @@ namespace Microsoft.Common.Core.Security {
             }
             return ss;
         }
+
+        public static string ToUnsecureString(this SecureString ss) {
+            if (ss == null) {
+                return null;
+            }
+
+            IntPtr ptr = IntPtr.Zero;
+            try {
+                ptr = Marshal.SecureStringToGlobalAllocUnicode(ss);
+                return Marshal.PtrToStringUni(ptr);
+            } finally {
+                Marshal.ZeroFreeGlobalAllocUnicode(ptr);
+            }
+        }
     }
 }
