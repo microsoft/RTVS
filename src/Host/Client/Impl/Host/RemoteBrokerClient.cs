@@ -57,6 +57,8 @@ namespace Microsoft.R.Host.Client.Host {
                 _console.Write(Resources.Error_NoBrokerCertificate);
             } else {
                 var hashString = certificate.GetCertHashString();
+                bool accepted = true;
+
                 if (_certificateHash == null || !_certificateHash.EqualsOrdinal(hashString)) {
                     Log.WriteAsync(LogVerbosity.Minimal, MessageCategory.Warning, Resources.Trace_UntrustedCertificate.FormatInvariant(certificate.Subject)).DoNotWait();
 
@@ -64,12 +66,12 @@ namespace Microsoft.R.Host.Client.Host {
                     var certificateTask = _services.Security.ValidateX509CertificateAsync(certificate, message);
                     _services.Tasks.Wait(certificateTask);
 
-                    var accepted = certificateTask.Result;
+                    accepted = certificateTask.Result;
                     if (accepted) {
                         _certificateHash = hashString;
                     }
-                    return accepted;
                 }
+                return accepted;
             }
 
             return IsVerified;
