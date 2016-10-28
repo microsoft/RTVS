@@ -62,7 +62,6 @@
     <Compile Include="EditorFactory\EditorExtensions.cs" />
     <Compile Include="EditorFactory\ProjectionEditorInstance.cs" />
     <Compile Include="EditorFactory\EditorInstance.cs" />
-    <Compile Include="Extensions\TextRangeExtensions.cs" />
     <Compile Include="Extensions\TrackingExtensions.cs" />
     <Compile Include="Imaging\GlyphService.cs" />
     <Compile Include="Outline\OutlineController.cs" />
