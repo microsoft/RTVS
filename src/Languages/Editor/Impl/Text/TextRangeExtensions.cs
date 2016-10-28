@@ -33,5 +33,13 @@ namespace Microsoft.Languages.Editor.Text {
         public static ITextRange ToTextRange(this SnapshotSpan span) {
             return new TextRange(span.Start.Position, span.Length);
         }
+
+        public static string GetText(this ITextRange range, ITextSnapshot snapshot) {
+            return snapshot.GetText(range.ToSpan());
+        }
+
+        public static string GetText(this ITextRange range, ITextBuffer textBuffer) {
+            return range.GetText(textBuffer.CurrentSnapshot);
+        }
     }
 }
