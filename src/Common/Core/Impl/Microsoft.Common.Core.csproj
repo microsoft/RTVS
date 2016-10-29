@@ -147,6 +147,7 @@
     <Compile Include="Telemetry\TelemetryArea.cs" />
     <Compile Include="Telemetry\TelemetryServiceBase.cs" />
     <Compile Include="Threading\BinaryAsyncLock.cs" />
+    <Compile Include="Threading\AsyncReaderWriterLock.Queue.cs" />
     <Compile Include="Threading\DelayedAsyncAction.cs" />
     <Compile Include="Threading\IAsyncReaderWriterLockToken.cs" />
     <Compile Include="Threading\IMainThread.cs" />
