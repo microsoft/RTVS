@@ -1,4 +1,8 @@
-using System;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -41,245 +45,107 @@ namespace Microsoft.Common.Core.Threading {
     ///</list>
     /// </para>
     /// </remarks>
-    public class AsyncReaderWriterLock {
-        private ReaderLockSource _readerTail;
-        private WriterLockSource _writerTail;
-        private WriterLockSource _lastAcquiredWriter;
-
-        private static readonly IReentrancyTokenFactory<ReaderLockSource> ReaderLockTokenFactory;
-        private static readonly IReentrancyTokenFactory<WriterLockSource> WriterLockTokenFactory;
+    public partial class AsyncReaderWriterLock {
+        private static readonly IReentrancyTokenFactory<LockSource> LockTokenFactory;
 
         static AsyncReaderWriterLock() {
-            ReaderLockTokenFactory = ReentrancyToken.CreateFactory<ReaderLockSource>();
-            WriterLockTokenFactory = ReentrancyToken.CreateFactory<WriterLockSource>();
+            LockTokenFactory = ReentrancyToken.CreateFactory<LockSource>();
         }
 
-        public AsyncReaderWriterLock() {
-            _readerTail = new ReaderLockSource(this);
-            _writerTail = new WriterLockSource(this);
+        private readonly Queue<LockSource> _queue;
 
-            _readerTail.CompleteTasks();
-            _writerTail.TryCompleteTask();
-            _writerTail.Task.Result.Dispose();
+        public AsyncReaderWriterLock() {
+            _queue = new Queue<LockSource>();
         }
 
         public Task<IAsyncReaderWriterLockToken> ReaderLockAsync(CancellationToken cancellationToken = default(CancellationToken), ReentrancyToken reentrancyToken = default(ReentrancyToken)) {
             Task<IAsyncReaderWriterLockToken> task;
-            var writerFromToken = WriterLockTokenFactory.GetSource(reentrancyToken);
-            if (writerFromToken != null && writerFromToken.TryReenter(out task)) {
+            var source = LockTokenFactory.GetSource(reentrancyToken);
+            if (source != null && source.TryReenter(false, out task)) {
                 return task;
             }
 
-            var readerFromToken = ReaderLockTokenFactory.GetSource(reentrancyToken);
-            if (readerFromToken != null && readerFromToken.TryReenter(out task)) {
-                return task;
+            if (cancellationToken.IsCancellationRequested) {
+                return Task.FromCanceled<IAsyncReaderWriterLockToken>(cancellationToken);
             }
 
-            while (true) {
-                if (cancellationToken.IsCancellationRequested) {
-                    return Task.FromCanceled<IAsyncReaderWriterLockToken>(cancellationToken);
-                }
-            
-                task = _readerTail.WaitAsync(cancellationToken);
-                if (task != null) {
-                    return task;
-                }
+            source = new LockSource(this, false);
+            bool isAddedAfterWriter;
+            _queue.AddReader(source, out isAddedAfterWriter);
+            if (isAddedAfterWriter) {
+                source.RegisterCancellation(cancellationToken);
+            } else {
+                source.Release();
             }
+
+            return source.Task;
         }
 
         public Task<IAsyncReaderWriterLockToken> WriterLockAsync(CancellationToken cancellationToken = default(CancellationToken), ReentrancyToken reentrancyToken = default(ReentrancyToken)) {
             Task<IAsyncReaderWriterLockToken> task;
-            var writerFromToken = WriterLockTokenFactory.GetSource(reentrancyToken);
-            if (writerFromToken != null && writerFromToken.TryReenter(out task)) {
+            var writerFromToken = LockTokenFactory.GetSource(reentrancyToken);
+            if (writerFromToken != null && writerFromToken.TryReenter(true, out task)) {
                 return task;
             }
 
-            while (true) {
-                if (cancellationToken.IsCancellationRequested) {
-                    return Task.FromCanceled<IAsyncReaderWriterLockToken>(cancellationToken);
+            if (cancellationToken.IsCancellationRequested) {
+                return Task.FromCanceled<IAsyncReaderWriterLockToken>(cancellationToken);
+            }
+
+            var source = new LockSource(this, true);
+            _queue.AddWriter(source);
+            if (_queue.GetFirstAsWriter() == source && !_queue.GetFirstReaders().Any()) {
+                source.Release();
+            } else {
+                source.RegisterCancellation(cancellationToken);
+            }
+
+            return source.Task;
+        }
+
+        private void RemoveFromQueue(LockSource lockSource) {
+            _queue.Remove(lockSource);
+            var writer = _queue.GetFirstAsWriter();
+            if (writer != null) {
+                writer.Release();
+            } else {
+                foreach (var reader in _queue.GetFirstReaders()) {
+                    reader.Release();
                 }
-
-                WriterLockSource oldWriter = _writerTail;
-                WriterLockSource newWriter;
-                if (!oldWriter.TrySetNext(out newWriter)) {
-                    continue;
-                }
-
-                var reader = oldWriter.IsCompleted && _lastAcquiredWriter == oldWriter
-                    ? Interlocked.Exchange(ref _readerTail, new ReaderLockSource(this)) 
-                    : null;
-
-                if (Interlocked.CompareExchange(ref _writerTail, newWriter, oldWriter) != oldWriter) {
-                    throw new InvalidOperationException();
-                }
-
-                if (reader != null) { // oldWriter.IsCompleted
-                    reader.RegisterWait(newWriter, cancellationToken);
-                } else {
-                    oldWriter.RegisterWait(cancellationToken);
-                }
-
-                return newWriter.Task;
             }
         }
 
-        private void CompleteNextTask(WriterLockSource writer) {
-            var reader = _readerTail;
-            while (writer != null && !writer.TryCompleteTask()) {
-                writer = writer.NextWriter;
-            }
-
-            // No writer source left - complete reader source tasks
-            if (writer == null) {
-                reader.CompleteTasks();
-            }
-        }
-
-        private void CompleteReaderTasksIfRequired(WriterLockSource writer) {
-            var reader = _readerTail;
-            while (writer != null && writer.IsCompleted) {
-                writer = writer.NextWriter;
-            }
-
-            // No writer source left - complete reader source tasks
-            if (writer == null) {
-                reader.CompleteTasks();
-            }
-        }
-
-        private class ReaderLockSource {
+        [DebuggerDisplay("{IsWriter ? \"Writer\" : \"Reader\"}, IsReleased = {_tcs.Task.IsCompleted}, IsPendingRemoval = {IsPendingRemoval}")]
+        private class LockSource : IQueueItem {
             private readonly AsyncReaderWriterLock _host;
-            private readonly TaskCompletionSource<bool> _rootTcs;
-            private WriterLockSource _writer;
-            private int _count;
-
-            public ReaderLockSource(AsyncReaderWriterLock host) {
-                _host = host;
-                _rootTcs = new TaskCompletionSource<bool>();
-            }
-
-            public Task<IAsyncReaderWriterLockToken> WaitAsync(CancellationToken cancellationToken) {
-                if (!TryIncrement()) {
-                    return null;
-                }
-
-                if (_rootTcs.Task.Status == TaskStatus.RanToCompletion) {
-                    return Task.FromResult<IAsyncReaderWriterLockToken>(new Token(Decrement, this));
-                }
-
-                var tcs = new TaskCompletionSource<IAsyncReaderWriterLockToken>();
-
-                if (cancellationToken.CanBeCanceled) {
-                    cancellationToken.Register(Cancellation, tcs, false);
-                }
-
-                _rootTcs.Task.ContinueWith(Continuation, tcs, cancellationToken, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
-
-                return tcs.Task;
-            }
-
-            public bool TryReenter(out Task<IAsyncReaderWriterLockToken> task) {
-                while (true) {
-                    var count = _count;
-                    if (count == 0) {
-                        task = null;
-                        return false;
-                    }
-
-                    if (Interlocked.CompareExchange(ref _count, count + 1, count) == count) {
-                        IAsyncReaderWriterLockToken token = new Token(Decrement, this);
-                        task = Task.FromResult(token);
-                        return true;
-                    }
-                }
-            }
-
-            private void Continuation(Task<bool> task, object state)
-                => ((TaskCompletionSource<IAsyncReaderWriterLockToken>)state).TrySetResult(new Token(Decrement, this));
-
-            private void Cancellation(object state) {
-                if (((TaskCompletionSource<IAsyncReaderWriterLockToken>) state).TrySetCanceled()) {
-                    Decrement();
-                }
-            }
-
-            public void CompleteTasks() => _rootTcs.TrySetResult(true);
-
-            public void RegisterWait(WriterLockSource writer, CancellationToken cancellationToken) {
-                Interlocked.Exchange(ref _writer, writer);
-
-                CompleteTasks();
-
-                if (cancellationToken.IsCancellationRequested) {
-                    CancelWaitReaders(cancellationToken);
-                } else if (_count == 0) {
-                    writer.TryCompleteTask();
-                } else if (cancellationToken.CanBeCanceled) {
-                    cancellationToken.Register(CancelWaitReaders, cancellationToken, false);
-                }
-            }
-
-            private void CancelWaitReaders(object state) {
-                if (!_writer.TryCancelTask((CancellationToken) state)) {
-                    return;
-                }
-
-                _host.CompleteReaderTasksIfRequired(_writer.NextWriter);
-            }
-
-            private bool TryIncrement() {
-                // _writer != null means that current ReaderLockSource can't create any more readers 
-                // see WriterLockAsync
-                if (_writer != null) {
-                    return false;
-                }
-
-                Interlocked.Increment(ref _count);
-                // If _writer != null became not null when _count was incremented, Decrement it back
-                if (_writer != null) {
-                    Decrement();
-                    return false;
-                }
-
-                return true;
-            }
-
-            private void Decrement() {
-                var count = Interlocked.Decrement(ref _count);
-
-                if (count == 0) {
-                    _host.CompleteNextTask(_writer);
-                }
-            }
-        }
-
-        private class WriterLockSource {
             private readonly TaskCompletionSource<IAsyncReaderWriterLockToken> _tcs;
-            private readonly AsyncReaderWriterLock _host;
-            private WriterLockSource _nextWriter;
+            private CancellationTokenRegistration _cancellationTokenRegistration;
             private int _reentrancyCount;
+            private int _removed;
+            private IQueueItem _next;
 
             public Task<IAsyncReaderWriterLockToken> Task => _tcs.Task;
-            public WriterLockSource NextWriter => _nextWriter;
-            public bool IsCompleted => _tcs.Task.IsCanceled || _reentrancyCount == 0;
+            public bool IsWriter { get; }
 
-            public WriterLockSource(AsyncReaderWriterLock host) {
-                _reentrancyCount = 1;
+            public LockSource(AsyncReaderWriterLock host, bool isWriter) {
                 _host = host;
                 _tcs = new TaskCompletionSource<IAsyncReaderWriterLockToken>();
+                _reentrancyCount = 1;
+                IsWriter = isWriter;
             }
 
-            public bool TrySetNext(out WriterLockSource next) {
-                if (_nextWriter != null) {
-                    next = null;
+            public void Release() {
+                if (_tcs.TrySetResult(new Token(this))) { 
+                    _cancellationTokenRegistration.Dispose();
+                }
+            }
+
+            public bool TryReenter(bool writerOnly, out Task<IAsyncReaderWriterLockToken> task) {
+                if (!IsWriter && writerOnly) {
+                    task = null;
                     return false;
                 }
 
-                next = new WriterLockSource(_host);
-                return Interlocked.CompareExchange(ref _nextWriter, next, null) == null;
-            }
-
-            public bool TryReenter(out Task<IAsyncReaderWriterLockToken> task) {
                 while (true) {
                     var count = _reentrancyCount;
                     if (count == 0) {
@@ -288,64 +154,54 @@ namespace Microsoft.Common.Core.Threading {
                     }
 
                     if (Interlocked.CompareExchange(ref _reentrancyCount, count + 1, count) == count) {
-                        IAsyncReaderWriterLockToken token = new Token(DecrementReentrancy, this);
-                        task = System.Threading.Tasks.Task.FromResult(token);
+                        task = _tcs.Task;
                         return true;
                     }
                 }
             }
 
-            public bool TryCompleteTask() {
-                var isSet = _tcs.TrySetResult(new Token(DecrementReentrancy, this));
-                if (isSet) {
-                    Interlocked.Exchange(ref _host._lastAcquiredWriter, this);
-                }
-                return isSet;
+            public void RegisterCancellation(CancellationToken cancellationToken) {
+                _cancellationTokenRegistration = cancellationToken.Register(Cancel);
             }
 
-            public bool TryCancelTask(CancellationToken cancellationToken) => _tcs.TrySetCanceled(cancellationToken);
-
-            public void RegisterWait(CancellationToken cancellationToken) {
-                if (cancellationToken.IsCancellationRequested) {
-                    _nextWriter.TryCancelTask(cancellationToken);
+            public bool TryRemoveFromQueue() {
+                var count = Interlocked.Decrement(ref _reentrancyCount);
+                if (count > 0) {
+                    return false;
                 }
 
-                if (cancellationToken.CanBeCanceled) {
-                    cancellationToken.Register(CancelWait, cancellationToken, false);
-                }
+                _host.RemoveFromQueue(this);
+                return true;
             }
-
-            private void DecrementReentrancy() {
-                if (Interlocked.Decrement(ref _reentrancyCount) == 0) {
-                    _host.CompleteNextTask(this);
+            
+            private void Cancel() {
+                if (_tcs.TrySetCanceled()) {
+                    _cancellationTokenRegistration.Dispose();
+                    TryRemoveFromQueue();
                 }
             }
 
-            private void CancelWait(object state) {
-                if (_nextWriter.TryCancelTask((CancellationToken) state)) {
-                    var writer = _host._lastAcquiredWriter;
-                    _host.CompleteReaderTasksIfRequired(writer);
-                }
-            }
+            public bool IsPendingRemoval => _reentrancyCount == 0;
+            public bool IsRemoved => _removed == 1;
+            public IQueueItem Next => _next;
+
+            public void MarkRemoved() => Interlocked.Exchange(ref _removed, 1);
+            public IQueueItem TrySetNext(IQueueItem value, IQueueItem comparand) => Interlocked.CompareExchange(ref _next, value, comparand);
         }
 
         private class Token : IAsyncReaderWriterLockToken {
-            private Action _dispose;
+            private LockSource _lockSource;
             public ReentrancyToken Reentrancy { get; }
 
-            public Token(Action dispose, WriterLockSource reentrancySource) {
-                _dispose = dispose;
-                Reentrancy = WriterLockTokenFactory.Create(reentrancySource);
-            }
-
-            public Token(Action dispose, ReaderLockSource reentrancySource) {
-                _dispose = dispose;
-                Reentrancy = ReaderLockTokenFactory.Create(reentrancySource);
+            public Token(LockSource lockSource) {
+                _lockSource = lockSource;
+                Reentrancy = LockTokenFactory.Create(lockSource);
             }
 
             public void Dispose() {
-                var dispose = Interlocked.Exchange(ref _dispose, null);
-                dispose?.Invoke();
+                if (_lockSource.TryRemoveFromQueue()) {
+                    _lockSource = null;
+                }
             }
         }
     }

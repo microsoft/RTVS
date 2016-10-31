@@ -737,6 +737,38 @@ namespace Microsoft.Common.Core.Test.Threading {
             task1.Should().BeRanToCompletion();
             task2.Should().NotBeCompleted();
         }
+        
+        [Test]
+        public void WriteRead_CancelSecond_ReleaseFirst_Read() {
+            var cts = new CancellationTokenSource();
+
+            var task1 = _arwl.WriterLockAsync(CancellationToken.None);
+            var task2 = _arwl.ReaderLockAsync(cts.Token);
+
+            cts.Cancel();
+            task1.Result.Dispose();
+            var task3 = _arwl.ReaderLockAsync(CancellationToken.None);
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().BeCanceled();
+            task3.Should().BeRanToCompletion();
+        }
+
+        [Test]
+        public void WriteRead_CancelSecond_ReleaseFirst_Write() {
+            var cts = new CancellationTokenSource();
+
+            var task1 = _arwl.WriterLockAsync(CancellationToken.None);
+            var task2 = _arwl.ReaderLockAsync(cts.Token);
+
+            cts.Cancel();
+            task1.Result.Dispose();
+            var task3 = _arwl.WriterLockAsync(CancellationToken.None);
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().BeCanceled();
+            task3.Should().BeRanToCompletion();
+        }
 
         [Test]
         public void Write_Release_Read() {
@@ -882,6 +914,38 @@ namespace Microsoft.Common.Core.Test.Threading {
 
             task1.Should().BeRanToCompletion();
             task2.Should().NotBeCompleted();
+        }
+        
+        [Test]
+        public void WriteWrite_CancelSecond_ReleaseFirst_Read() {
+            var cts = new CancellationTokenSource();
+
+            var task1 = _arwl.WriterLockAsync(CancellationToken.None);
+            var task2 = _arwl.WriterLockAsync(cts.Token);
+
+            cts.Cancel();
+            task1.Result.Dispose();
+            var task3 = _arwl.ReaderLockAsync(CancellationToken.None);
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().BeCanceled();
+            task3.Should().BeRanToCompletion();
+        }
+
+        [Test]
+        public void WriteWrite_CancelSecond_ReleaseFirst_Write() {
+            var cts = new CancellationTokenSource();
+
+            var task1 = _arwl.WriterLockAsync(CancellationToken.None);
+            var task2 = _arwl.WriterLockAsync(cts.Token);
+
+            cts.Cancel();
+            task1.Result.Dispose();
+            var task3 = _arwl.WriterLockAsync(CancellationToken.None);
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().BeCanceled();
+            task3.Should().BeRanToCompletion();
         }
 
         [Test]
