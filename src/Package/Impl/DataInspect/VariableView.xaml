@@ -6,7 +6,6 @@
              xmlns:pkg="clr-namespace:Microsoft.VisualStudio.R.Package"
              xmlns:local="clr-namespace:Microsoft.VisualStudio.R.Package.DataInspect"
              xmlns:imaging="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.Imaging"
-             xmlns:img="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Imaging"
              xmlns:imagecatalog="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.ImageCatalog"
              xmlns:core="clr-namespace:System;assembly=mscorlib"
              xmlns:wpf="clr-namespace:Microsoft.Common.Wpf;assembly=Microsoft.R.Common.Wpf"
@@ -14,7 +13,6 @@
              wpf:LambdaProperties.ImportedNamespaces="System.Linq Microsoft.VisualStudio.Imaging Microsoft.R.DataInspection"
              mc:Ignorable="d" x:Name="Self"
              d:DesignHeight="300" d:DesignWidth="300"
-             img:ImageThemingUtilities.ImageBackgroundColor="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundKey}}"
              Foreground="{DynamicResource {x:Static rwpf:Brushes.WindowTextKey}}"
              HorizontalAlignment="Stretch"
              FocusManager.FocusedElement="{Binding ElementName=RootTreeGrid}">
