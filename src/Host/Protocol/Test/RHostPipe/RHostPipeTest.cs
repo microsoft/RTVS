@@ -1,9 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using Microsoft.Common.Core;
-using Microsoft.R.Interpreters;
-using Microsoft.UnitTests.Core.XUnit;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,6 +10,11 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentAssertions;
+using Microsoft.Common.Core;
+using Microsoft.R.Interpreters;
+using Microsoft.UnitTests.Core.XUnit;
+
 using static System.FormattableString;
 
 namespace Microsoft.R.Host.Protocol.Test.RHostPipe {
@@ -63,40 +65,54 @@ namespace Microsoft.R.Host.Protocol.Test.RHostPipe {
                 EnableRaisingEvents = true,
             };
 
-            process.ErrorDataReceived += (sender, e) => {
-            };
-
-            process.Exited += delegate {
-            };
-
-            try {
-                process.Start();
-                process.WaitForExit(250);
-                if (process.HasExited && process.ExitCode < 0) {
-                    // RODO: process failed to start
-                }
-            } catch (Exception) {
-                throw;
+            process.Start();
+            process.WaitForExit(250);
+            if (process.HasExited && process.ExitCode < 0) {
+                return;
             }
 
-            process.BeginErrorReadLine();
+            CancellationTokenSource cts = new CancellationTokenSource(3000);
+            Task.Run(() => {
+                cts.Token.WaitHandle.WaitOne();
+                TryKill(process);
+            }).DoNotWait();
 
-            await ReadAnyStartupOutputFromRHost(process.StandardOutput.BaseStream);
-            await SendFuzzedInputToRHost(process.StandardInput.BaseStream, input);
-            await ReadAnyOutputFromRHost(process.StandardOutput.BaseStream);
-            process.Kill();
+            await ReadStartupOutputFromRHostAsync(process.StandardOutput.BaseStream, cts.Token);
+            await SendFuzzedInputToRHostAsync(process.StandardInput.BaseStream, input, cts.Token);
+            ReadAnyOutputFromRHostAsync(process.StandardOutput.BaseStream, cts.Token).DoNotWait();
+
+            // Fuzzed input should not kill the host.
+            process.HasExited.Should().BeFalse();
+
+            TryKill(process);
         }
 
-        private Task ReadAnyStartupOutputFromRHost(Stream stream) {
-            throw new NotImplementedException();
+        private static void TryKill(Process process) {
+            try {
+                process.Kill();
+            } catch (Exception) { }
         }
 
-        private Task SendFuzzedInputToRHost(Stream stream, byte[] input) {
-            throw new NotImplementedException();
+        private async Task ReadStartupOutputFromRHostAsync(Stream stream, CancellationToken ct) {
+            // Capture R Startup messages.
+            byte[] buffer = new byte[1024*1024];
+            int bytesRead = 0;
+            do {
+                bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, ct);
+            } while (bytesRead == buffer.Length && !ct.IsCancellationRequested);
         }
 
-        private Task ReadAnyOutputFromRHost(Stream streamy) {
-            throw new NotImplementedException();
+        private async Task SendFuzzedInputToRHostAsync(Stream stream, byte[] input, CancellationToken ct) {
+            await stream.WriteAsync(input, 0, input.Length, ct);
+        }
+
+        private async Task ReadAnyOutputFromRHostAsync(Stream stream, CancellationToken ct) {
+            // Capture R messages after sending fuzzed input.
+            byte[] buffer = new byte[1024 * 1024];
+            int bytesRead = 0;
+            do {
+                bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, ct);
+            } while (!ct.IsCancellationRequested);
         }
 
         private Interpreter _interpreter;
@@ -107,7 +123,7 @@ namespace Microsoft.R.Host.Protocol.Test.RHostPipe {
             var interpreters = GetInterpreters();
             _interpreter = interpreters.FirstOrDefault();
 
-            for (int i = 0; i < 10; ++i) {
+            for (int i = 0; i < 100; ++i) {
                 byte[] input = GenerateInput();
                 await RHostPipeFuzzTestRunnerAsync(input);
             }
@@ -118,7 +134,7 @@ namespace Microsoft.R.Host.Protocol.Test.RHostPipe {
             using (BinaryWriter writer = new BinaryWriter(ms)) {
                 // Id =uint64
                 writer.Write(GenerateUInt64());
-                // Requestid = uint64
+                // Request id = uint64
                 writer.Write(GenerateUInt64());
                 // Name
                 writer.Write(GenerateAsciiString().ToCharArray());
@@ -133,27 +149,27 @@ namespace Microsoft.R.Host.Protocol.Test.RHostPipe {
             }
         }
 
-        private string GenerateAsciiString() {
-            byte[] rbuf = new byte[_rand.Next(0, 1024*1024)];
-            _rand.NextBytes(rbuf);
-            return Encoding.ASCII.GetString(rbuf);
-        }
-
-        private string GenerateUnicodeString(int max = 10000) {
+        private string GenerateAsciiString(int max = 10000) {
             byte[] rbuf = new byte[_rand.Next(0, max)];
             _rand.NextBytes(rbuf);
             return Encoding.ASCII.GetString(rbuf);
         }
 
+        private string GenerateUTF8String(int max = 10000) {
+            byte[] rbuf = new byte[_rand.Next(0, max)];
+            _rand.NextBytes(rbuf);
+            return Encoding.UTF8.GetString(rbuf);
+        }
+
         private string GenerateJsonArray() {
             if(_rand.Next()%2 == 0) {
                 // return random unicode string
-                return GenerateUnicodeString();
+                return GenerateUTF8String();
             }
 
             string[] parts = new string[_rand.Next(0,1000)]; 
             for(int i = 0; i < parts.Length; ++i) {
-                parts[i] = GenerateUnicodeString(100);
+                parts[i] = GenerateUTF8String(100);
             }
 
             // return a JSON array of random unicode strings
