@@ -110,27 +110,29 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             VsWpfOverrides.Apply();
             CranMirrorList.Download();
 
-            RtvsTelemetry.Initialize();
-
-            using (var p = Current.GetDialogPage(typeof(RToolsOptionsPage)) as RToolsOptionsPage) {
-                p.LoadSettings();
-            }
-
-            MicrosoftRClient.CheckInstall(VsAppShell.Current);
             base.Initialize();
+
+            RtvsTelemetry.Initialize();
+            MicrosoftRClient.CheckInstall(VsAppShell.Current);
 
             ProjectIconProvider.LoadProjectImages();
             LogCleanup.DeleteLogsAsync(DiagnosticLogs.DaysToRetain);
 
+            IdleTimeAction.Create(CompleteInit, 20, this.GetType());
+            IdleTimeAction.Create(ExpansionsCache.Load, 200, typeof(ExpansionsCache));
+        }
+        
+        private void CompleteInit() {
+            using (var p = Current.GetDialogPage(typeof(RToolsOptionsPage)) as RToolsOptionsPage) {
+                p?.LoadSettings();
+            }
+
+            System.Threading.Tasks.Task.Run(() => RtvsTelemetry.Current.ReportConfiguration());
             _indexBuildingTask = FunctionIndex.BuildIndexAsync();
 
             AdviseExportedWindowFrameEvents<ActiveWpfTextViewTracker>();
             AdviseExportedWindowFrameEvents<VsActiveRInteractiveWindowTracker>();
             AdviseExportedDebuggerEvents<VsDebuggerModeTracker>();
-
-            System.Threading.Tasks.Task.Run(() => RtvsTelemetry.Current.ReportConfiguration());
-
-            IdleTimeAction.Create(ExpansionsCache.Load, 200, typeof(ExpansionsCache));
         }
 
         protected override void Dispose(bool disposing) {
