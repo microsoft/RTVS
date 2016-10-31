@@ -474,17 +474,16 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
             return Task.CompletedTask;
         }
 
-        async Task IRCallbacks.Disconnected() {
+        Task IRCallbacks.Disconnected() {
             _isHostRunning = false;
-            using (await _initializationLock.WaitAsync()) {
-                Disconnected?.Invoke(this, EventArgs.Empty);
+            Disconnected?.Invoke(this, EventArgs.Empty);
 
-                var currentRequest = Interlocked.Exchange(ref _currentRequestSource, null);
-                var exception = new RHostDisconnectedException();
-                currentRequest?.TryCancel(exception);
+            var currentRequest = Interlocked.Exchange(ref _currentRequestSource, null);
+            var exception = new RHostDisconnectedException();
+            currentRequest?.TryCancel(exception);
 
-                ClearPendingRequests(exception);
-            }
+            ClearPendingRequests(exception);
+            return Task.CompletedTask;
         }
 
         Task IRCallbacks.Shutdown(bool rDataSaved) {
