@@ -1484,8 +1484,10 @@
   <Import Project="..\..\Common\BuildTasks\Microsoft.Common.BuildTasks.targets" />
   <Target Name="AddToVsixSources" AfterTargets="GetVsixSourceItems">
     <ItemGroup>
+      <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.Host.exe" />
       <VSIXSourceItem Include="$(OutputPath)\Newtonsoft.Json.dll" />
       <VSIXSourceItem Include="$(OutputPath)\websocket-sharp.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Microsoft.Data.ConnectionUI.Dialog.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Data.ConnectionUI.Dialog.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Data.ConnectionUI.dll" />
       <VSIXSourceItem Include="$(OutputPath)\ItemTemplates\**\*.*">

@@ -1,9 +1,12 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.25830.2
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.VisualStudio.R.Package", "Package\Impl\Microsoft.VisualStudio.R.Package.csproj", "{26035FE3-25AB-45EC-BB45-7FD0B6C1D545}"
+	ProjectSection(ProjectDependencies) = postProject
+		{131842CE-DAF9-4C0E-8409-4A26EF7961A7} = {131842CE-DAF9-4C0E-8409-4A26EF7961A7}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Languages.Core", "Languages\Core\Impl\Microsoft.Languages.Core.csproj", "{25CD8690-6208-4740-B123-6DBCE6B9444A}"
 EndProject

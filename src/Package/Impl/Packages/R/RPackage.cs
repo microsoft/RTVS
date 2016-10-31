@@ -96,6 +96,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         public const string OptionsDialogName = "R Tools";
 
         private System.Threading.Tasks.Task _indexBuildingTask;
+        private bool _settingsLoaded;
 
         public static IRPackage Current { get; private set; }
 
@@ -121,11 +122,9 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             IdleTimeAction.Create(CompleteInit, 20, this.GetType());
             IdleTimeAction.Create(ExpansionsCache.Load, 200, typeof(ExpansionsCache));
         }
-        
+
         private void CompleteInit() {
-            using (var p = Current.GetDialogPage(typeof(RToolsOptionsPage)) as RToolsOptionsPage) {
-                p?.LoadSettings();
-            }
+            LoadSettings();
 
             System.Threading.Tasks.Task.Run(() => RtvsTelemetry.Current.ReportConfiguration());
             _indexBuildingTask = FunctionIndex.BuildIndexAsync();
@@ -177,9 +176,20 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             return base.GetAutomationObject(name);
         }
 
+        #region IRPackage
         public T FindWindowPane<T>(Type t, int id, bool create) where T : ToolWindowPane {
             return FindWindowPane(t, id, create) as T;
         }
+
+        public void LoadSettings() {
+            if (!_settingsLoaded) {
+                using (var p = Current.GetDialogPage(typeof(RToolsOptionsPage)) as RToolsOptionsPage) {
+                    p?.LoadSettings();
+                }
+                _settingsLoaded = true;
+            }
+        }
+        #endregion
 
         protected override int CreateToolWindow(ref Guid toolWindowType, int id) {
             var toolWindowFactory = VsAppShell.Current.ExportProvider.GetExportedValue<RPackageToolWindowProvider>();
@@ -200,5 +210,5 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             }
             return false;
         }
-     }
+    }
 }
