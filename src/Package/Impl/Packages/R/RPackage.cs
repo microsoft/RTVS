@@ -123,9 +123,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         }
 
         private void CompleteInit() {
-            using (var p = Current.GetDialogPage(typeof(RToolsOptionsPage)) as RToolsOptionsPage) {
-                p?.LoadSettings();
-            }
+            LoadSettings();
 
             RtvsTelemetry.Initialize(_packageIndex, VsAppShell.Current.ExportProvider.GetExportedValue<IRSettings>());
 
@@ -174,9 +172,17 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             return base.GetAutomationObject(name);
         }
 
+        #region IRPackage
         public T FindWindowPane<T>(Type t, int id, bool create) where T : ToolWindowPane {
             return FindWindowPane(t, id, create) as T;
         }
+
+        public void LoadSettings() {
+            using (var p = Current.GetDialogPage(typeof(RToolsOptionsPage)) as RToolsOptionsPage) {
+                p?.LoadSettings();
+            }
+        }
+        #endregion
 
         protected override int CreateToolWindow(ref Guid toolWindowType, int id) {
             var toolWindowFactory = VsAppShell.Current.ExportProvider.GetExportedValue<RPackageToolWindowProvider>();
