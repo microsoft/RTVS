@@ -54,5 +54,13 @@ namespace Microsoft.UnitTests.Core.Threading {
                 }
             }
         }
+
+        public static async Task When(Task task, int timeout) {
+            var timeoutTask = Task.Delay(timeout);
+            await Task.WhenAny(timeoutTask, task);
+            if (timeoutTask.IsCompleted) {
+                throw new TimeoutException("Test failed by timeout, task is still not completed");
+            }
+        }
     }
 }

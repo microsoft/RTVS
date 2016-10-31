@@ -11,6 +11,7 @@ using FluentAssertions;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.OS;
 using Microsoft.UnitTests.Core.FluentAssertions;
+using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Newtonsoft.Json;
 using Xunit;
@@ -63,20 +64,15 @@ namespace Microsoft.R.Host.Protocol.Test.UserProfileServicePipe {
             testDone.Wait(serverTimeOut + clientTimeOut);
         }
 
-        private async Task CreateProfileFuzzTestRunnerAsync(IUserProfileServices creator, string input, bool isValidParse, bool isValidAccount, bool isExistingAccount, int serverTimeOut, int clientTimeOut) {
-            ManualResetEventSlim testDone = new ManualResetEventSlim(false);
-            Task.Run(async () => {
+        private async Task CreateProfileFuzzTestRunnerAsync(IUserProfileServices creator, string input, int serverTimeOut, int clientTimeOut) {
+            var task = Task.Run(async () => {
                 try {
-                    try {
-                        await RUserProfileCreator.CreateProfileAsync(serverTimeOutms: serverTimeOut, clientTimeOutms: clientTimeOut, userProfileService: creator);
-                    } catch (JsonReaderException) {
-                        // expecting JSON parsing to fail
-                        // JSON parsing may fail due to randomly generated strings as input.
-                    }
-                } finally {
-                    testDone.Set();
+                    await RUserProfileCreator.CreateProfileAsync(serverTimeOutms: serverTimeOut, clientTimeOutms: clientTimeOut, userProfileService: creator);
+                } catch (JsonReaderException) {
+                    // expecting JSON parsing to fail
+                    // JSON parsing may fail due to randomly generated strings as input.
                 }
-            }).DoNotWait();
+            });
 
             using (CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(clientTimeOut))) {
                 UserProfileResultMock result = await CreateProfileClientTestWorkerAsync(input, cts.Token);
@@ -84,7 +80,7 @@ namespace Microsoft.R.Host.Protocol.Test.UserProfileServicePipe {
                 result?.Error.Should().Be(13);
             }
 
-            testDone.Wait(serverTimeOut + clientTimeOut);
+            await ParallelTools.When(task, serverTimeOut + clientTimeOut);
         }
 
         [CompositeTest]
@@ -129,7 +125,7 @@ namespace Microsoft.R.Host.Protocol.Test.UserProfileServicePipe {
                 UserProfileCreatorFuzzTestMock creator = new UserProfileCreatorFuzzTestMock();
 
                 try {
-                    await CreateProfileFuzzTestRunnerAsync(creator, json, false, false, false, 100, 100);
+                    await CreateProfileFuzzTestRunnerAsync(creator, json, 100, 100);
                 } catch (IOException) {
                     // expect pipe to fail. The client side pipe throws an IOException when the server side pipe 
                     // closes due to IO error or attempt to access unauthorized memory.

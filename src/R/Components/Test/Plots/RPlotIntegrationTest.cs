@@ -720,7 +720,7 @@ namespace Microsoft.R.Components.Test.Plots {
 
             await InitializeGraphicsDevice();
 
-            await ExecuteAndWaitForPlotsAsync(new string[] {
+            await ExecuteAndWaitForPlotsAsync(new [] {
                 "plot(0:10)",
             });
 
@@ -731,9 +731,9 @@ namespace Microsoft.R.Components.Test.Plots {
             deviceCommands.EndLocator.Should().BeInvisibleAndDisabled();
 
             var firstLocatorModeTask = EventTaskSources.IRPlotDevice.LocatorModeChanged.Create(_workflow.Plots.ActiveDevice);
-            ExecuteAndDoNotWaitForPlotsAsync(new string[] {
+            var locatorTask = ExecuteAndDoNotWaitForPlotsAsync(new [] {
                 "res <- locator()",
-            }).DoNotWait();
+            });
             await firstLocatorModeTask;
 
             var points = new Point[] {
@@ -777,13 +777,15 @@ namespace Microsoft.R.Components.Test.Plots {
             deviceCommands.EndLocator.Should().BeInvisibleAndDisabled();
 
             string outputFilePath = _testFiles.GetDestinationPath("LocatorResult.csv");
-            await ExecuteAndDoNotWaitForPlotsAsync(new string[] {
-                string.Format("write.csv(res, {0})", outputFilePath.ToRPath().ToRStringLiteral())
+            await ExecuteAndDoNotWaitForPlotsAsync(new[] {
+                $"write.csv(res, {outputFilePath.ToRPath().ToRStringLiteral()})"
             });
 
             var x = new double[] { -2.48008095952895, 1.55378525638498, 10.0697250455366 };
             var y = new double[] { 14.4476461865435, 12.091623959219, 9.73560173189449 };
             CheckLocatorResult(outputFilePath, x, y);
+
+            await locatorTask;
         }
 
         [Test(ThreadType.UI)]
@@ -802,9 +804,9 @@ namespace Microsoft.R.Components.Test.Plots {
             deviceCommands.EndLocator.Should().BeInvisibleAndDisabled();
 
             var locatorModeTask = EventTaskSources.IRPlotDevice.LocatorModeChanged.Create(_workflow.Plots.ActiveDevice);
-            ExecuteAndDoNotWaitForPlotsAsync(new string[] {
+            var locatorTask = ExecuteAndDoNotWaitForPlotsAsync(new string[] {
                 "res <- locator()",
-            }).DoNotWait();
+            });
             await locatorModeTask;
 
             deviceVC.LocatorMode.Should().BeTrue();
@@ -819,11 +821,13 @@ namespace Microsoft.R.Components.Test.Plots {
 
             string outputFilePath = _testFiles.GetDestinationPath("LocatorResultNoClick.csv");
             await ExecuteAndDoNotWaitForPlotsAsync(new string[] {
-                string.Format("write.csv(res, {0})", outputFilePath.ToRPath().ToRStringLiteral())
+                $"write.csv(res, {outputFilePath.ToRPath().ToRStringLiteral()})"
             });
 
             string output = File.ReadAllText(outputFilePath);
             output.Trim().Should().Be("\"\"");
+
+            await locatorTask;
         }
 
         [Test(ThreadType.UI)]

@@ -94,11 +94,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
                     Name = nameof(session)
                 }, null, 1000);
 
-                try {
-                    await ParallelTools.WhenAll(switchTask, startHostTask);
-                } catch (TimeoutException) {
-                    Debugger.Launch();
-                }
+                await ParallelTools.WhenAll(switchTask, startHostTask);
 
                 startHostTask.Should().BeRanToCompletion();
                 switchTask.Should().BeRanToCompletion();
