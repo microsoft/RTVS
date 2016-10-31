@@ -98,6 +98,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     internal class RPackage : BasePackage<RLanguageService>, IRPackage {
         public const string OptionsDialogName = "R Tools";
         private IPackageIndex _packageIndex;
+        private bool _settingsLoaded;
 
         public static IRPackage Current { get; private set; }
 
@@ -112,23 +113,25 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             VsWpfOverrides.Apply();
             CranMirrorList.Download();
 
-            using (var p = Current.GetDialogPage(typeof(RToolsOptionsPage)) as RToolsOptionsPage) {
-                p?.LoadSettings();
-            }
-
-            RtvsTelemetry.Initialize(_packageIndex, VsAppShell.Current.ExportProvider.GetExportedValue<IRSettings>());
             base.Initialize();
 
             ProjectIconProvider.LoadProjectImages();
             LogCleanup.DeleteLogsAsync(DiagnosticLogs.DaysToRetain);
 
+            IdleTimeAction.Create(CompleteInit, 20, this.GetType(), VsAppShell.Current);
+            IdleTimeAction.Create(ExpansionsCache.Load, 200, typeof(ExpansionsCache), VsAppShell.Current);
+            IdleTimeAction.Create(() => RtvsTelemetry.Current.ReportConfiguration(), 5000, typeof(RtvsTelemetry), VsAppShell.Current);
+        }
+
+        private void CompleteInit() {
+            LoadSettings();
+
+            RtvsTelemetry.Initialize(_packageIndex, VsAppShell.Current.ExportProvider.GetExportedValue<IRSettings>());
+
             BuildFunctionIndex();
             AdviseExportedWindowFrameEvents<ActiveWpfTextViewTracker>();
             AdviseExportedWindowFrameEvents<VsActiveRInteractiveWindowTracker>();
             AdviseExportedDebuggerEvents<VsDebuggerModeTracker>();
-
-            IdleTimeAction.Create(ExpansionsCache.Load, 200, typeof(ExpansionsCache), VsAppShell.Current);
-            IdleTimeAction.Create(() => RtvsTelemetry.Current.ReportConfiguration(), 5000, typeof(RtvsTelemetry), VsAppShell.Current);
         }
 
         protected override void Dispose(bool disposing) {
@@ -170,9 +173,20 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             return base.GetAutomationObject(name);
         }
 
+        #region IRPackage
         public T FindWindowPane<T>(Type t, int id, bool create) where T : ToolWindowPane {
             return FindWindowPane(t, id, create) as T;
         }
+
+        public void LoadSettings() {
+            if (!_settingsLoaded) {
+                using (var p = Current.GetDialogPage(typeof(RToolsOptionsPage)) as RToolsOptionsPage) {
+                    p?.LoadSettings();
+                }
+                _settingsLoaded = true;
+            }
+        }
+        #endregion
 
         protected override int CreateToolWindow(ref Guid toolWindowType, int id) {
             var toolWindowFactory = VsAppShell.Current.ExportProvider.GetExportedValue<RPackageToolWindowProvider>();
