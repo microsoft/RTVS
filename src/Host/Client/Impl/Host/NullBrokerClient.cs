@@ -5,7 +5,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Client.Host {
@@ -21,12 +20,12 @@ namespace Microsoft.R.Host.Client.Host {
         public Task<AboutHost> GetHostInformationAsync(CancellationToken cancellationToken = default(CancellationToken)) => Task.FromResult(AboutHost.Empty);
         public Task PingAsync() => Result;
 
-        public Task<RHost> ConnectAsync(BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken), ReentrancyToken reentrancyToken = default(ReentrancyToken)) => Result;
+        public Task<RHost> ConnectAsync(BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken)) => Result;
 
         public Task TerminateSessionAsync(string name, CancellationToken cancellationToken = new CancellationToken()) => Result;
 
         public void Dispose() { }
 
-        public Task<string> HandleUrlAsync(string url, CancellationToken ct) => Task.FromResult(url);
+        public Task<string> HandleUrlAsync(string url, CancellationToken cancellationToken) => Task.FromResult(url);
     }
 }

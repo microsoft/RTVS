@@ -416,14 +416,16 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 ? await _installedAndLoadedLock.ResetAsync()
                 : await _installedAndLoadedLock.WaitAsync();
 
-            try {
-                await LoadInstalledAndLoadedPackagesAsync();
-                _errorMessages.Remove(ErrorMessageType.Connection);
-                lockToken.Set();
-            } catch (RPackageManagerException ex) {
-                _errorMessages.Add(ex.Message, ErrorMessageType.Connection);
-            } finally {
-                lockToken.Reset();
+            if (!lockToken.IsSet) {
+                try {
+                    await LoadInstalledAndLoadedPackagesAsync();
+                    _errorMessages.Remove(ErrorMessageType.Connection);
+                    lockToken.Set();
+                } catch (RPackageManagerException ex) {
+                    _errorMessages.Add(ex.Message, ErrorMessageType.Connection);
+                } finally {
+                    lockToken.Reset();
+                }
             }
         }
 

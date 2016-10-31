@@ -15,7 +15,6 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Net;
-using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.BrokerServices;
 using Microsoft.R.Host.Protocol;
 using Newtonsoft.Json;
@@ -93,7 +92,7 @@ namespace Microsoft.R.Host.Client.Host {
             return !string.IsNullOrEmpty(result) ? JsonConvert.DeserializeObject<AboutHost>(result) : AboutHost.Empty;
         }
 
-        public virtual async Task<RHost> ConnectAsync(BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken), ReentrancyToken reentrancyToken = default(ReentrancyToken)) {
+        public virtual async Task<RHost> ConnectAsync(BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken)) {
             DisposableBag.ThrowIfDisposed();
             await TaskUtilities.SwitchToBackgroundThread();
 
@@ -187,6 +186,6 @@ namespace Microsoft.R.Host.Client.Host {
             return new RHost(name, callbacks, transport, Log, cts);
         }
 
-        public virtual Task<string> HandleUrlAsync(string url, CancellationToken ct)  => Task.FromResult(url);
+        public virtual Task<string> HandleUrlAsync(string url, CancellationToken cancellationToken)  => Task.FromResult(url);
     }
 }

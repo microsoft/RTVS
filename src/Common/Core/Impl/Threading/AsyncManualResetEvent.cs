@@ -12,10 +12,13 @@ namespace Microsoft.Common.Core.Threading {
         private TaskCompletionSource<bool> _tcs;
         public bool IsSet => _tcs.Task.IsCompleted;
 
-        public Task WaitAsync() => _tcs.Task;
         public void Set() => _tcs.TrySetResult(true);
 
-        public Task WaitAsync(CancellationToken cancellationToken) {
+        public Task WaitAsync(CancellationToken cancellationToken = default(CancellationToken)) {
+            if (!cancellationToken.CanBeCanceled) {
+                return _tcs.Task;
+            }
+
             if (cancellationToken.IsCancellationRequested) {
                 return Task.FromCanceled(cancellationToken);
             }

@@ -1,16 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System.Collections;
-using System.Collections.Generic;
 using System.Threading;
 
 namespace Microsoft.Common.Core.Threading {
     public partial class AsyncReaderWriterLock {
-        internal class Queue<TQueueItem> : IEnumerable<TQueueItem> where TQueueItem: class, IQueueItem {
-            private IQueueItem _head;
-            private IQueueItem _tail;
-            private IQueueItem _wTail;
+        private class Queue {
+            private LockSource _head;
+            private LockSource _tail;
+            private LockSource _wTail;
 
             /// <summary>
             /// Adds a reader item
@@ -36,39 +34,58 @@ namespace Microsoft.Common.Core.Threading {
             /// </remarks>
             /// <param name="item"></param>
             /// <param name="isAddedAfterWriter"></param>
-            public void AddReader(TQueueItem item, out bool isAddedAfterWriter) {
-                var wTail = _wTail;
-                UpdateTail(item);
-
-                var newWTail = SpinWhileWTailIsPendingRemoval();
-                isAddedAfterWriter = wTail != newWTail && newWTail != null
-                    ? IsFirstEqualOrBeforeSecond(item, newWTail)
-                    : newWTail != null;
+            public void AddReader(LockSource item, out bool isAddedAfterWriter) {
+                lock (this) {
+                    UpdateTail(item);
+                    isAddedAfterWriter = _wTail != null;
+                }
             }
 
-            private IQueueItem SpinWhileWTailIsPendingRemoval() {
-                var wTail = _wTail;
-                if (wTail == null || !wTail.IsPendingRemoval) {
-                    return wTail;
-                }
-
-                var sw = new SpinWait();
-                while (wTail != null && wTail.IsPendingRemoval) {
-                    sw.SpinOnce();
-                    wTail = _wTail;
-                }
-
-                return wTail;
-            }
-
-            private static bool IsFirstEqualOrBeforeSecond(IQueueItem first, IQueueItem second) {
-                while (first != null) {
-                    if (first == second) {
-                        return true;
+            /// <summary>
+            /// Adds a reader from exclusive reader lock
+            /// </summary>
+            /// <remarks>
+            /// 1.  _wTail         erlTail
+            ///          ↓               ↓
+            ///    R−→R−→R  ―►  R−→R−→R−→E
+            ///          ↑               ↑
+            ///      _tail           _tail
+            /// 
+            /// 
+            /// 2.  _wTail       _wTail  erlTail
+            ///          ↓            ↓  ↓
+            ///    R−→R−→W  ―►  R−→R−→W−→E
+            ///          ↑               ↑
+            ///      _tail           _tail
+            /// 
+            /// 
+            /// 3.  _wTail          _wTail     erlTail
+            ///          ↓               ↓           ↓
+            ///    R−→W−→W−→R−→R  ―►  R−→W−→W−→R−→R−→E
+            ///                ↑                  ↑
+            ///            _tail              _tail
+            ///  
+            /// 
+            /// 4.  _wTail _tail       _wTail    _tail
+            ///          ↓     ↓            ↓        ↓
+            ///    R−→W−→W−→E−→R  ―►  R−→W−→W−→E−→E−→R
+            ///             ↑                     ↑
+            ///   erLock.Tail               erlTail
+            /// </remarks>
+            public void AddExclusiveReader(ExclusiveReaderLockSource item, out bool isAddedAfterWriterOrExclusiveReader) {
+                lock (this) {
+                    var erlTail = item.ExclusiveReaderLock.Tail;
+                    if (erlTail?.Next == null) {
+                        UpdateTail(item);
+                        isAddedAfterWriterOrExclusiveReader = _wTail != null || erlTail != null;
+                    } else {
+                        Link(item, erlTail.Next);
+                        Link(erlTail, item);
+                        isAddedAfterWriterOrExclusiveReader = true;
                     }
-                    first = first.Next;
+
+                    Interlocked.Exchange(ref item.ExclusiveReaderLock.Tail, item);
                 }
-                return false;
             }
 
             /// <summary>
@@ -96,144 +113,113 @@ namespace Microsoft.Common.Core.Threading {
             ///      _tail                 _tail
             /// </remarks>
             /// <param name="item"></param>
-            public IQueueItem AddWriter(TQueueItem item) {
-                while (true) {
-                    var tail = _tail;
+            /// <param name="isFirstWriter"></param>
+            public void AddWriter(LockSource item, out bool isFirstWriter) {
+                lock (this) {
+                    var wTail = Interlocked.Exchange(ref _wTail, item);
+
                     // Case 1. No writers in the queue. Update _wTail and the _tail
-                    var wTail = Interlocked.CompareExchange(ref _wTail, item, null);
-                    if (wTail == null) {
-                        UpdateTail(item);
-                        return item;
-                    }
-
                     // Case 2. No readers in front of a writer, _tail and _wTail point at the same item. Update _wTail.Next, _tail and _wTail
-                    if (wTail == tail && wTail.TrySetNext(item, null) == null) {
-                        Interlocked.Exchange(ref _tail, item);
-                        Interlocked.Exchange(ref _wTail, item);
-                        return item;
+                    if (wTail == null || wTail == _tail) {
+                        UpdateTail(item);
+                    } else {
+                        Link(item, wTail.Next);
+                        Link(wTail, item);
                     }
 
-                    // Case 3. Readers in front of writers. wTail.Next points to reader. Update item.Next, _wTail.Next and _wTail
-                    var wTailNext = wTail.Next;
-                    if (wTailNext == null || wTailNext.IsWriter || wTail.IsRemoved) {
-                        continue;
-                    }
-
-                    item.TrySetNext(wTailNext, item.Next);
-                    
-                    if (wTail.TrySetNext(item, wTailNext) == wTailNext && !wTail.IsRemoved && Interlocked.CompareExchange(ref _wTail, item, wTail) == wTail) {
-                        return item;
-                    }
+                    isFirstWriter = _head == item;
                 }
             }
             
-            /// <summary>
-            /// Updates tail
-            /// </summary>
-            /// <param name="item">item to set as a tail</param>
-            /// <returns>Previous tail</returns>
-            private void UpdateTail(TQueueItem item) {
-                while (true) {
-                    var tail = Interlocked.CompareExchange(ref _tail, item, null);
-                    if (tail == null) {
-                        Interlocked.Exchange(ref _head, item);
-                        return;
+            public LockSource[] Remove(LockSource item) {
+                lock (this) {
+                    var next = item.Next;
+                    Interlocked.CompareExchange(ref _head, next, item);
+
+                    var previous = item.Previous;
+                    Interlocked.CompareExchange(ref _tail, previous, item);
+                    Interlocked.CompareExchange(ref _wTail, previous != null && previous.IsWriter ? previous : null, item);
+
+                    var erLock = (item as ExclusiveReaderLockSource)?.ExclusiveReaderLock;
+                    if (erLock != null) {
+                        Interlocked.CompareExchange(ref erLock.Tail, previous as ExclusiveReaderLockSource, item);
                     }
                     
-                    if (tail.TrySetNext(item, null) == null && Interlocked.CompareExchange(ref _tail, item, tail) == tail) {
-                        return;
+                    Unlink(item);
+                    if (_head == null) {
+                        return new LockSource[0];
                     }
+
+                    if (_head.IsWriter && next == _head) {
+                        return new[] { _head };
+                    }
+
+                    if (_wTail == null && next != null) {
+                        return FilterAndCopyToArray(next);
+                    }
+
+                    return new LockSource[0];
+                }
+            }
+            
+            private void UpdateTail(LockSource item) {
+                var tail = Interlocked.Exchange(ref _tail, item);
+                if (tail == null) {
+                    Interlocked.Exchange(ref _head, item);
+                } else {
+                    Link(tail, item);
                 }
             }
 
-            public void Remove(TQueueItem item) {
-                if (item == _head || item == _wTail) {
-                    CleanupFromHead();
-                }
-            }
-
-            private void CleanupFromHead() {
-                var head = _head;
-                while (head != null && head.IsPendingRemoval) {
-                    var next = head.Next;
-
-                    head.MarkRemoved();
-                    Interlocked.CompareExchange(ref _tail, null, head);
-                    Interlocked.CompareExchange(ref _wTail, null, head);
-                    head = Interlocked.CompareExchange(ref _head, next, head) == head ? next : _head;
-                }
-
-                if (head == null) {
-                    return;
-                }
-
-                var item = head;
-                var lastWriter = head.IsWriter ? head : null;
-
-                // If new head is pending removal, another thread will handle further cleanup
-                while (!head.IsPendingRemoval) {
-                    var next = item.Next;
-                    if (next == null) {
-                       return; 
-                    }
-
-                    if (next.IsPendingRemoval) {
-                        next.MarkRemoved();
-                        Interlocked.CompareExchange(ref _tail, item, next);
-                        Interlocked.CompareExchange(ref _wTail, lastWriter, next);
-                        item.TrySetNext(next.Next, next);
-                        continue;
-                    }
-
-                    if (next.IsWriter) {
-                        lastWriter = next;
-                    }
-
-                    item = next;
-                }
-            }
-
-            public IEnumerable<TQueueItem> GetFirstReaders() {
-                var item = _head;
-                while (item != null && (item.IsPendingRemoval || !item.IsWriter)) {
-                    if (!item.IsPendingRemoval) {
-                        yield return (TQueueItem)item;
-                    }
-
-                    item = item.Next;
-                }
-            }
-
-            public TQueueItem GetFirstAsWriter() {
-                var head = _head;
-                if (head != null && !head.IsPendingRemoval && head.IsWriter) {
-                    return (TQueueItem)head;
-                }
-
-                return null;
-            }
-
-            public IEnumerator<TQueueItem> GetEnumerator() {
-                var item = _head;
+            private LockSource[] FilterAndCopyToArray(LockSource start) {
+                var count = 0;
+                var item = start;
                 while (item != null) {
-                    if (!item.IsPendingRemoval) {
-                        yield return (TQueueItem)item;
+                    if (ReaderCanBeReleased(item)) {
+                        count++;
                     }
                     item = item.Next;
                 }
+
+                var items = new LockSource[count];
+                count = 0;
+                item = start;
+                while (item != null) {
+                    if (ReaderCanBeReleased(item)) {
+                        items[count] = item;
+                        count++;
+                    }
+                    item = item.Next;
+                }
+
+                return items;
             }
 
-            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-        }
+            private bool ReaderCanBeReleased(LockSource source) {
+                var erlSource = source as ExclusiveReaderLockSource;
+                var previousErlSource = source.Previous as ExclusiveReaderLockSource;
+                return erlSource == null 
+                    || previousErlSource == null 
+                    || erlSource.ExclusiveReaderLock != previousErlSource.ExclusiveReaderLock;
+            }
 
-        internal interface IQueueItem {
-            bool IsWriter { get; }
-            bool IsPendingRemoval { get; }
-            bool IsRemoved { get; }
-            IQueueItem Next { get; }
+            private static void Link(LockSource previous, LockSource next) {
+                Interlocked.Exchange(ref previous.Next, next);
+                Interlocked.Exchange(ref next.Previous, previous);
+            }
 
-            void MarkRemoved();
-            IQueueItem TrySetNext(IQueueItem value, IQueueItem comparand);
+            private static void Unlink(LockSource item) {
+                if (item.Next != null) {
+                    Interlocked.Exchange(ref item.Next.Previous, item.Previous);
+                }
+
+                if (item.Previous != null) {
+                    Interlocked.Exchange(ref item.Previous.Next, item.Next);
+                }
+
+                Interlocked.Exchange(ref item.Next, null);
+                Interlocked.Exchange(ref item.Previous, null);
+            }
         }
     }
 }

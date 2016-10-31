@@ -94,6 +94,9 @@
     <Compile Include="Tasks\TaskCompletionSourceEx.cs" />
     <Compile Include="Threading\AsyncManualResetEvent.cs" />
     <Compile Include="Threading\AsyncReaderWriterLock.cs" />
+    <Compile Include="Threading\AsyncReaderWriterLock.ExclusiveReaderLock.cs" />
+    <Compile Include="Threading\AsyncReaderWriterLock.LockSource.cs" />
+    <Compile Include="Threading\AsyncReaderWriterLock.Token.cs" />
     <Compile Include="Threading\BackgroundThreadAwaitable.cs" />
     <Compile Include="Threading\BackgroundThreadAwaiter.cs" />
     <Compile Include="Collections\ListExtensions.cs" />

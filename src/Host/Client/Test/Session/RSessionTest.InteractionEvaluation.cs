@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.UnitTests.Core.FluentAssertions;
@@ -30,7 +31,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
                 _taskObserver = taskObserver;
                 _testMethod = testMethod.MethodInfo;
                 _brokerClient = CreateLocalBrokerClient(nameof(RSessionTest) + nameof(InteractionEvaluation));
-                _session = new RSession(0, _brokerClient, () => { });
+                _session = new RSession(0, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
             }
 
             public async Task InitializeAsync() {
@@ -141,7 +142,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
  
             [Test]
             public async Task EvaluateAsync_DisconnectedFromTheStart() {
-                using (var session = new RSession(0, _brokerClient, () => { })) {
+                using (var session = new RSession(0, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { })) {
                     // ReSharper disable once AccessToDisposedClosure
                     Func<Task> f = () => session.EvaluateAsync("x <- 1");
                     await f.ShouldThrowAsync<RHostDisconnectedException>();
@@ -168,7 +169,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
             [Test]
             public async Task BeginEvaluationAsync_DisconnectedFromTheStart() {
-                using (var session = new RSession(0, _brokerClient, () => { })) {
+                using (var session = new RSession(0, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { })) {
                     // ReSharper disable once AccessToDisposedClosure
                     Func<Task> f = () => session.BeginEvaluationAsync();
                     await f.ShouldThrowAsync<RHostDisconnectedException>();
@@ -231,7 +232,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
             [Test]
             public async Task BeginInteractionAsync_DisconnectedFromTheStart() {
-                using (var session = new RSession(0, _brokerClient, () => { })) {
+                using (var session = new RSession(0, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { })) {
                     // ReSharper disable once AccessToDisposedClosure
                     Func<Task> f = () => session.BeginInteractionAsync();
                     await f.ShouldThrowAsync<RHostDisconnectedException>();
