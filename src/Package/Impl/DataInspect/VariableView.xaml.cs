@@ -55,6 +55,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             SortDirection = ListSortDirection.Ascending;
             RootTreeGrid.Sorting += RootTreeGrid_Sorting;
 
+            var color = VSColorTheme.GetThemedColor(EnvironmentColors.ToolWindowBackgroundColorKey);
+            ImageThemingUtilities.SetImageBackgroundColor(RootTreeGrid, Color.FromArgb(color.A, color.R, color.G, color.B));
             ImageThemingUtilities.SetThemeScrollBars(RootTreeGrid, true);
 
             var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();

@@ -21,6 +21,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Utility
             return new ToolWindowPaneMock(this) as T;
         }
 
+        public void LoadSettings() { }
+
         public DialogPage GetDialogPage(Type t) {
             throw new NotImplementedException();
         }
