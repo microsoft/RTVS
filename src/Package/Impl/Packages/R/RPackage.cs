@@ -117,7 +117,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             ProjectIconProvider.LoadProjectImages();
             LogCleanup.DeleteLogsAsync(DiagnosticLogs.DaysToRetain);
 
-            IdleTimeAction.Create(CompleteInit, 20, typeof(ExpansionsCache), VsAppShell.Current);
+            IdleTimeAction.Create(CompleteInit, 20, this.GetType(), VsAppShell.Current);
             IdleTimeAction.Create(ExpansionsCache.Load, 200, typeof(ExpansionsCache), VsAppShell.Current);
             IdleTimeAction.Create(() => RtvsTelemetry.Current.ReportConfiguration(), 5000, typeof(RtvsTelemetry), VsAppShell.Current);
         }
