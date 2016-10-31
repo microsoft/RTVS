@@ -395,9 +395,7 @@ namespace Microsoft.R.Host.Client {
                     // any case, and we'll catch MessageTransportException if no-one is on the other end anymore.
                     await _transport.CloseAsync();
                     token.Set();
-                } catch (OperationCanceledException) {
-                    token.Set();
-                } catch (MessageTransportException) {
+                } catch (Exception ex) when (ex is OperationCanceledException || ex is MessageTransportException) {
                     token.Set();
                 } finally {
                     token.Reset();
