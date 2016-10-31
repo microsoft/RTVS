@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Test.Fakes.Shell;
+using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Interpreters;
@@ -35,7 +36,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
         public void Lifecycle() {
             var disposed = false;
 
-            var session = new RSession(0, _brokerClient, () => disposed = true);
+            var session = new RSession(0, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => disposed = true);
             disposed.Should().BeFalse();
 
             session.MonitorEvents();
@@ -50,7 +51,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
         public void Lifecycle_DoubleDispose() {
             var disposed = false;
 
-            var session = new RSession(0, _brokerClient, () => disposed = true);
+            var session = new RSession(0, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => disposed = true);
             session.Dispose();
 
             disposed = false;
@@ -64,7 +65,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [Test]
         [Category.R.Session]
         public async Task StartStop() {
-            var session = new RSession(0, _brokerClient, () => { });
+            var session = new RSession(0, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
 
             session.HostStarted.Status.Should().Be(TaskStatus.WaitingForActivation);
             session.IsHostRunning.Should().BeFalse();
@@ -92,7 +93,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [Test]
         [Category.R.Session]
         public async Task DoubleStart() {
-            var session = new RSession(0, _brokerClient, () => { });
+            var session = new RSession(0, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name
             }, null, 50000);
@@ -111,7 +112,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [Category.R.Session]
         public async Task StartStopMultipleSessions() {
             Func<int, Task<RSession>> start = async i => {
-                var session = new RSession(i, _brokerClient, () => { });
+                var session = new RSession(i, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
                 await session.StartHostAsync(new RHostStartupInfo { Name = _testMethod.Name + i }, null, 50000);
                 return session;
             };
@@ -131,7 +132,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [Category.R.Session]
         public void StartRHostMissing() {
             var brokerClient = new LocalBrokerClient(nameof(RSessionTest), @"C:\", TestCoreServices.CreateReal(), new NullConsole(), Environment.SystemDirectory);
-            var session = new RSession(0, brokerClient, () => { });
+            var session = new RSession(0, brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name
             }, null, 10000);
@@ -142,7 +143,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [Test]
         [Category.R.Session]
         public async Task StopBeforeInitialized() {
-            var session = new RSession(0, _brokerClient, () => { });
+            var session = new RSession(0, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name
             }, null, 10000);
@@ -159,7 +160,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
         public async Task StopBeforeInitialized_RHostMissing() {
             var brokerClient = new LocalBrokerClient(nameof(RSessionTest), @"C:\",
                 TestCoreServices.CreateReal(), new NullConsole(), Environment.SystemDirectory);
-            var session = new RSession(0, brokerClient, () => { });
+            var session = new RSession(0, brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name
             }, null, 10000);

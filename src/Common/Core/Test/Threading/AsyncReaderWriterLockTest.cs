@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
@@ -1074,6 +1073,22 @@ namespace Microsoft.Common.Core.Test.Threading {
         }
 
         [Test]
+        public async Task Concurrent_ReadExclusiveRead_CancelSecond() {
+            var tasks = await ParallelTools.InvokeAsync(48, i => {
+                // Every 4th lock is writer lock
+                var isExclusiveReader = i % 2 == 1;
+                if (isExclusiveReader) {
+                    var erl = _arwl.CreateExclusiveReaderLock();
+                    return erl.WaitAsync();
+                }
+
+                return _arwl.ReaderLockAsync();
+            }, 50000);
+
+            tasks.Should().OnlyContain(t => t.Status == TaskStatus.RanToCompletion);
+        }
+
+        [Test]
         public void Reentrancy_ReadRead() {
             var task1 = _arwl.ReaderLockAsync(CancellationToken.None);
             var task2 = _arwl.ReaderLockAsync(CancellationToken.None, task1.Result.Reentrancy);
@@ -1176,5 +1191,331 @@ namespace Microsoft.Common.Core.Test.Threading {
             task2.Should().BeRanToCompletion();
             task3.Should().BeRanToCompletion();
         } 
+
+        [Test]
+        public void Read_ExclusiveRead() {
+            var erl = _arwl.CreateExclusiveReaderLock();
+            var task1 = _arwl.ReaderLockAsync();
+            var task2 = erl.WaitAsync();
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().BeRanToCompletion();
+        }
+        
+        [Test]
+        public void ExclusiveRead_Read() {
+            var erl = _arwl.CreateExclusiveReaderLock();
+            var task1 = erl.WaitAsync();
+            var task2 = _arwl.ReaderLockAsync();
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().BeRanToCompletion();
+        }
+        
+        [Test]
+        public void ExclusiveRead_ExclusiveRead() {
+            var erl = _arwl.CreateExclusiveReaderLock();
+            var task1 = erl.WaitAsync();
+            var task2 = erl.WaitAsync();
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().NotBeCompleted();
+        }
+        
+        [Test]
+        public void ExclusiveRead_Read_ExclusiveRead_CancelSecond() {
+            var cts = new CancellationTokenSource();
+            
+            var erl = _arwl.CreateExclusiveReaderLock();
+            var task1 = erl.WaitAsync(CancellationToken.None);
+            var task2 = _arwl.WriterLockAsync(cts.Token);
+            var task3 = erl.WaitAsync(CancellationToken.None);
+
+            cts.Cancel();
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().BeCanceled();
+            task3.Should().NotBeCompleted();
+        }
+
+        [Test]
+        public void ExclusiveRead_Read_ReleaseFirst_ExclusiveRead() {
+            var cts = new CancellationTokenSource();
+            
+            var erl = _arwl.CreateExclusiveReaderLock();
+            var task1 = erl.WaitAsync(CancellationToken.None);
+            var task2 = _arwl.ReaderLockAsync(cts.Token);
+
+            task1.Result.Dispose();
+
+            var task3 = erl.WaitAsync(CancellationToken.None);
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().BeRanToCompletion();
+            task3.Should().BeRanToCompletion();
+        }
+
+        [Test]
+        public void ExclusiveRead_ExclusiveRead_ExclusiveRead_CancelSecond() {
+            var cts = new CancellationTokenSource();
+
+            var erl = _arwl.CreateExclusiveReaderLock();
+            var task1 = erl.WaitAsync(CancellationToken.None);
+            var task2 = erl.WaitAsync(cts.Token);
+            var task3 = erl.WaitAsync(CancellationToken.None);
+
+            cts.Cancel();
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().BeCanceled();
+            task3.Should().NotBeCompleted();
+        }
+        
+        [Test]
+        public void ExclusiveRead_ExclusiveRead_ExclusiveRead_ReleaseFirst() {
+            var erl = _arwl.CreateExclusiveReaderLock();
+            var task1 = erl.WaitAsync();
+            var task2 = erl.WaitAsync();
+            var task3 = erl.WaitAsync();
+
+            task1.Result.Dispose();
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().BeRanToCompletion();
+            task3.Should().NotBeCompleted();
+        }
+        
+        [Test]
+        public void ExclusiveRead_ExclusiveRead_ExclusiveRead_CancelSecond_ReleaseFirst() {
+            var cts = new CancellationTokenSource();
+
+            var erl = _arwl.CreateExclusiveReaderLock();
+            var task1 = erl.WaitAsync(CancellationToken.None);
+            var task2 = erl.WaitAsync(cts.Token);
+            var task3 = erl.WaitAsync(CancellationToken.None);
+
+            cts.Cancel();
+            task1.Result.Dispose();
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().BeCanceled();
+            task3.Should().BeRanToCompletion();
+        }
+        
+        [Test]
+        public void ExclusiveRead_ExclusiveRead_CancelSecond_ReleaseFirst_ExclusiveRead() {
+            var cts = new CancellationTokenSource();
+            
+            var erl = _arwl.CreateExclusiveReaderLock();
+            var task1 = erl.WaitAsync(CancellationToken.None);
+            var task2 = erl.WaitAsync(cts.Token);
+
+            cts.Cancel();
+            task1.Result.Dispose();
+
+            var task3 = erl.WaitAsync(CancellationToken.None);
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().BeCanceled();
+            task3.Should().BeRanToCompletion();
+        }
+
+        [Test]
+        public void ExclusiveRead_SecondExclusiveRead_SecondExclusiveRead_ExclusiveRead() {
+            var erl1 = _arwl.CreateExclusiveReaderLock();
+            var erl2 = _arwl.CreateExclusiveReaderLock();
+            var task1 = erl1.WaitAsync();
+            var task2 = erl2.WaitAsync();
+            var task3 = erl2.WaitAsync();
+            var task4 = erl1.WaitAsync();
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().BeRanToCompletion();
+            task3.Should().NotBeCompleted();
+            task4.Should().NotBeCompleted();
+        } 
+
+        [Test]
+        public void ExclusiveRead_SecondExclusiveRead_ExclusiveRead_SecondExclusiveRead() {
+            var erl1 = _arwl.CreateExclusiveReaderLock();
+            var erl2 = _arwl.CreateExclusiveReaderLock();
+            var task1 = erl1.WaitAsync();
+            var task2 = erl2.WaitAsync();
+            var task3 = erl1.WaitAsync();
+            var task4 = erl2.WaitAsync();
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().BeRanToCompletion();
+            task3.Should().NotBeCompleted();
+            task4.Should().NotBeCompleted();
+        } 
+
+        [Test]
+        public void ExclusiveRead_ExclusiveRead_SecondExclusiveRead_SecondExclusiveRead() {
+            var erl1 = _arwl.CreateExclusiveReaderLock();
+            var erl2 = _arwl.CreateExclusiveReaderLock();
+            var task1 = erl1.WaitAsync();
+            var task2 = erl1.WaitAsync();
+            var task3 = erl2.WaitAsync();
+            var task4 = erl2.WaitAsync();
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().NotBeCompleted();
+            task3.Should().BeRanToCompletion();
+            task4.Should().NotBeCompleted();
+        } 
+
+        [Test]
+        public void ExclusiveRead_ExclusiveRead_ReleaseFirst() {
+            var erl = _arwl.CreateExclusiveReaderLock();
+            var task1 = erl.WaitAsync();
+            var task2 = erl.WaitAsync();
+
+            task1.Result.Dispose();
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().BeRanToCompletion();
+        } 
+
+        [Test]
+        public void Read_Write_ExclusiveRead_CancelSecond() {
+            var cts = new CancellationTokenSource();
+            
+            var erl = _arwl.CreateExclusiveReaderLock();
+            var task1 = _arwl.ReaderLockAsync(CancellationToken.None);
+            var task2 = _arwl.WriterLockAsync(cts.Token);
+            var task3 = erl.WaitAsync(CancellationToken.None);
+
+            cts.Cancel();
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().BeCanceled();
+            task3.Should().BeRanToCompletion();
+        } 
+
+        [Test]
+        public void WriteExclusiveReadRead_ReleaseFirst() {
+            var erl = _arwl.CreateExclusiveReaderLock();
+            var task1 = _arwl.WriterLockAsync();
+            var task2 = erl.WaitAsync();
+            var task3 = _arwl.ReaderLockAsync();
+
+            task1.Result.Dispose();
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().BeRanToCompletion();
+            task3.Should().BeRanToCompletion();
+        } 
+
+        [Test]
+        public void WriteReadExclusiveRead_ReleaseFirst() {
+            var erl = _arwl.CreateExclusiveReaderLock();
+            var task1 = _arwl.WriterLockAsync();
+            var task2 = _arwl.ReaderLockAsync();
+            var task3 = erl.WaitAsync();
+
+            task1.Result.Dispose();
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().BeRanToCompletion();
+            task3.Should().BeRanToCompletion();
+        } 
+
+        [Test]
+        public void WriteExclusiveReadExclusiveRead_ReleaseFirst() {
+            var erl = _arwl.CreateExclusiveReaderLock();
+            var task1 = _arwl.WriterLockAsync();
+            var task2 = erl.WaitAsync();
+            var task3 = erl.WaitAsync();
+
+            task1.Result.Dispose();
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().BeRanToCompletion();
+            task3.Should().NotBeCompleted();
+        } 
+
+        [Test]
+        public void WriteExclusiveRead_SecondExclusiveRead_ReleaseFirst() {
+            var erl1 = _arwl.CreateExclusiveReaderLock();
+            var erl2 = _arwl.CreateExclusiveReaderLock();
+            var task1 = _arwl.WriterLockAsync();
+            var task2 = erl1.WaitAsync();
+            var task3 = erl2.WaitAsync();
+
+            task1.Result.Dispose();
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().BeRanToCompletion();
+            task3.Should().BeRanToCompletion();
+        } 
+
+        [Test]
+        public void Write_ExclusiveRead_SecondExclusiveRead_Read_ReleaseFirst() {
+            var erl1 = _arwl.CreateExclusiveReaderLock();
+            var erl2 = _arwl.CreateExclusiveReaderLock();
+            var task1 = _arwl.WriterLockAsync();
+            var task2 = erl1.WaitAsync();
+            var task3 = erl2.WaitAsync();
+            var task4 = _arwl.ReaderLockAsync();
+
+            task1.Result.Dispose();
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().BeRanToCompletion();
+            task3.Should().BeRanToCompletion();
+            task4.Should().BeRanToCompletion();
+        } 
+
+        [Test]
+        public void Write_ExclusiveRead_SecondExclusiveRead_SecondExclusiveRead_ExclusiveRead_ReleaseFirst() {
+            var erl1 = _arwl.CreateExclusiveReaderLock();
+            var erl2 = _arwl.CreateExclusiveReaderLock();
+            var task1 = _arwl.WriterLockAsync();
+            var task2 = erl1.WaitAsync();
+            var task3 = erl2.WaitAsync();
+            var task4 = erl2.WaitAsync();
+            var task5 = erl1.WaitAsync();
+
+            task1.Result.Dispose();
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().BeRanToCompletion();
+            task3.Should().BeRanToCompletion();
+            task4.Should().NotBeCompleted();
+            task5.Should().NotBeCompleted();
+        }
+
+        [Test]
+        public void ExclusiveRead_Write_ExclusiveRead_CancelSecond() {
+            var cts = new CancellationTokenSource();
+            
+            var erl = _arwl.CreateExclusiveReaderLock();
+            var task1 = erl.WaitAsync(CancellationToken.None);
+            var task2 = _arwl.WriterLockAsync(cts.Token);
+            var task3 = erl.WaitAsync(CancellationToken.None);
+
+            cts.Cancel();
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().BeCanceled();
+            task3.Should().NotBeCompleted();
+        }
+
+        [Test]
+        public void ExclusiveRead_Write_Read_CancelSecond() {
+            var cts = new CancellationTokenSource();
+            
+            var erl = _arwl.CreateExclusiveReaderLock();
+            var task1 = erl.WaitAsync(CancellationToken.None);
+            var task2 = _arwl.WriterLockAsync(cts.Token);
+            var task3 = _arwl.ReaderLockAsync(CancellationToken.None);
+
+            cts.Cancel();
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().BeCanceled();
+            task3.Should().BeRanToCompletion();
+        }
     }
 }
