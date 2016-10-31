@@ -98,6 +98,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     internal class RPackage : BasePackage<RLanguageService>, IRPackage {
         public const string OptionsDialogName = "R Tools";
         private IPackageIndex _packageIndex;
+        private bool _settingsLoaded;
 
         public static IRPackage Current { get; private set; }
 
@@ -178,8 +179,11 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         }
 
         public void LoadSettings() {
-            using (var p = Current.GetDialogPage(typeof(RToolsOptionsPage)) as RToolsOptionsPage) {
-                p?.LoadSettings();
+            if (!_settingsLoaded) {
+                using (var p = Current.GetDialogPage(typeof(RToolsOptionsPage)) as RToolsOptionsPage) {
+                    p?.LoadSettings();
+                }
+                _settingsLoaded = true;
             }
         }
         #endregion
