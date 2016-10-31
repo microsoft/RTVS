@@ -2,12 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Collections;
 
 namespace Microsoft.UnitTests.Core.Threading {
     public static class ParallelTools {
@@ -40,6 +37,22 @@ namespace Microsoft.UnitTests.Core.Threading {
             var tasks = results.ToArray();
             await Task.WhenAny(Task.WhenAll(tasks).SilenceException<Exception>(), Task.Delay(delayMs));
             return tasks.ToArray();
+        }
+
+        public static Task WhenAll(params Task[] tasks) {
+            return WhenAll(10000, tasks);
+        }
+
+        public static async Task WhenAll(int timeout, params Task[] tasks) {
+            var timeoutTask = Task.Delay(timeout);
+            await Task.WhenAny(timeoutTask, Task.WhenAll(tasks));
+            if (timeoutTask.IsCompleted) {
+                var indexes = tasks.IndexWhere(t => !t.IsCompleted).ToList();
+                if (indexes.Any()) {
+                    var message = $"{nameof(WhenAll)} failed by timeout, the tasks at {string.Join(", ", indexes)} are still not completed";
+                    throw new TimeoutException(message);
+                }
+            }
         }
     }
 }

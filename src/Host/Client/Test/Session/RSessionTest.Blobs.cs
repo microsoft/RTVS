@@ -6,6 +6,7 @@ using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.UnitTests.Core.FluentAssertions;
@@ -26,7 +27,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
                 _taskObserver = taskObserver;
                 _testMethod = testMethod.MethodInfo;
                 _brokerClient = CreateLocalBrokerClient(nameof(RSessionTest) + nameof(Blobs));
-                _session = new RSession(0, _brokerClient, () => { });
+                _session = new RSession(0, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
             }
 
             public async Task InitializeAsync() {
@@ -45,7 +46,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
             [Test]
             public async Task CreateBlob_DisconnectedFromTheStart() {
-                using (var session = new RSession(0, _brokerClient, () => { })) {
+                using (var session = new RSession(0, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { })) {
                     var data = new byte[] { 1, 2, 3, 4, 5 };
                     using (DataTransferSession dts = new DataTransferSession(session, null)) {
                         Func<Task> f = () => dts.SendBytesAsync(data, false);
@@ -85,7 +86,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
             [Test]
             public async Task GetBlob_DisconnectedFromTheStart() {
-                using (var session = new RSession(0, _brokerClient, () => { })) {
+                using (var session = new RSession(0, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { })) {
                     Func<Task> f = () => session.BlobReadAllAsync(1);
                     await f.ShouldThrowAsync<RHostDisconnectedException>();
                 }
@@ -134,7 +135,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
             [Test]
             public async Task DestroyBlob_DisconnectedFromTheStart() {
-                using (var session = new RSession(0, _brokerClient, () => { })) {
+                using (var session = new RSession(0, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { })) {
                     var blobids = new ulong[] { 1, 2, 3, 4, 5 };
                     Func<Task> f = () => session.DestroyBlobsAsync(blobids);
                     await f.ShouldThrowAsync<RHostDisconnectedException>();

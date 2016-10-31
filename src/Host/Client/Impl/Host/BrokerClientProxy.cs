@@ -4,17 +4,14 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Client.Host {
     internal sealed class BrokerClientProxy : IBrokerClient {
-        private readonly AsyncReaderWriterLock _connectArwl;
         private IBrokerClient _broker;
 
-        public BrokerClientProxy(AsyncReaderWriterLock connectArwl) {
+        public BrokerClientProxy() {
             _broker = new NullBrokerClient();
-            _connectArwl = connectArwl;
         }
 
         public IBrokerClient Set(IBrokerClient broker) {
@@ -34,16 +31,12 @@ namespace Microsoft.R.Host.Client.Host {
         public Task PingAsync() => _broker.PingAsync();
         public Task<AboutHost> GetHostInformationAsync(CancellationToken cancellationToken) => _broker.GetHostInformationAsync(cancellationToken);
 
-        public async Task<RHost> ConnectAsync(BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken), ReentrancyToken reentrancyToken = default(ReentrancyToken)) {
+        public Task<RHost> ConnectAsync(BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken)) 
+            => _broker.ConnectAsync(connectionInfo, cancellationToken);
 
-            using (await _connectArwl.ReaderLockAsync(cancellationToken, reentrancyToken)) {
-                return await _broker.ConnectAsync(connectionInfo, cancellationToken, reentrancyToken);
-            }
-        }
+        public Task TerminateSessionAsync(string name, CancellationToken cancellationToken = default(CancellationToken))
+            => _broker.TerminateSessionAsync(name, cancellationToken);
 
-        public Task TerminateSessionAsync(string name, CancellationToken cancellationToken = new CancellationToken()) =>
-            _broker.TerminateSessionAsync(name, cancellationToken);
-
-        public Task<string> HandleUrlAsync(string url, CancellationToken ct) => _broker.HandleUrlAsync(url, ct);
+        public Task<string> HandleUrlAsync(string url, CancellationToken cancellationToken) => _broker.HandleUrlAsync(url, cancellationToken);
     }
 }
