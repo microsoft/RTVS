@@ -23,7 +23,7 @@ namespace Microsoft.R.Host.Client {
             await _sendLock.WaitAsync(cancellationToken);
             try {
                 await _socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, "", cancellationToken);
-            } catch (Exception ex) when (ex is IOException || ex is SocketException || ex is WebSocketException) {
+            } catch (Exception ex) when (IsTransportException(ex)) {
                 throw new MessageTransportException(ex);
             } finally {
                 _sendLock.Release();
@@ -44,11 +44,7 @@ namespace Microsoft.R.Host.Client {
                 WebSocketReceiveResult wsrr;
                 try {
                     wsrr = await _socket.ReceiveAsync(new ArraySegment<byte>(buffer.GetBuffer(), index, blockSize), cancellationToken);
-                } catch (IOException ex) {
-                    throw new MessageTransportException(ex);
-                } catch (SocketException ex) {
-                    throw new MessageTransportException(ex);
-                } catch (WebSocketException ex) {
+                } catch (Exception ex) when(IsTransportException(ex)) {
                     throw new MessageTransportException(ex);
                 } finally {
                     _receiveLock.Release();
@@ -71,15 +67,15 @@ namespace Microsoft.R.Host.Client {
             await _sendLock.WaitAsync(cancellationToken);
             try {
                 await _socket.SendAsync(new ArraySegment<byte>(data), WebSocketMessageType.Binary, true, cancellationToken);
-            } catch (IOException ex) {
-                throw new MessageTransportException(ex);
-            } catch (SocketException ex) {
-                throw new MessageTransportException(ex);
-            } catch (WebSocketException ex) {
+            } catch (Exception ex) when(IsTransportException(ex)) {
                 throw new MessageTransportException(ex);
             } finally {
                 _sendLock.Release();
             }
+        }
+
+        private static bool IsTransportException(Exception ex) {
+            return ex is IOException || ex is SocketException || ex is WebSocketException || ex is ObjectDisposedException;
         }
     }
 }
