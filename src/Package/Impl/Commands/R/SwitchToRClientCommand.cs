@@ -38,10 +38,11 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
                 return;
             }
 
-            using (var page = RPackage.Current.GetDialogPage(typeof(RToolsOptionsPage)) as RToolsOptionsPage) {
-                RToolsSettings.Current.RBasePath = rClientPath;
-                page.SaveSettings();
-            }
+            RToolsSettings.Current.RBasePath = rClientPath;
+
+            var settings = _shell.ExportProvider.GetExportedValue<ISettingsStorage>();
+            settings.Persist();
+
             _shell.ShowMessage(Resources.RPathChangedRestartVS, MessageButtons.OK);
         }
     }

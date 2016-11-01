@@ -25,7 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// <summary>
         /// Persistent storage for any settings application may need to keep between sessions.
         /// </summary>
-        IWritableSettingsStorage SettingsStorage { get; }
+        IWritableEditorSettingsStorage SettingsStorage { get; }
 
         string BrowseForFileOpen(IntPtr owner, string filter, string initialPath = null, string title = null);
 

@@ -49,7 +49,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private static VsAppShell _instance;
         private static IApplicationShell _testShell;
         private IdleTimeSource _idleTimeSource;
-        private IWritableSettingsStorage _settingStorage;
+        private IWritableEditorSettingsStorage _settingStorage;
 
         public static void EnsureInitialized() {
             ThreadHelper.ThrowIfNotOnUIThread();
@@ -402,12 +402,12 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             }
         }
 
-        public IWritableSettingsStorage SettingsStorage {
+        public IWritableEditorSettingsStorage SettingsStorage {
             get {
                 if (_settingStorage == null) {
                     var ctrs = ExportProvider.GetExportedValue<IContentTypeRegistryService>();
                     var contentType = ctrs.GetContentType(RContentTypeDefinition.ContentType);
-                    _settingStorage = ComponentLocatorForOrderedContentType<IWritableSettingsStorage>.FindFirstOrderedComponent(contentType);
+                    _settingStorage = ComponentLocatorForOrderedContentType<IWritableEditorSettingsStorage>.FindFirstOrderedComponent(contentType);
                 }
                 return _settingStorage;
             }

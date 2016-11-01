@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel;
 using System.Drawing.Design;
 using Microsoft.Common.Core.Enums;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Host.Client.Install;
 using Microsoft.R.Support.Settings;
@@ -14,14 +15,16 @@ using Microsoft.VisualStudio.R.Package.Options.R.Tools;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Telemetry;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.Win32;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R {
     public class RToolsOptionsPage : DialogPage {
+        private readonly ISettingsStorage _storage;
         private bool _allowLoadingFromStorage;
         private bool _applied;
 
         public RToolsOptionsPage() {
-            this.SettingsRegistryPath = @"UserSettings\R_Tools";
+            _storage = VsAppShell.Current.ExportProvider.GetExportedValue<ISettingsStorage>();
         }
 
         [LocCategory("Settings_GeneralCategory")]
@@ -254,7 +257,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         /// Saves all values to persistent storage. Typically called when package unloads.
         /// </summary>
         public void SaveSettings() {
-            SaveSettingsToStorage();
+            PersistSettings();
         }
 
         public override void LoadSettingsFromStorage() {
@@ -291,7 +294,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             // Save in-memory settings to storage. In case dialog
             // is canceled with some settings modified we will be
             // able to restore them from storage.
-            SaveSettingsToStorage();
+            PersistSettings();
             base.OnActivate(e);
         }
 
@@ -299,10 +302,29 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             if (e.ApplyBehavior == ApplyKind.Apply) {
                 _applied = true;
                 // On OK persist settings
-                SaveSettingsToStorage();
+                PersistSettings();
                 RtvsTelemetry.Current.ReportSettings();
             }
             base.OnApply(e);
+        }
+
+        private void PersistSettings() {
+            SaveSettingsToStorage();
+            _storage.Persist();
+        }
+
+        protected override void LoadSettingFromStorage(PropertyDescriptor prop) {
+            if (_storage.SettingExists(prop.Name)) {
+                var value = _storage.GetSetting(prop.Name, prop.PropertyType);
+                prop.SetValue(this, value);
+            }
+        }
+
+        protected override void SaveSetting(PropertyDescriptor prop) {
+            var value = prop.GetValue(this);
+            if (value != null) {
+                _storage.SetSetting(prop.Name, value);
+            }
         }
     }
 }

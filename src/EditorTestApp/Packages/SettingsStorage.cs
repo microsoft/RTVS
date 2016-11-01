@@ -9,7 +9,7 @@ using Microsoft.Languages.Core.Settings;
 namespace Microsoft.Languages.Editor.Application.Packages
 {
     [ExcludeFromCodeCoverage]
-    internal class SettingsStorage : IWritableSettingsStorage
+    internal class SettingsStorage : IWritableEditorSettingsStorage
     {
         private readonly Dictionary<string, object> _settings = new Dictionary<string, object>();
 
