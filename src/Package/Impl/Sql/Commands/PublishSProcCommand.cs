@@ -14,6 +14,7 @@ using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using EnvDTE;
 using Microsoft.R.Components.Sql.Publish;
+using Microsoft.Common.Core.Shell;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
@@ -29,17 +30,19 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
         private readonly IProjectSystemServices _pss;
         private readonly IFileSystem _fs;
         private readonly IDacPackageServicesProvider _dacServicesProvider;
+        private readonly ISettingsStorage _settings;
 
         [ImportingConstructor]
-        public PublishSProcCommand(IApplicationShell appShell, IProjectSystemServices pss, IDacPackageServicesProvider dacServicesProvider) :
-            this(appShell, pss, new FileSystem(), dacServicesProvider) {
+        public PublishSProcCommand(IApplicationShell appShell, IProjectSystemServices pss, IDacPackageServicesProvider dacServicesProvider, ISettingsStorage settings) :
+            this(appShell, pss, new FileSystem(), dacServicesProvider, settings) {
         }
 
-        public PublishSProcCommand(IApplicationShell appShell, IProjectSystemServices pss, IFileSystem fs, IDacPackageServicesProvider dacServicesProvider) {
+        public PublishSProcCommand(IApplicationShell appShell, IProjectSystemServices pss, IFileSystem fs, IDacPackageServicesProvider dacServicesProvider, ISettingsStorage settings) {
             _appShell = appShell;
             _pss = pss;
             _fs = fs;
             _dacServicesProvider = dacServicesProvider;
+            _settings = settings;
         }
 
         public CommandStatusResult GetCommandStatus(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus progressiveStatus) {
@@ -77,7 +80,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
                         dte.ExecuteCommand("File.SaveAll");
 
                         var publisher = new SProcPublisher(_appShell, _pss, _fs, _dacServicesProvider.GetDacPackageServices());
-                        var settings = new SqlSProcPublishSettings(_appShell.SettingsStorage);
+                        var settings = new SqlSProcPublishSettings(_settings);
                         publisher.Publish(settings, sprocFiles);
                     } catch (Exception ex) {
                         _appShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.SqlPublish_PublishError, ex.Message));

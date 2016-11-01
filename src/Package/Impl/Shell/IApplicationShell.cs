@@ -22,11 +22,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// <returns>Service instance of null if not found.</returns>
         T GetGlobalService<T>(Type type = null) where T : class;
 
-        /// <summary>
-        /// Persistent storage for any settings application may need to keep between sessions.
-        /// </summary>
-        IWritableEditorSettingsStorage SettingsStorage { get; }
-
         string BrowseForFileOpen(IntPtr owner, string filter, string initialPath = null, string title = null);
 
         string BrowseForFileSave(IntPtr owner, string filter, string initialPath = null, string title = null);

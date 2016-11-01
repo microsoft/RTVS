@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TextManager.Interop;
 
-namespace Microsoft.VisualStudio.R.Languages {
+namespace Microsoft.VisualStudio.R.Editors {
     /// <summary>
     /// Basic language service implementation for Visual Studio.
     /// Mostly provides interfaces that return 'not implemented'
