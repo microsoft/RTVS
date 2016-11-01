@@ -132,6 +132,23 @@ namespace Microsoft.Common.Core.IO {
             return zipFilePath;
         }
 
+        public string GetTempFileName() {
+            return Path.GetTempFileName();
+        }
+
+        public void DecompressFile(string zipFilePath, string path, string entryName = "data") {
+            using (FileStream zipStream = new FileStream(zipFilePath, FileMode.Open))
+            using (ZipArchive archive = new ZipArchive(zipStream, ZipArchiveMode.Read)) {
+                var entry = archive.GetEntry(entryName);
+                using (Stream input = entry.Open())
+                using (FileStream output = new FileStream(path, FileMode.Create)) {
+                    input.CopyTo(output);
+                    output.Flush();
+                }
+            }
+        }
+
+
         public string GetDownloadsPath(string fileName) {
             if (string.IsNullOrWhiteSpace(fileName)) {
                 return GetKnownFolderPath(KnownFolderGuids.Downloads);

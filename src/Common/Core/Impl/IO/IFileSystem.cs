@@ -44,5 +44,8 @@ namespace Microsoft.Common.Core.IO {
         string CompressFiles(IEnumerable<string> paths, string relativeToDir, IProgress<string> progress, CancellationToken ct);
         string CompressDirectory(string path);
         string CompressDirectory(string path, Matcher matcher, IProgress<string> progress, CancellationToken ct);
+
+        string GetTempFileName();
+        void DecompressFile(string archive, string path, string entryName = "data");
     }
 }
