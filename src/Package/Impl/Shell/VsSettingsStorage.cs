@@ -13,6 +13,9 @@ using Microsoft.VisualStudio.Shell.Settings;
 using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
+    /// <summary>
+    /// Represents VS user settings collection.
+    /// </summary>
     [Export(typeof(ISettingsStorage))]
     internal sealed class VsSettingsStorage : ISettingsStorage {
         /// <summary>

@@ -21,6 +21,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using NSubstitute;
 using static System.FormattableString;
 using Microsoft.R.Components.Sql.Publish;
+using Microsoft.Common.Core.Shell;
 
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
@@ -105,7 +106,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
         public void PublishSProcCommandStatus() {
             var servicesProvider = Substitute.For<IDacPackageServicesProvider>();
 
-            var cmd = new PublishSProcCommand(_appShell, _pss, servicesProvider);
+            var cmd = new PublishSProcCommand(_appShell, _pss, servicesProvider, Substitute.For<ISettingsStorage>());
             cmd.GetCommandStatus(null, 0, true, null, CommandStatus.NotSupported).Should().Be(CommandStatusResult.Unhandled);
             cmd.GetCommandStatus(null, RPackageCommandId.icmdPublishSProc, true, null, CommandStatus.NotSupported)
                 .Should().Be(new CommandStatusResult(true, null, CommandStatus.Enabled | CommandStatus.Supported));
@@ -128,7 +129,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
 
             var servicesProvider = Substitute.For<IDacPackageServicesProvider>();
 
-            var cmd = new PublishSProcCommand(_appShell, _pss, servicesProvider);
+            var cmd = new PublishSProcCommand(_appShell, _pss, servicesProvider, Substitute.For<ISettingsStorage>());
             cmd.TryHandleCommand(null, RPackageCommandId.icmdPublishSProc, false, 0, IntPtr.Zero, IntPtr.Zero).Should().BeTrue();
             //_appShell.Received().ShowErrorMessage(Resources.SqlPublishDialog_NoDbProject);
         }
@@ -156,7 +157,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
 
             var servicesProvider = Substitute.For<IDacPackageServicesProvider>();
 
-            var cmd = new PublishSProcCommand(_appShell, _pss, servicesProvider);
+            var cmd = new PublishSProcCommand(_appShell, _pss, servicesProvider, Substitute.For<ISettingsStorage>());
             cmd.TryHandleCommand(null, RPackageCommandId.icmdPublishSProc, false, 0, IntPtr.Zero, IntPtr.Zero).Should().BeTrue();
             _appShell.Received().ShowErrorMessage(Resources.SqlPublishDialog_NoSProcFiles);
         }

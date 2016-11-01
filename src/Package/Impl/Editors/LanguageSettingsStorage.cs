@@ -11,7 +11,7 @@ using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.TextManager.Interop;
 
-namespace Microsoft.VisualStudio.R.Package.Options.Common {
+namespace Microsoft.VisualStudio.R.Package.Editors {
     /// <summary>
     /// Base class of VS settings. Provides implementation of <see cref="IWritableEditorSettingsStorage"/> for 
     /// application-agnostic editor code. This class also provides tracking of tab/indent settings via VS

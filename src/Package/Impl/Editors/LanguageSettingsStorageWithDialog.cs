@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
-namespace Microsoft.VisualStudio.R.Package.Options.Common {
+namespace Microsoft.VisualStudio.R.Package.Editors {
     /// <summary>
     /// Base class of VS settings that also expose Tools | Options page that is derived from DialogPage.
     /// <seealso cref="WebSettingsStorage"/>

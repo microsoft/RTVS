@@ -49,26 +49,26 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
 
         public SqlSProcPublishSettings() { }
 
-        public SqlSProcPublishSettings(IEditorSettingsStorage settingsStorage) {
+        public SqlSProcPublishSettings(ISettingsStorage settingsStorage) {
             Load(settingsStorage);
         }
 
-        private void Load(IEditorSettingsStorage settingsStorage) {
-            TargetType = (PublishTargetType)settingsStorage.GetInteger(TargetTypeSettingName, (int)PublishTargetType.Dacpac);
-            TargetDatabaseConnection = settingsStorage.GetString(TargetDatabaseConnectionSettingName, string.Empty);
-            TargetProject = settingsStorage.GetString(TargetProjectSettingName, string.Empty);
-            TableName = settingsStorage.GetString(TableNameSettingName, SqlSProcPublishSettings.DefaultRCodeTableName);
-            CodePlacement = (RCodePlacement)settingsStorage.GetInteger(CodePlacementSettingName, (int)RCodePlacement.Inline);
-            QuoteType = (SqlQuoteType)settingsStorage.GetInteger(QuoteTypeSettingName, (int)SqlQuoteType.None);
+        private void Load(ISettingsStorage settingsStorage) {
+            TargetType = settingsStorage.GetSetting(TargetTypeSettingName, PublishTargetType.Dacpac);
+            TargetDatabaseConnection = settingsStorage.GetSetting(TargetDatabaseConnectionSettingName, string.Empty);
+            TargetProject = settingsStorage.GetSetting(TargetProjectSettingName, string.Empty);
+            TableName = settingsStorage.GetSetting(TableNameSettingName, DefaultRCodeTableName);
+            CodePlacement = settingsStorage.GetSetting(CodePlacementSettingName, RCodePlacement.Inline);
+            QuoteType = settingsStorage.GetSetting(QuoteTypeSettingName, SqlQuoteType.None);
         }
 
-        public void Save(IWritableEditorSettingsStorage settingsStorage) {
-            settingsStorage.SetInteger(TargetTypeSettingName,(int)TargetType);
-            settingsStorage.SetString(TargetDatabaseConnectionSettingName, TargetDatabaseConnection);
-            settingsStorage.SetString(TargetProjectSettingName, TargetProject);
-            settingsStorage.SetString(TableNameSettingName, TableName);
-            settingsStorage.SetInteger(CodePlacementSettingName, (int)CodePlacement);
-            settingsStorage.SetInteger(QuoteTypeSettingName, (int)QuoteType);
+        public void Save(ISettingsStorage settingsStorage) {
+            settingsStorage.SetSetting(TargetTypeSettingName, TargetType);
+            settingsStorage.SetSetting(TargetDatabaseConnectionSettingName, TargetDatabaseConnection);
+            settingsStorage.SetSetting(TargetProjectSettingName, TargetProject);
+            settingsStorage.SetSetting(TableNameSettingName, TableName);
+            settingsStorage.SetSetting(CodePlacementSettingName, CodePlacement);
+            settingsStorage.SetSetting(QuoteTypeSettingName, QuoteType);
         }
     }
 }

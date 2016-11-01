@@ -18,19 +18,16 @@ using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.Host;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
-using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.Settings;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.R.Package.Definitions;
 using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Utilities;
 using static System.FormattableString;
 using IServiceProvider = System.IServiceProvider;
 using VsPackage = Microsoft.VisualStudio.Shell.Package;
@@ -357,7 +354,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 return _settingStorage;
             }
         }
-
         #endregion
 
         #region
