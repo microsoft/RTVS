@@ -15,7 +15,6 @@ using Microsoft.VisualStudio.R.Package.Options.R.Tools;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Telemetry;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.Win32;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R {
     public class RToolsOptionsPage : DialogPage {
@@ -318,6 +317,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
                 var value = _storage.GetSetting(prop.Name, prop.PropertyType);
                 prop.SetValue(this, value);
             }
+            // Not calling base intentionally - we are loading properties outselves
         }
 
         protected override void SaveSetting(PropertyDescriptor prop) {
@@ -325,6 +325,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             if (value != null) {
                 _storage.SetSetting(prop.Name, value);
             }
+            // Not calling base intentionally - we are saving properties outselves
         }
     }
 }

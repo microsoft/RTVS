@@ -15,9 +15,24 @@ using static System.FormattableString;
 namespace Microsoft.VisualStudio.R.Package.Shell {
     [Export(typeof(ISettingsStorage))]
     internal sealed class VsSettingsStorage : ISettingsStorage {
+        /// <summary>
+        /// Collection path in VS settings
+        /// </summary>
         private const string _collectionPath = "R Tools";
-        private readonly Dictionary<string, object> _settings = new Dictionary<string, object>();
+
+        /// <summary>
+        /// Settings cache. Persisted to storage when package is unloaded.
+        /// </summary>
+        private readonly Dictionary<string, object> _settingsCache = new Dictionary<string, object>();
+
+        /// <summary>
+        /// VS internal settings manager <seealso cref="IVsSettingsManager"/>
+        /// </summary>
         private readonly ShellSettingsManager _shellSettingsManager;
+
+        /// <summary>
+        /// Settings store provided by the <see cref="ShellSettingsManager"/>
+        /// </summary>
         private readonly WritableSettingsStore _store;
         private readonly object _lock = new object();
 
@@ -33,7 +48,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         public bool SettingExists(string name) {
             lock (_lock) {
-                if (_settings.ContainsKey(name)) {
+                if (_settingsCache.ContainsKey(name)) {
                     return true;
                 }
                 return _store.PropertyExists(_collectionPath, name);
@@ -43,13 +58,13 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         public object GetSetting(string name, Type t) {
             lock (_lock) {
                 object value;
-                if (_settings.TryGetValue(name, out value)) {
+                if (_settingsCache.TryGetValue(name, out value)) {
                     return value;
                 }
 
                 value = GetValueFromStore(name, t);
                 if (value != null) {
-                    _settings[name] = value;
+                    _settingsCache[name] = value;
                     return value;
                 }
             }
@@ -67,21 +82,21 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         public void SetSetting(string name, object value) {
             lock (_lock) {
-                _settings[name] = value;
+                _settingsCache[name] = value;
             }
         }
 
         public void Persist() {
             lock (_lock) {
-                foreach (var s in _settings) {
+                foreach (var s in _settingsCache) {
                     var t = s.Value.GetType();
-                    if (typeof(bool).IsAssignableFrom(t)) {
+                    if (s.Value is bool) {
                         _store.SetBoolean(_collectionPath, s.Key, (bool)s.Value);
                     } else if (typeof(int).IsAssignableFrom(t) || t.IsEnum) {
                         _store.SetInt32(_collectionPath, s.Key, (int)s.Value);
-                    } else if (typeof(string).IsAssignableFrom(t)) {
+                    } else if (s.Value is string) {
                         _store.SetString(_collectionPath, s.Key, (string)s.Value);
-                    } else if (typeof(DateTime).IsAssignableFrom(t)) {
+                    } else if (s.Value is DateTime) {
                         _store.SetString(_collectionPath, s.Key, ((DateTime)s.Value).ToString(CultureInfo.InvariantCulture));
                     } else if (typeof(IEnumerable<string>).IsAssignableFrom(t)) {
                         SaveStringCollectionToStore(s.Key, (IEnumerable<string>)s.Value);
