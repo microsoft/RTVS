@@ -406,11 +406,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             if (hr != VSConstants.S_OK) {
                 ErrorHandler.ThrowOnFailure(shell.LoadPackage(ref guid, out package), VSConstants.E_FAIL);
             }
-            // Workaround: need to load settings after package is loaded. 
-            // Should not be necessary when https://github.com/Microsoft/RTVS/issues/2607 is done.
-            var rp = package as IRPackage;
-            rp?.LoadSettings();
-
             return package;
         }
 
