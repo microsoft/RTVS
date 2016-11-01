@@ -6,17 +6,16 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media;
 using FluentAssertions;
-using Microsoft.Common.Core;
-using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Plots.Implementation;
 using Microsoft.R.Components.Plots.Implementation.ViewModel;
+using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Test.Fakes.InteractiveWindow;
 using Microsoft.R.Components.Test.Fakes.VisualComponentFactories;
 using Microsoft.R.Host.Client;
+using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
@@ -46,7 +45,6 @@ namespace Microsoft.R.Components.Test.Plots {
             _containerHost = containerHost;
             _exportProvider = catalog.CreateExportProvider();
             _workflowProvider = _exportProvider.GetExportedValue<TestRInteractiveWorkflowProvider>();
-            _workflowProvider.BrokerName = nameof(RPlotIntegrationTest);
             _plotDeviceVisualComponentContainerFactory = _exportProvider.GetExportedValue<TestRPlotDeviceVisualComponentContainerFactory>();
             // Don't override the standard behavior of using the control size
             _plotDeviceVisualComponentContainerFactory.DeviceProperties = null;
@@ -60,6 +58,9 @@ namespace Microsoft.R.Components.Test.Plots {
         }
 
         public async Task InitializeAsync() {
+            var settings = _exportProvider.GetExportedValue<IRSettings>();
+            await _workflow.RSessions.TrySwitchBrokerAsync(settings.LastActiveConnection.Name, settings.LastActiveConnection.Path);
+
             _plotVisualComponent.Control.Width = 600;
             _plotVisualComponent.Control.Height = 500;
             _replVisualComponent = await _workflow.GetOrCreateVisualComponent(_componentContainerFactory);
@@ -156,12 +157,12 @@ namespace Microsoft.R.Components.Test.Plots {
                 var result = await eval.ExecuteCodeAsync(script.EnsureLineBreak());
                 result.IsSuccessful.Should().BeTrue();
 
-                await ParallelTools.When(plotReceivedTask, $"{nameof(ExecuteAndWaitForPlotsAsync)} failed on timeout for script: {script}");
+                await plotReceivedTask.Should().BeCompletedAsync(10000, $"it should execute script: {script}");
             }
         }
 
         private Size GetPixelSize(int width, int height) {
-            var source = PresentationSource.FromVisual(_plotVisualComponent.Control as Visual);
+            var source = PresentationSource.FromVisual(_plotVisualComponent.Control);
             return WpfUnitsConversion.ToPixels(source, new Size(width, height));
         }
     }

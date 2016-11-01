@@ -40,7 +40,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
             var connectionsProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IConnectionManagerProvider>();
             var historyProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRHistoryProvider>();
             var packagesProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRPackageManagerProvider>();
-            _interactiveWorkflowProvider = TestRInteractiveWorkflowProviderFactory.Create(nameof(ProjectCommandsTest), sessionProvider, connectionsProvider, historyProvider, packagesProvider);
+            _interactiveWorkflowProvider = TestRInteractiveWorkflowProviderFactory.Create(sessionProvider, connectionsProvider, historyProvider, packagesProvider);
         }
 
         public void Dispose() {

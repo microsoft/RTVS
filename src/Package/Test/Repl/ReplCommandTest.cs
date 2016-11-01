@@ -12,6 +12,7 @@ using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Implementation;
 using Microsoft.R.Components.Test.Stubs.VisualComponents;
 using Microsoft.R.Host.Client;
+using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
@@ -39,7 +40,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
             _debuggerModeTracker = new VsDebuggerModeTracker();
 
             _componentContainerFactory = new InteractiveWindowComponentContainerFactoryMock(VsAppShell.Current);
-            _workflowProvider = TestRInteractiveWorkflowProviderFactory.Create(nameof(ReplCommandTest), debuggerModeTracker: _debuggerModeTracker);
+            _workflowProvider = TestRInteractiveWorkflowProviderFactory.Create(debuggerModeTracker: _debuggerModeTracker);
             _workflow = _workflowProvider.GetOrCreate();
         }
 
@@ -58,7 +59,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
             var commandFactory = new VsRCommandFactory(_workflowProvider, _componentContainerFactory);
             var commands = UIThreadHelper.Instance.Invoke(() => commandFactory.GetCommands(tv, editorBuffer));
 
-            await _workflow.RSession.HostStarted;
+            await _workflow.RSession.HostStarted.Should().BeCompletedAsync();
             _workflow.ActiveWindow.Should().NotBeNull();
 
             var command = commands.OfType<SendToReplCommand>()
