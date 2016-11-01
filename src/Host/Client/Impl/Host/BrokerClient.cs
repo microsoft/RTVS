@@ -69,8 +69,7 @@ namespace Microsoft.R.Host.Client.Host {
             HttpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-        protected virtual void Dispose(bool disposing) => DisposableBag.TryDispose();
-        public void Dispose() => Dispose(true);
+        public void Dispose() => DisposableBag.TryDispose();
 
         public async Task PingAsync() {
             if (HttpClient != null) {

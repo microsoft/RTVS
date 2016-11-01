@@ -751,7 +751,7 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
                 _session = session;
             }
 
-            public async Task ConnectToNewBrokerAsync(CancellationToken cancellationToken, ReentrancyToken reentrancyToken) {
+            public async Task ConnectToNewBrokerAsync(CancellationToken cancellationToken) {
                 using (_session._disposeToken.Link(ref cancellationToken)) { 
                     if (_session._startupInfo == null) {
                         return;

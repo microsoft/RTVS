@@ -7,14 +7,16 @@ using System.Threading;
 
 namespace Microsoft.Common.Core.Disposables {
     public sealed class DisposableBag {
+        private readonly string _objectName;
         private readonly string _message;
         private ConcurrentStack<Action> _disposables;
 
         public static DisposableBag Create<T>(IDisposable disposable) where T : IDisposable => Create<T>().Add(disposable);
         public static DisposableBag Create<T>(Action action) where T : IDisposable => Create<T>().Add(action);
-        public static DisposableBag Create<T>() where T : IDisposable => new DisposableBag(FormattableString.Invariant($"{typeof(T).Name} instance is disposed"));
+        public static DisposableBag Create<T>() where T : IDisposable => new DisposableBag(typeof(T).Name, FormattableString.Invariant($"{typeof(T).Name} instance is disposed"));
 
-        public DisposableBag(string message = null) {
+        public DisposableBag(string objectName, string message = null) {
+            _objectName = objectName;
             _message = message;
             _disposables = new ConcurrentStack<Action>();
         }
@@ -40,10 +42,10 @@ namespace Microsoft.Common.Core.Disposables {
             }
 
             if (_message == null) {
-                throw new InvalidOperationException();
+                throw new ObjectDisposedException(_objectName);
             }
 
-            throw new InvalidOperationException(_message);
+            throw new ObjectDisposedException(_objectName, _message);
         }
 
         public bool TryDispose() {

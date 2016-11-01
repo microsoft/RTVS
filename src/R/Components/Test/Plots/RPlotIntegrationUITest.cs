@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using FluentAssertions;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Plots;
@@ -76,14 +77,10 @@ namespace Microsoft.R.Components.Test.Plots {
             return Task.CompletedTask;
         }
 
-        private TestCoreShell CoreShell {
-            get { return _workflow.Shell as TestCoreShell; }
-        }
-
         [Test(ThreadType.UI)]
         public async Task ResizePlot() {
             await InitializeGraphicsDevice();
-            await ExecuteAndWaitForPlotsAsync(new string[] {
+            await ExecuteAndWaitForPlotsAsync(new [] {
                 "plot(1:10)",
             });
 
@@ -143,8 +140,7 @@ namespace Microsoft.R.Components.Test.Plots {
             var result = await eval.ExecuteCodeAsync("dev.new()\n");
             result.IsSuccessful.Should().BeTrue();
 
-            await deviceCreatedTask;
-            await deviceChangedTask;
+            await ParallelTools.WhenAll(20000, deviceCreatedTask, deviceChangedTask);
         }
 
         private async Task ExecuteAndWaitForPlotsAsync(string[] scripts) {
@@ -160,7 +156,7 @@ namespace Microsoft.R.Components.Test.Plots {
                 var result = await eval.ExecuteCodeAsync(script.EnsureLineBreak());
                 result.IsSuccessful.Should().BeTrue();
 
-                await plotReceivedTask;
+                await ParallelTools.When(plotReceivedTask, $"{nameof(ExecuteAndWaitForPlotsAsync)} failed on timeout for script: {script}");
             }
         }
 

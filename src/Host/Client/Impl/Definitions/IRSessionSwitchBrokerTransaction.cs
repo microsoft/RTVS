@@ -15,7 +15,7 @@ namespace Microsoft.R.Host.Client {
         /// At the end of stage, old connection still exists and all pending interactions/evaluations are alive.
         /// Canceling transaction during or at the end of this stage allows to fallback to the old broker and avoid restarting session
         /// </summary>
-        Task ConnectToNewBrokerAsync(CancellationToken cancellationToken, ReentrancyToken reentrancyToken);
+        Task ConnectToNewBrokerAsync(CancellationToken cancellationToken);
 
         /// <summary>
         /// Second step of the transaction. Assumes that connection to the new broker has been established.

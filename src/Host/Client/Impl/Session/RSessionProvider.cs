@@ -228,10 +228,13 @@ namespace Microsoft.R.Host.Client.Session {
                 var oldBroker = _brokerProxy.Set(brokerClient);
                 try {
                     BrokerChanging?.Invoke(this, EventArgs.Empty);
-                    await SwitchBrokerAsync(cancellationToken, lockToken.Reentrancy);
+                    await SwitchBrokerAsync(cancellationToken);
                     oldBroker.Dispose();
                 } catch (Exception ex) {
                     _brokerProxy.Set(oldBroker);
+                    if (_disposeToken.IsDisposed) {
+                        oldBroker.Dispose();
+                    }
                     brokerClient.Dispose();
                     BrokerChangeFailed?.Invoke(this, EventArgs.Empty);
                     if (ex is OperationCanceledException || ex is RHostBrokerBinaryMissingException) {
@@ -249,20 +252,20 @@ namespace Microsoft.R.Host.Client.Session {
             }
         }
 
-        private async Task SwitchBrokerAsync(CancellationToken cancellationToken, ReentrancyToken reentrancyToken) {
+        private async Task SwitchBrokerAsync(CancellationToken cancellationToken) {
             var transactions = _sessions.Values.Select(s => s.StartSwitchingBroker()).ExcludeDefault().ToList();
             if (transactions.Any()) {
-                await SwitchSessionsAsync(transactions, cancellationToken, reentrancyToken);
+                await SwitchSessionsAsync(transactions, cancellationToken);
             } else {
                 // Ping isn't enough here - need a "full" test with RHost
                 await TestBrokerConnectionWithRHost(_brokerProxy, cancellationToken);
             }
         }
 
-        private async Task SwitchSessionsAsync(IReadOnlyCollection<IRSessionSwitchBrokerTransaction> transactions, CancellationToken cancellationToken, ReentrancyToken reentrancyToken) {
+        private async Task SwitchSessionsAsync(IReadOnlyCollection<IRSessionSwitchBrokerTransaction> transactions, CancellationToken cancellationToken) {
             // All sessions should participate in switch. If any of it didn't start, cancel the rest.
             try {
-                await ConnectToNewBrokerAsync(transactions, cancellationToken, reentrancyToken);
+                await ConnectToNewBrokerAsync(transactions, cancellationToken);
 
                 OnBrokerDisconnected();
                 await CompleteSwitchingBrokerAsync(transactions, cancellationToken);
@@ -289,9 +292,9 @@ namespace Microsoft.R.Host.Client.Session {
             }
         }
 
-        private async Task ConnectToNewBrokerAsync(IEnumerable<IRSessionSwitchBrokerTransaction> transactions, CancellationToken cancellationToken, ReentrancyToken reentrancyToken) {
+        private async Task ConnectToNewBrokerAsync(IEnumerable<IRSessionSwitchBrokerTransaction> transactions, CancellationToken cancellationToken) {
             try {
-                await WhenAllCancelOnFailure(transactions, (t, ct) => t.ConnectToNewBrokerAsync(ct, reentrancyToken), cancellationToken);
+                await WhenAllCancelOnFailure(transactions, (t, ct) => t.ConnectToNewBrokerAsync(ct), cancellationToken);
             } catch (OperationCanceledException ex) when (!(ex is RHostDisconnectedException)) {
                 throw;
             } catch (Exception ex) {
@@ -315,7 +318,9 @@ namespace Microsoft.R.Host.Client.Session {
                 try {
                     await taskFactory(t, ct);
                 } catch (ObjectDisposedException) when (t.IsSessionDisposed) {
+                    ct.ThrowIfCancellationRequested();
                 } catch (OperationCanceledException) when (t.IsSessionDisposed) {
+                    ct.ThrowIfCancellationRequested();
                 }  
             }, cancellationToken);
         }
@@ -325,7 +330,9 @@ namespace Microsoft.R.Host.Client.Session {
                 try {
                     await taskFactory(s, ct);
                 } catch (ObjectDisposedException) when (s.IsDisposed) {
+                    ct.ThrowIfCancellationRequested();
                 } catch (OperationCanceledException) when (s.IsDisposed) {
+                    ct.ThrowIfCancellationRequested();
                 }  
             }, cancellationToken);
         }
