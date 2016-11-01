@@ -15,9 +15,11 @@ using Microsoft.Common.Wpf.Imaging;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Plots.Commands;
+using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Test.Fakes.InteractiveWindow;
 using Microsoft.R.Components.Test.Fakes.VisualComponentFactories;
 using Microsoft.R.Host.Client;
+using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
@@ -41,7 +43,6 @@ namespace Microsoft.R.Components.Test.Plots {
         public RPlotIntegrationTest(RComponentsMefCatalogFixture catalog, TestMethodFixture testMethod, TestFilesFixture testFiles) {
             _exportProvider = catalog.CreateExportProvider();
             _workflowProvider = _exportProvider.GetExportedValue<TestRInteractiveWorkflowProvider>();
-            _workflowProvider.BrokerName = nameof(RPlotIntegrationTest);
             _workflow = _workflowProvider.GetOrCreate();
             _plotDeviceVisualComponentContainerFactory = _exportProvider.GetExportedValue<TestRPlotDeviceVisualComponentContainerFactory>();
             _plotHistoryVisualComponentContainerFactory = _exportProvider.GetExportedValue<IRPlotHistoryVisualComponentContainerFactory>();
@@ -51,6 +52,9 @@ namespace Microsoft.R.Components.Test.Plots {
         }
 
         public async Task InitializeAsync() {
+            var settings = _exportProvider.GetExportedValue<IRSettings>();
+            await _workflow.RSessions.TrySwitchBrokerAsync(settings.LastActiveConnection.Name, settings.LastActiveConnection.Path);
+
             _plotDeviceVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
             _replVisualComponent = await _workflow.GetOrCreateVisualComponent(_componentContainerFactory);
         }
@@ -1035,7 +1039,7 @@ namespace Microsoft.R.Components.Test.Plots {
                 var result = await eval.ExecuteCodeAsync(script.EnsureLineBreak());
                 result.IsSuccessful.Should().BeTrue();
 
-                await ParallelTools.When(plotReceivedTask, $"{nameof(ExecuteAndWaitForPlotsAsync)} failed on timeout for script: {script}");
+                await plotReceivedTask.Should().BeCompletedAsync(10000, $"it should execute script: {script}");
             }
         }
 

@@ -21,8 +21,7 @@ using Microsoft.VisualStudio.R.Package.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.Test.FakeFactories {
     public static class TestRInteractiveWorkflowProviderFactory {
-        public static TestRInteractiveWorkflowProvider Create(string brokerConnectorName
-            , IRSessionProvider sessionProvider = null
+        public static TestRInteractiveWorkflowProvider Create(IRSessionProvider sessionProvider = null
             , IConnectionManagerProvider connectionsProvider = null
             , IRHistoryProvider historyProvider = null
             , IRPackageManagerProvider packagesProvider = null
@@ -46,7 +45,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.FakeFactories {
             return new TestRInteractiveWorkflowProvider(
                 connectionsProvider, historyProvider, packagesProvider, plotsProvider,
                 activeTextViewTracker, debuggerModeTracker, sessionProvider,
-                shell, settings, wss) { BrokerName = brokerConnectorName };
+                shell, settings, wss);
         }
     }
 }

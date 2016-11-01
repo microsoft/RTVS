@@ -31,7 +31,6 @@ namespace Microsoft.R.Components.Test.PackageManager {
         public RPackageManagerViewModelTest(RComponentsMefCatalogFixture catalog, TestMethodFixture testMethod, TestFilesFixture testFiles) {
             _exportProvider = catalog.CreateExportProvider();
             var workflowProvider = _exportProvider.GetExportedValue<TestRInteractiveWorkflowProvider>();
-            workflowProvider.BrokerName = nameof(RPackageManagerViewModelTest);
             _workflow = UIThreadHelper.Instance.Invoke(() => workflowProvider.GetOrCreate());
             _testMethod = testMethod.MethodInfo;
             _testFiles = testFiles;
