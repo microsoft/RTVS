@@ -52,7 +52,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private readonly ICoreServices _coreServices;
 
         private IdleTimeSource _idleTimeSource;
-        private IWritableSettingsStorage _settingStorage;
+        private IWritableEditorSettingsStorage _settingStorage;
 
         [ImportingConstructor]
         public VsAppShell(ITelemetryService telemetryService
@@ -347,13 +347,12 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         #endregion
 
         #region IApplicationShell
-        public IWritableSettingsStorage SettingsStorage {
+        public IWritableEditorSettingsStorage SettingsStorage {
             get {
                 if (_settingStorage == null) {
                     var ctrs = ExportProvider.GetExportedValue<IContentTypeRegistryService>();
                     var contentType = ctrs.GetContentType(RContentTypeDefinition.ContentType);
-                    _settingStorage = ComponentLocatorForOrderedContentType<IWritableSettingsStorage>
-                                            .FindFirstOrderedComponent(CompositionService, contentType);
+                    _settingStorage = ComponentLocatorForOrderedContentType<IWritableEditorSettingsStorage>.FindFirstOrderedComponent(contentType);
                 }
                 return _settingStorage;
             }

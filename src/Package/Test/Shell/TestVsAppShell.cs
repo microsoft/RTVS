@@ -37,7 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
         private IServiceProvider _sp;
         private static TestVsAppShell _instance;
         private static object _shellLock = new object();
-        private IWritableSettingsStorage _settingStorage;
+        private IWritableEditorSettingsStorage _settingStorage;
 
         private TestVsAppShell() {
             CompositionService = VsTestCompositionCatalog.Current.CompositionService;
@@ -87,12 +87,12 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
             return null;
         }
 
-        public override IWritableSettingsStorage SettingsStorage {
+        public override IWritableEditorSettingsStorage SettingsStorage {
             get {
                 if (_settingStorage == null) {
                     var ctrs = ExportProvider.GetExportedValue<IContentTypeRegistryService>();
                     var contentType = ctrs.GetContentType(RContentTypeDefinition.ContentType);
-                    _settingStorage = ComponentLocatorForOrderedContentType<IWritableSettingsStorage>
+                    _settingStorage = ComponentLocatorForOrderedContentType<IWritableEditorSettingsStorage>
                                             .FindFirstOrderedComponent(CompositionService, contentType);
                 }
                 return _settingStorage;

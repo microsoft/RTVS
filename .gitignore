@@ -58,7 +58,7 @@ src/Mocks/VisualStudio/project.json
 src/Package/Impl/source.extension.vsixmanifest
 src/Package/Impl/project.json
 src/Package/Test/project.json
-src\Package\TestApp
+src/Package/TestApp/project.json
 src/ProjectSystem/Impl/project.json
 src/ProjectSystem/Test/project.json
 src/EditorTestApp/project.json
@@ -73,7 +73,7 @@ src/R/Editor/Test/project.json
 src/R/Editor/Impl/project.json
 src/UnitTests/Core/Impl/project.json
 src/Mocks/Editor/project.json
-src/R/Debugger/Impl/project.json
+src/Debugger/Impl/project.json
 src/R/Support/Impl/project.json
 src/R/Sql/Impl/project.json
 

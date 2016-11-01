@@ -45,7 +45,7 @@ namespace Microsoft.Languages.Editor.Application.Packages {
     }
 
     [ExcludeFromCodeCoverage]
-    [Export(typeof(IWritableSettingsStorage))]
+    [Export(typeof(IWritableEditorSettingsStorage))]
     [ContentType(RContentTypeDefinition.ContentType)]
     [Name("R Test settings")]
     [Order(Before = "Default")]

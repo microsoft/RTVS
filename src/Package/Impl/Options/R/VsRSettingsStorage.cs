@@ -9,7 +9,7 @@ using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R {
-    [Export(typeof(IWritableSettingsStorage))]
+    [Export(typeof(IWritableEditorSettingsStorage))]
     [ContentType(RContentTypeDefinition.ContentType)]
     [Name("Visual Studio R Editor settings")]
     [Order(Before = "Default")]

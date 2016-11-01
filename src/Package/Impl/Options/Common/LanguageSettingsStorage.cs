@@ -19,7 +19,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.Common {
     /// </summary>
     public abstract class LanguageSettingsStorage
         : IVsTextManagerEvents4
-        , IWritableSettingsStorage
+        , IWritableEditorSettingsStorage
         , IDisposable {
 
         public event EventHandler<EventArgs> SettingsChanged;

@@ -97,6 +97,7 @@
     <Compile Include="Threading\AsyncReaderWriterLock.ExclusiveReaderLock.cs" />
     <Compile Include="Threading\AsyncReaderWriterLock.LockSource.cs" />
     <Compile Include="Threading\AsyncReaderWriterLock.Token.cs" />
+    <Compile Include="Shell\ISettingsStorage.cs" />
     <Compile Include="Threading\BackgroundThreadAwaitable.cs" />
     <Compile Include="Threading\BackgroundThreadAwaiter.cs" />
     <Compile Include="Collections\ListExtensions.cs" />

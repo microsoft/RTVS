@@ -9,7 +9,7 @@ namespace Microsoft.Common.Core.Settings {
     /// Editor uses exported object to retrieve its settings such as indentation
     /// style, tab size, formatting options and so on.
     /// </summary>
-    public interface ISettingsStorage {
+    public interface IEditorSettingsStorage {
         event EventHandler<EventArgs> SettingsChanged;
 
         void LoadFromStorage();
@@ -24,7 +24,7 @@ namespace Microsoft.Common.Core.Settings {
     /// Editor uses exported object to store settings such as indentation style, 
     /// tab size, formatting options and so on.
     /// </summary>
-    public interface IWritableSettingsStorage : ISettingsStorage {
+    public interface IWritableEditorSettingsStorage : IEditorSettingsStorage {
         void ResetSettings();
 
         void SetString(string name, string value);

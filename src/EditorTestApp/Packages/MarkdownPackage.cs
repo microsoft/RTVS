@@ -19,7 +19,7 @@ namespace Microsoft.Languages.Editor.Application.Packages {
     internal sealed class TestMdTextViewConnectionListener : MdTextViewConnectionListener {}
 
     [ExcludeFromCodeCoverage]
-    [Export(typeof(IWritableSettingsStorage))]
+    [Export(typeof(IWritableEditorSettingsStorage))]
     [ContentType(MdContentTypeDefinition.ContentType)]
     [Name("Markdown Test settings")]
     [Order(Before = "Default")]

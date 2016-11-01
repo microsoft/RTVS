@@ -7,6 +7,7 @@ using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Settings;
@@ -118,12 +119,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             ProjectIconProvider.LoadProjectImages();
             LogCleanup.DeleteLogsAsync(DiagnosticLogs.DaysToRetain);
 
-            IdleTimeAction.Create(CompleteInit, 20, this.GetType(), VsAppShell.Current);
-            IdleTimeAction.Create(ExpansionsCache.Load, 200, typeof(ExpansionsCache), VsAppShell.Current);
-            IdleTimeAction.Create(() => RtvsTelemetry.Current.ReportConfiguration(), 5000, typeof(RtvsTelemetry), VsAppShell.Current);
-        }
-
-        private void CompleteInit() {
             LoadSettings();
 
             RtvsTelemetry.Initialize(_packageIndex, VsAppShell.Current.ExportProvider.GetExportedValue<IRSettings>());
@@ -132,6 +127,9 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             AdviseExportedWindowFrameEvents<ActiveWpfTextViewTracker>();
             AdviseExportedWindowFrameEvents<VsActiveRInteractiveWindowTracker>();
             AdviseExportedDebuggerEvents<VsDebuggerModeTracker>();
+
+            System.Threading.Tasks.Task.Run(() => RtvsTelemetry.Current.ReportConfiguration());
+            IdleTimeAction.Create(ExpansionsCache.Load, 200, typeof(ExpansionsCache));
         }
 
         protected override void Dispose(bool disposing) {
@@ -142,10 +140,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             CsvAppFileIO.Close(new FileSystem());
 
             RtvsTelemetry.Current.Dispose();
-
-            using (var p = Current.GetDialogPage(typeof(RToolsOptionsPage)) as RToolsOptionsPage) {
-                p?.SaveSettings();
-            }
+            VsAppShell.Current.ExportProvider.GetExportedValue<ISettingsStorage>().Persist();
 
             base.Dispose(disposing);
         }

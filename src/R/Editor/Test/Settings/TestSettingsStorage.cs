@@ -11,11 +11,11 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.R.Editor.Test.Settings {
     [ExcludeFromCodeCoverage]
-    [Export(typeof(IWritableSettingsStorage))]
+    [Export(typeof(IWritableEditorSettingsStorage))]
     [ContentType(RContentTypeDefinition.ContentType)]
     [Name("R Test Editor settings")]
     [Order(Before = "Visual Studio R Editor settings")]
-    public class TestSettingsStorage : IWritableSettingsStorage
+    public class TestSettingsStorage : IWritableEditorSettingsStorage
     {
         Dictionary<string, object> _settings = new Dictionary<string, object>();
 

@@ -8,8 +8,6 @@ using System.Reflection;
 using Microsoft.Common.Core;
 using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Settings.Definitions;
-using Microsoft.VisualStudio.R.Package.Options.R;
-using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.SurveyNews {
     [Export(typeof(ISurveyNewsOptions))]
@@ -20,15 +18,7 @@ namespace Microsoft.VisualStudio.R.Package.SurveyNews {
 
         public DateTime SurveyNewsLastCheck {
             get { return RToolsSettings.Current.SurveyNewsLastCheck; }
-            set {
-                // We go through the dialog page, instead of going straight to RToolsSettings,
-                // to ensure that the value gets saved.  Otherwise the option would only get saved
-                // if the user opens the dialog page during the VS session.
-                using (var p = RPackage.Current.GetDialogPage(typeof(RToolsOptionsPage)) as RToolsOptionsPage) {
-                    p.SurveyNewsLastCheck = value;
-                    p.SaveSettings();
-                }
-            }
+            set { RToolsSettings.Current.SurveyNewsLastCheck = value; }
         }
 
         public string IndexUrl { get { return RToolsSettings.Current.SurveyNewsIndexUrl; } }

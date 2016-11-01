@@ -15,8 +15,8 @@ namespace Microsoft.Languages.Editor.Shell {
     /// <summary>
     /// Provides abstraction of application services to editor components
     /// </summary>
-    public static class EditorShell {
-        private static Dictionary<string, ISettingsStorage> _settingStorageMap = new Dictionary<string, ISettingsStorage>(StringComparer.OrdinalIgnoreCase);
+    public sealed class EditorShell {
+        private static Dictionary<string, IEditorSettingsStorage> _settingStorageMap = new Dictionary<string, IEditorSettingsStorage>(StringComparer.OrdinalIgnoreCase);
         private static object _shell;
         private static readonly object _instanceLock = new object();
         private static readonly object _settingsLock = new object();
@@ -39,8 +39,8 @@ namespace Microsoft.Languages.Editor.Shell {
             }
         }
 
-        public static ISettingsStorage GetSettings(ICompositionCatalog compositionCatalog, string contentTypeName) {
-            ISettingsStorage settingsStorage = null;
+        public static IEditorSettingsStorage GetSettings(ICompositionCatalog compositionCatalog, string contentTypeName) {
+            IEditorSettingsStorage settingsStorage = null;
 
             lock (_settingsLock) {
                 if (_settingStorageMap.TryGetValue(contentTypeName, out settingsStorage)) {
@@ -54,21 +54,21 @@ namespace Microsoft.Languages.Editor.Shell {
                 var contentType = contentTypeRegistry.GetContentType(contentTypeName);
                 Debug.Assert(contentType != null, "Cannot find content type object for " + contentTypeName);
 
-            settingsStorage = ComponentLocatorForOrderedContentType<IWritableSettingsStorage>.FindFirstOrderedComponent(compositionCatalog.CompositionService, contentType);
+            settingsStorage = ComponentLocatorForOrderedContentType<IWritableEditorSettingsStorage>.FindFirstOrderedComponent(contentType);
 
             if (settingsStorage == null) {
-                settingsStorage = ComponentLocatorForOrderedContentType<ISettingsStorage>.FindFirstOrderedComponent(compositionCatalog.CompositionService, contentType);
+                settingsStorage = ComponentLocatorForOrderedContentType<IEditorSettingsStorage>.FindFirstOrderedComponent(contentType);
             }
 
             if (settingsStorage == null) {
-                var storages = ComponentLocatorForContentType<IWritableSettingsStorage, IComponentContentTypes>.ImportMany(compositionCatalog.CompositionService, contentType);
-                if (storages.Any())
+                var storages = ComponentLocatorForContentType<IWritableEditorSettingsStorage, IComponentContentTypes>.ImportMany(contentType);
+                if (storages.Count() > 0)
                     settingsStorage = storages.First().Value;
             }
 
             if (settingsStorage == null) {
-                var readonlyStorages = ComponentLocatorForContentType<ISettingsStorage, IComponentContentTypes>.ImportMany(compositionCatalog.CompositionService, contentType);
-                if (readonlyStorages.Any())
+                var readonlyStorages = ComponentLocatorForContentType<IEditorSettingsStorage, IComponentContentTypes>.ImportMany(contentType);
+                if (readonlyStorages.Count() > 0)
                     settingsStorage = readonlyStorages.First().Value;
             }
 

@@ -32,13 +32,13 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
         private readonly ICoreShell _coreShell;
         private readonly IProjectSystemServices _pss;
         private readonly IProjectConfigurationSettingsProvider _pcsp;
-        private readonly IWritableSettingsStorage _storage;
+        private readonly IWritableEditorSettingsStorage _storage;
 
         public PublishOptionsDialogModelTest() {
             _coreShell = Substitute.For<ICoreShell>();
             _pss = Substitute.For<IProjectSystemServices>();
             _pcsp = Substitute.For<IProjectConfigurationSettingsProvider>();
-            _storage = Substitute.For<IWritableSettingsStorage>();
+            _storage = Substitute.For<IWritableEditorSettingsStorage>();
         }
 
         [Test(ThreadType.UI)]

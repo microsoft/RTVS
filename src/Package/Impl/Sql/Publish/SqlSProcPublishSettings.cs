@@ -49,11 +49,11 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
 
         public SqlSProcPublishSettings() { }
 
-        public SqlSProcPublishSettings(ISettingsStorage settingsStorage) {
+        public SqlSProcPublishSettings(IEditorSettingsStorage settingsStorage) {
             Load(settingsStorage);
         }
 
-        private void Load(ISettingsStorage settingsStorage) {
+        private void Load(IEditorSettingsStorage settingsStorage) {
             TargetType = (PublishTargetType)settingsStorage.GetInteger(TargetTypeSettingName, (int)PublishTargetType.Dacpac);
             TargetDatabaseConnection = settingsStorage.GetString(TargetDatabaseConnectionSettingName, string.Empty);
             TargetProject = settingsStorage.GetString(TargetProjectSettingName, string.Empty);
@@ -62,7 +62,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             QuoteType = (SqlQuoteType)settingsStorage.GetInteger(QuoteTypeSettingName, (int)SqlQuoteType.None);
         }
 
-        public void Save(IWritableSettingsStorage settingsStorage) {
+        public void Save(IWritableEditorSettingsStorage settingsStorage) {
             settingsStorage.SetInteger(TargetTypeSettingName,(int)TargetType);
             settingsStorage.SetString(TargetDatabaseConnectionSettingName, TargetDatabaseConnection);
             settingsStorage.SetString(TargetProjectSettingName, TargetProject);

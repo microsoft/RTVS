@@ -22,7 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             var appShell = Substitute.For<IApplicationShell>();
             var pss = Substitute.For<IProjectSystemServices>();
             var pcsp = Substitute.For<IProjectConfigurationSettingsProvider>();
-            var storage = Substitute.For<IWritableSettingsStorage>();
+            var storage = Substitute.For<IWritableEditorSettingsStorage>();
             var fs = Substitute.For<IFileSystem>();
 
             var dlg = await SqlPublshOptionsDialog.CreateAsync(appShell, pss, fs, pcsp);
