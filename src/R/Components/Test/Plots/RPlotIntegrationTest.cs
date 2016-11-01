@@ -19,6 +19,7 @@ using Microsoft.R.Components.Test.Fakes.InteractiveWindow;
 using Microsoft.R.Components.Test.Fakes.VisualComponentFactories;
 using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.Mef;
+using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 using Xunit;
@@ -41,9 +42,9 @@ namespace Microsoft.R.Components.Test.Plots {
             _exportProvider = catalog.CreateExportProvider();
             _workflowProvider = _exportProvider.GetExportedValue<TestRInteractiveWorkflowProvider>();
             _workflowProvider.BrokerName = nameof(RPlotIntegrationTest);
+            _workflow = _workflowProvider.GetOrCreate();
             _plotDeviceVisualComponentContainerFactory = _exportProvider.GetExportedValue<TestRPlotDeviceVisualComponentContainerFactory>();
             _plotHistoryVisualComponentContainerFactory = _exportProvider.GetExportedValue<IRPlotHistoryVisualComponentContainerFactory>();
-            _workflow = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
             _componentContainerFactory = _exportProvider.GetExportedValue<IInteractiveWindowComponentContainerFactory>();
             _testMethod = testMethod.MethodInfo;
             _testFiles = testFiles;
@@ -1020,13 +1021,10 @@ namespace Microsoft.R.Components.Test.Plots {
             var result = await eval.ExecuteCodeAsync("dev.new()\n");
             result.IsSuccessful.Should().BeTrue();
 
-            await deviceCreatedTask;
-            await deviceChangedTask;
+            await ParallelTools.WhenAll(20000, deviceCreatedTask, deviceChangedTask);
         }
 
-        private async Task ExecuteAndWaitForPlotsAsync(string[] scripts) {
-            await ExecuteAndWaitForPlotsAsync(_workflow.Plots.ActiveDevice, scripts);
-        }
+        private Task ExecuteAndWaitForPlotsAsync(string[] scripts) => ExecuteAndWaitForPlotsAsync(_workflow.Plots.ActiveDevice, scripts);
 
         private async Task ExecuteAndWaitForPlotsAsync(IRPlotDevice device, string[] scripts) {
             var eval = _workflow.ActiveWindow.InteractiveWindow.Evaluator;
@@ -1037,7 +1035,7 @@ namespace Microsoft.R.Components.Test.Plots {
                 var result = await eval.ExecuteCodeAsync(script.EnsureLineBreak());
                 result.IsSuccessful.Should().BeTrue();
 
-                await plotReceivedTask;
+                await ParallelTools.When(plotReceivedTask, $"{nameof(ExecuteAndWaitForPlotsAsync)} failed on timeout for script: {script}");
             }
         }
 

@@ -67,6 +67,29 @@ namespace Microsoft.Common.Core.Test.Tasks {
         }
 
         [Test]
+        public async Task WhenAllCancelOnFailure_AlreadyCancellation() {
+            var index = 0;
+            var cts = new CancellationTokenSource();
+            cts.Cancel();
+
+            Func<CancellationToken, Task> function1 = async ct => {
+                await Task.Delay(200, ct);
+                Interlocked.Exchange(ref index, 1);
+                throw new InvalidOperationException("1");
+            };
+
+            Func<CancellationToken, Task> function2 = async ct => {
+                await Task.Delay(50, ct);
+                Interlocked.Exchange(ref index, 2);
+                throw new InvalidOperationException("2");
+            };
+
+            Func<Task> f = () => TaskUtilities.WhenAllCancelOnFailure(new [] { function1, function2 }, cts.Token);
+            await f.ShouldThrowAsync<OperationCanceledException>();
+            index.Should().Be(0);
+        }
+
+        [Test]
         public async Task WhenAllCancelOnFailure_FailureThenCancellation() {
             var index = 0;
 
