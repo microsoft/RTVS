@@ -299,7 +299,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
 
                     // Removing that plot may activate the device from the removed plot,
                     // which would hide this device. So we re-show it.
-                    await ShowDeviceAsync(targetDevice);
+                    await ShowDeviceAsync(targetDevice, false);
                 }
             }
         }
@@ -317,6 +317,12 @@ namespace Microsoft.R.Components.Plots.Implementation {
             return plots.ToArray();
         }
 
+        public IRPlotDevice[] GetAllDevices() {
+            InteractiveWorkflow.Shell.AssertIsOnMainThread();
+
+            return _devices.ToArray();
+        }
+
         private async Task CopyPlotAsync(IRPlot sourcePlot, IRPlotDevice targetDevice) {
             await TaskUtilities.SwitchToBackgroundThread();
             try {
@@ -326,12 +332,12 @@ namespace Microsoft.R.Components.Plots.Implementation {
             }
         }
 
-        private async Task ShowDeviceAsync(IRPlotDevice device) {
+        public async Task ShowDeviceAsync(IRPlotDevice device, bool activate) {
             InteractiveWorkflow.Shell.AssertIsOnMainThread();
 
             var visualComponent = await GetVisualComponentForDevice(device.DeviceId);
             if (visualComponent != null) {
-                visualComponent.Container.Show(focus: false, immediate: false);
+                visualComponent.Container.Show(focus: activate, immediate: false);
             }
         }
 

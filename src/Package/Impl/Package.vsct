@@ -250,6 +250,15 @@
           <ButtonText>&amp;Windows</ButtonText>
         </Strings>
       </Menu>
+
+      <!-- Plot Windows flyout -->
+      <Menu guid="guidRToolsCmdSet" id="plotWindowsSubMenu" type="Menu" priority="0x100">
+        <Parent guid="guidRToolsCmdSet" id="plotSubMenuNavGroup" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Plot &amp;Windows</ButtonText>
+        </Strings>
+      </Menu>
     </Menus>
 
     <Combos>
@@ -414,6 +423,9 @@
       </Group>
       <Group guid="guidRToolsCmdSet" id="plotSubMenuLocatorGroup" priority="0x0600">
         <Parent guid="guidRToolsCmdSet" id="plotSubMenu"/>
+      </Group>
+      <Group guid="guidRToolsCmdSet" id="plotWindowsSubMenuGroup" priority="0x0100" >
+        <Parent guid="guidRToolsCmdSet" id="plotWindowsSubMenu" />
       </Group>
 
       <!-- Same as above, but excludes commands that are already present in Interactive Window toolbar (like Restart). -->
@@ -1006,11 +1018,22 @@
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
-          <ButtonText>Activate Plot</ButtonText>
-          <MenuText>Activate &amp;Plot</MenuText>
+          <ButtonText>Show Plot</ButtonText>
+          <MenuText>Show &amp;Plot</MenuText>
         </Strings>
       </Button>
-      
+
+      <Button guid="guidRToolsCmdSet" id="icmdPlotWindowsDynamicStart" priority="0x1000" >
+        <Parent guid="guidRToolsCmdSet" id="plotWindowsSubMenuGroup" />
+        <CommandFlag>DynamicItemStart</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <!-- This text does not appear. -->
+        <Strings>
+          <ButtonText>R Plot - Device X</ButtonText>
+        </Strings>
+      </Button>
+
       <!-- End Plots flyout -->
 
       <!-- Data flyout -->
@@ -2096,21 +2119,9 @@
       <Parent guid="guidRToolsCmdSet" id="plotSubMenuNavGroup"/>
     </CommandPlacement>
 
-    <!--<CommandPlacement guid="guidRToolsCmdSet" id="icmdShowPlotHistory" priority="0x0050">
-      <Parent guid="guidRToolsCmdSet" id="plotSubMenuNavGroup"/>
-    </CommandPlacement>-->
-
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdPlotHistoryWindow" priority="0x0050">
       <Parent guid="guidRToolsCmdSet" id="plotSubMenuNavGroup"/>
     </CommandPlacement>
-
-    <!--<CommandPlacement guid="guidRToolsCmdSet" id="icmdPrevPlot" priority="0x0100">
-      <Parent guid="guidRToolsCmdSet" id="plotSubMenuNavGroup"/>
-    </CommandPlacement>
-
-    <CommandPlacement guid="guidRToolsCmdSet" id="icmdNextPlot" priority="0x0200">
-      <Parent guid="guidRToolsCmdSet" id="plotSubMenuNavGroup"/>
-    </CommandPlacement>-->
 
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdExportPlotAsImage" priority="0x0100">
       <Parent guid="guidRToolsCmdSet" id="plotSubMenuFileGroup"/>
@@ -2161,10 +2172,6 @@
       <Parent guid="guidRToolsCmdSet" id="plotHistoryToolbarMgmtGroup"/>
     </CommandPlacement>
 
-    <!--<CommandPlacement guid="guidRToolsCmdSet" id="icmdRemovePlot" priority="0x0100">
-      <Parent guid="guidRToolsCmdSet" id="plotHistoryToolbarMgmtGroup"/>
-    </CommandPlacement>-->
-
     <!-- Plot window toolbar -->
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdNewPlotWindow" priority="0x0020">
       <Parent guid="guidRToolsCmdSet" id="plotToolbarDevGroup"/>
@@ -2173,10 +2180,6 @@
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdActivatePlotWindow" priority="0x0030">
       <Parent guid="guidRToolsCmdSet" id="plotToolbarDevGroup"/>
     </CommandPlacement>
-
-    <!--<CommandPlacement guid="guidRToolsCmdSet" id="icmdShowPlotHistory" priority="0x0050">
-      <Parent guid="guidRToolsCmdSet" id="plotToolbarNavGroup"/>
-    </CommandPlacement>-->
 
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdPlotHistoryWindow" priority="0x0050">
       <Parent guid="guidRToolsCmdSet" id="plotToolbarNavGroup"/>
@@ -2647,13 +2650,8 @@
       <IDSymbol name="icmdPlotHistoryZoomOut" value="724" />
       <IDSymbol name="icmdPlotHistoryAutoHide" value="725" />
       <IDSymbol name="icmdPlotHistoryActivatePlot" value="726" />
-
-      <IDSymbol name="plotSubMenu" value="750"/>
-      <IDSymbol name="plotSubMenuFileGroup" value="751"/>
-      <IDSymbol name="plotSubMenuCopyGroup" value="754"/>
-      <IDSymbol name="plotSubMenuNavGroup" value="755"/>
-      <IDSymbol name="plotSubMenuClearGroup" value="756"/>
-      <IDSymbol name="plotSubMenuLocatorGroup" value="757"/>
+      <!-- This dynamic command uses ids from 730 to 749 -->
+      <IDSymbol name="icmdPlotWindowsDynamicStart" value="730" />
 
       <!-- Data-->
       <IDSymbol name="icmdImportDataset" value="801" />
@@ -2727,6 +2725,15 @@
       <IDSymbol name="editorNavContextMenuGroup" value="0x2029"/>
       <IDSymbol name="connectionsStatusBarMruGroup" value="0x2040"/>
       <IDSymbol name="connectionsStatusBarReconnectGroup" value="0x2041"/>
+      <IDSymbol name="plotSubMenu" value="0x2050"/>
+      <IDSymbol name="plotSubMenuFileGroup" value="0x2051"/>
+      <IDSymbol name="plotSubMenuCopyGroup" value="0x2052"/>
+      <IDSymbol name="plotSubMenuNavGroup" value="0x2053"/>
+      <IDSymbol name="plotSubMenuClearGroup" value="0x2054"/>
+      <IDSymbol name="plotSubMenuLocatorGroup" value="0x2055"/>
+      <IDSymbol name="plotWindowsSubMenuGroup" value="0x2056" />
+      <IDSymbol name="plotWindowsSubMenu" value ="0x2057"/>
+
 
       <!-- Variable Explorer -->
       <IDSymbol name="variableWindowToolBarId" value="0x2030" />

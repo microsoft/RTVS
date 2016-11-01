@@ -254,6 +254,17 @@ namespace Microsoft.R.Components.Plots {
         IRPlot[] GetAllPlots();
 
         /// <summary>
+        /// Get all the plot devices.
+        /// </summary>
+        /// <returns></returns>
+        IRPlotDevice[] GetAllDevices();
+
+        /// <summary>
+        /// Show the plot device window.
+        /// </summary>
+        Task ShowDeviceAsync(IRPlotDevice device, bool activate);
+
+        /// <summary>
         /// Add a visual component to the pool of available components.
         /// </summary>
         /// <param name="visualComponent">Available visual component.</param>
