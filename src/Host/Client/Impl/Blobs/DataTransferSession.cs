@@ -91,16 +91,19 @@ namespace Microsoft.R.Host.Client {
         /// <param name="doCleanUp">true to add blob upon transfer for cleanup on dispose, false to ignore it after transfer.</param>
         public async Task FetchCompressedFileAsync(IRBlobInfo blob, string filePath, bool doCleanUp = true, IProgress<long> progress = null) {
             string tempFilePath = _fs.GetTempFileName();
-            using (RBlobStream blobStream = await RBlobStream.OpenAsync(blob, _blobService))
-            using (Stream fileStream = _fs.CreateFile(tempFilePath)) {
-                await blobStream.CopyToAsync(fileStream, progress);
-            }
+            try {
+                using (RBlobStream blobStream = await RBlobStream.OpenAsync(blob, _blobService))
+                using (Stream fileStream = _fs.CreateFile(tempFilePath)) {
+                    await blobStream.CopyToAsync(fileStream, progress);
+                }
 
-            _fs.DecompressFile(tempFilePath, filePath);
-            _fs.DeleteFile(tempFilePath);
+                _fs.DecompressFile(tempFilePath, filePath);
 
-            if (doCleanUp) {
-                _cleanup.Add(blob);
+                if (doCleanUp) {
+                    _cleanup.Add(blob);
+                }
+            } finally {
+                _fs.DeleteFile(tempFilePath);
             }
         }
 

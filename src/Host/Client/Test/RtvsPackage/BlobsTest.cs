@@ -209,15 +209,8 @@ namespace Microsoft.R.Host.Client.Test.RtvsPackage {
                 var compressedData = await eval.EvaluateAsync<byte[]>($"rtvs:::get_blob({blobId2})", REvaluationKind.Normal);
                 compressedData.Length.Should().BeLessThan(expectedData.Length);
 
-                // Decompress and validate
-                var fs = new FileSystem();
-                string tempFile = fs.GetTempFileName();
-                string dataFile = fs.GetTempFileName();
-                fs.FileWriteAllBytes(tempFile, compressedData);
-                fs.DecompressFile(tempFile, dataFile);
-                byte[] actualData = fs.FileReadAllBytes(dataFile);
-                fs.DeleteFile(tempFile);
-                fs.DeleteFile(dataFile);
+                byte[] actualData = DecompressData(compressedData);
+                actualData.Should().Equal(expectedData);
 
                 actualData.Should().Equal(expectedData);
                 await eval.ExecuteAsync($"rtvs:::destroy_blob({blobId})");
@@ -240,20 +233,28 @@ namespace Microsoft.R.Host.Client.Test.RtvsPackage {
                 var blobId2 = ((JValue)createCompressedResult.Result).Value<ulong>();
                 var compressedData = await eval.EvaluateAsync<byte[]>($"rtvs:::get_blob({blobId2})", REvaluationKind.Normal);
 
-                // Decompress and validate
-                var fs = new FileSystem();
-                string tempFile = fs.GetTempFileName();
-                string dataFile = fs.GetTempFileName();
-                fs.FileWriteAllBytes(tempFile, compressedData);
-                fs.DecompressFile(tempFile, dataFile);
-                byte[] actualData = fs.FileReadAllBytes(dataFile);
-                fs.DeleteFile(tempFile);
-                fs.DeleteFile(dataFile);
-
+                byte[] actualData = DecompressData(compressedData);
                 actualData.Should().Equal(expectedData);
+
                 await eval.ExecuteAsync($"rtvs:::destroy_blob({blobId})");
                 await eval.ExecuteAsync($"rtvs:::destroy_blob({blobId2})");
             }
+        }
+
+        private byte[] DecompressData(byte[] compressedData) {
+            byte[] decompressedData = null;
+            var fs = new FileSystem();
+            string tempFile = fs.GetTempFileName();
+            string dataFile = fs.GetTempFileName();
+            try {
+                fs.FileWriteAllBytes(tempFile, compressedData);
+                fs.DecompressFile(tempFile, dataFile);
+                fs.FileReadAllBytes(dataFile);
+            }finally {
+                fs.DeleteFile(tempFile);
+                fs.DeleteFile(dataFile);
+            }
+            return decompressedData;
         }
     }
 }
