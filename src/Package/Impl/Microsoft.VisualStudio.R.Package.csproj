@@ -1555,6 +1555,6 @@
       <Output TaskParameter="ResourcesToEmbed" ItemName="EmbeddedResource" />
     </XamlRuleToCode>
   </Target>
-  <Import Project="$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\14.2.25201\tools\vssdk\Microsoft.VsSDK.targets" Condition="'$(VisualStudioVersion)'=='14.0' AND Exists('$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\14.2.25201\tools\vssdk\Microsoft.VsSDK.targets')" />
+  <Import Project="$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\14.3.25407\tools\vssdk\Microsoft.VsSDK.targets" Condition="'$(VisualStudioVersion)'=='14.0' AND Exists('$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\14.3.25407\tools\vssdk\Microsoft.VsSDK.targets')" />
   <Import Project="$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\15.0.25728-Preview5\tools\vssdk\Microsoft.VsSDK.targets" Condition="'$(VisualStudioVersion)'=='15.0' AND Exists('$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\15.0.25728-Preview5\tools\vssdk\Microsoft.VsSDK.targets')" />
 </Project>
