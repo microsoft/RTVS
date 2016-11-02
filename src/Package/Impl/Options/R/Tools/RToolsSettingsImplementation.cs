@@ -6,14 +6,15 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Enums;
-using Microsoft.Common.Core.Logging;
-using Microsoft.Common.Wpf;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.Settings;
-using Microsoft.R.Support.Settings.Definitions;
+using Microsoft.R.Interpreters;
+using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.SurveyNews;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -32,10 +33,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [ImportingConstructor]
         public RToolsSettingsImplementation(ISettingsStorage settings) {
             _settings = settings;
-
-            // Default settings. Will be overwritten with actual
-            // settings (if any) when settings are loaded from storage
-            RBasePath = RInstallation.GetRInstallPath(null, null);
             _workingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         }
 

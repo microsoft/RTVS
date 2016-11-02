@@ -5,7 +5,6 @@ using System;
 using System.ComponentModel.Design;
 using System.Threading;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Settings;
 
 namespace Microsoft.Common.Core.Shell {
     /// <summary>
@@ -97,10 +96,5 @@ namespace Microsoft.Common.Core.Shell {
         /// Application constants
         /// </summary>
         IApplicationConstants AppConstants { get; }
-
-        /// <summary>
-        /// Persistent storage for any settings application may need to keep between sessions.
-        /// </summary>
-        IWritableSettingsStorage SettingsStorage { get; }
     }
 }
