@@ -21,7 +21,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// <summary>
         /// Collection path in VS settings
         /// </summary>
-        private const string _collectionPath = "R Tools";
+        private const string _collectionPath = "RTools";
 
         /// <summary>
         /// Settings cache. Persisted to storage when package is unloaded.
@@ -109,33 +109,38 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
 
         private object GetValueFromStore(string name, Type t) {
-            if (typeof(bool).IsAssignableFrom(t)) {
-                return _store.GetBoolean(_collectionPath, name);
-            } else if (typeof(int).IsAssignableFrom(t) || t.IsEnum) {
-                return _store.GetInt32(_collectionPath, name);
-            } else if (typeof(string).IsAssignableFrom(t)) {
-                return _store.GetString(_collectionPath, name);
-            } else if (typeof(DateTime).IsAssignableFrom(t)) {
-                var s = _store.GetString(_collectionPath, name);
-                DateTime dt;
-                if(DateTime.TryParse(s, CultureInfo.InvariantCulture, DateTimeStyles.NoCurrentDateDefault, out dt)) {
-                    return dt;
+            if (_store.CollectionExists(_collectionPath) && _store.PropertyExists(_collectionPath, name)) {
+                if (typeof(bool).IsAssignableFrom(t)) {
+                    return _store.GetBoolean(_collectionPath, name);
+                } else if (typeof(int).IsAssignableFrom(t) || t.IsEnum) {
+                    return _store.GetInt32(_collectionPath, name);
+                } else if (typeof(string).IsAssignableFrom(t)) {
+                    return _store.GetString(_collectionPath, name);
+                } else if (typeof(DateTime).IsAssignableFrom(t)) {
+                    var s = _store.GetString(_collectionPath, name, null);
+                    if (s != null) {
+                        DateTime dt;
+                        if (DateTime.TryParse(s, CultureInfo.InvariantCulture, DateTimeStyles.NoCurrentDateDefault, out dt)) {
+                            return dt;
+                        }
+                        return DateTime.Now;
+                    }
+                } else if (typeof(IEnumerable<string>).IsAssignableFrom(t)) {
+                    return GetStringCollectionFromStore(name);
                 }
-                return DateTime.Now;
-            } else if (typeof(IEnumerable<string>).IsAssignableFrom(t)) {
-                return GetStringCollectionFromStore(name);
             }
-
-            Debug.Fail("Unsupported setting type");
             return null;
         }
 
         private IEnumerable<string> GetStringCollectionFromStore(string name) {
             var values = new List<string>();
-            string subCollectionPath = Invariant($"{_collectionPath}/{name}");
+            string subCollectionPath = Invariant($@"{_collectionPath}\{name}");
             if (_store.CollectionExists(subCollectionPath)) {
                 for (int i = 0; ; i++) {
-                    string value = _store.GetString(subCollectionPath, Invariant($"Value{i}"));
+                    string value = null;
+                    if (_store.PropertyExists(subCollectionPath, name)) {
+                        value = _store.GetString(subCollectionPath, Invariant($"Value{i}"));
+                    }
                     if (value == null) {
                         break;
                     }
