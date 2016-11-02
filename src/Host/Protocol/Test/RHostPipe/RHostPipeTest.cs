@@ -74,24 +74,21 @@ namespace Microsoft.R.Host.Protocol.Test.RHostPipe {
 
             // Process should not exit before fully starting up
             process.HasExited.Should().BeFalse();
-            Task killRhostTask = Task.CompletedTask;
-            Task readOutputTask = Task.CompletedTask;
             try {
-                CancellationTokenSource cts = new CancellationTokenSource(3000);
-                killRhostTask = Task.Run(() => {
-                    cts.Token.WaitHandle.WaitOne();
-                    TryKill(process);
-                });
 
+                Task killRhostTask = Task.Delay(3000).ContinueWith(t => TryKill(process));
+
+                CancellationTokenSource cts = new CancellationTokenSource(3000);
                 await ReadStartupOutputFromRHostAsync(process.StandardOutput.BaseStream, cts.Token);
                 await SendFuzzedInputToRHostAsync(process.StandardInput.BaseStream, input, cts.Token);
-                readOutputTask = ReadAnyOutputFromRHostAsync(process.StandardOutput.BaseStream, cts.Token);
-
+                Task readOutputTask = ReadAnyOutputFromRHostAsync(process.StandardOutput.BaseStream, cts.Token);
                 // Fuzzed input should not kill the host.
                 process.HasExited.Should().BeFalse();
-            } finally {
-                TryKill(process);
+
                 await Task.WhenAll(killRhostTask, readOutputTask);
+            } finally {
+                // In case anything fails above kill host.
+                TryKill(process);
             }
         }
 
@@ -133,7 +130,7 @@ namespace Microsoft.R.Host.Protocol.Test.RHostPipe {
             var interpreters = GetInterpreters();
             _interpreter = interpreters.FirstOrDefault();
 
-            for (int i = 0; i < 10; ++i) {
+            for (int i = 0; i < 100; ++i) {
                 byte[] input = GenerateInput();
                 await RHostPipeFuzzTestRunnerAsync(input);
             }
