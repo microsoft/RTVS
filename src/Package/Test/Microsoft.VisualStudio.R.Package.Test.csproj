@@ -220,6 +220,8 @@
     <Compile Include="Repl\SetDirectoryCommandTest.cs" />
     <Compile Include="Repl\ReplCommandTest.cs" />
     <Compile Include="Repl\CurrentDirectoryTest.cs" />
+    <Compile Include="Settings\SettingsStorageTest.cs" />
+    <Compile Include="Settings\TestSettingsStore.cs" />
     <Compile Include="Shell\VsTestCompositionCatalog.cs" />
     <Compile Include="Cran\CranMirrorListTest.cs" />
     <Compile Include="DataInspect\ObservableTreeNodeTest.cs" />

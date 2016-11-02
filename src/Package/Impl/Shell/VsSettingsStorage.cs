@@ -32,7 +32,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// <summary>
         /// VS internal settings manager <seealso cref="IVsSettingsManager"/>
         /// </summary>
-        private readonly ShellSettingsManager _shellSettingsManager;
+        private readonly SettingsManager _settingsManager;
 
         /// <summary>
         /// Settings store provided by the <see cref="ShellSettingsManager"/>
@@ -40,14 +40,12 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private readonly WritableSettingsStore _store;
         private readonly object _lock = new object();
 
-        public VsSettingsStorage() {
-            _shellSettingsManager = new ShellSettingsManager(RPackage.Current);
-            _store = _shellSettingsManager.GetWritableSettingsStore(SettingsScope.UserSettings);
-            Debug.Assert(_store != null);
+        public VsSettingsStorage(SettingsManager sm) {
+            _settingsManager = sm;
+            _store = _settingsManager.GetWritableSettingsStore(SettingsScope.UserSettings);
 
-            if (!_store.CollectionExists(_collectionPath)) {
-                _store.CreateCollection(_collectionPath);
-            }
+            Debug.Assert(_store != null);
+            EnsureCollectionExists();
         }
 
         public bool SettingExists(string name) {
@@ -92,6 +90,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         public void Persist() {
             lock (_lock) {
+                EnsureCollectionExists();
+
                 foreach (var s in _settingsCache) {
                     var t = s.Value.GetType();
                     if (s.Value is bool) {
@@ -111,36 +111,23 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
 
         private object GetValueFromStore(string name, Type t) {
-            if (typeof(bool).IsAssignableFrom(t)) {
-                return _store.GetBoolean(_collectionPath, name);
-            } else if (typeof(int).IsAssignableFrom(t) || t.IsEnum) {
-                return _store.GetInt32(_collectionPath, name);
-            } else if (typeof(uint).IsAssignableFrom(t)) {
-                return _store.GetUInt32(_collectionPath, name);
-            } else if (typeof(string).IsAssignableFrom(t)) {
-                return _store.GetString(_collectionPath, name);
-            } else {
-                var s = _store.GetString(_collectionPath, name);
-                if (s != null) {
-                    return JsonConvert.DeserializeObject(s);
+            if (_store.CollectionExists(_collectionPath) && _store.PropertyExists(_collectionPath, name)) {
+                if (typeof(bool).IsAssignableFrom(t)) {
+                    return _store.GetBoolean(_collectionPath, name);
+                } else if (typeof(int).IsAssignableFrom(t) || t.IsEnum) {
+                    return _store.GetInt32(_collectionPath, name);
+                } else if (typeof(uint).IsAssignableFrom(t)) {
+                    return _store.GetUInt32(_collectionPath, name);
+                } else if (typeof(string).IsAssignableFrom(t)) {
+                    return _store.GetString(_collectionPath, name);
+                } else {
+                    var s = _store.GetString(_collectionPath, name);
+                    if (s != null) {
+                        return JsonConvert.DeserializeObject(s);
+                    }
                 }
             }
             return null;
-        }
-
-        private IEnumerable<string> GetStringCollectionFromStore(string name) {
-            var values = new List<string>();
-            string subCollectionPath = Invariant($"{_collectionPath}/{name}");
-            if (_store.CollectionExists(subCollectionPath)) {
-                for (int i = 0; ; i++) {
-                    string value = _store.GetString(subCollectionPath, Invariant($"Value{i}"));
-                    if (value == null) {
-                        break;
-                    }
-                    values.Add(value);
-                }
-            }
-            return values;
         }
 
         private void SaveStringCollectionToStore(string name, IEnumerable<string> values) {
@@ -151,6 +138,12 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             foreach (var v in values) {
                 _store.SetString(subCollectionPath, Invariant($"Value{i}"), v);
                 i++;
+            }
+        }
+
+        private void EnsureCollectionExists() {
+            if (!_store.CollectionExists(_collectionPath)) {
+                _store.CreateCollection(_collectionPath);
             }
         }
     }
