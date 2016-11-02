@@ -1003,7 +1003,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(LibDirectory)\Microsoft.VisualStudio.VsInteractiveWindow.dll</HintPath>
     </Reference>
-    <Reference Include="$(PrivateAssembliesFolderPath)\Microsoft.VisualStudio.Telemetry.dll">
+    <Reference Include="$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.Telemetry.dll">
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>
