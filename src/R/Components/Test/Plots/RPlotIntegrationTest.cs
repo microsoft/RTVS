@@ -52,8 +52,7 @@ namespace Microsoft.R.Components.Test.Plots {
         }
 
         public async Task InitializeAsync() {
-            var settings = _exportProvider.GetExportedValue<IRSettings>();
-            await _workflow.RSessions.TrySwitchBrokerAsync(settings.LastActiveConnection.Name, settings.LastActiveConnection.Path);
+            await _workflow.RSessions.TrySwitchBrokerAsync(nameof(RPlotIntegrationTest));
 
             _plotDeviceVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
             _replVisualComponent = await _workflow.GetOrCreateVisualComponent(_componentContainerFactory);

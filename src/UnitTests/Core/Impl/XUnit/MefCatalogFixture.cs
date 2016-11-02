@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Composition.Primitives;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using Microsoft.UnitTests.Core.Mef;
 
 namespace Microsoft.UnitTests.Core.XUnit {
@@ -21,18 +22,18 @@ namespace Microsoft.UnitTests.Core.XUnit {
 
         protected abstract ComposablePartCatalog CreateCatalog();
 
-        protected virtual void AddValues(CompositionContainer container) {}
+        protected virtual void AddValues(CompositionContainer container, string testName) {}
 
-        public IExportProvider CreateExportProvider() {
+        public IExportProvider CreateExportProvider([CallerMemberName] string testName = null) {
             var container = new CompositionContainer(_catalogLazy.Value, CompositionOptions.DisableSilentRejection);
-            AddValues(container);
+            AddValues(container, testName);
             _containers.Enqueue(container);
             return new TestExportProvider(container);
         }
 
-        public IExportProvider CreateExportProvider(CompositionBatch additionalValues) {
+        public IExportProvider CreateExportProvider(CompositionBatch additionalValues, [CallerMemberName] string testName = null) {
             var container = new CompositionContainer(_catalogLazy.Value, CompositionOptions.DisableSilentRejection);
-            AddValues(container);
+            AddValues(container, testName);
             container.Compose(additionalValues);
             _containers.Enqueue(container);
             return new TestExportProvider(container);

@@ -33,8 +33,7 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
         }
 
         public async Task InitializeAsync() {
-            var settings = _exportProvider.GetExportedValue<IRSettings>();
-            await _workflow.RSessions.TrySwitchBrokerAsync(settings.LastActiveConnection.Name, settings.LastActiveConnection.Path);
+            await _workflow.RSessions.TrySwitchBrokerAsync(nameof(RInteractiveEvaluatorTest));
         }
 
         public async Task DisposeAsync() {
