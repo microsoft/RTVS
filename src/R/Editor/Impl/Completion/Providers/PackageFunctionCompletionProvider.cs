@@ -26,7 +26,6 @@ namespace Microsoft.R.Editor.Completion.Providers {
         private const int _asyncWaitTimeout = 1000;
         private readonly ILoadedPackagesProvider _loadedPackagesProvider;
         private readonly ISnippetInformationSourceProvider _snippetInformationSource;
-        private readonly ICoreShell _shell;
         private readonly IPackageIndex _packageIndex;
         private readonly IFunctionIndex _functionIndex;
 
