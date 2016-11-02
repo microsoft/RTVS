@@ -9,7 +9,7 @@ using Microsoft.VisualStudio.Utilities;
 namespace Microsoft.Languages.Editor.Application.Packages
 {
     [ExcludeFromCodeCoverage]
-    [Export(typeof(IWritableSettingsStorage))]
+    [Export(typeof(IWritableEditorSettingsStorage))]
     [ContentType("text")]
     [Name("Generic Test settings")]
     [Order(Before = "Default")]

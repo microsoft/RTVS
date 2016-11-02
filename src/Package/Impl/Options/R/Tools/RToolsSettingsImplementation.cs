@@ -8,8 +8,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Enums;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Settings.Mirrors;
@@ -20,18 +20,17 @@ using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.SurveyNews;
-using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R {
     [Export(typeof(IRSettings))]
     [Export(typeof(IRToolsSettings))]
     internal sealed class RToolsSettingsImplementation : IRToolsSettings {
+
         private const int MaxDirectoryEntries = 8;
         private string _cranMirror;
         private string _workingDirectory;
         private int _codePage;
-        private bool _showPackageManagerDisclaimer = true;
 
         /// <summary>
         /// Path to 64-bit R installation such as 
@@ -49,14 +48,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
 
         public bool MultilineHistorySelection { get; set; } = true;
 
-        public bool ShowPackageManagerDisclaimer {
-            get { return _showPackageManagerDisclaimer; }
-            set {
-                using (SaveSettings()) {
-                    _showPackageManagerDisclaimer = value;
-                }
-            }
-        }
+        public bool ShowPackageManagerDisclaimer { get; set; }
 
         public string CranMirror {
             get { return _cranMirror; }
@@ -158,11 +150,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
 
                 WorkingDirectoryList = list.ToArray();
             }
-        }
-
-        private IDisposable SaveSettings() {
-            var page = RPackage.Current.GetDialogPage(typeof(RToolsOptionsPage)) as RToolsOptionsPage;
-            return Disposable.Create(() => page?.SaveSettings());
         }
     }
 }

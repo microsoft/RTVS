@@ -270,6 +270,7 @@
     <Compile Include="Repl\Shiny\StopShinyAppCommand.cs" />
     <Compile Include="Repl\Shiny\RunShinyAppCommand.cs" />
     <Compile Include="Shell\AppShellExtensions.cs" />
+    <Compile Include="Shell\VsSettingsStorage.cs" />
     <Compile Include="Sql\Commands\PublishSProcCommand.cs" />
     <Compile Include="Sql\Commands\ManageDsnCommand.cs" />
     <Compile Include="Sql\Commands\AddDsnCommand.cs" />
@@ -414,15 +415,15 @@
     <Compile Include="Options\Attributes\LocDescriptionAttribute.cs" />
     <Compile Include="Options\Attributes\OnOffTypeConverter.cs" />
     <Compile Include="Options\Attributes\LocDisplayNameAttribute.cs" />
-    <Compile Include="Options\Common\LanguageSettingsStorage.cs" />
-    <Compile Include="Options\Common\LanguageSettingsStorageWithDialog.cs" />
+    <Compile Include="Editors\LanguageSettingsStorage.cs" />
+    <Compile Include="Editors\LanguageSettingsStorageWithDialog.cs" />
     <Compile Include="Options\R\RToolsOptionsPage.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Options\R\Editor\REditorOptionsDialog.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Options\R\VsRSettingsStorage.cs" />
+    <Compile Include="Editors\VsRSettingsStorage.cs" />
     <Compile Include="ProjectSystem\RProjectLoadHooks.cs" />
     <Compile Include="ProjectSystem\RProjectSourceItemProviderExtension.cs" />
     <Compile Include="Publishing\Handlers\MdPublishHandler.cs" />
@@ -456,7 +457,7 @@
     <Compile Include="Packages\R\RLanguageService.cs" />
     <Compile Include="Editors\TextBufferInitializationTracker.cs" />
     <Compile Include="Editors\BaseEditorFactory.cs" />
-    <Compile Include="Languages\BaseLanguageService.cs" />
+    <Compile Include="Editors\BaseLanguageService.cs" />
     <Compile Include="Packages\BasePackage.cs" />
     <Compile Include="Packages\R\RPackage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -1479,7 +1480,9 @@
       <StrongName>StrongName</StrongName>
     </FilesToSign>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Options\Common\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\Common\BuildTasks\Microsoft.Common.BuildTasks.targets" />
   <Target Name="AddToVsixSources" AfterTargets="GetVsixSourceItems">

@@ -5,7 +5,6 @@ using System;
 using System.ComponentModel.Design;
 using System.Threading;
 using Microsoft.Common.Core.Telemetry;
-using Microsoft.Common.Core.Threading;
 
 namespace Microsoft.Common.Core.Shell {
     /// <summary>
