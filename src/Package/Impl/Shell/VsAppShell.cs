@@ -45,7 +45,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private static VsAppShell _instance;
         private static IApplicationShell _testShell;
         private IdleTimeSource _idleTimeSource;
-        private IWritableEditorSettingsStorage _settingStorage;
 
         public static void EnsureInitialized() {
             ThreadHelper.ThrowIfNotOnUIThread();
