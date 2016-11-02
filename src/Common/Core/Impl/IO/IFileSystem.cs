@@ -31,7 +31,7 @@ namespace Microsoft.Common.Core.IO {
 
         Stream CreateFile(string path);
         Stream FileOpen(string path, FileMode mode);
-        
+
         IFileVersionInfo GetVersionInfo(string path);
         void DeleteFile(string path);
         void DeleteDirectory(string path, bool recursive);
@@ -44,8 +44,5 @@ namespace Microsoft.Common.Core.IO {
         string CompressFiles(IEnumerable<string> paths, string relativeToDir, IProgress<string> progress, CancellationToken ct);
         string CompressDirectory(string path);
         string CompressDirectory(string path, Matcher matcher, IProgress<string> progress, CancellationToken ct);
-
-        string GetTempFileName();
-        void DecompressFile(string archive, string path, string entryName = "data");
     }
 }

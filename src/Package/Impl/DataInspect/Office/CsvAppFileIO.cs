@@ -84,7 +84,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
                 using (DataTransferSession dts = new DataTransferSession(session, fileSystem)) {
                     var total = await session.GetBlobSizeAsync(csvDataBlobId, CancellationToken.None);
                     progress.Report(new ProgressDialogData(0, statusBarText: Resources.Status_WritingCSV, waitMessage: Resources.Status_WritingCSV));
-                    await dts.FetchCompressedFileAsync(new RBlobInfo(csvDataBlobId), fileName, true, new Progress<long>(b => {
+                    await dts.FetchAndDecompressFileAsync(new RBlobInfo(csvDataBlobId), fileName, true, new Progress<long>(b => {
                         var step = (int)(b * 100 / total);
                         progress.Report(new ProgressDialogData(step, statusBarText: Resources.Status_WritingCSV, waitMessage: Resources.Status_WritingCSV));
                     }));

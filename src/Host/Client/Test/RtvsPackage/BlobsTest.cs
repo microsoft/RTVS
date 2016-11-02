@@ -203,18 +203,16 @@ namespace Microsoft.R.Host.Client.Test.RtvsPackage {
                 createCompressedResult.Result.Should().NotBeNull();
 
                 var blobId = ((JValue)createResult.Result).Value<ulong>();
-                var expectedData = await eval.EvaluateAsync<byte[]>($"rtvs:::get_blob({blobId})", REvaluationKind.Normal);
-                
                 var blobId2 = ((JValue)createCompressedResult.Result).Value<ulong>();
-                var compressedData = await eval.EvaluateAsync<byte[]>($"rtvs:::get_blob({blobId2})", REvaluationKind.Normal);
-                compressedData.Length.Should().BeLessThan(expectedData.Length);
 
-                byte[] actualData = DecompressData(compressedData);
-                actualData.Should().Equal(expectedData);
+                using (DataTransferSession dts = new DataTransferSession(_session, new FileSystem())) {
+                    var expectedData = await dts.FetchBytesAsync(new RBlobInfo(blobId));
+                    var compressedData = await dts.FetchBytesAsync(new RBlobInfo(blobId2));
+                    compressedData.Length.Should().BeLessThan(expectedData.Length);
 
-                actualData.Should().Equal(expectedData);
-                await eval.ExecuteAsync($"rtvs:::destroy_blob({blobId})");
-                await eval.ExecuteAsync($"rtvs:::destroy_blob({blobId2})");
+                    var actualData = await dts.FetchAndDecompressBytesAsync(new RBlobInfo(blobId2));
+                    actualData.Should().Equal(expectedData);
+                }
             }
         }
 
@@ -228,33 +226,14 @@ namespace Microsoft.R.Host.Client.Test.RtvsPackage {
                 createCompressedResult.Result.Should().NotBeNull();
 
                 var blobId = ((JValue)createResult.Result).Value<ulong>();
-                var expectedData = await eval.EvaluateAsync<byte[]>($"rtvs:::get_blob({blobId})", REvaluationKind.Normal);
-
                 var blobId2 = ((JValue)createCompressedResult.Result).Value<ulong>();
-                var compressedData = await eval.EvaluateAsync<byte[]>($"rtvs:::get_blob({blobId2})", REvaluationKind.Normal);
 
-                byte[] actualData = DecompressData(compressedData);
-                actualData.Should().Equal(expectedData);
-
-                await eval.ExecuteAsync($"rtvs:::destroy_blob({blobId})");
-                await eval.ExecuteAsync($"rtvs:::destroy_blob({blobId2})");
+                using (DataTransferSession dts = new DataTransferSession(_session, new FileSystem())) {
+                    var expectedData = await dts.FetchBytesAsync(new RBlobInfo(blobId));
+                    var actualData = await dts.FetchAndDecompressBytesAsync(new RBlobInfo(blobId2));
+                    actualData.Should().Equal(expectedData);
+                }
             }
-        }
-
-        private byte[] DecompressData(byte[] compressedData) {
-            byte[] decompressedData = null;
-            var fs = new FileSystem();
-            string tempFile = fs.GetTempFileName();
-            string dataFile = fs.GetTempFileName();
-            try {
-                fs.FileWriteAllBytes(tempFile, compressedData);
-                fs.DecompressFile(tempFile, dataFile);
-                fs.FileReadAllBytes(dataFile);
-            }finally {
-                fs.DeleteFile(tempFile);
-                fs.DeleteFile(dataFile);
-            }
-            return decompressedData;
         }
     }
 }

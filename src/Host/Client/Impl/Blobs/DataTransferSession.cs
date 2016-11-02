@@ -3,6 +3,7 @@
 
 using System;
 using System.IO;
+using System.IO.Compression;
 using System.Collections.Generic;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
@@ -89,21 +90,17 @@ namespace Microsoft.R.Host.Client {
         /// <param name="blob">Blob from which the data is to be retrieved.</param>
         /// <param name="filePath">Path to the file where the retrieved data will be written.</param>
         /// <param name="doCleanUp">true to add blob upon transfer for cleanup on dispose, false to ignore it after transfer.</param>
-        public async Task FetchCompressedFileAsync(IRBlobInfo blob, string filePath, bool doCleanUp = true, IProgress<long> progress = null) {
-            string tempFilePath = _fs.GetTempFileName();
-            try {
-                using (RBlobStream blobStream = await RBlobStream.OpenAsync(blob, _blobService))
-                using (Stream fileStream = _fs.CreateFile(tempFilePath)) {
-                    await blobStream.CopyToAsync(fileStream, progress);
+        public async Task FetchAndDecompressFileAsync(IRBlobInfo blob, string filePath, bool doCleanUp = true, IProgress<long> progress = null) {
+            using (MemoryStream compressed = new MemoryStream(await FetchBytesAsync(blob, false, progress)))
+            using (ZipArchive archive = new ZipArchive(compressed, ZipArchiveMode.Read)) {
+                var entry = archive.GetEntry("data");
+                using (Stream decompressedStream = entry.Open())
+                using (Stream fileStream = _fs.CreateFile(filePath)) {
+                    await decompressedStream.CopyToAsync(fileStream, progress);
                 }
-
-                _fs.DecompressFile(tempFilePath, filePath);
-
-                if (doCleanUp) {
-                    _cleanup.Add(blob);
-                }
-            } finally {
-                _fs.DeleteFile(tempFilePath);
+            }
+            if (doCleanUp) {
+                _cleanup.Add(blob);
             }
         }
 
@@ -118,6 +115,32 @@ namespace Microsoft.R.Host.Client {
             using (MemoryStream ms = new MemoryStream((int)blobStream.Length)) {
                 await blobStream.CopyToAsync(ms, progress);
                 data = ms.ToArray();
+            }
+
+            if (doCleanUp) {
+                _cleanup.Add(blob);
+            }
+
+            return data;
+        }
+
+        /// <summary>
+        /// Gets the data for a given blob (compressed) from R-Host and decompresses it. This 
+        /// method adds the blob for clean up by default.
+        /// </summary>
+        /// <param name="blob">Blob from which the data is to be retrieved.</param>
+        /// <param name="filePath">Path to the file where the retrieved data will be written.</param>
+        /// <param name="doCleanUp">true to add blob upon transfer for cleanup on dispose, false to ignore it after transfer.</param>
+        public async Task<byte[]> FetchAndDecompressBytesAsync(IRBlobInfo blob, bool doCleanUp = true, IProgress<long> progress = null) {
+            byte[] data = null;
+            using (MemoryStream compressed = new MemoryStream(await FetchBytesAsync(blob, false, progress)))
+            using (ZipArchive archive = new ZipArchive(compressed, ZipArchiveMode.Read)) {
+                var entry = archive.GetEntry("data");
+                using (Stream decompressedStream = entry.Open())
+                using (MemoryStream ms = new MemoryStream()) {
+                    await decompressedStream.CopyToAsync(ms, progress);
+                    data = ms.ToArray();
+                }
             }
 
             if (doCleanUp) {
