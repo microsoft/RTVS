@@ -21,59 +21,34 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace Microsoft.VisualStudio.R.Package.Options.R {
     [Export(typeof(IRSettings))]
     [Export(typeof(IRToolsSettings))]
-    internal sealed class RToolsSettingsImplementation : IRToolsSettings {
-
+    internal sealed class RToolsSettingsImplementation : IRToolsSettings, IRPersistentSettings {
         private const int MaxDirectoryEntries = 8;
+        private readonly ISettingsStorage _settings;
+
         private string _cranMirror;
         private string _workingDirectory;
         private int _codePage;
 
-        private IConnectionInfo[] _connections = new IConnectionInfo[0];
-        private IConnectionInfo _lastActiveConnection;
+        [ImportingConstructor]
+        public RToolsSettingsImplementation(ISettingsStorage settings) {
+            _settings = settings;
 
-        private YesNoAsk _loadRDataOnProjectLoad = YesNoAsk.No;
-        private YesNoAsk _saveRDataOnProjectUnload = YesNoAsk.No;
-        private bool _alwaysSaveHistory = true;
-        private bool _clearFilterOnAddHistory = true;
-        private bool _multilineHistorySelection = true;
-        private HelpBrowserType _helpBrowserType = HelpBrowserType.Automatic;
-        private bool _showDotPrefixedVariables;
-        private SurveyNewsPolicy _surveyNewsCheck = SurveyNewsPolicy.CheckOnceWeek;
-        private DateTime _surveyNewsLastCheck;
-        private string _surveyNewsFeedUrl = SurveyNewsUrls.Feed;
-        private string _surveyNewsIndexUrl = SurveyNewsUrls.Index;
-        private bool _evaluateActiveBindings = true;
-        private string _webHelpSearchString = "R site:stackoverflow.com";
-        private BrowserType _webHelpSearchBrowserType = BrowserType.Internal;
-        private BrowserType _htmlBrowserType = BrowserType.Internal;
-        private BrowserType _markdownBrowserType = BrowserType.External;
-        private LogVerbosity _logLevel = LogVerbosity.Normal;
-
-        public YesNoAsk LoadRDataOnProjectLoad {
-            get { return _loadRDataOnProjectLoad; }
-            set { SetProperty(ref _loadRDataOnProjectLoad, value); }
+            // Default settings. Will be overwritten with actual
+            // settings (if any) when settings are loaded from storage
+            RBasePath = RInstallation.GetRInstallPath(null, null);
+            _workingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         }
 
-        public YesNoAsk SaveRDataOnProjectUnload {
-            get { return _saveRDataOnProjectUnload; }
-            set { SetProperty(ref _saveRDataOnProjectUnload, value); }
-        }
-
-        public bool AlwaysSaveHistory {
-            get { return _alwaysSaveHistory; }
-            set { SetProperty(ref _alwaysSaveHistory, value); }
-        }
-
-        public bool ClearFilterOnAddHistory {
-            get { return _clearFilterOnAddHistory; }
-            set { SetProperty(ref _clearFilterOnAddHistory, value); }
-        }
-
-        public bool MultilineHistorySelection {
-            get { return _multilineHistorySelection; }
-            set { SetProperty(ref _multilineHistorySelection, value); }
-        }
-
+        /// <summary>
+        /// Path to 64-bit R installation such as 
+        /// 'C:\Program Files\R\R-3.2.2' without bin\x64
+        /// </summary>
+        public string RBasePath { get; set; }
+        public YesNoAsk LoadRDataOnProjectLoad { get; set; } = YesNoAsk.No;
+        public YesNoAsk SaveRDataOnProjectUnload { get; set; } = YesNoAsk.No;
+        public bool AlwaysSaveHistory { get; set; } = true;
+        public bool ClearFilterOnAddHistory { get; set; } = true;
+        public bool MultilineHistorySelection { get; set; } = true;
         public bool ShowPackageManagerDisclaimer { get; set; }
 
         public string CranMirror {
@@ -125,70 +100,43 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             }
         }
 
-        public string[] WorkingDirectoryList { get; set; } = new string[0];
+        public IEnumerable<string> WorkingDirectoryList { get; set; } = Enumerable.Empty<string>();
+        public string RCommandLineArguments { get; set; }
+        public HelpBrowserType HelpBrowserType { get; set; }
+        public bool ShowDotPrefixedVariables { get; set; }
+        public SurveyNewsPolicy SurveyNewsCheck { get; set; } = SurveyNewsPolicy.CheckOnceWeek;
+        public DateTime SurveyNewsLastCheck { get; set; }
+        public string SurveyNewsFeedUrl { get; set; } = SurveyNewsUrls.Feed;
+        public string SurveyNewsIndexUrl { get; set; } = SurveyNewsUrls.Index;
+        public bool EvaluateActiveBindings { get; set; } = true;
+        public string WebHelpSearchString { get; set; } = "R site:stackoverflow.com";
+        public BrowserType WebHelpSearchBrowserType { get; set; } = BrowserType.Internal;
+        public BrowserType ShinyBrowserType { get; set; } = BrowserType.Internal;
+        public BrowserType MarkdownBrowserType { get; set; } = BrowserType.External;
 
-        public HelpBrowserType HelpBrowserType {
-            get { return _helpBrowserType; }
-            set { SetProperty(ref _helpBrowserType, value); }
+        private async Task SetMirrorToSession() {
+            IRSessionProvider sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+            var sessions = sessionProvider.GetSessions();
+            string mirrorName = RToolsSettings.Current.CranMirror;
+            string mirrorUrl = CranMirrorList.UrlFromName(mirrorName);
+
+            foreach (var s in sessions.Where(s => s.IsHostRunning)) {
+                try {
+                    await s.SetVsCranSelectionAsync(mirrorUrl);
+                } catch (RException) { } catch (MessageTransportException) { } catch (OperationCanceledException) { }
+            }
         }
 
-        public bool ShowDotPrefixedVariables {
-            get { return _showDotPrefixedVariables; }
-            set { SetProperty(ref _showDotPrefixedVariables, value); }
-        }
+        private async Task SetSessionCodePage() {
+            IRSessionProvider sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+            var sessions = sessionProvider.GetSessions();
+            var cp = RToolsSettings.Current.RCodePage;
 
-        public SurveyNewsPolicy SurveyNewsCheck {
-            get { return _surveyNewsCheck; }
-            set { SetProperty(ref _surveyNewsCheck, value); }
-        }
-
-        public DateTime SurveyNewsLastCheck {
-            get { return _surveyNewsLastCheck; }
-            set { SetProperty(ref _surveyNewsLastCheck, value); }
-        }
-
-        public string SurveyNewsFeedUrl {
-            get { return _surveyNewsFeedUrl; }
-            set { SetProperty(ref _surveyNewsFeedUrl, value); }
-        }
-
-        public string SurveyNewsIndexUrl {
-            get { return _surveyNewsIndexUrl; }
-            set { SetProperty(ref _surveyNewsIndexUrl, value); }
-        }
-
-        public bool EvaluateActiveBindings {
-            get { return _evaluateActiveBindings; }
-            set { SetProperty(ref _evaluateActiveBindings, value); }
-        }
-
-        public string WebHelpSearchString {
-            get { return _webHelpSearchString; }
-            set { SetProperty(ref _webHelpSearchString, value); }
-        }
-
-        public BrowserType WebHelpSearchBrowserType {
-            get { return _webHelpSearchBrowserType; }
-            set { SetProperty(ref _webHelpSearchBrowserType, value); }
-        }
-
-        public BrowserType HtmlBrowserType {
-            get { return _htmlBrowserType; }
-            set { SetProperty(ref _htmlBrowserType, value); }
-        }
-
-        public BrowserType MarkdownBrowserType {
-            get { return _markdownBrowserType; }
-            set { SetProperty(ref _markdownBrowserType, value); }
-        }
-
-        public LogVerbosity LogVerbosity {
-            get { return _logLevel; }
-            set { SetProperty(ref _logLevel, value); }
-        }
-
-        public RToolsSettingsImplementation() {
-            _workingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            foreach (var s in sessions.Where(s => s.IsHostRunning)) {
+                try {
+                    await s.SetCodePageAsync(cp);
+                } catch (RException) { } catch (MessageTransportException) {} catch (OperationCanceledException) { }
+            }
         }
 
         private void UpdateWorkingDirectoryList(string newDirectory) {
@@ -202,5 +150,34 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
                 WorkingDirectoryList = list.ToArray();
             }
         }
+
+        #region IRPersistentSettings
+        public void LoadSettings() {
+            var properties = this.GetType().GetProperties(BindingFlags.Public);
+            foreach (var p in properties) {
+                if (_settings.SettingExists(p.Name)) {
+                    var value = _settings.GetSetting(p.Name, p.PropertyType);
+                    p.SetValue(this, value);
+                }
+            }
+        }
+
+        public void SaveSettings() {
+            var dict = ToDictionary();
+            foreach (var kvp in dict) {
+                _settings.SetSetting(kvp.Key, kvp.Value);
+            }
+        }
+        public IDictionary<string, object> ToDictionary() {
+            var dict = new Dictionary<string, object>();
+            var properties = this.GetType().GetProperties(BindingFlags.Public);
+            foreach (var p in properties) {
+                var value = p.GetValue(this);
+                dict[p.Name] = value;
+            }
+            return dict;
+        }
+
+        #endregion
     }
 }

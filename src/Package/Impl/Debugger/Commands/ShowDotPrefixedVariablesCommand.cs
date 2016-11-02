@@ -4,7 +4,7 @@
 using EnvDTE;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Debugger;
-using Microsoft.R.Support.Settings.Definitions;
+using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;

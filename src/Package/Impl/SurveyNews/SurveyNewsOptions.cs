@@ -7,7 +7,6 @@ using System.IO;
 using System.Reflection;
 using Microsoft.Common.Core;
 using Microsoft.R.Support.Settings;
-using Microsoft.R.Support.Settings.Definitions;
 
 namespace Microsoft.VisualStudio.R.Package.SurveyNews {
     [Export(typeof(ISurveyNewsOptions))]

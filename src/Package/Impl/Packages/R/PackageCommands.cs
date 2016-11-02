@@ -49,6 +49,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             var wbs = exportProvider.GetExportedValue<IWebBrowserServices>();
             var pcsp = exportProvider.GetExportedValue<IProjectConfigurationSettingsProvider>();
             var dbcs = exportProvider.GetExportedValue<IDbConnectionService>();
+            var settings = exportProvider.GetExportedValue<IRToolsSettings>();
             var logPerms = exportProvider.GetExportedValue<ILoggingPermissions>();
 
             return new List<MenuCommand> {
@@ -56,7 +57,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new GoToEditorOptionsCommand(),
                 new ImportRSettingsCommand(),
                 new InstallRClientCommand(appShell),
-                new SwitchToRClientCommand(interactiveWorkflow.Connections, appShell),
+                new SwitchToRClientCommand(interactiveWorkflow.Connections, appShell, settings),
                 new SurveyNewsCommand(appShell),
                 new SetupRemoteCommand(),
 

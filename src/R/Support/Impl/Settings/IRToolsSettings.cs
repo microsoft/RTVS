@@ -2,18 +2,20 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using Microsoft.Common.Core.Enums;
 using Microsoft.R.Components.Settings;
 
-namespace Microsoft.R.Support.Settings.Definitions {
+namespace Microsoft.R.Support.Settings {
     public interface IRToolsSettings : IRSettings {
+
         YesNoAsk LoadRDataOnProjectLoad { get; set; }
         YesNoAsk SaveRDataOnProjectUnload { get; set; }
 
         /// <summary>
         /// Most recently used directories in REPL
         /// </summary>
-        string[] WorkingDirectoryList { get; set; }
+        IEnumerable<string> WorkingDirectoryList { get; set; }
 
         bool ShowDotPrefixedVariables { get; set; }
 

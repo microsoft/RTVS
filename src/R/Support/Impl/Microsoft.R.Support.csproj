@@ -135,9 +135,10 @@
     <Compile Include="RD\Tokens\RdToken.cs" />
     <Compile Include="RD\Tokens\RdTokenizer.cs" />
     <Compile Include="RD\Tokens\RdTokenType.cs" />
-    <Compile Include="Settings\Definitions\IRToolsSettings.cs" />
-    <Compile Include="Settings\Definitions\SurveyNewsPolicy.cs" />
-    <Compile Include="Settings\Definitions\WebHelpSearchBrowserType.cs" />
+    <Compile Include="Settings\IRPersistentSettings.cs" />
+    <Compile Include="Settings\IRToolsSettings.cs" />
+    <Compile Include="Settings\SurveyNewsPolicy.cs" />
+    <Compile Include="Settings\WebHelpSearchBrowserType.cs" />
     <Compile Include="Settings\RToolsSettings.cs" />
     <Compile Include="Utility\AsyncData.cs" />
   </ItemGroup>

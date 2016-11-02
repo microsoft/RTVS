@@ -12,7 +12,7 @@ using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.ConnectionManager.Implementation;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Interpreters;
-using Microsoft.R.Support.Settings.Definitions;
+using Microsoft.R.Support.Settings;
 
 namespace Microsoft.R.Support.Test.Utility {
     [ExcludeFromCodeCoverage]
@@ -76,7 +76,7 @@ namespace Microsoft.R.Support.Test.Utility {
 
         public bool ShowPackageManagerDisclaimer { get; set; } = true;
 
-        public string[] WorkingDirectoryList { get; set; } = new string[0];
+        public IEnumerable<string> WorkingDirectoryList { get; set; } = Enumerable.Empty<string>();
 
         public HelpBrowserType HelpBrowserType {
             get { return HelpBrowserType.Automatic; }

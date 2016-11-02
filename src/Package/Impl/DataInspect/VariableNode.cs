@@ -6,7 +6,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.R.Support.Settings.Definitions;
+using Microsoft.R.Support.Settings;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>

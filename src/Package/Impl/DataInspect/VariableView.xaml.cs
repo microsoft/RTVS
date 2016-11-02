@@ -18,17 +18,18 @@ using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Host;
-using Microsoft.R.Support.Settings.Definitions;
+using Microsoft.R.Host.Client.Session;
+using Microsoft.R.StackTracing;
+using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Imaging.Interop;
+using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Commands.R;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 using static System.FormattableString;
 using static Microsoft.R.DataInspection.REvaluationResultProperties;
-using Microsoft.VisualStudio.PlatformUI;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public partial class VariableView : UserControl, ICommandTarget, IDisposable {

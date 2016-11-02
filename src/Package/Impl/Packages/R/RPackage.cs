@@ -99,7 +99,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     internal class RPackage : BasePackage<RLanguageService>, IRPackage {
         public const string OptionsDialogName = "R Tools";
         private IPackageIndex _packageIndex;
-        private bool _settingsLoaded;
 
         public static IRPackage Current { get; private set; }
 
@@ -119,7 +118,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             ProjectIconProvider.LoadProjectImages();
             LogCleanup.DeleteLogsAsync(DiagnosticLogs.DaysToRetain);
 
-            LoadSettings();
 
             RtvsTelemetry.Initialize(_packageIndex, VsAppShell.Current.ExportProvider.GetExportedValue<IRSettings>());
 
@@ -171,15 +169,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         #region IRPackage
         public T FindWindowPane<T>(Type t, int id, bool create) where T : ToolWindowPane {
             return FindWindowPane(t, id, create) as T;
-        }
-
-        public void LoadSettings() {
-            if (!_settingsLoaded) {
-                using (var p = Current.GetDialogPage(typeof(RToolsOptionsPage)) as RToolsOptionsPage) {
-                    p?.LoadSettings();
-                }
-                _settingsLoaded = true;
-            }
         }
         #endregion
 

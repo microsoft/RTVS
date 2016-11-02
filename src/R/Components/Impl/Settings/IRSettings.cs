@@ -6,7 +6,8 @@ using Microsoft.Common.Core.Logging;
 using Microsoft.R.Components.ConnectionManager;
 
 namespace Microsoft.R.Components.Settings {
-    public interface IRSettings: INotifyPropertyChanged {
+    public interface IRSettings {
+
         bool AlwaysSaveHistory { get; set; }
         bool ClearFilterOnAddHistory { get; set; }
         bool MultilineHistorySelection { get; set; }
