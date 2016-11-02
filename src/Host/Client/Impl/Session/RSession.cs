@@ -586,12 +586,10 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
                             OnMutated();
                         }
 
-                        if (ct.IsCancellationRequested) {
-                            return;
+                        if (!ct.IsCancellationRequested) {
+                            var evaluationSource = await _pendingEvaluationSources.ReceiveAsync(ct);
+                            mutated |= await evaluationSource.BeginEvaluationAsync(contexts, _host, hostCancellationToken);
                         }
-
-                        var evaluationSource = await _pendingEvaluationSources.ReceiveAsync(ct);
-                        mutated |= await evaluationSource.BeginEvaluationAsync(contexts, _host, hostCancellationToken);
                     } catch (OperationCanceledException) {
                         return;
                     }
