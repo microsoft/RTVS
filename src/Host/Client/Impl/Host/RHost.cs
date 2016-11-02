@@ -13,6 +13,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Tasks;
 using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Protocol;
@@ -47,13 +48,14 @@ namespace Microsoft.R.Host.Client {
         private TaskCompletionSource<object> _cancelAllTcs;
         private CancellationTokenSource _cancelAllCts = new CancellationTokenSource();
 
-        public RHost(string name, IRCallbacks callbacks, IMessageTransport transport, IActionLog log, CancellationTokenSource cts) {
+        public RHost(string name, IRCallbacks callbacks, IMessageTransport transport, IActionLog log) {
             Check.ArgumentStringNullOrEmpty(nameof(name), name);
 
             _callbacks = callbacks;
             _transport = transport;
             _log = log;
-            _cts = cts;
+            _cts = new CancellationTokenSource();
+            _cts.Token.Register(() => { _log.RHostProcessExited(); });
         }
 
         public void Dispose() {
@@ -153,51 +155,54 @@ namespace Microsoft.R.Host.Client {
 
         private async Task ShowDialog(Message request, MessageButtons buttons, CancellationToken ct) {
             TaskUtilities.AssertIsOnBackgroundThread();
+            using (CancellationTokenUtilities.Link(ref ct, _cancelAllCts.Token)) {
+                request.ExpectArguments(2);
+                var contexts = GetContexts(request);
+                var s = request.GetString(1, "s", allowNull: true);
 
-            request.ExpectArguments(2);
-            var contexts = GetContexts(request);
-            var s = request.GetString(1, "s", allowNull: true);
+                MessageButtons input = await _callbacks.ShowDialog(contexts, s, buttons, ct);
+                ct.ThrowIfCancellationRequested();
 
-            MessageButtons input = await _callbacks.ShowDialog(contexts, s, buttons, ct);
-            ct.ThrowIfCancellationRequested();
-
-            string response;
-            switch (input) {
-                case MessageButtons.No:
-                    response = "N";
-                    break;
-                case MessageButtons.Cancel:
-                    response = "C";
-                    break;
-                case MessageButtons.Yes:
-                    response = "Y";
-                    break;
-                default: {
+                string response;
+                switch (input) {
+                    case MessageButtons.No:
+                        response = "N";
+                        break;
+                    case MessageButtons.Cancel:
+                        response = "C";
+                        break;
+                    case MessageButtons.Yes:
+                        response = "Y";
+                        break;
+                    default: {
                         FormattableString error = $"YesNoCancel: callback returned an invalid value: {input}";
                         Trace.Fail(Invariant(error));
                         throw new InvalidOperationException(Invariant(error));
                     }
-            }
+                }
 
-            await RespondAsync(request, ct, response);
+                await RespondAsync(request, ct, response);
+            }
         }
 
         private async Task ReadConsole(Message request, CancellationToken ct) {
             TaskUtilities.AssertIsOnBackgroundThread();
 
-            request.ExpectArguments(5);
+            using (CancellationTokenUtilities.Link(ref ct, _cancelAllCts.Token)) {
+                request.ExpectArguments(5);
 
-            var contexts = GetContexts(request);
-            var len = request.GetInt32(1, "len");
-            var addToHistory = request.GetBoolean(2, "addToHistory");
-            var retryReason = request.GetString(3, "retry_reason", allowNull: true);
-            var prompt = request.GetString(4, "prompt", allowNull: true);
+                var contexts = GetContexts(request);
+                var len = request.GetInt32(1, "len");
+                var addToHistory = request.GetBoolean(2, "addToHistory");
+                var retryReason = request.GetString(3, "retry_reason", allowNull: true);
+                var prompt = request.GetString(4, "prompt", allowNull: true);
 
-            string input = await _callbacks.ReadConsole(contexts, prompt, len, addToHistory, ct);
-            ct.ThrowIfCancellationRequested();
+                string input = await _callbacks.ReadConsole(contexts, prompt, len, addToHistory, ct);
+                ct.ThrowIfCancellationRequested();
 
-            input = input.Replace("\r\n", "\n");
-            await RespondAsync(request, ct, input);
+                input = input.Replace("\r\n", "\n");
+                await RespondAsync(request, ct, input);
+            }
         }
 
         public Task<ulong> CreateBlobAsync(CancellationToken cancellationToken) {
@@ -321,7 +326,9 @@ namespace Microsoft.R.Host.Client {
         public Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind, CancellationToken ct) {
             if (_cancelEvaluationAfterRunTask == null) {
                 throw new InvalidOperationException("Host was not started");
-            } else if (_cancelEvaluationAfterRunTask.IsCompleted) { 
+            }
+
+            if (_cancelEvaluationAfterRunTask.IsCompleted) { 
                 return RhostDisconnectedEvaluationResult;
             }
 
@@ -358,13 +365,15 @@ namespace Microsoft.R.Host.Client {
             try {
                 // Cancel any pending callbacks
                 _cancelAllCts.Cancel();
-
+                var cts = CancellationTokenSource.CreateLinkedTokenSource(_cts.Token, cancellationToken);
                 try {
-                    await NotifyAsync("!//", CancellationTokenSource.CreateLinkedTokenSource(_cts.Token, cancellationToken).Token);
+                    await NotifyAsync("!//", cts.Token);
                 } catch (OperationCanceledException) {
                     return;
                 } catch (MessageTransportException) {
                     return;
+                } finally {
+                    cts.Dispose();
                 }
 
                 await tcs.Task;
@@ -444,25 +453,25 @@ namespace Microsoft.R.Host.Client {
                                 break;
 
                             case "?YesNoCancel":
-                                ShowDialog(message, MessageButtons.YesNoCancel, CancellationTokenSource.CreateLinkedTokenSource(ct, _cancelAllCts.Token).Token)
+                                ShowDialog(message, MessageButtons.YesNoCancel, ct)
                                     .SilenceException<MessageTransportException>()
                                     .DoNotWait();
                                 break;
 
                             case "?YesNo":
-                                ShowDialog(message, MessageButtons.YesNo, CancellationTokenSource.CreateLinkedTokenSource(ct, _cancelAllCts.Token).Token)
+                                ShowDialog(message, MessageButtons.YesNo, ct)
                                     .SilenceException<MessageTransportException>()
                                     .DoNotWait();
                                 break;
 
                             case "?OkCancel":
-                                ShowDialog(message, MessageButtons.OKCancel, CancellationTokenSource.CreateLinkedTokenSource(ct, _cancelAllCts.Token).Token)
+                                ShowDialog(message, MessageButtons.OKCancel, ct)
                                     .SilenceException<MessageTransportException>()
                                     .DoNotWait();
                                 break;
 
                             case "?>":
-                                ReadConsole(message, CancellationTokenSource.CreateLinkedTokenSource(ct, _cancelAllCts.Token).Token)
+                                ReadConsole(message, ct)
                                     .SilenceException<MessageTransportException>()
                                     .DoNotWait();
                                 break;
@@ -614,7 +623,7 @@ namespace Microsoft.R.Host.Client {
                 throw new InvalidOperationException("This host is already running.");
             }
 
-            ct = CancellationTokenSource.CreateLinkedTokenSource(ct, _cts.Token).Token;
+            var cts = CancellationTokenUtilities.Link(ref ct, _cts.Token);
 
             try {
                 _runTask = RunWorker(ct);
@@ -630,6 +639,8 @@ namespace Microsoft.R.Host.Client {
                 Debug.Fail(message);
                 throw;
             } finally {
+                cts.Dispose();
+
                 // Signal cancellation to any callbacks that haven't returned yet.
                 _cts.Cancel();
 

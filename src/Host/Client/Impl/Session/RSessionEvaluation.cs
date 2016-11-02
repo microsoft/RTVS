@@ -12,7 +12,8 @@ namespace Microsoft.R.Host.Client.Session {
     internal sealed class RSessionEvaluation : IRSessionEvaluation {
         private readonly IRExpressionEvaluator _evaluator;
         private readonly TaskCompletionSourceEx<object> _tcs;
-        private readonly IDisposable _hostCancellationRegistration;
+        private CancellationTokenRegistration _hostCancellationRegistration;
+        private CancellationTokenRegistration _clientCancellationRegistration;
 
         public IReadOnlyList<IRContext> Contexts { get; }
         public bool IsMutating { get; private set; }
@@ -27,6 +28,7 @@ namespace Microsoft.R.Host.Client.Session {
 
         public void Dispose() {
             _hostCancellationRegistration.Dispose();
+            _clientCancellationRegistration.Dispose();
             _tcs.TrySetResult(null);
         }
 
@@ -35,7 +37,7 @@ namespace Microsoft.R.Host.Client.Session {
                 IsMutating = true;
             }
 
-            ct.Register(() => _tcs.TrySetCanceled());
+            _clientCancellationRegistration = ct.Register(() => _tcs.TrySetCanceled());
             return _evaluator.EvaluateAsync(expression, kind, ct);
         }
     }

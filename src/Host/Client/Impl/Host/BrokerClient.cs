@@ -178,11 +178,7 @@ namespace Microsoft.R.Host.Client.Host {
 
         private RHost CreateRHost(string name, IRCallbacks callbacks, WebSocket socket) {
             var transport = new WebSocketMessageTransport(socket);
-
-            var cts = new CancellationTokenSource();
-            cts.Token.Register(() => { Log.RHostProcessExited(); });
-
-            return new RHost(name, callbacks, transport, Log, cts);
+            return new RHost(name, callbacks, transport, Log);
         }
 
         public virtual Task<string> HandleUrlAsync(string url, CancellationToken cancellationToken)  => Task.FromResult(url);

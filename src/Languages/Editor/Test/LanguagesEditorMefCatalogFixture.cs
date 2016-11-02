@@ -48,8 +48,8 @@ namespace Microsoft.Languages.Editor.Test {
             };
         }
 
-        protected override void AddValues(CompositionContainer container) {
-            base.AddValues(container);
+        protected override void AddValues(CompositionContainer container, string testName) {
+            base.AddValues(container, testName);
             var editorShell = new TestEditorShell(container);
             var batch = new CompositionBatch()
                 .AddValue(FileSystemStubFactory.CreateDefault())

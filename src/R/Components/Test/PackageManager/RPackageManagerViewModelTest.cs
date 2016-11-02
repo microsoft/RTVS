@@ -38,7 +38,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
 
         public async Task InitializeAsync() {
             var settings = _exportProvider.GetExportedValue<IRSettings>();
-            await _workflow.RSessions.TrySwitchBrokerAsync(settings.LastActiveConnection.Name, settings.LastActiveConnection.Path);
+            await _workflow.RSessions.TrySwitchBrokerAsync(nameof(RPackageManagerViewModelTest));
 
             await _workflow.RSession.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name,

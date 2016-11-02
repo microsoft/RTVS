@@ -6,12 +6,8 @@ using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.Common.Core.Extensions;
-using Microsoft.Common.Core.Shell;
-using Microsoft.Common.Core.Test.StubBuilders;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Test;
 using Microsoft.R.Components.Settings;
-using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Test.Utility;
 using Microsoft.UnitTests.Core.XUnit;
 
@@ -27,10 +23,10 @@ namespace Microsoft.R.Support.Test {
             "Microsoft.R.Support.Test"
         });
 
-        protected override void AddValues(CompositionContainer container) {
-            base.AddValues(container);
+        protected override void AddValues(CompositionContainer container, string testName) {
+            base.AddValues(container, testName);
             var batch = new CompositionBatch()
-                .AddValue<IRSettings>(new TestRToolsSettings());
+                .AddValue<IRSettings>(new TestRToolsSettings(testName));
             container.Compose(batch);
         }
     }
