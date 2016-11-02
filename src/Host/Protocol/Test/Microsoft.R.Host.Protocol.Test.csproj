@@ -52,6 +52,10 @@
       <Project>{ee2504a4-4666-460b-8552-5b342718cb02}</Project>
       <Name>Microsoft.Languages.Core.Test</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\R\Interpreters\Impl\Microsoft.R.Interpreters.csproj">
+      <Project>{8445A4FB-4443-432C-94E8-1408559B7F58}</Project>
+      <Name>Microsoft.R.Interpreters</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
       <Project>{5ef2ad64-d6fe-446b-b350-8c7f0df0834d}</Project>
       <Name>Microsoft.UnitTests.Core</Name>
@@ -62,6 +66,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="RHostPipe\RHostPipeTest.cs" />
     <Compile Include="UserProfileServicePipe\UserProfileCreatorMock.cs" />
     <Compile Include="UserProfileServicePipe\UserProfileCreatorFuzzTestMock.cs" />
     <Compile Include="UserProfileServicePipe\UserProfileResultMock.cs" />

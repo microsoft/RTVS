@@ -30,6 +30,7 @@
     <BaseOutputPath>$(BinDirectory)</BaseOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\SetupRHost\</IntermediateOutputPath>
     <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
+    <RunWixToolsOutOfProc>true</RunWixToolsOutOfProc>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DefineConstants>Debug;MsiVersion=$(BuildVersion);ProductVersion=$(MajorVersion).$(MinorVersion);VsVersion=$(VsVersion)</DefineConstants>

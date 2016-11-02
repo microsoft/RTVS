@@ -39,28 +39,24 @@ namespace Microsoft.R.Host.Protocol {
                         }).DoNotWait();
                     }
 
-                    using (CancellationTokenSource serverTimedCTS = new CancellationTokenSource(serverTimeOutms))
-                    using (CancellationTokenSource combinedServerCTS = CancellationTokenSource.CreateLinkedTokenSource(serverTimedCTS.Token, ct)) {
-                        CancellationToken serverCT = ct;
+                    using (var cts = CancellationTokenSource.CreateLinkedTokenSource(ct)) {
                         if (serverTimeOutms > 0) {
-                            serverCT = combinedServerCTS.Token;
+                            cts.CancelAfter(serverTimeOutms);
                         }
 
-                        await CreateProfileHandleUserCredentails(userProfileService, server, serverCT, logger);
+                        await CreateProfileHandleUserCredentails(userProfileService, server, cts.Token, logger);
                     }
 
-                    using (CancellationTokenSource clientTimedCTS = new CancellationTokenSource(clientTimeOutms))
-                    using (CancellationTokenSource combinedClientCTS = CancellationTokenSource.CreateLinkedTokenSource(clientTimedCTS.Token, ct)) {
-                        CancellationToken clientCT = ct;
+                    using (var cts = CancellationTokenSource.CreateLinkedTokenSource(ct)) {
                         if (clientTimeOutms > 0) {
-                            clientCT = combinedClientCTS.Token;
+                            cts.CancelAfter(clientTimeOutms);
                         }
 
                         // Waiting here to allow client to finish reading client should disconnect after reading.
                         byte[] requestRaw = new byte[1024];
                         int bytesRead = 0;
-                        while (bytesRead == 0 && !clientCT.IsCancellationRequested) {
-                            bytesRead = await server.ReadAsync(requestRaw, 0, requestRaw.Length, clientCT);
+                        while (bytesRead == 0 && !cts.Token.IsCancellationRequested) {
+                            bytesRead = await server.ReadAsync(requestRaw, 0, requestRaw.Length, cts.Token);
                         }
 
                         // if there was an attempt to write, disconnect.

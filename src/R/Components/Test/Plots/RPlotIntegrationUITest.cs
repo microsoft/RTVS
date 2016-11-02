@@ -29,37 +29,32 @@ namespace Microsoft.R.Components.Test.Plots {
     public class RPlotIntegrationUITest : IAsyncLifetime {
         private readonly ContainerHostMethodFixture _containerHost;
         private readonly IExportProvider _exportProvider;
-        private readonly TestRInteractiveWorkflowProvider _workflowProvider;
         private readonly IRInteractiveWorkflow _workflow;
         private readonly IInteractiveWindowComponentContainerFactory _componentContainerFactory;
         private readonly TestRPlotDeviceVisualComponentContainerFactory _plotDeviceVisualComponentContainerFactory;
         private readonly IRPlotHistoryVisualComponentContainerFactory _plotHistoryVisualComponentContainerFactory;
-        private readonly MethodInfo _testMethod;
-        private readonly TestFilesFixture _testFiles;
         private IInteractiveWindowVisualComponent _replVisualComponent;
         private IRPlotDeviceVisualComponent _plotVisualComponent;
         private IDisposable _containerDisposable;
         private const int PlotWindowInstanceId = 1;
 
-        public RPlotIntegrationUITest(RComponentsMefCatalogFixture catalog, ContainerHostMethodFixture containerHost, TestMethodFixture testMethod, TestFilesFixture testFiles) {
+        public RPlotIntegrationUITest(RComponentsMefCatalogFixture catalog, ContainerHostMethodFixture containerHost) {
             _containerHost = containerHost;
             _exportProvider = catalog.CreateExportProvider();
-            _workflowProvider = _exportProvider.GetExportedValue<TestRInteractiveWorkflowProvider>();
+            _exportProvider.GetExportedValue<TestRInteractiveWorkflowProvider>();
             _plotDeviceVisualComponentContainerFactory = _exportProvider.GetExportedValue<TestRPlotDeviceVisualComponentContainerFactory>();
+
             // Don't override the standard behavior of using the control size
             _plotDeviceVisualComponentContainerFactory.DeviceProperties = null;
             _plotHistoryVisualComponentContainerFactory = _exportProvider.GetExportedValue<IRPlotHistoryVisualComponentContainerFactory>();
             _workflow = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
             _componentContainerFactory = _exportProvider.GetExportedValue<IInteractiveWindowComponentContainerFactory>();
-            _testMethod = testMethod.MethodInfo;
-            _testFiles = testFiles;
             _plotVisualComponent = UIThreadHelper.Instance.Invoke(() => _workflow.Plots.GetOrCreateVisualComponent(_plotDeviceVisualComponentContainerFactory, PlotWindowInstanceId));
             UIThreadHelper.Instance.Invoke(() => _workflow.Plots.RegisterVisualComponent(_plotVisualComponent));
         }
 
         public async Task InitializeAsync() {
-            var settings = _exportProvider.GetExportedValue<IRSettings>();
-            await _workflow.RSessions.TrySwitchBrokerAsync(settings.LastActiveConnection.Name, settings.LastActiveConnection.Path);
+            await _workflow.RSessions.TrySwitchBrokerAsync(nameof(RPlotIntegrationUITest));
 
             _plotVisualComponent.Control.Width = 600;
             _plotVisualComponent.Control.Height = 500;
