@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Media;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Wpf.Extensions;
@@ -18,7 +19,7 @@ using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Session;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.R.StackTracing;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.Imaging;
@@ -61,8 +62,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             ImageThemingUtilities.SetImageBackgroundColor(RootTreeGrid, Color.FromArgb(color.A, color.R, color.G, color.B));
             ImageThemingUtilities.SetThemeScrollBars(RootTreeGrid, true);
 
-            var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-            _session = sessionProvider.GetInteractiveWindowRSession();
+            var workflow = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
+            _session = workflow.RSession;
 
             _environmentProvider = new REnvironmentProvider(_session);
             EnvironmentComboBox.DataContext = _environmentProvider;

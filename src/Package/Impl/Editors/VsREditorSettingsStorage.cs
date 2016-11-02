@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.ComponentModel.Composition;
-using Microsoft.Common.Core.Settings;
+using Microsoft.Languages.Core.Settings;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Utilities;

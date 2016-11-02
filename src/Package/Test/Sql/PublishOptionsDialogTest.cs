@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.IO;
-using Microsoft.Common.Core.Settings;
+using Microsoft.Common.Core.Shell;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration;
@@ -22,7 +22,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             var appShell = Substitute.For<IApplicationShell>();
             var pss = Substitute.For<IProjectSystemServices>();
             var pcsp = Substitute.For<IProjectConfigurationSettingsProvider>();
-            var storage = Substitute.For<IWritableEditorSettingsStorage>();
             var fs = Substitute.For<IFileSystem>();
             var s = Substitute.For<ISettingsStorage>();
 

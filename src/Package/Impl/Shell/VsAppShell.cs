@@ -10,11 +10,10 @@ using System.Diagnostics;
 using System.Threading;
 using System.Windows.Threading;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Settings;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Core.Threading;
-using Microsoft.Languages.Editor.Composition;
+using Microsoft.Languages.Core.Settings;
 using Microsoft.Languages.Editor.Host;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
@@ -343,20 +342,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
         #endregion
 
-        #region IApplicationShell
-        public IWritableEditorSettingsStorage SettingsStorage {
-            get {
-                if (_settingStorage == null) {
-                    var ctrs = ExportProvider.GetExportedValue<IContentTypeRegistryService>();
-                    var contentType = ctrs.GetContentType(RContentTypeDefinition.ContentType);
-                    _settingStorage = ComponentLocatorForOrderedContentType<IWritableEditorSettingsStorage>.FindFirstOrderedComponent(contentType);
-                }
-                return _settingStorage;
-            }
-        }
-        #endregion
-
-        #region
+        #region Threading
         public int ThreadId => MainThread.ManagedThreadId;
         public void Post(Action action, CancellationToken cancellationToken) {
             var awaiter = ThreadHelper.JoinableTaskFactory

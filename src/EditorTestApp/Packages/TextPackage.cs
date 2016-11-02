@@ -3,7 +3,7 @@
 
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.Common.Core.Settings;
+using Microsoft.Languages.Core.Settings;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.Languages.Editor.Application.Packages {

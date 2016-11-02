@@ -17,7 +17,6 @@ using Microsoft.VisualStudio.R.Package.Sql;
 using Microsoft.VisualStudio.R.Package.Sql.Publish;
 using Microsoft.VisualStudio.Shell.Interop;
 using NSubstitute;
-using Microsoft.Common.Core.Settings;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 #endif

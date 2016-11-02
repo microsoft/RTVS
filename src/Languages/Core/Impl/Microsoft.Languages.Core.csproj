@@ -41,6 +41,7 @@
     <Compile Include="Formatting\TextBuilder.cs" />
     <Compile Include="Formatting\Whitespace.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Settings\IEditorSettingsStorage.cs" />
     <Compile Include="Text\BraceCounter.cs" />
     <Compile Include="Text\CharacterStream.cs" />
     <Compile Include="Text\Definitions\ICompositeTextRange.cs" />

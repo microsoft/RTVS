@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using Microsoft.Common.Core.Settings;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Languages.Core.Settings;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.VisualStudio.Utilities;
 
@@ -21,7 +21,7 @@ namespace Microsoft.Languages.Editor.Shell {
         private static readonly object _instanceLock = new object();
         private static readonly object _settingsLock = new object();
 
-        public static bool HasShell  => _shell != null;
+        public static bool HasShell => _shell != null;
 
         public static IEditorShell Current {
             get {
@@ -49,28 +49,29 @@ namespace Microsoft.Languages.Editor.Shell {
 
                 // Need to find the settings using MEF (don't use MEF inside of other locks, that can lead to deadlock)
 
-            var contentTypeRegistry = compositionCatalog.ExportProvider.GetExportedValue<IContentTypeRegistryService>();
+                var contentTypeRegistry = compositionCatalog.ExportProvider.GetExportedValue<IContentTypeRegistryService>();
 
                 var contentType = contentTypeRegistry.GetContentType(contentTypeName);
                 Debug.Assert(contentType != null, "Cannot find content type object for " + contentTypeName);
 
-            settingsStorage = ComponentLocatorForOrderedContentType<IWritableEditorSettingsStorage>.FindFirstOrderedComponent(contentType);
+                var cs = compositionCatalog.CompositionService;
+                settingsStorage = ComponentLocatorForOrderedContentType<IWritableEditorSettingsStorage>.FindFirstOrderedComponent(cs, contentType);
 
-            if (settingsStorage == null) {
-                settingsStorage = ComponentLocatorForOrderedContentType<IEditorSettingsStorage>.FindFirstOrderedComponent(contentType);
-            }
+                if (settingsStorage == null) {
+                    settingsStorage = ComponentLocatorForOrderedContentType<IEditorSettingsStorage>.FindFirstOrderedComponent(cs, contentType);
+                }
 
-            if (settingsStorage == null) {
-                var storages = ComponentLocatorForContentType<IWritableEditorSettingsStorage, IComponentContentTypes>.ImportMany(contentType);
-                if (storages.Count() > 0)
-                    settingsStorage = storages.First().Value;
-            }
+                if (settingsStorage == null) {
+                    var storages = ComponentLocatorForContentType<IWritableEditorSettingsStorage, IComponentContentTypes>.ImportMany(cs, contentType);
+                    if (storages.Count() > 0)
+                        settingsStorage = storages.First().Value;
+                }
 
-            if (settingsStorage == null) {
-                var readonlyStorages = ComponentLocatorForContentType<IEditorSettingsStorage, IComponentContentTypes>.ImportMany(contentType);
-                if (readonlyStorages.Count() > 0)
-                    settingsStorage = readonlyStorages.First().Value;
-            }
+                if (settingsStorage == null) {
+                    var readonlyStorages = ComponentLocatorForContentType<IEditorSettingsStorage, IComponentContentTypes>.ImportMany(cs, contentType);
+                    if (readonlyStorages.Count() > 0)
+                        settingsStorage = readonlyStorages.First().Value;
+                }
 
                 Debug.Assert(settingsStorage != null, String.Format(CultureInfo.CurrentCulture,
                     "Cannot find settings storage export for content type '{0}'", contentTypeName));

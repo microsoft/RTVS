@@ -5,16 +5,17 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
-using System.Globalization;
 using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Settings;
 using Microsoft.VisualStudio.Shell.Settings;
+using Newtonsoft.Json;
 using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
     /// <summary>
-    /// Represents VS user settings collection.
+    /// Represents VS user settings collection. 
+    /// Provides methods for saving values in VS settings.
     /// </summary>
     [Export(typeof(ISettingsStorage))]
     internal sealed class VsSettingsStorage : ISettingsStorage {
@@ -95,14 +96,15 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                     var t = s.Value.GetType();
                     if (s.Value is bool) {
                         _store.SetBoolean(_collectionPath, s.Key, (bool)s.Value);
-                    } else if (typeof(int).IsAssignableFrom(t) || t.IsEnum) {
+                    } else if (s.Value is int || t.IsEnum) {
                         _store.SetInt32(_collectionPath, s.Key, (int)s.Value);
+                    } else if (s.Value is uint) {
+                        _store.SetUInt32(_collectionPath, s.Key, (uint)s.Value);
                     } else if (s.Value is string) {
                         _store.SetString(_collectionPath, s.Key, (string)s.Value);
-                    } else if (s.Value is DateTime) {
-                        _store.SetString(_collectionPath, s.Key, ((DateTime)s.Value).ToString(CultureInfo.InvariantCulture));
-                    } else if (typeof(IEnumerable<string>).IsAssignableFrom(t)) {
-                        SaveStringCollectionToStore(s.Key, (IEnumerable<string>)s.Value);
+                    } else {
+                        var json = JsonConvert.SerializeObject(s.Value);
+                        _store.SetString(_collectionPath, s.Key, json);
                     }
                 }
             }
@@ -113,20 +115,16 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 return _store.GetBoolean(_collectionPath, name);
             } else if (typeof(int).IsAssignableFrom(t) || t.IsEnum) {
                 return _store.GetInt32(_collectionPath, name);
+            } else if (typeof(uint).IsAssignableFrom(t)) {
+                return _store.GetUInt32(_collectionPath, name);
             } else if (typeof(string).IsAssignableFrom(t)) {
                 return _store.GetString(_collectionPath, name);
-            } else if (typeof(DateTime).IsAssignableFrom(t)) {
+            } else {
                 var s = _store.GetString(_collectionPath, name);
-                DateTime dt;
-                if(DateTime.TryParse(s, CultureInfo.InvariantCulture, DateTimeStyles.NoCurrentDateDefault, out dt)) {
-                    return dt;
+                if (s != null) {
+                    return JsonConvert.DeserializeObject(s);
                 }
-                return DateTime.Now;
-            } else if (typeof(IEnumerable<string>).IsAssignableFrom(t)) {
-                return GetStringCollectionFromStore(name);
             }
-
-            Debug.Fail("Unsupported setting type");
             return null;
         }
 
