@@ -135,13 +135,9 @@ namespace Microsoft.R.Components.Plots.Implementation {
             Container.UpdateCommandStatus(false);
         }
 
-        public async Task<LocatorResult> StartLocatorModeAsync(CancellationToken ct) {
-            return await _viewModel.StartLocatorModeAsync(ct);
-        }
+        public Task<LocatorResult> StartLocatorModeAsync(CancellationToken ct) => _viewModel.StartLocatorModeAsync(ct);
 
-        public void EndLocatorMode() {
-            _viewModel.EndLocatorMode();
-        }
+        public void EndLocatorMode() => _viewModel.EndLocatorMode();
 
         public void ClickPlot(int x, int y) {
             _viewModel.ClickPlot(x, y);

@@ -49,13 +49,17 @@ namespace Microsoft.R.Host.Broker.Lifetime {
             }
 
             var cts = new CancellationTokenSource(_options.PingTimeout.Value);
-            cts.Token.Register(() => {
-                if (_cts == cts) {
-                    _logger.LogCritical(Resources.Critical_PingTimeOut);
-                    Program.Exit();
-                }
-            });
-            _cts = cts; 
+            cts.Token.Register(PingTimeout, cts);
+            var oldCts = Interlocked.Exchange(ref _cts, cts); 
+            oldCts?.Dispose();
+        }
+
+        private void PingTimeout(object state) {
+            var cts = (CancellationTokenSource) state;
+            if (_cts == cts) {
+                _logger.LogCritical(Resources.Critical_PingTimeOut);
+                Program.Exit();
+            }
         }
     }
 }

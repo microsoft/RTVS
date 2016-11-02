@@ -559,41 +559,42 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
             Interlocked.Exchange(ref _currentRequestSource, requestSource);
 
             requestSource.Request(_contexts, prompt, len, requestTcs);
-            ct.Register(delegate { requestTcs.TrySetCanceled(); });
+            using (ct.Register(() => requestTcs.TrySetCanceled())) {
+                var response = await requestTcs.Task;
 
-            string response = await requestTcs.Task;
+                Debug.Assert(response.Length < len); // len includes null terminator
+                if (response.Length >= len) {
+                    response = response.Substring(0, len - 1);
+                }
 
-            Debug.Assert(response.Length < len); // len includes null terminator
-            if (response.Length >= len) {
-                response = response.Substring(0, len - 1);
+                return response;
             }
-
-            return response;
         }
 
         private async Task EvaluateUntilCancelled(IReadOnlyList<IRContext> contexts, CancellationToken evaluationCancellationToken, CancellationToken hostCancellationToken) {
             TaskUtilities.AssertIsOnBackgroundThread();
+            using (var cts = CancellationTokenSource.CreateLinkedTokenSource(hostCancellationToken, evaluationCancellationToken)) {
+                var ct = cts.Token;
+                bool mutated = true; // start with true on the assumption that the preceding interaction has mutated something
+                while (!ct.IsCancellationRequested) {
+                    try {
+                        if (await EvaluateAll(contexts, mutated, hostCancellationToken)) {
+                            // EvaluateAll has raised the event already, so reset the flag.
+                            mutated = false;
+                        } else if (mutated) {
+                            // EvaluateAll did not raise the event, but we have a pending mutate to inform about.
+                            OnMutated();
+                        }
 
-            var ct = CancellationTokenSource.CreateLinkedTokenSource(hostCancellationToken, evaluationCancellationToken).Token;
-            bool mutated = true; // start with true on the assumption that the preceding interaction has mutated something
-            while (!ct.IsCancellationRequested) {
-                try {
-                    if (await EvaluateAll(contexts, mutated, hostCancellationToken)) {
-                        // EvaluateAll has raised the event already, so reset the flag.
-                        mutated = false;
-                    } else if (mutated) {
-                        // EvaluateAll did not raise the event, but we have a pending mutate to inform about.
-                        OnMutated();
-                    }
+                        if (ct.IsCancellationRequested) {
+                            return;
+                        }
 
-                    if (ct.IsCancellationRequested) {
+                        var evaluationSource = await _pendingEvaluationSources.ReceiveAsync(ct);
+                        mutated |= await evaluationSource.BeginEvaluationAsync(contexts, _host, hostCancellationToken);
+                    } catch (OperationCanceledException) {
                         return;
                     }
-
-                    var evaluationSource = await _pendingEvaluationSources.ReceiveAsync(ct);
-                    mutated |= await evaluationSource.BeginEvaluationAsync(contexts, _host, hostCancellationToken);
-                } catch (OperationCanceledException) {
-                    return;
                 }
             }
         }

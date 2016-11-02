@@ -30,13 +30,16 @@ namespace Microsoft.R.Host.Client {
         }
 
         private abstract class Request<T> : Request {
-            protected readonly TaskCompletionSourceEx<T> CompletionSource = new TaskCompletionSourceEx<T>();
+            protected readonly TaskCompletionSource<T> CompletionSource = new TaskCompletionSource<T>();
 
             public Task<T> Task => CompletionSource.Task;
 
-            protected Request(RHost host, Message message, CancellationToken cancellationToken)
-                : base(host, message) {
-                cancellationToken.Register(() => CompletionSource.TrySetCanceled(null, cancellationToken));
+            protected Request(RHost host, Message message, CancellationToken cancellationToken) : base(host, message) {
+                if (cancellationToken.CanBeCanceled) {
+                    cancellationToken
+                        .Register(() => CompletionSource.TrySetCanceled(cancellationToken))
+                        .UnregisterOnCompletion(CompletionSource.Task);
+                }
             }
         }
     }
