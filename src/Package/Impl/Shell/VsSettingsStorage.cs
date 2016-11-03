@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Settings;
@@ -29,31 +30,42 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// </summary>
         private readonly Dictionary<string, object> _settingsCache = new Dictionary<string, object>();
 
-        /// <summary>
-        /// VS internal settings manager <seealso cref="IVsSettingsManager"/>
-        /// </summary>
-        private readonly SettingsManager _settingsManager;
-
-        /// <summary>
-        /// Settings store provided by the <see cref="ShellSettingsManager"/>
-        /// </summary>
-        private readonly WritableSettingsStore _store;
         private readonly object _lock = new object();
+
+        private SettingsManager _settingsManager;
+        private SettingsManager SettingsManager {
+            get {
+                if (_settingsManager == null) {
+                    _settingsManager = new ShellSettingsManager(RPackage.Current);
+                }
+                return _settingsManager;
+            }
+        }
+
+        private WritableSettingsStore _store;
+        private WritableSettingsStore Store {
+            get {
+                if (_store == null) {
+                    _store = SettingsManager.GetWritableSettingsStore(SettingsScope.UserSettings);
+                    EnsureCollectionExists();
+                }
+                return _store;
+            }
+        }
+
+        public VsSettingsStorage() : this(null) { }
 
         public VsSettingsStorage(SettingsManager sm) {
             _settingsManager = sm;
-            _store = _settingsManager.GetWritableSettingsStore(SettingsScope.UserSettings);
-
-            Debug.Assert(_store != null);
-            EnsureCollectionExists();
         }
 
+        #region ISettingsStorage
         public bool SettingExists(string name) {
             lock (_lock) {
                 if (_settingsCache.ContainsKey(name)) {
                     return true;
                 }
-                return _store.PropertyExists(_collectionPath, name);
+                return Store.PropertyExists(_collectionPath, name);
             }
         }
 
@@ -95,55 +107,47 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 foreach (var s in _settingsCache) {
                     var t = s.Value.GetType();
                     if (s.Value is bool) {
-                        _store.SetBoolean(_collectionPath, s.Key, (bool)s.Value);
+                        Store.SetBoolean(_collectionPath, s.Key, (bool)s.Value);
                     } else if (s.Value is int || t.IsEnum) {
-                        _store.SetInt32(_collectionPath, s.Key, (int)s.Value);
+                        Store.SetInt32(_collectionPath, s.Key, (int)s.Value);
                     } else if (s.Value is uint) {
-                        _store.SetUInt32(_collectionPath, s.Key, (uint)s.Value);
+                        Store.SetUInt32(_collectionPath, s.Key, (uint)s.Value);
                     } else if (s.Value is string) {
-                        _store.SetString(_collectionPath, s.Key, (string)s.Value);
+                        Store.SetString(_collectionPath, s.Key, (string)s.Value);
                     } else {
                         var json = JsonConvert.SerializeObject(s.Value);
-                        _store.SetString(_collectionPath, s.Key, json);
+                        Store.SetString(_collectionPath, s.Key, json);
                     }
                 }
             }
         }
+        #endregion
+
+        internal void ClearCache() => _settingsCache.Clear(); // for tests
 
         private object GetValueFromStore(string name, Type t) {
-            if (_store.CollectionExists(_collectionPath) && _store.PropertyExists(_collectionPath, name)) {
+            if (Store.CollectionExists(_collectionPath) && Store.PropertyExists(_collectionPath, name)) {
                 if (typeof(bool).IsAssignableFrom(t)) {
-                    return _store.GetBoolean(_collectionPath, name);
+                    return Store.GetBoolean(_collectionPath, name);
                 } else if (typeof(int).IsAssignableFrom(t) || t.IsEnum) {
-                    return _store.GetInt32(_collectionPath, name);
+                    return Store.GetInt32(_collectionPath, name);
                 } else if (typeof(uint).IsAssignableFrom(t)) {
-                    return _store.GetUInt32(_collectionPath, name);
+                    return Store.GetUInt32(_collectionPath, name);
                 } else if (typeof(string).IsAssignableFrom(t)) {
-                    return _store.GetString(_collectionPath, name);
+                    return Store.GetString(_collectionPath, name);
                 } else {
-                    var s = _store.GetString(_collectionPath, name);
+                    var s = Store.GetString(_collectionPath, name);
                     if (s != null) {
-                        return JsonConvert.DeserializeObject(s);
+                        return JsonConvert.DeserializeObject(s, t);
                     }
                 }
             }
             return null;
         }
 
-        private void SaveStringCollectionToStore(string name, IEnumerable<string> values) {
-            string subCollectionPath = Invariant($"{_collectionPath}/{name}");
-            _store.CreateCollection(subCollectionPath);
-
-            int i = 0;
-            foreach (var v in values) {
-                _store.SetString(subCollectionPath, Invariant($"Value{i}"), v);
-                i++;
-            }
-        }
-
         private void EnsureCollectionExists() {
-            if (!_store.CollectionExists(_collectionPath)) {
-                _store.CreateCollection(_collectionPath);
+            if (!Store.CollectionExists(_collectionPath)) {
+                Store.CreateCollection(_collectionPath);
             }
         }
     }
