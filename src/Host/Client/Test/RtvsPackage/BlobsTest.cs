@@ -7,6 +7,7 @@ using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Script;
@@ -173,6 +174,65 @@ namespace Microsoft.R.Host.Client.Test.RtvsPackage {
                 actualData.Should().Equal(expectedData);
 
                 await eval.ExecuteAsync($"rtvs:::destroy_blob({blobId})");
+            }
+        }
+
+        [Test]
+        public async Task RZeroSizedBlob() {
+            using (var eval = await _session.BeginEvaluationAsync()) {
+                var createResult = await eval.EvaluateAsync("rtvs:::create_blob(raw())", REvaluationKind.Normal);
+                createResult.Result.Should().NotBeNull();
+
+                var blobId = ((JValue)createResult.Result).Value<ulong>();
+                var actualData = await eval.EvaluateAsync<byte[]>($"rtvs:::get_blob({blobId})", REvaluationKind.Normal);
+
+                byte[] expectedData = { };
+                actualData.Should().Equal(expectedData);
+
+                await eval.ExecuteAsync($"rtvs:::destroy_blob({blobId})");
+            }
+        }
+
+        [Test]
+        public async Task CompressedBlob() {
+            using (var eval = await _session.BeginEvaluationAsync()) {
+                var createResult = await eval.EvaluateAsync("rtvs:::create_blob(raw(1000000))", REvaluationKind.Normal);
+                createResult.Result.Should().NotBeNull();
+
+                var createCompressedResult = await eval.EvaluateAsync("rtvs:::create_compressed_blob(raw(1000000))", REvaluationKind.Normal);
+                createCompressedResult.Result.Should().NotBeNull();
+
+                var blobId = ((JValue)createResult.Result).Value<ulong>();
+                var blobId2 = ((JValue)createCompressedResult.Result).Value<ulong>();
+
+                using (DataTransferSession dts = new DataTransferSession(_session, new FileSystem())) {
+                    var expectedData = await dts.FetchBytesAsync(new RBlobInfo(blobId));
+                    var compressedData = await dts.FetchBytesAsync(new RBlobInfo(blobId2));
+                    compressedData.Length.Should().BeLessThan(expectedData.Length);
+
+                    var actualData = await dts.FetchAndDecompressBytesAsync(new RBlobInfo(blobId2));
+                    actualData.Should().Equal(expectedData);
+                }
+            }
+        }
+
+        [Test]
+        public async Task CompressedZeroSizedBlob() {
+            using (var eval = await _session.BeginEvaluationAsync()) {
+                var createResult = await eval.EvaluateAsync("rtvs:::create_blob(raw())", REvaluationKind.Normal);
+                createResult.Result.Should().NotBeNull();
+
+                var createCompressedResult = await eval.EvaluateAsync("rtvs:::create_compressed_blob(raw())", REvaluationKind.Normal);
+                createCompressedResult.Result.Should().NotBeNull();
+
+                var blobId = ((JValue)createResult.Result).Value<ulong>();
+                var blobId2 = ((JValue)createCompressedResult.Result).Value<ulong>();
+
+                using (DataTransferSession dts = new DataTransferSession(_session, new FileSystem())) {
+                    var expectedData = await dts.FetchBytesAsync(new RBlobInfo(blobId));
+                    var actualData = await dts.FetchAndDecompressBytesAsync(new RBlobInfo(blobId2));
+                    actualData.Should().Equal(expectedData);
+                }
             }
         }
     }
