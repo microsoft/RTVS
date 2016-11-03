@@ -243,6 +243,15 @@
   <data name="Error_PackageMissing" xml:space="preserve">
     <value>This operation requires package {0} which is not installed or has been removed. </value>
   </data>
+  <data name="PlotWindowCommandNoDevice" xml:space="preserve">
+    <value>R Plot</value>
+  </data>
+  <data name="PlotWindowCommand" xml:space="preserve">
+    <value>R Plot - Device {0}</value>
+  </data>
+  <data name="PlotWindowCommandActive" xml:space="preserve">
+    <value>R Plot - Device {0} - Active</value>
+  </data>
   <data name="PlotWindowCaption" xml:space="preserve">
     <value>R Plot</value>
   </data>

@@ -117,7 +117,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new ShowToolWindowCommand<ConnectionManagerWindowPane>(RPackageCommandId.icmdShowConnectionsWindow),
                 new ShowToolWindowCommand<PackageManagerWindowPane>(RPackageCommandId.icmdShowPackagesWindow),
                 new ShowToolWindowCommand<PlotHistoryWindowPane>(RPackageCommandId.icmdPlotHistoryWindow),
-                new ShowToolWindowCommand<PlotDeviceWindowPane>(RPackageCommandId.icmdShowPlotWindow),
 
                 new ShowHelpOnCurrentCommand(interactiveWorkflow, textViewTracker, replTracker),
                 new SearchWebForCurrentCommand(interactiveWorkflow, textViewTracker, replTracker, wbs),
@@ -126,7 +125,9 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
                 // Plot commands
                 CreateRCmdSetCommand(RPackageCommandId.icmdNewPlotWindow, new PlotDeviceNewCommand(interactiveWorkflow)),
-                CreateRCmdSetCommand(RPackageCommandId.icmdPlotWindowsDynamicStart, new ShowPlotDeviceCommand(interactiveWorkflow)),
+                CreateRCmdSetCommand(RPackageCommandId.icmdPlotWindowsDynamicStart, new ShowPlotWindowCommand(appShell, interactiveWorkflow)),
+                new HideAllPlotWindowsCommand(appShell),
+                new ShowMainPlotWindowCommand(interactiveWorkflow),
 
                 // Connection manager commands
                 CreateRCmdSetCommand(RPackageCommandId.icmdReconnect, new ReconnectCommand(interactiveWorkflow)),

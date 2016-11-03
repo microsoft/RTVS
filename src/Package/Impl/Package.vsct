@@ -427,6 +427,9 @@
       <Group guid="guidRToolsCmdSet" id="plotWindowsSubMenuGroup" priority="0x0100" >
         <Parent guid="guidRToolsCmdSet" id="plotWindowsSubMenu" />
       </Group>
+      <Group guid="guidRToolsCmdSet" id="plotWindowsHideSubMenuGroup" priority="0x0200" >
+        <Parent guid="guidRToolsCmdSet" id="plotWindowsSubMenu" />
+      </Group>
 
       <!-- Same as above, but excludes commands that are already present in Interactive Window toolbar (like Restart). -->
       <Group guid="guidRToolsCmdSet" id="sessionSubMenuRGroup" priority="0x0100">
@@ -1023,7 +1026,7 @@
         </Strings>
       </Button>
 
-      <Button guid="guidRToolsCmdSet" id="icmdPlotWindowsDynamicStart" priority="0x1000" >
+      <Button guid="guidRToolsCmdSet" id="icmdPlotWindowsDynamicStart" priority="0x0100" >
         <Parent guid="guidRToolsCmdSet" id="plotWindowsSubMenuGroup" />
         <CommandFlag>DynamicItemStart</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -1031,6 +1034,17 @@
         <!-- This text does not appear. -->
         <Strings>
           <ButtonText>R Plot - Device X</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdPlotWindowsHideAll" priority="0x0200" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="plotWindowsHideSubMenuGroup" />
+        <Icon guid="ImageCatalogGuid" id="CloseAll"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Hide All Plot Windows</ButtonText>
+          <MenuText>&amp;Hide All Plot Windows</MenuText>
         </Strings>
       </Button>
 
@@ -2650,6 +2664,7 @@
       <IDSymbol name="icmdPlotHistoryZoomOut" value="724" />
       <IDSymbol name="icmdPlotHistoryAutoHide" value="725" />
       <IDSymbol name="icmdPlotHistoryActivatePlot" value="726" />
+      <IDSymbol name="icmdPlotWindowsHideAll" value="727" />
       <!-- This dynamic command uses ids from 730 to 749 -->
       <IDSymbol name="icmdPlotWindowsDynamicStart" value="730" />
 
@@ -2732,7 +2747,8 @@
       <IDSymbol name="plotSubMenuClearGroup" value="0x2054"/>
       <IDSymbol name="plotSubMenuLocatorGroup" value="0x2055"/>
       <IDSymbol name="plotWindowsSubMenuGroup" value="0x2056" />
-      <IDSymbol name="plotWindowsSubMenu" value ="0x2057"/>
+      <IDSymbol name="plotWindowsHideSubMenuGroup" value="0x2057" />
+      <IDSymbol name="plotWindowsSubMenu" value ="0x2058"/>
 
 
       <!-- Variable Explorer -->
