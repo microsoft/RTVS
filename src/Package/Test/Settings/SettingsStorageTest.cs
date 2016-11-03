@@ -26,8 +26,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Settings {
             SaveRestore("name", (uint)1);
             SaveRestore("name", "string");
             SaveRestore("name", DateTime.Now);
-            SaveRestore("name", );
-            SaveRestore("name", 0);
+            SaveRestore("name", new TestSetting("p1", 1));
         }
 
         public void SaveRestore<T>(string name, T value) {
@@ -36,6 +35,16 @@ namespace Microsoft.VisualStudio.R.Package.Test.Settings {
             storage.SetSetting(name, value);
             storage.SettingExists(name).Should().BeTrue();
             storage.GetSetting(name, value.GetType()).Should().Be(value);
+        }
+
+        class TestSetting {
+            public string Prop1 { get; }
+            public int Prop2 { get; }
+
+            public TestSetting(string p1, int p2) {
+                Prop1 = p1;
+                Prop2 = p2;
+            }
         }
     }
 }

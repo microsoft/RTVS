@@ -9,9 +9,7 @@
              xmlns:viewModel="clr-namespace:Microsoft.R.Components.ConnectionManager.ViewModel"
              xmlns:controls="clr-namespace:Microsoft.R.Wpf.Controls;assembly=Microsoft.R.Wpf"
              xmlns:imaging="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.Imaging"
-             xmlns:plui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Imaging"
              xmlns:imagecatalog="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.ImageCatalog"
-             plui:ImageThemingUtilities.ImageBackgroundColor="{DynamicResource {x:Static rwpf:ImageSources.ImageBackground}}"
              mc:Ignorable="d" x:Name="Self"
              d:DataContext="{d:DesignInstance Type=designTime:DesignTimeConnectionManagerViewModel, IsDesignTimeCreatable=True}"
              d:DesignHeight="600" d:DesignWidth="400">

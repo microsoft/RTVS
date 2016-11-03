@@ -49,6 +49,7 @@
     <Compile Include="FontKeys.cs" />
     <Compile Include="ImageSources.cs" />
     <Compile Include="StyleKeys.cs" />
+    <Compile Include="Themes\IThemeUtilities.cs" />
     <Compile Include="ValueConverters\EnumDescriptionValueConverter.cs" />
     <Compile Include="ValueConverters\IconUrlToImageCacheConverter.cs" />
   </ItemGroup>

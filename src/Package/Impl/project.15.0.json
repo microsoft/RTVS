@@ -5,6 +5,7 @@
     "Microsoft.Build": "15.1.262-preview5",
     "Microsoft.VisualStudio.Debugger.Interop.10.0": "10.0.30319",
     "Microsoft.VisualStudio.Debugger.Interop.14.0": "15.0.25726-Preview5",
+    "Microsoft.VisualStudio.Imaging": "15.0.25824-RC",
     "Microsoft.VisualStudio.ImageCatalog": "15.0.25824-RC",
     "Microsoft.VisualStudio.ProjectSystem": "15.0.561-pre-g30afd8d890",
     "Microsoft.VisualStudio.ProjectSystem.SDK.Tools": "15.0.561-pre-g30afd8d890",

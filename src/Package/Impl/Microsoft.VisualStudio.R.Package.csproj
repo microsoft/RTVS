@@ -512,6 +512,7 @@
     <Compile Include="Repl\VsActiveRInteractiveWindowTracker.cs" />
     <Compile Include="Utilities\VsDebuggerModeTracker.cs" />
     <Compile Include="Wpf\PlatformDialogWindow.cs" />
+    <Compile Include="Wpf\ThemeUtilities.cs" />
     <Compile Include="Wpf\VsWpfOverrides.cs" />
     <Compile Include="Windows\GotoSolutionExplorerCommand.cs" />
     <Compile Include="Windows\GotoEditorWindowCommand.cs" />

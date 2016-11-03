@@ -13,7 +13,6 @@ using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Core.Threading;
-using Microsoft.Languages.Core.Settings;
 using Microsoft.Languages.Editor.Host;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
@@ -46,9 +45,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         private readonly IRSettings _settings;
         private readonly ICoreServices _coreServices;
-
         private IdleTimeSource _idleTimeSource;
-        private IWritableEditorSettingsStorage _settingStorage;
 
         [ImportingConstructor]
         public VsAppShell(ITelemetryService telemetryService

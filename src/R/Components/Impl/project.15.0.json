@@ -7,7 +7,9 @@
     "Microsoft.VisualStudio.Text.Logic": "15.0.25824-RC",
     "Microsoft.VisualStudio.Text.UI": "15.0.25824-RC",
     "Microsoft.VisualStudio.Text.UI.Wpf": "15.0.25824-RC",
-    "Newtonsoft.Json": "8.0.3"
+    "Microsoft.VisualStudio.Imaging": "15.0.25824-RC",
+    "Microsoft.VisualStudio.ImageCatalog": "15.0.25824-RC",
+    "Newtonsoft.Json": "9.0.1"
   },
   "frameworks": {
     "net46": { }
