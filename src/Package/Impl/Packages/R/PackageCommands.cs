@@ -125,9 +125,9 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
                 // Plot commands
                 CreateRCmdSetCommand(RPackageCommandId.icmdNewPlotWindow, new PlotDeviceNewCommand(interactiveWorkflow)),
+                CreateRCmdSetCommand(RPackageCommandId.icmdShowPlotWindow, new ShowMainPlotWindowCommand(interactiveWorkflow)),
                 CreateRCmdSetCommand(RPackageCommandId.icmdPlotWindowsDynamicStart, new ShowPlotWindowCommand(appShell, interactiveWorkflow)),
                 new HideAllPlotWindowsCommand(appShell),
-                new ShowMainPlotWindowCommand(interactiveWorkflow),
 
                 // Connection manager commands
                 CreateRCmdSetCommand(RPackageCommandId.icmdReconnect, new ReconnectCommand(interactiveWorkflow)),

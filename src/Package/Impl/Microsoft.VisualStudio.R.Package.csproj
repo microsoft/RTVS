@@ -67,7 +67,6 @@
     <Compile Include="Commands\CommandAsyncToOleMenuCommandShim.cs" />
     <Compile Include="Commands\CommandAsyncToOleMenuCommandShimFactory.cs" />
     <Compile Include="Commands\OleControllerChain.cs" />
-    <Compile Include="Commands\R\ShowMainPlotWindowCommand.cs" />
     <Compile Include="Commands\R\HideAllPlotWindows.cs" />
     <Compile Include="Commands\R\ShowPlotWindowCommand.cs" />
     <Compile Include="Commands\R\SwitchToRClientCommand.cs" />

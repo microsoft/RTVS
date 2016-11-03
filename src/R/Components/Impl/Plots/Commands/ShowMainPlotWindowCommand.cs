@@ -7,10 +7,10 @@ using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
 
 namespace Microsoft.R.Components.Plots.Commands {
-    public sealed class PlotDeviceNewCommand : IAsyncCommand {
+    public sealed class ShowMainPlotWindowCommand : IAsyncCommand {
         private readonly IRInteractiveWorkflow _workflow;
 
-        public PlotDeviceNewCommand(IRInteractiveWorkflow workflow) {
+        public ShowMainPlotWindowCommand(IRInteractiveWorkflow workflow) {
             if (workflow == null) {
                 throw new ArgumentNullException(nameof(workflow));
             }
@@ -24,15 +24,16 @@ namespace Microsoft.R.Components.Plots.Commands {
             }
         }
 
-        public async Task<CommandResult> InvokeAsync() {
+        public Task<CommandResult> InvokeAsync() {
             try {
-                await _workflow.Plots.NewDeviceAsync(-1);
+                var component = _workflow.Plots.GetOrCreateMainPlotVisualComponent();
+                component.Container.Show(focus: true, immediate: false);
             } catch (RPlotManagerException ex) {
                 _workflow.Shell.ShowErrorMessage(ex.Message);
             } catch (OperationCanceledException) {
             }
 
-            return CommandResult.Executed;
+            return Task.FromResult(CommandResult.Executed);
         }
     }
 }
