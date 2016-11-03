@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using FluentAssertions.Execution;
@@ -50,6 +51,23 @@ namespace Microsoft.UnitTests.Core.FluentAssertions {
                     return string.Empty;
             }
         }
+        
+        public Task<AndConstraint<TaskAssertions>> BeCompletedAsync(int timeout = 10000, string because = "", params object[] reasonArgs) {
+            Subject.Should().NotBeNull();
+            var timeoutTask = Task.Delay(timeout);
+            var state = new BeCompletedAsyncContinuationState(timeout, because, reasonArgs);
+            return Task.WhenAny(timeoutTask, Subject)
+                .ContinueWith(BeCompletedAsyncContinuation, state, default(CancellationToken), TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+        }
+
+        private AndConstraint<TaskAssertions> BeCompletedAsyncContinuation(Task<Task> task, object state) {
+            var data = (BeCompletedAsyncContinuationState) state;
+            Execute.Assertion.ForCondition(Subject.IsCompleted)
+                .BecauseOf(data.Because, data.ReasonArgs)
+                .FailWith($"Expected task to be completed in {data.Timeout} milliseconds{{reason}}, but it is {Subject.Status}.");
+
+            return new AndConstraint<TaskAssertions>(this);
+        }
 
         public AndConstraint<TaskAssertions> BeRanToCompletion(string because = "", params object[] reasonArgs) 
             => AssertStatus(TaskStatus.RanToCompletion, true, because, reasonArgs, "Expected task to completed execution successfully{reason}, but it has status {0}.", Subject.Status);
@@ -77,6 +95,17 @@ namespace Microsoft.UnitTests.Core.FluentAssertions {
                 .FailWith(message, messageArgs);
 
             return new AndConstraint<TaskAssertions>(this);
+        }
+
+        private class BeCompletedAsyncContinuationState {
+            public BeCompletedAsyncContinuationState(int timeout, string because, object[] reasonArgs) {
+                Because = because;
+                ReasonArgs = reasonArgs;
+                Timeout = timeout;
+            }
+            public int Timeout { get; }
+            public string Because { get; }
+            public object[] ReasonArgs { get; }
         }
     }
 }

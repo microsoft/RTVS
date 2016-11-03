@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.R.Components.ConnectionManager;
@@ -26,7 +27,7 @@ using Xunit;
 namespace Microsoft.VisualStudio.R.Package.Test.Repl {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
-    public class CurrentDirectoryTest : IDisposable {
+    public class CurrentDirectoryTest : IAsyncLifetime {
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
         private readonly IRSessionProvider _sessionProvider;
 
@@ -44,9 +45,18 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
                 debuggerModeTracker, VsAppShell.Current, RToolsSettings.Current, null, () => { }));
         }
 
-        public void Dispose() {
+        public async Task InitializeAsync() {
+            await _interactiveWorkflow.RSessions.TrySwitchBrokerAsync(RToolsSettings.Current.LastActiveConnection.Name, RToolsSettings.Current.LastActiveConnection.Path);
+        }
+
+        public async Task DisposeAsync() {
+            await _interactiveWorkflow.RSession.StopHostAsync();
             _interactiveWorkflow.Dispose();
             _sessionProvider.Dispose();
+        }
+
+        public void Dispose() {
+            
         }
 
         [Test]

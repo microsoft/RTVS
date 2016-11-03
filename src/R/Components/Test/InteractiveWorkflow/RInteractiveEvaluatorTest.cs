@@ -11,12 +11,14 @@ using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.InteractiveWindow;
+using Xunit;
 
 namespace Microsoft.R.Components.Test.InteractiveWorkflow {
     [ExcludeFromCodeCoverage]
-    public class RInteractiveEvaluatorTest : IDisposable {
+    public class RInteractiveEvaluatorTest : IAsyncLifetime {
         private readonly IExportProvider _exportProvider;
         private readonly IRInteractiveWorkflowProvider _workflowProvider;
+        private readonly IRInteractiveWorkflow _workflow;
         private readonly IInteractiveWindowComponentContainerFactory _interactiveWindowComponentContainerFactory;
 
         public RInteractiveEvaluatorTest(RComponentsMefCatalogFixture catalog) {
@@ -26,23 +28,28 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
             settings.RCodePage = 1252;
 
             _workflowProvider = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
+            _workflow = UIThreadHelper.Instance.Invoke(() => _workflowProvider.GetOrCreate());
             _interactiveWindowComponentContainerFactory = _exportProvider.GetExportedValue<IInteractiveWindowComponentContainerFactory>();
         }
 
-        public void Dispose() {
+        public async Task InitializeAsync() {
+            await _workflow.RSessions.TrySwitchBrokerAsync(nameof(RInteractiveEvaluatorTest));
+        }
+
+        public async Task DisposeAsync() {
+            await _workflow.RSession.StopHostAsync();
             _exportProvider?.Dispose();
         }
 
         [Test]
         [Category.Interactive]
         public async Task EvaluatorTest01() {
-            var workflow = UIThreadHelper.Instance.Invoke(() => _workflowProvider.GetOrCreate());
-            var session = workflow.RSession;
-            using (await UIThreadHelper.Instance.Invoke(() => workflow.GetOrCreateVisualComponent(_interactiveWindowComponentContainerFactory))) {
-                workflow.ActiveWindow.Should().NotBeNull();
+            var session = _workflow.RSession;
+            using (await UIThreadHelper.Instance.Invoke(() => _workflow.GetOrCreateVisualComponent(_interactiveWindowComponentContainerFactory))) {
+                _workflow.ActiveWindow.Should().NotBeNull();
                 session.IsHostRunning.Should().BeTrue();
 
-                var window = workflow.ActiveWindow.InteractiveWindow;
+                var window = _workflow.ActiveWindow.InteractiveWindow;
                 var eval = window.Evaluator;
 
                 eval.CanExecuteCode("x <-").Should().BeFalse();
@@ -92,13 +99,12 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
         [Test]
         [Category.Interactive]
         public async Task EvaluatorTest02() {
-            var workflow = UIThreadHelper.Instance.Invoke(() => _workflowProvider.GetOrCreate());
-            var session = workflow.RSession;
-            using (await UIThreadHelper.Instance.Invoke(() => workflow.GetOrCreateVisualComponent(_interactiveWindowComponentContainerFactory))) {
-                workflow.ActiveWindow.Should().NotBeNull();
+            var session = _workflow.RSession;
+            using (await UIThreadHelper.Instance.Invoke(() => _workflow.GetOrCreateVisualComponent(_interactiveWindowComponentContainerFactory))) {
+                _workflow.ActiveWindow.Should().NotBeNull();
                 session.IsHostRunning.Should().BeTrue();
 
-                var window = workflow.ActiveWindow.InteractiveWindow;
+                var window = _workflow.ActiveWindow.InteractiveWindow;
                 var eval = window.Evaluator;
 
                 window.Operations.ClearView();

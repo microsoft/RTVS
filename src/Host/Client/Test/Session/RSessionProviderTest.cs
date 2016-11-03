@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -93,7 +94,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
                     Name = nameof(session)
                 }, null, 1000);
 
-                await Task.WhenAll(switchTask, startHostTask);
+                await ParallelTools.WhenAll(switchTask, startHostTask);
 
                 startHostTask.Should().BeRanToCompletion();
                 switchTask.Should().BeRanToCompletion();

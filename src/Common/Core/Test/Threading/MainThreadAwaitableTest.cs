@@ -59,10 +59,12 @@ namespace Microsoft.Common.Core.Test.Threading {
 
         [Test]
         public void GetResult_ThrowOnBackgroundThread() {
-            var awaitable = new MainThreadAwaitable(_mainThread);
+            var cts = new CancellationTokenSource();
+            var awaitable = new MainThreadAwaitable(_mainThread, cts.Token);
+            cts.Cancel();
 
             Action a = () => awaitable.GetAwaiter().GetResult();
-            a.ShouldThrow<InvalidOperationException>();
+            a.ShouldThrow<OperationCanceledException>();
         }
         
         private sealed class TestMainThread : IMainThread {

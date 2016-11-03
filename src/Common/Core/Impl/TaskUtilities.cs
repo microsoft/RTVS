@@ -65,7 +65,13 @@ namespace Microsoft.Common.Core {
 
         public static Task WhenAllCancelOnFailure(IEnumerable<Func<CancellationToken, Task>> functions, CancellationToken cancellationToken) {
             var functionsList = functions.ToList();
-            var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            CancellationTokenSource cts = null;
+            try {
+                cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            } catch (Exception) when (cancellationToken.IsCancellationRequested) {
+                cancellationToken.ThrowIfCancellationRequested();
+            }
+
             var tcs = new TaskCompletionSourceEx<bool>();
             var state = new WhenAllCancelOnFailureContinuationState(functionsList.Count, tcs, cts);
 

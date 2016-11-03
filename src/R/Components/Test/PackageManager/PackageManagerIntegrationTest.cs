@@ -37,7 +37,6 @@ namespace Microsoft.R.Components.Test.PackageManager {
         public PackageManagerIntegrationTest(RComponentsMefCatalogFixture catalog, TestMethodFixture testMethod, TestFilesFixture testFiles) {
             _exportProvider = catalog.CreateExportProvider();
             _workflowProvider = _exportProvider.GetExportedValue<TestRInteractiveWorkflowProvider>();
-            _workflowProvider.BrokerName = nameof(PackageManagerIntegrationTest);
             _testMethod = testMethod.MethodInfo;
             _repoPath = TestRepositories.GetRepoPath(testFiles);
             _libPath = Path.Combine(testFiles.LibraryDestinationPath, _testMethod.Name);

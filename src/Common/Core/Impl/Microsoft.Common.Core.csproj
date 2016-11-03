@@ -91,9 +91,13 @@
     <Compile Include="Shell\MessageType.cs" />
     <Compile Include="Shell\ProgressDialogData.cs" />
     <Compile Include="Events\DirtyEventSource.cs" />
+    <Compile Include="Tasks\CancellationTokenUtilities.cs" />
     <Compile Include="Tasks\TaskCompletionSourceEx.cs" />
     <Compile Include="Threading\AsyncManualResetEvent.cs" />
     <Compile Include="Threading\AsyncReaderWriterLock.cs" />
+    <Compile Include="Threading\AsyncReaderWriterLock.ExclusiveReaderLock.cs" />
+    <Compile Include="Threading\AsyncReaderWriterLock.LockSource.cs" />
+    <Compile Include="Threading\AsyncReaderWriterLock.Token.cs" />
     <Compile Include="Threading\BackgroundThreadAwaitable.cs" />
     <Compile Include="Threading\BackgroundThreadAwaiter.cs" />
     <Compile Include="Collections\ListExtensions.cs" />
@@ -147,6 +151,7 @@
     <Compile Include="Telemetry\TelemetryArea.cs" />
     <Compile Include="Telemetry\TelemetryServiceBase.cs" />
     <Compile Include="Threading\BinaryAsyncLock.cs" />
+    <Compile Include="Threading\AsyncReaderWriterLock.Queue.cs" />
     <Compile Include="Threading\DelayedAsyncAction.cs" />
     <Compile Include="Threading\IAsyncReaderWriterLockToken.cs" />
     <Compile Include="Threading\IMainThread.cs" />

@@ -31,7 +31,6 @@ namespace Microsoft.R.Components.Test.PackageManager {
         public RPackageManagerViewModelTest(RComponentsMefCatalogFixture catalog, TestMethodFixture testMethod, TestFilesFixture testFiles) {
             _exportProvider = catalog.CreateExportProvider();
             var workflowProvider = _exportProvider.GetExportedValue<TestRInteractiveWorkflowProvider>();
-            workflowProvider.BrokerName = nameof(RPackageManagerViewModelTest);
             _workflow = UIThreadHelper.Instance.Invoke(() => workflowProvider.GetOrCreate());
             _testMethod = testMethod.MethodInfo;
             _testFiles = testFiles;
@@ -39,7 +38,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
 
         public async Task InitializeAsync() {
             var settings = _exportProvider.GetExportedValue<IRSettings>();
-            await _workflow.RSessions.TrySwitchBrokerAsync(settings.LastActiveConnection.Name, settings.LastActiveConnection.Path);
+            await _workflow.RSessions.TrySwitchBrokerAsync(nameof(RPackageManagerViewModelTest));
 
             await _workflow.RSession.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name,
@@ -87,7 +86,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
             var t2 = InUI(() => _packageManagerViewModel.SwitchToLoadedPackagesAsync());
             var t3 = InUI(() => _packageManagerViewModel.SwitchToInstalledPackagesAsync());
 
-            await Task.WhenAll(t1, t2, t3);
+            await ParallelTools.WhenAll(t1, t2, t3);
 
             _packageManagerViewModel.IsLoading.Should().BeFalse();
             _packageManagerViewModel.SelectedPackage.Should().NotBeNull();
@@ -100,8 +99,8 @@ namespace Microsoft.R.Components.Test.PackageManager {
             var t1 = InUI(() => _packageManagerViewModel.SwitchToLoadedPackagesAsync());
             var t2 = InUI(() => _packageManagerViewModel.SwitchToInstalledPackagesAsync());
             var t3 = InUI(() => _packageManagerViewModel.SwitchToAvailablePackagesAsync());
-            
-            await Task.WhenAll(t1, t2, t3);
+
+            await ParallelTools.WhenAll(t1, t2, t3);
             var expected = new [] { "NotAvailable1", "NotAvailable2", "rtvslib1" };
 
             _packageManagerViewModel.IsLoading.Should().BeFalse();
@@ -138,7 +137,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
             // We need real repo for this test
             await TestRepositories.SetCranRepoAsync(_workflow.RSession);
 
-            _packageManagerViewModel.SwitchToLoadedPackagesAsync().DoNotWait();
+            var t0 = _packageManagerViewModel.SwitchToLoadedPackagesAsync();
             var t1 = _packageManagerViewModel.SwitchToInstalledPackagesAsync();
             var t2 = _packageManagerViewModel.SwitchToAvailablePackagesAsync();
 
@@ -147,6 +146,8 @@ namespace Microsoft.R.Components.Test.PackageManager {
 
             await t2;
             _packageManagerViewModel.IsLoading.Should().BeFalse();
+
+            await t0;
         }
     }
 }

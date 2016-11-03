@@ -18,6 +18,7 @@ namespace Microsoft.R.Host.Client.Host {
     internal sealed class RemoteBrokerClient : BrokerClient {
         private readonly IConsole _console;
         private readonly ICoreServices _services;
+        private string  _certificateHash;
 
         static RemoteBrokerClient() {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
@@ -33,8 +34,8 @@ namespace Microsoft.R.Host.Client.Host {
             HttpClientHandler.ServerCertificateValidationCallback = ValidateCertificateHttpHandler;
         }
 
-        public override Task<string> HandleUrlAsync(string url, CancellationToken ct) {
-            return WebServer.CreateWebServerAsync(url, HttpClient.BaseAddress.ToString(), ct);
+        public override Task<string> HandleUrlAsync(string url, CancellationToken cancellationToken) {
+            return WebServer.CreateWebServerAsync(url, HttpClient.BaseAddress.ToString(), cancellationToken);
         }
 
         protected override async Task<Exception> HandleHttpRequestExceptionAsync(HttpRequestException exception) {
@@ -55,11 +56,22 @@ namespace Microsoft.R.Host.Client.Host {
                 Log.WriteAsync(LogVerbosity.Minimal, MessageCategory.Error, Resources.Error_NoBrokerCertificate).DoNotWait();
                 _console.Write(Resources.Error_NoBrokerCertificate);
             } else {
-                Log.WriteAsync(LogVerbosity.Minimal, MessageCategory.Warning, Resources.Trace_UntrustedCertificate.FormatInvariant(certificate.Subject)).DoNotWait();
-                var message = Resources.CertificateSecurityWarning.FormatInvariant(Uri.Host);
-                var certificateTask = _services.Security.ValidateX509CertificateAsync(certificate, message);
-                _services.Tasks.Wait(certificateTask);
-                return certificateTask.Result;
+                var hashString = certificate.GetCertHashString();
+                bool accepted = true;
+
+                if (_certificateHash == null || !_certificateHash.EqualsOrdinal(hashString)) {
+                    Log.WriteAsync(LogVerbosity.Minimal, MessageCategory.Warning, Resources.Trace_UntrustedCertificate.FormatInvariant(certificate.Subject)).DoNotWait();
+
+                    var message = Resources.CertificateSecurityWarning.FormatInvariant(Uri.Host);
+                    var certificateTask = _services.Security.ValidateX509CertificateAsync(certificate, message);
+                    _services.Tasks.Wait(certificateTask);
+
+                    accepted = certificateTask.Result;
+                    if (accepted) {
+                        _certificateHash = hashString;
+                    }
+                }
+                return accepted;
             }
 
             return IsVerified;

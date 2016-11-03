@@ -44,11 +44,11 @@ namespace Microsoft.R.Components.Test {
             };
         }
 
-        protected override void AddValues(CompositionContainer container) {
-            base.AddValues(container);
+        protected override void AddValues(CompositionContainer container, string testName) {
+            base.AddValues(container, testName);
             var coreShell = new TestCoreShell(container);
             var batch = new CompositionBatch()
-                .AddValue<IRSettings>(RSettingsStubFactory.CreateForExistingRPath())
+                .AddValue<IRSettings>(RSettingsStubFactory.CreateForExistingRPath(testName))
                 .AddValue<ICoreShell>(coreShell)
                 .AddValue(coreShell);
             container.Compose(batch);

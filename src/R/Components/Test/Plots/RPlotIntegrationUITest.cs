@@ -6,16 +6,16 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media;
 using FluentAssertions;
-using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Plots.Implementation;
 using Microsoft.R.Components.Plots.Implementation.ViewModel;
+using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Test.Fakes.InteractiveWindow;
 using Microsoft.R.Components.Test.Fakes.VisualComponentFactories;
 using Microsoft.R.Host.Client;
+using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
@@ -29,36 +29,33 @@ namespace Microsoft.R.Components.Test.Plots {
     public class RPlotIntegrationUITest : IAsyncLifetime {
         private readonly ContainerHostMethodFixture _containerHost;
         private readonly IExportProvider _exportProvider;
-        private readonly TestRInteractiveWorkflowProvider _workflowProvider;
         private readonly IRInteractiveWorkflow _workflow;
         private readonly IInteractiveWindowComponentContainerFactory _componentContainerFactory;
         private readonly TestRPlotDeviceVisualComponentContainerFactory _plotDeviceVisualComponentContainerFactory;
         private readonly IRPlotHistoryVisualComponentContainerFactory _plotHistoryVisualComponentContainerFactory;
-        private readonly MethodInfo _testMethod;
-        private readonly TestFilesFixture _testFiles;
         private IInteractiveWindowVisualComponent _replVisualComponent;
         private IRPlotDeviceVisualComponent _plotVisualComponent;
         private IDisposable _containerDisposable;
         private const int PlotWindowInstanceId = 1;
 
-        public RPlotIntegrationUITest(RComponentsMefCatalogFixture catalog, ContainerHostMethodFixture containerHost, TestMethodFixture testMethod, TestFilesFixture testFiles) {
+        public RPlotIntegrationUITest(RComponentsMefCatalogFixture catalog, ContainerHostMethodFixture containerHost) {
             _containerHost = containerHost;
             _exportProvider = catalog.CreateExportProvider();
-            _workflowProvider = _exportProvider.GetExportedValue<TestRInteractiveWorkflowProvider>();
-            _workflowProvider.BrokerName = nameof(RPlotIntegrationTest);
+            _exportProvider.GetExportedValue<TestRInteractiveWorkflowProvider>();
             _plotDeviceVisualComponentContainerFactory = _exportProvider.GetExportedValue<TestRPlotDeviceVisualComponentContainerFactory>();
+
             // Don't override the standard behavior of using the control size
             _plotDeviceVisualComponentContainerFactory.DeviceProperties = null;
             _plotHistoryVisualComponentContainerFactory = _exportProvider.GetExportedValue<IRPlotHistoryVisualComponentContainerFactory>();
             _workflow = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
             _componentContainerFactory = _exportProvider.GetExportedValue<IInteractiveWindowComponentContainerFactory>();
-            _testMethod = testMethod.MethodInfo;
-            _testFiles = testFiles;
             _plotVisualComponent = UIThreadHelper.Instance.Invoke(() => _workflow.Plots.GetOrCreateVisualComponent(_plotDeviceVisualComponentContainerFactory, PlotWindowInstanceId));
             UIThreadHelper.Instance.Invoke(() => _workflow.Plots.RegisterVisualComponent(_plotVisualComponent));
         }
 
         public async Task InitializeAsync() {
+            await _workflow.RSessions.TrySwitchBrokerAsync(nameof(RPlotIntegrationUITest));
+
             _plotVisualComponent.Control.Width = 600;
             _plotVisualComponent.Control.Height = 500;
             _replVisualComponent = await _workflow.GetOrCreateVisualComponent(_componentContainerFactory);
@@ -76,14 +73,10 @@ namespace Microsoft.R.Components.Test.Plots {
             return Task.CompletedTask;
         }
 
-        private TestCoreShell CoreShell {
-            get { return _workflow.Shell as TestCoreShell; }
-        }
-
         [Test(ThreadType.UI)]
         public async Task ResizePlot() {
             await InitializeGraphicsDevice();
-            await ExecuteAndWaitForPlotsAsync(new string[] {
+            await ExecuteAndWaitForPlotsAsync(new [] {
                 "plot(1:10)",
             });
 
@@ -143,8 +136,7 @@ namespace Microsoft.R.Components.Test.Plots {
             var result = await eval.ExecuteCodeAsync("dev.new()\n");
             result.IsSuccessful.Should().BeTrue();
 
-            await deviceCreatedTask;
-            await deviceChangedTask;
+            await ParallelTools.WhenAll(20000, deviceCreatedTask, deviceChangedTask);
         }
 
         private async Task ExecuteAndWaitForPlotsAsync(string[] scripts) {
@@ -160,12 +152,12 @@ namespace Microsoft.R.Components.Test.Plots {
                 var result = await eval.ExecuteCodeAsync(script.EnsureLineBreak());
                 result.IsSuccessful.Should().BeTrue();
 
-                await plotReceivedTask;
+                await plotReceivedTask.Should().BeCompletedAsync(10000, $"it should execute script: {script}");
             }
         }
 
         private Size GetPixelSize(int width, int height) {
-            var source = PresentationSource.FromVisual(_plotVisualComponent.Control as Visual);
+            var source = PresentationSource.FromVisual(_plotVisualComponent.Control);
             return WpfUnitsConversion.ToPixels(source, new Size(width, height));
         }
     }

@@ -140,7 +140,7 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
             await _plotManager.CopyOrMovePlotFromAsync(sourceDeviceId, sourcePlotId, _device, isMove);
         }
 
-        public async Task<LocatorResult> StartLocatorModeAsync(CancellationToken ct) {
+        public Task<LocatorResult> StartLocatorModeAsync(CancellationToken ct) {
             _shell.AssertIsOnMainThread();
 
             _locatorTcs = new TaskCompletionSource<LocatorResult>();
@@ -151,8 +151,7 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
 
             _device.LocatorMode = LocatorMode;
 
-            var task = _locatorTcs.Task;
-            return await task;
+            return _locatorTcs.Task;
         }
 
         public void EndLocatorMode() {

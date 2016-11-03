@@ -6,6 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Components.Settings;
 using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Test.Utility;
 using Microsoft.UnitTests.Core.Mef;
@@ -20,16 +21,18 @@ namespace Microsoft.R.Support.Test.Functions {
         private readonly IExportProvider _exportProvider;
         private readonly IPackageIndex _packageIndex;
         private readonly IFunctionIndex _functionIndex;
+        private readonly IRInteractiveWorkflow _workflow;
 
         public FunctionInfoTest(RSupportMefCatalogFixture catalog) {
             _exportProvider = catalog.CreateExportProvider();
-            UIThreadHelper.Instance.Invoke(() => _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate());
+            _workflow = UIThreadHelper.Instance.Invoke(() => _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate());
             _packageIndex = _exportProvider.GetExportedValue<IPackageIndex>();
             _functionIndex = _exportProvider.GetExportedValue<IFunctionIndex>();
         }
 
-        public Task InitializeAsync() {
-            return _packageIndex.InitializeAsync(_functionIndex);
+        public async Task InitializeAsync() {
+            await _workflow.RSessions.TrySwitchBrokerAsync(nameof(FunctionInfoTest));
+            await _packageIndex.InitializeAsync(_functionIndex);
         }
 
         public async Task DisposeAsync() {

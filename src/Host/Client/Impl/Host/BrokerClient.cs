@@ -15,7 +15,6 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Net;
-using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.BrokerServices;
 using Microsoft.R.Host.Protocol;
 using Newtonsoft.Json;
@@ -70,8 +69,7 @@ namespace Microsoft.R.Host.Client.Host {
             HttpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-        protected virtual void Dispose(bool disposing) => DisposableBag.TryDispose();
-        public void Dispose() => Dispose(true);
+        public void Dispose() => DisposableBag.TryDispose();
 
         public async Task PingAsync() {
             if (HttpClient != null) {
@@ -89,11 +87,11 @@ namespace Microsoft.R.Host.Client.Host {
             try {
                 var response = await HttpClient.GetAsync("/about", cancellationToken);
                 result = await response.Content.ReadAsStringAsync();
-            } catch (OperationCanceledException) { }
+            } catch (OperationCanceledException) { } catch(HttpRequestException) { } 
             return !string.IsNullOrEmpty(result) ? JsonConvert.DeserializeObject<AboutHost>(result) : AboutHost.Empty;
         }
 
-        public virtual async Task<RHost> ConnectAsync(BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken), ReentrancyToken reentrancyToken = default(ReentrancyToken)) {
+        public virtual async Task<RHost> ConnectAsync(BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken)) {
             DisposableBag.ThrowIfDisposed();
             await TaskUtilities.SwitchToBackgroundThread();
 
@@ -180,13 +178,9 @@ namespace Microsoft.R.Host.Client.Host {
 
         private RHost CreateRHost(string name, IRCallbacks callbacks, WebSocket socket) {
             var transport = new WebSocketMessageTransport(socket);
-
-            var cts = new CancellationTokenSource();
-            cts.Token.Register(() => { Log.RHostProcessExited(); });
-
-            return new RHost(name, callbacks, transport, Log, cts);
+            return new RHost(name, callbacks, transport, Log);
         }
 
-        public virtual Task<string> HandleUrlAsync(string url, CancellationToken ct)  => Task.FromResult(url);
+        public virtual Task<string> HandleUrlAsync(string url, CancellationToken cancellationToken)  => Task.FromResult(url);
     }
 }
