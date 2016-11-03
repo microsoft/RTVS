@@ -59,6 +59,10 @@ create_blob <- function(obj) {
     call_embedded("create_blob", obj)
 }
 
+create_compressed_blob <- function(obj) {
+    call_embedded("create_compressed_blob", obj)
+}
+
 get_blob <- function(blob_id) {
     call_embedded("get_blob", blob_id)
 }
@@ -158,7 +162,7 @@ export_to_csv <- function(expr, sep, dec) {
     filepath <- tempfile('export_', fileext = '.csv')
     on.exit(unlink(filepath))
     write.table(res, file = filepath, qmethod = 'double', col.names = NA, sep = sep, dec = dec)
-    create_blob(readBin(filepath, 'raw', file.info(filepath)$size))
+    create_compressed_blob(readBin(filepath, 'raw', file.info(filepath)$size))
 }
 
 # Helper to export current plot to image
