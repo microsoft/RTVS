@@ -7,7 +7,7 @@ using System.IO;
 using Microsoft.VisualStudio.Settings;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Settings {
-    public sealed class TestSettingsStore : WritableSettingsStore {
+    internal sealed class TestSettingsStore : WritableSettingsStore {
         private readonly Dictionary<string, Dictionary<string, object>> _collections = new Dictionary<string, Dictionary<string, object>>();
 
         public override bool CollectionExists(string collectionPath) {
@@ -69,33 +69,15 @@ namespace Microsoft.VisualStudio.R.Package.Test.Settings {
         public override ulong GetUInt64(string collectionPath, string propertyName, ulong defaultValue) => GetValue<ulong>(collectionPath, propertyName, defaultValue);
         public override bool PropertyExists(string collectionPath, string propertyName) => _collections[collectionPath].ContainsKey(propertyName);
 
-        public override void SetBoolean(string collectionPath, string propertyName, bool value) {
-            throw new NotImplementedException();
-        }
-
-        public override void SetInt32(string collectionPath, string propertyName, int value) {
-            throw new NotImplementedException();
-        }
-
-        public override void SetInt64(string collectionPath, string propertyName, long value) {
-            throw new NotImplementedException();
-        }
-
+        public override void SetBoolean(string collectionPath, string propertyName, bool value) => _collections[collectionPath][propertyName] = value;
+        public override void SetInt32(string collectionPath, string propertyName, int value) => _collections[collectionPath][propertyName] = value;
+        public override void SetInt64(string collectionPath, string propertyName, long value) => _collections[collectionPath][propertyName] = value;
         public override void SetMemoryStream(string collectionPath, string propertyName, MemoryStream value) {
             throw new NotImplementedException();
         }
-
-        public override void SetString(string collectionPath, string propertyName, string value) {
-            throw new NotImplementedException();
-        }
-
-        public override void SetUInt32(string collectionPath, string propertyName, uint value) {
-            throw new NotImplementedException();
-        }
-
-        public override void SetUInt64(string collectionPath, string propertyName, ulong value) {
-            throw new NotImplementedException();
-        }
+        public override void SetString(string collectionPath, string propertyName, string value) => _collections[collectionPath][propertyName] = value;
+        public override void SetUInt32(string collectionPath, string propertyName, uint value) => _collections[collectionPath][propertyName] = value;
+        public override void SetUInt64(string collectionPath, string propertyName, ulong value) => _collections[collectionPath][propertyName] = value;
 
         private T GetValue<T>(string collectionPath, string propertyName) {
             object value;

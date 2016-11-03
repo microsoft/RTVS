@@ -5,18 +5,37 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using FluentAssertions;
 using Microsoft.UnitTests.Core.XUnit;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Settings;
 using NSubstitute;
+using Xunit;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Settings {
     [ExcludeFromCodeCoverage]
     [Category.VsPackage.Settings]
     public sealed class SettingsStorageTest {
-        [Test]
-        public void Construction() {
+        private readonly TestSettingsManager _sm = new TestSettingsManager();
 
+        [Test]
+        public void SaveRestore(int value) {
+            SaveRestore("name", -2);
+            SaveRestore("name", true);
+            SaveRestore("name", false);
+            SaveRestore("name", (uint)1);
+            SaveRestore("name", "string");
+            SaveRestore("name", DateTime.Now);
+            SaveRestore("name", );
+            SaveRestore("name", 0);
         }
-   
+
+        public void SaveRestore<T>(string name, T value) {
+            var storage = new VsSettingsStorage(_sm);
+            storage.SettingExists(name).Should().BeFalse();
+            storage.SetSetting(name, value);
+            storage.SettingExists(name).Should().BeTrue();
+            storage.GetSetting(name, value.GetType()).Should().Be(value);
+        }
     }
 }
