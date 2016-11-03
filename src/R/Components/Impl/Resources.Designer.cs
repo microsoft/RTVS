@@ -1163,24 +1163,6 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R Plot - Device {0}.
-        /// </summary>
-        public static string PlotWindowCommand {
-            get {
-                return ResourceManager.GetString("PlotWindowCommand", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to R Plot - Device {0} - Active.
-        /// </summary>
-        public static string PlotWindowCommandActive {
-            get {
-                return ResourceManager.GetString("PlotWindowCommandActive", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to CPU Count: {0}.
         /// </summary>
         public static string ProcessorCount {

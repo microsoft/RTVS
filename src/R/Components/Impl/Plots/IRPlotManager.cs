@@ -26,6 +26,10 @@ namespace Microsoft.R.Components.Plots {
         /// </summary>
         IRPlotDeviceVisualComponent GetPlotVisualComponent(IRPlotDevice device);
 
+        /// <summary>
+        /// Visual component for the plot device which uses the specified
+        /// instance id, or <c>null</c> if it hasn't been created yet.
+        /// </summary>
         IRPlotDeviceVisualComponent GetPlotVisualComponent(int instanceId);
 
         /// <summary>
@@ -267,17 +271,6 @@ namespace Microsoft.R.Components.Plots {
         /// </summary>
         /// <returns></returns>
         IRPlot[] GetAllPlots();
-
-        /// <summary>
-        /// Get all the plot devices.
-        /// </summary>
-        /// <returns></returns>
-        IRPlotDevice[] GetAllDevices();
-
-        /// <summary>
-        /// Show the plot device window.
-        /// </summary>
-        Task ShowDeviceAsync(IRPlotDevice device, bool activate);
 
         /// <summary>
         /// Add a visual component to the pool of available components.

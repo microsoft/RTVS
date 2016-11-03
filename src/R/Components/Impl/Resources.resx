@@ -388,12 +388,6 @@
   <data name="ConnectionManager_EditedConnectionHasChanges" xml:space="preserve">
     <value>Edited connection has unsaved changes. Do you want to save them?</value>
   </data>
-  <data name="PlotWindowCommand" xml:space="preserve">
-    <value>R Plot - Device {0}</value>
-  </data>
-  <data name="PlotWindowCommandActive" xml:space="preserve">
-    <value>R Plot - Device {0} - Active</value>
-  </data>
   <data name="Plots_RemoveAllPlotsWarning" xml:space="preserve">
     <value>Are you sure you want to remove all plots from {0}?</value>
   </data>
