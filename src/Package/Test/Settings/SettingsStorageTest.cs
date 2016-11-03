@@ -49,6 +49,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.Settings {
                 var other = (TestSetting)obj;
                 return other.Prop1 == this.Prop1 && other.Prop2 == this.Prop2;
             }
+
+            public override int GetHashCode() {
+                return base.GetHashCode();
+            }
         }
     }
 }
