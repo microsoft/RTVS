@@ -5,7 +5,7 @@
     "Microsoft.VisualStudio.Editor": "14.3.25407",
     "Microsoft.VisualStudio.Language.StandardClassification": "14.3.25407",
     "Microsoft.VisualStudio.OLE.Interop": "7.10.6070",
-    "Microsoft.VisualStudio.SDK.EmbedInteropTypes": "14.1.2",
+    "Microsoft.VisualStudio.SDK.EmbedInteropTypes": "14.1.4",
     "Microsoft.VisualStudio.Shell.Interop": "7.10.6071"
   },
   "frameworks": {
