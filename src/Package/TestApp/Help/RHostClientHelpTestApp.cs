@@ -19,10 +19,15 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
                 _component.Browser.Navigated += Browser_Navigated;
             }
         }
-        public bool Ready { get; set; }
+        public TaskCompletionSource<bool> Ready { get; }
         public Uri Uri { get; private set; }
+
+        public RHostClientHelpTestApp() {
+            Ready = new TaskCompletionSource<bool>();
+        }
+
         private void Browser_Navigated(object sender, WebBrowserNavigatedEventArgs e) {
-            Ready = true;
+            Ready.TrySetResult(true);
             Uri = _component.Browser.Url;
         }
 

@@ -7,18 +7,23 @@ using System.Windows;
 using System.Windows.Media;
 using Microsoft.R.Wpf.Themes;
 using Microsoft.VisualStudio.PlatformUI;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Wpf {
     [Export(typeof(IThemeUtilities))]
     class ThemeUtilities : IThemeUtilities {
         public void SetImageBackgroundColor(DependencyObject o, object themeKey) {
-            Debug.Assert(themeKey is ThemeResourceKey);
-            var color = VSColorTheme.GetThemedColor(themeKey as ThemeResourceKey);
-            ImageThemingUtilities.SetImageBackgroundColor(o, Color.FromArgb(color.A, color.R, color.G, color.B));
+            if(!VsAppShell.Current.IsUnitTestEnvironment) {
+                Debug.Assert(themeKey is ThemeResourceKey);
+                var color = VSColorTheme.GetThemedColor(themeKey as ThemeResourceKey);
+                ImageThemingUtilities.SetImageBackgroundColor(o, Color.FromArgb(color.A, color.R, color.G, color.B));
+            }
         }
         public void SetThemeScrollBars(DependencyObject o) {
-            ImageThemingUtilities.SetThemeScrollBars(o, true);
+            if (!VsAppShell.Current.IsUnitTestEnvironment) {
+                ImageThemingUtilities.SetThemeScrollBars(o, true);
+            }
         }
     }
 }

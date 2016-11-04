@@ -22,6 +22,8 @@ namespace Microsoft.R.Support.Test.Utility {
     public sealed class TestRToolsSettings : IRToolsSettings {
         private readonly IConnectionInfo[] _connections;
 
+        public TestRToolsSettings(): this(null) { }
+
         public TestRToolsSettings(string connectionName = null) {
             _connections = new IConnectionInfo[] { new ConnectionInfo {
                 Name = connectionName ?? "Test",

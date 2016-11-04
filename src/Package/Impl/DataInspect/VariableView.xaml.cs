@@ -61,7 +61,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             RootTreeGrid.Sorting += RootTreeGrid_Sorting;
 
             var theme = shell.ExportProvider.GetExportedValue<IThemeUtilities>();
-            theme.SetImageBackgroundColor(RootTreeGrid, Brushes.ToolWindowBackgroundKey);
+            theme.SetImageBackgroundColor(RootTreeGrid, Brushes.ToolWindowBackgroundColorKey);
             theme.SetThemeScrollBars(RootTreeGrid);
 
             var workflow = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();

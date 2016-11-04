@@ -52,13 +52,15 @@ namespace Microsoft.VisualStudio.R.Package.Wpf
             Brushes.ListPaneBackgroundKey = VsBrushes.BrandedUIBackgroundKey;
             Brushes.SplitterBackgroundKey = VsBrushes.CommandShelfBackgroundGradientKey;
 
-            Brushes.ToolWindowBackgroundKey = VsBrushes.ToolWindowBackgroundKey;
-            Brushes.ToolWindowBorderKey = VsBrushes.ToolWindowBorderKey;
-            Brushes.ToolWindowButtonDownBorderKey = VsBrushes.ToolWindowButtonDownBorderKey;
-            Brushes.ToolWindowButtonDownKey = VsBrushes.ToolWindowButtonDownKey;
-            Brushes.ToolWindowButtonHoverActiveBorderKey = VsBrushes.ToolWindowButtonHoverActiveBorderKey;
-            Brushes.ToolWindowButtonHoverActiveKey = VsBrushes.ToolWindowButtonHoverActiveKey;
-            Brushes.ToolWindowTextKey = VsBrushes.ToolWindowTextKey;
+            Brushes.ToolWindowBackgroundColorKey = EnvironmentColors.ToolWindowBackgroundColorKey;
+            Brushes.ToolWindowBackgroundKey = EnvironmentColors.ToolWindowBackgroundBrushKey;
+            Brushes.ToolWindowBorderKey = EnvironmentColors.ToolWindowBorderBrushKey;
+            Brushes.ToolWindowButtonDownBorderKey = EnvironmentColors.ToolWindowButtonDownBorderBrushKey;
+            Brushes.ToolWindowButtonDownKey = EnvironmentColors.ToolWindowButtonDownBorderBrushKey;
+            Brushes.ToolWindowButtonHoverActiveBorderKey = EnvironmentColors.ToolWindowButtonHoverActiveBorderBrushKey;
+            Brushes.ToolWindowButtonHoverActiveKey = EnvironmentColors.ToolWindowButtonHoverActiveBorderBrushKey;
+            Brushes.ToolWindowTextKey = EnvironmentColors.ToolWindowTextBrushKey;
+
             Brushes.UITextKey = VsBrushes.BrandedUITextKey;
             Brushes.WindowTextKey = VsBrushes.WindowTextKey;
             Brushes.WindowKey = VsBrushes.WindowKey;

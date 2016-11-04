@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.R.Components.View;
 
@@ -14,5 +15,8 @@ namespace Microsoft.R.Components.Help {
         void Navigate(string url);
 
         string VisualTheme { get; set; }
+
+        Task ReadyAsync { get; }
+        Task LoadingAsync { get; }
     }
 }

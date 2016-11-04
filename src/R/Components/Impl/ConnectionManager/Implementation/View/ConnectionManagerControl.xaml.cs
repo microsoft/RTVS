@@ -23,7 +23,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
             InitializeComponent();
 
             var theme = coreShell.ExportProvider.GetExportedValue<IThemeUtilities>();
-            theme.SetImageBackgroundColor(this, Brushes.ToolWindowBackgroundKey);
+            theme.SetImageBackgroundColor(this, Brushes.ToolWindowBackgroundColorKey);
             theme.SetThemeScrollBars(this);
         }
 

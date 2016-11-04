@@ -43,6 +43,7 @@ namespace Microsoft.R.Wpf {
         public static object ListPaneBackgroundKey { get; set; } = SystemColors.WindowBrushKey;
         public static object SplitterBackgroundKey { get; set; } = SystemColors.WindowBrushKey;
 
+        public static object ToolWindowBackgroundColorKey { get; set; } = SystemColors.WindowColorKey;
         public static object ToolWindowBackgroundKey { get; set; } = SystemColors.WindowBrushKey;
         public static object ToolWindowBorderKey { get; set; } = SystemColors.WindowBrushKey;
         public static object ToolWindowButtonDownBorderKey { get; set; } = SystemColors.WindowBrushKey;

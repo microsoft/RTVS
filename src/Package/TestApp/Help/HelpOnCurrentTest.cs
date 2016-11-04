@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Test.Controls;
 using Microsoft.R.Components.ContentTypes;
@@ -25,7 +26,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
 
         [Test(Skip = "https://github.com/Microsoft/RTVS/issues/1983")]
         [Category.Interactive]
-        public void HelpTest() {
+        public async Task HelpTest() {
             var clientApp = new RHostClientHelpTestApp();
             using (new ControlTestScript(typeof(HelpVisualComponent))) {
                 DoIdle(100);
@@ -52,18 +53,12 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
                 cmd.Text.Should().EndWith("plot");
 
                 cmd.Invoke();
-                WaitForAppReady(clientApp);
+                await clientApp.Ready.Task;
 
                 clientApp.Uri.IsLoopback.Should().Be(true);
                 clientApp.Uri.PathAndQuery.Should().Be("/library/graphics/html/plot.html");
 
                 DoIdle(500);
-            }
-        }
-
-        private void WaitForAppReady(RHostClientHelpTestApp clientApp) {
-            for (int i = 0; i < 100 && !clientApp.Ready; i++) {
-                DoIdle(200);
             }
         }
     }
