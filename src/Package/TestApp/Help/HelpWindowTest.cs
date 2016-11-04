@@ -68,17 +68,17 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
         }
 
         private async Task ShowHelpAsync(string command, VsRHostScript hostScript, RHostClientHelpTestApp clientApp) {
-            clientApp.ResetReadyState();
+            clientApp.Ready.Reset();
             await hostScript.Session.ExecuteAsync($"rtvs:::show_help({command.ToRStringLiteral()})").SilenceException<RException>();
             await WaitForReadyAndRenderedAsync(clientApp);
         }
 
         private async Task ExecCommandAsync(RHostClientHelpTestApp clientApp, int commandId) {
-            UIThreadHelper.Instance.Invoke(() => {
+            await UIThreadHelper.Instance.InvokeAsync(() => {
                 object o = new object();
                 clientApp.Component.Controller.Invoke(RGuidList.RCmdSetGuid, commandId, null, ref o);
             });
-            await clientApp.Ready;
+            clientApp.Ready.Wait(5000);
         }
 
         private async Task<string> GetBackgroundColorAsync(IHelpVisualComponent component, RHostClientHelpTestApp clientApp) {
@@ -95,7 +95,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
 
         private async Task WaitForReadyAndRenderedAsync(RHostClientHelpTestApp clientApp) {
             await UIThreadHelper.Instance.InvokeAsync(() => DoIdle(500));
-            await clientApp.Ready;
+            clientApp.Ready.Wait(5000);
             await UIThreadHelper.Instance.InvokeAsync(() => DoIdle(500));
         }
     }

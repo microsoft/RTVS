@@ -44,17 +44,17 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
                 component.VisualTheme = "Light.css";
                 await UIThreadHelper.Instance.InvokeAsync(() => {
                     clientApp.Component = component;
-                });
 
-                var view = activeViewTrackerMock.GetLastActiveTextView(RContentTypeDefinition.ContentType);
-                var cmd = new ShowHelpOnCurrentCommand(interactiveWorkflow, activeViewTrackerMock, activeReplTrackerMock);
-                cmd.Should().BeVisibleAndDisabled();
+                    var view = activeViewTrackerMock.GetLastActiveTextView(RContentTypeDefinition.ContentType);
+                    var cmd = new ShowHelpOnCurrentCommand(interactiveWorkflow, activeViewTrackerMock, activeReplTrackerMock);
+                    cmd.Should().BeVisibleAndDisabled();
 
-                UIThreadHelper.Instance.Invoke(() => {
                     view.Caret.MoveTo(new SnapshotPoint(view.TextBuffer.CurrentSnapshot, 3));
 
                     cmd.Should().BeVisibleAndEnabled();
                     cmd.Text.Should().EndWith("plot");
+
+                    clientApp.Ready.Reset();
                     cmd.Invoke();
                 });
 
@@ -67,7 +67,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
 
         private async Task WaitForReadyAndRenderedAsync(RHostClientHelpTestApp clientApp) {
             await UIThreadHelper.Instance.InvokeAsync(() => DoIdle(500));
-            await clientApp.Ready;
+            clientApp.Ready.Wait(5000);
             await UIThreadHelper.Instance.InvokeAsync(() => DoIdle(500));
         }
     }

@@ -24,37 +24,33 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
             }
         }
 
-        public Task<bool> Ready => _tcs.Task;
+        public ManualResetEventSlim Ready { get; }
         public Uri Uri { get; private set; }
 
-        private void Browser_Navigated(object sender, WebBrowserNavigatedEventArgs e) {
-            UIThreadHelper.Instance.Invoke(() => {
-                Component.Browser.DocumentCompleted += OnDocumentCompleted;
-                Uri = _component.Browser.Url;
-            });
-        }
-
-        private void Browser_Navigating(object sender, WebBrowserNavigatingEventArgs e) {
-            ResetReadyState();
-        }
-
-        public void ResetReadyState() {
-            _tcs = new TaskCompletionSource<bool>();
-        }
-
-        private void SetReadyState() {
-            _tcs.TrySetResult(true);
+        public RHostClientHelpTestApp() {
+            Ready = new ManualResetEventSlim();
         }
 
         public override Task ShowHelpAsync(string url, CancellationToken cancellationToken) {
-            ResetReadyState();
+            Ready.Reset();
             return UIThreadHelper.Instance.InvokeAsync(() => Component.Navigate(url), cancellationToken);
+        }
+
+        private void Browser_Navigated(object sender, WebBrowserNavigatedEventArgs e) {
+            UIThreadHelper.Instance.InvokeAsync(() => {
+                Component.Browser.DocumentCompleted += OnDocumentCompleted;
+                Uri = _component.Browser.Url;
+            }).DoNotWait();
+        }
+
+        private void Browser_Navigating(object sender, WebBrowserNavigatingEventArgs e) {
+            Ready.Reset();
         }
 
         private void OnDocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e) {
             UIThreadHelper.Instance.InvokeAsync(() => {
                 Component.Browser.DocumentCompleted -= OnDocumentCompleted;
-                SetReadyState();
+                Ready.Set();
             }).DoNotWait();
         }
     }
