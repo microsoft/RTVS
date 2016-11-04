@@ -13,7 +13,6 @@ using Microsoft.UnitTests.Core.Threading;
 namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
     class RHostClientHelpTestApp : RHostClientTestApp {
         private IHelpVisualComponent _component;
-        private TaskCompletionSource<bool> _tcs = new TaskCompletionSource<bool>();
 
         public IHelpVisualComponent Component {
             get { return _component; }
