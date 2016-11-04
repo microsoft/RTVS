@@ -31,8 +31,8 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
         [Test]
         public async Task HelpTest() {
             var clientApp = new RHostClientHelpTestApp();
+            await HostScript.InitializeAsync(clientApp);
             using (var script = new ControlTestScript(typeof(HelpVisualComponent))) {
-                await HostScript.InitializeAsync(clientApp);
                 DoIdle(100);
 
                 var component = ControlWindow.Component as IHelpVisualComponent;
