@@ -15,8 +15,5 @@ namespace Microsoft.R.Components.Help {
         void Navigate(string url);
 
         string VisualTheme { get; set; }
-
-        Task ReadyAsync { get; }
-        Task LoadingAsync { get; }
     }
 }

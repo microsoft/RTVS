@@ -53,7 +53,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
                 cmd.Text.Should().EndWith("plot");
 
                 cmd.Invoke();
-                await clientApp.Ready.Task;
+                await clientApp.Ready;
 
                 clientApp.Uri.IsLoopback.Should().Be(true);
                 clientApp.Uri.PathAndQuery.Should().Be("/library/graphics/html/plot.html");

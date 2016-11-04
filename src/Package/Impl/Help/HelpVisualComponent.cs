@@ -44,9 +44,6 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         private IRSession _session;
         private WindowsFormsHost _host;
 
-        private TaskCompletionSource<bool> _tcsReady = new TaskCompletionSource<bool>();
-        private TaskCompletionSource<bool> _tcsLoading = new TaskCompletionSource<bool>();
-
         public HelpVisualComponent() {
             _codeColorBuilder = VsAppShell.Current.ExportProvider.GetExportedValue<IVignetteCodeColorBuilder>();
             _coreShell = VsAppShell.Current.ExportProvider.GetExportedValue<ICoreShell>();
@@ -98,10 +95,6 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         public string VisualTheme { get; set; }
-
-        public Task LoadingAsync => _tcsLoading.Task;
-        public Task ReadyAsync => _tcsReady.Task;
-
         #endregion
 
         private void OnRSessionDisconnected(object sender, EventArgs e) {
@@ -125,7 +118,6 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
                 Browser.Navigating += OnNavigating;
                 Browser.Navigated += OnNavigated;
-                Browser.DocumentCompleted += OnDocumentCompleted;
 
                 _host = new WindowsFormsHost();
                 _windowContentControl.Content = _host;
@@ -256,11 +248,6 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             DisconnectBrowser();
         }
 
-        private void OnDocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e) {
-            _tcsReady.TrySetResult(true);
-            _tcsLoading = new TaskCompletionSource<bool>();
-        }
-
         private void SetThemeColorsWhenReady() {
             if (!ConnectBrowser()) {
                 // The browser document is not ready yet. Create another idle 
@@ -316,7 +303,6 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
                 Browser.Navigating -= OnNavigating;
                 Browser.Navigated -= OnNavigated;
-                Browser.DocumentCompleted -= OnDocumentCompleted;
 
                 Browser.Dispose();
                 Browser = null;
@@ -340,9 +326,6 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             // Disconnect browser from the tool window so it does not
             // flicker when we change page and element styling.
             _host.Child = null;
-
-            _tcsLoading.TrySetResult(true);
-            _tcsReady = new TaskCompletionSource<bool>();
         }
 
         private void DisconnectWindowEvents() {
