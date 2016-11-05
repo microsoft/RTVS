@@ -7,21 +7,17 @@ using System.Linq;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 
-namespace Microsoft.UnitTests.Core.XUnit
-{
+namespace Microsoft.UnitTests.Core.XUnit {
     [ExcludeFromCodeCoverage]
-    public class InlineArrayDiscoverer : IDataDiscoverer
-    {
+    public class InlineArrayDiscoverer : IDataDiscoverer {
         /// <inheritdoc/>
-        public virtual IEnumerable<object[]> GetData(IAttributeInfo dataAttribute, IMethodInfo testMethod)
-        {
+        public virtual IEnumerable<object[]> GetData(IAttributeInfo dataAttribute, IMethodInfo testMethod) {
             var args = (IEnumerable<object>)dataAttribute.GetConstructorArguments().Single() ?? Enumerable.Empty<object>();
             yield return new object[] { args.ToArray() };
         }
 
         /// <inheritdoc/>
-        public virtual bool SupportsDiscoveryEnumeration(IAttributeInfo dataAttribute, IMethodInfo testMethod)
-        {
+        public virtual bool SupportsDiscoveryEnumeration(IAttributeInfo dataAttribute, IMethodInfo testMethod) {
             return true;
         }
     }

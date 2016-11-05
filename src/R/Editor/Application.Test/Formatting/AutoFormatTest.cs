@@ -17,13 +17,17 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
     public class AutoFormatTest : IDisposable {
         private readonly IExportProvider _exportProvider;
         private readonly EditorHostMethodFixture _editorHost;
+        private readonly bool _autoFormat;
 
         public AutoFormatTest(REditorApplicationMefCatalogFixture catalogFixture, EditorHostMethodFixture editorHost) {
             _exportProvider = catalogFixture.CreateExportProvider();
             _editorHost = editorHost;
+            _autoFormat = REditorSettings.AutoFormat;
+            REditorSettings.AutoFormat = true;
         }
 
         public void Dispose() {
+            REditorSettings.AutoFormat = _autoFormat;
             _exportProvider.Dispose();
         }
 

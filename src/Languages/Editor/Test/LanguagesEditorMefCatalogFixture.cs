@@ -12,12 +12,9 @@ using Microsoft.Languages.Editor.Test.Fakes.Shell;
 using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.Languages.Editor.Test {
-    [AssemblyFixture]
+    // Fixture doesn't import itself. Use AssemblyFixtureImportAttribute
     [ExcludeFromCodeCoverage]
-    public sealed class LanguagesEditorMefCatalogFixture : LanguagesEditorMefCatalogFixtureBase { }
-
-    [ExcludeFromCodeCoverage]
-    public class LanguagesEditorMefCatalogFixtureBase : AssemblyMefCatalogFixture {
+    public class LanguagesEditorMefCatalogFixture : AssemblyMefCatalogFixture {
         protected override IEnumerable<string> GetBinDirectoryAssemblies() {
             return new[] {
                 "Microsoft.Languages.Editor.dll",

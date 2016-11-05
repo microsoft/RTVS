@@ -21,28 +21,13 @@ namespace Microsoft.R.Editor.Test.Completions {
 
         [Test]
         public async Task InstallPackageTest() {
-            using (var script = new RHostScript(Workflow.RSessions)) {
-                var completionSets = new List<CompletionSet>();
-                for (int i = 0; i < 2; i++) {
-                    try {
-                        await script.Session.ExecuteAsync("remove.packages('abc')", REvaluationKind.Mutating);
-                    } catch (RException) { }
+            await Workflow.RSession.EnsureHostStartedAsync(new RHostStartupInfo {Name = nameof(InstallPackageTest)}, null, 50000);
 
-                    await PackageIndex.BuildIndexAsync();
-
-                    completionSets.Clear();
-                    GetCompletions("abc::", 5, completionSets);
-
-                    completionSets.Should().ContainSingle();
-                    // Try again one more time
-                    if (completionSets[0].Completions.Count == 0) {
-                        break;
-                    }
-                }
-                completionSets[0].Completions.Should().BeEmpty();
-
+            var completionSets = new List<CompletionSet>();
+            for (int i = 0; i < 2; i++) {
                 try {
-                    await script.Session.ExecuteAsync("install.packages('abc')", REvaluationKind.Mutating);
+                    await Workflow.Packages.UninstallPackageAsync("abc", null);
+                    //await Workflow.RSession.ExecuteAsync("remove.packages('abc')", REvaluationKind.Mutating);
                 } catch (RException) { }
 
                 await PackageIndex.BuildIndexAsync();
@@ -51,8 +36,24 @@ namespace Microsoft.R.Editor.Test.Completions {
                 GetCompletions("abc::", 5, completionSets);
 
                 completionSets.Should().ContainSingle();
-                completionSets[0].Completions.Should().NotBeEmpty();
+                // Try again one more time
+                if (completionSets[0].Completions.Count == 0) {
+                    break;
+                }
             }
+            completionSets[0].Completions.Should().BeEmpty();
+
+            try {
+                await Workflow.RSession.ExecuteAsync("install.packages('abc')", REvaluationKind.Mutating);
+            } catch (RException) { }
+
+            await PackageIndex.BuildIndexAsync();
+
+            completionSets.Clear();
+            GetCompletions("abc::", 5, completionSets);
+
+            completionSets.Should().ContainSingle();
+            completionSets[0].Completions.Should().NotBeEmpty();
         }
     }
 }

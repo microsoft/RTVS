@@ -1336,6 +1336,56 @@ namespace Microsoft.Common.Core.Test.Threading {
         } 
 
         [Test]
+        public void ExclusiveRead_SecondExclusiveRead_ExclusiveRead_ReleaseSecond_ReleaseFirst() {
+            var erl1 = _arwl.CreateExclusiveReaderLock();
+            var erl2 = _arwl.CreateExclusiveReaderLock();
+            var task1 = erl1.WaitAsync();
+            var task2 = erl2.WaitAsync();
+            var task3 = erl1.WaitAsync();
+
+            task2.Result.Dispose();
+            task1.Result.Dispose();
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().BeRanToCompletion();
+            task3.Should().BeRanToCompletion();
+        } 
+
+        [Test]
+        public void ExclusiveRead_SecondExclusiveRead_ReleaseSecond_ReleaseFirst_ExclusiveRead() {
+            var erl1 = _arwl.CreateExclusiveReaderLock();
+            var erl2 = _arwl.CreateExclusiveReaderLock();
+            var task1 = erl1.WaitAsync();
+            var task2 = erl2.WaitAsync();
+
+            task2.Result.Dispose();
+            task1.Result.Dispose();
+
+            var task3 = erl1.WaitAsync();
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().BeRanToCompletion();
+            task3.Should().BeRanToCompletion();
+        } 
+
+        [Test]
+        public void ExclusiveRead_SecondExclusiveRead_ReleaseSecond_ReleaseFirst_SecondExclusiveRead() {
+            var erl1 = _arwl.CreateExclusiveReaderLock();
+            var erl2 = _arwl.CreateExclusiveReaderLock();
+            var task1 = erl1.WaitAsync();
+            var task2 = erl2.WaitAsync();
+
+            task2.Result.Dispose();
+            task1.Result.Dispose();
+
+            var task3 = erl2.WaitAsync();
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().BeRanToCompletion();
+            task3.Should().BeRanToCompletion();
+        } 
+
+        [Test]
         public void ExclusiveRead_SecondExclusiveRead_ExclusiveRead_SecondExclusiveRead() {
             var erl1 = _arwl.CreateExclusiveReaderLock();
             var erl2 = _arwl.CreateExclusiveReaderLock();

@@ -5,15 +5,11 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.R.Editor.Test;
-using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Editor.Application.Test {
-    [AssemblyFixture]
+    // Fixture doesn't import itself. Use AssemblyFixtureImportAttribute
     [ExcludeFromCodeCoverage]
-    public sealed class REditorApplicationMefCatalogFixture : REditorApplicationMefCatalogFixtureBase { }
-
-    [ExcludeFromCodeCoverage]
-    public class REditorApplicationMefCatalogFixtureBase : REditorMefCatalogFixtureBase {
+    public class REditorApplicationMefCatalogFixture : REditorMefCatalogFixture {
         protected override IEnumerable<string> GetBinDirectoryAssemblies() => base.GetBinDirectoryAssemblies().Concat(new[] {
             "Microsoft.Markdown.Editor",
             "Microsoft.Markdown.Editor.Test",

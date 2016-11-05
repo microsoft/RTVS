@@ -21,17 +21,14 @@ using Microsoft.VisualStudio.R.Package.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.Test.FakeFactories {
     public static class TestRInteractiveWorkflowProviderFactory {
-        public static TestRInteractiveWorkflowProvider Create(IRSessionProvider sessionProvider = null
-            , IConnectionManagerProvider connectionsProvider = null
+        public static TestRInteractiveWorkflowProvider Create(IConnectionManagerProvider connectionsProvider = null
             , IRHistoryProvider historyProvider = null
             , IRPackageManagerProvider packagesProvider = null
             , IRPlotManagerProvider plotsProvider = null
             , IActiveWpfTextViewTracker activeTextViewTracker = null
             , IDebuggerModeTracker debuggerModeTracker = null
             , ICoreShell shell = null
-            , IRSettings settings = null
-            , IWorkspaceServices wss = null) {
-            sessionProvider = sessionProvider ?? new RSessionProviderMock();
+            , IRSettings settings = null) {
             connectionsProvider = connectionsProvider ?? ConnectionManagerProviderStubFactory.CreateDefault();
             historyProvider = historyProvider ?? RHistoryProviderStubFactory.CreateDefault();
             packagesProvider = packagesProvider ?? RPackageManagerProviderStubFactory.CreateDefault();
@@ -44,8 +41,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.FakeFactories {
 
             return new TestRInteractiveWorkflowProvider(
                 connectionsProvider, historyProvider, packagesProvider, plotsProvider,
-                activeTextViewTracker, debuggerModeTracker, sessionProvider,
-                shell, settings, wss);
+                activeTextViewTracker, debuggerModeTracker, shell, settings);
         }
     }
 }

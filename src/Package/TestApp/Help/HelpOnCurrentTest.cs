@@ -32,7 +32,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
 
                 var activeViewTrackerMock = new ActiveTextViewTrackerMock("  plot", RContentTypeDefinition.ContentType);
                 var activeReplTrackerMock = new ActiveRInteractiveWindowTrackerMock();
-                var interactiveWorkflowProvider = TestRInteractiveWorkflowProviderFactory.Create(SessionProvider, activeTextViewTracker: activeViewTrackerMock);
+                var interactiveWorkflowProvider = TestRInteractiveWorkflowProviderFactory.Create(activeTextViewTracker: activeViewTrackerMock);
                 var interactiveWorkflow = interactiveWorkflowProvider.GetOrCreate();
 
                 var component = ControlWindow.Component as IHelpVisualComponent;

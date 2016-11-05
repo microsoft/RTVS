@@ -9,16 +9,13 @@ using Microsoft.Common.Core.Extensions;
 using Microsoft.Languages.Editor.Test;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Support.Test.Utility;
-using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Support.Test {
-    [AssemblyFixture]
+    // Fixture doesn't import itself. Use AssemblyFixtureImportAttribute
     [ExcludeFromCodeCoverage]
-    public sealed class RSupportMefCatalogFixture : RSupportMefCatalogFixtureBase { }
-
-    [ExcludeFromCodeCoverage]
-    public class RSupportMefCatalogFixtureBase : LanguagesEditorMefCatalogFixtureBase {
+    public class RSupportMefCatalogFixture : LanguagesEditorMefCatalogFixture {
         protected override IEnumerable<string> GetBinDirectoryAssemblies() => base.GetBinDirectoryAssemblies().Concat(new[] {
+            "Microsoft.VisualStudio.InteractiveWindow.dll",
             "Microsoft.R.Support",
             "Microsoft.R.Support.Test"
         });
