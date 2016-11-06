@@ -3,12 +3,14 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Operators;
+using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 
 namespace Microsoft.R.Core.Formatting {
@@ -651,7 +653,9 @@ namespace Microsoft.R.Core.Formatting {
             int end = _tokens.IsEndOfStream() ? _textProvider.Length : _tokens.CurrentToken.Start;
 
             string text = _textProvider.GetText(TextRange.FromBounds(start, end));
-            if (!preserveUserIndent && string.IsNullOrWhiteSpace(text)) {
+            bool lineBreakBeforeToken = _tokens.IsLineBreakAfter(_textProvider, _tokens.Position - 1);
+
+            if (lineBreakBeforeToken && !preserveUserIndent && string.IsNullOrWhiteSpace(text)) {
                 // Append any user-entered whitespace. We preserve line breaks but trim 
                 // unnecessary spaces such as on empty lines. We must, however, preserve 
                 // user indentation in long argument lists and in expresions split 
@@ -673,6 +677,10 @@ namespace Microsoft.R.Core.Formatting {
                             // Preserve user indent in argument lists
                             preserveUserIndent = _openBraces.Count > 0 && _openBraces.Peek() != RTokenType.OpenCurlyBrace;
                             break;
+
+                        default:
+                            preserveUserIndent = !IsCompleteExpression(_tokens.Position);
+                            break;
                     }
 
                     // Also preserve indent before the tokens below. This matter in long lists 
@@ -685,7 +693,7 @@ namespace Microsoft.R.Core.Formatting {
                             case RTokenType.Comma:
                             case RTokenType.Operator:
                             case RTokenType.Comment:
-                                preserveUserIndent = _tokens.IsLineBreakAfter(_textProvider, _tokens.Position - 1);
+                                preserveUserIndent = true;
                                 break;
                         }
                     }
@@ -804,6 +812,41 @@ namespace Microsoft.R.Core.Formatting {
             if (!SingleLineScope) {
                 _tb.SoftLineBreak();
             }
+        }
+
+        private bool IsCompleteExpression(int currentTokenIndex) {
+            // Withing the current scope find if text between scope start or the nearest
+            // preceding expression is a complete expression. We preserve user indentation
+            // un multiline expressions so we need to know if a particular position
+            // in a middle of an exression. Simple cases liike when previous token was
+            // an operator is handled directly. In more complex cases such scope-less
+            // function definitions we need to parse the statement.
+
+            int startIndex = 0;
+            var openBraceToken = _formattingScopes.Peek().OpenBraceToken;
+            if (openBraceToken != null) {
+                for (int i = currentTokenIndex - 1; i >= 0; i--) {
+                    if (_tokens[i] == openBraceToken) {
+                        startIndex = i + 1;
+                        break;
+                    }
+                }
+            }
+
+            if (startIndex < currentTokenIndex) {
+                var startToken = _tokens[startIndex];
+                var currentToken = _tokens[currentTokenIndex];
+
+                // Limit token stream since parser may not necessarily stop at the supplied text range end.
+                var list = new List<RToken>();
+                var tokens = _tokens.Skip(startIndex).Take(currentTokenIndex - startIndex);
+                var ts = new TokenStream<RToken>(new TextRangeCollection<RToken>(tokens), RToken.EndOfStreamToken);
+                var ast = RParser.Parse(_textProvider,
+                                        TextRange.FromBounds(startToken.Start, currentToken.Start),
+                                        ts, new List<RToken>(), null);
+                 return ast.IsCompleteExpression();
+            }
+            return true;
         }
     }
 }
