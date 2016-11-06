@@ -133,7 +133,7 @@ namespace Microsoft.R.Editor.Formatting {
             int rCaretPosition = caretBufferPoint.Position;
 
             var caretLine = rSnapshot.GetLineFromPosition(rCaretPosition);
-            int innerIndentSize = SmartIndenter.InnerIndentSizeFromNode(rTextBuffer, scope, options);
+            int innerIndentSize = SmartIndenter.InnerIndentSizeFromNode(rTextBuffer, scope, caretBufferPoint.Position, options);
 
             int openBraceLineNumber = rSnapshot.GetLineNumberFromPosition(scope.OpenCurlyBrace.Start);
             var braceLine = rSnapshot.GetLineFromLineNumber(openBraceLineNumber);

@@ -9,7 +9,6 @@ using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Operators;
-using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 
 namespace Microsoft.R.Core.Formatting {
@@ -17,15 +16,20 @@ namespace Microsoft.R.Core.Formatting {
     /// Formats R code based on tokenization
     /// </summary>
     public class RFormatter {
-        private readonly RFormatOptions _options;
-        private readonly IndentBuilder _indentBuilder;
-        private readonly TextBuilder _tb;
-        private readonly Stack<RTokenType> _openBraces = new Stack<RTokenType>();
-
-        private FormattingScopeStack _formattingScopes;
+        private RFormatOptions _options;
+        private IndentBuilder _indentBuilder;
+        private TextBuilder _tb;
         private TokenStream<RToken> _tokens;
         private ITextProvider _textProvider;
         private int _singleLineScopeEnd = -1;
+
+        private Stack<FormattingScope> _formattingScopes = new Stack<FormattingScope>();
+        private Stack<RTokenType> _openBraces = new Stack<RTokenType>();
+
+        private int SuppressLineBreakCount {
+            get { return _formattingScopes.Peek().SuppressLineBreakCount; }
+            set { _formattingScopes.Peek().SuppressLineBreakCount = value; }
+        }
 
         public RFormatter() :
             this(new RFormatOptions()) {
@@ -35,6 +39,7 @@ namespace Microsoft.R.Core.Formatting {
             _options = options;
             _indentBuilder = new IndentBuilder(_options.IndentType, _options.IndentSize, _options.TabSize);
             _tb = new TextBuilder(_indentBuilder);
+            _formattingScopes.Push(new FormattingScope());
         }
 
         /// <summary>
@@ -81,7 +86,6 @@ namespace Microsoft.R.Core.Formatting {
                 case RTokenType.Semicolon:
                     AppendToken(leadingSpace: false, trailingSpace: true);
                     SoftLineBreak();
-                    CheckMultilineExpressionFormatting();
                     break;
 
                 case RTokenType.Operator:
@@ -92,11 +96,6 @@ namespace Microsoft.R.Core.Formatting {
                     AppendToken(leadingSpace: LeadingSpaceNeeded(), trailingSpace: false);
                     break;
             }
-        }
-
-        private void CheckMultilineExpressionFormatting() {
-            var es = _formattingScopes.ExpressionScope;
-            es.CheckComplete();
         }
 
         /// <summary>
@@ -110,8 +109,8 @@ namespace Microsoft.R.Core.Formatting {
             if (IsInArguments()) {
                 // Inside argument lists indentation rules are different
                 // so open new set of options and indentation
-                var formattingScope = new BlockFormattingScope(_tb, _tokens, _options);
-                _formattingScopes.OpenScope(formattingScope);
+                FormattingScope formattingScope = new FormattingScope(_tb, _tokens, _options);
+                _formattingScopes.Push(formattingScope);
             }
 
             // If scope is empty, make it { } unless there is a line break already in it
@@ -155,8 +154,11 @@ namespace Microsoft.R.Core.Formatting {
 
             var leadingSpace = SingleLineScope && _tokens.PreviousToken.TokenType != RTokenType.CloseCurlyBrace;
 
-            if (_formattingScopes.BlockScope.CloseBracePosition == _tokens.Position) {
-                _formattingScopes.CloseScope();
+            if (_formattingScopes.Count > 1) {
+                if (_formattingScopes.Peek().CloseBracePosition == _tokens.Position) {
+                    FormattingScope scope = _formattingScopes.Pop();
+                    scope.Dispose();
+                }
             }
 
             AppendToken(leadingSpace: leadingSpace, trailingSpace: false);
@@ -167,7 +169,7 @@ namespace Microsoft.R.Core.Formatting {
                 singleLineScopeJustClosed = true;
             }
 
-            if (_formattingScopes.BlockScope.SuppressLineBreakCounter == 0 && !_tokens.IsEndOfStream()) {
+            if (SuppressLineBreakCount == 0 && !_tokens.IsEndOfStream()) {
                 // We insert line break after } unless 
                 //  a) Next token is comma (scope is in the argument list) or 
                 //  b) Next token is a closing brace (last parameter in a function or indexer) or 
@@ -346,15 +348,15 @@ namespace Microsoft.R.Core.Formatting {
 
                 foundSameLineElse = HasSameLineElse();
                 if (foundSameLineElse) {
-                    _formattingScopes.BlockScope.SuppressLineBreakCounter++;
+                    SuppressLineBreakCount++;
                     AppendScopeContent(stopAtLineBreak: true);
-                    _formattingScopes.BlockScope.SuppressLineBreakCounter--;
+                    SuppressLineBreakCount--;
 
                     return;
                 }
             }
 
-            if (_formattingScopes.BlockScope.SuppressLineBreakCounter > 0) {
+            if (SuppressLineBreakCount > 0) {
                 AppendScopeContent(stopAtLineBreak: true);
                 return;
             }
@@ -649,10 +651,6 @@ namespace Microsoft.R.Core.Formatting {
             int end = _tokens.IsEndOfStream() ? _textProvider.Length : _tokens.CurrentToken.Start;
 
             string text = _textProvider.GetText(TextRange.FromBounds(start, end));
-            if(text.IndexOfAny(CharExtensions.LineBreakChars) >= 0) {
-                CheckMultilineExpressionFormatting();
-            }
-
             if (!preserveUserIndent && string.IsNullOrWhiteSpace(text)) {
                 // Append any user-entered whitespace. We preserve line breaks but trim 
                 // unnecessary spaces such as on empty lines. We must, however, preserve 
@@ -781,8 +779,6 @@ namespace Microsoft.R.Core.Formatting {
             var tokenizer = new RTokenizer(separateComments: false);
             var tokens = tokenizer.Tokenize(_textProvider, 0, _textProvider.Length);
             _tokens = new TokenStream<RToken>(tokens, RToken.EndOfStreamToken);
-
-            _formattingScopes = new FormattingScopeStack(_textProvider, _tb, _tokens, _options);
         }
 
         private int GetSingleLineScopeEnd() {

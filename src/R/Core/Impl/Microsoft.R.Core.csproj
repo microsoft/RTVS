@@ -54,8 +54,6 @@
     <Compile Include="AST\Extensions\AstNodeExtensions.cs" />
     <Compile Include="AST\Extensions\StatementExtensions.cs" />
     <Compile Include="Formatting\FormattingScope.cs" />
-    <Compile Include="Formatting\ExpressionFormattingScope.cs" />
-    <Compile Include="Formatting\FormattingScopeStack.cs" />
     <Compile Include="Parser\Definitions\IExpressionTermFilter.cs" />
     <Compile Include="AST\Functions\Definitions\IFunctionDefinition.cs" />
     <Compile Include="AST\Functions\Definitions\IFunction.cs" />
@@ -133,7 +131,6 @@
     <Compile Include="AST\Values\LogicalValue.cs" />
     <Compile Include="AST\Operators\Indexer.cs" />
     <Compile Include="Evaluation\Evaluator.cs" />
-    <Compile Include="Formatting\BlockFormattingScope.cs" />
     <Compile Include="Formatting\RFormatOptions.cs" />
     <Compile Include="Formatting\RFormatter.cs" />
     <Compile Include="Parser\Definitions\IParseError.cs" />
