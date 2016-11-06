@@ -12,42 +12,40 @@ namespace Microsoft.R.Core.Formatting {
     /// <summary>
     /// Settings for formatting of { } scope.
     /// </summary>
-    internal sealed class FormattingScope : IDisposable {
-        private readonly RFormatOptions _options;
-        private readonly TextBuilder _tb;
-        private readonly int _previousIndentLevel;
+    internal abstract class FormattingScope : IDisposable {
+        protected RFormatOptions Options { get; }
+        protected TextBuilder TextBuilder { get; }
+        protected TokenStream<RToken> Tokens { get; }
+        protected int PreviousIndentLevel { get; }
 
-        public int CloseBracePosition { get; private set; } = -1;
+        protected FormattingScope() { }
 
-        public int SuppressLineBreakCount { get; set; }
-
-        public FormattingScope() { }
-
-        public FormattingScope(TextBuilder tb, TokenStream<RToken> tokens, RFormatOptions options) {
+        protected FormattingScope(TextBuilder tb, TokenStream<RToken> tokens, RFormatOptions options) {
             Debug.Assert(tokens.CurrentToken.TokenType == RTokenType.OpenCurlyBrace);
 
-            _options = options;
-            _tb = tb;
+            Options = options;
+            Tokens = tokens;
+            TextBuilder = tb;
 
-            CloseBracePosition = TokenBraceCounter<RToken>.GetMatchingBrace(tokens,
-                new RToken(RTokenType.OpenCurlyBrace), new RToken(RTokenType.CloseCurlyBrace),
-                new RTokenTypeComparer());
-
-            _previousIndentLevel = tb.IndentBuilder.IndentLevel;
+            PreviousIndentLevel = tb.IndentBuilder.IndentLevel;
             tb.IndentBuilder.SetIndentLevelForSize(CurrentLineIndent(tb));
         }
 
-        private int CurrentLineIndent(TextBuilder tb) {
+        protected int CurrentLineIndent(TextBuilder tb) {
             for (int i = tb.Length - 1; i >= 0; i--) {
                 if (CharExtensions.IsLineBreak(tb.Text[i])) {
-                    return IndentBuilder.TextIndentInSpaces(tb.Text.Substring(i + 1), _options.TabSize);
+                    return IndentBuilder.TextIndentInSpaces(tb.Text.Substring(i + 1), Options.TabSize);
                 }
             }
             return 0;
         }
 
         public void Dispose() {
-            _tb.IndentBuilder.SetIndentLevel(_previousIndentLevel);
+            Dispose(true);
+        }
+
+        protected virtual void Dispose(bool disposing) {
+            TextBuilder.IndentBuilder.SetIndentLevel(PreviousIndentLevel);
         }
     }
 }
