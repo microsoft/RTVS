@@ -164,9 +164,10 @@ namespace Microsoft.R.Host.Client.Session {
         public Task<ulong> CreateBlobAsync(CancellationToken ct = default(CancellationToken)) =>
             DoBlobServiceAsync(_host?.CreateBlobAsync(ct));
 
-        public Task DestroyBlobsAsync(IEnumerable<ulong> blobIds, CancellationToken ct = default(CancellationToken)) => 
+        public Task DestroyBlobsAsync(IEnumerable<ulong> blobIds, CancellationToken ct = default(CancellationToken)) =>
             DoBlobServiceAsync(new Lazy<Task<long>>(async () => {
-                await _host.DestroyBlobsAsync(blobIds, ct);
+                var task = _host?.DestroyBlobsAsync(blobIds, ct) ?? Task.CompletedTask;
+                await task;
                 return 0;
             }).Value);
 
