@@ -18,7 +18,7 @@ namespace Microsoft.R.Core.Formatting {
         private readonly int _previousIndentLevel;
 
         public RToken OpenBraceToken { get; set; }
-        public int CloseBracePosition { get; } = -1;
+        public int CloseBracePosition { get; }
 
         public int SuppressLineBreakCount { get; set; }
 

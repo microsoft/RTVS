@@ -653,9 +653,14 @@ namespace Microsoft.R.Core.Formatting {
             int end = _tokens.IsEndOfStream() ? _textProvider.Length : _tokens.CurrentToken.Start;
 
             string text = _textProvider.GetText(TextRange.FromBounds(start, end));
-            bool lineBreakBeforeToken = _tokens.IsLineBreakAfter(_textProvider, _tokens.Position - 1);
+            bool whitespaceOnly = string.IsNullOrWhiteSpace(text);
 
-            if (lineBreakBeforeToken && !preserveUserIndent && string.IsNullOrWhiteSpace(text)) {
+            bool lineBreakBeforeToken = false;
+            if (whitespaceOnly) {
+                lineBreakBeforeToken = _tokens.IsLineBreakAfter(_textProvider, _tokens.Position - 1);
+            }
+
+            if (lineBreakBeforeToken && !preserveUserIndent) {
                 // Append any user-entered whitespace. We preserve line breaks but trim 
                 // unnecessary spaces such as on empty lines. We must, however, preserve 
                 // user indentation in long argument lists and in expresions split 
@@ -715,7 +720,7 @@ namespace Microsoft.R.Core.Formatting {
                 } else {
                     _tb.SoftIndent();
                 }
-            } else if (!string.IsNullOrWhiteSpace(text)) {
+            } else if (!whitespaceOnly) {
                 // If there is unrecognized text between tokens, append it verbatim
                 _tb.AppendPreformattedText(text);
             }
