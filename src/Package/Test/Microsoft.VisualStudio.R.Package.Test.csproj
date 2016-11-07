@@ -32,12 +32,12 @@
     <Reference Include="Microsoft.VisualStudio.InteractiveWindow">
       <Private>True</Private>
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(LibDirectory)\Microsoft.VisualStudio.InteractiveWindow.dll</HintPath>
+      <HintPath>$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.InteractiveWindow.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.VsInteractiveWindow">
       <Private>True</Private>
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(LibDirectory)\Microsoft.VisualStudio.VsInteractiveWindow.dll</HintPath>
+      <HintPath>$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.VsInteractiveWindow.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -220,6 +220,9 @@
     <Compile Include="Repl\SetDirectoryCommandTest.cs" />
     <Compile Include="Repl\ReplCommandTest.cs" />
     <Compile Include="Repl\CurrentDirectoryTest.cs" />
+    <Compile Include="Settings\SettingsStorageTest.cs" />
+    <Compile Include="Settings\TestSettingsManager.cs" />
+    <Compile Include="Settings\TestSettingsStore.cs" />
     <Compile Include="Shell\VsTestCompositionCatalog.cs" />
     <Compile Include="Cran\CranMirrorListTest.cs" />
     <Compile Include="DataInspect\ObservableTreeNodeTest.cs" />

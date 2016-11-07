@@ -4,15 +4,15 @@
 using System;
 using System.Collections.Immutable;
 using System.ComponentModel.Composition;
-using Microsoft.VisualStudio.ProjectSystem;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.R.Package.Commands;
+using Microsoft.Common.Core.Shell;
+using Microsoft.R.Components.Sql.Publish;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Sql.Publish;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration;
-using System.Threading.Tasks;
-using Microsoft.Common.Core.Shell;
-using Microsoft.R.Components.Sql.Publish;
+using Microsoft.VisualStudio.ProjectSystem;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
@@ -26,13 +26,17 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
         private readonly IProjectSystemServices _pss;
         private readonly IProjectConfigurationSettingsProvider _pcsp;
         private readonly IDacPackageServicesProvider _dacServicesProvider;
+        private readonly ISettingsStorage _settings;
 
         [ImportingConstructor]
-        public PublishSProcOptionsCommand(IApplicationShell appShell, IProjectSystemServices pss, IProjectConfigurationSettingsProvider pcsp, IDacPackageServicesProvider dacServicesProvider) {
+        public PublishSProcOptionsCommand(IApplicationShell appShell, IProjectSystemServices pss, 
+                                          IProjectConfigurationSettingsProvider pcsp, IDacPackageServicesProvider dacServicesProvider,
+                                          ISettingsStorage settings) {
             _appShell = appShell;
             _pss = pss;
             _pcsp = pcsp;
             _dacServicesProvider = dacServicesProvider;
+            _settings = settings;
         }
 
         public Task<CommandStatusResult> GetCommandStatusAsync(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus progressiveStatus) {
@@ -44,8 +48,8 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
 
         public async Task<bool> TryHandleCommandAsync(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, long commandExecuteOptions, IntPtr variantArgIn, IntPtr variantArgOut) {
             if (commandId == RPackageCommandId.icmdPublishSProcOptions) {
-                if (_dacServicesProvider.GetDacPackageServices(showMessage: true) != null) {
-                    var dlg = await SqlPublshOptionsDialog.CreateAsync(_appShell, _pss, _pcsp);
+                if (_dacServicesProvider.GetDacPackageServices() != null) {
+                    var dlg = await SqlPublshOptionsDialog.CreateAsync(_appShell, _pss, _pcsp, _settings);
 
                     await _appShell.SwitchToMainThreadAsync();
                     dlg.ShowModal();

@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Interpreters;
 using Microsoft.R.Support.Settings;
@@ -12,27 +13,39 @@ using Microsoft.R.Support.Settings;
 namespace Microsoft.R.Host.Client.Test.Script {
     [ExcludeFromCodeCoverage]
     public class RHostScript : IDisposable {
+        private IRSessionCallback _clientApp;
         private bool _disposed;
 
         public IRSessionProvider SessionProvider { get; private set; }
-        public IRSession Session { get; }
+        public IRSession Session { get; private set; }
 
         public static Version RVersion => new RInstallation().GetCompatibleEngines().First().Version;
 
         public RHostScript(IRSessionProvider sessionProvider, IRSessionCallback clientApp = null) {
             SessionProvider = sessionProvider;
+            _clientApp = clientApp;
+            InitializeAsync().Wait();
+        }
+
+        public RHostScript(IRSessionProvider sessionProvider, bool async, IRSessionCallback clientApp) {
+            SessionProvider = sessionProvider;
+            _clientApp = clientApp;
+        }
+
+        public async Task InitializeAsync(IRSessionCallback clientApp = null) {
+            _clientApp = clientApp ?? _clientApp;
 
             Session = SessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
             if (Session.IsHostRunning) {
-                Session.StopHostAsync().Wait();
+                await Session.StopHostAsync();
             }
 
-            Session.StartHostAsync(new RHostStartupInfo {
+            await Session.StartHostAsync(new RHostStartupInfo {
                 Name = "RHostScript",
                 CranMirrorName = RToolsSettings.Current.CranMirror,
                 CodePage = RToolsSettings.Current.RCodePage,
                 RHostCommandLineArguments = RToolsSettings.Current.LastActiveConnection.RCommandLineArguments
-            }, clientApp ?? new RHostClientTestApp(), 50000).Wait();
+            }, _clientApp ?? new RHostClientTestApp(), 50000);
         }
 
         public void Dispose() {

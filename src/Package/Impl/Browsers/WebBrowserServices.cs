@@ -6,7 +6,6 @@ using System.ComponentModel.Composition;
 using Microsoft.Common.Core.OS;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Support.Settings;
-using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell.Interop;

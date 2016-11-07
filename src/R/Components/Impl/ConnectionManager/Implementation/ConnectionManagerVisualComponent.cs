@@ -18,7 +18,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             _viewModel = new ConnectionManagerViewModel(connectionManager, coreShell);
             Container = container;
             Controller = null;
-            var control = new ConnectionManagerControl {
+            var control = new ConnectionManagerControl(coreShell) {
                 DataContext = _viewModel
             };
             Control = control;

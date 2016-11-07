@@ -2,8 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using Microsoft.Common.Core.Settings;
 using Microsoft.Languages.Core.Formatting;
+using Microsoft.Languages.Core.Settings;
 using Microsoft.Languages.Editor.Settings;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
@@ -24,7 +24,7 @@ namespace Microsoft.R.Editor.Settings {
         private static bool _initialized = false;
         private static RFormatOptions _formatOptions = new RFormatOptions();
 
-        private static ISettingsStorage Storage {
+        private static IEditorSettingsStorage Storage {
             get {
                 var storage = EditorShell.GetSettings(EditorShell.Current, RContentTypeDefinition.LanguageName);
 
@@ -37,8 +37,8 @@ namespace Microsoft.R.Editor.Settings {
             }
         }
 
-        public static IWritableSettingsStorage WritableStorage {
-            get { return Storage as IWritableSettingsStorage; }
+        public static IWritableEditorSettingsStorage WritableStorage {
+            get { return Storage as IWritableEditorSettingsStorage; }
         }
 
         public static event EventHandler<EventArgs> Changed;

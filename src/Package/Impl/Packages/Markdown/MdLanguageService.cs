@@ -4,9 +4,8 @@
 using System;
 using System.Runtime.InteropServices;
 using Microsoft.Markdown.Editor.ContentTypes;
-using Microsoft.VisualStudio.R.Languages;
+using Microsoft.VisualStudio.R.Editors;
 using Microsoft.VisualStudio.R.Package;
-using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace Microsoft.VisualStudio.R.Packages.Markdown {
     [Guid(MdGuidList.MdLanguageServiceGuidString)]

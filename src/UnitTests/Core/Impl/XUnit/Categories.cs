@@ -291,5 +291,13 @@ namespace Microsoft.UnitTests.Core.XUnit {
         public class FuzzTestAttribute : CategoryAttribute {
             public FuzzTestAttribute() : base("FuzzTest") { }
         }
+
+        [ExcludeFromCodeCoverage]
+        public static class VsPackage {
+            [ExcludeFromCodeCoverage]
+            public class SettingsAttribute : CategoryAttribute {
+                public SettingsAttribute() : base("VS.Package.Settings") { }
+            }
+        }
     }
 }

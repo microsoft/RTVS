@@ -5,7 +5,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager.ViewModel;
+using Microsoft.R.Wpf;
+using Microsoft.R.Wpf.Themes;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
     /// <summary>
@@ -15,8 +18,13 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
 
         private IConnectionManagerViewModel Model => DataContext as IConnectionManagerViewModel;
 
-        public ConnectionManagerControl() {
+           
+        public ConnectionManagerControl(ICoreShell coreShell) {
             InitializeComponent();
+
+            var theme = coreShell.ExportProvider.GetExportedValue<IThemeUtilities>();
+            theme.SetImageBackgroundColor(this, Brushes.ToolWindowBackgroundColorKey);
+            theme.SetThemeScrollBars(this);
         }
 
         private void ButtonCancel_Click(object sender, RoutedEventArgs e) {

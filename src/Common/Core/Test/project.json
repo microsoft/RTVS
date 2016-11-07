@@ -1,6 +1,6 @@
 ﻿{
   "dependencies": {
-    "FluentAssertions": "4.14.0",
+    "FluentAssertions": "4.16.0",
     "MicroBuild.Core": "0.2.0",
     "Newtonsoft.Json": "9.0.1",
     "NSubstitute": "1.10.0",

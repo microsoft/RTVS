@@ -55,10 +55,28 @@ project.lock.json
 
 # NuGet project.json files that created from project.*.json depending on VS version
 src/Mocks/VisualStudio/project.json
+src/Package/Impl/source.extension.vsixmanifest
 src/Package/Impl/project.json
 src/Package/Test/project.json
+src/Package/TestApp/project.json
 src/ProjectSystem/Impl/project.json
 src/ProjectSystem/Test/project.json
+src/EditorTestApp/project.json
+src/Languages/Editor/Test/project.json
+src/Languages/Editor/Impl/project.json
+src/Markdown/Editor/Test/project.json
+src/Markdown/Editor/Impl/project.json
+src/R/Components/Test/project.json
+src/R/Components/Impl/project.json
+src/R/Editor/Application.Test/project.json
+src/R/Editor/Test/project.json
+src/R/Editor/Impl/project.json
+src/UnitTests/Core/Impl/project.json
+src/Mocks/Editor/project.json
+src/Debugger/Impl/project.json
+src/R/Support/Impl/project.json
+src/R/Sql/Impl/project.json
+
 
 # Windows Azure Build Output
 csx/
@@ -99,4 +117,6 @@ src/R.VC.db
 .Rproj.user
 src/R.VC.opendb
 TestFiles/
+*.db
+*.opendb
 *.vstman

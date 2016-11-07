@@ -15,6 +15,9 @@ namespace Microsoft.VisualStudio.R.Package.Test.Utility {
         public VsRHostScript(IRSessionProvider sessionProvider, IRSessionCallback clientApp = null)
             : base(sessionProvider, clientApp) { }
 
+        public VsRHostScript(IRSessionProvider sessionProvider, bool async, IRSessionCallback clientApp)
+            : base(sessionProvider, async, clientApp) { }
+
         public static void DoIdle(int ms) {
             UIThreadHelper.Instance.Invoke(() => {
                 int time = 0;

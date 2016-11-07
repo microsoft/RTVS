@@ -12,7 +12,7 @@ using static System.FormattableString;
 
 namespace Microsoft.R.Host.Protocol {
     public class Message {
-        private static readonly MD5 _hash = MD5.Create();
+        private static readonly SHA512 _hash = SHA512.Create();
         public ulong Id { get; }
         public ulong RequestId { get; }
         public string Name { get; }
@@ -96,7 +96,7 @@ namespace Microsoft.R.Host.Protocol {
             string blobString;
             if (Blob.Length > 100) {
                 var hashString = BitConverter.ToString(_hash.ComputeHash(Blob));
-                blobString = Invariant($"<blob length=\"{Blob.Length}\" md5=\"{hashString}\" />");
+                blobString = Invariant($"<blob length=\"{Blob.Length}\" sha512=\"{hashString}\" />");
             } else {
                 blobString = Invariant($"<blob content=\"{BitConverter.ToString(Blob)}\" />");
             }
