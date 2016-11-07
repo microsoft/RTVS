@@ -5,12 +5,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Languages.Core.Formatting;
+using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Functions;
 using Microsoft.R.Core.AST.Scopes;
 using Microsoft.R.Core.AST.Statements;
 using Microsoft.R.Core.Formatting;
+using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Settings;
 using Microsoft.VisualStudio.Text;
@@ -101,7 +103,7 @@ namespace Microsoft.R.Editor.SmartIndent {
         /// from the core editor for indentation when user typed Enter.
         /// </param>
         /// <returns>Level of indent in spaces</returns>
-        public static int GetSmartIndent(ITextSnapshotLine line, AstRoot ast = null, 
+        public static int GetSmartIndent(ITextSnapshotLine line, AstRoot ast = null,
                                          int originalIndentSizeInSpaces = -1, bool formatting = false) {
             ITextBuffer textBuffer = line.Snapshot.TextBuffer;
             ITextSnapshotLine prevLine = null;
@@ -213,6 +215,7 @@ namespace Microsoft.R.Editor.SmartIndent {
 
             scopeStatement = smallestScope as IAstNodeWithScope;
             scope = smallestScope as IScope;
+            int extraIndent = IsCompleteExpression(scope, line.Start) ? 0 : REditorSettings.IndentSize;
 
             // If IScope is a scope defined by the parent statement, use
             // the parent statement so in 
@@ -264,7 +267,7 @@ namespace Microsoft.R.Editor.SmartIndent {
                 }
 
                 // We are inside a scope so provide inner indent
-                return InnerIndentSizeFromNode(textBuffer, scopeStatement, REditorSettings.FormatOptions);
+                return InnerIndentSizeFromNode(textBuffer, scopeStatement, REditorSettings.FormatOptions) + extraIndent;
             }
 
             // Try locate the scope itself, if any
@@ -275,10 +278,39 @@ namespace Microsoft.R.Editor.SmartIndent {
                         return OuterIndentSizeFromNode(textBuffer, scope, REditorSettings.FormatOptions);
                     }
                 }
-                return InnerIndentSizeFromNode(textBuffer, scope, REditorSettings.FormatOptions);
+                return InnerIndentSizeFromNode(textBuffer, scope, REditorSettings.FormatOptions) + extraIndent;
             }
 
-            return 0;
+            return extraIndent;
+        }
+
+        private static bool IsCompleteExpression(IScope scope, int position) {
+            // Within the current scope find if text between scope start or the nearest
+            // preceding expression is a complete expression. For example, in 'x <- <ENTER>
+            // we want to indent one level deeper. The construct can be
+            //
+            //       x <- 
+            //          <EOF>
+            // or
+            //      x <- 
+            //          1
+            // or
+            //      {
+            //          <EOF>
+            //
+            if (scope != null) {
+                int start = scope.OpenCurlyBrace != null ? scope.OpenCurlyBrace.End : scope.Start;
+                foreach (var c in scope.Children) {
+                    if (c.Start >= position || c.Contains(position)) {
+                        break;
+                    }
+                    start = c.End;
+                }
+
+                var ast = RParser.Parse(scope.Root.TextProvider.GetText(TextRange.FromBounds(start, position)));
+                return ast.IsCompleteExpression();
+            }
+            return true;
         }
 
         private static int GetFirstArgumentIndent(ITextSnapshot snapshot, IFunction fc) {
