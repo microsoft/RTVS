@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.R.Components.ConnectionManager.Implementation {
+namespace Microsoft.R.Components.ConnectionManager {
     internal class Connection : ConnectionInfo, IConnection {
         public Connection(IConnectionInfo ci) :
             this(ci.Name, ci.Path, ci.RCommandLineArguments, ci.LastUsed, ci.IsUserCreated) { }

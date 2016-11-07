@@ -31,8 +31,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         private string _cranMirror;
         private string _workingDirectory;
         private int _codePage;
-        private IConnectionInfo[] _connections = new IConnectionInfo[0];
-        private IConnectionInfo _lastActiveConnection;
+        private ConnectionInfo[] _connections = new ConnectionInfo[0];
+        private ConnectionInfo _lastActiveConnection;
 
         private YesNoAsk _loadRDataOnProjectLoad = YesNoAsk.No;
         private YesNoAsk _saveRDataOnProjectUnload = YesNoAsk.No;
@@ -103,12 +103,12 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set { SetProperty(ref _codePage, value); }
         }
 
-        public IConnectionInfo[] Connections {
+        public ConnectionInfo[] Connections {
             get { return _connections; }
             set { SetProperty(ref _connections, value); }
         }
 
-        public IConnectionInfo LastActiveConnection {
+        public ConnectionInfo LastActiveConnection {
             get { return _lastActiveConnection; }
             set { SetProperty(ref _lastActiveConnection, value); }
         }

@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.R.Components.ConnectionManager.Implementation {
+namespace Microsoft.R.Components.ConnectionManager {
     public class ConnectionInfo : IConnectionInfo {
         public string Name { get; set; }
         public string Path { get; set; }
