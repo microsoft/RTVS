@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.R.Components.Controller;
@@ -25,27 +26,31 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
         }
 
         public async Task<CommandResult> InvokeAsync() {
-            if (Clipboard.ContainsData(PlotClipboardData.Format)) {
-                var source = PlotClipboardData.Parse((string)Clipboard.GetData(PlotClipboardData.Format));
-                if (source != null) {
-                    try {
-                        if (VisualComponent.Device == null) {
-                            await InteractiveWorkflow.Plots.NewDeviceAsync(VisualComponent.InstanceId);
-                        }
+            try {
+                if (Clipboard.ContainsData(PlotClipboardData.Format)) {
+                    var source = PlotClipboardData.Parse((string)Clipboard.GetData(PlotClipboardData.Format));
+                    if (source != null) {
+                        try {
+                            if (VisualComponent.Device == null) {
+                                await InteractiveWorkflow.Plots.NewDeviceAsync(VisualComponent.InstanceId);
+                            }
 
-                        Debug.Assert(VisualComponent.Device != null);
-                        await InteractiveWorkflow.Plots.CopyOrMovePlotFromAsync(source.DeviceId, source.PlotId, VisualComponent.Device, source.Cut);
+                            Debug.Assert(VisualComponent.Device != null);
+                            await InteractiveWorkflow.Plots.CopyOrMovePlotFromAsync(source.DeviceId, source.PlotId, VisualComponent.Device, source.Cut);
 
-                        // If it's a move, clear the clipboard as we don't want
-                        // the user to try to paste it again
-                        if (source.Cut) {
-                            Clipboard.Clear();
+                            // If it's a move, clear the clipboard as we don't want
+                            // the user to try to paste it again
+                            if (source.Cut) {
+                                Clipboard.Clear();
+                            }
+                        } catch (RPlotManagerException ex) {
+                            InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);
+                        } catch (OperationCanceledException) {
                         }
-                    } catch (RPlotManagerException ex) {
-                        InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);
-                    } catch (OperationCanceledException) {
                     }
                 }
+            } catch (ExternalException ex) {
+                InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);
             }
 
             return CommandResult.Executed;
