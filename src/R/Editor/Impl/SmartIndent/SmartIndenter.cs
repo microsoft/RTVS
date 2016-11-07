@@ -267,7 +267,7 @@ namespace Microsoft.R.Editor.SmartIndent {
                 }
 
                 // We are inside a scope so provide inner indent
-                return InnerIndentSizeFromNode(textBuffer, scopeStatement, line.Start, REditorSettings.FormatOptions) + extraIndent;
+                return InnerIndentSizeFromNode(textBuffer, scopeStatement, REditorSettings.FormatOptions) + extraIndent;
             }
 
             // Try locate the scope itself, if any
@@ -278,7 +278,7 @@ namespace Microsoft.R.Editor.SmartIndent {
                         return OuterIndentSizeFromNode(textBuffer, scope, REditorSettings.FormatOptions);
                     }
                 }
-                return InnerIndentSizeFromNode(textBuffer, scope, line.Start, REditorSettings.FormatOptions) + extraIndent;
+                return InnerIndentSizeFromNode(textBuffer, scope, REditorSettings.FormatOptions) + extraIndent;
             }
 
             return extraIndent;
@@ -318,7 +318,7 @@ namespace Microsoft.R.Editor.SmartIndent {
             return fc.OpenBrace.End - line.Start;
         }
 
-        public static int InnerIndentSizeFromNode(ITextBuffer textBuffer, IAstNode node, int position, RFormatOptions options) {
+        public static int InnerIndentSizeFromNode(ITextBuffer textBuffer, IAstNode node, RFormatOptions options) {
             if (node != null) {
                 // Scope indentation is based on the scope defining node i.e.
                 // x <- function(a) {
