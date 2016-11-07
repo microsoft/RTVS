@@ -52,10 +52,10 @@ namespace Microsoft.R.Components.Test.Plots {
         }
 
         public async Task InitializeAsync() {
+            _replVisualComponent = await _workflow.GetOrCreateVisualComponent(_componentContainerFactory);
             await _workflow.RSessions.TrySwitchBrokerAsync(nameof(RPlotIntegrationTest));
 
             _plotDeviceVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
-            _replVisualComponent = await _workflow.GetOrCreateVisualComponent(_componentContainerFactory);
         }
 
         public Task DisposeAsync() {

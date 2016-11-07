@@ -8,6 +8,7 @@ using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Test.Text;
 using Microsoft.Languages.Editor.Text;
+using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Formatting;
 using Microsoft.R.Editor.SmartIndent;
@@ -52,7 +53,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
             ITextView textView = TextViewTest.MakeTextView("  x <- 1\r\n", 0, out ast);
             using (var document = new EditorDocumentMock(new EditorTreeMock(textView.TextBuffer, ast))) {
 
-                ISmartIndentProvider provider = _exportProvider.GetExportedValue<ISmartIndentProvider>();
+                ISmartIndentProvider provider = _exportProvider.GetExportedValue<ISmartIndentProvider>("ContentTypes", RContentTypeDefinition.ContentType);
                 SmartIndenter indenter = (SmartIndenter)provider.CreateSmartIndent(textView);
 
                 int? indent = indenter.GetDesiredIndentation(textView.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(1), IndentStyle.Block);

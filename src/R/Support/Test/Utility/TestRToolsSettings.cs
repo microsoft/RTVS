@@ -22,9 +22,10 @@ namespace Microsoft.R.Support.Test.Utility {
     public sealed class TestRToolsSettings : IRToolsSettings {
         private readonly IConnectionInfo[] _connections;
 
-        public TestRToolsSettings(): this(null) { }
+        [ImportingConstructor]
+        public TestRToolsSettings() : this("Test") {}
 
-        public TestRToolsSettings(string connectionName = null) {
+        public TestRToolsSettings(string connectionName) {
             _connections = new IConnectionInfo[] { new ConnectionInfo {
                 Name = connectionName ?? "Test",
                 Path = new RInstallation().GetCompatibleEngines().First().InstallPath
@@ -36,8 +37,7 @@ namespace Microsoft.R.Support.Test.Utility {
             set { }
         }
 
-        public IConnectionInfo 
-            LastActiveConnection {
+        public IConnectionInfo LastActiveConnection {
             get { return _connections[0]; }
             set { }
         }

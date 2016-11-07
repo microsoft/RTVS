@@ -8,8 +8,8 @@ using Microsoft.R.Host.Client.Session;
 using Xunit;
 
 namespace Microsoft.R.Host.Client.Test.Fixtures {
-    [ExcludeFromCodeCoverage]
     // Fixture doesn't import itself. Use AssemblyFixtureImportAttribute
+    [ExcludeFromCodeCoverage]
     public sealed class SessionProviderFixture: IAsyncLifetime {
         public IRSessionProvider SessionProvider { get; }
 

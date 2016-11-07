@@ -7,6 +7,7 @@ using System.Collections.Generic;
 namespace Microsoft.UnitTests.Core.Mef {
     public interface IExportProvider : IDisposable {
         T GetExportedValue<T>();
+        T GetExportedValue<T>(string metadataKey, params object[] metadataValues);
         IEnumerable<Lazy<T>> GetExports<T>();
         IEnumerable<Lazy<T, TMetadataView>> GetExports<T, TMetadataView>();
     }
