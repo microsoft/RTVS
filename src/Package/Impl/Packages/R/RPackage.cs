@@ -15,6 +15,7 @@ using Microsoft.R.Components.Settings.Mirrors;
 using Microsoft.R.Debugger;
 using Microsoft.R.Debugger.PortSupplier;
 using Microsoft.R.Support.Help;
+using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.InteractiveWindow.Shell;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Package.Registration;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Shell;
@@ -110,6 +111,9 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 return;
             }
 
+            var settings = VsAppShell.Current.ExportProvider.GetExportedValue<IRToolsSettings>() as IRPersistentSettings;
+            settings.LoadSettings();
+
             VsWpfOverrides.Apply();
             CranMirrorList.Download();
 
@@ -138,7 +142,9 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             CsvAppFileIO.Close(new FileSystem());
 
             RtvsTelemetry.Current.Dispose();
-            VsAppShell.Current.ExportProvider.GetExportedValue<ISettingsStorage>().Persist();
+
+            var settings = VsAppShell.Current.ExportProvider.GetExportedValue<IRToolsSettings>() as IRPersistentSettings;
+            settings.SaveSettings();
 
             base.Dispose(disposing);
         }

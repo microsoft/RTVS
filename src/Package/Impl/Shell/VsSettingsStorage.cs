@@ -105,18 +105,22 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 EnsureCollectionExists();
 
                 foreach (var s in _settingsCache) {
-                    var t = s.Value.GetType();
-                    if (s.Value is bool) {
-                        Store.SetBoolean(_collectionPath, s.Key, (bool)s.Value);
-                    } else if (s.Value is int || t.IsEnum) {
-                        Store.SetInt32(_collectionPath, s.Key, (int)s.Value);
-                    } else if (s.Value is uint) {
-                        Store.SetUInt32(_collectionPath, s.Key, (uint)s.Value);
-                    } else if (s.Value is string) {
-                        Store.SetString(_collectionPath, s.Key, (string)s.Value);
+                    if (s.Value != null) {
+                        var t = s.Value.GetType();
+                        if (s.Value is bool) {
+                            Store.SetBoolean(_collectionPath, s.Key, (bool)s.Value);
+                        } else if (s.Value is int || t.IsEnum) {
+                            Store.SetInt32(_collectionPath, s.Key, (int)s.Value);
+                        } else if (s.Value is uint) {
+                            Store.SetUInt32(_collectionPath, s.Key, (uint)s.Value);
+                        } else if (s.Value is string) {
+                            Store.SetString(_collectionPath, s.Key, (string)s.Value);
+                        } else {
+                            var json = JsonConvert.SerializeObject(s.Value);
+                            Store.SetString(_collectionPath, s.Key, json);
+                        }
                     } else {
-                        var json = JsonConvert.SerializeObject(s.Value);
-                        Store.SetString(_collectionPath, s.Key, json);
+                        Store.DeleteProperty(_collectionPath, s.Key);
                     }
                 }
             }

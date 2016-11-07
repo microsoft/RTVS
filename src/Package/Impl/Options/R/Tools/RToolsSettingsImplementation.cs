@@ -209,7 +209,10 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
 
         #region IRPersistentSettings
         public void LoadSettings() => _settings.LoadPropertyValues(this);
-        public void SaveSettings() => _settings.SavePropertyValues(this);
+        public void SaveSettings() {
+            _settings.SavePropertyValues(this);
+            _settings.Persist();
+        }
         #endregion
     }
 }
