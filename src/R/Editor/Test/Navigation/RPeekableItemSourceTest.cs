@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
@@ -13,7 +14,9 @@ using Microsoft.Languages.Core.Text;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Navigation.Peek;
+using Microsoft.R.Editor.Test.Completions;
 using Microsoft.R.Editor.Test.Mocks;
+using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Fixtures;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.Mef;
@@ -82,9 +85,13 @@ x <- function(a) {
         }
 
         [Test]
-        public void PeekInternalFunction01() {
-            var workflow = UIThreadHelper.Instance.Invoke(() => _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate());
-            using (new RHostScript(workflow.RSessions)) {
+        public async Task PeekInternalFunction01() {
+            using (var workflow = UIThreadHelper.Instance.Invoke(() => _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate())) {
+                await workflow.RSessions.TrySwitchBrokerAsync(nameof(RPeekableItemSourceTest));
+                await workflow.RSession.EnsureHostStartedAsync(new RHostStartupInfo {
+                    Name = nameof(PeekInternalFunction01)
+                }, null, 50000);
+
                 string content = @"lm()";
                 RunInternalItemPeekTest(content, 0, 1, "lm");
             }

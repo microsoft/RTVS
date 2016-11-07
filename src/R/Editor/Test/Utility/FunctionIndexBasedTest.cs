@@ -25,15 +25,16 @@ namespace Microsoft.R.Editor.Test.Utility {
             ExportProvider = catalog.CreateExportProvider();
             Workflow = UIThreadHelper.Instance.Invoke(() => ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate());
             EditorShell = ExportProvider.GetExportedValue<IEditorShell>();
-            PackageIndex = ExportProvider.GetExportedValue<IPackageIndex>();
             FunctionIndex = ExportProvider.GetExportedValue<IFunctionIndex>();
+            PackageIndex = ExportProvider.GetExportedValue<IPackageIndex>();
         }
 
-        public Task InitializeAsync() {
-            return PackageIndex.InitializeAsync(FunctionIndex);
+        public async Task InitializeAsync() {
+            await Workflow.RSessions.TrySwitchBrokerAsync(GetType().Name);
+            await PackageIndex.BuildIndexAsync();
         }
 
-        public virtual async Task DisposeAsync() {
+        public async Task DisposeAsync() {
             await PackageIndex.DisposeAsync(ExportProvider);
             ExportProvider.Dispose();
         }

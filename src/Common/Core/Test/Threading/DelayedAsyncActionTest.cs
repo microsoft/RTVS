@@ -29,12 +29,12 @@ namespace Microsoft.Common.Core.Test.Threading {
         [Test]
         public async Task InvokeTwice_DuringTimeout() {
             var count = 0;
-            var action = new DelayedAsyncAction(200, () => Task.FromResult(Interlocked.Increment(ref count)));
+            var action = new DelayedAsyncAction(300, () => Task.FromResult(Interlocked.Increment(ref count)));
 
             action.Invoke();
             await Task.Delay(100);
             action.Invoke();
-            await Task.Delay(300);
+            await Task.Delay(500);
 
             count.Should().Be(1, "DelayedAction should be called only once");
         }
@@ -42,13 +42,13 @@ namespace Microsoft.Common.Core.Test.Threading {
         [Test]
         public async Task InvokeTwice_DuringTimeout_Concurrent() {
             var count = 0;
-            var action = new DelayedAsyncAction(200, () => Task.FromResult(Interlocked.Increment(ref count)));
+            var action = new DelayedAsyncAction(300, () => Task.FromResult(Interlocked.Increment(ref count)));
 
             ParallelTools.Invoke(4, async i => {
                 await Task.Delay(50 * i);
                 action.Invoke();
             });
-            await Task.Delay(500);
+            await Task.Delay(700);
 
             count.Should().Be(1, "DelayedAction should be called only once");
         }

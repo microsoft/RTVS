@@ -49,7 +49,10 @@ namespace Microsoft.R.Support.Help.Packages {
             _interactiveSession.PackagesRemoved += OnPackagesChanged;
         }
 
-        private void OnPackagesChanged(object sender, EventArgs e) => ScheduleIdleTimeRebuild();
+        private void OnPackagesChanged(object sender, EventArgs e) {
+            _buildIndexLock.EnqueueReset();
+            ScheduleIdleTimeRebuild();
+        }
 
         #region IPackageIndex
         /// <summary>

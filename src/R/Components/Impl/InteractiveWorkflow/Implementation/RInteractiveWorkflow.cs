@@ -2,9 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
@@ -28,9 +26,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         private readonly IActiveWpfTextViewTracker _activeTextViewTracker;
         private readonly IDebuggerModeTracker _debuggerModeTracker;
         private readonly IRSettings _settings;
-        private readonly Action _onDispose;
         private readonly RInteractiveWorkflowOperations _operations;
-        private readonly IWorkspaceServices _wss;
 
         private bool _replLostFocus;
         private bool _debuggerJustEnteredBreakMode;
@@ -47,28 +43,24 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
         public IInteractiveWindowVisualComponent ActiveWindow { get; private set; }
 
-        public RInteractiveWorkflow(IRSessionProvider sessionProvider
-            , IConnectionManagerProvider connectionsProvider
+        public RInteractiveWorkflow(IConnectionManagerProvider connectionsProvider
             , IRHistoryProvider historyProvider
             , IRPackageManagerProvider packagesProvider
             , IRPlotManagerProvider plotsProvider
             , IActiveWpfTextViewTracker activeTextViewTracker
             , IDebuggerModeTracker debuggerModeTracker
             , ICoreShell coreShell
-            , IRSettings settings
-            , IWorkspaceServices wss
-            , Action onDispose) {
+            , IRSettings settings) {
 
             _activeTextViewTracker = activeTextViewTracker;
             _debuggerModeTracker = debuggerModeTracker;
             _settings = settings;
-            _wss = wss;
-            _onDispose = onDispose;
 
             Shell = coreShell;
-            RSessions = sessionProvider;
+            RSessions = new RSessionProvider(coreShell.Services, new InteractiveWindowConsole(this));
+            RSessions.BrokerChanging += OnBrokerChanging;
 
-            RSession = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
+            RSession = RSessions.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
             Connections = connectionsProvider.CreateConnectionManager(this);
 
             History = historyProvider.CreateRHistory(this);
@@ -89,10 +81,11 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 .Add(() => _debuggerModeTracker.EnterBreakMode -= DebuggerEnteredBreakMode)
                 .Add(() => _debuggerModeTracker.LeaveBreakMode -= DebuggerLeftBreakMode)
                 .Add(() => _activeTextViewTracker.LastActiveTextViewChanged -= LastActiveTextViewChanged)
+                .Add(() => RSessions.BrokerChanging -= OnBrokerChanging)
                 .Add(() => RSession.Disconnected -= RSessionDisconnected)
+                .Add(RSessions)
                 .Add(Operations)
-                .Add(Connections).
-                Add(_onDispose);
+                .Add(Connections);
         }
 
         private void DebuggerEnteredBreakMode(object sender, EventArgs e) {
@@ -133,6 +126,19 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
                 // Reset the flag, so that further focus changes are not affected until the next debugger break occurs.
                 _debuggerJustEnteredBreakMode = false;
+            }
+        }
+
+        private void OnBrokerChanging(object sender, EventArgs e) {
+            OnBrokerChangingAsync().DoNotWait();
+        }
+
+        private async Task OnBrokerChangingAsync() {
+            await Shell.SwitchToMainThreadAsync();
+            var factory = Shell.ExportProvider.GetExportedValueOrDefault<IInteractiveWindowComponentContainerFactory>();
+            if (factory != null) {
+                var component = await GetOrCreateVisualComponent(factory);
+                component.Container.Show(focus: false, immediate: false);
             }
         }
 

@@ -5,10 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Completion.Providers;
 using Microsoft.R.Editor.Imaging;
+using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
@@ -60,11 +62,14 @@ namespace Microsoft.R.Editor.Test.Completions {
         }
 
         [Test]
-        public void RemoteFiles() {
-            var completionSets = new List<CompletionSet>();
-            var workflowProvider = UIThreadHelper.Instance.Invoke(() => _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate());
-            using (var script = new RHostScript(workflowProvider.RSessions)) {
-                var provider = new FilesCompletionProvider(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), workflowProvider, _imagesProvider, _glyphService, forceR: true);
+        public async Task RemoteFiles() {
+            using (var workflow = UIThreadHelper.Instance.Invoke(() => _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate())) {
+                await workflow.RSessions.TrySwitchBrokerAsync(nameof(FileCompletionProviderTest));
+                await workflow.RSession.EnsureHostStartedAsync(new RHostStartupInfo {
+                    Name = nameof(RemoteFiles)
+                }, null, 50000);
+
+                var provider = new FilesCompletionProvider(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), workflow, _imagesProvider, _glyphService, forceR: true);
                 var entries = provider.GetEntries(null);
                 entries.Should().NotBeEmpty();
                 entries.Should().Contain(e => e.DisplayText == _testFolderName);

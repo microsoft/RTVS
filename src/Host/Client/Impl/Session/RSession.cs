@@ -769,10 +769,6 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
                         return;
                     }
 
-                    if (_hostToSwitch == null) {
-                        Debugger.Launch();
-                    }
-
                     try {
                         var brokerClient = _session.BrokerClient;
                         var startupInfo = _session._startupInfo;

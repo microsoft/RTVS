@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
+using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
@@ -34,6 +35,7 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
 
         public async Task InitializeAsync() {
             await _workflow.RSessions.TrySwitchBrokerAsync(nameof(RInteractiveEvaluatorTest));
+            await _workflow.RSession.HostStarted.Should().BeCompletedAsync(50000);
         }
 
         public async Task DisposeAsync() {

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Text;
@@ -13,6 +14,7 @@ using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Test.Fakes.Trackers;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test;
+using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
@@ -25,34 +27,23 @@ using Xunit;
 
 namespace Microsoft.R.Components.Test.InteractiveWorkflow {
     [ExcludeFromCodeCoverage]
-    public class RInteractiveWorkflowCommandTest : IAsyncLifetime {
+    public class RInteractiveWorkflowCommandTest : IDisposable {
         private readonly MethodInfo _testMethod;
         private readonly IExportProvider _exportProvider;
         private readonly IRInteractiveWorkflow _workflow;
         private readonly IInteractiveWindowComponentContainerFactory _componentContainerFactory;
+        private IRSettings _settings;
 
         public RInteractiveWorkflowCommandTest(RComponentsMefCatalogFixture catalog, TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo;
             _exportProvider = catalog.CreateExportProvider();
             _workflow = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
             _componentContainerFactory = _exportProvider.GetExportedValue<IInteractiveWindowComponentContainerFactory>();
+            _settings = _exportProvider.GetExportedValue<IRSettings>();
         }
 
-        public async Task InitializeAsync() {
-            var settings = _exportProvider.GetExportedValue<IRSettings>();
-            await _workflow.RSessions.TrySwitchBrokerAsync(nameof(RInteractiveWorkflowCommandTest));
-
-            await _workflow.RSession.StartHostAsync(new RHostStartupInfo {
-                Name = _testMethod.Name,
-                RHostCommandLineArguments = settings.LastActiveConnection.RCommandLineArguments,
-                CranMirrorName = settings.CranMirror,
-                CodePage = settings.RCodePage
-            }, null, 50000);
-        }
-
-        public Task DisposeAsync() {
+        public void Dispose() {
             _exportProvider.Dispose();
-            return Task.CompletedTask;
         }
 
         [CompositeTest(ThreadType.UI)]
@@ -60,6 +51,14 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
         [InlineData(false, "utf-8")]
         [InlineData(true, "Windows-1252")]
         public async Task SourceRScriptTest(bool echo, string encoding) {
+            await _workflow.RSessions.TrySwitchBrokerAsync(nameof(RInteractiveWorkflowCommandTest));
+            await _workflow.RSession.EnsureHostStartedAsync(new RHostStartupInfo {
+                Name = _testMethod.Name,
+                RHostCommandLineArguments = _settings.LastActiveConnection.RCommandLineArguments,
+                CranMirrorName = _settings.CranMirror,
+                CodePage = _settings.RCodePage
+            }, null, 50000);
+
             var session = _workflow.RSession;
             await session.ExecuteAsync("sourced <- FALSE");
 
@@ -111,6 +110,14 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
             using (await UIThreadHelper.Instance.Invoke(() => _workflow.GetOrCreateVisualComponent(_componentContainerFactory))) {
                 command.Should().BeVisibleAndDisabled();
 
+                await _workflow.RSessions.TrySwitchBrokerAsync(nameof(RInteractiveWorkflowCommandTest));
+                await _workflow.RSession.EnsureHostStartedAsync(new RHostStartupInfo {
+                    Name = _testMethod.Name,
+                    RHostCommandLineArguments = _settings.LastActiveConnection.RCommandLineArguments,
+                    CranMirrorName = _settings.CranMirror,
+                    CodePage = _settings.RCodePage
+                }, null, 50000);
+
                 using (var interaction = await _workflow.RSession.BeginInteractionAsync()) {
                     var task = interaction.RespondAsync("while(TRUE) {}");
                     await EventTaskSources.IRSession.AfterRequest.Create(_workflow.RSession);
@@ -125,6 +132,8 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
 
                     await command.InvokeAsync();
                     command.Should().BeVisibleAndDisabled();
+
+                    await task.Should().BeCompletedAsync();
                 }
             }
 

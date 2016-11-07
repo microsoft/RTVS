@@ -20,31 +20,25 @@ using static System.FormattableString;
 using static Microsoft.UnitTests.Core.Random;
 
 namespace Microsoft.R.Host.Protocol.Test.RHostPipe {
+    [Category.FuzzTest]
     public class RHostPipeTest {
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
-        static extern int GetShortPathName(string lpszLongPath, StringBuilder lpszShortPath, int cchBuffer);
+        private readonly Interpreter _interpreter;
 
-        internal class Interpreter {
-            public string Path { get; set; }
-            public string BinPath { get; set; }
+        public RHostPipeTest() {
+            _interpreter = new RInstallation().GetCompatibleEngines()
+                .Select(e => new Interpreter { Path = e.InstallPath, BinPath = e.BinPath })
+                .FirstOrDefault();
         }
+        
+        [CompositeTest]
+        [IntRange(100)]
+        public async Task RHostPipeFuzzTest(int iteration) {
+            var input = GenerateInput();
 
-        private IEnumerable<Interpreter> GetInterpreters() {
-            var engines = new RInstallation().GetCompatibleEngines();
-            if (engines.Any()) {
-                foreach (var e in engines) {
-                    var detected = new Interpreter() { Path = e.InstallPath, BinPath = e.BinPath };
-                    yield return detected;
-                }
-            } 
-        }
-
-        private async Task RHostPipeFuzzTestRunnerAsync(byte[] input) {
-            string RHostExe = "Microsoft.R.Host.exe";
-
-            string brokerPath = Path.GetDirectoryName(typeof(RHostPipeTest).Assembly.GetAssemblyPath());
-            string rhostExePath = Path.Combine(brokerPath, RHostExe);
-            string arguments = Invariant($"--rhost-name \"FuzzTest\"");
+            var RHostExe = "Microsoft.R.Host.exe";
+            var brokerPath = Path.GetDirectoryName(typeof(RHostPipeTest).Assembly.GetAssemblyPath());
+            var rhostExePath = Path.Combine(brokerPath, RHostExe);
+            var arguments = Invariant($"--rhost-name \"FuzzTest\"");
 
             ProcessStartInfo psi = new ProcessStartInfo(rhostExePath) {
                 UseShellExecute = false,
@@ -66,8 +60,6 @@ namespace Microsoft.R.Host.Protocol.Test.RHostPipe {
                 StartInfo = psi,
                 EnableRaisingEvents = true,
             };
-
-
             
             process.Start();
             process.WaitForExit(250);
@@ -76,7 +68,7 @@ namespace Microsoft.R.Host.Protocol.Test.RHostPipe {
             process.HasExited.Should().BeFalse();
             try {
 
-                Task killRhostTask = Task.Delay(3000).ContinueWith(t => TryKill(process));
+                var killRhostTask = Task.Delay(3000).ContinueWith(t => TryKill(process));
 
                 CancellationTokenSource cts = new CancellationTokenSource(3000);
                 await ReadStartupOutputFromRHostAsync(process.StandardOutput.BaseStream, cts.Token);
@@ -101,7 +93,7 @@ namespace Microsoft.R.Host.Protocol.Test.RHostPipe {
         private async Task ReadStartupOutputFromRHostAsync(Stream stream, CancellationToken ct) {
             // Capture R Startup messages.
             byte[] buffer = new byte[1024*1024];
-            int bytesRead = 0;
+            var bytesRead = 0;
             do {
                 bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, ct);
             } while (bytesRead == buffer.Length && !ct.IsCancellationRequested);
@@ -122,20 +114,6 @@ namespace Microsoft.R.Host.Protocol.Test.RHostPipe {
             } catch(Exception ex) when (!ex.IsCriticalException()) { }
         }
 
-        private Interpreter _interpreter;
-
-        [Test]
-        [Category.FuzzTest]
-        public async Task RHostPipeFuzzTest() {
-            var interpreters = GetInterpreters();
-            _interpreter = interpreters.FirstOrDefault();
-
-            for (int i = 0; i < 100; ++i) {
-                byte[] input = GenerateInput();
-                await RHostPipeFuzzTestRunnerAsync(input);
-            }
-        }
-
         private byte[] GenerateInput() {
             using (MemoryStream ms = new MemoryStream())
             using (BinaryWriter writer = new BinaryWriter(ms)) {
@@ -154,6 +132,14 @@ namespace Microsoft.R.Host.Protocol.Test.RHostPipe {
                 writer.Flush();
                 return ms.ToArray();
             }
+        }
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
+        static extern int GetShortPathName(string lpszLongPath, StringBuilder lpszShortPath, int cchBuffer);
+
+        private class Interpreter {
+            public string Path { get; set; }
+            public string BinPath { get; set; }
         }
     }
 }

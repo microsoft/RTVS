@@ -32,8 +32,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
         private readonly IRSessionProvider _sessionProvider;
 
         public CurrentDirectoryTest() {
-            _sessionProvider = new RSessionProvider(TestCoreServices.CreateReal());
-
             var connectionsProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IConnectionManagerProvider>();
             var historyProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRHistoryProvider>();
             var packagesProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRPackageManagerProvider>();
@@ -41,8 +39,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
             var activeTextViewTracker = new ActiveTextViewTrackerMock(string.Empty, string.Empty);
             var debuggerModeTracker = new TestDebuggerModeTracker();
             _interactiveWorkflow = UIThreadHelper.Instance.Invoke(() => new RInteractiveWorkflow(
-                _sessionProvider, connectionsProvider, historyProvider, packagesProvider, plotsProvider, activeTextViewTracker,
-                debuggerModeTracker, VsAppShell.Current, RToolsSettings.Current, null, () => { }));
+                connectionsProvider, historyProvider, packagesProvider, plotsProvider, activeTextViewTracker,
+                debuggerModeTracker, VsAppShell.Current, RToolsSettings.Current));
+
+            _sessionProvider = _interactiveWorkflow.RSessions;
         }
 
         public async Task InitializeAsync() {

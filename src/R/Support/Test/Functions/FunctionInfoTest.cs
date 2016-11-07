@@ -31,8 +31,8 @@ namespace Microsoft.R.Support.Test.Functions {
         }
 
         public async Task InitializeAsync() {
-            await _workflow.RSessions.TrySwitchBrokerAsync(nameof(FunctionInfoTest));
-            await _packageIndex.InitializeAsync(_functionIndex);
+            await _workflow.RSessions.TrySwitchBrokerAsync(GetType().Name);
+            await _packageIndex.BuildIndexAsync();
         }
 
         public async Task DisposeAsync() {

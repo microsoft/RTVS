@@ -27,11 +27,6 @@ namespace Microsoft.R.Support.Test.Utility {
             return tcs.Task;
         }
 
-        public static Task InitializeAsync(this IPackageIndex packageIndex, IFunctionIndex functionIndex) {
-            RToolsSettings.Current = new TestRToolsSettings();
-            return packageIndex.BuildIndexAsync();
-        } 
-
         public static async Task DisposeAsync(this IPackageIndex packageIndex, IExportProvider exportProvider) {
             var sessionProvider = exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate().RSessions;
             if (sessionProvider != null) {
