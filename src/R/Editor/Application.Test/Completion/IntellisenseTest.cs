@@ -151,7 +151,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         [Test]
         public async Task R_CompletionFiles() {
             using (var script = await _editorHost.StartScript(ExportProvider, RContentTypeDefinition.ContentType)) {
-                using (new RHostScript(_sessionProvider)) {
+                using (new RHostScript(Workflow.RSessions)) {
                     string asmPath = Assembly.GetExecutingAssembly().GetAssemblyPath();
                     RToolsSettings.Current.WorkingDirectory = Path.GetDirectoryName(asmPath);
 
