@@ -715,7 +715,7 @@ namespace Microsoft.R.Core.Formatting {
                 } else {
                     _tb.SoftIndent();
                 }
-            } else {
+            } else if (!string.IsNullOrWhiteSpace(text)) {
                 // If there is unrecognized text between tokens, append it verbatim
                 _tb.AppendPreformattedText(text);
             }
@@ -844,7 +844,7 @@ namespace Microsoft.R.Core.Formatting {
                 var ast = RParser.Parse(_textProvider,
                                         TextRange.FromBounds(startToken.Start, currentToken.Start),
                                         ts, new List<RToken>(), null);
-                 return ast.IsCompleteExpression();
+                return ast.IsCompleteExpression();
             }
             return true;
         }
