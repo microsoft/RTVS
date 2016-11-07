@@ -815,11 +815,11 @@ namespace Microsoft.R.Core.Formatting {
         }
 
         private bool IsCompleteExpression(int currentTokenIndex) {
-            // Withing the current scope find if text between scope start or the nearest
+            // Within the current scope find if text between scope start or the nearest
             // preceding expression is a complete expression. We preserve user indentation
-            // un multiline expressions so we need to know if a particular position
-            // in a middle of an exression. Simple cases liike when previous token was
-            // an operator is handled directly. In more complex cases such scope-less
+            // in multiline expressions so we need to know if a particular position
+            // in a middle of an expression. Simple cases liike when previous token was
+            // an operator are handled directly. In more complex cases such scope-less
             // function definitions we need to parse the statement.
 
             int startIndex = 0;
