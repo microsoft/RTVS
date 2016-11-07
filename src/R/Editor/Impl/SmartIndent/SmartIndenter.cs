@@ -285,7 +285,7 @@ namespace Microsoft.R.Editor.SmartIndent {
         }
 
         private static bool IsCompleteExpression(IScope scope, int position) {
-            // Withing the current scope find if text between scope start or the nearest
+            // Within the current scope find if text between scope start or the nearest
             // preceding expression is a complete expression. For example, in 'x <- <ENTER>
             // we want to indent one level deeper. The construct can be
             //
