@@ -138,8 +138,6 @@
     <Compile Include="Debugger\Commands\ShowDotPrefixedVariablesCommand.cs" />
     <Compile Include="Debugger\DataTips\DataTipTextViewFilter.cs" />
     <Compile Include="Debugger\DataTips\DataTipTextViewConnectionListener.cs" />
-    <Compile Include="Documentation\DocumentationUrls.cs" />
-    <Compile Include="Documentation\OpenDocumentationCommand.cs" />
     <Compile Include="Expansions\SnippetInformationSourceProvider.cs" />
     <Compile Include="Feedback\ReportIssueCommand.cs" />
     <Compile Include="Commands\R\InstallRClientCommand.cs" />

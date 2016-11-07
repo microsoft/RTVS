@@ -106,6 +106,9 @@
     <Compile Include="Controller\IAsyncCommand.cs" />
     <Compile Include="Controller\IAsyncCommandRange.cs" />
     <Compile Include="Controller\ICommandTarget.cs" />
+    <Compile Include="Documentation\Commands\OpenDocumentationCommand.cs" />
+    <Compile Include="Documentation\LocalDocumentationPaths.cs" />
+    <Compile Include="Documentation\OnlineDocumentationUrls.cs" />
     <Compile Include="Extensions\TextBufferExtensions.cs" />
     <Compile Include="Extensions\TextViewExtensions.cs" />
     <Compile Include="Help\IHelpVisualComponent.cs" />
