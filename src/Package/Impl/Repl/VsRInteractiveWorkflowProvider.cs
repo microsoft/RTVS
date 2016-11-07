@@ -79,27 +79,15 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         public IRInteractiveWorkflow Active => (_instanceLazy != null && _instanceLazy.IsValueCreated) ? _instanceLazy.Value : null;
 
         private IRInteractiveWorkflow CreateRInteractiveWorkflow() {
-            var sessionProvider = new RSessionProvider(_services, new InteractiveWindowConsole( _shell, _instanceLazy));
-            var workflow = new RInteractiveWorkflow(sessionProvider, _connectionsProvider, _historyProvider, _packagesProvider, 
-                                                    _plotsProvider, _activeTextViewTracker, _debuggerModeTracker, 
-                                                    _shell, _settings, _wss, () => DisposeInstance(sessionProvider));
-            _disposableBag.Add(workflow);
-
-            sessionProvider.BrokerChanging += OnBrokerChanging;
-            return workflow;
+            _disposableBag.Add(DisposeInstance);
+            return new RInteractiveWorkflow(_connectionsProvider, _historyProvider, _packagesProvider, _plotsProvider, _activeTextViewTracker, _debuggerModeTracker, _shell, _settings);
         }
 
-        private void OnBrokerChanging(object sender, EventArgs e) {
-            Task.Run(async () => {
-                await _shell.SwitchToMainThreadAsync();
-                _shell.PostCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdShowReplWindow);
-            }).DoNotWait();
-        }
-
-        private void DisposeInstance(IRSessionProvider sessionProvider) {
-            sessionProvider.BrokerChanging -= OnBrokerChanging;
-            sessionProvider.Dispose();
-            _instanceLazy = null;
+        private void DisposeInstance() {
+            var lazy = Interlocked.Exchange(ref _instanceLazy, null);
+            if (lazy != null && lazy.IsValueCreated) {
+                lazy.Value.Dispose();
+            }
         }
     }
 }

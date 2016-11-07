@@ -94,6 +94,8 @@
     <Compile Include="XUnit\IMethodFixture.cs" />
     <Compile Include="XUnit\InlineArrayAttribute.cs" />
     <Compile Include="XUnit\InlineArrayDiscoverer.cs" />
+    <Compile Include="XUnit\IntRangeAttribute.cs" />
+    <Compile Include="XUnit\IntRangeDiscoverer.cs" />
     <Compile Include="XUnit\MefCatalogFixture.cs" />
     <Compile Include="XUnit\MessageBusInjections\ExecuteBeforeAfterAttributesMessageBusInjection.cs" />
     <Compile Include="XUnit\MessageBusInjections\ITestAfterStartingBeforeFinishedInjection.cs" />

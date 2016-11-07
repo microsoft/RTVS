@@ -142,7 +142,8 @@ namespace Microsoft.Common.Core.Threading {
 
                     var erLock = (item as ExclusiveReaderLockSource)?.ExclusiveReaderLock;
                     if (erLock != null) {
-                        Interlocked.CompareExchange(ref erLock.Tail, previous as ExclusiveReaderLockSource, item);
+                        var previousErlSource = previous as ExclusiveReaderLockSource;
+                        Interlocked.CompareExchange(ref erLock.Tail, previousErlSource?.ExclusiveReaderLock == erLock ? previousErlSource : null, item);
                     }
                     
                     Unlink(item);

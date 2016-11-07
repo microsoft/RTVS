@@ -40,7 +40,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
             var settings = _exportProvider.GetExportedValue<IRSettings>();
             await _workflow.RSessions.TrySwitchBrokerAsync(nameof(RPackageManagerViewModelTest));
 
-            await _workflow.RSession.StartHostAsync(new RHostStartupInfo {
+            await _workflow.RSession.EnsureHostStartedAsync(new RHostStartupInfo {
                 Name = _testMethod.Name,
                 CranMirrorName = settings.CranMirror,
                 RHostCommandLineArguments = settings.LastActiveConnection.RCommandLineArguments,

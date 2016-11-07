@@ -30,11 +30,9 @@ namespace Microsoft.R.Components.Test.Plots {
         private readonly ContainerHostMethodFixture _containerHost;
         private readonly IExportProvider _exportProvider;
         private readonly IRInteractiveWorkflow _workflow;
-        private readonly IInteractiveWindowComponentContainerFactory _componentContainerFactory;
         private readonly TestRPlotDeviceVisualComponentContainerFactory _plotDeviceVisualComponentContainerFactory;
         private readonly IRPlotHistoryVisualComponentContainerFactory _plotHistoryVisualComponentContainerFactory;
-        private IInteractiveWindowVisualComponent _replVisualComponent;
-        private IRPlotDeviceVisualComponent _plotVisualComponent;
+        private readonly IRPlotDeviceVisualComponent _plotVisualComponent;
         private IDisposable _containerDisposable;
         private const int PlotWindowInstanceId = 1;
 
@@ -48,17 +46,16 @@ namespace Microsoft.R.Components.Test.Plots {
             _plotDeviceVisualComponentContainerFactory.DeviceProperties = null;
             _plotHistoryVisualComponentContainerFactory = _exportProvider.GetExportedValue<IRPlotHistoryVisualComponentContainerFactory>();
             _workflow = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
-            _componentContainerFactory = _exportProvider.GetExportedValue<IInteractiveWindowComponentContainerFactory>();
             _plotVisualComponent = UIThreadHelper.Instance.Invoke(() => _workflow.Plots.GetOrCreateVisualComponent(_plotDeviceVisualComponentContainerFactory, PlotWindowInstanceId));
             UIThreadHelper.Instance.Invoke(() => _workflow.Plots.RegisterVisualComponent(_plotVisualComponent));
         }
 
         public async Task InitializeAsync() {
             await _workflow.RSessions.TrySwitchBrokerAsync(nameof(RPlotIntegrationUITest));
+            await _workflow.RSession.HostStarted.Should().BeCompletedAsync(50000);
 
             _plotVisualComponent.Control.Width = 600;
             _plotVisualComponent.Control.Height = 500;
-            _replVisualComponent = await _workflow.GetOrCreateVisualComponent(_componentContainerFactory);
             _containerDisposable = await _containerHost.AddToHost(_plotVisualComponent.Control);
         }
 
@@ -69,7 +66,6 @@ namespace Microsoft.R.Components.Test.Plots {
 
             _containerDisposable?.Dispose();
             _exportProvider.Dispose();
-            _replVisualComponent.Dispose();
             return Task.CompletedTask;
         }
 

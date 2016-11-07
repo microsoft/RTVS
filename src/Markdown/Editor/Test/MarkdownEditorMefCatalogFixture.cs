@@ -5,15 +5,11 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.Languages.Editor.Test;
-using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.Markdown.Editor.Test {
-    [AssemblyFixture]
+    // Fixture doesn't import itself. Use AssemblyFixtureImportAttribute
     [ExcludeFromCodeCoverage]
-    public sealed class MarkdownEditorMefCatalogFixture : MarkdownEditorMefCatalogFixtureBase { }
-
-    [ExcludeFromCodeCoverage]
-    public class MarkdownEditorMefCatalogFixtureBase : LanguagesEditorMefCatalogFixtureBase {
+    public class MarkdownEditorMefCatalogFixture : LanguagesEditorMefCatalogFixture {
         protected override IEnumerable<string> GetBinDirectoryAssemblies() => base.GetBinDirectoryAssemblies().Concat(new[] {
             "Microsoft.Markdown.Editor",
             "Microsoft.Markdown.Editor.Test"
