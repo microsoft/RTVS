@@ -68,6 +68,8 @@
     <Compile Include="Commands\CommandAsyncToOleMenuCommandShim.cs" />
     <Compile Include="Commands\CommandAsyncToOleMenuCommandShimFactory.cs" />
     <Compile Include="Commands\OleControllerChain.cs" />
+    <Compile Include="Commands\R\HideAllPlotWindows.cs" />
+    <Compile Include="Commands\R\ShowPlotWindowCommand.cs" />
     <Compile Include="Commands\R\SwitchToRClientCommand.cs" />
     <Compile Include="Commands\SessionCommand.cs" />
     <Compile Include="DataInspect\Commands\DeleteAllVariablesCommand.cs" />
@@ -319,6 +321,7 @@
     <Compile Include="Sql\Publish\SqlTelemetryEvents.cs" />
     <Compile Include="StatusBar\VsStatusBar.cs" />
     <Compile Include="Utilities\IdeUtilities.cs" />
+    <Compile Include="Utilities\VsUIShellExtensions.cs" />
     <Compile Include="Windows\ToolWindowPaneFactory.cs" />
     <Compile Include="History\VsRHistoryVisualComponentContainerFactory.cs" />
     <Compile Include="Imaging\ImagesProvider.cs" />

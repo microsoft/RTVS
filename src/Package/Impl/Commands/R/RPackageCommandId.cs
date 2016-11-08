@@ -69,6 +69,9 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public const int icmdPlotHistoryZoomOut = 724;
         public const int icmdPlotHistoryAutoHide = 725;
         public const int icmdPlotHistoryActivatePlot = 726;
+        public const int icmdPlotWindowsHideAll = 727;
+        // This dynamic command uses ids from 730 to 749
+        public const int icmdPlotWindowsDynamicStart = 730;
 
         // Data
         public const int icmdImportDataset = 801;

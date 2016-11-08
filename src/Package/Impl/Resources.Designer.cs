@@ -1161,6 +1161,33 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to R Plot - Device {0}.
+        /// </summary>
+        public static string PlotWindowCommand {
+            get {
+                return ResourceManager.GetString("PlotWindowCommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R Plot - Device {0} - Active.
+        /// </summary>
+        public static string PlotWindowCommandActive {
+            get {
+                return ResourceManager.GetString("PlotWindowCommandActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R Plot.
+        /// </summary>
+        public static string PlotWindowCommandNoDevice {
+            get {
+                return ResourceManager.GetString("PlotWindowCommandNoDevice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Run.
         /// </summary>
         public static string ProjectProperties_RunPageTitle {
