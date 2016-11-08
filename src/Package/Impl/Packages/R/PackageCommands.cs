@@ -6,6 +6,8 @@ using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Design;
 using Microsoft.Common.Core.Logging;
 using Microsoft.R.Components.ConnectionManager.Commands;
+using Microsoft.R.Components.Documentation;
+using Microsoft.R.Components.Documentation.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Commands;
 using Microsoft.R.Components.Plots.Commands;
@@ -15,7 +17,6 @@ using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Browsers;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.DataInspect.Commands;
-using Microsoft.VisualStudio.R.Package.Documentation;
 using Microsoft.VisualStudio.R.Package.Feedback;
 using Microsoft.VisualStudio.R.Package.Help;
 using Microsoft.VisualStudio.R.Package.History;
@@ -66,14 +67,14 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new SendSmileCommand(logPerms, appShell.Services),
                 new SendFrownCommand(logPerms, appShell.Services),
 
-                new OpenDocumentationCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdRtvsDocumentation, DocumentationUrls.RtvsDocumentation),
-                new OpenDocumentationCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdRtvsSamples, DocumentationUrls.RtvsSamples),
-                new OpenDocumentationCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdRDocsIntroToR, DocumentationUrls.CranIntro),
-                new OpenDocumentationCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdRDocsTaskViews, DocumentationUrls.CranViews),
-                new OpenDocumentationCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdRDocsDataImportExport, DocumentationUrls.CranData),
-                new OpenDocumentationCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdRDocsWritingRExtensions, DocumentationUrls.CranExtensions),
-                new OpenDocumentationCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdCheckForUpdates, DocumentationUrls.CheckForRtvsUpdates),
-                new OpenDocumentationCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdMicrosoftRProducts, DocumentationUrls.MicrosoftRProducts),
+                CreateRCmdSetCommand(RPackageCommandId.icmdRDocsIntroToR, new OpenDocumentationCommand(interactiveWorkflow, OnlineDocumentationUrls.CranIntro, LocalDocumentationPaths.CranIntro)),
+                CreateRCmdSetCommand(RPackageCommandId.icmdRDocsDataImportExport, new OpenDocumentationCommand(interactiveWorkflow, OnlineDocumentationUrls.CranData, LocalDocumentationPaths.CranData)),
+                CreateRCmdSetCommand(RPackageCommandId.icmdRDocsWritingRExtensions, new OpenDocumentationCommand(interactiveWorkflow, OnlineDocumentationUrls.CranExtensions, LocalDocumentationPaths.CranExtensions)),
+                CreateRCmdSetCommand(RPackageCommandId.icmdRDocsTaskViews, new OpenDocumentationCommand(interactiveWorkflow, OnlineDocumentationUrls.CranViews)),
+                CreateRCmdSetCommand(RPackageCommandId.icmdRtvsDocumentation, new OpenDocumentationCommand(interactiveWorkflow, OnlineDocumentationUrls.RtvsDocumentation)),
+                CreateRCmdSetCommand(RPackageCommandId.icmdRtvsSamples, new OpenDocumentationCommand(interactiveWorkflow, OnlineDocumentationUrls.RtvsSamples)),
+                CreateRCmdSetCommand(RPackageCommandId.icmdCheckForUpdates, new OpenDocumentationCommand(interactiveWorkflow, OnlineDocumentationUrls.CheckForRtvsUpdates)),
+                CreateRCmdSetCommand(RPackageCommandId.icmdMicrosoftRProducts, new OpenDocumentationCommand(interactiveWorkflow, OnlineDocumentationUrls.MicrosoftRProducts)),
 
                 new LoadWorkspaceCommand(appShell, interactiveWorkflow, projectServiceAccessor),
                 new SaveWorkspaceCommand(appShell, interactiveWorkflow, projectServiceAccessor),
