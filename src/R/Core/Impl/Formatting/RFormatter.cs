@@ -846,8 +846,9 @@ namespace Microsoft.R.Core.Formatting {
                 var list = new List<RToken>();
                 var tokens = _tokens.Skip(startIndex).Take(currentTokenIndex - startIndex);
                 var ts = new TokenStream<RToken>(new TextRangeCollection<RToken>(tokens), RToken.EndOfStreamToken);
+                var end = currentToken.TokenType != RTokenType.EndOfStream ? currentToken.Start : _textProvider.Length;
                 var ast = RParser.Parse(_textProvider,
-                                        TextRange.FromBounds(startToken.Start, currentToken.Start),
+                                        TextRange.FromBounds(startToken.Start, end),
                                         ts, new List<RToken>(), null);
                 return ast.IsCompleteExpression();
             }
