@@ -144,7 +144,7 @@ namespace Microsoft.R.Editor.Formatting {
                             // Typically this is a test scenario only. In the real editor
                             // instance document is available and automatically updates AST
                             // when whitespace inserted, not no manual update is necessary.
-                            ast.ReflectTextChange(line.Start, 0, indentString.Length);
+                            ast.ReflectTextChange(line.Start, 0, indentString.Length, new TextProvider(textBuffer.CurrentSnapshot));
                         }
                     }
                 }

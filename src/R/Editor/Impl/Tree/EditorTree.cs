@@ -255,7 +255,7 @@ namespace Microsoft.R.Editor.Tree {
             List<TextChangeEventArgs> changes = new List<TextChangeEventArgs>(1);
             changes.Add(change);
 
-            _astRoot.ReflectTextChanges(changes);
+            _astRoot.ReflectTextChanges(changes, new TextProvider(TextBuffer.CurrentSnapshot));
         }
 
         internal TextChange PendingChanges {

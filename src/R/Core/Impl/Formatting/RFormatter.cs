@@ -655,12 +655,7 @@ namespace Microsoft.R.Core.Formatting {
             string text = _textProvider.GetText(TextRange.FromBounds(start, end));
             bool whitespaceOnly = string.IsNullOrWhiteSpace(text);
 
-            bool lineBreakBeforeToken = false;
-            if (whitespaceOnly) {
-                lineBreakBeforeToken = _tokens.IsLineBreakAfter(_textProvider, _tokens.Position - 1);
-            }
-
-            if (lineBreakBeforeToken && !preserveUserIndent) {
+            if (!preserveUserIndent && whitespaceOnly) {
                 // Append any user-entered whitespace. We preserve line breaks but trim 
                 // unnecessary spaces such as on empty lines. We must, however, preserve 
                 // user indentation in long argument lists and in expresions split 
@@ -684,6 +679,9 @@ namespace Microsoft.R.Core.Formatting {
                             break;
 
                         default:
+                            // If expression between scope start and the current point is incomplete,
+                            // (i.e. we are in a middle of multiline expression) we want to preserve 
+                            // user-supplied indentation.
                             preserveUserIndent = !IsCompleteExpression(_tokens.Position);
                             break;
                     }
@@ -720,8 +718,8 @@ namespace Microsoft.R.Core.Formatting {
                 } else {
                     _tb.SoftIndent();
                 }
-            } else if (!whitespaceOnly) {
-                // If there is unrecognized text between tokens, append it verbatim
+            } else {
+                // If there is unrecognized text between tokens, append it verbatim.
                 _tb.AppendPreformattedText(text);
             }
         }
@@ -740,8 +738,6 @@ namespace Microsoft.R.Core.Formatting {
         private bool ShouldAppendTextBeforeToken() {
             if (_tokens.PreviousToken.TokenType == RTokenType.Comment &&
                 _tokens.CurrentToken.TokenType != RTokenType.Comment) {
-                // TODO: implement function argument alignment instead.
-                //
                 // Copy any possible indentation after comment
                 // at the previous line such as in 
                 //    func(a, #comment
@@ -794,6 +790,12 @@ namespace Microsoft.R.Core.Formatting {
             _tokens = new TokenStream<RToken>(tokens, RToken.EndOfStreamToken);
         }
 
+        /// <summary>
+        /// Calculates position of a end of a single-line scope.
+        /// The simple scope ends at a line break or at opening 
+        /// or closing curly brace.
+        /// </summary>
+        /// <returns></returns>
         private int GetSingleLineScopeEnd() {
             int closeBraceIndex = TokenBraceCounter<RToken>.GetMatchingBrace(
                       _tokens,
@@ -820,21 +822,18 @@ namespace Microsoft.R.Core.Formatting {
         }
 
         private bool IsCompleteExpression(int currentTokenIndex) {
-            // Within the current scope find if text between scope start or the nearest
-            // preceding expression is a complete expression. We preserve user indentation
+            // Within the current scope find if text between scope start and the current
+            // token position is a complete expression. We preserve user indentation
             // in multiline expressions so we need to know if a particular position
             // in a middle of an expression. Simple cases liike when previous token was
             // an operator are handled directly. In more complex cases such scope-less
             // function definitions we need to parse the statement.
 
             int startIndex = 0;
-            var openBraceToken = _formattingScopes.Peek().OpenBraceToken;
-            if (openBraceToken != null) {
-                for (int i = currentTokenIndex - 1; i >= 0; i--) {
-                    if (_tokens[i] == openBraceToken) {
-                        startIndex = i + 1;
-                        break;
-                    }
+            for (int i = currentTokenIndex - 1; i >= 0; i--) {
+                if (_tokens[i].TokenType == RTokenType.OpenCurlyBrace || _tokens[i].TokenType == RTokenType.CloseCurlyBrace) {
+                    startIndex = i + 1;
+                    break;
                 }
             }
 
@@ -845,8 +844,10 @@ namespace Microsoft.R.Core.Formatting {
                 // Limit token stream since parser may not necessarily stop at the supplied text range end.
                 var list = new List<RToken>();
                 var tokens = _tokens.Skip(startIndex).Take(currentTokenIndex - startIndex);
+
                 var ts = new TokenStream<RToken>(new TextRangeCollection<RToken>(tokens), RToken.EndOfStreamToken);
                 var end = currentToken.TokenType != RTokenType.EndOfStream ? currentToken.Start : _textProvider.Length;
+
                 var ast = RParser.Parse(_textProvider,
                                         TextRange.FromBounds(startToken.Start, end),
                                         ts, new List<RToken>(), null);
