@@ -8,7 +8,7 @@ namespace Microsoft.Common.Core.Extensions {
     public static class ReflectionExtensions {
         public static IDictionary<string, object> GetPropertyValueDictionary(this object o) {
             var dict = new Dictionary<string, object>();
-            var properties = o.GetType().GetProperties(BindingFlags.Public);
+            var properties = o.GetType().GetProperties();
             foreach (var p in properties) {
                 var value = p.GetValue(o);
                 dict[p.Name] = value;
@@ -16,7 +16,7 @@ namespace Microsoft.Common.Core.Extensions {
             return dict;
         }
         public static void SetProperties(this object o, IDictionary<string, object> dict) {
-            var properties = o.GetType().GetProperties(BindingFlags.Public);
+            var properties = o.GetType().GetProperties();
             foreach (var p in properties) {
                 object value;
                 if(dict.TryGetValue(p.Name, out value)) {

@@ -7,7 +7,7 @@ using Microsoft.Common.Core.Shell;
 namespace Microsoft.Common.Core.Extensions {
     public static class SettingsExtensions {
         public static void LoadPropertyValues(this ISettingsStorage settings, object o) {
-            var properties = o.GetType().GetProperties(BindingFlags.Public);
+            var properties = o.GetType().GetProperties();
             foreach (var p in properties) {
                 if (settings.SettingExists(p.Name)) {
                     var value = settings.GetSetting(p.Name, p.PropertyType);

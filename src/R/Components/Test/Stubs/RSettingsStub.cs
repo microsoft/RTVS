@@ -13,8 +13,8 @@ namespace Microsoft.R.Components.Test.Stubs {
         public bool AlwaysSaveHistory { get; set; }
         public bool ClearFilterOnAddHistory { get; set; }
         public bool MultilineHistorySelection { get; set; }
-        public IConnectionInfo[] Connections { get; set; }
-        public IConnectionInfo LastActiveConnection { get; set; }
+        public ConnectionInfo[] Connections { get; set; }
+        public ConnectionInfo LastActiveConnection { get; set; }
         public string CranMirror { get; set; }
         public string WorkingDirectory { get; set; }
         public bool ShowPackageManagerDisclaimer { get; set; }

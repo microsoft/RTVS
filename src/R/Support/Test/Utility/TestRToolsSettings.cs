@@ -20,24 +20,24 @@ namespace Microsoft.R.Support.Test.Utility {
     [Export(typeof(IRSettings))]
     [Export(typeof(IRToolsSettings))]
     public sealed class TestRToolsSettings : IRToolsSettings {
-        private readonly IConnectionInfo[] _connections;
+        private readonly ConnectionInfo[] _connections;
 
         [ImportingConstructor]
         public TestRToolsSettings() : this("Test") {}
 
         public TestRToolsSettings(string connectionName) {
-            _connections = new IConnectionInfo[] { new ConnectionInfo {
+            _connections = new ConnectionInfo[] { new ConnectionInfo {
                 Name = connectionName ?? "Test",
                 Path = new RInstallation().GetCompatibleEngines().First().InstallPath
             }};
         }
 
-        public IConnectionInfo[] Connections {
+        public ConnectionInfo[] Connections {
             get { return _connections; }
             set { }
         }
 
-        public IConnectionInfo LastActiveConnection {
+        public ConnectionInfo LastActiveConnection {
             get { return _connections[0]; }
             set { }
         }

@@ -16,13 +16,13 @@ namespace Microsoft.R.Components.Settings {
         /// Array of saved connections
         /// Sorted by latest usage
         /// </summary>
-        IConnectionInfo[] Connections { get; set; }
+        ConnectionInfo[] Connections { get; set; }
 
         /// <summary>
         /// Latest active connection
         /// May not be in list of  <see cref="Connections"/>
         /// </summary>
-        IConnectionInfo LastActiveConnection { get; set; }
+        ConnectionInfo LastActiveConnection { get; set; }
         
         /// <summary>
         /// Selected CRAN mirror

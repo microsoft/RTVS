@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Enums;
 using Microsoft.Common.Core.Extensions;
@@ -24,6 +23,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace Microsoft.VisualStudio.R.Package.Options.R {
     [Export(typeof(IRSettings))]
     [Export(typeof(IRToolsSettings))]
+    [Export(typeof(IRPersistentSettings))]
     internal sealed class RToolsSettingsImplementation : BindableBase, IRToolsSettings, IRPersistentSettings {
         private const int MaxDirectoryEntries = 8;
         private readonly ISettingsStorage _settings;
@@ -31,8 +31,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         private string _cranMirror;
         private string _workingDirectory;
         private int _codePage;
-        private IConnectionInfo[] _connections = new IConnectionInfo[0];
-        private IConnectionInfo _lastActiveConnection;
+        private ConnectionInfo[] _connections = new ConnectionInfo[0];
+        private ConnectionInfo _lastActiveConnection;
 
         private YesNoAsk _loadRDataOnProjectLoad = YesNoAsk.No;
         private YesNoAsk _saveRDataOnProjectUnload = YesNoAsk.No;
@@ -103,12 +103,12 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set { SetProperty(ref _codePage, value); }
         }
 
-        public IConnectionInfo[] Connections {
+        public ConnectionInfo[] Connections {
             get { return _connections; }
             set { SetProperty(ref _connections, value); }
         }
 
-        public IConnectionInfo LastActiveConnection {
+        public ConnectionInfo LastActiveConnection {
             get { return _lastActiveConnection; }
             set { SetProperty(ref _lastActiveConnection, value); }
         }
@@ -209,7 +209,10 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
 
         #region IRPersistentSettings
         public void LoadSettings() => _settings.LoadPropertyValues(this);
-        public void SaveSettings() => _settings.SavePropertyValues(this);
+        public void SaveSettings() {
+            _settings.SavePropertyValues(this);
+            _settings.Persist();
+        }
         #endregion
     }
 }
