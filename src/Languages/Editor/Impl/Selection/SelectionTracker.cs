@@ -88,7 +88,8 @@ namespace Microsoft.Languages.Editor.Selection {
         protected virtual void MoveCaretTo(SnapshotPoint position, int virtualSpaces) {
             SnapshotPoint? viewPosition = TextView.MapUpToView(position);
             if (viewPosition.HasValue) {
-                TextView.Caret.MoveTo(new VirtualSnapshotPoint(viewPosition.Value, virtualSpaces));
+                var line = TextView.TextBuffer.CurrentSnapshot.GetLineFromPosition(viewPosition.Value);
+                TextView.Caret.MoveTo(new VirtualSnapshotPoint(line, virtualSpaces));
 
                 if (TextView.Caret.ContainingTextViewLine.VisibilityState != VisibilityState.FullyVisible) {
                     TextView.Caret.EnsureVisible();
