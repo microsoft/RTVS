@@ -5,6 +5,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
+using Microsoft.R.Components.Help;
 
 namespace Microsoft.R.Host.Client.Test.Script {
     public class RHostClientTestApp : IRSessionCallback {
@@ -12,6 +13,7 @@ namespace Microsoft.R.Host.Client.Test.Script {
         public Func<Guid, PlotDeviceProperties> PlotDeviceCreateHandler { get; set; }
         public Action<Guid> PlotDeviceDestroyHandler { get; set; }
         public Action<PlotMessage> PlotHandler { get; set; }
+        public IHelpVisualComponent HelpComponent { get; set; }
 
         public virtual string CranUrlFromName(string name) {
             return "https://cran.rstudio.com";
@@ -30,6 +32,7 @@ namespace Microsoft.R.Host.Client.Test.Script {
         }
 
         public virtual Task ShowHelpAsync(string url, CancellationToken cancellationToken = default(CancellationToken)) {
+            HelpComponent.Navigate(url);
             return Task.CompletedTask;
         }
 

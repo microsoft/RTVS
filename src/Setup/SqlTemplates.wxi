@@ -2,15 +2,15 @@
 <Include>
   <DirectoryRef Id="SqlRTemplatesFolder">
     <Component Id="SqlRItemTemplates" Guid="{D06E34D2-0F8F-4273-8E79-D0104FE0C91A}">
-      <File Source="$(var.BinDir)\Templates\Sql\Create Procedure R.vsdir" />
-      <File Source="$(var.BinDir)\Templates\Sql\R Script.vsdir" />
+      <File Source="$(var.TemplatesDir)\Sql\Create Procedure R.vsdir" />
+      <File Source="$(var.TemplatesDir)\Sql\R Script.vsdir" />
     </Component>
   </DirectoryRef>
   <DirectoryRef Id="SqlItemsFolder">
     <Component Id="SqlRItems" Guid="{08892896-DFA1-4DB8-973C-7E4FBF1274B6}">
-      <File Source="$(var.BinDir)\Templates\Sql\Create Procedure R.vstemplate" />
-      <File Source="$(var.BinDir)\Templates\Sql\Create Procedure R.sql" />
-      <File Id="ScriptRForSql" Source="$(var.BinDir)\Templates\NewItem\Script.r" />
+      <File Source="$(var.TemplatesDir)\Sql\Create Procedure R.vstemplate" />
+      <File Source="$(var.TemplatesDir)\Sql\Create Procedure R.sql" />
+      <File Id="ScriptRForSql" Source="$(var.TemplatesDir)\NewItem\Script.r" />
     </Component>
   </DirectoryRef>
 </Include>

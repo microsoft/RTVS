@@ -1,6 +1,6 @@
 ﻿{
   "dependencies": {
-    "FluentAssertions": "4.14.0",
+    "FluentAssertions": "4.16.0",
     "MicroBuild.Core": "0.2.0",
     "Microsoft.Tpl.Dataflow": "4.5.24",
     "Microsoft.VisualStudio.ProjectSystem": "14.0.50617-pre",

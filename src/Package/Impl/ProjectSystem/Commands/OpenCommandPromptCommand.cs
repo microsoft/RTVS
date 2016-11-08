@@ -6,6 +6,7 @@ using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.IO;
 using Microsoft.Common.Core.Services;
+using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Commands;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Utilities;

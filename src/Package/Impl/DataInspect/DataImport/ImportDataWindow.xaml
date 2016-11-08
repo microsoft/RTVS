@@ -1,18 +1,18 @@
-﻿<ui:DialogWindow x:Class="Microsoft.VisualStudio.R.Package.DataInspect.DataImport.ImportDataWindow"
+﻿<ui:PlatformDialogWindow x:Class="Microsoft.VisualStudio.R.Package.DataInspect.DataImport.ImportDataWindow"
                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                 xmlns:ui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0"
                  xmlns:pkg="clr-namespace:Microsoft.VisualStudio.R.Package"
                  xmlns:wpf="clr-namespace:Microsoft.R.Wpf;assembly=Microsoft.R.Wpf"
+                 xmlns:ui="clr-namespace:Microsoft.VisualStudio.R.Package.Wpf"
                  xmlns:components="clr-namespace:Microsoft.R.Components;assembly=Microsoft.R.Components"
                  mc:Ignorable="d" MinHeight="500" MinWidth="728" x:Name="Self"
                  ShowInTaskbar="False" WindowStyle="SingleBorderWindow"
                  Background="{DynamicResource {x:Static wpf:Brushes.BackgroundBrushKey}}"
                  Foreground="{DynamicResource {x:Static wpf:Brushes.UITextKey}}"
                  Title="{x:Static pkg:Resources.ImportData_Title}">
-    <ui:DialogWindow.Resources>
+    <ui:PlatformDialogWindow.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <wpf:CommonResources />
@@ -21,7 +21,7 @@
                 <TextBlock Text="{Binding Path=Key}" />
             </DataTemplate>
         </ResourceDictionary>
-    </ui:DialogWindow.Resources>
+    </ui:PlatformDialogWindow.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -235,4 +235,4 @@
                     IsCancel="True" />
         </Grid>
     </Grid>
-</ui:DialogWindow>
+</ui:PlatformDialogWindow>

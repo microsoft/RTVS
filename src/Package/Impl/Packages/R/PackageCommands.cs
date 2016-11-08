@@ -12,6 +12,7 @@ using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Commands;
 using Microsoft.R.Components.Plots.Commands;
 using Microsoft.R.Components.Sql;
+using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Browsers;
 using Microsoft.VisualStudio.R.Package.Commands;
@@ -50,6 +51,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             var wbs = exportProvider.GetExportedValue<IWebBrowserServices>();
             var pcsp = exportProvider.GetExportedValue<IProjectConfigurationSettingsProvider>();
             var dbcs = exportProvider.GetExportedValue<IDbConnectionService>();
+            var settings = exportProvider.GetExportedValue<IRToolsSettings>();
             var logPerms = exportProvider.GetExportedValue<ILoggingPermissions>();
 
             return new List<MenuCommand> {
@@ -57,7 +59,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new GoToEditorOptionsCommand(),
                 new ImportRSettingsCommand(),
                 new InstallRClientCommand(appShell),
-                new SwitchToRClientCommand(interactiveWorkflow.Connections, appShell),
+                new SwitchToRClientCommand(interactiveWorkflow.Connections, appShell, settings),
                 new SurveyNewsCommand(appShell),
                 new SetupRemoteCommand(),
 
@@ -118,7 +120,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new ShowToolWindowCommand<ConnectionManagerWindowPane>(RPackageCommandId.icmdShowConnectionsWindow),
                 new ShowToolWindowCommand<PackageManagerWindowPane>(RPackageCommandId.icmdShowPackagesWindow),
                 new ShowToolWindowCommand<PlotHistoryWindowPane>(RPackageCommandId.icmdPlotHistoryWindow),
-                new ShowToolWindowCommand<PlotDeviceWindowPane>(RPackageCommandId.icmdShowPlotWindow),
 
                 new ShowHelpOnCurrentCommand(interactiveWorkflow, textViewTracker, replTracker),
                 new SearchWebForCurrentCommand(interactiveWorkflow, textViewTracker, replTracker, wbs),
@@ -127,6 +128,9 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
                 // Plot commands
                 CreateRCmdSetCommand(RPackageCommandId.icmdNewPlotWindow, new PlotDeviceNewCommand(interactiveWorkflow)),
+                CreateRCmdSetCommand(RPackageCommandId.icmdShowPlotWindow, new ShowMainPlotWindowCommand(interactiveWorkflow)),
+                CreateRCmdSetCommand(RPackageCommandId.icmdPlotWindowsDynamicStart, new ShowPlotWindowCommand(appShell, interactiveWorkflow)),
+                new HideAllPlotWindowsCommand(appShell),
 
                 // Connection manager commands
                 CreateRCmdSetCommand(RPackageCommandId.icmdReconnect, new ReconnectCommand(interactiveWorkflow)),

@@ -5,7 +5,6 @@ using System;
 using System.Text;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Support.Settings;
-using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.VisualStudio.R.Package.Browsers;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Repl;

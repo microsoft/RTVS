@@ -4,7 +4,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core.OS;
-using Microsoft.R.Support.Settings.Definitions;
+using Microsoft.R.Support.Settings;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.Browsers;

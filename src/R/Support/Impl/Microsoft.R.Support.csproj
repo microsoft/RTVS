@@ -23,6 +23,9 @@
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\$(AssemblyName)\</IntermediateOutputPath>
     <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
   </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>copy /y "$(MSBuildProjectDirectory)\project.$(VisualStudioVersion).json" "$(MSBuildProjectDirectory)\project.json"</PreBuildEvent>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
     <Reference Include="System" />
@@ -132,13 +135,16 @@
     <Compile Include="RD\Tokens\RdToken.cs" />
     <Compile Include="RD\Tokens\RdTokenizer.cs" />
     <Compile Include="RD\Tokens\RdTokenType.cs" />
-    <Compile Include="Settings\Definitions\IRToolsSettings.cs" />
-    <Compile Include="Settings\Definitions\SurveyNewsPolicy.cs" />
-    <Compile Include="Settings\Definitions\WebHelpSearchBrowserType.cs" />
+    <Compile Include="Settings\IRPersistentSettings.cs" />
+    <Compile Include="Settings\IRToolsSettings.cs" />
+    <Compile Include="Settings\SurveyNewsPolicy.cs" />
+    <Compile Include="Settings\WebHelpSearchBrowserType.cs" />
     <Compile Include="Settings\RToolsSettings.cs" />
     <Compile Include="Utility\AsyncData.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="project.15.0.json" />
+    <None Include="project.14.0.json" />
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>

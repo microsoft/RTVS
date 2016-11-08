@@ -2,19 +2,27 @@
 <Include>
   <Feature Id="ProductFeature" Title="$(var.ProductName)">
 
-    <!--<?foreach Lang in $(var.LangList)?>
-      <?if $(var.Lang) != "ENU"?>
-        <ComponentRef Id="ProductLocalizedResources_$(var.Lang)" />
-      <?endif?>    
-    <?endforeach?>-->
+    <ComponentRef Id="ItemTemplates_DatasetRD" />
+    <ComponentRef Id="ItemTemplates_EmptyMD" />
+    <ComponentRef Id="ItemTemplates_EmptyRD" />
+    <ComponentRef Id="ItemTemplates_EmptyRMD" />
+    <ComponentRef Id="ItemTemplates_FunctionRD" />
+    <ComponentRef Id="ItemTemplates_RScript" />
+    <ComponentRef Id="ItemTemplates_RSettings" />
+    <ComponentRef Id="ItemTemplates_SqlQuery" />
+    <ComponentRef Id="ItemTemplates_SqlSProc" />
+    <ComponentRef Id="ItemTemplates_TextFile" />
+    <ComponentRef Id="ItemTemplates_WebHtmlPage" />
+    <ComponentRef Id="ItemTemplates_WebStyleSheet" />
+    <ComponentRef Id="ItemTemplates_XMLFile" />
+    <ComponentRef Id="ItemTemplates_XMLSchema" />
+    <ComponentRef Id="ItemTemplates_XSLTFile" />
 
-    <?foreach Lcid in $(var.LcidList)?>
-      <ComponentRef Id="ItemTemplates_$(var.Lcid)" />
-      <ComponentRef Id="ProjectTemplates_$(var.Lcid)" />
-    <?endforeach?>
+    <ComponentRef Id="ProjectTemplates_EmptyProject" />
+
     <ComponentRef Id="CpsRules" />
     <ComponentRef Id="MSBuildTargets" />
-    
+
     <ComponentRef Id="ProductAssemblies" />
     <ComponentRef Id="FileNewTemplates" />
     <ComponentRef Id="SqlRItemTemplates" />
@@ -27,7 +35,7 @@
     <ComponentRef Id="RegistryEntries" />
 
     <ComponentGroupRef Id="RtvsPackage" />
-    
+
     <ComponentRef Id="SnippetsIndex" />
     <ComponentRef Id="SnippetsAnalysis" />
     <ComponentRef Id="SnippetsDatasets" />
@@ -36,7 +44,7 @@
     <ComponentRef Id="SnippetsGraphics" />
     <ComponentRef Id="SnippetsOperators" />
     <ComponentRef Id="SnippetsRodbc" />
-    
+
     <ComponentRef Id="SnippetsMrsAnalysis" />
     <ComponentRef Id="SnippetsMrsChunking" />
     <ComponentRef Id="SnippetsMrsComputeContext" />

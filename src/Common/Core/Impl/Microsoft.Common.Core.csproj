@@ -54,6 +54,8 @@
     <Compile Include="Extensions\ClipboardExtensions.cs" />
     <Compile Include="Exceptions\CriticalException.cs" />
     <Compile Include="Extensions\MathExtensions.cs" />
+    <Compile Include="Extensions\ReflectionExtensions.cs" />
+    <Compile Include="Extensions\SettingsExtensions.cs" />
     <Compile Include="Extensions\StreamExtensions.cs" />
     <Compile Include="IO\KnownFolderGuids.cs" />
     <Compile Include="Logging\ILoggerProvider.cs" />
@@ -82,7 +84,6 @@
     <Compile Include="Security\SecurityUtilities.cs" />
     <Compile Include="Services\ICoreServices.cs" />
     <Compile Include="Services\CoreServices.cs" />
-    <Compile Include="Settings\ISettingsStorage.cs" />
     <Compile Include="Shell\CoreShellExtensions.cs" />
     <Compile Include="Shell\IApplicationConstants.cs" />
     <Compile Include="Shell\UIColorTheme.cs" />
@@ -98,6 +99,7 @@
     <Compile Include="Threading\AsyncReaderWriterLock.ExclusiveReaderLock.cs" />
     <Compile Include="Threading\AsyncReaderWriterLock.LockSource.cs" />
     <Compile Include="Threading\AsyncReaderWriterLock.Token.cs" />
+    <Compile Include="Shell\ISettingsStorage.cs" />
     <Compile Include="Threading\BackgroundThreadAwaitable.cs" />
     <Compile Include="Threading\BackgroundThreadAwaiter.cs" />
     <Compile Include="Collections\ListExtensions.cs" />

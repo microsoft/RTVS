@@ -9,11 +9,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Settings;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Threading;
 using Microsoft.UnitTests.Core.Threading;
-using NSubstitute;
 
 namespace Microsoft.Common.Core.Test.Fakes.Shell {
     [ExcludeFromCodeCoverage]
@@ -68,7 +66,6 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
         public IProgressDialog ProgressDialog { get; } = new TestProgressDialog();
         public IApplicationConstants AppConstants => new TestAppConstants();
         public ICoreServices Services => TestCoreServices.CreateReal();
-        public IWritableSettingsStorage SettingsStorage => Substitute.For<IWritableSettingsStorage>();
 
         #region IMainThread
         public int ThreadId => MainThread.ManagedThreadId;

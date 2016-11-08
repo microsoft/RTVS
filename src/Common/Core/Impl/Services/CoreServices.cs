@@ -24,6 +24,7 @@ namespace Microsoft.Common.Core.Services {
             , ILoggingPermissions permissions
             , ISecurityService security
             , ITaskService tasks
+            , ISettingsStorage settings
             , [Import(AllowDefault = true)] IActionLog log = null
             , [Import(AllowDefault = true)] IFileSystem fs = null
             , [Import(AllowDefault = true)] IRegistry registry = null
@@ -40,6 +41,7 @@ namespace Microsoft.Common.Core.Services {
             ProcessServices = ps ?? new ProcessServices();
             Registry = registry ?? new RegistryImpl();
             FileSystem = fs ?? new FileSystem();
+            Settings = settings;
         }
 
         public IActionLog Log => _log ?? (_log = LoggingServices.GetOrCreateLog(_appConstants.ApplicationName));
@@ -51,5 +53,6 @@ namespace Microsoft.Common.Core.Services {
         public ITelemetryService Telemetry { get; }
         public ITaskService Tasks { get; }
         public ILoggingServices LoggingServices { get; }
+        public ISettingsStorage Settings { get; }
     }
 }

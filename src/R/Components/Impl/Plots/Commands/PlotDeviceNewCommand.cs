@@ -8,10 +8,14 @@ using Microsoft.R.Components.InteractiveWorkflow;
 
 namespace Microsoft.R.Components.Plots.Commands {
     public sealed class PlotDeviceNewCommand : IAsyncCommand {
-        private IRInteractiveWorkflow InteractiveWorkflow { get; }
+        private readonly IRInteractiveWorkflow _workflow;
 
-        public PlotDeviceNewCommand(IRInteractiveWorkflow interactiveWorkflow) {
-            InteractiveWorkflow = interactiveWorkflow;
+        public PlotDeviceNewCommand(IRInteractiveWorkflow workflow) {
+            if (workflow == null) {
+                throw new ArgumentNullException(nameof(workflow));
+            }
+
+            _workflow = workflow;
         }
 
         public CommandStatus Status {
@@ -22,9 +26,9 @@ namespace Microsoft.R.Components.Plots.Commands {
 
         public async Task<CommandResult> InvokeAsync() {
             try {
-                await InteractiveWorkflow.Plots.NewDeviceAsync(-1);
+                await _workflow.Plots.NewDeviceAsync(-1);
             } catch (RPlotManagerException ex) {
-                InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);
+                _workflow.Shell.ShowErrorMessage(ex.Message);
             } catch (OperationCanceledException) {
             }
 

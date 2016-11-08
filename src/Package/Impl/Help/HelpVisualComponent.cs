@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
@@ -299,8 +300,10 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
             if (Browser != null) {
                 DisconnectWindowEvents();
+
                 Browser.Navigating -= OnNavigating;
                 Browser.Navigated -= OnNavigated;
+
                 Browser.Dispose();
                 Browser = null;
             }

@@ -43,8 +43,8 @@ namespace Microsoft.R.Editor.Completion.Providers {
 
             _directory = ExtractDirectory(directoryCandidate);
 
-            if (_directory.StartsWithOrdinal("~\\")) {
-                _directory = _directory.Substring(2);
+            if (_directory.Length == 0 || _directory.StartsWithOrdinal("~\\")) {
+                _directory = _directory.Length > 1 ? _directory.Substring(2) : _directory;
                 _userDirectoryFetchingTask = _workflow.RSession.GetRUserDirectoryAsync();
             }
         }

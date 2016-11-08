@@ -3,8 +3,8 @@
 
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.Common.Core.Settings;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Languages.Core.Settings;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Services;
@@ -45,7 +45,7 @@ namespace Microsoft.Languages.Editor.Application.Packages {
     }
 
     [ExcludeFromCodeCoverage]
-    [Export(typeof(IWritableSettingsStorage))]
+    [Export(typeof(IWritableEditorSettingsStorage))]
     [ContentType(RContentTypeDefinition.ContentType)]
     [Name("R Test settings")]
     [Order(Before = "Default")]

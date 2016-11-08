@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using Microsoft.Common.Core.Settings;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Languages.Core.Settings;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.VisualStudio.Utilities;
 
@@ -15,13 +15,13 @@ namespace Microsoft.Languages.Editor.Shell {
     /// <summary>
     /// Provides abstraction of application services to editor components
     /// </summary>
-    public static class EditorShell {
-        private static Dictionary<string, ISettingsStorage> _settingStorageMap = new Dictionary<string, ISettingsStorage>(StringComparer.OrdinalIgnoreCase);
+    public sealed class EditorShell {
+        private static Dictionary<string, IEditorSettingsStorage> _settingStorageMap = new Dictionary<string, IEditorSettingsStorage>(StringComparer.OrdinalIgnoreCase);
         private static object _shell;
         private static readonly object _instanceLock = new object();
         private static readonly object _settingsLock = new object();
 
-        public static bool HasShell  => _shell != null;
+        public static bool HasShell => _shell != null;
 
         public static IEditorShell Current {
             get {
@@ -39,8 +39,8 @@ namespace Microsoft.Languages.Editor.Shell {
             }
         }
 
-        public static ISettingsStorage GetSettings(ICompositionCatalog compositionCatalog, string contentTypeName) {
-            ISettingsStorage settingsStorage = null;
+        public static IEditorSettingsStorage GetSettings(ICompositionCatalog compositionCatalog, string contentTypeName) {
+            IEditorSettingsStorage settingsStorage = null;
 
             lock (_settingsLock) {
                 if (_settingStorageMap.TryGetValue(contentTypeName, out settingsStorage)) {
@@ -49,28 +49,29 @@ namespace Microsoft.Languages.Editor.Shell {
 
                 // Need to find the settings using MEF (don't use MEF inside of other locks, that can lead to deadlock)
 
-            var contentTypeRegistry = compositionCatalog.ExportProvider.GetExportedValue<IContentTypeRegistryService>();
+                var contentTypeRegistry = compositionCatalog.ExportProvider.GetExportedValue<IContentTypeRegistryService>();
 
                 var contentType = contentTypeRegistry.GetContentType(contentTypeName);
                 Debug.Assert(contentType != null, "Cannot find content type object for " + contentTypeName);
 
-            settingsStorage = ComponentLocatorForOrderedContentType<IWritableSettingsStorage>.FindFirstOrderedComponent(compositionCatalog.CompositionService, contentType);
+                var cs = compositionCatalog.CompositionService;
+                settingsStorage = ComponentLocatorForOrderedContentType<IWritableEditorSettingsStorage>.FindFirstOrderedComponent(cs, contentType);
 
-            if (settingsStorage == null) {
-                settingsStorage = ComponentLocatorForOrderedContentType<ISettingsStorage>.FindFirstOrderedComponent(compositionCatalog.CompositionService, contentType);
-            }
+                if (settingsStorage == null) {
+                    settingsStorage = ComponentLocatorForOrderedContentType<IEditorSettingsStorage>.FindFirstOrderedComponent(cs, contentType);
+                }
 
-            if (settingsStorage == null) {
-                var storages = ComponentLocatorForContentType<IWritableSettingsStorage, IComponentContentTypes>.ImportMany(compositionCatalog.CompositionService, contentType);
-                if (storages.Any())
-                    settingsStorage = storages.First().Value;
-            }
+                if (settingsStorage == null) {
+                    var storages = ComponentLocatorForContentType<IWritableEditorSettingsStorage, IComponentContentTypes>.ImportMany(cs, contentType);
+                    if (storages.Count() > 0)
+                        settingsStorage = storages.First().Value;
+                }
 
-            if (settingsStorage == null) {
-                var readonlyStorages = ComponentLocatorForContentType<ISettingsStorage, IComponentContentTypes>.ImportMany(compositionCatalog.CompositionService, contentType);
-                if (readonlyStorages.Any())
-                    settingsStorage = readonlyStorages.First().Value;
-            }
+                if (settingsStorage == null) {
+                    var readonlyStorages = ComponentLocatorForContentType<IEditorSettingsStorage, IComponentContentTypes>.ImportMany(cs, contentType);
+                    if (readonlyStorages.Count() > 0)
+                        settingsStorage = readonlyStorages.First().Value;
+                }
 
                 Debug.Assert(settingsStorage != null, String.Format(CultureInfo.CurrentCulture,
                     "Cannot find settings storage export for content type '{0}'", contentTypeName));

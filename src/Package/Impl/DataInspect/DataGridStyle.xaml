@@ -2,12 +2,12 @@
                     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:Microsoft.VisualStudio.R.Package.DataInspect"
-                    xmlns:vsui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0">
+                    xmlns:rwpf="clr-namespace:Microsoft.R.Wpf;assembly=Microsoft.R.Wpf">
 
     <!-- Data grid cell -->
     <Style x:Uid="Style_1" TargetType="{x:Type DataGridCell}">
-        <Setter x:Uid="Setter_1" Property="Background" Value="{DynamicResource {x:Static vsui:TreeViewColors.BackgroundBrushKey}}" />
-        <Setter x:Uid="Setter_2" Property="TextElement.Foreground" Value="{DynamicResource {x:Static vsui:TreeViewColors.BackgroundTextBrushKey}}" />
+        <Setter x:Uid="Setter_1" Property="Background" Value="{DynamicResource {x:Static rwpf:Brushes.TreeViewBackgroundBrushKey}}" />
+        <Setter x:Uid="Setter_2" Property="TextElement.Foreground" Value="{DynamicResource {x:Static rwpf:Brushes.TreeViewBackgroundTextBrushKey}}" />
         <Setter x:Uid="Setter_3" Property="BorderThickness" Value="0" />
         <!-- Disable cell selection color -->
         <Setter x:Uid="Setter_4" Property="Padding" Value="1" />
@@ -39,8 +39,8 @@
         </Setter>
         <Style.Triggers>
             <Trigger x:Uid="Trigger_1" Property="IsSelected" Value="True">
-                <Setter x:Uid="Setter_6" Property="Background" Value="{DynamicResource {x:Static vsui:TreeViewColors.SelectedItemActiveBrushKey}}" />
-                <Setter x:Uid="Setter_7" Property="TextElement.Foreground" Value="{DynamicResource {x:Static vsui:TreeViewColors.SelectedItemActiveTextBrushKey}}" />
+                <Setter x:Uid="Setter_6" Property="Background" Value="{DynamicResource {x:Static rwpf:Brushes.TreeViewSelectedItemActiveBrushKey}}" />
+                <Setter x:Uid="Setter_7" Property="TextElement.Foreground" Value="{DynamicResource {x:Static rwpf:Brushes.TreeViewSelectedItemActiveTextBrushKey}}" />
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -62,14 +62,14 @@
     <Style x:Uid="Style_3" TargetType="{x:Type DataGridColumnHeader}">
         <Setter x:Uid="Setter_12" Property="Padding" Value="4" />
         <Setter x:Uid="Setter_13" Property="BorderThickness" Value="0,0,1,1" />
-        <Setter x:Uid="Setter_14" Property="BorderBrush" Value="{DynamicResource {x:Static vsui:HeaderColors.SeparatorLineBrushKey}}" />
-        <Setter x:Uid="Setter_15" Property="Background"  Value="{DynamicResource {x:Static vsui:HeaderColors.DefaultBrushKey}}" />
-        <Setter x:Uid="Setter_16" Property="Foreground" Value="{DynamicResource {x:Static vsui:HeaderColors.DefaultTextBrushKey}}" />
-        <Setter x:Uid="Setter_17" Property="SeparatorBrush" Value="{DynamicResource {x:Static vsui:HeaderColors.SeparatorLineBrushKey}}" />
+        <Setter x:Uid="Setter_14" Property="BorderBrush" Value="{DynamicResource {x:Static rwpf:Brushes.HeaderColorsSeparatorLineBrushKey}}" />
+        <Setter x:Uid="Setter_15" Property="Background"  Value="{DynamicResource {x:Static rwpf:Brushes.HeaderColorsDefaultBrushKey}}" />
+        <Setter x:Uid="Setter_16" Property="Foreground" Value="{DynamicResource {x:Static rwpf:Brushes.HeaderColorsDefaultTextBrushKey}}" />
+        <Setter x:Uid="Setter_17" Property="SeparatorBrush" Value="{DynamicResource {x:Static rwpf:Brushes.HeaderColorsSeparatorLineBrushKey}}" />
         <Style.Triggers>
             <Trigger x:Uid="Trigger_4" Property="IsPressed" Value="True">
-                <Setter x:Uid="Setter_21" Property="Background"  Value="{DynamicResource {x:Static vsui:HeaderColors.MouseDownBrushKey}}" />
-                <Setter x:Uid="Setter_22" Property="Foreground" Value="{DynamicResource {x:Static vsui:HeaderColors.MouseDownTextBrushKey}}" />
+                <Setter x:Uid="Setter_21" Property="Background"  Value="{DynamicResource {x:Static rwpf:Brushes.HeaderColorsMouseDownBrushKey}}" />
+                <Setter x:Uid="Setter_22" Property="Foreground" Value="{DynamicResource {x:Static rwpf:Brushes.HeaderColorsMouseDownTextBrushKey}}" />
             </Trigger>
             <MultiTrigger x:Uid="MultiTrigger_1">
                 <MultiTrigger.Conditions>
@@ -77,41 +77,41 @@
                     <Condition x:Uid="Condition_2" Property="IsPressed" Value="False" />
                 </MultiTrigger.Conditions>
                 <MultiTrigger.Setters>
-                    <Setter x:Uid="Setter_23" Property="Background"  Value="{DynamicResource {x:Static vsui:HeaderColors.MouseOverBrushKey}}" />
-                    <Setter x:Uid="Setter_24" Property="Foreground" Value="{DynamicResource {x:Static vsui:HeaderColors.MouseOverTextBrushKey}}" />
+                    <Setter x:Uid="Setter_23" Property="Background"  Value="{DynamicResource {x:Static rwpf:Brushes.HeaderColorsMouseOverBrushKey}}" />
+                    <Setter x:Uid="Setter_24" Property="Foreground" Value="{DynamicResource {x:Static rwpf:Brushes.HeaderColorsMouseOverTextBrushKey}}" />
                 </MultiTrigger.Setters>
             </MultiTrigger>
         </Style.Triggers>
     </Style>
     <!-- Data grid row -->
     <Style x:Uid="Style_4" TargetType="{x:Type DataGridRow}" >
-        <Setter x:Uid="Setter_25" Property="Background" Value="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowBackgroundBrushKey}}" />
+        <Setter x:Uid="Setter_25" Property="Background" Value="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundKey}}" />
         <!-- Enable full row selection look, even when there isnt a * width column -->
         <Style.Triggers>
             <Trigger x:Uid="Trigger_5" Property="IsSelected" Value="True">
-                <Setter x:Uid="Setter_26" Property="Background" Value="{DynamicResource {x:Static vsui:TreeViewColors.SelectedItemActiveBrushKey}}" />
-                <Setter x:Uid="Setter_27" Property="TextElement.Foreground" Value="{DynamicResource {x:Static vsui:TreeViewColors.SelectedItemActiveTextBrushKey}}" />
+                <Setter x:Uid="Setter_26" Property="Background" Value="{DynamicResource {x:Static rwpf:Brushes.TreeViewSelectedItemActiveBrushKey}}" />
+                <Setter x:Uid="Setter_27" Property="TextElement.Foreground" Value="{DynamicResource {x:Static rwpf:Brushes.TreeViewSelectedItemActiveTextBrushKey}}" />
             </Trigger>
         </Style.Triggers>
     </Style>
     <!-- Data grid -->
     <Style x:Uid="Style_5" TargetType="{x:Type local:TreeGrid}">
-        <Setter x:Uid="Setter_28" Property="Background" Value="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowBackgroundBrushKey}}" />
-        <Setter x:Uid="Setter_34" Property="Foreground" Value="{DynamicResource {x:Static vsui:TreeViewColors.BackgroundTextBrushKey}}" />
+        <Setter x:Uid="Setter_28" Property="Background" Value="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundKey}}" />
+        <Setter x:Uid="Setter_34" Property="Foreground" Value="{DynamicResource {x:Static rwpf:Brushes.TreeViewBackgroundTextBrushKey}}" />
         <!-- Dont show selection column-->
         <Setter x:Uid="Setter_29" Property="HeadersVisibility" Value="Column" />
         <Setter x:Uid="Setter_31" Property="BorderThickness" Value="1" />
-        <Setter x:Uid="Setter_35" Property="BorderBrush" Value="{DynamicResource {x:Static vsui:HeaderColors.SeparatorLineBrushKey}}" />
+        <Setter x:Uid="Setter_35" Property="BorderBrush" Value="{DynamicResource {x:Static rwpf:Brushes.HeaderColorsSeparatorLineBrushKey}}" />
         <!-- Only select one item -->
         <Setter x:Uid="Setter_32" Property="SelectionMode" Value="Single" />
         <!-- Selection is entire row -->
         <Setter x:Uid="Setter_33" Property="SelectionUnit" Value="FullRow" />
 
-        <Setter Property="HorizontalGridLinesBrush" Value="{DynamicResource {x:Static vsui:EnvironmentColors.GridLineBrushKey}}" />
-        <Setter Property="VerticalGridLinesBrush" Value="{DynamicResource {x:Static vsui:EnvironmentColors.GridLineBrushKey}}" />
+        <Setter Property="HorizontalGridLinesBrush" Value="{DynamicResource {x:Static rwpf:Brushes.GridLineBrushKey}}" />
+        <Setter Property="VerticalGridLinesBrush" Value="{DynamicResource {x:Static rwpf:Brushes.GridLineBrushKey}}" />
     </Style>
     
     <Style TargetType="{x:Type DataGridRowHeader}">
-        <Setter Property="Background" Value="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowBackgroundBrushKey}}" />
+        <Setter Property="Background" Value="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundKey}}" />
     </Style>
 </ResourceDictionary>

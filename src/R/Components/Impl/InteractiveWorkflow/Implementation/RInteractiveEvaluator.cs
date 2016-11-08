@@ -10,9 +10,9 @@ using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager;
-using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.Settings;
+using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
@@ -119,21 +119,9 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             }
 
             var ast = RParser.Parse(text);
-            if (ast.Errors.Count > 0) {
-                // if we have any errors other than an incomplete statement send the
-                // bad code to R.  Otherwise continue reading input.
-                foreach (var error in ast.Errors) {
-                    if (error.ErrorType != ParseErrorType.CloseCurlyBraceExpected &&
-                        error.ErrorType != ParseErrorType.CloseBraceExpected &&
-                        error.ErrorType != ParseErrorType.CloseSquareBracketExpected &&
-                        error.ErrorType != ParseErrorType.FunctionBodyExpected &&
-                        error.ErrorType != ParseErrorType.RightOperandExpected) {
-                        return true;
-                    }
-                }
-                return false;
-            }
-            return true;
+            // If we have any errors other than an incomplete statement send the
+            // bad code to R.  Otherwise continue reading input.
+            return ast.IsCompleteExpression();
         }
 
         public async Task<ExecutionResult> ExecuteCodeAsync(string text) {

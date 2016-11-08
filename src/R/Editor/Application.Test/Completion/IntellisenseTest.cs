@@ -9,7 +9,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -17,7 +16,6 @@ using Microsoft.R.Editor.Settings;
 using Microsoft.R.Editor.Snippets;
 using Microsoft.R.Editor.Test.Utility;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.R.Support.Settings;
 using Microsoft.UnitTests.Core.Threading;
@@ -153,22 +151,23 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         [Test]
         public async Task R_CompletionFiles() {
             using (var script = await _editorHost.StartScript(ExportProvider, RContentTypeDefinition.ContentType)) {
-                string asmPath = Assembly.GetExecutingAssembly().GetAssemblyPath();
-                RToolsSettings.Current.WorkingDirectory = Path.GetDirectoryName(asmPath);
+                using (new RHostScript(Workflow.RSessions)) {
+                    string asmPath = Assembly.GetExecutingAssembly().GetAssemblyPath();
+                    RToolsSettings.Current.WorkingDirectory = Path.GetDirectoryName(asmPath);
 
-                script.DoIdle(100);
-                script.Type("x <- \"");
-                script.DoIdle(1000);
-                script.Type("{TAB}");
-                script.DoIdle(100);
+                    script.DoIdle(100);
+                    script.Type("x <- \"");
+                    script.DoIdle(1000);
+                    script.Type("{TAB}");
+                    script.DoIdle(100);
 
-                var session = script.GetCompletionSession();
-                session.Should().NotBeNull();
-                script.DoIdle(200);
+                    var session = script.GetCompletionSession();
+                    session.Should().NotBeNull();
+                    script.DoIdle(200);
 
-                var list = session.SelectedCompletionSet.Completions.ToList();
-                var item = list.FirstOrDefault(x => x.DisplayText == "ItemTemplates");
-                item.Should().NotBeNull();
+                    var list = session.SelectedCompletionSet.Completions.ToList();
+                    list.Should().NotBeEmpty();
+                }
             }
         }
 

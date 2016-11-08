@@ -8,33 +8,36 @@ using EnvDTE;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
-using Microsoft.VisualStudio.PlatformUI;
+using Microsoft.R.Components.Extensions;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Package.Wpf;
 using Microsoft.VisualStudio.R.Packages.R;
 
-namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
+namespace Microsoft.VisualStudio.R.Package.Sql.Publish
+{
     /// <summary>
     /// Interaction logic for SqlPublsh.xaml
     /// </summary>
-    public partial class SqlPublshOptionsDialog : DialogWindow {
+    public partial class SqlPublshOptionsDialog : PlatformDialogWindow {
         private readonly IApplicationShell _appShell;
         private readonly IProjectSystemServices _pss;
         private readonly IProjectConfigurationSettingsProvider _pcsp;
+        private readonly ISettingsStorage _settings;
         private SqlPublishOptionsDialogViewModel _model;
 
         public static async Task<SqlPublshOptionsDialog> CreateAsync(
-            IApplicationShell appShell, IProjectSystemServices pss, IFileSystem fs, IProjectConfigurationSettingsProvider pcsp) {
-            var dialog = new SqlPublshOptionsDialog(appShell, pss, fs, pcsp);
+            IApplicationShell appShell, IProjectSystemServices pss, IFileSystem fs, IProjectConfigurationSettingsProvider pcsp, ISettingsStorage settings) {
+            var dialog = new SqlPublshOptionsDialog(appShell, pss, fs, pcsp, settings);
             await dialog.InitializeModelAsync();
             return dialog;
         }
 
         public static async Task<SqlPublshOptionsDialog> CreateAsync(
-            IApplicationShell appShell, IProjectSystemServices pss, IProjectConfigurationSettingsProvider pcsp) {
-            var dialog = await CreateAsync(appShell, pss, new FileSystem(), pcsp);
+            IApplicationShell appShell, IProjectSystemServices pss, IProjectConfigurationSettingsProvider pcsp, ISettingsStorage settings) {
+            var dialog = await CreateAsync(appShell, pss, new FileSystem(), pcsp, settings);
 
             await appShell.SwitchToMainThreadAsync();
             dialog.InitializeComponent();
@@ -42,16 +45,17 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             return dialog;
         }
 
-        private SqlPublshOptionsDialog(IApplicationShell appShell, IProjectSystemServices pss, IFileSystem fs, IProjectConfigurationSettingsProvider pcsp) {
+        private SqlPublshOptionsDialog(IApplicationShell appShell, IProjectSystemServices pss, IFileSystem fs, IProjectConfigurationSettingsProvider pcsp, ISettingsStorage settings) {
             _appShell = appShell;
             _pss = pss;
             _pcsp = pcsp;
+            _settings = settings;
 
             Title = Package.Resources.SqlPublishDialog_Title;
         }
 
         private async Task InitializeModelAsync() {
-            var settings = new SqlSProcPublishSettings(_appShell.SettingsStorage);
+            var settings = new SqlSProcPublishSettings(_settings);
             _model = await SqlPublishOptionsDialogViewModel.CreateAsync(settings, _appShell, _pss, _pcsp);
             DataContext = _model;
         }
@@ -64,7 +68,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         }
 
         private void SaveSettingsAndClose() {
-            _model.Settings.Save(_appShell.SettingsStorage);
+            _model.Settings.Save(_settings);
 
             // Make sure all files are saved and up to date on disk.
             var dte = _appShell.GetGlobalService<DTE>(typeof(DTE));

@@ -86,6 +86,14 @@ namespace Microsoft.R.Components.Plots.Implementation {
             return visualComponent;
         }
 
+        public IRPlotDeviceVisualComponent GetPlotVisualComponent(int instanceId) {
+            _shell.AssertIsOnMainThread();
+
+            IRPlotDeviceVisualComponent visualComponent = null;
+            _visualComponents.TryGetValue(instanceId, out visualComponent);
+            return visualComponent;
+        }
+
         public void RegisterVisualComponent(IRPlotDeviceVisualComponent visualComponent) {
             _shell.AssertIsOnMainThread();
 
@@ -351,23 +359,14 @@ namespace Microsoft.R.Components.Plots.Implementation {
         private async Task<IRPlotDeviceVisualComponent> GetVisualComponentForDevice(Guid deviceId) {
             InteractiveWorkflow.Shell.AssertIsOnMainThread();
 
-            IRPlotDeviceVisualComponent component;
-
             // If we've already assigned a plot window, reuse it
-            if (_assignedVisualComponents.TryGetValue(deviceId, out component)) {
+            IRPlotDeviceVisualComponent component = GetPlotDeviceVisualComponent(deviceId);
+            if (component != null) {
                 return component;
             }
 
-            // If we have an unused plot window, reuse it
-            if (_unassignedVisualComponents.Count > 0) {
-                component = _unassignedVisualComponents[0];
-            }
-
-            // If we have no plot window to reuse, create one
-            if (component == null) {
-                var containerFactory = InteractiveWorkflow.Shell.ExportProvider.GetExportedValue<IRPlotDeviceVisualComponentContainerFactory>();
-                component = GetOrCreateVisualComponent(containerFactory, GetUnusedInstanceId(deviceId));
-            }
+            // Recycle one that doesn't have a plot device assigned, or create a new one if none available
+            component = GetOrCreatePlotDeviceVisualComponent();
 
             var device = FindDevice(deviceId);
             await component.AssignAsync(device);
@@ -379,6 +378,37 @@ namespace Microsoft.R.Components.Plots.Implementation {
             }
 
             return component;
+        }
+
+        private IRPlotDeviceVisualComponent GetPlotDeviceVisualComponent(Guid deviceId) {
+            IRPlotDeviceVisualComponent component;
+
+            if (_assignedVisualComponents.TryGetValue(deviceId, out component)) {
+                return component;
+            }
+
+            return null;
+        }
+
+        private IRPlotDeviceVisualComponent GetOrCreatePlotDeviceVisualComponent() {
+            IRPlotDeviceVisualComponent component = null;
+
+            // If we have an unused plot window, reuse it
+            if (_unassignedVisualComponents.Count > 0) {
+                component = _unassignedVisualComponents[0];
+            }
+
+            // If we have no plot window to reuse, create one
+            if (component == null) {
+                var containerFactory = InteractiveWorkflow.Shell.ExportProvider.GetExportedValue<IRPlotDeviceVisualComponentContainerFactory>();
+                component = GetOrCreateVisualComponent(containerFactory, GetUnusedInstanceId());
+            }
+
+            return component;
+        }
+
+        public IRPlotDeviceVisualComponent GetOrCreateMainPlotVisualComponent() {
+            return ActiveDevice != null ? GetPlotDeviceVisualComponent(ActiveDevice.DeviceId) : GetOrCreatePlotDeviceVisualComponent();
         }
 
         private IRPlotDevice FindDevice(Guid deviceId) {
@@ -409,7 +439,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
             }
         }
 
-        private int GetUnusedInstanceId(Guid deviceId) {
+        private int GetUnusedInstanceId() {
             InteractiveWorkflow.Shell.AssertIsOnMainThread();
 
             // Pick the lowest number that isn't known to be used.

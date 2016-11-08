@@ -6,29 +6,31 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Enums;
+using Microsoft.Common.Core.Extensions;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Wpf;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.Settings;
-using Microsoft.R.Support.Settings.Definitions;
+using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.SurveyNews;
-using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R {
     [Export(typeof(IRSettings))]
     [Export(typeof(IRToolsSettings))]
-    internal sealed class RToolsSettingsImplementation : BindableBase, IRToolsSettings {
+    internal sealed class RToolsSettingsImplementation : BindableBase, IRToolsSettings, IRPersistentSettings {
         private const int MaxDirectoryEntries = 8;
+        private readonly ISettingsStorage _settings;
+
         private string _cranMirror;
         private string _workingDirectory;
         private int _codePage;
-        private bool _showPackageManagerDisclaimer = true;
         private IConnectionInfo[] _connections = new IConnectionInfo[0];
         private IConnectionInfo _lastActiveConnection;
 
@@ -37,6 +39,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         private bool _alwaysSaveHistory = true;
         private bool _clearFilterOnAddHistory = true;
         private bool _multilineHistorySelection = true;
+        private bool _showPackageManagerDisclaimer = true;
         private HelpBrowserType _helpBrowserType = HelpBrowserType.Automatic;
         private bool _showDotPrefixedVariables;
         private SurveyNewsPolicy _surveyNewsCheck = SurveyNewsPolicy.CheckOnceWeek;
@@ -50,6 +53,16 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         private BrowserType _markdownBrowserType = BrowserType.External;
         private LogVerbosity _logLevel = LogVerbosity.Normal;
 
+        [ImportingConstructor]
+        public RToolsSettingsImplementation(ISettingsStorage settings) {
+            _settings = settings;
+            _workingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+        }
+
+        /// <summary>
+        /// Path to 64-bit R installation such as 
+        /// 'C:\Program Files\R\R-3.2.2' without bin\x64
+        /// </summary>
         public YesNoAsk LoadRDataOnProjectLoad {
             get { return _loadRDataOnProjectLoad; }
             set { SetProperty(ref _loadRDataOnProjectLoad, value); }
@@ -77,11 +90,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
 
         public bool ShowPackageManagerDisclaimer {
             get { return _showPackageManagerDisclaimer; }
-            set {
-                using (SaveSettings()) {
-                    SetProperty(ref _showPackageManagerDisclaimer, value);
-                }
-            }
+            set { SetProperty(ref _showPackageManagerDisclaimer, value); }
         }
 
         public string CranMirror {
@@ -96,20 +105,12 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
 
         public IConnectionInfo[] Connections {
             get { return _connections; }
-            set {
-                using (SaveSettings()) {
-                    SetProperty(ref _connections, value);
-                }
-            }
+            set { SetProperty(ref _connections, value); }
         }
 
         public IConnectionInfo LastActiveConnection {
             get { return _lastActiveConnection; }
-            set {
-                using (SaveSettings()) {
-                    SetProperty(ref _lastActiveConnection, value);
-                }
-            }
+            set { SetProperty(ref _lastActiveConnection, value); }
         }
 
         public string WorkingDirectory {
@@ -133,8 +134,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             }
         }
 
-        public string[] WorkingDirectoryList { get; set; } = new string[0];
-
+        public IEnumerable<string> WorkingDirectoryList { get; set; } = Enumerable.Empty<string>();
         public HelpBrowserType HelpBrowserType {
             get { return _helpBrowserType; }
             set { SetProperty(ref _helpBrowserType, value); }
@@ -195,10 +195,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set { SetProperty(ref _logLevel, value); }
         }
 
-        public RToolsSettingsImplementation() {
-            _workingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-        }
-
         private void UpdateWorkingDirectoryList(string newDirectory) {
             List<string> list = new List<string>(WorkingDirectoryList);
             if (!list.Contains(newDirectory, StringComparer.OrdinalIgnoreCase)) {
@@ -211,14 +207,9 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             }
         }
 
-        private static IDisposable SaveSettings() {
-            if (RPackage.Current != null) {
-                var page = (RToolsOptionsPage)RPackage.Current.GetDialogPage(typeof(RToolsOptionsPage));
-                return page != null && !page.IsLoadingFromStorage
-                    ? Disposable.Create(() => page.SaveSettings())
-                    : Disposable.Empty;
-            }
-            return Disposable.Empty;
-        }
+        #region IRPersistentSettings
+        public void LoadSettings() => _settings.LoadPropertyValues(this);
+        public void SaveSettings() => _settings.SavePropertyValues(this);
+        #endregion
     }
 }

@@ -14,6 +14,8 @@ namespace Microsoft.R.Core.Test.Formatting {
         [CompositeTest]
         [InlineData("x %>% y%>%\n   z%>%a", "x %>% y %>%\n   z %>% a")]
         [InlineData("((x %>% y)\n   %>%z%>%a)", "((x %>% y)\n   %>% z %>% a)")]
+        [InlineData("x <- function()\n  z", "x <- function()\n  z")]
+        [InlineData("{\n    x <- function()\n      z\n}", "{\n    x <- function()\n      z\n}")]
         public void Multiline(string original, string expected) {
             RFormatter f = new RFormatter();
             string actual = f.Format(original);

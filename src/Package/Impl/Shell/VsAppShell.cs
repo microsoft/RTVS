@@ -10,27 +10,22 @@ using System.Diagnostics;
 using System.Threading;
 using System.Windows.Threading;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Settings;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Core.Threading;
-using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.Host;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
-using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.Settings;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.R.Package.Definitions;
 using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Utilities;
 using static System.FormattableString;
 using IServiceProvider = System.IServiceProvider;
 using VsPackage = Microsoft.VisualStudio.Shell.Package;
@@ -50,9 +45,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         private readonly IRSettings _settings;
         private readonly ICoreServices _coreServices;
-
         private IdleTimeSource _idleTimeSource;
-        private IWritableSettingsStorage _settingStorage;
 
         [ImportingConstructor]
         public VsAppShell(ITelemetryService telemetryService
@@ -346,22 +339,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
         #endregion
 
-        #region IApplicationShell
-        public IWritableSettingsStorage SettingsStorage {
-            get {
-                if (_settingStorage == null) {
-                    var ctrs = ExportProvider.GetExportedValue<IContentTypeRegistryService>();
-                    var contentType = ctrs.GetContentType(RContentTypeDefinition.ContentType);
-                    _settingStorage = ComponentLocatorForOrderedContentType<IWritableSettingsStorage>
-                                            .FindFirstOrderedComponent(CompositionService, contentType);
-                }
-                return _settingStorage;
-            }
-        }
-
-        #endregion
-
-        #region
+        #region Threading
         public int ThreadId => MainThread.ManagedThreadId;
         public void Post(Action action, CancellationToken cancellationToken) {
             var awaiter = ThreadHelper.JoinableTaskFactory
@@ -407,11 +385,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             if (hr != VSConstants.S_OK) {
                 ErrorHandler.ThrowOnFailure(shell.LoadPackage(ref guid, out package), VSConstants.E_FAIL);
             }
-            // Workaround: need to load settings after package is loaded. 
-            // Should not be necessary when https://github.com/Microsoft/RTVS/issues/2607 is done.
-            var rp = package as IRPackage;
-            rp?.LoadSettings();
-
             return package;
         }
 

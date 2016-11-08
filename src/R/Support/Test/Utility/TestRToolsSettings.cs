@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
@@ -12,7 +13,7 @@ using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.ConnectionManager.Implementation;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Interpreters;
-using Microsoft.R.Support.Settings.Definitions;
+using Microsoft.R.Support.Settings;
 
 namespace Microsoft.R.Support.Test.Utility {
     [ExcludeFromCodeCoverage]
@@ -26,7 +27,7 @@ namespace Microsoft.R.Support.Test.Utility {
 
         public TestRToolsSettings(string connectionName) {
             _connections = new IConnectionInfo[] { new ConnectionInfo {
-                Name = connectionName,
+                Name = connectionName ?? "Test",
                 Path = new RInstallation().GetCompatibleEngines().First().InstallPath
             }};
         }
@@ -83,7 +84,7 @@ namespace Microsoft.R.Support.Test.Utility {
 
         public bool ShowPackageManagerDisclaimer { get; set; } = true;
 
-        public string[] WorkingDirectoryList { get; set; } = new string[0];
+        public IEnumerable<string> WorkingDirectoryList { get; set; } = Enumerable.Empty<string>();
 
         public HelpBrowserType HelpBrowserType {
             get { return HelpBrowserType.Automatic; }
