@@ -117,17 +117,20 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="MicrosoftRHostDisconnected" xml:space="preserve">
-    <value>Interactive Window is disconnected from R Session. Click Reset to reconnect.</value>
-  </data>
   <data name="MicrosoftRHostStopped" xml:space="preserve">
-    <value>R Host process is stopped. Click Reset to start a new one.</value>
+    <value>R Host process is stopped. Click "Reset" to start a new one.</value>
   </data>
   <data name="MicrosoftRHostStopping" xml:space="preserve">
     <value>Stopping R Session...</value>
   </data>
   <data name="MicrosoftRHostStarting" xml:space="preserve">
     <value>Starting R Session...</value>
+  </data>
+  <data name="RestartRHost" xml:space="preserve">
+    <value>Click "Reset" to start a new session.</value>
+  </data>
+  <data name="ReconnectToBroker" xml:space="preserve">
+    <value>Open Workspaces window and either select local R interpreter or try connecting to a remote machine.</value>
   </data>
   <data name="Error_Microsoft_R_Host_Missing" xml:space="preserve">
     <value>Microsoft.R.Host.exe is missing. Click OK to open download link in the default browser.</value>

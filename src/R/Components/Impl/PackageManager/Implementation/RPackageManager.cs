@@ -138,6 +138,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             // separate package query session to avoid freezing the REPL.
             try {
                 var startupInfo = new RHostStartupInfo {
+                    Name = "PackageManager",
                     CranMirrorName = _settings.CranMirror,
                     CodePage = _settings.RCodePage
                 };

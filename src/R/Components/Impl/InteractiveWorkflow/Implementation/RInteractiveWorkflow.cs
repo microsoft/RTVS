@@ -163,7 +163,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 return ActiveWindow;
             }
 
-            var evaluator = new RInteractiveEvaluator(RSession, History, Connections, Shell, _settings);
+            var evaluator = new RInteractiveEvaluator(RSessions, RSession, History, Connections, Shell, _settings);
 
             ActiveWindow = componentContainerFactory.Create(instanceId, evaluator, RSessions);
             var interactiveWindow = ActiveWindow.InteractiveWindow;

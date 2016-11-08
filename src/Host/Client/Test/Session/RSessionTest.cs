@@ -13,6 +13,7 @@ using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Interpreters;
+using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
@@ -67,26 +68,86 @@ namespace Microsoft.R.Host.Client.Test.Session {
         public async Task StartStop() {
             var session = new RSession(0, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
 
-            session.HostStarted.Status.Should().Be(TaskStatus.WaitingForActivation);
+            session.HostStarted.Should().NotBeCompleted();
+            session.IsHostRunning.Should().BeFalse();
+
+            await session.StartHostAsync(new RHostStartupInfo {
+                Name = _testMethod.Name
+            }, null, 50000);
+
+            session.HostStarted.Should().BeRanToCompletion();
+            session.IsHostRunning.Should().BeTrue();
+
+            await session.StopHostAsync();
+
+            session.HostStarted.Should().NotBeCompleted();
+            session.IsHostRunning.Should().BeFalse();
+
+            await session.StartHostAsync(new RHostStartupInfo {
+                Name = _testMethod.Name
+            }, null, 50000);
+
+            session.HostStarted.Should().BeRanToCompletion();
+            session.IsHostRunning.Should().BeTrue();
+        }
+
+        [Test]
+        [Category.R.Session]
+        public async Task Start_KillProcess_Start() {
+            var session = new RSession(0, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
+
+            session.HostStarted.Should().NotBeCompleted();
             session.IsHostRunning.Should().BeFalse();
             
             await session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name
             }, null, 50000);
 
-            session.HostStarted.Status.Should().Be(TaskStatus.RanToCompletion);
+            session.HostStarted.Should().BeRanToCompletion();
             session.IsHostRunning.Should().BeTrue();
 
-            await session.StopHostAsync();
+            var sessionDisconnectedTask = EventTaskSources.IRSession.Disconnected.Create(session);
+            var processId = await GetRSessionProcessId(session);
+            Process.GetProcessById(processId).Kill();
+            await sessionDisconnectedTask;
 
-            session.HostStarted.Status.Should().Be(TaskStatus.WaitingForActivation);
             session.IsHostRunning.Should().BeFalse();
 
             await session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name
             }, null, 50000);
 
-            session.HostStarted.Status.Should().Be(TaskStatus.RanToCompletion);
+            session.HostStarted.Should().BeRanToCompletion();
+            session.IsHostRunning.Should().BeTrue();
+        }
+
+        [Test]
+        [Category.R.Session]
+        public async Task EnsureStarted_KillProcess_EnsureStarted() {
+            var session = new RSession(0, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
+
+            session.HostStarted.Should().NotBeCompleted();
+            session.IsHostRunning.Should().BeFalse();
+
+            await session.EnsureHostStartedAsync(new RHostStartupInfo {
+                Name = _testMethod.Name
+            }, null, 50000);
+
+            session.HostStarted.Should().BeRanToCompletion();
+            session.IsHostRunning.Should().BeTrue();
+
+            var sessionDisconnectedTask = EventTaskSources.IRSession.Disconnected.Create(session);
+            var processId = await GetRSessionProcessId(session);
+            Process.GetProcessById(processId).Kill();
+            await sessionDisconnectedTask;
+
+            session.IsHostRunning.Should().BeFalse();
+
+            await session.EnsureHostStartedAsync(new RHostStartupInfo {
+                Name = _testMethod.Name
+            }, null, 50000);
+
+            session.HostStarted.Should().BeRanToCompletion();
             session.IsHostRunning.Should().BeTrue();
         }
 
@@ -172,8 +233,10 @@ namespace Microsoft.R.Host.Client.Test.Session {
             await startTask;
         }
 
-        private static IBrokerClient CreateLocalBrokerClient(string name) {
-            return new LocalBrokerClient(name, new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath, TestCoreServices.CreateReal(), new NullConsole());
-        }
+        private static IBrokerClient CreateLocalBrokerClient(string name) 
+            => new LocalBrokerClient(name, new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath, TestCoreServices.CreateReal(), new NullConsole());
+
+        private static Task<int> GetRSessionProcessId(IRSession session) 
+            => session.EvaluateAsync<int>("Sys.getpid()", REvaluationKind.Normal);
     }
 }

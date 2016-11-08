@@ -515,15 +515,6 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Interactive Window is disconnected from R Session. Click Reset to reconnect..
-        /// </summary>
-        public static string MicrosoftRHostDisconnected {
-            get {
-                return ResourceManager.GetString("MicrosoftRHostDisconnected", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Starting R Session....
         /// </summary>
         public static string MicrosoftRHostStarting {
@@ -533,7 +524,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R Host process is stopped. Click Reset to start a new one..
+        ///   Looks up a localized string similar to R Host process is stopped. Click &quot;Reset&quot; to start a new one..
         /// </summary>
         public static string MicrosoftRHostStopped {
             get {
@@ -1181,11 +1172,29 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Open Workspaces window and either select local R interpreter or try connecting to a remote machine..
+        /// </summary>
+        public static string ReconnectToBroker {
+            get {
+                return ResourceManager.GetString("ReconnectToBroker", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R Interactive.
         /// </summary>
         public static string ReplWindowName {
             get {
                 return ResourceManager.GetString("ReplWindowName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Click &quot;Reset&quot; to start a new session..
+        /// </summary>
+        public static string RestartRHost {
+            get {
+                return ResourceManager.GetString("RestartRHost", resourceCulture);
             }
         }
         
