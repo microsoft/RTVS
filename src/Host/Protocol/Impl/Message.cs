@@ -6,6 +6,7 @@ using System.Text;
 using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
+using Microsoft.Common.Core;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using static System.FormattableString;
@@ -13,12 +14,12 @@ using static System.FormattableString;
 namespace Microsoft.R.Host.Protocol {
     public class Message {
         private static readonly SHA512 _hash = SHA512.Create();
-        public ulong Id { get; }
-        public ulong RequestId { get; }
-        public string Name { get; }
+        public ulong Id { get; private set; }
+        public ulong RequestId { get; private set; }
+        public string Name { get; private set; }
 
-        public JArray Json { get; }
-        public byte[] Blob { get; }
+        public JArray Json { get; private set; }
+        public byte[] Blob { get; private set; }
 
         public bool IsRequest => RequestId == ulong.MaxValue;
 
@@ -36,20 +37,23 @@ namespace Microsoft.R.Host.Protocol {
             Blob = blob ?? new byte[0];
         }
 
-        public Message(byte[] data) {
+        private Message() { }
+
+        public static Message Create(byte[] data) {
+            Message message = new Message();
             try {
                 int offset = 0;
-                Id = BitConverter.ToUInt64(data, offset);
+                message.Id = BitConverter.ToUInt64(data, offset);
                 offset += sizeof(ulong);
 
-                RequestId = BitConverter.ToUInt64(data, offset);
+                message.RequestId = BitConverter.ToUInt64(data, offset);
                 offset += sizeof(ulong);
 
                 int term = Array.IndexOf<byte>(data, 0, offset);
                 if (term < 0) {
                     throw new IndexOutOfRangeException();
                 }
-                Name = Encoding.UTF8.GetString(data, offset, term - offset);
+                message.Name = Encoding.UTF8.GetString(data, offset, term - offset);
                 offset = term + 1;
 
                 term = Array.IndexOf<byte>(data, 0, offset);
@@ -57,16 +61,18 @@ namespace Microsoft.R.Host.Protocol {
                     throw new IndexOutOfRangeException();
                 }
                 string json = Encoding.UTF8.GetString(data, offset, term - offset);
-                Json = (JArray)JsonConvert.DeserializeObject(json);
+                message.Json = ((JArray)JsonConvert.DeserializeObject(json)) ?? new JArray();
                 offset = term + 1;
 
-                Blob = new byte[data.Length - offset];
-                if (Blob.Length > 0) {
-                    Array.Copy(data, offset, Blob, 0, Blob.Length);
+                message.Blob = new byte[data.Length - offset];
+                if (message.Blob.Length > 0) {
+                    Array.Copy(data, offset, message.Blob, 0, message.Blob.Length);
                 }
-            } catch (Exception ex) when (ex is IndexOutOfRangeException || ex is ArgumentOutOfRangeException) {
+            } catch (Exception ex) when (ex.IsProtocolException() || ex is JsonException) {
                 throw ProtocolError($"Malformed message", BitConverter.ToString(data));
             }
+
+            return message;
         }
 
         public byte[] ToBytes() {

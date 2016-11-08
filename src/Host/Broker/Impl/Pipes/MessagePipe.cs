@@ -183,7 +183,7 @@ namespace Microsoft.R.Host.Broker.Pipes {
 
             Message message;
             try {
-                message = new Message(messageData);
+                message = Message.Create(messageData);
             } catch (InvalidDataException ex) {
                 _logger.Log(LogLevel.Error, 0, messageData, ex, delegate {
                     return Invariant($"Malformed {origin.ToString().ToLowerInvariant()} message:{Environment.NewLine}{BitConverter.ToString(messageData)}");
