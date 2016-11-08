@@ -118,8 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="RHostDisconnected" xml:space="preserve">
-    <value>Interactive Window is disconnected from R Session.
-Open Workspaces window and either select local R interpreter or try connecting to a remote machine.</value>
+    <value>Interactive Window is disconnected from R Session.</value>
   </data>
   <data name="RSessionProvider_ConnectionFailed" xml:space="preserve">
     <value>Connecting to R Workspace failed.

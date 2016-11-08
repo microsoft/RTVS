@@ -23,6 +23,7 @@ using Microsoft.VisualStudio.Text.Projection;
 
 namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
     public sealed class RInteractiveEvaluator : IInteractiveEvaluator {
+        private readonly IRSessionProvider _sessionProvider;
         private readonly IConnectionManager _connections;
         private readonly ICoreShell _coreShell;
         private readonly IRSettings _settings;
@@ -32,13 +33,14 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         public IRHistory History { get; }
         public IRSession Session { get; }
 
-        public RInteractiveEvaluator(IRSession session, IRHistory history, IConnectionManager connections, ICoreShell coreShell, IRSettings settings) {
+        public RInteractiveEvaluator(IRSessionProvider sessionProvider, IRSession session, IRHistory history, IConnectionManager connections, ICoreShell coreShell, IRSettings settings) {
             History = history;
             Session = session;
             Session.Output += SessionOnOutput;
             Session.Disconnected += SessionOnDisconnected;
             Session.BeforeRequest += SessionOnBeforeRequest;
             Session.AfterRequest += SessionOnAfterRequest;
+            _sessionProvider = sessionProvider;
             _connections = connections;
             _coreShell = coreShell;
             _settings = settings;
@@ -153,7 +155,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
                 return ExecutionResult.Success;
             } catch (RHostDisconnectedException rhdex) {
-                WriteError(rhdex.Message);
+                WriteErrorLine(rhdex.Message);
+                WriteErrorLine(_sessionProvider.IsConnected ? Resources.RestartRHost : Resources.ReconnectToBroker);
                 return ExecutionResult.Success;
             } catch (OperationCanceledException) {
                 // Cancellation reason was already reported via RSession.Error and printed out;
@@ -273,6 +276,12 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         private void WriteError(string message) {
             if (CurrentWindow != null) {
                 _coreShell.DispatchOnUIThread(() => CurrentWindow.WriteError(message));
+            }
+        }
+
+        private void WriteErrorLine(string message) {
+            if (CurrentWindow != null) {
+                _coreShell.DispatchOnUIThread(() => CurrentWindow.WriteErrorLine(message));
             }
         }
 

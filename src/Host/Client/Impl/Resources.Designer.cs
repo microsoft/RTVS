@@ -241,8 +241,7 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Interactive Window is disconnected from R Session.
-        ///Open Workspaces window and either select local R interpreter or try connecting to a remote machine..
+        ///   Looks up a localized string similar to Interactive Window is disconnected from R Session..
         /// </summary>
         internal static string RHostDisconnected {
             get {
