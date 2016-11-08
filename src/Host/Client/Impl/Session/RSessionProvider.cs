@@ -61,7 +61,7 @@ namespace Microsoft.R.Host.Client.Session {
 
                 try {
                     await session.StartHostAsync(new RHostStartupInfo {
-                        Name = "Isolated_" + (startupInfo.Name ?? session.Id.ToString()),
+                        Name = $"Isolated_{startupInfo.Name ?? string.Empty}_{session.Id}",
                         CranMirrorName = startupInfo.CranMirrorName,
                         CodePage = startupInfo.CodePage
                     }, null, cancellationToken: cancellationToken);
