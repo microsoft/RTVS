@@ -57,7 +57,7 @@ namespace Microsoft.R.Host.Client {
                 }
 
                 if (wsrr.EndOfMessage) {
-                    return Message.Create(buffer.ToArray());
+                    return Message.Parse(buffer.ToArray());
                 }
             }
         }

@@ -39,7 +39,7 @@ namespace Microsoft.R.Host.Protocol {
 
         private Message() { }
 
-        public static Message Create(byte[] data) {
+        public static Message Parse(byte[] data) {
             Message message = new Message();
             try {
                 int offset = 0;

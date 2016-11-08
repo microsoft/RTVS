@@ -18,7 +18,7 @@ namespace Microsoft.R.Host.Protocol.Test.ProtocolMessage {
             ParallelTools.Invoke(1000, i => {
                 var input = GenerateInput();
                 try {
-                    var message = Message.Create(input);
+                    var message = Message.Parse(input);
                     var msgbytes = message.ToBytes();
                 } catch (InvalidDataException) {
                 } catch (TraceFailException) {
