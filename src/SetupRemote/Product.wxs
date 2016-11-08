@@ -45,6 +45,7 @@
             ServiceInterrogate="yes" ServiceChangeConfig="yes" ServiceEnumerateDependents="yes" ServiceQueryConfig="yes"
             ServiceQueryStatus="yes" ServiceUserDefinedControl="yes" />
       </ServiceInstall>
+      <ServiceControl Id="UserProfileServiceUninstall" Name="RUserProfileService" Remove="uninstall" Stop="uninstall"/>
     </Component>
 
     <Component Id="MonitorAutoStart" Directory="INSTALLFOLDER" Guid="{3502EC99-A511-4EC0-9E57-9868362D478D}" Win64="yes">
