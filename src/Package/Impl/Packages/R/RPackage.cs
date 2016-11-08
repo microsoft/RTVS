@@ -111,7 +111,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 return;
             }
 
-            var settings = VsAppShell.Current.ExportProvider.GetExportedValue<IRToolsSettings>() as IRPersistentSettings;
+            var settings = VsAppShell.Current.ExportProvider.GetExportedValue<IRPersistentSettings>();
             settings.LoadSettings();
 
             VsWpfOverrides.Apply();
@@ -143,7 +143,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             RtvsTelemetry.Current.Dispose();
 
-            var settings = VsAppShell.Current.ExportProvider.GetExportedValue<IRToolsSettings>() as IRPersistentSettings;
+            var settings = VsAppShell.Current.ExportProvider.GetExportedValue<IRPersistentSettings>();
             settings.SaveSettings();
 
             base.Dispose(disposing);

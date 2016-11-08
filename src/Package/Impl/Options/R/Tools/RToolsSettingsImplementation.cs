@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Enums;
 using Microsoft.Common.Core.Extensions;
@@ -24,6 +23,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace Microsoft.VisualStudio.R.Package.Options.R {
     [Export(typeof(IRSettings))]
     [Export(typeof(IRToolsSettings))]
+    [Export(typeof(IRPersistentSettings))]
     internal sealed class RToolsSettingsImplementation : BindableBase, IRToolsSettings, IRPersistentSettings {
         private const int MaxDirectoryEntries = 8;
         private readonly ISettingsStorage _settings;
