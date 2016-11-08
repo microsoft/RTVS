@@ -216,7 +216,7 @@ namespace Microsoft.R.Host.Client.Session {
         public async Task EnsureHostStartedAsync(RHostStartupInfo startupInfo, IRSessionCallback callback, int timeout = 3000, CancellationToken cancellationToken = default(CancellationToken)) {
             using (_disposeToken.Link(ref cancellationToken))
             using (await _initializationLock.WaitAsync(cancellationToken)) {
-                if (_initializationTcs.Task.Status != TaskStatus.RanToCompletion) {
+                if (_initializationTcs.Task.Status != TaskStatus.RanToCompletion || !_isHostRunning) {
                     await StartHostAsyncBackground(startupInfo, callback, timeout, cancellationToken);
                 }
             }
@@ -225,7 +225,7 @@ namespace Microsoft.R.Host.Client.Session {
         public async Task StartHostAsync(RHostStartupInfo startupInfo, IRSessionCallback callback, int timeout = 3000, CancellationToken cancellationToken = default(CancellationToken)) {
             using (_disposeToken.Link(ref cancellationToken))
             using (await _initializationLock.WaitAsync(cancellationToken)) {
-                if (_initializationTcs.Task.Status != TaskStatus.RanToCompletion) {
+                if (_initializationTcs.Task.Status != TaskStatus.RanToCompletion || !_isHostRunning) {
                     await StartHostAsyncBackground(startupInfo, callback, timeout, cancellationToken);
                 } else {
                     throw new InvalidOperationException("Another instance of RHost is running for this RSession. Stop it before starting new one.");
