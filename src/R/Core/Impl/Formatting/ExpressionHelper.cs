@@ -10,6 +10,9 @@ using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 
 namespace Microsoft.R.Core.Formatting {
+    /// <summary>
+    /// Provides services for expression formatting and indentation
+    /// </summary>
     internal sealed class ExpressionHelper {
         private readonly TokenStream<RToken> _tokens;
         private readonly ITextProvider _textProvider;

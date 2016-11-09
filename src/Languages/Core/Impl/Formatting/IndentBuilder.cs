@@ -234,6 +234,9 @@ namespace Microsoft.Languages.Core.Formatting {
             return indent;
         }
 
+        /// <summary>
+        /// Determines indentation based on the leading whitespace in the current line.
+        /// </summary>
         public static int GetLineIndentSize(TextBuilder tb, int position, int tabSize) {
             for (int i = position - 1; i >= 0; i--) {
                 if (CharExtensions.IsLineBreak(tb.Text[i])) {

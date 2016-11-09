@@ -139,7 +139,7 @@ namespace Microsoft.R.Core.Formatting {
             //          z
             //      }
             //
-            _formattingScopes.Push(new FormattingScope(_tb, _tokens, _tokens.Position - 1, _options));
+            _formattingScopes.OpenScope(new FormattingScope(_tb, _tokens, _tokens.Position - 1, _options, _braceHandler));
 
             if (!SingleLineScope) {
                 _tb.SoftLineBreak();
@@ -157,7 +157,7 @@ namespace Microsoft.R.Core.Formatting {
             var leadingSpace = SingleLineScope && _tokens.PreviousToken.TokenType != RTokenType.CloseCurlyBrace;
 
             // Close formatting scope and remember if it was based on the user-supplied indent.
-            _formattingScopes.Close(_tokens.Position);
+            _formattingScopes.TryCloseScope(_tokens.Position);
 
             // Closing curly indentation is defined by the line that either holds the opening curly brace
             // or the line that holds keyword that defines the expression that the curly belongs to.
@@ -171,8 +171,9 @@ namespace Microsoft.R.Core.Formatting {
             //      }
             //
             if (!SingleLineScope) {
-                var indentString = _braceHandler.GetCloseCurlyBraceIndent(_tokens.CurrentToken, _tb, _options);
-                if (!string.IsNullOrEmpty(indentString)) {
+                int lineIndentSize = _braceHandler.GetCloseCurlyBraceIndentSize(_tokens.CurrentToken, _tb, _options);
+                if (lineIndentSize > 0) {
+                    var indentString = IndentBuilder.GetIndentString(lineIndentSize, _options.IndentType, _options.TabSize);
                     _tb.AppendPreformattedText(indentString);
                     leadingSpace = false;
                 } else {
@@ -615,7 +616,7 @@ namespace Microsoft.R.Core.Formatting {
 
                         case RTokenType.Comment:
                             // Preserve user indent in argument lists
-                            preserveUserIndent = _braceHandler.Top?.TokenType != RTokenType.OpenCurlyBrace;
+                            preserveUserIndent = _braceHandler.IsInArguments();
                             break;
 
                         default:
@@ -729,7 +730,7 @@ namespace Microsoft.R.Core.Formatting {
             var tokens = tokenizer.Tokenize(_textProvider, 0, _textProvider.Length);
             _tokens = new TokenStream<RToken>(tokens, RToken.EndOfStreamToken);
 
-            _braceHandler = new BraceHandler(_tokens);
+            _braceHandler = new BraceHandler(_tokens, _tb);
             _expressionHelper = new ExpressionHelper(_tokens, _textProvider);
         }
 

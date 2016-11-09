@@ -1,23 +1,30 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Core.Tokens;
 
 namespace Microsoft.R.Core.Formatting {
+    /// <summary>
+    /// Provides set of services for brace handling in formatting
+    /// </summary>
     internal sealed class BraceHandler {
-        private readonly Dictionary<RToken, int> _bracetoKeywordMap = new Dictionary<RToken, int>();
+        private readonly Dictionary<RToken, int> _bracetoKeywordPositionMap = new Dictionary<RToken, int>();
         private Stack<RToken> _openBraces = new Stack<RToken>();
         private readonly TokenStream<RToken> _tokens;
+        private readonly TextBuilder _tb;
 
         public RToken Top => _openBraces.Count > 0 ? _openBraces.Peek() : null;
 
-        public BraceHandler(TokenStream<RToken> tokens) {
+        public BraceHandler(TokenStream<RToken> tokens, TextBuilder tb) {
             _tokens = tokens;
+            _tb = tb;
         }
 
         public void HandleBrace() {
@@ -26,14 +33,14 @@ namespace Microsoft.R.Core.Formatting {
             switch (currentToken.TokenType) {
                 case RTokenType.OpenBrace:
                     if (_tokens.PreviousToken.TokenType == RTokenType.Keyword) {
-                        AssociateKeywordWithOpenBrace(currentToken, _tokens.Position - 1);
+                        AssociateKeywordPositionWithOpenBrace(currentToken, GetNearestNonWhitespaceIndex());
                     }
                     _openBraces.Push(_tokens.CurrentToken);
                     return;
 
                 case RTokenType.OpenCurlyBrace:
                     if (_tokens.PreviousToken.TokenType == RTokenType.CloseBrace) {
-                        AssociateKeywordWithToken(currentToken, _tokens.PreviousToken);
+                        AssociateKeywordPositionWithToken(currentToken, _tokens.PreviousToken);
                     }
                     _openBraces.Push(_tokens.CurrentToken);
                     return;
@@ -47,12 +54,17 @@ namespace Microsoft.R.Core.Formatting {
             if (_openBraces.Count > 0) {
                 switch (currentToken.TokenType) {
                     case RTokenType.CloseBrace:
+                        var openBrace = TryPopMatchingBrace(currentToken);
+                        if (openBrace != null) {
+                            if (_tokens.NextToken.TokenType == RTokenType.OpenCurlyBrace) {
+                                AssociateKeywordPositionWithToken(openBrace, _tokens.NextToken);
+                            }
+                        }
+                        break;
+
                     case RTokenType.CloseSquareBracket:
                     case RTokenType.CloseDoubleSquareBracket:
-                        if (_openBraces.Peek().TokenType == GetMatchingBraceToken(_tokens.CurrentToken.TokenType)) {
-                            var openBrace = _openBraces.Pop();
-                            AssociateKeywordWithToken(openBrace, currentToken);
-                        }
+                        TryPopMatchingBrace(currentToken);
                         break;
 
                     case RTokenType.CloseCurlyBrace:
@@ -61,8 +73,7 @@ namespace Microsoft.R.Core.Formatting {
                             if (_openBraces.Peek().TokenType == RTokenType.OpenCurlyBrace) {
                                 break;
                             }
-                            var openBrace = _openBraces.Pop();
-                            AssociateKeywordWithToken(openBrace, currentToken);
+                            _openBraces.Pop();
                         }
 
                         if (_openBraces.Count > 0) {
@@ -116,36 +127,85 @@ namespace Microsoft.R.Core.Formatting {
             return false;
         }
 
-        public string GetCloseCurlyBraceIndent(RToken token, TextBuilder tb, RFormatOptions options) {
-            Debug.Assert(token.TokenType == RTokenType.CloseCurlyBrace);
+        /// <summary>
+        /// Given opening curly brace tries to find keyword that is associated
+        /// with the scope and calculate indentation based on the keyword line.
+        /// </summary>
+        public int GetOpenCurlyBraceIndentSize(RToken openCurlyBraceToken, TextBuilder tb, RFormatOptions options) {
+            Debug.Assert(openCurlyBraceToken.TokenType == RTokenType.OpenCurlyBrace);
 
-            int keywordIndex = -1;
-            if (_bracetoKeywordMap.TryGetValue(token, out keywordIndex)) {
-                var keywordToken = _tokens[keywordIndex];
-                var lineIndentSize = IndentBuilder.GetLineIndentSize(tb, keywordToken.Start, options.TabSize);
-                return IndentBuilder.GetIndentString(lineIndentSize, options.IndentType, options.TabSize);
-            }
-            return string.Empty;
-        }
-
-        private int GetLineIndentSize(TextBuilder tb, int position, int tabSize) {
-            for (int i = position - 1; i >= 0; i--) {
-                if (CharExtensions.IsLineBreak(tb.Text[i])) {
-                    return IndentBuilder.TextIndentInSpaces(tb.Text.Substring(i + 1), tabSize);
-                }
+            int keywordPosition = -1;
+            if (_bracetoKeywordPositionMap.TryGetValue(openCurlyBraceToken, out keywordPosition)) {
+                return IndentBuilder.GetLineIndentSize(tb, keywordPosition, options.TabSize);
             }
             return 0;
         }
 
-        private void AssociateKeywordWithOpenBrace(RToken openBrace, int keywordIndex) {
-            _bracetoKeywordMap[openBrace] = keywordIndex;
+        /// <summary>
+        /// Given closing curly brace tries to find keyword that is associated
+        /// with the scope and calculate indentation based on the keyword line.
+        /// </summary>
+        public int GetCloseCurlyBraceIndentSize(RToken closeCurlyBraceToken, TextBuilder tb, RFormatOptions options) {
+            Debug.Assert(closeCurlyBraceToken.TokenType == RTokenType.CloseCurlyBrace);
+
+            // Search stack for the first matching brace. Stack enumerates from the top down.
+            var openCurlyBraceToken = _openBraces.FirstOrDefault(t => t.TokenType == RTokenType.OpenCurlyBrace);
+            if (openCurlyBraceToken != null) {
+                return GetOpenCurlyBraceIndentSize(openCurlyBraceToken, tb, options);
+            }
+            return 0;
         }
 
-        private void AssociateKeywordWithToken(RToken source, RToken target) {
-            int keywordIndex;
-            if (_bracetoKeywordMap.TryGetValue(source, out keywordIndex)) {
-                _bracetoKeywordMap[target] = keywordIndex;
+        /// <summary>
+        /// Associates keyword with the open brace. Used when formatter needs to determine
+        /// indentation level of the new formatting scope when it encounters { token.
+        /// </summary>
+        /// <remarks>
+        /// Closing curly indentation is defined by the line that either holds the opening curly brace
+        /// or the line that holds keyword that defines the expression that the curly belongs to.
+        /// Examples: 
+        ///
+        ///      x &lt;- 
+        ///          function(a) {
+        ///          }
+        ///
+        ///      x &lt;- function(a) {
+        ///      }
+        ///
+        /// First keyword is associated with the open brace, then, when brace pair closes, association
+        /// is propagated to the closing brace and then to the opening curly. When curly pair closes
+        /// formatter then finds appropriate indentation based on the line that contains the keyword token.
+        /// </remarks>
+
+        private void AssociateKeywordPositionWithOpenBrace(RToken openBrace, int keywordPosition) {
+            _bracetoKeywordPositionMap[openBrace] = keywordPosition;
+        }
+
+        /// <summary>
+        /// Propagates keyword association to the target token.
+        /// <seealso cref="AssociateKeywordPositionWithOpenBrace"/>
+        /// </summary>
+        private void AssociateKeywordPositionWithToken(RToken source, RToken target) {
+            int keywordPosition;
+            if (_bracetoKeywordPositionMap.TryGetValue(source, out keywordPosition)) {
+                _bracetoKeywordPositionMap[target] = keywordPosition;
             }
+        }
+
+        private RToken TryPopMatchingBrace(RToken token) {
+            if (_openBraces.Peek().TokenType == GetMatchingBraceToken(token.TokenType)) {
+                return _openBraces.Pop();
+            }
+            return null;
+        }
+
+        private int GetNearestNonWhitespaceIndex() {
+            for (int i = _tb.Length - 1; i >= 0; i--) {
+                if (!Char.IsWhiteSpace(_tb.Text[i])) {
+                    return i;
+                }
+            }
+            return 0;
         }
     }
 }
