@@ -10,7 +10,7 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.VisualStudio.Shell.Mocks {
     [ExcludeFromCodeCoverage]
-    public sealed class VsInteractiveWindowMock : IVsInteractiveWindow {
+    public sealed class VsInteractiveWindowMock : ToolWindowPane, IVsInteractiveWindow {
         private IWpfTextView _textView;
 
         public VsInteractiveWindowMock(IWpfTextView textView) {
