@@ -17,7 +17,7 @@ namespace Microsoft.R.Core.Formatting {
         private readonly TextBuilder _tb;
         private readonly int _previousIndentLevel;
 
-        public int CloseBracePosition { get; }
+        public int CloseBraceTokenIndex { get; }
         public int StartingLineIndent { get; }
         public int SuppressLineBreakCount { get; set; }
 
@@ -32,7 +32,7 @@ namespace Microsoft.R.Core.Formatting {
             var position = tokens.Position;
             tokens.Position = openBraceTokenIndex;
 
-            CloseBracePosition = TokenBraceCounter<RToken>.GetMatchingBrace(tokens,
+            CloseBraceTokenIndex = TokenBraceCounter<RToken>.GetMatchingBrace(tokens,
                 new RToken(RTokenType.OpenCurlyBrace), new RToken(RTokenType.CloseCurlyBrace),
                 new RTokenTypeComparer());
 

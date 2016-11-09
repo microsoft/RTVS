@@ -233,5 +233,14 @@ namespace Microsoft.Languages.Core.Formatting {
 
             return indent;
         }
+
+        public static int GetLineIndentSize(TextBuilder tb, int position, int tabSize) {
+            for (int i = position - 1; i >= 0; i--) {
+                if (CharExtensions.IsLineBreak(tb.Text[i])) {
+                    return TextIndentInSpaces(tb.Text.Substring(i + 1), tabSize);
+                }
+            }
+            return 0;
+        }
     }
 }

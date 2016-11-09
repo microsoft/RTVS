@@ -53,7 +53,10 @@
     <Compile Include="AST\Extensions\ScopeExtensions.cs" />
     <Compile Include="AST\Extensions\AstNodeExtensions.cs" />
     <Compile Include="AST\Extensions\StatementExtensions.cs" />
+    <Compile Include="Formatting\BraceHandler.cs" />
+    <Compile Include="Formatting\ExpressionHelper.cs" />
     <Compile Include="Formatting\FormattingScope.cs" />
+    <Compile Include="Formatting\FormattingScopeStack.cs" />
     <Compile Include="Parser\Definitions\IExpressionTermFilter.cs" />
     <Compile Include="AST\Functions\Definitions\IFunctionDefinition.cs" />
     <Compile Include="AST\Functions\Definitions\IFunction.cs" />
