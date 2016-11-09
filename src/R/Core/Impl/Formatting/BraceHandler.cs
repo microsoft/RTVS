@@ -26,12 +26,18 @@ namespace Microsoft.R.Core.Formatting {
             switch (currentToken.TokenType) {
                 case RTokenType.OpenBrace:
                     if (_tokens.PreviousToken.TokenType == RTokenType.Keyword) {
-                        _bracetoKeywordMap[currentToken] = _tokens.Position - 1;
+                        AssociateKeywordWithOpenBrace(currentToken, _tokens.Position - 1);
                     }
                     _openBraces.Push(_tokens.CurrentToken);
                     return;
 
                 case RTokenType.OpenCurlyBrace:
+                    if (_tokens.PreviousToken.TokenType == RTokenType.CloseBrace) {
+                        AssociateKeywordWithToken(currentToken, _tokens.PreviousToken);
+                    }
+                    _openBraces.Push(_tokens.CurrentToken);
+                    return;
+
                 case RTokenType.OpenSquareBracket:
                 case RTokenType.OpenDoubleSquareBracket:
                     _openBraces.Push(_tokens.CurrentToken);
@@ -39,12 +45,13 @@ namespace Microsoft.R.Core.Formatting {
             }
 
             if (_openBraces.Count > 0) {
-                switch (_tokens.CurrentToken.TokenType) {
+                switch (currentToken.TokenType) {
                     case RTokenType.CloseBrace:
                     case RTokenType.CloseSquareBracket:
                     case RTokenType.CloseDoubleSquareBracket:
                         if (_openBraces.Peek().TokenType == GetMatchingBraceToken(_tokens.CurrentToken.TokenType)) {
-                            _openBraces.Pop();
+                            var openBrace = _openBraces.Pop();
+                            AssociateKeywordWithToken(openBrace, currentToken);
                         }
                         break;
 
@@ -54,7 +61,8 @@ namespace Microsoft.R.Core.Formatting {
                             if (_openBraces.Peek().TokenType == RTokenType.OpenCurlyBrace) {
                                 break;
                             }
-                            _openBraces.Pop();
+                            var openBrace = _openBraces.Pop();
+                            AssociateKeywordWithToken(openBrace, currentToken);
                         }
 
                         if (_openBraces.Count > 0) {
@@ -127,6 +135,17 @@ namespace Microsoft.R.Core.Formatting {
                 }
             }
             return 0;
+        }
+
+        private void AssociateKeywordWithOpenBrace(RToken openBrace, int keywordIndex) {
+            _bracetoKeywordMap[openBrace] = keywordIndex;
+        }
+
+        private void AssociateKeywordWithToken(RToken source, RToken target) {
+            int keywordIndex;
+            if (_bracetoKeywordMap.TryGetValue(source, out keywordIndex)) {
+                _bracetoKeywordMap[target] = keywordIndex;
+            }
         }
     }
 }
