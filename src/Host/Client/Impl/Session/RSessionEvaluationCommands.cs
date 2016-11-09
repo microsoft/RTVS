@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using static System.FormattableString;
@@ -185,8 +186,8 @@ grDevices::deviceIsInteractive('ide')
             return evaluation.EvaluateAsync<ulong>(script, REvaluationKind.Normal);
         }
 
-        public static async Task SetVsCranSelectionAsync(this IRExpressionEvaluator evaluation, string mirrorUrl) {
-            await evaluation.ExecuteAsync(Invariant($"rtvs:::set_mirror({mirrorUrl.ToRStringLiteral()})"));
+        public static async Task SetVsCranSelectionAsync(this IRExpressionEvaluator evaluation, string mirrorUrl, CancellationToken cancellationToken = default(CancellationToken)) {
+            await evaluation.ExecuteAsync(Invariant($"rtvs:::set_mirror({mirrorUrl.ToRStringLiteral()})"), cancellationToken);
         }
 
         public static Task SetROptionsAsync(this IRExpressionEvaluator evaluation) {
@@ -198,12 +199,12 @@ grDevices::deviceIsInteractive('ide')
             return evaluation.ExecuteAsync(script);
         }
 
-        public static Task SetCodePageAsync(this IRExpressionEvaluator evaluation, int codePage) {
+        public static Task SetCodePageAsync(this IRExpressionEvaluator evaluation, int codePage, CancellationToken cancellationToken = default(CancellationToken)) {
             if (codePage == 0) {
                 codePage = NativeMethods.GetOEMCP();
             }
             var script = Invariant($"Sys.setlocale('LC_CTYPE', '.{codePage}')");
-            return evaluation.ExecuteAsync(script);
+            return evaluation.ExecuteAsync(script, cancellationToken);
         }
 
         public static Task OverrideFunctionAsync(this IRExpressionEvaluator evaluation, string name, string ns) {

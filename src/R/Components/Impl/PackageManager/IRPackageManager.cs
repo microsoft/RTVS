@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.R.Components.PackageManager.Model;
 
@@ -20,18 +21,20 @@ namespace Microsoft.R.Components.PackageManager {
         /// Get the list of packages installed in the library folders set for
         /// this session ie. in .libPaths().
         /// </summary>
+        /// <param name="cancellationToken"></param>
         /// <returns>List of packages.</returns>
         /// <exception cref="RPackageManagerException">
         /// The package list couldn't be retrieved from the session.
         /// </exception>
         /// <exception cref="OperationCanceledException">
         /// </exception>
-        Task<IReadOnlyList<RPackage>> GetInstalledPackagesAsync();
+        Task<IReadOnlyList<RPackage>> GetInstalledPackagesAsync(CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Get the list of packages that are available from the repositories
         /// set for this session ie. in getOption('repos').
         /// </summary>
+        /// <param name="cancellationToken"></param>
         /// <returns>
         /// List of packages. Note that several fields will not be populated,
         /// you need to call <see cref="AddAdditionalPackageInfoAsync(RPackage)"/>
@@ -42,7 +45,7 @@ namespace Microsoft.R.Components.PackageManager {
         /// </exception>
         /// <exception cref="OperationCanceledException">
         /// </exception>
-        Task<IReadOnlyList<RPackage>> GetAvailablePackagesAsync();
+        Task<IReadOnlyList<RPackage>> GetAvailablePackagesAsync(CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Install a package by sending install.packages() to the REPL.
