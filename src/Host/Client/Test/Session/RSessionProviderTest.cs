@@ -58,24 +58,6 @@ namespace Microsoft.R.Host.Client.Test.Session {
         }
 
         [Test]
-        public async Task BeginEvaluationAsync_ParallelAccess() {
-           using (var sessionProvider = new RSessionProvider(TestCoreServices.CreateReal())) {
-                await sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(BeginEvaluationAsync_ParallelAccess));
-                var tasks = await ParallelTools.InvokeAsync(10, async i => {
-                    var startupInfo = new RHostStartupInfo {
-                        Name = nameof(BeginEvaluationAsync_ParallelAccess)
-                    };
-
-                    using (var evaluation = await sessionProvider.BeginEvaluationAsync(startupInfo)) {
-                        return await evaluation.EvaluateAsync<int>($"{i} + 2", REvaluationKind.Normal);
-                    }
-                });
-
-               tasks.Select(t => t.Result).Should().Contain(Enumerable.Range(2, 10));
-           }
-        }
-
-        [Test]
         public async Task ConnectWhenSwitching() {
             using (var sessionProvider = new RSessionProvider(TestCoreServices.CreateReal())) {
                 var guid1 = new Guid();

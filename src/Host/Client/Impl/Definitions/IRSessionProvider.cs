@@ -21,16 +21,6 @@ namespace Microsoft.R.Host.Client {
         IEnumerable<IRSession> GetSessions();
 
         /// <summary>
-        /// Creates <see cref="IRSessionEvaluation"/> for R expressions to be evaluated
-        /// Expressions are evaluated in a separate <see cref="IRSession"/>, no artifacts will be preserved after evaluation
-        /// </summary>
-        /// <param name="hostFactory"></param>
-        /// <param name="startupInfo"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        Task<IRSessionEvaluation> BeginEvaluationAsync(RHostStartupInfo startupInfo, CancellationToken cancellationToken = default(CancellationToken));
-
-        /// <summary>
         /// Tests connection to the broker without changing current one.
         /// </summary>
         /// <param name="name">Name of the broker. Will be displayed in REPL.</param>

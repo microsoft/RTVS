@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
@@ -12,6 +13,7 @@ using Microsoft.Common.Core.Events;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Components.Settings;
+using Microsoft.R.Components.Settings.Mirrors;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
@@ -20,7 +22,9 @@ using static System.FormattableString;
 
 namespace Microsoft.R.Components.PackageManager.Implementation {
     internal class RPackageManager : IRPackageManager {
-        private readonly IRSessionProvider _sessionProvider;
+        private static readonly Guid SessionId = new Guid("61C93E8D-D24D-4012-82F4-093086A4FB08");
+
+        private readonly IRSession _session;
         private readonly IRSettings _settings;
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
         private readonly DisposableBag _disposableBag;
@@ -46,7 +50,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
         public IRPackageManagerVisualComponent VisualComponent { get; private set; }
 
         public RPackageManager(IRSettings settings, IRInteractiveWorkflow interactiveWorkflow, Action dispose) {
-            _sessionProvider = interactiveWorkflow.RSessions;
+            _session = interactiveWorkflow.RSessions.GetOrCreate(SessionId);
             _settings = settings;
             _interactiveWorkflow = interactiveWorkflow;
             _loadedPackagesEvent = new DirtyEventSource(this);
@@ -74,14 +78,14 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             return VisualComponent;
         }
 
-        public async Task<IReadOnlyList<RPackage>> GetInstalledPackagesAsync() {
+        public async Task<IReadOnlyList<RPackage>> GetInstalledPackagesAsync(CancellationToken cancellationToken = default (CancellationToken)) {
             _installedPackagesEvent.Reset();
-            return await GetPackagesAsync(async eval => await eval.InstalledPackagesAsync());
+            return await GetPackagesAsync(_session.InstalledPackagesAsync, cancellationToken);
         }
 
-        public async Task<IReadOnlyList<RPackage>> GetAvailablePackagesAsync() {
+        public async Task<IReadOnlyList<RPackage>> GetAvailablePackagesAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             _availablePackagesEvent.Reset();
-            return await GetPackagesAsync(async eval => await eval.AvailablePackagesAsync());
+            return await GetPackagesAsync(_session.AvailablePackagesAsync, cancellationToken);
         }
 
         public async Task InstallPackageAsync(string name, string libraryPath) {
@@ -133,31 +137,31 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             => _interactiveWorkflow.RSession.EvaluateAsync<PackageLockState>(
                  Invariant($"rtvs:::package_lock_state({name.ToRStringLiteral()}, {libraryPath.ToRStringLiteral()})"), REvaluationKind.Normal);
 
-        private async Task<IReadOnlyList<RPackage>> GetPackagesAsync(Func<IRExpressionEvaluator, Task<JArray>> queryFunc) {
+        private async Task<IReadOnlyList<RPackage>> GetPackagesAsync(Func<Task<JArray>> queryFunc, CancellationToken cancellationToken) {
             // Fetching of installed and available packages is done in a
             // separate package query session to avoid freezing the REPL.
             try {
-                var startupInfo = new RHostStartupInfo {
-                    Name = "PackageManager",
-                    CranMirrorName = _settings.CranMirror,
-                    CodePage = _settings.RCodePage
-                };
+                var startupInfo = new RHostStartupInfo { Name = "PackageManager" };
 
-                using (var eval = await _sessionProvider.BeginEvaluationAsync(startupInfo)) {
-                    // Get the repos and libpaths from the REPL session and set them
-                    // in the package query session
-                    var repositories = (await DeparseRepositoriesAsync());
-                    if (repositories != null) {
-                        await WrapRException(eval.ExecuteAsync($"options(repos=eval(parse(text={repositories.ToRStringLiteral()})))"));
-                    }
-                    var libraries = (await DeparseLibrariesAsync());
-                    if (libraries != null) { 
-                        await WrapRException(eval.ExecuteAsync($".libPaths(eval(parse(text={libraries.ToRStringLiteral()})))"));
-                    }
+                await _session.EnsureHostStartedAsync(startupInfo, null, cancellationToken: cancellationToken);
+                await _session.SetVsCranSelectionAsync(CranMirrorList.UrlFromName(_settings.CranMirror), cancellationToken);
+                await _session.SetCodePageAsync(_settings.RCodePage, cancellationToken);
 
-                    var result = await WrapRException(queryFunc(eval));
-                    return result.Select(p => p.ToObject<RPackage>()).ToList().AsReadOnly();
+                // Get the repos and libpaths from the REPL session and set them
+                // in the package query session
+                var repositories = (await DeparseRepositoriesAsync());
+                if (repositories != null) {
+                    await WrapRException(_session.ExecuteAsync($"options(repos=eval(parse(text={repositories.ToRStringLiteral()})))", cancellationToken));
                 }
+
+                var libraries = (await DeparseLibrariesAsync());
+                if (libraries != null) { 
+                    await WrapRException(_session.ExecuteAsync($".libPaths(eval(parse(text={libraries.ToRStringLiteral()})))", cancellationToken));
+                }
+
+                var result = await WrapRException(queryFunc());
+                return result.Select(p => p.ToObject<RPackage>()).ToList().AsReadOnly();
+
             } catch (RHostDisconnectedException ex) {
                 throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
             }
