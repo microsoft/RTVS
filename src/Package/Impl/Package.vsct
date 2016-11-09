@@ -2407,47 +2407,56 @@
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowEditorWindow" editor="guidRToolsCmdSet" key1="1" mod1="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowEditorWindow" editor="REditor" key1="1" mod1="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowEditorWindow" editor="RmdEditor" key1="1" mod1="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowEditorWindow" editor="InteractiveWindow" key1="1" mod1="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowEditorWindow" editor="SolutionExplorer" key1="1" mod1="CONTROL" />
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowReplWindow" editor="guidRToolsCmdSet" key1="2" mod1="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowReplWindow" editor="REditor" key1="2" mod1="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowReplWindow" editor="RmdEditor" key1="2" mod1="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowReplWindow" editor="InteractiveWindow" key1="2" mod1="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowReplWindow" editor="SolutionExplorer" key1="2" mod1="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowReplWindow" editor="guidVSStd97" key1="2" mod1="CONTROL" />
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowHelpWindow" editor="guidRToolsCmdSet" key1="3" mod1="CONTROL"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowHelpWindow" editor="REditor" key1="3" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowHelpWindow" editor="RmdEditor" key1="3" mod1="CONTROL"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowHelpWindow" editor="InteractiveWindow" key1="3" mod1="CONTROL"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowHelpWindow" editor="SolutionExplorer" key1="3" mod1="CONTROL"/>
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowHistoryWindow" editor="guidRToolsCmdSet" key1="4" mod1="CONTROL"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowHistoryWindow" editor="REditor" key1="4" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowHistoryWindow" editor="RmdEditor" key1="4" mod1="CONTROL"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowHistoryWindow" editor="InteractiveWindow" key1="4" mod1="CONTROL"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowHistoryWindow" editor="SolutionExplorer" key1="4" mod1="CONTROL"/>
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowSolutionExplorer" editor="guidRToolsCmdSet" key1="5" mod1="CONTROL"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowSolutionExplorer" editor="REditor" key1="5" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowSolutionExplorer" editor="RmdEditor" key1="5" mod1="CONTROL"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowSolutionExplorer" editor="InteractiveWindow" key1="5" mod1="CONTROL"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowSolutionExplorer" editor="SolutionExplorer" key1="5" mod1="CONTROL"/>
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowPlotWindow" editor="guidRToolsCmdSet" key1="6" mod1="CONTROL"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowPlotWindow" editor="REditor" key1="6" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowPlotWindow" editor="RmdEditor" key1="6" mod1="CONTROL"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowPlotWindow" editor="InteractiveWindow" key1="6" mod1="CONTROL"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowPlotWindow" editor="SolutionExplorer" key1="6" mod1="CONTROL"/>
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowPackagesWindow" editor="guidRToolsCmdSet" key1="7" mod1="CONTROL"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowPackagesWindow" editor="REditor" key1="7" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowPackagesWindow" editor="RmdEditor" key1="7" mod1="CONTROL"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowPackagesWindow" editor="InteractiveWindow" key1="7" mod1="CONTROL"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowPackagesWindow" editor="SolutionExplorer" key1="7" mod1="CONTROL"/>
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="guidRToolsCmdSet" key1="8" mod1="CONTROL"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="REditor" key1="8" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="RmdEditor" key1="8" mod1="CONTROL"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="InteractiveWindow" key1="8" mod1="CONTROL"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="SolutionExplorer" key1="8" mod1="CONTROL"/>
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowConnectionsWindow" editor="guidRToolsCmdSet" key1="9" mod1="CONTROL"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowConnectionsWindow" editor="REditor" key1="9" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowConnectionsWindow" editor="RmdEditor" key1="9" mod1="CONTROL"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowConnectionsWindow" editor="InteractiveWindow" key1="9" mod1="CONTROL"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowConnectionsWindow" editor="SolutionExplorer" key1="9" mod1="CONTROL"/>
 
@@ -2459,33 +2468,39 @@
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdNextPlot" editor="guidRToolsCmdSet" key1="VK_F12" mod1="CONTROL ALT"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdNextPlot" editor="REditor" key1="VK_F12" mod1="CONTROL ALT"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdNextPlot" editor="RmdEditor" key1="VK_F12" mod1="CONTROL ALT"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdNextPlot" editor="InteractiveWindow" key1="VK_F12" mod1="CONTROL ALT"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdNextPlot" editor="SolutionExplorer" key1="VK_F12" mod1="CONTROL ALT"/>
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdPrevPlot" editor="guidRToolsCmdSet" key1="VK_F11" mod1="CONTROL ALT"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdPrevPlot" editor="REditor" key1="VK_F11" mod1="CONTROL ALT"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdPrevPlot" editor="RmdEditor" key1="VK_F11" mod1="CONTROL ALT"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdPrevPlot" editor="InteractiveWindow" key1="VK_F11" mod1="CONTROL ALT"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdPrevPlot" editor="SolutionExplorer" key1="VK_F11" mod1="CONTROL ALT"/>
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdResetRepl" editor="guidRToolsCmdSet" key1="VK_F10" mod1="CONTROL SHIFT" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdResetRepl" editor="REditor" key1="VK_F10" mod1="CONTROL SHIFT" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdResetRepl" editor="RmdEditor" key1="VK_F10" mod1="CONTROL SHIFT" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdResetRepl" editor="InteractiveWindow" key1="VK_F10" mod1="CONTROL SHIFT" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdResetRepl" editor="SolutionExplorer" key1="VK_F10" mod1="CONTROL SHIFT" />
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScript" editor="guidRToolsCmdSet" key1="S" mod1="CONTROL SHIFT" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScript" editor="REditor" key1="S" mod1="CONTROL SHIFT" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScript" editor="RmdEditor" key1="S" mod1="CONTROL SHIFT" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScript" editor="InteractiveWindow" key1="S" mod1="CONTROL SHIFT" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScript" editor="SolutionExplorer" key1="S" mod1="CONTROL SHIFT" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScript" editor="Global" key1="S" mod1="CONTROL SHIFT" />
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScriptWithEcho" editor="guidRToolsCmdSet" key1="VK_RETURN" mod1="CONTROL SHIFT" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScriptWithEcho" editor="REditor" key1="VK_RETURN" mod1="CONTROL SHIFT" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScriptWithEcho" editor="RmdEditor" key1="VK_RETURN" mod1="CONTROL SHIFT" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScriptWithEcho" editor="InteractiveWindow" key1="VK_RETURN" mod1="CONTROL SHIFT" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScriptWithEcho" editor="SolutionExplorer" key1="VK_RETURN" mod1="CONTROL SHIFT" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScriptWithEcho" editor="Global" key1="VK_RETURN" mod1="CONTROL SHIFT" />
     
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSetDirectoryToSourceCommand" editor="guidRToolsCmdSet" key1="E" mod1="CONTROL SHIFT" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSetDirectoryToSourceCommand" editor="REditor" key1="E" mod1="CONTROL SHIFT" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSetDirectoryToSourceCommand" editor="RmdEditor" key1="E" mod1="CONTROL SHIFT" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSetDirectoryToSourceCommand" editor="InteractiveWindow" key1="E" mod1="CONTROL SHIFT" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSetDirectoryToSourceCommand" editor="RmdEditor" key1="E" mod1="CONTROL SHIFT" />
 
@@ -2495,6 +2510,7 @@
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSelectWorkingDirectory" editor="guidRToolsCmdSet" key1="W" mod1="CONTROL SHIFT" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSelectWorkingDirectory" editor="REditor" key1="W" mod1="CONTROL SHIFT" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSelectWorkingDirectory" editor="RmdEditor" key1="W" mod1="CONTROL SHIFT" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSelectWorkingDirectory" editor="InteractiveWindow" key1="W" mod1="CONTROL SHIFT" />
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdInsertRoxygenBlock" editor="REditor" key1="R" mod1="CONTROL SHIFT ALT" />
