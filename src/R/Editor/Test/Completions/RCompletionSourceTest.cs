@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Languages.Core.Text;
 using Microsoft.UnitTests.Core.XUnit;
@@ -75,14 +76,20 @@ namespace Microsoft.R.Editor.Test.Completions {
         [InlineData("utils::", 7, "adist", "approximate string distance")]
         [InlineData("lm(utils::)", 10, "adist", "approximate string distance")]
         [InlineData("rtvs::", 6, "fetch_file", "used to download")]
-        public void SpecificPackage(string content, int position, string expectedEntry, string expectedDescription) {
+        public async Task SpecificPackage(string content, int position, string expectedEntry, string expectedDescription) {
+            var info = await FunctionIndex.GetFunctionInfoAsync(expectedEntry);
+            info.Should().NotBeNull();
+
             var completionSets = new List<CompletionSet>();
             GetCompletions(content, position, completionSets);
 
             completionSets.Should().ContainSingle();
 
-            completionSets[0].Completions.Should().Contain(c => c.DisplayText == expectedEntry)
-                .Which.Description.Should().Contain(expectedDescription);
+            var entry = completionSets[0].Completions.FirstOrDefault(c => c.DisplayText == expectedEntry);
+            entry.Should().NotBeNull();
+
+            var description = entry.Description;
+            description.Should().Contain(expectedDescription);
         }
 
         [CompositeTest]

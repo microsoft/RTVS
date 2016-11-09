@@ -18,8 +18,6 @@ using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
-using Newtonsoft.Json.Linq;
-using static System.FormattableString;
 
 namespace Microsoft.R.Support.Help.Packages {
     /// <summary>
@@ -27,6 +25,7 @@ namespace Microsoft.R.Support.Help.Packages {
     /// </summary>
     [Export(typeof(IPackageIndex))]
     public sealed class PackageIndex : IPackageIndex {
+        private readonly IRInteractiveWorkflow _workflow;
         private readonly IRSession _interactiveSession;
         private readonly ICoreShell _shell;
         private readonly IIntellisenseRSession _host;
@@ -43,15 +42,19 @@ namespace Microsoft.R.Support.Help.Packages {
             _host = host;
             _functionIndex = functionIndex;
 
-            _interactiveSession = interactiveWorkflowProvider.GetOrCreate().RSession;
-
-            _interactiveSession.Connected += OnSessionConnected;
+            _workflow = interactiveWorkflowProvider.GetOrCreate();
+            
+            _interactiveSession = _workflow.RSession;
             _interactiveSession.PackagesInstalled += OnPackagesChanged;
             _interactiveSession.PackagesRemoved += OnPackagesChanged;
+
+            _workflow.RSessions.BrokerStateChanged += OnBrokerStateChanged;
         }
 
-        private void OnSessionConnected(object sender, RConnectedEventArgs e) {
-            BuildIndexAsync().DoNotWait();
+        private void OnBrokerStateChanged(object sender, BrokerStateChangedEventArgs e) {
+            if (e.IsConnected) {
+                BuildIndexAsync().DoNotWait();
+            }
         }
 
         private void OnPackagesChanged(object sender, EventArgs e) {
@@ -141,7 +144,7 @@ namespace Microsoft.R.Support.Help.Packages {
             if (_interactiveSession != null) {
                 _interactiveSession.PackagesInstalled -= OnPackagesChanged;
                 _interactiveSession.PackagesRemoved -= OnPackagesChanged;
-                _interactiveSession.Connected -= OnSessionConnected;
+                _workflow.RSessions.BrokerStateChanged -= OnBrokerStateChanged;
             }
             _host?.Dispose();
         }
