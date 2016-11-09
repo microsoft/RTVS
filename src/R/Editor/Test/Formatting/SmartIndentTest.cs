@@ -65,10 +65,6 @@ namespace Microsoft.R.Editor.Test.Formatting {
         [InlineData("x <- func(\n    z = list(\n        a = function() {\n", 3, 12)]
         [InlineData("x <- func(\n    z = list(\n        a = function() {\n        },\n", 4, 8)]
         [InlineData("x <- func(\n    z = list(\n        a = function() {\n        }\n)\n", 5, 0)]
-        [InlineData("x <-\n", 1, 4)]
-        [InlineData("x <- function()\n", 1, 4)]
-        [InlineData("x <- \ny +\n", 2, 4)]
-        [InlineData("{\nx <- \n", 2, 8)]
         public void Scope(string content, int lineNum, int expectedIndent) {
             AstRoot ast;
             ITextView textView = TextViewTest.MakeTextView(content, 0, out ast);

@@ -17,5 +17,12 @@ namespace Microsoft.Common.Core {
                 ex is AccessViolationException ||
                 ex is CriticalException;
         }
+
+        public static bool IsProtocolException(this Exception ex) {
+            return ex is IndexOutOfRangeException ||
+                ex is ArgumentOutOfRangeException ||
+                ex is InvalidCastException ||
+                ex is FormatException;
+        }
     }
 }
