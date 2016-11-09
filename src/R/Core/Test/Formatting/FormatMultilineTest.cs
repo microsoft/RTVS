@@ -16,6 +16,9 @@ namespace Microsoft.R.Core.Test.Formatting {
         [InlineData("((x %>% y)\n   %>%z%>%a)", "((x %>% y)\n   %>% z %>% a)")]
         [InlineData("x <- function()\n  z", "x <- function()\n  z")]
         [InlineData("{\n  x <- function()\n      z\n}", "{\n  x <- function()\n      z\n}")]
+        [InlineData("x <- \n  if(TRUE) {\n   z\n}", "x <-\n  if (TRUE) {\n    z\n  }")]
+        [InlineData("{\n  x <- \n    if(TRUE) {\n   z\n}\n}", "{\n  x <-\n    if (TRUE) {\n      z\n    }\n}")]
+        [InlineData("x <-function(a,\n    b){\n z\n}", "x <- function(a,\n    b) {\n  z\n}")]
         public void Multiline(string original, string expected) {
             RFormatter f = new RFormatter();
             string actual = f.Format(original);

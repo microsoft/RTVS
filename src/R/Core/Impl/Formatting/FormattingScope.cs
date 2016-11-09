@@ -17,27 +17,34 @@ namespace Microsoft.R.Core.Formatting {
         private readonly TextBuilder _tb;
         private readonly int _previousIndentLevel;
 
-        public RToken OpenBraceToken { get; set; }
         public int CloseBracePosition { get; }
-
+        public int StartingLineIndent { get; }
         public int SuppressLineBreakCount { get; set; }
 
         public FormattingScope() { }
 
-        public FormattingScope(TextBuilder tb, TokenStream<RToken> tokens, RFormatOptions options) {
-            Debug.Assert(tokens.CurrentToken.TokenType == RTokenType.OpenCurlyBrace);
+        public FormattingScope(TextBuilder tb, TokenStream<RToken> tokens, int openBraceTokenIndex, RFormatOptions options) {
+            Debug.Assert(tokens[openBraceTokenIndex].TokenType == RTokenType.OpenCurlyBrace);
 
             _options = options;
             _tb = tb;
 
-            OpenBraceToken = tokens.CurrentToken;
+            var position = tokens.Position;
+            tokens.Position = openBraceTokenIndex;
 
             CloseBracePosition = TokenBraceCounter<RToken>.GetMatchingBrace(tokens,
                 new RToken(RTokenType.OpenCurlyBrace), new RToken(RTokenType.CloseCurlyBrace),
                 new RTokenTypeComparer());
 
+            tokens.Position = position;
+
             _previousIndentLevel = tb.IndentBuilder.IndentLevel;
-            tb.IndentBuilder.SetIndentLevelForSize(CurrentLineIndent(tb));
+            StartingLineIndent = CurrentLineIndent(tb);
+            if (StartingLineIndent > 0) {
+                tb.IndentBuilder.SetIndentLevelForSize(StartingLineIndent + _options.IndentSize);
+            } else {
+                tb.IndentBuilder.NewIndentLevel();
+            }
         }
 
         private int CurrentLineIndent(TextBuilder tb) {

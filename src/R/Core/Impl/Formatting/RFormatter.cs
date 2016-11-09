@@ -108,58 +108,80 @@ namespace Microsoft.R.Core.Formatting {
         private void OpenFormattingScope() {
             Debug.Assert(_tokens.CurrentToken.TokenType == RTokenType.OpenCurlyBrace);
 
-            if (IsInArguments()) {
-                // Inside argument lists indentation rules are different
-                // so open new set of options and indentation
-                FormattingScope formattingScope = new FormattingScope(_tb, _tokens, _options);
-                _formattingScopes.Push(formattingScope);
-            }
-
             // If scope is empty, make it { } unless there is a line break already in it
             if (_tokens.NextToken.TokenType == RTokenType.CloseCurlyBrace &&
                 _textProvider.IsWhiteSpaceOnlyRange(_tokens.CurrentToken.End, _tokens.NextToken.Start)) {
                 AppendToken(leadingSpace: _tokens.PreviousToken.TokenType == RTokenType.CloseBrace, trailingSpace: true);
                 AppendToken(leadingSpace: false, trailingSpace: false);
                 return;
-            } else {
-                // Determine if the scope is a single line like if(TRUE) { 1 } and keep it 
-                // on a single line unless there are line breaks in it. Continue without 
-                // breaks until the scope ends. Includes multiple nested scopes such as {{{ 1 }}}. 
-                // We continue on the outer scope boundaries.
-                if (_singleLineScopeEnd < 0) {
-                    _singleLineScopeEnd = GetSingleLineScopeEnd();
-                }
+            }
 
-                if (_options.BracesOnNewLine && !SingleLineScope) {
-                    SoftLineBreak();
-                } else if (!IsOpenBraceToken(_tokens.PreviousToken.TokenType)) {
+            // Determine if the scope is a single line like if(TRUE) { 1 } and keep it 
+            // on a single line unless there are line breaks in it. Continue without 
+            // breaks until the scope ends. Includes multiple nested scopes such as {{{ 1 }}}. 
+            // We continue on the outer scope boundaries.
+            if (_singleLineScopeEnd < 0) {
+                _singleLineScopeEnd = GetSingleLineScopeEnd();
+            }
+
+            if (_options.BracesOnNewLine && !SingleLineScope) {
+                // Add line break if brace positioning is expanded and it is not a single line scope like { }
+                SoftLineBreak();
+            } else {
+                // Add space if curly is preceded by )
+                bool precededByCloseBrace = _tokens.PreviousToken.TokenType == RTokenType.CloseBrace;
+                if (precededByCloseBrace) {
                     _tb.AppendSpace();
                 }
             }
 
+            // Append { to the formatted text
             AppendToken(leadingSpace: false, trailingSpace: false);
+
+            // Open new scope. It is one indent level deeper than either current
+            // indent level or one level deeper than the current line indent
+            // such as when formatting multiline expression that also includes
+            // scope statements such as
+            //   x <- 
+            //      if(...) {
+            //          z
+            //      }
+            //
+            _formattingScopes.Push(new FormattingScope(_tb, _tokens, _tokens.Position - 1, _options));
 
             if (!SingleLineScope) {
                 _tb.SoftLineBreak();
-                _tb.NewIndentLevel();
             }
         }
 
         private void CloseFormattingScope() {
             Debug.Assert(_tokens.CurrentToken.TokenType == RTokenType.CloseCurlyBrace);
 
+            // if it is not single line scope like { } add linke break before }
             if (!SingleLineScope) {
                 _tb.SoftLineBreak();
-                _tb.CloseIndentLevel();
-                _tb.SoftIndent();
             }
 
             var leadingSpace = SingleLineScope && _tokens.PreviousToken.TokenType != RTokenType.CloseCurlyBrace;
 
+            // Close formatting scope and remember if it was based on the user-supplied indent.
+            int braceIndentSize = 0;
             if (_formattingScopes.Count > 1) {
                 if (_formattingScopes.Peek().CloseBracePosition == _tokens.Position) {
                     FormattingScope scope = _formattingScopes.Pop();
+                    braceIndentSize = scope.StartingLineIndent;
                     scope.Dispose();
+                }
+            }
+
+            // Closing curly should be indented at the level of the line 
+            // that holds opening curly brace.
+            if (!SingleLineScope) {
+                if (braceIndentSize > 0) {
+                    _tb.AppendPreformattedText(IndentBuilder.GetIndentString(braceIndentSize, _options.IndentType, _options.TabSize));
+                    leadingSpace = false;
+                } else {
+                    _tb.SoftIndent();
                 }
             }
 

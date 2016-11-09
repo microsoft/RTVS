@@ -70,7 +70,7 @@ x <- function() {
                     var packageIndex = _exportProvider.GetExportedValue<IPackageIndex>();
                     await packageIndex.BuildIndexAsync();
                     var functionIndex = _exportProvider.GetExportedValue<IFunctionIndex>();
-                    PackageIndexUtility.GetFunctionInfoAsync(functionIndex, "lm").Wait(3000);
+                    await PackageIndexUtility.GetFunctionInfoAsync(functionIndex, "lm");
 
                     script.DoIdle(500);
                     script.MoveDown();
