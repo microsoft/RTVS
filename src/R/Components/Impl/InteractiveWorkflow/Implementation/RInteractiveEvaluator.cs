@@ -87,7 +87,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 await _coreShell.ShowErrorMessageAsync(Resources.Error_Microsoft_R_Host_Missing);
                 return ExecutionResult.Failure;
             } catch (RHostDisconnectedException ex) {
-                CurrentWindow?.WriteError(Environment.NewLine + ex.Message);
+                WriteRHostDisconnectedError(ex);
                 return ExecutionResult.Success;
             } catch (Exception ex) {
                 await _coreShell.ShowErrorMessageAsync(ex.Message);
@@ -167,8 +167,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
                 return ExecutionResult.Success;
             } catch (RHostDisconnectedException rhdex) {
-                WriteErrorLine(rhdex.Message);
-                WriteErrorLine(_sessionProvider.IsConnected ? Resources.RestartRHost : Resources.ReconnectToBroker);
+                WriteRHostDisconnectedError(rhdex);
                 return ExecutionResult.Success;
             } catch (OperationCanceledException) {
                 // Cancellation reason was already reported via RSession.Error and printed out;
@@ -291,15 +290,15 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             }
         }
 
-        private void WriteErrorLine(string message) {
-            if (CurrentWindow != null) {
-                _coreShell.DispatchOnUIThread(() => CurrentWindow.WriteErrorLine(message));
-            }
+        private void WriteRHostDisconnectedError(RHostDisconnectedException exception) {
+            WriteRHostDisconnectedErrorAsync(exception).DoNotWait();
         }
 
-        private void WriteLine(string message) {
+        private async Task WriteRHostDisconnectedErrorAsync(RHostDisconnectedException exception) {
+            await _coreShell.SwitchToMainThreadAsync();
             if (CurrentWindow != null) {
-                _coreShell.DispatchOnUIThread(() => CurrentWindow.WriteLine(message));
+                CurrentWindow.WriteErrorLine(exception.Message);
+                CurrentWindow.WriteErrorLine(_sessionProvider.IsConnected ? Resources.RestartRHost : Resources.ReconnectToBroker);
             }
         }
 

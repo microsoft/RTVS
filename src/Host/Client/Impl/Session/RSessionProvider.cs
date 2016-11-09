@@ -53,33 +53,7 @@ namespace Microsoft.R.Host.Client.Session {
         public IEnumerable<IRSession> GetSessions() {
             return _sessions.Values;
         }
-
-        public async Task<IRSessionEvaluation> BeginEvaluationAsync(RHostStartupInfo startupInfo, CancellationToken cancellationToken = default(CancellationToken)) {
-            using (_disposeToken.Link(ref cancellationToken)) { 
-                cancellationToken.ThrowIfCancellationRequested();
-                var session = GetOrCreate(Guid.NewGuid());
-
-                try {
-                    await session.StartHostAsync(new RHostStartupInfo {
-                        Name = $"Isolated_{startupInfo.Name ?? string.Empty}_{session.Id}",
-                        CranMirrorName = startupInfo.CranMirrorName,
-                        CodePage = startupInfo.CodePage
-                    }, null, cancellationToken: cancellationToken);
-
-                    cancellationToken.ThrowIfCancellationRequested();
-
-                    var evaluation = await session.BeginEvaluationAsync(cancellationToken);
-                    cancellationToken.ThrowIfCancellationRequested();
-
-                    return new IsolatedRSessionEvaluation(session, evaluation);
-                } finally {
-                    if (cancellationToken.IsCancellationRequested) {
-                        await session.StopHostAsync();
-                    }
-                }
-            }
-        }
-
+        
         public void Dispose() {
             if (!_disposeToken.TryMarkDisposed()) {
                 return;
