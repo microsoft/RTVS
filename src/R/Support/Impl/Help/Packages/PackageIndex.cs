@@ -45,8 +45,13 @@ namespace Microsoft.R.Support.Help.Packages {
 
             _interactiveSession = interactiveWorkflowProvider.GetOrCreate().RSession;
 
+            _interactiveSession.Connected += OnSessionConnected;
             _interactiveSession.PackagesInstalled += OnPackagesChanged;
             _interactiveSession.PackagesRemoved += OnPackagesChanged;
+        }
+
+        private void OnSessionConnected(object sender, RConnectedEventArgs e) {
+            BuildIndexAsync().DoNotWait();
         }
 
         private void OnPackagesChanged(object sender, EventArgs e) {
@@ -136,6 +141,7 @@ namespace Microsoft.R.Support.Help.Packages {
             if (_interactiveSession != null) {
                 _interactiveSession.PackagesInstalled -= OnPackagesChanged;
                 _interactiveSession.PackagesRemoved -= OnPackagesChanged;
+                _interactiveSession.Connected -= OnSessionConnected;
             }
             _host?.Dispose();
         }

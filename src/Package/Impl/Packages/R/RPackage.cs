@@ -200,7 +200,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
         private void BuildFunctionIndex() {
             _packageIndex = VsAppShell.Current.ExportProvider.GetExportedValue<IPackageIndex>();
-            _packageIndex.BuildIndexAsync().DoNotWait();
         }
 
         private void SavePackageIndex() {
