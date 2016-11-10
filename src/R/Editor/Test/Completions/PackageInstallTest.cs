@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.Common.Core.Shell;
+using Microsoft.R.Editor.Test.Utility;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Xunit;
@@ -16,8 +16,8 @@ namespace Microsoft.R.Editor.Test.Completions {
     [ExcludeFromCodeCoverage]
     [Category.R.Completion]
     [Collection(CollectionNames.NonParallel)]
-    public class PackageInstallTest : RCompletionSourceTestBase {
-        public PackageInstallTest(REditorMefCatalogFixture catalog) : base(catalog) {}
+    public class PackageInstallTest : FunctionIndexBasedTest {
+        public PackageInstallTest(REditorMefCatalogFixture catalog) : base(catalog) { }
 
         [Test]
         public async Task InstallPackageTest() {
@@ -33,7 +33,7 @@ namespace Microsoft.R.Editor.Test.Completions {
                 await PackageIndex.BuildIndexAsync();
 
                 completionSets.Clear();
-                GetCompletions("abc::", 5, completionSets);
+                RCompletionTestUtilities.GetCompletions(EditorShell, "abc::", 5, completionSets);
 
                 completionSets.Should().ContainSingle();
                 // Try again one more time
@@ -50,7 +50,7 @@ namespace Microsoft.R.Editor.Test.Completions {
             await PackageIndex.BuildIndexAsync();
 
             completionSets.Clear();
-            GetCompletions("abc::", 5, completionSets);
+            RCompletionTestUtilities.GetCompletions(EditorShell, "abc::", 5, completionSets);
 
             completionSets.Should().ContainSingle();
             completionSets[0].Completions.Should().NotBeEmpty();

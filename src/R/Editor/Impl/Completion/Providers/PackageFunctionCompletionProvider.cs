@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Media;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Imaging;
@@ -34,8 +35,8 @@ namespace Microsoft.R.Editor.Completion.Providers {
 
         [ImportingConstructor]
         public PackageFunctionCompletionProvider(
-            ILoadedPackagesProvider loadedPackagesProvider, 
-            [Import(AllowDefault = true)] ISnippetInformationSourceProvider snippetInformationSource, 
+            ILoadedPackagesProvider loadedPackagesProvider,
+            [Import(AllowDefault = true)] ISnippetInformationSourceProvider snippetInformationSource,
             IPackageIndex packageIndex,
             IFunctionIndex functionIndex,
             IGlyphService glyphService) {
@@ -100,7 +101,9 @@ namespace Microsoft.R.Editor.Completion.Providers {
                 return GetSpecificPackage(context);
             }
 
-            return GetAllFilePackages(context);
+            var t = GetAllFilePackagesAsync(context);
+            t.Wait(_asyncWaitTimeout);
+            return t.IsCompleted ? t.Result : Enumerable.Empty<IPackageInfo>();
         }
 
         /// <summary>
@@ -153,19 +156,14 @@ namespace Microsoft.R.Editor.Completion.Providers {
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        private IEnumerable<IPackageInfo> GetAllFilePackages(RCompletionContext context) {
+        private Task<IEnumerable<IPackageInfo>> GetAllFilePackagesAsync(RCompletionContext context) {
             _loadedPackagesProvider?.Initialize();
 
             IEnumerable<string> loadedPackages = _loadedPackagesProvider?.GetPackageNames() ?? Enumerable.Empty<string>();
             IEnumerable<string> filePackageNames = context.AstRoot.GetFilePackageNames();
             IEnumerable<string> allPackageNames = PackageIndex.PreloadedPackages.Union(filePackageNames).Union(loadedPackages);
 
-            return allPackageNames
-                .Select(packageName => GetPackageByName(packageName))
-                // May be null if user mistyped package name in the library()
-                // statement or package is not installed.
-                .Where(p => p != null)
-                .ToList();
+            return _packageIndex.GetPackagesInfoAsync(allPackageNames);
         }
 
         private IPackageInfo GetPackageByName(string packageName) {

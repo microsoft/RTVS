@@ -86,9 +86,9 @@ namespace Microsoft.R.Core.AST {
         /// Updates positions of nodes in the tree reflecting multiple 
         /// changes made to the source text buffer.
         /// </summary>
-        public void ReflectTextChanges(IReadOnlyCollection<TextChangeEventArgs> textChanges) {
+        public void ReflectTextChanges(IReadOnlyCollection<TextChangeEventArgs> textChanges, ITextProvider newText) {
             foreach (TextChangeEventArgs curChange in textChanges) {
-                ReflectTextChange(curChange.Start, curChange.OldLength, curChange.NewLength);
+                ReflectTextChange(curChange.Start, curChange.OldLength, curChange.NewLength, newText);
             }
         }
 
@@ -99,7 +99,9 @@ namespace Microsoft.R.Core.AST {
         /// <param name="start">Start position of the change</param>
         /// <param name="oldLength">Length of changed fragment before the change</param>
         /// <param name="newLength">Length of changed fragment after the change</param>
-        public void ReflectTextChange(int start, int oldLength, int newLength) {
+        /// <param name="newText">Complete new text snapshot</param>
+        public void ReflectTextChange(int start, int oldLength, int newLength, ITextProvider newText) {
+            TextProvider = newText;
             int offset = newLength - oldLength;
             ShiftStartingFrom(start, offset);
             Comments.ReflectTextChange(start, oldLength, newLength);

@@ -15,8 +15,13 @@ namespace Microsoft.UnitTests.Core.XUnit.MethodFixtures {
             return MethodFixtureBase.DefaultInitializeResult;
         }
 
-        public Task DisposeAsync(IMessageBus messageBus) => ContainerHost.Decrement();
+        public virtual Task DisposeAsync(IMessageBus messageBus) {
+            Dispose(true);
+            return ContainerHost.Decrement();
+        }
 
         public Task<IDisposable> AddToHost(UIElement element) => ContainerHost.AddContainer(element);
+
+        protected virtual void Dispose(bool disposing) { }
     }
 }

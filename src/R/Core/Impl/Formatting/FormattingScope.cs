@@ -17,24 +17,39 @@ namespace Microsoft.R.Core.Formatting {
         private readonly TextBuilder _tb;
         private readonly int _previousIndentLevel;
 
-        public int CloseBracePosition { get; private set; } = -1;
-
+        public int CloseCurlyBraceTokenIndex { get; }
+        public int StartingLineIndentSize { get; }
         public int SuppressLineBreakCount { get; set; }
 
         public FormattingScope() { }
 
-        public FormattingScope(TextBuilder tb, TokenStream<RToken> tokens, RFormatOptions options) {
-            Debug.Assert(tokens.CurrentToken.TokenType == RTokenType.OpenCurlyBrace);
+        public FormattingScope(TextBuilder tb, TokenStream<RToken> tokens, int openBraceTokenIndex, RFormatOptions options, BraceHandler braceHandler) {
+            Debug.Assert(tokens[openBraceTokenIndex].TokenType == RTokenType.OpenCurlyBrace);
 
             _options = options;
             _tb = tb;
+            _previousIndentLevel = tb.IndentBuilder.IndentLevel;
 
-            CloseBracePosition = TokenBraceCounter<RToken>.GetMatchingBrace(tokens,
+            CloseCurlyBraceTokenIndex = FindMatchingCloseBrace(tokens, openBraceTokenIndex);
+
+            StartingLineIndentSize = braceHandler.GetOpenCurlyBraceIndentSize(tokens[openBraceTokenIndex], tb, options);
+            if (StartingLineIndentSize > 0) {
+                tb.IndentBuilder.SetIndentLevelForSize(StartingLineIndentSize + _options.IndentSize);
+            } else {
+                tb.IndentBuilder.NewIndentLevel();
+            }
+        }
+
+        private int FindMatchingCloseBrace(TokenStream<RToken> tokens, int openBraceTokenIndex) {
+            var position = tokens.Position;
+            tokens.Position = openBraceTokenIndex;
+
+            var result = TokenBraceCounter<RToken>.GetMatchingBrace(tokens,
                 new RToken(RTokenType.OpenCurlyBrace), new RToken(RTokenType.CloseCurlyBrace),
                 new RTokenTypeComparer());
 
-            _previousIndentLevel = tb.IndentBuilder.IndentLevel;
-            tb.IndentBuilder.SetIndentLevelForSize(CurrentLineIndent(tb));
+            tokens.Position = position;
+            return result;
         }
 
         private int CurrentLineIndent(TextBuilder tb) {

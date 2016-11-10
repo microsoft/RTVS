@@ -8,9 +8,6 @@ using FluentAssertions;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Fixtures;
-using Microsoft.R.Host.Client.Test.Script;
-using Microsoft.R.Support.Help;
-using Microsoft.R.Support.Test.Utility;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -37,7 +34,11 @@ namespace Microsoft.R.Editor.Application.Test.Markdown {
         [Test]
         [Category.Interactive]
         public async Task TypeRBlock() {
-            using (var script = await _editorHost.StartScript(_exportProvider, MdContentTypeDefinition.ContentType)) {
+            using (var script = await _editorHost.StartScript(_exportProvider, string.Empty, "filename", MdContentTypeDefinition.ContentType, _sessionProvider)) {
+
+                var info = await _editorHost.FunctionIndex.GetFunctionInfoAsync("abbreviate");
+                info.Should().NotBeNull();
+
                 script.Type("```{r}{ENTER}{ENTER}```");
                 script.MoveUp();
                 script.Type("x");
@@ -49,8 +50,8 @@ namespace Microsoft.R.Editor.Application.Test.Markdown {
                 script.Type("{TAB}(){");
                 script.DoIdle(200);
                 script.Type("{ENTER}abbr{TAB}(");
- 
-                string expected = 
+
+                string expected =
 @"```{r}
 x <- function() {
     abbreviate()
@@ -64,39 +65,34 @@ x <- function() {
         [Test]
         [Category.Interactive]
         public async Task RSignature() {
-            using (var script = await _editorHost.StartScript(_exportProvider, "```{r}\r\n\r\n```", MdContentTypeDefinition.ContentType)) {
-                IntelliSenseRSession.HostStartTimeout = 10000;
-                using (new RHostScript(_sessionProvider)) {
-                    var packageIndex = _exportProvider.GetExportedValue<IPackageIndex>();
-                    await packageIndex.BuildIndexAsync();
-                    var functionIndex = _exportProvider.GetExportedValue<IFunctionIndex>();
-                    PackageIndexUtility.GetFunctionInfoAsync(functionIndex, "lm").Wait(3000);
+            using (var script = await _editorHost.StartScript(_exportProvider, "```{r}\r\n\r\n```", "filename", MdContentTypeDefinition.ContentType, _sessionProvider)) {
+                var info = await _editorHost.FunctionIndex.GetFunctionInfoAsync("lm");
+                info.Should().NotBeNull();
 
-                    script.DoIdle(500);
-                    script.MoveDown();
-                    script.Type("x <- lm(");
-                    script.DoIdle(2000);
+                script.DoIdle(500);
+                script.MoveDown();
+                script.Type("x <- lm(");
+                script.DoIdle(2000);
 
-                    ISignatureHelpSession session = script.GetSignatureSession();
-                    session.Should().NotBeNull();
-                    IParameter parameter = session.SelectedSignature.CurrentParameter;
-                    parameter.Should().NotBeNull();
-                    parameter.Name.Should().Be("formula");
+                ISignatureHelpSession session = script.GetSignatureSession();
+                session.Should().NotBeNull();
+                IParameter parameter = session.SelectedSignature.CurrentParameter;
+                parameter.Should().NotBeNull();
+                parameter.Name.Should().Be("formula");
 
-                    script.Type("sub");
-                    script.DoIdle(500);
-                    script.Type("{TAB}");
-                    script.DoIdle(1000);
+                script.Type("sub");
+                script.DoIdle(500);
+                script.Type("{TAB}");
+                script.DoIdle(1000);
 
-                    parameter = session.SelectedSignature.CurrentParameter;
-                    parameter.Name.Should().Be("subset");
+                parameter = session.SelectedSignature.CurrentParameter;
+                parameter.Name.Should().Be("subset");
 
-                    string actual = script.EditorText;
-                    actual.Should().Be("```{r}\r\nx <- lm(subset = )\r\n```");
+                string actual = script.EditorText;
+                actual.Should().Be("```{r}\r\nx <- lm(subset = )\r\n```");
 
-                    session = script.GetSignatureSession();
-                    parameter = session.SelectedSignature.CurrentParameter;
-                }
+                session = script.GetSignatureSession();
+                parameter = session.SelectedSignature.CurrentParameter;
             }
         }
     }

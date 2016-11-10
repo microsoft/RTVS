@@ -18,7 +18,6 @@ using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
-using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 
 namespace Microsoft.R.Support.Help.Packages {
@@ -27,6 +26,7 @@ namespace Microsoft.R.Support.Help.Packages {
     /// </summary>
     [Export(typeof(IPackageIndex))]
     public sealed class PackageIndex : IPackageIndex {
+        private readonly IRInteractiveWorkflow _workflow;
         private readonly IRSession _interactiveSession;
         private readonly ICoreShell _shell;
         private readonly IIntellisenseRSession _host;
@@ -43,10 +43,28 @@ namespace Microsoft.R.Support.Help.Packages {
             _host = host;
             _functionIndex = functionIndex;
 
-            _interactiveSession = interactiveWorkflowProvider.GetOrCreate().RSession;
+            _workflow = interactiveWorkflowProvider.GetOrCreate();
 
+            _interactiveSession = _workflow.RSession;
+            _interactiveSession.Connected += OnSessionConnected;
             _interactiveSession.PackagesInstalled += OnPackagesChanged;
             _interactiveSession.PackagesRemoved += OnPackagesChanged;
+
+            _workflow.RSessions.BrokerStateChanged += OnBrokerStateChanged;
+
+            if (_workflow.RSession.IsHostRunning) {
+                BuildIndexAsync().DoNotWait();
+            }
+        }
+
+        private void OnSessionConnected(object sender, RConnectedEventArgs e) {
+            BuildIndexAsync().DoNotWait();
+        }
+
+        private void OnBrokerStateChanged(object sender, BrokerStateChangedEventArgs e) {
+            if (e.IsConnected) {
+                BuildIndexAsync().DoNotWait();
+            }
         }
 
         private void OnPackagesChanged(object sender, EventArgs e) {
@@ -76,7 +94,7 @@ namespace Microsoft.R.Support.Help.Packages {
 
                     var startTime = DateTime.Now;
                     // Fetch list of available packages from R session
-                    await BuildPackageListAsync();
+                    await BuildInstalledPackagesIndexAsync();
                     Debug.WriteLine("R package names/description: {0} ms", (DateTime.Now - startTime).TotalMilliseconds);
 
                     // Populate function index for preloaded packages first
@@ -94,33 +112,48 @@ namespace Microsoft.R.Support.Help.Packages {
                 }
             } catch (RHostDisconnectedException ex) {
                 Debug.WriteLine(ex.Message);
+                ScheduleIdleTimeRebuild();
             } finally {
                 lockToken.Set();
             }
         }
 
         /// <summary>
-        /// Retrieves information on the package from index. Does not attempt to locate the package
-        /// if it is not in the index such as when package was just installed.
-        /// </summary>
-        public IPackageInfo GetPackageInfo(string packageName) {
-            PackageInfo package = null;
-            packageName = packageName.TrimQuotes().Trim();
-            _packages.TryGetValue(packageName, out package);
-            return package;
-        }
-
-        /// <summary>
         /// Retrieves R package information by name. If package is not in the index,
         /// attempts to locate the package in the current R session.
         /// </summary>
-        public Task<IPackageInfo> GetPackageInfoAsync(string packageName) {
+        public async Task<IPackageInfo> GetPackageInfoAsync(string packageName) {
             packageName = packageName.TrimQuotes().Trim();
             IPackageInfo package = GetPackageInfo(packageName);
-            if (package == null) {
-                return TryAddNewPackageAsync(packageName);
+            if (package != null) {
+                return package;
             }
-            return Task.FromResult(package);
+
+            Debug.WriteLine(Invariant($"Missing package: {packageName}"));
+            return (await TryAddMissingPackagesAsync(new string[] { packageName })).FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Retrieves information on multilple R packages. If one of the packages 
+        /// is not in the index, attempts to locate the package in the current R session.
+        /// </summary>
+        public async Task<IEnumerable<IPackageInfo>> GetPackagesInfoAsync(IEnumerable<string> packageNames) {
+            var list = new List<IPackageInfo>();
+            var missing = new List<string>();
+
+            foreach (var n in packageNames) {
+                var name = n.TrimQuotes().Trim();
+                IPackageInfo package = GetPackageInfo(name);
+                if (package != null) {
+                    list.Add(package);
+                } else {
+                    Debug.WriteLine(Invariant($"Missing package: {name}"));
+                    missing.Add(name);
+                }
+            }
+
+            list.AddRange(await TryAddMissingPackagesAsync(missing));
+            return list;
         }
 
         public void WriteToDisk() {
@@ -136,12 +169,14 @@ namespace Microsoft.R.Support.Help.Packages {
             if (_interactiveSession != null) {
                 _interactiveSession.PackagesInstalled -= OnPackagesChanged;
                 _interactiveSession.PackagesRemoved -= OnPackagesChanged;
+                _interactiveSession.Connected -= OnSessionConnected;
+                _workflow.RSessions.BrokerStateChanged -= OnBrokerStateChanged;
             }
             _host?.Dispose();
         }
 
-        private async Task BuildPackageListAsync() {
-            var packages = await GetPackagesAsync();
+        private async Task BuildInstalledPackagesIndexAsync() {
+            var packages = await GetInstalledPackagesAsync();
             foreach (var p in packages) {
                 _packages[p.Package] = new PackageInfo(_host, p.Package, p.Description, p.Version);
             }
@@ -166,22 +201,32 @@ namespace Microsoft.R.Support.Help.Packages {
             }
         }
 
-        private async Task<IPackageInfo> TryAddNewPackageAsync(string packageName) {
-            try {
-                var packages = await GetPackagesAsync();
-                var package = packages.FirstOrDefault(p => p.Package.EqualsOrdinal(packageName));
-                if (package != null) {
-                    var p = new PackageInfo(_host, package.Package, package.Description, package.Version);
-                    await p.LoadFunctionsIndexAsync();
-                    _packages[packageName] = p;
-                    _functionIndex.RegisterPackageFunctions(p);
-                    return p;
-                }
-            } catch (RHostDisconnectedException) { }
-            return null;
+        /// <summary>
+        /// From the supplied names selects packages that are not in the index and attempts
+        /// to add them to the index. This typically applies to packages that were just installed.
+        /// </summary>
+        private async Task<IEnumerable<IPackageInfo>> TryAddMissingPackagesAsync(IEnumerable<string> packageNames) {
+            var list = new List<IPackageInfo>();
+            // Do not attempt to add new package when index is still being built
+            if (packageNames.Any() && _buildIndexLock.IsSet) {
+                try {
+                    var installedPackages = await GetInstalledPackagesAsync();
+                    var packagesNotInIndex = installedPackages.Where(p => packageNames.Contains(p.Package));
+                    foreach (var p in packagesNotInIndex) {
+                        var info = new PackageInfo(_host, p.Package, p.Description, p.Version);
+                        _packages[p.Package] = info;
+
+                        await info.LoadFunctionsIndexAsync();
+                        _functionIndex.RegisterPackageFunctions(info);
+
+                        list.Add(info);
+                    }
+                } catch (RHostDisconnectedException) { }
+            }
+            return list;
         }
 
-        private async Task<IEnumerable<RPackage>> GetPackagesAsync() {
+        private async Task<IEnumerable<RPackage>> GetInstalledPackagesAsync() {
             try {
                 await _host.CreateSessionAsync();
                 var result = await _host.Session.InstalledPackagesAsync();
@@ -213,6 +258,17 @@ namespace Microsoft.R.Support.Help.Packages {
 
             var lockToken = await _buildIndexLock.ResetAsync();
             await BuildIndexAsync(lockToken);
+        }
+
+        /// <summary>
+        /// Retrieves information on the package from index. Does not attempt to locate the package
+        /// if it is not in the index such as when package was just installed.
+        /// </summary>
+        private IPackageInfo GetPackageInfo(string packageName) {
+            PackageInfo package = null;
+            packageName = packageName.TrimQuotes().Trim();
+            _packages.TryGetValue(packageName, out package);
+            return package;
         }
     }
 }

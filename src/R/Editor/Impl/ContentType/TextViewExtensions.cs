@@ -129,7 +129,7 @@ namespace Microsoft.R.Editor {
                 var token = tokens[tokenIndex];
                 if (token.TokenType == RTokenType.Comment) {
                     // Tokenize inside comment since we do want F1 to work inside 
-                    // commented out code, code samples or Rozygen blocks.
+                    // commented out code, code samples or Roxygen blocks.
                     positionInTokens -= token.Start;
                     offset = token.Start + 1;
                     tokens = tokenizer.Tokenize(lineText.Substring(offset, token.Length - 1));
@@ -139,8 +139,10 @@ namespace Microsoft.R.Editor {
                     }
                 }
                 if (tokenTypeCheck(token.TokenType)) {
-                    span = new Span(line.Start + token.Start + offset, token.Length);
-                    return lineText.Substring(token.Start + offset, token.Length);
+                    var start = token.Start + offset;
+                    var end = Math.Min(start + token.Length, line.End);
+                    span = Span.FromBounds(start, end);
+                    return lineText.Substring(start, span.Length);
                 }
             }
 

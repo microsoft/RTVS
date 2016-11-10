@@ -3,6 +3,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Support.Help;
@@ -32,6 +33,7 @@ namespace Microsoft.R.Editor.Test.Utility {
         public async Task InitializeAsync() {
             await Workflow.RSessions.TrySwitchBrokerAsync(GetType().Name);
             await PackageIndex.BuildIndexAsync();
+            await FunctionIndex.BuildIndexAsync();
         }
 
         public async Task DisposeAsync() {

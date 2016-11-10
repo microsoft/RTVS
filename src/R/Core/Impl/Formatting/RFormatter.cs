@@ -16,20 +16,15 @@ namespace Microsoft.R.Core.Formatting {
     /// Formats R code based on tokenization
     /// </summary>
     public class RFormatter {
-        private RFormatOptions _options;
-        private IndentBuilder _indentBuilder;
-        private TextBuilder _tb;
+        private readonly RFormatOptions _options;
+        private readonly IndentBuilder _indentBuilder;
+        private readonly TextBuilder _tb;
+        private readonly FormattingScopeStack _formattingScopes = new FormattingScopeStack();
         private TokenStream<RToken> _tokens;
         private ITextProvider _textProvider;
         private int _singleLineScopeEnd = -1;
-
-        private Stack<FormattingScope> _formattingScopes = new Stack<FormattingScope>();
-        private Stack<RTokenType> _openBraces = new Stack<RTokenType>();
-
-        private int SuppressLineBreakCount {
-            get { return _formattingScopes.Peek().SuppressLineBreakCount; }
-            set { _formattingScopes.Peek().SuppressLineBreakCount = value; }
-        }
+        private BraceHandler _braceHandler;
+        private ExpressionHelper _expressionHelper;
 
         public RFormatter() :
             this(new RFormatOptions()) {
@@ -39,7 +34,6 @@ namespace Microsoft.R.Core.Formatting {
             _options = options;
             _indentBuilder = new IndentBuilder(_options.IndentType, _options.IndentSize, _options.TabSize);
             _tb = new TextBuilder(_indentBuilder);
-            _formattingScopes.Push(new FormattingScope());
         }
 
         /// <summary>
@@ -106,58 +100,84 @@ namespace Microsoft.R.Core.Formatting {
         private void OpenFormattingScope() {
             Debug.Assert(_tokens.CurrentToken.TokenType == RTokenType.OpenCurlyBrace);
 
-            if (IsInArguments()) {
-                // Inside argument lists indentation rules are different
-                // so open new set of options and indentation
-                FormattingScope formattingScope = new FormattingScope(_tb, _tokens, _options);
-                _formattingScopes.Push(formattingScope);
-            }
-
             // If scope is empty, make it { } unless there is a line break already in it
             if (_tokens.NextToken.TokenType == RTokenType.CloseCurlyBrace &&
                 _textProvider.IsWhiteSpaceOnlyRange(_tokens.CurrentToken.End, _tokens.NextToken.Start)) {
                 AppendToken(leadingSpace: _tokens.PreviousToken.TokenType == RTokenType.CloseBrace, trailingSpace: true);
                 AppendToken(leadingSpace: false, trailingSpace: false);
                 return;
-            } else {
-                // Determine if the scope is a single line like if(TRUE) { 1 } and keep it 
-                // on a single line unless there are line breaks in it. Continue without 
-                // breaks until the scope ends. Includes multiple nested scopes such as {{{ 1 }}}. 
-                // We continue on the outer scope boundaries.
-                if (_singleLineScopeEnd < 0) {
-                    _singleLineScopeEnd = GetSingleLineScopeEnd();
-                }
+            }
 
-                if (_options.BracesOnNewLine && !SingleLineScope) {
-                    SoftLineBreak();
-                } else if (!IsOpenBraceToken(_tokens.PreviousToken.TokenType)) {
+            // Determine if the scope is a single line like if(TRUE) { 1 } and keep it 
+            // on a single line unless there are line breaks in it. Continue without 
+            // breaks until the scope ends. Includes multiple nested scopes such as {{{ 1 }}}. 
+            // We continue on the outer scope boundaries.
+            if (_singleLineScopeEnd < 0) {
+                _singleLineScopeEnd = GetSingleLineScopeEnd();
+            }
+
+            if (_options.BracesOnNewLine && !SingleLineScope) {
+                // Add line break if brace positioning is expanded and it is not a single line scope like { }
+                SoftLineBreak();
+            } else {
+                // Add space if curly is preceded by )
+                bool precededByCloseBrace = _tokens.PreviousToken.TokenType == RTokenType.CloseBrace;
+                if (precededByCloseBrace) {
                     _tb.AppendSpace();
                 }
             }
 
+            // Append { to the formatted text
             AppendToken(leadingSpace: false, trailingSpace: false);
+
+            // Open new scope. It is one indent level deeper than either current
+            // indent level or one level deeper than the current line indent
+            // such as when formatting multiline expression that also includes
+            // scope statements such as
+            //   x <- 
+            //      if(...) {
+            //          z
+            //      }
+            //
+            _formattingScopes.OpenScope(new FormattingScope(_tb, _tokens, _tokens.Position - 1, _options, _braceHandler));
 
             if (!SingleLineScope) {
                 _tb.SoftLineBreak();
-                _tb.NewIndentLevel();
             }
         }
 
         private void CloseFormattingScope() {
             Debug.Assert(_tokens.CurrentToken.TokenType == RTokenType.CloseCurlyBrace);
 
+            // if it is not single line scope like { } add linke break before }
             if (!SingleLineScope) {
                 _tb.SoftLineBreak();
-                _tb.CloseIndentLevel();
-                _tb.SoftIndent();
             }
 
             var leadingSpace = SingleLineScope && _tokens.PreviousToken.TokenType != RTokenType.CloseCurlyBrace;
 
-            if (_formattingScopes.Count > 1) {
-                if (_formattingScopes.Peek().CloseBracePosition == _tokens.Position) {
-                    FormattingScope scope = _formattingScopes.Pop();
-                    scope.Dispose();
+            // Close formatting scope and remember if it was based on the user-supplied indent.
+            _formattingScopes.TryCloseScope(_tokens.Position);
+
+            // Closing curly indentation is defined by the line that either holds the opening curly brace
+            // or the line that holds keyword that defines the expression that the curly belongs to.
+            // Examples: 
+            //
+            //      x <- 
+            //          function(a) {
+            //          }
+            //
+            //      x <- function(a) {
+            //      }
+            //
+            if (!SingleLineScope) {
+                int lineIndentSize = _braceHandler.GetCloseCurlyBraceIndentSize(_tokens.CurrentToken, _tb, _options);
+                if (lineIndentSize > 0) {
+                    var indentString = IndentBuilder.GetIndentString(lineIndentSize, _options.IndentType, _options.TabSize);
+                    _tb.AppendPreformattedText(indentString);
+                    leadingSpace = false;
+                } else {
+                    _tb.SoftIndent();
                 }
             }
 
@@ -169,7 +189,7 @@ namespace Microsoft.R.Core.Formatting {
                 singleLineScopeJustClosed = true;
             }
 
-            if (SuppressLineBreakCount == 0 && !_tokens.IsEndOfStream()) {
+            if (_formattingScopes.SuppressLineBreakCount == 0 && !_tokens.IsEndOfStream()) {
                 // We insert line break after } unless 
                 //  a) Next token is comma (scope is in the argument list) or 
                 //  b) Next token is a closing brace (last parameter in a function or indexer) or 
@@ -178,7 +198,7 @@ namespace Microsoft.R.Core.Formatting {
                 if (!KeepCurlyAndElseTogether()) {
                     if (singleLineScopeJustClosed &&
                         !IsClosingToken(_tokens.CurrentToken) &&
-                        !IsInArguments()) {
+                        !_braceHandler.IsInArguments()) {
                         SoftLineBreak();
                     }
                 }
@@ -348,15 +368,15 @@ namespace Microsoft.R.Core.Formatting {
 
                 foundSameLineElse = HasSameLineElse();
                 if (foundSameLineElse) {
-                    SuppressLineBreakCount++;
+                    _formattingScopes.SuppressLineBreakCount++;
                     AppendScopeContent(stopAtLineBreak: true);
-                    SuppressLineBreakCount--;
+                    _formattingScopes.SuppressLineBreakCount--;
 
                     return;
                 }
             }
 
-            if (SuppressLineBreakCount > 0) {
+            if (_formattingScopes.SuppressLineBreakCount > 0) {
                 AppendScopeContent(stopAtLineBreak: true);
                 return;
             }
@@ -367,7 +387,7 @@ namespace Microsoft.R.Core.Formatting {
             // if user put it there  'else if' remains on one line
             // if user didn't then add line break between them.
 
-            if (IsInArguments()) {
+            if (_braceHandler.IsInArguments()) {
                 addLineBreak = false;
             } else if (!_tokens.IsLineBreakAfter(_textProvider, _tokens.Position - 1)) {
                 if (keyword.EqualsOrdinal("else") && _tokens.CurrentToken.IsKeywordText(_textProvider, "if")) {
@@ -476,7 +496,7 @@ namespace Microsoft.R.Core.Formatting {
                 // and the next token
                 _tb.SoftLineBreak();
             } else {
-                HandleBrace();
+                _braceHandler.HandleBrace();
             }
 
             _tokens.MoveToNextToken();
@@ -486,67 +506,9 @@ namespace Microsoft.R.Core.Formatting {
             }
         }
 
-        private void HandleBrace() {
-            switch (_tokens.CurrentToken.TokenType) {
-                case RTokenType.OpenBrace:
-                case RTokenType.OpenCurlyBrace:
-                case RTokenType.OpenSquareBracket:
-                case RTokenType.OpenDoubleSquareBracket:
-                    _openBraces.Push(_tokens.CurrentToken.TokenType);
-                    return;
-            }
 
-            if (_openBraces.Count > 0) {
-                switch (_tokens.CurrentToken.TokenType) {
-                    case RTokenType.CloseBrace:
-                    case RTokenType.CloseSquareBracket:
-                    case RTokenType.CloseDoubleSquareBracket:
-                        if (_openBraces.Peek() == GetMatchingBraceToken(_tokens.CurrentToken.TokenType)) {
-                            _openBraces.Pop();
-                        }
-                        break;
 
-                    case RTokenType.CloseCurlyBrace:
-                        // Close all braces until the nearest curly
-                        while (_openBraces.Count > 0) {
-                            if (_openBraces.Peek() == RTokenType.OpenCurlyBrace) {
-                                break;
-                            }
-                            _openBraces.Pop();
-                        }
 
-                        if (_openBraces.Count > 0) {
-                            _openBraces.Pop();
-                        }
-                        break;
-                }
-            }
-        }
-
-        private RTokenType GetMatchingBraceToken(RTokenType tokenType) {
-            switch (tokenType) {
-                case RTokenType.OpenBrace:
-                    return RTokenType.CloseBrace;
-
-                case RTokenType.CloseBrace:
-                    return RTokenType.OpenBrace;
-
-                case RTokenType.OpenSquareBracket:
-                    return RTokenType.CloseSquareBracket;
-
-                case RTokenType.CloseSquareBracket:
-                    return RTokenType.OpenSquareBracket;
-
-                case RTokenType.OpenDoubleSquareBracket:
-                    return RTokenType.CloseDoubleSquareBracket;
-
-                case RTokenType.CloseDoubleSquareBracket:
-                    return RTokenType.OpenDoubleSquareBracket;
-            }
-
-            Debug.Assert(false, "Unknown brace token");
-            return RTokenType.Unknown;
-        }
 
         private bool LeadingSpaceNeeded() {
             switch (_tokens.PreviousToken.TokenType) {
@@ -574,25 +536,6 @@ namespace Microsoft.R.Core.Formatting {
                             break;
                     }
                     break;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Tells if scope is opening inside function
-        /// or indexer arguments and hence user indentation
-        /// of curly braces must be respected.
-        /// </summary>
-        /// <returns></returns>
-        private bool IsInArguments() {
-            if (_openBraces.Count > 0) {
-                switch (_openBraces.Peek()) {
-                    case RTokenType.OpenBrace:
-                    case RTokenType.OpenSquareBracket:
-                    case RTokenType.OpenDoubleSquareBracket:
-                        return true;
-                }
             }
 
             return false;
@@ -651,7 +594,9 @@ namespace Microsoft.R.Core.Formatting {
             int end = _tokens.IsEndOfStream() ? _textProvider.Length : _tokens.CurrentToken.Start;
 
             string text = _textProvider.GetText(TextRange.FromBounds(start, end));
-            if (!preserveUserIndent && string.IsNullOrWhiteSpace(text)) {
+            bool whitespaceOnly = string.IsNullOrWhiteSpace(text);
+
+            if (!preserveUserIndent && whitespaceOnly) {
                 // Append any user-entered whitespace. We preserve line breaks but trim 
                 // unnecessary spaces such as on empty lines. We must, however, preserve 
                 // user indentation in long argument lists and in expresions split 
@@ -671,7 +616,14 @@ namespace Microsoft.R.Core.Formatting {
 
                         case RTokenType.Comment:
                             // Preserve user indent in argument lists
-                            preserveUserIndent = _openBraces.Count > 0 && _openBraces.Peek() != RTokenType.OpenCurlyBrace;
+                            preserveUserIndent = _braceHandler.IsInArguments();
+                            break;
+
+                        default:
+                            // If expression between scope start and the current point is incomplete,
+                            // (i.e. we are in a middle of multiline expression) we want to preserve 
+                            // user-supplied indentation.
+                            preserveUserIndent = !_expressionHelper.IsCompleteExpression(_tokens.Position);
                             break;
                     }
 
@@ -685,7 +637,7 @@ namespace Microsoft.R.Core.Formatting {
                             case RTokenType.Comma:
                             case RTokenType.Operator:
                             case RTokenType.Comment:
-                                preserveUserIndent = _tokens.IsLineBreakAfter(_textProvider, _tokens.Position - 1);
+                                preserveUserIndent = true;
                                 break;
                         }
                     }
@@ -708,7 +660,7 @@ namespace Microsoft.R.Core.Formatting {
                     _tb.SoftIndent();
                 }
             } else {
-                // If there is unrecognized text between tokens, append it verbatim
+                // If there is unrecognized text between tokens, append it verbatim.
                 _tb.AppendPreformattedText(text);
             }
         }
@@ -727,8 +679,6 @@ namespace Microsoft.R.Core.Formatting {
         private bool ShouldAppendTextBeforeToken() {
             if (_tokens.PreviousToken.TokenType == RTokenType.Comment &&
                 _tokens.CurrentToken.TokenType != RTokenType.Comment) {
-                // TODO: implement function argument alignment instead.
-                //
                 // Copy any possible indentation after comment
                 // at the previous line such as in 
                 //    func(a, #comment
@@ -779,8 +729,17 @@ namespace Microsoft.R.Core.Formatting {
             var tokenizer = new RTokenizer(separateComments: false);
             var tokens = tokenizer.Tokenize(_textProvider, 0, _textProvider.Length);
             _tokens = new TokenStream<RToken>(tokens, RToken.EndOfStreamToken);
+
+            _braceHandler = new BraceHandler(_tokens, _tb);
+            _expressionHelper = new ExpressionHelper(_tokens, _textProvider);
         }
 
+        /// <summary>
+        /// Calculates position of a end of a single-line scope.
+        /// The simple scope ends at a line break or at opening 
+        /// or closing curly brace.
+        /// </summary>
+        /// <returns></returns>
         private int GetSingleLineScopeEnd() {
             int closeBraceIndex = TokenBraceCounter<RToken>.GetMatchingBrace(
                       _tokens,

@@ -7,6 +7,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Test.Utility;
 using Microsoft.Languages.Editor.Test.Utility;
+using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
@@ -36,7 +37,7 @@ namespace Microsoft.R.Editor.Application.Test.Markdown {
         [InlineData("01.rmd")]
         public async Task RColors(string fileName) {
             string content = _files.LoadDestinationFile(fileName);
-            using (var script = await _editorHost.StartScript(_exportProvider, content, fileName, null)) {
+            using (var script = await _editorHost.StartScript(_exportProvider, content, fileName, MdContentTypeDefinition.ContentType, null)) {
                 script.DoIdle(500);
                 var spans = script.GetClassificationSpans();
                 var actual = ClassificationWriter.WriteClassifications(spans);

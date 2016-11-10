@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using Microsoft.R.Components.Extensions;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -88,11 +89,27 @@ namespace Microsoft.Languages.Editor.Selection {
         protected virtual void MoveCaretTo(SnapshotPoint position, int virtualSpaces) {
             SnapshotPoint? viewPosition = TextView.MapUpToView(position);
             if (viewPosition.HasValue) {
-                TextView.Caret.MoveTo(new VirtualSnapshotPoint(viewPosition.Value, virtualSpaces));
+                try {
+                    // If position is in virtual space (virtualSpaces > 0) a new line
+                    // was created as a result of smart indent. Upon Enter editor does
+                    // not insert whitespace until user starts typing. In this case
+                    // we want to offset from the start of the line rather than from
+                    // the last know token position.
+                    if (virtualSpaces > 0) {
+                        var line = TextView.TextBuffer.CurrentSnapshot.GetLineFromPosition(viewPosition.Value);
+                        TextView.Caret.MoveTo(new VirtualSnapshotPoint(line, virtualSpaces));
+                    } else {
+                        TextView.Caret.MoveTo(viewPosition.Value);
+                    }
 
-                if (TextView.Caret.ContainingTextViewLine.VisibilityState != VisibilityState.FullyVisible) {
-                    TextView.Caret.EnsureVisible();
-                    TextView.DisplayTextLineContainingBufferPosition(viewPosition.Value, _offsetFromTop, ViewRelativePosition.Top);
+                    if (TextView.Caret.ContainingTextViewLine.VisibilityState != VisibilityState.FullyVisible) {
+                        TextView.Caret.EnsureVisible();
+                        TextView.DisplayTextLineContainingBufferPosition(viewPosition.Value, _offsetFromTop, ViewRelativePosition.Top);
+                    }
+                } catch(ArgumentException) {
+                    // In case formatting changes code in a way that position
+                    // is no longer applicable. At worst caret position will move
+                    // slightly which is better than popping up exception dialogs.
                 }
             }
         }
