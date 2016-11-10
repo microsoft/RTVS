@@ -112,6 +112,7 @@ namespace Microsoft.R.Support.Help.Packages {
                 }
             } catch (RHostDisconnectedException ex) {
                 Debug.WriteLine(ex.Message);
+                ScheduleIdleTimeRebuild();
             } finally {
                 lockToken.Set();
             }
