@@ -39,12 +39,9 @@ namespace Microsoft.Languages.Editor.Controller {
         private Dictionary<ITextBuffer, IContentType> _bufferToOriginalContentType;
 
         protected TextViewConnectionListener() {
-            // WebEditor.CompositionService.SatisfyImportsOnce(this);
-
             if (_allInstances == null) {
                 _allInstances = new List<TextViewConnectionListener>();
             }
-
             // This class is never disposed, so it always stays in the global list
             _allInstances.Add(this);
         }

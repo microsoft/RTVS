@@ -13,9 +13,7 @@ namespace Microsoft.VisualStudio.R.Packages.Markdown {
         public MdLanguageService()
             : base(MdGuidList.MdLanguageServiceGuid,
                    MdContentTypeDefinition.LanguageName,
-                   MdContentTypeDefinition.FileExtension1 + ";" +
-                   MdContentTypeDefinition.FileExtension2 + ";" +
-                   MdContentTypeDefinition.FileExtension3) {
+                   MdContentTypeDefinition.FileExtension) {
         }
 
         protected override string SaveAsFilter {

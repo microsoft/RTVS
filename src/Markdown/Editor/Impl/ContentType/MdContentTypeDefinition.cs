@@ -6,11 +6,9 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.Markdown.Editor.ContentTypes {
     public sealed class MdContentTypeDefinition {
-        public const string LanguageName = "Markdown";
-        public const string ContentType = "Markdown";
-        public const string FileExtension1 = ".md";
-        public const string FileExtension2 = ".markdown";
-        public const string FileExtension3 = ".rmd";
+        public const string LanguageName = "R Markdown";
+        public const string ContentType = "R Markdown";
+        public const string FileExtension = ".rmd";
 
         /// <summary>
         /// Exports the MD content type
@@ -25,23 +23,7 @@ namespace Microsoft.Markdown.Editor.ContentTypes {
         /// </summary>
         [Export(typeof(FileExtensionToContentTypeDefinition))]
         [ContentType(MdContentTypeDefinition.ContentType)]
-        [FileExtension(MdContentTypeDefinition.FileExtension1)]
-        public FileExtensionToContentTypeDefinition IMdFileExtension1 { get; set; }
-
-        /// <summary>
-        /// Exports the markdown file extension
-        /// </summary>
-        [Export(typeof(FileExtensionToContentTypeDefinition))]
-        [ContentType(MdContentTypeDefinition.ContentType)]
-        [FileExtension(MdContentTypeDefinition.FileExtension2)]
-        public FileExtensionToContentTypeDefinition IMdFileExtension2 { get; set; }
-
-        /// <summary>
-        /// Exports the R markdown file extension
-        /// </summary>
-        [Export(typeof(FileExtensionToContentTypeDefinition))]
-        [ContentType(MdContentTypeDefinition.ContentType)]
-        [FileExtension(MdContentTypeDefinition.FileExtension3)]
-        public FileExtensionToContentTypeDefinition IMdFileExtension3 { get; set; }
+        [FileExtension(MdContentTypeDefinition.FileExtension)]
+        public FileExtensionToContentTypeDefinition IMdFileExtension { get; set; }
     }
 }
