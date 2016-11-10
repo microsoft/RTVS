@@ -50,8 +50,10 @@ namespace Microsoft.R.Host.Broker.Sessions {
         public IEnumerable<Session> GetSessions(IIdentity user) {
             lock (_sessions) {
                 List<Session> userSessions;
-                _sessions.TryGetValue(user.Name, out userSessions);
-                return userSessions.ToArray() ?? Enumerable.Empty<Session>();
+                if(_sessions.TryGetValue(user.Name, out userSessions)) {
+                    return userSessions.ToArray();
+                }
+                return Enumerable.Empty<Session>();
             }
         }
 
