@@ -38,26 +38,38 @@ namespace Microsoft.R.Editor.Application.Test.Markdown {
         [Category.Interactive]
         public async Task TypeRBlock() {
             using (var script = await _editorHost.StartScript(_exportProvider, MdContentTypeDefinition.ContentType)) {
-                script.Type("```{r}{ENTER}{ENTER}```");
-                script.MoveUp();
-                script.Type("x");
-                script.DoIdle(200);
-                script.Type("<-");
-                script.DoIdle(200);
-                script.Type("funct");
-                script.DoIdle(200);
-                script.Type("{TAB}(){");
-                script.DoIdle(200);
-                script.Type("{ENTER}abbr{TAB}(");
- 
-                string expected = 
-@"```{r}
+                IntelliSenseRSession.HostStartTimeout = 10000;
+                using (new RHostScript(_sessionProvider)) {
+                    var packageIndex = _exportProvider.GetExportedValue<IPackageIndex>();
+                    await packageIndex.BuildIndexAsync();
+                    var functionIndex = _exportProvider.GetExportedValue<IFunctionIndex>();
+                    await functionIndex.BuildIndexAsync();
+
+                    var info = await functionIndex.GetFunctionInfoAsync("abbreviate");
+                    info.Should().NotBeNull();
+
+                    script.Type("```{r}{ENTER}{ENTER}```");
+                    script.MoveUp();
+                    script.Type("x");
+                    script.DoIdle(200);
+                    script.Type("<-");
+                    script.DoIdle(200);
+                    script.Type("funct");
+                    script.DoIdle(200);
+                    script.Type("{TAB}(){");
+                    script.DoIdle(200);
+                    script.Type("{ENTER}abbr{TAB}(");
+
+                    string expected =
+    @"```{r}
 x <- function() {
     abbreviate()
 }
 ```";
-                string actual = script.EditorText;
-                actual.Should().Be(expected);
+                    string actual = script.EditorText;
+                    actual.Should().Be(expected);
+
+                }
             }
         }
 
@@ -70,7 +82,10 @@ x <- function() {
                     var packageIndex = _exportProvider.GetExportedValue<IPackageIndex>();
                     await packageIndex.BuildIndexAsync();
                     var functionIndex = _exportProvider.GetExportedValue<IFunctionIndex>();
-                    await PackageIndexUtility.GetFunctionInfoAsync(functionIndex, "lm");
+                    await functionIndex.BuildIndexAsync();
+
+                    var info = await functionIndex.GetFunctionInfoAsync("lm");
+                    info.Should().NotBeNull();
 
                     script.DoIdle(500);
                     script.MoveDown();

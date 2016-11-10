@@ -35,11 +35,11 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
         [Category.Interactive]
         public async Task R_AutoFormatFunctionBraces() {
             using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
-                script.Type("function(a,b){");
+                script.Type("function(a1,b1){");
                 script.DoIdle(300);
-                script.Type("{ENTER}a");
+                script.Type("{ENTER}a1");
 
-                string expected = "function(a, b) {\r\n    a\r\n}";
+                string expected = "function(a1, b1) {\r\n    a1\r\n}";
                 string actual = script.EditorText;
 
                 actual.Should().Be(expected);
@@ -257,8 +257,8 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
 
                 script.Type("zzzz(a=1,{ENTER}");
                 script.DoIdle(300);
-                script.Type("b=2");
-                string expected = "zzzz(a = 1,\r\n    b=2)";
+                script.Type("ba=2");
+                string expected = "zzzz(a = 1,\r\n    ba=2)";
 
                 string actual = script.EditorText;
                 actual.Should().Be(expected);
