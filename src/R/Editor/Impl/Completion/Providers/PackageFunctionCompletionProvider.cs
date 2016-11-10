@@ -35,8 +35,8 @@ namespace Microsoft.R.Editor.Completion.Providers {
 
         [ImportingConstructor]
         public PackageFunctionCompletionProvider(
-            ILoadedPackagesProvider loadedPackagesProvider, 
-            [Import(AllowDefault = true)] ISnippetInformationSourceProvider snippetInformationSource, 
+            ILoadedPackagesProvider loadedPackagesProvider,
+            [Import(AllowDefault = true)] ISnippetInformationSourceProvider snippetInformationSource,
             IPackageIndex packageIndex,
             IFunctionIndex functionIndex,
             IGlyphService glyphService) {
@@ -156,23 +156,14 @@ namespace Microsoft.R.Editor.Completion.Providers {
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        private async Task<IEnumerable<IPackageInfo>> GetAllFilePackagesAsync(RCompletionContext context) {
+        private Task<IEnumerable<IPackageInfo>> GetAllFilePackagesAsync(RCompletionContext context) {
             _loadedPackagesProvider?.Initialize();
 
             IEnumerable<string> loadedPackages = _loadedPackagesProvider?.GetPackageNames() ?? Enumerable.Empty<string>();
             IEnumerable<string> filePackageNames = context.AstRoot.GetFilePackageNames();
             IEnumerable<string> allPackageNames = PackageIndex.PreloadedPackages.Union(filePackageNames).Union(loadedPackages);
 
-            var list = new List<IPackageInfo>();
-            foreach (var name in allPackageNames) {
-                var info = await _packageIndex.GetPackageInfoAsync(name);
-                // May be null if user mistyped package name in the library()
-                // statement or package is not installed.
-                if(info != null) {
-                    list.Add(info);
-                }
-            }
-            return list;
+            return _packageIndex.GetPackagesInfoAsync(allPackageNames);
         }
 
         private IPackageInfo GetPackageByName(string packageName) {

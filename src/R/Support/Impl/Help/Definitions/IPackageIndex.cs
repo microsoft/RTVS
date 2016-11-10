@@ -29,9 +29,15 @@ namespace Microsoft.R.Support.Help {
         Task<IPackageInfo> GetPackageInfoAsync(string packageName);
 
         /// <summary>
+        /// Retrieves information on multilple R packages. If one of the packages 
+        /// is not in the index, attempts to locate the package in the current R session.
+        /// </summary>
+        Task<IEnumerable<IPackageInfo>> GetPackagesInfoAsync(IEnumerable<string> packageNames);
+
+        /// <summary>
         /// Retrieves information on the package from index. Does not attempt to locate the package
         /// if it is not in the index such as when package was just installed.
         /// </summary>
-         IPackageInfo GetPackageInfo(string packageName);
+        IPackageInfo GetPackageInfo(string packageName);
     }
 }
