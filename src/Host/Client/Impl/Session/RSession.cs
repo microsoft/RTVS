@@ -317,7 +317,7 @@ namespace Microsoft.R.Host.Client.Session {
             // Try graceful shutdown with q() first.
             if (host != null) {
                 try {
-                    host.QuitAsync().DoNotWait();
+                    host.QuitAsync().SilenceException<Exception>().DoNotWait();
                     await Task.WhenAny(hostRunTask, Task.Delay(2000)).Unwrap();
                 } catch (Exception) { }
 
