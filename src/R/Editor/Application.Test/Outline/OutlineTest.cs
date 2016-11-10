@@ -38,7 +38,7 @@ namespace Microsoft.R.Editor.Application.Test.Outline {
         [Category.Interactive]
         public async Task R_OutlineToggleAll() {
             string text = _files.LoadDestinationFile("lsfit.r");
-            using (var script = await _editorHost.StartScript(_exportProvider, text, RContentTypeDefinition.ContentType)) {
+            using (var script = await _editorHost.StartScript(_exportProvider, text, "filename", RContentTypeDefinition.ContentType, null)) {
                 script.DoIdle(500);
 
                 IOutliningManagerService svc = _exportProvider.GetExportedValue<IOutliningManagerService>();

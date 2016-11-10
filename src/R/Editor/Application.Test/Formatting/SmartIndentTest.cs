@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Settings;
+using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Test.Fixtures;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
@@ -16,10 +18,12 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
     [Collection(CollectionNames.NonParallel)]
     public class SmartIndentTest : IDisposable {
         private readonly IExportProvider _exportProvider;
+        private readonly IRSessionProvider _sessionProvider;
         private readonly EditorHostMethodFixture _editorHost;
 
-        public SmartIndentTest(REditorApplicationMefCatalogFixture catalogFixture, EditorHostMethodFixture editorHost) {
+        public SmartIndentTest(REditorApplicationMefCatalogFixture catalogFixture, SessionProviderFixture sessionProviderFixture, EditorHostMethodFixture editorHost) {
             _exportProvider = catalogFixture.CreateExportProvider();
+            _sessionProvider = sessionProviderFixture.SessionProvider;
             _editorHost = editorHost;
         }
 
@@ -46,11 +50,11 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
         [Test]
         [Category.Interactive]
         public async Task R_SmartIndentTest02() {
-            using (var script = await _editorHost.StartScript(_exportProvider, string.Empty, RContentTypeDefinition.ContentType)) {
+            using (var script = await _editorHost.StartScript(_exportProvider, string.Empty, "file", RContentTypeDefinition.ContentType, _sessionProvider)) {
                 REditorSettings.FormatOptions.BracesOnNewLine = false;
                 script.Type("if(TRUE)");
                 script.DoIdle(300);
-                script.Type("{ENTER}a");
+                script.Type("{ENTER}abb");
                 script.DoIdle(300);
                 script.Type("{ENTER}{ENTER}x <-1{ENTER}");
                 script.DoIdle(300);
@@ -94,10 +98,10 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 script.DoIdle(200);
                 script.Type("{ENTER}a<-1{ENTER}");
                 script.DoIdle(200);
-                script.Type("else {ENTER}b<-2;");
+                script.Type("else {ENTER}z<-2;");
                 script.DoIdle(200);
 
-                string expected = "{\r\n    if (1)\r\n        a <- 1\r\n    else\r\n        b <- 2;\r\n}";
+                string expected = "{\r\n    if (1)\r\n        a <- 1\r\n    else\r\n        z <- 2;\r\n}";
                 string actual = script.EditorText;
 
                 actual.Should().Be(expected);

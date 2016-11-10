@@ -1,23 +1,53 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Application.Core;
+using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Test.Script;
+using Microsoft.R.Support.Help;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
+using Xunit.Sdk;
 using static Microsoft.UnitTests.Core.Threading.UIThreadTools;
 
 namespace Microsoft.R.Editor.Application.Test {
     public class EditorHostMethodFixture : ContainerHostMethodFixture {
-        public Task<IEditorScript> StartScript(IExportProvider exportProvider, string contentType) => StartScript(exportProvider, string.Empty, "filename", contentType);
-        public Task<IEditorScript> StartScript(IExportProvider exportProvider, string text, string contentType) => StartScript(exportProvider, text, "filename", contentType);
+        private RHostScript _hostScript;
 
-        public async Task<IEditorScript> StartScript(IExportProvider exportProvider, string text, string filename, string contentType) {
+        public IPackageIndex PackageIndex { get; private set; }
+        public IFunctionIndex FunctionIndex { get; private set; }
+
+        public Task<IEditorScript> StartScript(IExportProvider exportProvider, string contentType) => 
+            StartScript(exportProvider, string.Empty, "filename", contentType, null);
+
+        public Task<IEditorScript> StartScript(IExportProvider exportProvider, string text, string contentType) => 
+            StartScript(exportProvider, text, "filename", contentType, null);
+
+        public async Task<IEditorScript> StartScript(IExportProvider exportProvider, string text, string filename, string contentType, IRSessionProvider sessionProvider) {
             var shell = exportProvider.GetExportedValue<ICoreShell>();
             var coreEditor = await InUI(() => new CoreEditor(shell, text, filename, contentType));
             var containerDisposable = await AddToHost(coreEditor.Control);
+
+            if (sessionProvider != null) {
+                IntelliSenseRSession.HostStartTimeout = 10000;
+                _hostScript = new RHostScript(sessionProvider);
+
+                PackageIndex = exportProvider.GetExportedValue<IPackageIndex>();
+                await PackageIndex.BuildIndexAsync();
+
+                FunctionIndex = exportProvider.GetExportedValue<IFunctionIndex>();
+                await FunctionIndex.BuildIndexAsync();
+            }
+
             return new EditorScript(exportProvider, coreEditor, containerDisposable);
+        }
+
+        protected override void Dispose(bool disposing) {
+            _hostScript?.Dispose();
+            base.Dispose(disposing);
         }
     }
 }
