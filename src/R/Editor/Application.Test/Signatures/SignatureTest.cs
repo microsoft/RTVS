@@ -8,9 +8,6 @@ using FluentAssertions;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Fixtures;
-using Microsoft.R.Host.Client.Test.Script;
-using Microsoft.R.Support.Help;
-using Microsoft.R.Support.Test.Utility;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -37,80 +34,71 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
         [Test]
         [Category.Interactive]
         public async Task R_SignatureParametersMatch() {
-            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
-                IntelliSenseRSession.HostStartTimeout = 10000;
-                using (new RHostScript(_sessionProvider)) {
-                    var functionIndex = await PrepareFunctionIndexAsync();
-                    await PackageIndexUtility.GetFunctionInfoAsync(functionIndex, "lm");
+            using (var script = await _editorHost.StartScript(_exportProvider, string.Empty, "file", RContentTypeDefinition.ContentType, _sessionProvider)) {
+                await _editorHost.FunctionIndex.GetFunctionInfoAsync("lm");
 
-                    script.Type("x <- lm(");
-                    script.DoIdle(2000);
+                script.Type("x <- lm(");
+                script.DoIdle(2000);
 
-                    ISignatureHelpSession session = script.GetSignatureSession();
-                    session.Should().NotBeNull();
-                    IParameter parameter = session.SelectedSignature.CurrentParameter;
-                    parameter.Should().NotBeNull();
+                ISignatureHelpSession session = script.GetSignatureSession();
+                session.Should().NotBeNull();
+                IParameter parameter = session.SelectedSignature.CurrentParameter;
+                parameter.Should().NotBeNull();
 
-                    parameter.Name.Should().Be("formula");
+                parameter.Name.Should().Be("formula");
 
-                    script.Type("sub");
-                    script.DoIdle(500);
-                    script.Type("{TAB}");
-                    script.DoIdle(1000);
+                script.Type("sub");
+                script.DoIdle(500);
+                script.Type("{TAB}");
+                script.DoIdle(1000);
 
-                    parameter = session.SelectedSignature.CurrentParameter;
-                    parameter.Name.Should().Be("subset");
+                parameter = session.SelectedSignature.CurrentParameter;
+                parameter.Name.Should().Be("subset");
 
-                    string actual = script.EditorText;
-                    actual.Should().Be("x <- lm(subset = )");
+                string actual = script.EditorText;
+                actual.Should().Be("x <- lm(subset = )");
 
-                    session = script.GetSignatureSession();
-                    parameter = session.SelectedSignature.CurrentParameter;
-                }
+                session = script.GetSignatureSession();
+                parameter = session.SelectedSignature.CurrentParameter;
             }
         }
 
         [Test]
         [Category.Interactive]
         public async Task R_SignatureSessionNavigation() {
-            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
-                IntelliSenseRSession.HostStartTimeout = 10000;
-                using (new RHostScript(_sessionProvider)) {
-                    var functionIndex = await PrepareFunctionIndexAsync();
-                    await PackageIndexUtility.GetFunctionInfoAsync(functionIndex, "lm");
+            using (var script = await _editorHost.StartScript(_exportProvider, string.Empty, "file", RContentTypeDefinition.ContentType, _sessionProvider)) {
+                await _editorHost.FunctionIndex.GetFunctionInfoAsync("lm");
 
-                    script.Type("x <- lm(subset = a, sing");
-                    script.DoIdle(1000);
-                    script.Type("{TAB}");
-                    script.DoIdle(1000);
+                script.Type("x <- lm(subset = a, sing");
+                script.DoIdle(1000);
+                script.Type("{TAB}");
+                script.DoIdle(1000);
 
-                    ISignatureHelpSession session = script.GetSignatureSession();
-                    session.Should().NotBeNull();
+                ISignatureHelpSession session = script.GetSignatureSession();
+                session.Should().NotBeNull();
 
-                    script.DoIdle(200);
-                    IParameter parameter = session.SelectedSignature.CurrentParameter;
-                    parameter.Should().NotBeNull();
-                    parameter.Name.Should().Be("singular.ok");
+                script.DoIdle(200);
+                IParameter parameter = session.SelectedSignature.CurrentParameter;
+                parameter.Should().NotBeNull();
+                parameter.Name.Should().Be("singular.ok");
 
-                    script.MoveLeft(17);
-                    script.DoIdle(200);
-                    parameter = session.SelectedSignature.CurrentParameter;
-                    parameter.Name.Should().Be("subset");
+                script.MoveLeft(17);
+                script.DoIdle(200);
+                parameter = session.SelectedSignature.CurrentParameter;
+                parameter.Name.Should().Be("subset");
 
-                    script.MoveRight(3);
-                    script.DoIdle(200);
-                    parameter = session.SelectedSignature.CurrentParameter;
-                    parameter.Name.Should().Be("singular.ok");
-                }
+                script.MoveRight(3);
+                script.DoIdle(200);
+                parameter = session.SelectedSignature.CurrentParameter;
+                parameter.Name.Should().Be("singular.ok");
             }
         }
 
         [Test]
         [Category.Interactive]
         public async Task R_EqualsCompletion01() {
-            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
-                var functionIndex = await PrepareFunctionIndexAsync();
-                var info = await PackageIndexUtility.GetFunctionInfoAsync(functionIndex, "addmargins");
+            using (var script = await _editorHost.StartScript(_exportProvider, string.Empty, "file", RContentTypeDefinition.ContentType, _sessionProvider)) {
+                await _editorHost.FunctionIndex.GetFunctionInfoAsync("addmargins");
 
                 script.DoIdle(100);
                 script.Type("addmargins(Fu");
@@ -123,12 +111,6 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
 
                 actual.Should().Be(expected);
             }
-        }
-
-        private async Task<IFunctionIndex> PrepareFunctionIndexAsync() {
-            var packageIndex = _exportProvider.GetExportedValue<IPackageIndex>();
-            await packageIndex.BuildIndexAsync();
-            return _exportProvider.GetExportedValue<IFunctionIndex>();
         }
     }
 }
