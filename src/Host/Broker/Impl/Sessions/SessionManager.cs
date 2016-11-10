@@ -51,7 +51,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
             lock (_sessions) {
                 List<Session> userSessions;
                 _sessions.TryGetValue(user.Name, out userSessions);
-                return userSessions.ToArray() ?? Enumerable.Empty<Session>();
+                return userSessions?.ToArray() ?? Enumerable.Empty<Session>();
             }
         }
 
