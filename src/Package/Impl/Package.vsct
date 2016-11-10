@@ -1368,6 +1368,7 @@
         <Icon guid="ImageCatalogGuid" id="NewBug"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>&amp;Report Issue on GitHub...</ButtonText>
           <CommandName>Report Issue</CommandName>
@@ -1379,6 +1380,7 @@
         <Icon guid="ImageCatalogGuid" id="FeedbackSmile"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Send &amp;Smile via Email...</ButtonText>
           <CommandName>Send R Smile</CommandName>
@@ -1388,6 +1390,7 @@
       <Button guid="guidRToolsCmdSet" id="icmdSendFrown" priority="0x0300" type="Button">
         <Parent guid="guidRToolsCmdSet" id="feedbackSubMenuGroup"/>
         <Icon guid="ImageCatalogGuid" id="FeedbackFrown"/>
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <Strings>
