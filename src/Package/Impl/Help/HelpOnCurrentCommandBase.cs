@@ -9,7 +9,6 @@ using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Repl;
-using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 

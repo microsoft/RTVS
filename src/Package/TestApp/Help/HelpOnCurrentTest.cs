@@ -7,26 +7,24 @@ using FluentAssertions;
 using Microsoft.Common.Core.Test.Controls;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Help;
-using Microsoft.R.Components.Test.StubFactories;
-using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Session;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.Help;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Test;
 using Microsoft.VisualStudio.R.Package.Test.FakeFactories;
 using Microsoft.VisualStudio.R.Package.Test.Mocks;
 using Microsoft.VisualStudio.Text;
+using NSubstitute;
 using Xunit;
 
 namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
     [ExcludeFromCodeCoverage]
+    [Category.Interactive]
     [Collection(CollectionNames.NonParallel)]
     public class HelpOnCurrentTest : HostBasedInteractiveTest {
 
         [Test]
-        [Category.Interactive]
         public async Task HelpTest() {
             var clientApp = new RHostClientHelpTestApp();
             await HostScript.InitializeAsync(clientApp);
@@ -35,8 +33,9 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
 
                 var activeViewTrackerMock = new ActiveTextViewTrackerMock("  plot", RContentTypeDefinition.ContentType);
                 var activeReplTrackerMock = new ActiveRInteractiveWindowTrackerMock();
-                var interactiveWorkflowProvider = TestRInteractiveWorkflowProviderFactory.Create(activeTextViewTracker: activeViewTrackerMock);
-                var interactiveWorkflow = interactiveWorkflowProvider.GetOrCreate();
+
+                var interactiveWorkflow = Substitute.For<IRInteractiveWorkflow>();
+                interactiveWorkflow.RSession.Returns(HostScript.Session);
 
                 var component = ControlWindow.Component as IHelpVisualComponent;
                 component.Should().NotBeNull();
