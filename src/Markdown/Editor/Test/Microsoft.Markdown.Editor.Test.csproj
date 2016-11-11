@@ -46,8 +46,8 @@
     <None Include="..\..\..\UnitTests\References.$(VisualStudioVersion)\app.config">
       <Link>app.config</Link>
     </None>
-    <None Include="Files\Classification\01.md" />
-    <None Include="Files\Classification\01.md.colors" />
+    <None Include="Files\Classification\01.rmd" />
+    <None Include="Files\Classification\01.rmd.colors" />
     <None Include="Files\Tokenization\01.md" />
     <None Include="Files\Tokenization\01.md.tokens" />
     <None Include="Files\Tokenization\01.md.tokens" />

@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Application.Core;
@@ -10,18 +9,20 @@ using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.R.Support.Help;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
-using Xunit.Sdk;
 using static Microsoft.UnitTests.Core.Threading.UIThreadTools;
 
 namespace Microsoft.R.Editor.Application.Test {
     public class EditorHostMethodFixture : ContainerHostMethodFixture {
-        private RHostScript _hostScript;
+        public RHostScript HostScript { get; private set; }
 
         public IPackageIndex PackageIndex { get; private set; }
         public IFunctionIndex FunctionIndex { get; private set; }
 
         public Task<IEditorScript> StartScript(IExportProvider exportProvider, string contentType) => 
             StartScript(exportProvider, string.Empty, "filename", contentType, null);
+
+        public Task<IEditorScript> StartScript(IExportProvider exportProvider, string contentType, IRSessionProvider sessionProvider) =>
+            StartScript(exportProvider, string.Empty, "filename", contentType, sessionProvider);
 
         public Task<IEditorScript> StartScript(IExportProvider exportProvider, string text, string contentType) => 
             StartScript(exportProvider, text, "filename", contentType, null);
@@ -33,7 +34,7 @@ namespace Microsoft.R.Editor.Application.Test {
 
             if (sessionProvider != null) {
                 IntelliSenseRSession.HostStartTimeout = 10000;
-                _hostScript = new RHostScript(sessionProvider);
+                HostScript = new RHostScript(sessionProvider);
 
                 PackageIndex = exportProvider.GetExportedValue<IPackageIndex>();
                 await PackageIndex.BuildIndexAsync();
@@ -43,11 +44,6 @@ namespace Microsoft.R.Editor.Application.Test {
             }
 
             return new EditorScript(exportProvider, coreEditor, containerDisposable);
-        }
-
-        protected override void Dispose(bool disposing) {
-            _hostScript?.Dispose();
-            base.Dispose(disposing);
         }
     }
 }

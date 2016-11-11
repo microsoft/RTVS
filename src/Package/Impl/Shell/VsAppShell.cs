@@ -46,6 +46,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private readonly IRSettings _settings;
         private readonly ICoreServices _coreServices;
         private IdleTimeSource _idleTimeSource;
+        private ExportProvider _exportProvider;
+        private ICompositionService _compositionService;
 
         [ImportingConstructor]
         public VsAppShell(ITelemetryService telemetryService
@@ -81,6 +83,10 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private void Initialize() {
             MainThread = Thread.CurrentThread;
             MainThreadDispatcher = Dispatcher.FromThread(MainThread);
+
+            var componentModel = (IComponentModel)VsPackage.GetGlobalService(typeof(SComponentModel));
+            _compositionService = componentModel.DefaultCompositionService;
+            _exportProvider = componentModel.DefaultExportProvider;
 
             _idleTimeSource = new IdleTimeSource();
             _idleTimeSource.OnIdle += OnIdle;
@@ -125,8 +131,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
             var componentModel = (IComponentModel)VsPackage.GetGlobalService(typeof(SComponentModel));
             var instance = (VsAppShell)componentModel.DefaultExportProvider.GetExportedValue<IApplicationShell>();
-            instance.CompositionService = componentModel.DefaultCompositionService;
-            instance.ExportProvider = componentModel.DefaultExportProvider;
 
             return Interlocked.CompareExchange(ref _instance, instance, null) ?? instance;
         }
@@ -135,12 +139,22 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// <summary>
         /// Application composition service
         /// </summary>
-        public ICompositionService CompositionService { get; private set; }
+        public ICompositionService CompositionService {
+            get {
+                EnsureInitialized();
+                return _compositionService;
+            }
+        }
 
         /// <summary>
         /// Application export provider
         /// </summary>
-        public ExportProvider ExportProvider { get; private set; }
+        public ExportProvider ExportProvider {
+            get {
+                EnsureInitialized();
+                return _exportProvider;
+            }
+        }
         #endregion
 
         #region ICoreShell

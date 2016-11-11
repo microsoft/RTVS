@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Formatting;
 using Microsoft.VisualStudio.Text.Projection;
 using Microsoft.VisualStudio.Utilities;
+using NSubstitute;
 
 namespace Microsoft.VisualStudio.Editor.Mocks {
     [ExcludeFromCodeCoverage]
@@ -40,9 +41,7 @@ namespace Microsoft.VisualStudio.Editor.Mocks {
         public double LineHeight => 12;
         public double MaxTextRightCoordinate => 100;
 
-        public IEditorOptions Options {
-            get { throw new NotImplementedException(); }
-        }
+        public IEditorOptions Options => Substitute.For<IEditorOptions>();
 
         public PropertyCollection Properties { get; private set; } = new PropertyCollection();
 
@@ -51,9 +50,7 @@ namespace Microsoft.VisualStudio.Editor.Mocks {
             set { throw new NotImplementedException(); }
         }
 
-        public ITextViewRoleSet Roles {
-            get { throw new NotImplementedException(); }
-        }
+        public ITextViewRoleSet Roles => Substitute.For<ITextViewRoleSet>();
 
         public ITextSelection Selection { get; private set; }
 

@@ -41,7 +41,7 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
         [Test]
         [Category.Md.Classifier]
         public void ClassifyMarkdownFileTest01() {
-            Action a = () => ClassifyFile(_files, @"Classification\01.md");
+            Action a = () => ClassifyFile(_files, @"Classification\01.rmd");
             a.ShouldNotThrow();
         }
 
