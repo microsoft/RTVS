@@ -269,9 +269,14 @@ namespace Microsoft.R.Host.Client.Session {
             _stopHostLock.EnqueueReset();
         }
 
-        public IRSessionSwitchBrokerTransaction StartSwitchingBroker() => !_disposeToken.IsDisposed ? new BrokerTransaction(this) : null;
+        public IRSessionSwitchBrokerTransaction StartSwitchingBroker() =>
+            !_disposeToken.IsDisposed && _startupInfo != null ? new BrokerTransaction(this) : null;
 
         public async Task ReconnectAsync(CancellationToken cancellationToken) {
+            if (_startupInfo == null) {
+                return;
+            }
+
             using (_disposeToken.Link(ref cancellationToken)) { 
                 var host = _host;
                 // host may be null if previous attempts to start it have failed
