@@ -263,7 +263,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         private static bool IsMultiLineCandidate(string text) {
-            if (text.IndexOfAny(new[] { '\n', '\r' }) != -1) {
+            if (text.IndexOfAny(CharExtensions.LineBreakChars) != -1) {
                 // if we already have newlines then we're multiline
                 return true;
             }

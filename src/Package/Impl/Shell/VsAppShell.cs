@@ -65,7 +65,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
 
         public static void EnsureInitialized() {
-            ThreadHelper.ThrowIfNotOnUIThread();
             var instance = GetInstance();
             if (instance.MainThread == null) {
                 instance.Initialize();
@@ -129,6 +128,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 return _instance;
             }
 
+            ThreadHelper.ThrowIfNotOnUIThread();
             var componentModel = (IComponentModel)VsPackage.GetGlobalService(typeof(SComponentModel));
             var instance = (VsAppShell)componentModel.DefaultExportProvider.GetExportedValue<IApplicationShell>();
 

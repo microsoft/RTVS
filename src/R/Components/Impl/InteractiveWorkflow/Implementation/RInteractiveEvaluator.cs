@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -10,9 +11,9 @@ using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager;
-using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.Settings;
+using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
@@ -120,22 +121,10 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 return true;
             }
 
+            // if we have any errors other than an incomplete statement send the
+            // bad code to R.  Otherwise continue reading input.
             var ast = RParser.Parse(text);
-            if (ast.Errors.Count > 0) {
-                // if we have any errors other than an incomplete statement send the
-                // bad code to R.  Otherwise continue reading input.
-                foreach (var error in ast.Errors) {
-                    if (error.ErrorType != ParseErrorType.CloseCurlyBraceExpected &&
-                        error.ErrorType != ParseErrorType.CloseBraceExpected &&
-                        error.ErrorType != ParseErrorType.CloseSquareBracketExpected &&
-                        error.ErrorType != ParseErrorType.FunctionBodyExpected &&
-                        error.ErrorType != ParseErrorType.RightOperandExpected) {
-                        return true;
-                    }
-                }
-                return false;
-            }
-            return true;
+            return ast.IsCompleteExpression();
         }
 
         public async Task<ExecutionResult> ExecuteCodeAsync(string text) {
@@ -248,39 +237,50 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         /// Workaround for interactive window that does not currently support
         /// 'carriage return' i.e. writing into the same line
         /// </summary>
-        private string _lastMessage;
-        private int _lastPosition = -1;
+        struct MessagePos {
+            public string Message;
+            public int Position;
+        }
+
+        private readonly ConcurrentStack<MessagePos> _messageStack = new ConcurrentStack<MessagePos>();
         private void OutputBuffer_Changed(object sender, TextContentChangedEventArgs e) {
-            if (_lastMessage != null) {
-                // Writing messages in the same line (via simulated CR)
-                var m = _lastMessage; // Make sure it is null so we don't re-enter.
-                _lastMessage = null;
-                // Replace last written placeholder with the actual message
-                CurrentWindow.OutputBuffer.Replace(new Span(_lastPosition, 1), m);
+            if (e.After.Length - e.Before.Length == 1) {
+                _coreShell.AssertIsOnMainThread();
+                MessagePos mp;
+                while (_messageStack.TryPop(out mp)) {
+                    // Writing messages in the same line (via simulated CR)
+
+                    var ch = CurrentWindow.OutputBuffer.CurrentSnapshot[mp.Position];
+                    Debug.Assert(ch == '$');
+                    Debug.Assert(mp.Position + 1 == CurrentWindow.OutputBuffer.CurrentSnapshot.Length);
+
+                    // Replace last written placeholder with the actual message
+                    CurrentWindow.OutputBuffer.Replace(new Span(mp.Position, 1), mp.Message);
+                }
             }
         }
 
         private void Write(string message) {
-            _coreShell.DispatchOnUIThread(() => {
-                if (CurrentWindow != null) {
+            if (CurrentWindow != null) {
+                _coreShell.DispatchOnUIThread(() => {
+                    CurrentWindow.FlushOutput();
                     // If message starts with CR we remember current output buffer
                     // length so we can continue writing lines into the same spot.
                     // See txtProgressBar in R.
                     if (message.Length > 1 && message[0] == '\r' && message[1] != '\n') {
                         // Store the message and the initial position. All subsequent 
                         // messages that start with CR. Will be written into the same place.
-                        _lastMessage = message.Substring(1);
-                        _lastPosition = _lastPosition < 0 ? CurrentWindow.OutputBuffer.CurrentSnapshot.Length : _lastPosition;
-                        message = "|"; // replacement placeholder so we can receive 'buffer changed' event
-                    } else {
-                        // Reset everything since the message is not of CR-type.
-                        _lastMessage = null;
-                        _lastPosition = -1;
+                        var mp = new MessagePos() {
+                            Message = message.Substring(1),
+                            Position = CurrentWindow.OutputBuffer.CurrentSnapshot.Length
+                        };
+                        message = "$"; // replacement placeholder so we can receive 'buffer changed' event
+                        _messageStack.Push(mp);
                     }
                     CurrentWindow.Write(message);
                     CurrentWindow.FlushOutput(); // Must flush so we do get 'buffer changed' immediately.
-                }
-            });
+                });
+            }
         }
 
 
