@@ -17,8 +17,10 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
             _interactiveWorkflow = interactiveWorkflow;
             _session = interactiveWorkflow.RSession;
             _debuggerModeTracker = debuggerModeTracker;
-            _session.Connected += OnConnected; ;
+
+            _session.Connected += OnConnected;
             _session.Disconnected += OnDisconnected;
+
             _session.BeforeRequest += OnBeforeRequest;
             _session.AfterRequest += OnAfterRequest;
         }
