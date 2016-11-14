@@ -75,20 +75,22 @@ namespace Microsoft.R.Host.Client.Host {
             if (HttpClient != null) {
                 // Just in case ping was disable for security reasons, try connecting to the broker anyway.
                 try {
-                    await GetHostInformationAsync(CancellationToken.None);
+                    await GetHostInformationAsync<AboutHost>(CancellationToken.None);
                 } catch (HttpRequestException ex) {
                     throw await HandleHttpRequestExceptionAsync(ex);
                 }
             }
         }
 
-        public async Task<AboutHost> GetHostInformationAsync(CancellationToken cancellationToken) {
+        public async Task<T> GetHostInformationAsync<T>(CancellationToken cancellationToken) {
             string result = null;
             try {
-                var response = await HttpClient.GetAsync("/about", cancellationToken);
+                var type = typeof(T);
+                var endPointName = "/" + type.Name.Substring(type.Name.LastIndexOf('.') + 1);
+                var response = await HttpClient.GetAsync(endPointName, cancellationToken);
                 result = await response.Content.ReadAsStringAsync();
             } catch (OperationCanceledException) { } catch(HttpRequestException) { } 
-            return !string.IsNullOrEmpty(result) ? JsonConvert.DeserializeObject<AboutHost>(result) : AboutHost.Empty;
+            return !string.IsNullOrEmpty(result) ? JsonConvert.DeserializeObject<T>(result) : default(T);
         }
 
         public virtual async Task<RHost> ConnectAsync(BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken)) {
@@ -109,7 +111,7 @@ namespace Microsoft.R.Host.Client.Host {
                 await CreateBrokerSessionAsync(connectionInfo.Name, connectionInfo.RCommandLineArguments, cancellationToken);
                 var webSocket = await ConnectToBrokerAsync(connectionInfo.Name, cancellationToken);
                 var host = CreateRHost(connectionInfo.Name, connectionInfo.Callbacks, webSocket);
-                await GetHostInformationAsync(cancellationToken);
+                await GetHostInformationAsync<AboutHost>(cancellationToken);
                 return host;
             } catch (HttpRequestException ex) {
                 throw await HandleHttpRequestExceptionAsync(ex);

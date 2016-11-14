@@ -12,7 +12,7 @@ using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Broker.About {
     [Authorize(Policy = Policies.RUser)]
-    [Route("/load")]
+    [Route("/HostLoad")]
     public class LoadController : Controller {
         private readonly PerformanceCounter _cpuCounter = new PerformanceCounter("Performance", "CPU");
         private readonly PerformanceCounter _networkCounter = new PerformanceCounter("Performance", "Network");
@@ -27,8 +27,9 @@ namespace Microsoft.R.Host.Broker.About {
             var query = new SelectQuery(@"Select * from Win32_OperatingSystem");
             using (var search = new ManagementObjectSearcher(query)) {
                 foreach (var mo in search.Get()) {
-                    h.FreeVirtualMemory = GetSizeInGB(mo, "FreeVirtualMemory");
-                    h.FreePhysicalMemory = GetSizeInGB(mo, "FreePhysicalMemory");
+                    var totalMemory = GetSizeInGB(mo, "TotalVisibleMemorySize");
+                    var freeMemory = GetSizeInGB(mo, "FreePhysicalMemory");
+                    h.MemoryLoad = freeMemory / totalMemory;
                     break;
                 }
             }

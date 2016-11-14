@@ -17,7 +17,7 @@ namespace Microsoft.R.Host.Client.Host {
         public bool IsRemote { get; } = true;
         public bool IsVerified => true;
 
-        public Task<AboutHost> GetHostInformationAsync(CancellationToken cancellationToken = default(CancellationToken)) => Task.FromResult(AboutHost.Empty);
+        public Task<T> GetHostInformationAsync<T>(CancellationToken cancellationToken = default(CancellationToken)) => Task.FromResult(default(T));
         public Task PingAsync() => Result;
 
         public Task<RHost> ConnectAsync(BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken)) => Result;

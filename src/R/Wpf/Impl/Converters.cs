@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Media;
 using Microsoft.Common.Wpf;
 
 namespace Microsoft.R.Wpf {
@@ -50,5 +51,17 @@ namespace Microsoft.R.Wpf {
         public static IMultiValueConverter Max { get; } = LambdaConverter.CreateMulti<double>(x => x.Max());
         public static IMultiValueConverter Min { get; } = LambdaConverter.CreateMulti<double>(x => x.Min());
         public static IMultiValueConverter ShowScrollbarForMinWidth { get; } = LambdaConverter.Create<double, double>((x, y) => x < y ? ScrollBarVisibility.Auto : ScrollBarVisibility.Disabled);
+
+        public static IValueConverter LoadToColor { get; } = LambdaConverter.Create<double>((x) => {
+            Color c;
+            if (x < 0.4) {
+                c = Colors.Green;
+            } else if (x < 0.7) {
+                c = Colors.Yellow;
+            } else {
+                c = Colors.Red;
+            }
+            return new SolidColorBrush(c);
+        });
     }
 }

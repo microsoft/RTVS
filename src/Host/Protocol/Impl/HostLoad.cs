@@ -3,9 +3,8 @@
 
 namespace Microsoft.R.Host.Protocol {
     public class HostLoad {
-        public long FreeVirtualMemory { get; set; }
-        public long FreePhysicalMemory { get; set; }
-        public float CpuLoad { get; set; }
-        public float NetworkLoad { get; set; }
+        public double CpuLoad { get; set; }
+        public double MemoryLoad { get; set; }
+        public double NetworkLoad { get; set; }
     }
 }

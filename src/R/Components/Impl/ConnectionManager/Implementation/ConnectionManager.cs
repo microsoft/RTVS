@@ -15,6 +15,7 @@ using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager.Implementation.View;
 using Microsoft.R.Components.ConnectionManager.Implementation.ViewModel;
+using Microsoft.R.Components.Information;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.StatusBar;
@@ -23,12 +24,14 @@ using Microsoft.R.Interpreters;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation {
     internal class ConnectionManager : IConnectionManager {
+        private readonly IRInteractiveWorkflow _interactiveWorkflow;
         private readonly IRSettings _settings;
         private readonly ICoreShell _shell;
         private readonly IStatusBar _statusBar;
         private readonly IRSessionProvider _sessionProvider;
         private readonly DisposableBag _disposableBag;
         private readonly ConnectionStatusBarViewModel _statusBarViewModel;
+        private readonly HostLoadIndicatorViewModel _hostLoadIndicatorViewModel;
         private readonly ConcurrentDictionary<Uri, IConnection> _userConnections;
 
         public bool IsConnected { get; private set; }
@@ -43,12 +46,15 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             _statusBar = statusBar;
             _sessionProvider = interactiveWorkflow.RSessions;
             _settings = settings;
+            _interactiveWorkflow = interactiveWorkflow;
             _shell = interactiveWorkflow.Shell;
 
             _statusBarViewModel = new ConnectionStatusBarViewModel(this, interactiveWorkflow.Shell);
+            _hostLoadIndicatorViewModel = new HostLoadIndicatorViewModel(interactiveWorkflow);
 
             _disposableBag = DisposableBag.Create<ConnectionManager>()
                 .Add(_statusBarViewModel)
+                .Add(_hostLoadIndicatorViewModel)
                 .Add(() => _sessionProvider.BrokerStateChanged -= BrokerStateChanged);
 
             _sessionProvider.BrokerStateChanged += BrokerStateChanged;
@@ -63,9 +69,13 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
         private async Task CompleteInitializationAsync() {
             await _shell.SwitchToMainThreadAsync();
-            _disposableBag.Add(_statusBar.AddItem(new ConnectionStatusBar {
-                DataContext = _statusBarViewModel
-            }));
+            _disposableBag
+                .Add(_statusBar.AddItem(new ConnectionStatusBar {
+                    DataContext = _statusBarViewModel
+                }))
+                .Add(_statusBar.AddItem(new HostLoadIndicator() {
+                    DataContext = _hostLoadIndicatorViewModel
+                }));
             await SwitchBrokerToLastConnection();
         }
 
@@ -166,7 +176,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                     Name = c.Name,
                     Path = c.Path,
                     RCommandLineArguments = c.RCommandLineArguments,
-                    IsUserCreated = c.IsUserCreated })
+                    IsUserCreated = c.IsUserCreated
+                })
                 .ToArray();
         }
 
@@ -245,9 +256,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
         private async Task SwitchBrokerToLastConnection() {
             var connectionInfo = _settings.LastActiveConnection;
-            if(connectionInfo != null) {
+            if (connectionInfo != null) {
                 var c = GetOrCreateConnection(connectionInfo.Name, connectionInfo.Path, connectionInfo.RCommandLineArguments, connectionInfo.IsUserCreated);
-                if(c.IsRemote) {
+                if (c.IsRemote) {
                     return; // Do not restore remote connections automatically
                 }
             }
