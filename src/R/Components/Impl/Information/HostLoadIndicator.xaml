@@ -4,18 +4,29 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Microsoft.R.Components.Information"
-             xmlns:wpf="clr-namespace:Microsoft.R.Wpf;assembly=Microsoft.R.Wpf"
+             xmlns:inf="clr-namespace:Microsoft.R.Components.Information"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid Width="48" Height="16">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition />
-            <ColumnDefinition />
-            <ColumnDefinition />
-        </Grid.ColumnDefinitions>
+    <Border BorderThickness="1">
+        <Grid Width="48" Height="18">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
 
-        <Rectangle Grid.Column="0" Fill="{Binding Path=CpuLoad, Converter={x:Static wpf:Converters.LoadToColor}}" />
-        <Rectangle Grid.Column="1" Fill="{Binding Path=MemoryLoad, Converter={x:Static wpf:Converters.LoadToColor}}" />
-        <Rectangle Grid.Column="2" Fill="{Binding Path=NetworkLoad, Converter={x:Static wpf:Converters.LoadToColor}}" />
-    </Grid>
+            <Rectangle Grid.Row="0" 
+                       Height="4" VerticalAlignment="Center" HorizontalAlignment="Left" StrokeThickness="0"
+                       Fill="{Binding Path=CpuLoad, Converter={x:Static inf:Converters.PercentageToColor}}" 
+                       Width="{Binding Path=CpuLoad, Converter={x:Static inf:Converters.PercentageToWidth}}"/>
+            <Rectangle Grid.Row="1" 
+                       Height="4" VerticalAlignment="Center" HorizontalAlignment="Left" StrokeThickness="0"
+                       Fill="{Binding Path=MemoryLoad, Converter={x:Static inf:Converters.PercentageToColor}}"
+                       Width="{Binding Path=MemoryLoad, Converter={x:Static inf:Converters.PercentageToWidth}}"/>
+            <Rectangle Grid.Row="2" 
+                       Height="4" VerticalAlignment="Center" HorizontalAlignment="Left" StrokeThickness="0"
+                       Fill="{Binding Path=NetworkLoad, Converter={x:Static inf:Converters.PercentageToColor}}"
+                       Width="{Binding Path=NetworkLoad, Converter={x:Static inf:Converters.PercentageToWidth}}"/>
+        </Grid>
+    </Border>
 </UserControl>

@@ -138,6 +138,7 @@
     <Compile Include="History\IRHistoryVisualComponentContainerFactory.cs" />
     <Compile Include="History\RHistoryCommandIds.cs" />
     <Compile Include="ContentTypes\RHistoryContentTypeDefinition.cs" />
+    <Compile Include="Information\Converters.cs" />
     <Compile Include="Information\HostLoadIndicator.xaml.cs">
       <DependentUpon>HostLoadIndicator.xaml</DependentUpon>
     </Compile>

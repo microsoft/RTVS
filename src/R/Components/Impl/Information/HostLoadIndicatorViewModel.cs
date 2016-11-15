@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Threading.Tasks;
 using System.Timers;
 using Microsoft.Common.Core;
 using Microsoft.Common.Wpf;
@@ -14,6 +13,7 @@ namespace Microsoft.R.Components.Information {
         private readonly Timer _timer = new Timer();
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
         private bool _disposed;
+        private bool _busy;
 
         private double _cpuLoad;
         private double _memoryLoad;
@@ -37,23 +37,26 @@ namespace Microsoft.R.Components.Information {
         public HostLoadIndicatorViewModel(IRInteractiveWorkflow interactiveWorkflow) {
             _interactiveWorkflow = interactiveWorkflow;
 
-            _timer.Interval = 5000;
+            _timer.Interval = 2000;
             _timer.AutoReset = true;
             _timer.Elapsed += OnTimer;
             _timer.Start();
         }
 
         private void OnTimer(object sender, ElapsedEventArgs e) {
-            if (!_disposed) {
-                _interactiveWorkflow.RSessions.Broker.GetHostInformationAsync<HostLoad>().ContinueWith((t) => {
-                    if (t.IsCompleted && t.Result != null) {
-                        _interactiveWorkflow.Shell.DispatchOnUIThread(() => {
-                            CpuLoad = t.Result.CpuLoad;
-                            MemoryLoad = t.Result.MemoryLoad;
-                            NetworkLoad = t.Result.NetworkLoad;
-                        });
-                    }
-                }).DoNotWait();
+            if (!_disposed && !_busy) {
+                _busy = true;
+                _interactiveWorkflow.RSessions.Broker.GetHostInformationAsync<HostLoad>()
+                   .ContinueWith((t) => {
+                       if (t.IsCompleted && t.Result != null) {
+                           _interactiveWorkflow.Shell.DispatchOnUIThread(() => {
+                               CpuLoad = t.Result.CpuLoad;
+                               MemoryLoad = t.Result.MemoryLoad;
+                               NetworkLoad = t.Result.NetworkLoad;
+                           });
+                       }
+                       _busy = false;
+                   }).DoNotWait();
             }
         }
 
