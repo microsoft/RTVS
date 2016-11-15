@@ -240,4 +240,7 @@
   <data name="Exception_MaxAllowedUsers" xml:space="preserve">
     <value>Windows Workstation only allows a single user session.</value>
   </data>
+  <data name="Error_ConfiguredPortNotAvailable" xml:space="preserve">
+    <value>Server port {0} is already in use.</value>
+  </data>
 </root>

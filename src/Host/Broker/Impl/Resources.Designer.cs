@@ -115,6 +115,15 @@ namespace Microsoft.R.Host.Broker {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Server port {0} is already in use..
+        /// </summary>
+        internal static string Error_ConfiguredPortNotAvailable {
+            get {
+                return ResourceManager.GetString("Error_ConfiguredPortNotAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to retrieve R installation data for interpreter \&quot;{0}\&quot; at \&quot;{1}\&quot;.
         /// </summary>
         internal static string Error_FailedRInstallationData {
