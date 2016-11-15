@@ -22,7 +22,7 @@ namespace Microsoft.Common.Core.Security {
             _coreShellLazy = coreShellLazy;
         }
 
-        public async Task<Credentials> GetUserCredentialsAsync(string authority, bool invalidateStoredCredentials, CancellationToken cancellationToken = default(CancellationToken)) {
+        public Task<Credentials> GetUserCredentialsAsync(string authority, bool invalidateStoredCredentials, CancellationToken cancellationToken = default(CancellationToken)) {
             var showDialog = invalidateStoredCredentials;
             var credentials = new Credentials();
 
@@ -37,7 +37,6 @@ namespace Microsoft.Common.Core.Security {
                     flags |= CREDUI_FLAGS_ALWAYS_SHOW_UI;
                 }
 
-                await _coreShellLazy.Value.SwitchToMainThreadAsync(cancellationToken);
                 var credui = new CREDUI_INFO {
                     cbSize = Marshal.SizeOf(typeof(CREDUI_INFO)),
                     hwndParent = _coreShellLazy.Value.AppConstants.ApplicationWindowHandle
@@ -59,7 +58,7 @@ namespace Microsoft.Common.Core.Security {
                 }
             }
 
-            return credentials;
+            return Task.FromResult(credentials);
         }
 
         public async Task<bool> ValidateX509CertificateAsync(X509Certificate certificate, string message, CancellationToken cancellationToken = default(CancellationToken)) {

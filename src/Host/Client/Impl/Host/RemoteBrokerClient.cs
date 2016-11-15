@@ -26,7 +26,7 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         public RemoteBrokerClient(string name, Uri brokerUri, ICoreServices services, IConsole console)
-            : base(name, brokerUri, brokerUri.Fragment, new RemoteCredentialsDecorator(brokerUri, services.Security), services.Log, console) {
+            : base(name, brokerUri, brokerUri.Fragment, new RemoteCredentialsDecorator(brokerUri, services.Security, services.MainThread), services.Log, console) {
             _console = console;
             _services = services;
 

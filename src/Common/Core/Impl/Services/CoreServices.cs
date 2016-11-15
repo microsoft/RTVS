@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
@@ -10,11 +11,13 @@ using Microsoft.Common.Core.Security;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Tasks;
 using Microsoft.Common.Core.Telemetry;
+using Microsoft.Common.Core.Threading;
 
 namespace Microsoft.Common.Core.Services {
     [Export(typeof(ICoreServices))]
     public sealed class CoreServices : ICoreServices {
         private readonly IApplicationConstants _appConstants;
+        private readonly Lazy<IMainThread> _mainThread;
         private IActionLog _log;
 
         [ImportingConstructor]
@@ -25,6 +28,7 @@ namespace Microsoft.Common.Core.Services {
             , ISecurityService security
             , ITaskService tasks
             , ISettingsStorage settings
+            , Lazy<IMainThread> mainThread
             , [Import(AllowDefault = true)] IActionLog log = null
             , [Import(AllowDefault = true)] IFileSystem fs = null
             , [Import(AllowDefault = true)] IRegistry registry = null
@@ -42,6 +46,7 @@ namespace Microsoft.Common.Core.Services {
             Registry = registry ?? new RegistryImpl();
             FileSystem = fs ?? new FileSystem();
             Settings = settings;
+            _mainThread = mainThread;
         }
 
         public IActionLog Log => _log ?? (_log = LoggingServices.GetOrCreateLog(_appConstants.ApplicationName));
@@ -54,5 +59,6 @@ namespace Microsoft.Common.Core.Services {
         public ITaskService Tasks { get; }
         public ILoggingServices LoggingServices { get; }
         public ISettingsStorage Settings { get; }
+        public IMainThread MainThread => _mainThread.Value;
     }
 }

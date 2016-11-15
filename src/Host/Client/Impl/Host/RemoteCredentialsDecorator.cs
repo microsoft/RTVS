@@ -14,14 +14,16 @@ using static Microsoft.R.Host.Client.NativeMethods;
 namespace Microsoft.R.Host.Client.Host {
     internal class RemoteCredentialsDecorator : ICredentialsDecorator {
         private readonly ISecurityService _securityService;
+        private readonly IMainThread _mainThread;
         private readonly Credentials _credentials = new Credentials();
         private readonly AutoResetEvent _credentialsValidated = new AutoResetEvent(true);
         private readonly string _authority;
         private readonly AsyncReaderWriterLock _lock;
         private bool _credentialsAreValid;
 
-        public RemoteCredentialsDecorator(Uri brokerUri, ISecurityService securityService) {
+        public RemoteCredentialsDecorator(Uri brokerUri, ISecurityService securityService, IMainThread mainThread) {
             _securityService = securityService;
+            _mainThread = mainThread;
             _authority = new UriBuilder { Scheme = brokerUri.Scheme, Host = brokerUri.Host, Port = brokerUri.Port }.ToString();
             _lock = new AsyncReaderWriterLock();
             _credentialsAreValid = true;
@@ -30,6 +32,8 @@ namespace Microsoft.R.Host.Client.Host {
         public NetworkCredential GetCredential(Uri uri, string authType) => new NetworkCredential(_credentials.UserName, _credentials.Password);
 
         public async Task<IDisposable> LockCredentialsAsync(CancellationToken cancellationToken = default(CancellationToken)) {
+            await _mainThread.SwitchToAsync(cancellationToken);
+
             Credentials credentials;
 
             // If there is already a LockCredentialsAsync request for which there hasn't been a validation yet, wait until it completes.

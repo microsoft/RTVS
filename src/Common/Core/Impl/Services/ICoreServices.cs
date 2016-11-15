@@ -8,6 +8,7 @@ using Microsoft.Common.Core.Security;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Tasks;
 using Microsoft.Common.Core.Telemetry;
+using Microsoft.Common.Core.Threading;
 
 namespace Microsoft.Common.Core.Services {
     public interface ICoreServices {
@@ -20,5 +21,6 @@ namespace Microsoft.Common.Core.Services {
         ITelemetryService Telemetry { get; }
         ITaskService Tasks { get; }
         ISettingsStorage Settings { get; }
+        IMainThread MainThread { get; }
     }
 }
