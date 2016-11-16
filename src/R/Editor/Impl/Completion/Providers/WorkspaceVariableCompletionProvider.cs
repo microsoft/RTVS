@@ -74,7 +74,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
             while (indexer != null) {
                 var variable = indexer.RightOperand as Variable;
                 if (variable != null) {
-                    list.Add(variable.Name);
+                    list.Add(variable.Name + "$");
                 } else {
                     break;
                 }
