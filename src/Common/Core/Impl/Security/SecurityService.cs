@@ -23,6 +23,8 @@ namespace Microsoft.Common.Core.Security {
         }
 
         public Task<Credentials> GetUserCredentialsAsync(string authority, bool invalidateStoredCredentials, CancellationToken cancellationToken = default(CancellationToken)) {
+            _coreShellLazy.Value.AssertIsOnMainThread();
+
             var showDialog = invalidateStoredCredentials;
             var credentials = new Credentials();
 
