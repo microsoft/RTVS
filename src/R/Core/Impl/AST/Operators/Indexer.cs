@@ -43,12 +43,11 @@ namespace Microsoft.R.Core.AST.Variables {
 
             if (tokens.CurrentToken.TokenType == terminatingTokenType) {
                 this.RightBrackets = RParser.ParseToken(context, this);
-                return base.Parse(context, parent);
             } else {
                 context.AddError(new MissingItemParseError(ParseErrorType.CloseSquareBracketExpected, tokens.PreviousToken));
             }
 
-            return true;
+            return base.Parse(context, parent);
         }
     }
 }
