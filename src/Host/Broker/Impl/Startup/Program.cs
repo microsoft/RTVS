@@ -57,7 +57,24 @@ namespace Microsoft.R.Host.Broker.Startup {
 
             var tlsConfig = new TlsConfiguration(_logger, _securityOptions);
             var httpsOptions = tlsConfig.GetHttpsOptions(Configuration);
-            CreateWebHost(httpsOptions).Run();
+
+            Uri uri = GetServerUri(Configuration);
+            try {
+                CreateWebHost(httpsOptions).Run();
+            } catch(AggregateException ex) when (ex.IsPortInUseException()) {
+                _logger.LogError(0, ex.InnerException, Resources.Error_ConfiguredPortNotAvailable, uri?.Port);
+            }
+        }
+
+        private static Uri GetServerUri(IConfigurationRoot configuration) {
+            try {
+                Uri uri;
+                var url = configuration.GetValue<string>("server.urls", null);
+                if (Uri.TryCreate(url, UriKind.Absolute, out uri) && uri.Port != 0) {
+                    return uri;
+                }
+            } catch (Exception) { }
+            return null;
         }
 
         public static IWebHost CreateWebHost(HttpsConnectionFilterOptions httpsOptions) {
