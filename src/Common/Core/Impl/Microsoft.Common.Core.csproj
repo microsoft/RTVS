@@ -156,6 +156,7 @@
     <Compile Include="Threading\AsyncReaderWriterLock.Queue.cs" />
     <Compile Include="Threading\DelayedAsyncAction.cs" />
     <Compile Include="Threading\IAsyncReaderWriterLockToken.cs" />
+    <Compile Include="Threading\MainThreadExtensions.cs" />
     <Compile Include="Threading\IMainThread.cs" />
     <Compile Include="Threading\IReentrancyTokenFactory.cs" />
     <Compile Include="Tasks\ITaskService.cs" />

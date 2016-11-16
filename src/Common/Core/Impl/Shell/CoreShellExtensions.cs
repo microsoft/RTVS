@@ -11,7 +11,7 @@ using Microsoft.Common.Core.Threading;
 namespace Microsoft.Common.Core.Shell {
     public static class CoreShellExtensions {
         public static MainThreadAwaitable SwitchToMainThreadAsync(this ICoreShell coreShell, CancellationToken cancellationToken = default(CancellationToken))
-            => new MainThreadAwaitable((IMainThread)coreShell, cancellationToken);
+            => ((IMainThread)coreShell).SwitchToAsync(cancellationToken);
 
         public static async Task ShowErrorMessageAsync(this ICoreShell coreShell, string message, CancellationToken cancellationToken = default(CancellationToken)) {
             await coreShell.SwitchToMainThreadAsync(cancellationToken);
