@@ -193,7 +193,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
             var connection = _connectionManager.AddOrUpdateConnection(
                 connectionViewModel.Name,
-                connectionViewModel.GetCompletePath(),
+                connectionViewModel.Path,
                 connectionViewModel.RCommandLineArguments,
                 connectionViewModel.IsUserCreated);
 

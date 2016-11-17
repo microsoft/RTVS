@@ -53,6 +53,29 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
         }
 
         [Test]
+        public void AutoUpdatePathAndName() {
+            var uri = new Uri("http://microsoft.com");
+            var conn = Substitute.For<IConnection>();
+
+            // After entering a new Path, the Path and Name are updated
+            // when Name was previously not specified.
+            var cm = new ConnectionViewModel(conn);
+            cm.Path = "SERVER";
+            cm.PathEditCompleted();
+            cm.Path.Should().Be("https://server:5444");
+            cm.Name.Should().Be(cm.Path);
+
+            // After entering a new Path, the Path is updated
+            // but the Name which was previously specified remains the same.
+            cm = new ConnectionViewModel(conn);
+            cm.Name = "SERVER";
+            cm.Path = "SERVER";
+            cm.PathEditCompleted();
+            cm.Path.Should().Be("https://server:5444");
+            cm.Name.Should().Be("SERVER");
+        }
+
+        [Test]
         public void SaveTooltips() {
             var uri = new Uri("http://microsoft.com");
             var conn = Substitute.For<IConnection>();
@@ -71,13 +94,17 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
 
         [CompositeTest]
         [InlineData("http://host", "http://host:80")]
+        [InlineData("http://HOST", "http://host:80")]
         [InlineData("https://host", "https://host:443")]
         [InlineData("http://host:5000", "http://host:5000")]
         [InlineData("https://host:5100", "https://host:5100")]
+        [InlineData("https://HOST:5100", "https://host:5100")]
+        [InlineData("HOST", "https://host:5444")]
         [InlineData("host", "https://host:5444")]
         [InlineData("host ", "https://host:5444")]
         [InlineData(" host", "https://host:5444")]
         [InlineData("host:4000", "host:4000")] // host == scheme in this case and 4000 is actually a host name
+        [InlineData("HOST:4000", "HOST:4000")] // host == scheme in this case and 4000 is actually a host name
         [InlineData("c:\\", "c:\\")]
         public void UrlCompletion(string original, string expected) {
             var conn = Substitute.For<IConnection>();

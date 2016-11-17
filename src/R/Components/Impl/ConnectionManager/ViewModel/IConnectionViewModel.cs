@@ -24,6 +24,6 @@ namespace Microsoft.R.Components.ConnectionManager.ViewModel {
         void Reset();
         string ConnectionTooltip { get; }
 
-        string GetCompletePath();
+        void PathEditCompleted();
     }
 }

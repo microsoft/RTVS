@@ -168,7 +168,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                 || !RCommandLineArguments.EqualsIgnoreCase(_connection?.RCommandLineArguments);
 
             Uri uri = null;
-            var isPathValid = Uri.TryCreate(GetCompletePath(), UriKind.Absolute, out uri);
+            var isPathValid = Uri.TryCreate(Path, UriKind.Absolute, out uri);
             if (string.IsNullOrEmpty(Name)) {
                 IsValid = false;
                 SaveButtonTooltip = Resources.ConnectionManager_ShouldHaveName;
@@ -183,10 +183,23 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             IsRemote = !(uri?.IsFile ?? true);
         }
 
-       public string GetCompletePath() {
+        public void PathEditCompleted() {
+            // After the user is done editing the path, we fix it up automatically
+            Path = GetCompletePath();
+
+            // Conveniently populate the name, if the user directly edited the path
+            // without specifying a name.
+            if (string.IsNullOrWhiteSpace(Name)) {
+                Name = Path;
+            }
+        }
+
+        internal string GetCompletePath() {
             // https://foo:5444 -> https://foo:5444 (no change)
-            // https://foo -> https://foo (no change)
-            // http://foo -> http://foo (no change)
+            // https://foo -> https://foo:443
+            // http://foo -> http://foo:80
+            // http://FOO -> http://foo:80
+            // http://FOO:80 -> http://foo:80
             // foo->https://foo:5444
 
             var path = Path?.Trim();
@@ -207,7 +220,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                 } else {
                     if (Uri.CheckHostName(path) != UriHostNameType.Unknown) {
                         var port = hasPort ? uri.Port : DefaultPort;
-                        return Invariant($"{Uri.UriSchemeHttps}{Uri.SchemeDelimiter}{path}:{port}");
+                        return Invariant($"{Uri.UriSchemeHttps}{Uri.SchemeDelimiter}{path.ToLower()}:{port}");
                     }
                 }
             }
