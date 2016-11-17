@@ -23,7 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
         protected override void SetStatus() {
             Supported = true;
-            Enabled = _viewTracker.LastActiveTextView != null;
+            Enabled = _viewTracker.LastActiveTextView != null && _interactiveWorkflow.RSession.IsHostRunning && !_interactiveWorkflow.RSession.IsRemote;
         }
 
         protected override void Handle() {

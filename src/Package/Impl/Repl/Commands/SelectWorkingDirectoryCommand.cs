@@ -24,7 +24,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
         protected override void SetStatus() {
             Supported = true;
-            Enabled =  _workflow.ActiveWindow != null;
+            Enabled = _workflow.ActiveWindow != null && _workflow.RSession.IsHostRunning && !_workflow.RSession.IsRemote;
         }
 
         protected override void Handle() {

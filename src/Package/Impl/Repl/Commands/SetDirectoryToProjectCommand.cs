@@ -24,7 +24,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
         protected override void SetStatus() {
             Supported = true;
-            Enabled = _pss.GetActiveProject() != null;
+            Enabled = _pss.GetActiveProject() != null && _interactiveWorkflow.RSession.IsHostRunning && !_interactiveWorkflow.RSession.IsRemote;
         }
 
         protected override void Handle() {
