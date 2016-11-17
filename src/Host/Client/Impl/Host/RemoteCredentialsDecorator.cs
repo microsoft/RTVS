@@ -5,6 +5,7 @@ using System;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Security;
 using Microsoft.Common.Core.Threading;
@@ -24,7 +25,7 @@ namespace Microsoft.R.Host.Client.Host {
         public RemoteCredentialsDecorator(Uri brokerUri, ISecurityService securityService, IMainThread mainThread) {
             _securityService = securityService;
             _mainThread = mainThread;
-            _authority = new UriBuilder { Scheme = brokerUri.Scheme, Host = brokerUri.Host, Port = brokerUri.Port }.ToString();
+            _authority = brokerUri.ToCredentialAuthority();
             _lock = new AsyncReaderWriterLock();
             _credentialsAreValid = true;
         }
