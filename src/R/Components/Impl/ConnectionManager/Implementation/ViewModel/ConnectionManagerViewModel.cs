@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -207,6 +208,12 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public bool TryDelete(IConnectionViewModel connection) {
             _shell.AssertIsOnMainThread();
+
+            var confirm = _shell.ShowMessage(string.Format(CultureInfo.CurrentUICulture, Resources.ConnectionManager_RemoveConnectionConfirmation, connection.Name), MessageButtons.YesNo);
+            if (confirm != MessageButtons.Yes) {
+                return false;
+            }
+
             var result = _connectionManager.TryRemove(connection.Id);
             UpdateConnections();
             return result;

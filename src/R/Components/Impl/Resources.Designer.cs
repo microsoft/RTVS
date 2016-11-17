@@ -298,6 +298,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to remove the &apos;{0}&apos; connection?.
+        /// </summary>
+        public static string ConnectionManager_RemoveConnectionConfirmation {
+            get {
+                return ResourceManager.GetString("ConnectionManager_RemoveConnectionConfirmation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Save.
         /// </summary>
         public static string ConnectionManager_Save {
