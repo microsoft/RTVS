@@ -189,9 +189,10 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             // http://foo -> http://foo (no change)
             // foo->https://foo:5444
 
+            var path = Path?.Trim();
             Uri uri = null;
             try {
-                Uri.TryCreate(Path, UriKind.Absolute, out uri);
+                Uri.TryCreate(path, UriKind.Absolute, out uri);
             } catch (InvalidOperationException) { } catch (ArgumentException) { } catch (UriFormatException) { }
 
             if (uri == null || !(uri.IsFile || string.IsNullOrEmpty(uri.Host))) {
@@ -204,13 +205,13 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                     }
                     return Invariant($"{uri.Scheme}{Uri.SchemeDelimiter}{uri.Host}");
                 } else {
-                    if (Uri.CheckHostName(Path) != UriHostNameType.Unknown) {
+                    if (Uri.CheckHostName(path) != UriHostNameType.Unknown) {
                         var port = hasPort ? uri.Port : DefaultPort;
-                        return Invariant($"{Uri.UriSchemeHttps}{Uri.SchemeDelimiter}{Path}:{port}");
+                        return Invariant($"{Uri.UriSchemeHttps}{Uri.SchemeDelimiter}{path}:{port}");
                     }
                 }
             }
-            return Path;
+            return path;
         }
     }
 }

@@ -75,6 +75,8 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
         [InlineData("http://host:5000", "http://host:5000")]
         [InlineData("https://host:5100", "https://host:5100")]
         [InlineData("host", "https://host:5444")]
+        [InlineData("host ", "https://host:5444")]
+        [InlineData(" host", "https://host:5444")]
         [InlineData("host:4000", "host:4000")] // host == scheme in this case and 4000 is actually a host name
         [InlineData("c:\\", "c:\\")]
         public void UrlCompletion(string original, string expected) {
