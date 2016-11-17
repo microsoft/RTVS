@@ -75,5 +75,9 @@ namespace Microsoft.Common.Core.Security {
             }
             return false;
         }
+
+        public bool DeleteUserCredentials(string authority) {
+            return CredDelete(authority, CRED_TYPE.GENERIC, 0);
+        }
     }
 }

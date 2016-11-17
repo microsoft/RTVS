@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Logging;
-using Microsoft.Common.Core.OS;
+using Microsoft.Common.Core.Security;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager.Implementation.View;
 using Microsoft.R.Components.ConnectionManager.Implementation.ViewModel;
@@ -31,6 +31,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         private readonly DisposableBag _disposableBag;
         private readonly ConnectionStatusBarViewModel _statusBarViewModel;
         private readonly ConcurrentDictionary<Uri, IConnection> _userConnections;
+        private readonly ISecurityService _securityService;
 
         public bool IsConnected { get; private set; }
         public IConnection ActiveConnection { get; private set; }
@@ -45,6 +46,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             _sessionProvider = interactiveWorkflow.RSessions;
             _settings = settings;
             _shell = interactiveWorkflow.Shell;
+            _securityService = _shell.ExportProvider.GetExportedValue<ISecurityService>();
 
             _statusBarViewModel = new ConnectionStatusBarViewModel(this, interactiveWorkflow.Shell);
 
@@ -102,7 +104,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             var isRemoved = _userConnections.TryRemove(id, out connection);
             if (isRemoved) {
                 UpdateRecentConnections();
-                CredentialManagerUtil.DeleteCredentials(id.ToCredentialAuthority());
+                _securityService.DeleteUserCredentials(id.ToCredentialAuthority());
             }
             return isRemoved;
         }
