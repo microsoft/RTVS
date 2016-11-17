@@ -57,6 +57,7 @@
     <Compile Include="Extensions\ReflectionExtensions.cs" />
     <Compile Include="Extensions\SettingsExtensions.cs" />
     <Compile Include="Extensions\StreamExtensions.cs" />
+    <Compile Include="Extensions\UriExtensions.cs" />
     <Compile Include="IO\KnownFolderGuids.cs" />
     <Compile Include="Logging\ILoggerProvider.cs" />
     <Compile Include="Logging\ILoggingPermissions.cs" />
@@ -74,6 +75,7 @@
     <Compile Include="Net\IFileDownloader.cs" />
     <Compile Include="Net\Network.cs" />
     <Compile Include="Net\WebSocketHelper.cs" />
+    <Compile Include="OS\CredentialManagerUtil.cs" />
     <Compile Include="OS\ErrorCodeConverter.cs" />
     <Compile Include="OS\IUserCredentials.cs" />
     <Compile Include="OS\IUserProfileCreatorResult.cs" />

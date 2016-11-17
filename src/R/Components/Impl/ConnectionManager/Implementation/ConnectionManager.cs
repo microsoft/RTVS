@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager.Implementation.View;
 using Microsoft.R.Components.ConnectionManager.Implementation.ViewModel;
@@ -83,9 +84,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         public IConnection AddOrUpdateConnection(string name, string path, string rCommandLineArguments, bool isUserCreated) {
-            var newConnection = new Connection(name, path, rCommandLineArguments, DateTime.Now, isUserCreated);
+            var newConnection = CreateConnection(name, path, rCommandLineArguments, isUserCreated);
             var connection = _userConnections.AddOrUpdate(newConnection.Id, newConnection, (k, v) => UpdateConnectionFactory(v, newConnection));
-
             UpdateRecentConnections();
             return connection;
         }
@@ -102,8 +102,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             var isRemoved = _userConnections.TryRemove(id, out connection);
             if (isRemoved) {
                 UpdateRecentConnections();
+                CredentialManagerUtil.DeleteCredentials(id.ToCredentialAuthority());
             }
-
             return isRemoved;
         }
 
