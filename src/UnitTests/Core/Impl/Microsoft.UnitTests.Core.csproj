@@ -16,6 +16,9 @@
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
   <Import Project="..\..\..\R.Settings.targets" />
   <PropertyGroup>
     <BaseIntermediateOutputPath>$(ObjDirectory)</BaseIntermediateOutputPath>
@@ -60,6 +63,7 @@
     <Compile Include="FluentAssertions\TaskAssertionsExtensions.cs" />
     <Compile Include="Mef\CatalogFactory.cs" />
     <Compile Include="Mef\PartMetadataAttributeNames.cs" />
+    <Compile Include="NativeMethods.cs" />
     <Compile Include="NSubstitute\SubstituteExtensions.cs" />
     <Compile Include="NSubstitute\SubstituteHelper.cs" />
     <Compile Include="NSubstitute\Mef\MefSubstituteBuilder.AddValueFactory.cs" />
@@ -69,6 +73,7 @@
     <Compile Include="NSubstitute\Mef\NSubstituteCompositionContainer.cs" />
     <Compile Include="NSubstitute\Mef\NSubstituteExportProvider.cs" />
     <Compile Include="Paths.cs" />
+    <Compile Include="ProcessUtils.cs" />
     <Compile Include="Random.cs" />
     <Compile Include="Threading\ControlledTaskScheduler.cs" />
     <Compile Include="Threading\ControlledTaskSchedulerExtensions.cs" />
