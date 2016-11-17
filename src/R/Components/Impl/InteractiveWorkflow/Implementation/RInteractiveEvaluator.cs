@@ -248,8 +248,9 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         /// Workaround for interactive window that does not currently support
         /// 'carriage return' i.e. writing into the same line
         /// </summary>
-        private string _lastMessage;
+        private volatile string _lastMessage;
         private int _lastPosition = -1;
+
         private void OutputBuffer_Changed(object sender, TextContentChangedEventArgs e) {
             if (_lastMessage != null) {
                 // Writing messages in the same line (via simulated CR)
@@ -261,26 +262,32 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         }
 
         private void Write(string message) {
-            _coreShell.DispatchOnUIThread(() => {
-                if (CurrentWindow != null) {
-                    // If message starts with CR we remember current output buffer
-                    // length so we can continue writing lines into the same spot.
-                    // See txtProgressBar in R.
-                    if (message.Length > 1 && message[0] == '\r' && message[1] != '\n') {
-                        // Store the message and the initial position. All subsequent 
-                        // messages that start with CR. Will be written into the same place.
-                        _lastMessage = message.Substring(1);
-                        _lastPosition = _lastPosition < 0 ? CurrentWindow.OutputBuffer.CurrentSnapshot.Length : _lastPosition;
-                        message = "|"; // replacement placeholder so we can receive 'buffer changed' event
-                    } else {
-                        // Reset everything since the message is not of CR-type.
-                        _lastMessage = null;
-                        _lastPosition = -1;
-                    }
+            // If the message starts with \r with no \n following it, it is an attempt to overwrite the previous line
+            // of text in place, as used by e.g. R txtProgressBar() function. Since VS REPL doesn't support it directly,
+            // we need to handle it ourselves here.
+            // Note: DispatchOnUIThread is expensive, and can saturate the message pump when there's a lot of output,
+            // making UI non-responsive. So avoid using it unless we need it - and we only need it for FlushOutput,
+            // and to synchronize _lastMessage.
+            if (message.Length > 1 && message[0] == '\r' && message[1] != '\n') {
+                _coreShell.DispatchOnUIThread(() => {
+                    // Remember current output buffer length so that we can continue writing lines into the same spot.
+                    // Store the message and the initial position. All subsequent messages that start with \r will be
+                    // written into the same place.
+                    _lastMessage = message.Substring(1);
+                    _lastPosition = _lastPosition < 0 ? CurrentWindow.OutputBuffer.CurrentSnapshot.Length : _lastPosition;
+                    message = "|"; // replacement placeholder so we can receive 'buffer changed' event
+
                     CurrentWindow.Write(message);
                     CurrentWindow.FlushOutput(); // Must flush so we do get 'buffer changed' immediately.
+                });
+            } else {
+                if (_lastMessage != null) {
+                    // Stop tracking position for \r handling, using UI thread to synchronize access.
+                    _coreShell.DispatchOnUIThread(() => _lastMessage = null);
                 }
-            });
+
+                CurrentWindow.Write(message);
+            }
         }
 
 
