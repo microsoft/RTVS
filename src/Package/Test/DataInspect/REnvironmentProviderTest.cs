@@ -100,7 +100,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             // Wait for prompt to appear.
             using (await _session.BeginInteractionAsync()) { }
 
-            var envProvider = new REnvironmentProvider(_session);
+            var envProvider = new REnvironmentProvider(_session, new TestMainThread());
             var envTcs = new TaskCompletionSource<IREnvironment[]>();
             envProvider.Environments.CollectionChanged += (sender, args) => {
                 envTcs.TrySetResult(envProvider.Environments.ToArray());

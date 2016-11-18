@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
@@ -25,7 +26,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
                 Substitute.For<ISecurityService>(),
                 Substitute.For<ITaskService>(),
                 Substitute.For<ISettingsStorage>(),
-                Lazy.Create(() => Substitute.For<IMainThread>()),
+                new Lazy<IMainThread>(() => new TestMainThread()),
                 Substitute.For<IActionLog>(),
                 fs ?? Substitute.For<IFileSystem>(),
                 registry ?? Substitute.For<IRegistry>(),
@@ -40,7 +41,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
                 Substitute.For<ISecurityService>(),
                 new TestTaskService(),
                 Substitute.For<ISettingsStorage>(),
-                Lazy.Create(() => Substitute.For<IMainThread>()),
+                new Lazy<IMainThread>(() => new TestMainThread()),
                 Substitute.For<IActionLog>(),
                 new FileSystem(),
                 new RegistryImpl(),

@@ -11,7 +11,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-using System.Windows.Media;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Wpf.Extensions;
@@ -25,7 +24,6 @@ using Microsoft.R.Support.Settings;
 using Microsoft.R.Wpf.Themes;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Imaging.Interop;
-using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Commands.R;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -67,7 +65,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             var workflow = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
             _session = workflow.RSession;
 
-            _environmentProvider = new REnvironmentProvider(_session);
+            _environmentProvider = new REnvironmentProvider(_session, shell.Services.MainThread);
             EnvironmentComboBox.DataContext = _environmentProvider;
             _environmentProvider.RefreshEnvironmentsAsync().DoNotWait();
         }
