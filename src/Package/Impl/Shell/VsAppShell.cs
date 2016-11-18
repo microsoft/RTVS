@@ -39,6 +39,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
     [Export(typeof(ICoreShell))]
     [Export(typeof(IEditorShell))]
     [Export(typeof(IApplicationShell))]
+    [Export(typeof(IMainThread))]
     public sealed class VsAppShell : IApplicationShell, IMainThread, IIdleTimeService, IDisposable {
         private static VsAppShell _instance;
         private static IApplicationShell _testShell;
@@ -129,6 +130,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             }
 
             ThreadHelper.ThrowIfNotOnUIThread();
+
             var componentModel = (IComponentModel)VsPackage.GetGlobalService(typeof(SComponentModel));
             var instance = (VsAppShell)componentModel.DefaultExportProvider.GetExportedValue<IApplicationShell>();
 

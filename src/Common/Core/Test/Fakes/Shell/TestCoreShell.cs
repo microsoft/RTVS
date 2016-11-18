@@ -68,8 +68,12 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
         public ICoreServices Services => TestCoreServices.CreateReal();
 
         #region IMainThread
-        public int ThreadId => MainThread.ManagedThreadId;
-        public void Post(Action action, CancellationToken cancellationToken) => UIThreadHelper.Instance.InvokeAsync(action, cancellationToken).DoNotWait();
+
+        public int ThreadId => Services.MainThread.ThreadId;
+
+        public void Post(Action action, CancellationToken cancellationToken) =>
+            Services.MainThread.Post(action, cancellationToken);
+
         #endregion
     }
 }

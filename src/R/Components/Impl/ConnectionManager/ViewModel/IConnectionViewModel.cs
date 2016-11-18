@@ -24,6 +24,15 @@ namespace Microsoft.R.Components.ConnectionManager.ViewModel {
         void Reset();
         string ConnectionTooltip { get; }
 
-        string GetCompletePath();
+        /// <summary>
+        /// Update the name with a value calculated based on the current path,
+        /// if name is determined to be tracking the path. Otherwise, it is not changed.
+        /// </summary>
+        void UpdateName();
+
+        /// <summary>
+        /// Update the path with a default scheme and port, if possible.
+        /// </summary>
+        void UpdatePath();
     }
 }

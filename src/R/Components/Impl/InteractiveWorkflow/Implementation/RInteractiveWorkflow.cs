@@ -144,6 +144,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
         private void RSessionDisconnected(object o, EventArgs eventArgs) {
             Operations.ClearPendingInputs();
+            ActiveWindow?.Container.UpdateCommandStatus(false);
         }
 
         private bool IsRProjectActive() {

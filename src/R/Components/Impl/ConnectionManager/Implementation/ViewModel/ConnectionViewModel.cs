@@ -27,6 +27,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private bool _isRemote;
         private bool _hasChanges;
         private bool _isValid;
+        private string _previousPath;
 
         public ConnectionViewModel() {
             IsUserCreated = true;
@@ -94,7 +95,10 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public bool IsEditing {
             get { return _isEditing; }
-            set { SetProperty(ref _isEditing, value); }
+            set {
+                SetProperty(ref _isEditing, value);
+                _previousPath = Path;
+            }
         }
 
         public bool IsRemote {
@@ -168,7 +172,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                 || !RCommandLineArguments.EqualsIgnoreCase(_connection?.RCommandLineArguments);
 
             Uri uri = null;
-            var isPathValid = Uri.TryCreate(GetCompletePath(), UriKind.Absolute, out uri);
+            var isPathValid = Uri.TryCreate(Path, UriKind.Absolute, out uri);
             if (string.IsNullOrEmpty(Name)) {
                 IsValid = false;
                 SaveButtonTooltip = Resources.ConnectionManager_ShouldHaveName;
@@ -183,15 +187,56 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             IsRemote = !(uri?.IsFile ?? true);
         }
 
-       public string GetCompletePath() {
-            // https://foo:5444 -> https://foo:5444 (no change)
-            // https://foo -> https://foo (no change)
-            // http://foo -> http://foo (no change)
-            // foo->https://foo:5444
+        public void UpdateName() {
+            var currentPath = Path?.Trim() ?? string.Empty;
+            var previousPath = _previousPath?.Trim() ?? string.Empty;
 
+            var previousProposedName = GetProposedName(previousPath);
+            var currentProposedName = GetProposedName(currentPath);
+
+            // Avoid changing anything if the edit
+            // has no effect on the name (like changing the path's port)
+            if (previousProposedName != currentProposedName) {
+                // Check if the name was calculated from the previous path
+                var currentName = Name ?? string.Empty;
+                if (string.IsNullOrEmpty(currentName) || string.Compare(currentName, previousProposedName, StringComparison.CurrentCultureIgnoreCase) == 0) {
+                    Name = currentProposedName;
+                }
+            }
+
+            // Remember the path, for the next update
+            _previousPath = currentPath;
+        }
+
+        public void UpdatePath() {
+            // Automatically update the Path with a more complete version
+            Path = GetCompletePath(Path?.Trim() ?? string.Empty);
+        }
+
+        internal static string GetProposedName(string path) {
+            try {
+                Uri uri;
+                if (Uri.TryCreate(path, UriKind.Absolute, out uri)) {
+                    if (!string.IsNullOrEmpty(uri.Host)) {
+                        return uri.Host;
+                    } else {
+                        return uri.AbsolutePath;
+                    }
+                }
+            } catch (InvalidOperationException) { } catch (ArgumentException) { } catch (UriFormatException) { }
+            return path.ToLower();
+        }
+
+        internal static string GetCompletePath(string path) {
+            // https://foo:5444 -> https://foo:5444 (no change)
+            // https://foo -> https://foo:443
+            // http://foo -> http://foo:80
+            // http://FOO -> http://foo:80
+            // http://FOO:80 -> http://foo:80
+            // foo->https://foo:5444
             Uri uri = null;
             try {
-                Uri.TryCreate(Path, UriKind.Absolute, out uri);
+                Uri.TryCreate(path, UriKind.Absolute, out uri);
             } catch (InvalidOperationException) { } catch (ArgumentException) { } catch (UriFormatException) { }
 
             if (uri == null || !(uri.IsFile || string.IsNullOrEmpty(uri.Host))) {
@@ -204,13 +249,13 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                     }
                     return Invariant($"{uri.Scheme}{Uri.SchemeDelimiter}{uri.Host}");
                 } else {
-                    if (Uri.CheckHostName(Path) != UriHostNameType.Unknown) {
+                    if (Uri.CheckHostName(path) != UriHostNameType.Unknown) {
                         var port = hasPort ? uri.Port : DefaultPort;
-                        return Invariant($"{Uri.UriSchemeHttps}{Uri.SchemeDelimiter}{Path}:{port}");
+                        return Invariant($"{Uri.UriSchemeHttps}{Uri.SchemeDelimiter}{path.ToLower()}:{port}");
                     }
                 }
             }
-            return Path;
+            return path;
         }
     }
 }

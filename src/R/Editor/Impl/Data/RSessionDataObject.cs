@@ -102,17 +102,14 @@ namespace Microsoft.R.Editor.Data {
         }
 
         protected virtual async Task<IReadOnlyList<IRSessionDataObject>> GetChildrenAsyncInternal() {
-            List<IRSessionDataObject> result = null;
-
             var valueEvaluation = DebugEvaluation as IRValueInfo;
             if (valueEvaluation == null) {
-                Debug.Assert(false, $"{nameof(RSessionDataObject)} result type is not {nameof(IRValueInfo)}");
-                return result;
+                // Failed to fetch children - for example, because the object is already gone.
+                return null;
             }
 
             if (valueEvaluation.HasChildren) {
                 await TaskUtilities.SwitchToBackgroundThread();
-
                 REvaluationResultProperties properties =
                     ExpressionProperty |
                     AccessorKindProperty |
@@ -125,10 +122,10 @@ namespace Microsoft.R.Editor.Data {
                     FlagsProperty |
                     (RToolsSettings.Current.EvaluateActiveBindings ? ComputedValueProperty : 0);
                 var children = await valueEvaluation.DescribeChildrenAsync(properties, RValueRepresentations.Str(MaxReprLength), MaxChildrenCount);
-                result = EvaluateChildren(children);
+                return EvaluateChildren(children);
             }
 
-            return result;
+            return null;
         }
 
         protected virtual List<IRSessionDataObject> EvaluateChildren(IReadOnlyList<IREvaluationResultInfo> children) {

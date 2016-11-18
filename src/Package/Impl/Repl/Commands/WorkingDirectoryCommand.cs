@@ -73,9 +73,13 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         }
 
         public override Microsoft.R.Components.Controller.CommandStatus Status(Guid group, int id) {
-            return _interactiveWorkflow.ActiveWindow != null ?
+            if (_interactiveWorkflow.ActiveWindow == null) {
+                return CommandStatus.Invisible;
+            }
+
+            return _interactiveWorkflow.RSession.IsHostRunning && !_interactiveWorkflow.RSession.IsRemote ?
                 CommandStatus.SupportedAndEnabled :
-                CommandStatus.Invisible;
+                CommandStatus.Supported;
         }
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {

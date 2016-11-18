@@ -81,9 +81,12 @@ namespace Microsoft.R.Host.Broker.Sessions {
                 throw new InvalidOperationException("Host process is already running");
             }
 
+            var useridentity = User as WindowsIdentity;
+            // In remote broker User Identity type is always WindowsIdentity
+            string suppressUI = (useridentity == null) ? string.Empty : " --suppress-ui ";
             string brokerPath = Path.GetDirectoryName(typeof(Program).Assembly.GetAssemblyPath());
             string rhostExePath = Path.Combine(brokerPath, RHostExe);
-            string arguments = Invariant($"--rhost-name \"{Id}\" --rhost-log-verbosity {(int)verbosity} {CommandLineArguments}");
+            string arguments = Invariant($"{suppressUI}--rhost-name \"{Id}\" --rhost-log-verbosity {(int)verbosity} {CommandLineArguments}");
             var username = new StringBuilder(NativeMethods.CREDUI_MAX_USERNAME_LENGTH + 1);
             var domain = new StringBuilder(NativeMethods.CREDUI_MAX_PASSWORD_LENGTH + 1);
 
@@ -97,7 +100,6 @@ namespace Microsoft.R.Host.Broker.Sessions {
                 LoadUserProfile = true
             };
             
-            var useridentity = User as WindowsIdentity;
             if (useridentity != null && WindowsIdentity.GetCurrent().User != useridentity.User && password != null) {
                 uint error = NativeMethods.CredUIParseUserName(User.Name, username, username.Capacity, domain, domain.Capacity);
                 if (error != 0) {

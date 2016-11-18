@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
@@ -11,6 +12,7 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Tasks;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Core.Test.Telemetry;
+using Microsoft.Common.Core.Threading;
 using NSubstitute;
 
 namespace Microsoft.Common.Core.Test.Fakes.Shell {
@@ -24,6 +26,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
                 Substitute.For<ISecurityService>(),
                 Substitute.For<ITaskService>(),
                 Substitute.For<ISettingsStorage>(),
+                new Lazy<IMainThread>(() => new TestMainThread()),
                 Substitute.For<IActionLog>(),
                 fs ?? Substitute.For<IFileSystem>(),
                 registry ?? Substitute.For<IRegistry>(),
@@ -38,6 +41,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
                 Substitute.For<ISecurityService>(),
                 new TestTaskService(),
                 Substitute.For<ISettingsStorage>(),
+                new Lazy<IMainThread>(() => new TestMainThread()),
                 Substitute.For<IActionLog>(),
                 new FileSystem(),
                 new RegistryImpl(),

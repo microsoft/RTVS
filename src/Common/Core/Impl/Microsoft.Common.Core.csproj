@@ -57,6 +57,7 @@
     <Compile Include="Extensions\ReflectionExtensions.cs" />
     <Compile Include="Extensions\SettingsExtensions.cs" />
     <Compile Include="Extensions\StreamExtensions.cs" />
+    <Compile Include="Extensions\UriExtensions.cs" />
     <Compile Include="IO\KnownFolderGuids.cs" />
     <Compile Include="Logging\ILoggerProvider.cs" />
     <Compile Include="Logging\ILoggingPermissions.cs" />
@@ -156,6 +157,7 @@
     <Compile Include="Threading\AsyncReaderWriterLock.Queue.cs" />
     <Compile Include="Threading\DelayedAsyncAction.cs" />
     <Compile Include="Threading\IAsyncReaderWriterLockToken.cs" />
+    <Compile Include="Threading\MainThreadExtensions.cs" />
     <Compile Include="Threading\IMainThread.cs" />
     <Compile Include="Threading\IReentrancyTokenFactory.cs" />
     <Compile Include="Tasks\ITaskService.cs" />

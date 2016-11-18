@@ -66,5 +66,16 @@ namespace Microsoft.Common.Core {
             public string pszCaptionText;
             public IntPtr hbmBanner;
         }
+
+        public enum CRED_TYPE {
+            GENERIC = 1,
+            DOMAIN_PASSWORD = 2,
+            DOMAIN_CERTIFICATE = 3,
+            DOMAIN_VISIBLE_PASSWORD = 4,
+            MAXIMUM = 5
+        }
+
+        [DllImport("advapi32.dll", EntryPoint = "CredDeleteW", CharSet = CharSet.Unicode)]
+        public static extern bool CredDelete(string target, CRED_TYPE type, int flags);
     }
 }

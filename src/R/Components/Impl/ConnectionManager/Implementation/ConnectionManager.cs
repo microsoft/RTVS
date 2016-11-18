@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Security;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager.Implementation.View;
 using Microsoft.R.Components.ConnectionManager.Implementation.ViewModel;
@@ -33,6 +34,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         private readonly ConnectionStatusBarViewModel _statusBarViewModel;
         private readonly HostLoadIndicatorViewModel _hostLoadIndicatorViewModel;
         private readonly ConcurrentDictionary<Uri, IConnection> _userConnections;
+        private readonly ISecurityService _securityService;
 
         public bool IsConnected { get; private set; }
         public IConnection ActiveConnection { get; private set; }
@@ -48,6 +50,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             _settings = settings;
             _interactiveWorkflow = interactiveWorkflow;
             _shell = interactiveWorkflow.Shell;
+            _securityService = _shell.ExportProvider.GetExportedValue<ISecurityService>();
 
             _statusBarViewModel = new ConnectionStatusBarViewModel(this, interactiveWorkflow.Shell);
             _hostLoadIndicatorViewModel = new HostLoadIndicatorViewModel(interactiveWorkflow);
@@ -93,9 +96,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         public IConnection AddOrUpdateConnection(string name, string path, string rCommandLineArguments, bool isUserCreated) {
-            var newConnection = new Connection(name, path, rCommandLineArguments, DateTime.Now, isUserCreated);
+            var newConnection = CreateConnection(name, path, rCommandLineArguments, isUserCreated);
             var connection = _userConnections.AddOrUpdate(newConnection.Id, newConnection, (k, v) => UpdateConnectionFactory(v, newConnection));
-
             UpdateRecentConnections();
             return connection;
         }
@@ -112,8 +114,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             var isRemoved = _userConnections.TryRemove(id, out connection);
             if (isRemoved) {
                 UpdateRecentConnections();
+                _securityService.DeleteUserCredentials(id.ToCredentialAuthority());
             }
-
             return isRemoved;
         }
 

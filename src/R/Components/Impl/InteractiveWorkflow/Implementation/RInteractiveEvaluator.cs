@@ -262,6 +262,9 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
         private void Write(string message) {
             if (CurrentWindow != null) {
+                // Note: DispatchOnUIThread is expensive, and can saturate the message pump when there's a lot of output,
+                // making UI non-responsive. So avoid using it unless we need it - and we only need it for FlushOutput,
+                // and to synchronize _lastMessage.
                 _coreShell.DispatchOnUIThread(() => {
                     CurrentWindow.FlushOutput();
                     // If message starts with CR we remember current output buffer
