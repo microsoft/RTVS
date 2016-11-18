@@ -26,7 +26,7 @@ namespace Microsoft.UnitTests.Core {
                             IntPtr pEntry = (IntPtr)(tableStartAddr + i * entrySize);
                             MIB_TCPROW2 tcpData = (MIB_TCPROW2)Marshal.PtrToStructure(pEntry, typeof(MIB_TCPROW2));
                             if (tcpData.dwOwningPid == pid) {
-                                ports.Add(tcpData.dwLocalPort);
+                                ports.Add(ntohs((ushort)tcpData.dwLocalPort));
                             }
                         }
                     } else {

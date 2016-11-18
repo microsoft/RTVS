@@ -6,6 +6,9 @@ using System.Runtime.InteropServices;
 
 namespace Microsoft.UnitTests.Core {
     internal static unsafe class NativeMethods {
+        [DllImport("ws2_32.dll", SetLastError = true)]
+        public static extern ushort ntohs(ushort v);
+
         [DllImport("iphlpapi.dll", SetLastError = true)]
         public static extern int GetTcpTable2(IntPtr tcpTable, ref int size, bool bOrder);
 
