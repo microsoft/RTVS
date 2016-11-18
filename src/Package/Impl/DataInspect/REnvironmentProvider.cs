@@ -9,11 +9,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Wpf;
 using Microsoft.Common.Wpf.Collections;
 using Microsoft.R.Host.Client;
 using Microsoft.R.StackTracing;
-using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     internal class REnvironmentProvider : BindableBase, IREnvironmentProvider {
@@ -21,12 +21,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private static readonly IReadOnlyList<REnvironment> _errorEnvironments = new[] { REnvironment.Error };
 
         private readonly DisposeToken _disposeToken = DisposeToken.Create<REnvironmentProvider>();
+        private readonly IMainThread _mainThread;
+
         private volatile IRSession _rSession;
-        private readonly CancellationTokenSource _refreshCts = new CancellationTokenSource();
         private IREnvironment _selectedEnvironment;
         private BatchObservableCollection<IREnvironment> _environments = new BatchObservableCollection<IREnvironment>();
 
-        public REnvironmentProvider(IRSession session) {
+        public REnvironmentProvider(IRSession session, IMainThread mainThread) {
+            _mainThread = mainThread;
             _rSession = session;
             _rSession.Mutated += RSession_Mutated;
         }
@@ -57,12 +59,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                 await TaskUtilities.SwitchToBackgroundThread();
 
-                cancellationToken.ThrowIfCancellationRequested();
-
                 var envs = new List<REnvironment>();
                 bool success = false;
                 try {
-                    var traceback = (await session.TracebackAsync())
+                    var traceback = (await session.TracebackAsync(cancellationToken: cancellationToken))
                         .Skip(1) // skip global - it's in the search path already
                         .Select(frame => new REnvironment(frame))
                         .Reverse();
@@ -71,34 +71,26 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                         envs.Add(null);
                     }
 
-                    cancellationToken.ThrowIfCancellationRequested();
-
-                    var searchPath = (await session.EvaluateAsync<string[]>("as.list(search())", REvaluationKind.BaseEnv))
+                    var searchPath = (await session.EvaluateAsync<string[]>("as.list(search())", REvaluationKind.BaseEnv, cancellationToken))
                         .Except(_hiddenEnvironments)
                         .Select(name => new REnvironment(name));
                     envs.AddRange(searchPath);
-
-                    cancellationToken.ThrowIfCancellationRequested();
 
                     success = true;
                 } catch (RException) {
                 } catch (OperationCanceledException) {
                 }
 
-                VsAppShell.Current.DispatchOnUIThread(() => {
-                    if (cancellationToken.IsCancellationRequested) {
-                        return;
-                    }
+                await _mainThread.SwitchToAsync(cancellationToken);
 
-                    var oldSelection = _selectedEnvironment;
-                    _environments.ReplaceWith(success ? envs : _errorEnvironments);
+                var oldSelection = _selectedEnvironment;
+                _environments.ReplaceWith(success ? envs : _errorEnvironments);
 
-                    IREnvironment newSelection = null;
-                    if (oldSelection != null) {
-                        newSelection = _environments?.FirstOrDefault(env => env?.Name == oldSelection.Name);
-                    }
-                    SelectedEnvironment = newSelection ?? _environments.FirstOrDefault();
-                });
+                IREnvironment newSelection = null;
+                if (oldSelection != null) {
+                    newSelection = _environments?.FirstOrDefault(env => env?.Name == oldSelection.Name);
+                }
+                SelectedEnvironment = newSelection ?? _environments.FirstOrDefault();
             }
         }
 
