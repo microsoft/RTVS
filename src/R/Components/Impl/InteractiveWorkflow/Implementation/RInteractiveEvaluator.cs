@@ -264,28 +264,31 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             if (CurrentWindow != null) {
                 // Note: DispatchOnUIThread is expensive, and can saturate the message pump when there's a lot of output,
                 // making UI non-responsive. So avoid using it unless we need it - and we only need it for FlushOutput,
-                // and to synchronize _lastMessage.
-                _coreShell.DispatchOnUIThread(() => {
-                    CurrentWindow.FlushOutput();
-                    // If message starts with CR we remember current output buffer
-                    // length so we can continue writing lines into the same spot.
-                    // See txtProgressBar in R.
-                    if (message.Length > 1 && message[0] == '\r' && message[1] != '\n') {
-                        // Store the message and the initial position. All subsequent 
-                        // messages that start with CR. Will be written into the same place.
-                        var mp = new MessagePos() {
-                            Message = message.Substring(1),
-                            Position = CurrentWindow.OutputBuffer.CurrentSnapshot.Length
-                        };
-                        message = "$"; // replacement placeholder so we can receive 'buffer changed' event
-                        _messageStack.Push(mp);
-                    }
+                // and we only need it to handle CR.
+                if (message.Length > 1 && message[0] == '\r' && message[1] != '\n') {
+                    _coreShell.DispatchOnUIThread(() => {
+                        CurrentWindow.FlushOutput();
+                        // If message starts with CR we remember current output buffer
+                        // length so we can continue writing lines into the same spot.
+                        // See txtProgressBar in R.
+                        if (message.Length > 1 && message[0] == '\r' && message[1] != '\n') {
+                            // Store the message and the initial position. All subsequent 
+                            // messages that start with CR. Will be written into the same place.
+                            var mp = new MessagePos() {
+                                Message = message.Substring(1),
+                                Position = CurrentWindow.OutputBuffer.CurrentSnapshot.Length
+                            };
+                            message = "$"; // replacement placeholder so we can receive 'buffer changed' event
+                            _messageStack.Push(mp);
+                        }
+                        CurrentWindow.Write(message);
+                        CurrentWindow.FlushOutput(); // Must flush so we do get 'buffer changed' immediately.
+                    });
+                } else {
                     CurrentWindow.Write(message);
-                    CurrentWindow.FlushOutput(); // Must flush so we do get 'buffer changed' immediately.
-                });
+                }
             }
         }
-
 
         private void WriteError(string message) {
             if (CurrentWindow != null) {
