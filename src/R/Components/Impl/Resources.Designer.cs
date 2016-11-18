@@ -479,6 +479,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Machine utilization: {0}% CPU, {1}% Memory, {2}% Network..
+        /// </summary>
+        public static string HostLoad_Tooltip {
+            get {
+                return ResourceManager.GetString("HostLoad_Tooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Input is too long - no more than {0} characters expected..
         /// </summary>
         public static string InputIsTooLong {

@@ -2,11 +2,13 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Globalization;
 using System.Timers;
 using Microsoft.Common.Core;
 using Microsoft.Common.Wpf;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Protocol;
+using static System.FormattableString;
 
 namespace Microsoft.R.Components.Information {
     public sealed class HostLoadIndicatorViewModel : BindableBase, IDisposable {
@@ -18,6 +20,7 @@ namespace Microsoft.R.Components.Information {
         private double _cpuLoad;
         private double _memoryLoad;
         private double _networkLoad;
+        private string _tooltip;
 
         public double CpuLoad {
             get { return _cpuLoad; }
@@ -32,6 +35,11 @@ namespace Microsoft.R.Components.Information {
         public double NetworkLoad {
             get { return _networkLoad; }
             set { SetProperty(ref _networkLoad, value); }
+        }
+
+        public string Tooltip {
+            get { return _tooltip; }
+            set { SetProperty(ref _tooltip, value); }
         }
 
         public HostLoadIndicatorViewModel(IRInteractiveWorkflow interactiveWorkflow) {
@@ -53,6 +61,12 @@ namespace Microsoft.R.Components.Information {
                                CpuLoad = t.Result.CpuLoad;
                                MemoryLoad = t.Result.MemoryLoad;
                                NetworkLoad = t.Result.NetworkLoad;
+
+                               Tooltip = string.Format(CultureInfo.InvariantCulture, 
+                                   Resources.HostLoad_Tooltip, 
+                                   (int)Math.Round(100 * CpuLoad), 
+                                   (int)Math.Round(100 * MemoryLoad), 
+                                   (int)Math.Round(100 * NetworkLoad));
                            });
                        }
                        _busy = false;
