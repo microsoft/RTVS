@@ -3,12 +3,12 @@
 
 using System;
 using System.Globalization;
+using System.Threading.Tasks;
 using System.Timers;
 using Microsoft.Common.Core;
 using Microsoft.Common.Wpf;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Protocol;
-using static System.FormattableString;
 
 namespace Microsoft.R.Components.Information {
     public sealed class HostLoadIndicatorViewModel : BindableBase, IDisposable {
@@ -42,36 +42,42 @@ namespace Microsoft.R.Components.Information {
             set { SetProperty(ref _tooltip, value); }
         }
 
-        public HostLoadIndicatorViewModel(IRInteractiveWorkflow interactiveWorkflow) {
+        public HostLoadIndicatorViewModel(IRInteractiveWorkflow interactiveWorkflow, int timerInterval = 2000) {
             _interactiveWorkflow = interactiveWorkflow;
 
-            _timer.Interval = 2000;
-            _timer.AutoReset = true;
-            _timer.Elapsed += OnTimer;
-            _timer.Start();
+            if (timerInterval > 0) {
+                _timer.Interval = timerInterval;
+                _timer.AutoReset = true;
+                _timer.Elapsed += OnTimer;
+                _timer.Start();
+            }
         }
 
         private void OnTimer(object sender, ElapsedEventArgs e) {
             if (!_disposed && !_busy) {
-                _busy = true;
-                _interactiveWorkflow.RSessions.Broker.GetHostInformationAsync<HostLoad>()
-                   .ContinueWith((t) => {
-                       if (t.IsCompleted && t.Result != null) {
-                           _interactiveWorkflow.Shell.DispatchOnUIThread(() => {
-                               CpuLoad = t.Result.CpuLoad;
-                               MemoryLoad = t.Result.MemoryLoad;
-                               NetworkLoad = t.Result.NetworkLoad;
-
-                               Tooltip = string.Format(CultureInfo.InvariantCulture, 
-                                   Resources.HostLoad_Tooltip, 
-                                   (int)Math.Round(100 * CpuLoad), 
-                                   (int)Math.Round(100 * MemoryLoad), 
-                                   (int)Math.Round(100 * NetworkLoad));
-                           });
-                       }
-                       _busy = false;
-                   }).DoNotWait();
+                UpdateModelAsync().DoNotWait();
             }
+        }
+
+        internal Task UpdateModelAsync() {
+            _busy = true;
+            return _interactiveWorkflow.RSessions.Broker.GetHostInformationAsync<HostLoad>()
+                .ContinueWith((t) => {
+                    if (t.IsCompleted && t.Result != null) {
+                        _interactiveWorkflow.Shell.DispatchOnUIThread(() => {
+                            CpuLoad = t.Result.CpuLoad;
+                            MemoryLoad = t.Result.MemoryLoad;
+                            NetworkLoad = t.Result.NetworkLoad;
+
+                            Tooltip = string.Format(CultureInfo.InvariantCulture,
+                                Resources.HostLoad_Tooltip,
+                                (int)Math.Round(100 * CpuLoad),
+                                (int)Math.Round(100 * MemoryLoad),
+                                (int)Math.Round(100 * NetworkLoad));
+                        });
+                    }
+                    _busy = false;
+                });
         }
 
         public void Dispose() {

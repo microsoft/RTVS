@@ -80,6 +80,7 @@
     <Compile Include="History\RHistoryIntegrationTest.cs" />
     <Compile Include="History\RHistoryTests.cs" />
     <Compile Include="History\RHistoryViewModelTest.cs" />
+    <Compile Include="Information\HostLoadIndicatorViewModelTest.cs" />
     <Compile Include="InteractiveWorkflow\RInteractiveEvaluatorTest.cs" />
     <Compile Include="InteractiveWorkflow\RInteractiveWorkflowOperationsTest.cs" />
     <Compile Include="MefCompositionTests.cs" />
@@ -177,6 +178,10 @@
     <ProjectReference Include="..\..\..\Host\Client\Test\Microsoft.R.Host.Client.Test.csproj">
       <Project>{e1b1909e-3193-499b-91db-1e13e6836929}</Project>
       <Name>Microsoft.R.Host.Client.Test</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Host\Protocol\Impl\Microsoft.R.Host.Protocol.csproj">
+      <Project>{C46E5F53-4CAF-4C65-B173-CA8140FB41E0}</Project>
+      <Name>Microsoft.R.Host.Protocol</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Mocks\Editor\Microsoft.VisualStudio.Editor.Mocks.csproj">
       <Project>{5fcb86d5-4b25-4039-858c-b5a06eb702e1}</Project>
