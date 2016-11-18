@@ -81,7 +81,7 @@
                                  Text="{Binding Path=Path, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                  controls:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_Path}" 
                                  IsReadOnly="{Binding Path=IsUserCreated, Converter={x:Static rwpf:Converters.Not}}"
-                                 LostFocus="PathTextBox_LostFocus" />
+                                 LostFocus="PathTextBox_LostFocus" TextChanged="PathTextBox_TextChanged" />
 
                         <Button Grid.Row="1" Grid.Column="1" Margin="3,0,0,6" Padding="2,0,2,0" Content="..." 
                                 VerticalAlignment="Stretch" MinHeight="0" MinWidth="0" Click="ButtonPath_Click"

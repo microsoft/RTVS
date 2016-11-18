@@ -87,7 +87,11 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
         }
 
         private void PathTextBox_LostFocus(object sender, RoutedEventArgs e) {
-            ((sender as TextBox)?.DataContext as IConnectionViewModel)?.PathEditCompleted();
+            ((sender as TextBox)?.DataContext as IConnectionViewModel)?.UpdatePath();
+        }
+
+        private void PathTextBox_TextChanged(object sender, TextChangedEventArgs e) {
+            ((sender as TextBox)?.DataContext as IConnectionViewModel)?.UpdateName();
         }
     }
 }

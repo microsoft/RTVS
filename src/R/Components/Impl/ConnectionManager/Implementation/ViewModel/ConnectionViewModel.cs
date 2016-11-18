@@ -27,6 +27,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private bool _isRemote;
         private bool _hasChanges;
         private bool _isValid;
+        private string _previousPath;
 
         public ConnectionViewModel() {
             IsUserCreated = true;
@@ -94,7 +95,10 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public bool IsEditing {
             get { return _isEditing; }
-            set { SetProperty(ref _isEditing, value); }
+            set {
+                SetProperty(ref _isEditing, value);
+                _previousPath = Path;
+            }
         }
 
         public bool IsRemote {
@@ -183,26 +187,53 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             IsRemote = !(uri?.IsFile ?? true);
         }
 
-        public void PathEditCompleted() {
-            // After the user is done editing the path, we fix it up automatically
-            Path = GetCompletePath();
+        public void UpdateName() {
+            var currentPath = Path?.Trim() ?? string.Empty;
+            var previousPath = _previousPath?.Trim() ?? string.Empty;
 
-            // Conveniently populate the name, if the user directly edited the path
-            // without specifying a name.
-            if (string.IsNullOrWhiteSpace(Name)) {
-                Name = Path;
+            var previousProposedName = GetProposedName(previousPath);
+            var currentProposedName = GetProposedName(currentPath);
+
+            // Avoid changing anything if the edit
+            // has no effect on the name (like changing the path's port)
+            if (previousProposedName != currentProposedName) {
+                // Check if the name was calculated from the previous path
+                var currentName = Name ?? string.Empty;
+                if (string.IsNullOrEmpty(currentName) || string.Compare(currentName, previousProposedName, StringComparison.CurrentCultureIgnoreCase) == 0) {
+                    Name = currentProposedName;
+                }
             }
+
+            // Remember the path, for the next update
+            _previousPath = currentPath;
         }
 
-        internal string GetCompletePath() {
+        public void UpdatePath() {
+            // Automatically update the Path with a more complete version
+            Path = GetCompletePath(Path?.Trim() ?? string.Empty);
+        }
+
+        internal static string GetProposedName(string path) {
+            try {
+                Uri uri;
+                if (Uri.TryCreate(path, UriKind.Absolute, out uri)) {
+                    if (!string.IsNullOrEmpty(uri.Host)) {
+                        return uri.Host;
+                    } else {
+                        return uri.AbsolutePath;
+                    }
+                }
+            } catch (InvalidOperationException) { } catch (ArgumentException) { } catch (UriFormatException) { }
+            return path.ToLower();
+        }
+
+        internal static string GetCompletePath(string path) {
             // https://foo:5444 -> https://foo:5444 (no change)
             // https://foo -> https://foo:443
             // http://foo -> http://foo:80
             // http://FOO -> http://foo:80
             // http://FOO:80 -> http://foo:80
             // foo->https://foo:5444
-
-            var path = Path?.Trim();
             Uri uri = null;
             try {
                 Uri.TryCreate(path, UriKind.Absolute, out uri);
