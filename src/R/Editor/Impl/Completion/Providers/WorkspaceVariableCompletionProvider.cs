@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -35,10 +36,12 @@ namespace Microsoft.R.Editor.Completion.Providers {
             ImageSource functionGlyph = _glyphService.GetGlyphThreadSafe(StandardGlyphGroup.GlyphGroupMethod, StandardGlyphItem.GlyphItemPublic);
             ImageSource variableGlyph = _glyphService.GetGlyphThreadSafe(StandardGlyphGroup.GlyphGroupVariable, StandardGlyphItem.GlyphItemPublic);
 
+            var start = DateTime.Now;
+
             _variablesProvider.Initialize();
             var names = GetFieldProvidingVariableNames(context);
 
-            foreach(var variableName in names) {
+            foreach (var variableName in names) {
                 int memberCount = _variablesProvider.GetMemberCount(variableName);
                 IReadOnlyCollection<INamedItemInfo> members = _variablesProvider.GetMembers(variableName, 200);
 
@@ -51,6 +54,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
                     }
                 }
             }
+            Debug.WriteLine("Variable members fetch: " + (DateTime.Now - start).TotalMilliseconds);
             return completions;
         }
         #endregion

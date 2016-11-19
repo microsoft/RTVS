@@ -466,6 +466,44 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
             }
         }
 
+        [Test]
+        public async Task R_VariablesIndexerMemberCompletion01() {
+            using (var script = await _editorHost.StartScript(ExportProvider, RContentTypeDefinition.ContentType, Workflow.RSessions)) {
+                await ExecuteRCode(_editorHost.HostScript.Session, "d1 <- mtcars\r\n");
+                PrimeIntellisenseProviders(script);
+                script.DoIdle(500);
+
+                script.Type("d1[m");
+
+                var session = script.GetCompletionSession();
+                session.Should().NotBeNull();
+                script.DoIdle(1000);
+
+                var comps = session.SelectedCompletionSet.Completions;
+                comps.Should().Contain(x => x.DisplayText == "mpg");
+                script.DoIdle(100);
+            }
+        }
+
+        [Test]
+        public async Task R_VariablesIndexerMemberCompletion02() {
+            using (var script = await _editorHost.StartScript(ExportProvider, RContentTypeDefinition.ContentType, Workflow.RSessions)) {
+                await ExecuteRCode(_editorHost.HostScript.Session, "d1 <- mtcars\r\n");
+                PrimeIntellisenseProviders(script);
+                script.DoIdle(500);
+
+                script.Type("d1[zz[m");
+
+                var session = script.GetCompletionSession();
+                session.Should().NotBeNull();
+                script.DoIdle(1000);
+
+                var comps = session.SelectedCompletionSet.Completions;
+                comps.Should().Contain(x => x.DisplayText == "mpg");
+                script.DoIdle(100);
+            }
+        }
+
         private void PrimeIntellisenseProviders(IEditorScript script) {
             // Prime variable provider
             UIThreadHelper.Instance.Invoke(() => {
