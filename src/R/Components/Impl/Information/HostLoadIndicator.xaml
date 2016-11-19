@@ -18,15 +18,18 @@
             <Rectangle Grid.Row="0" 
                        Height="4" VerticalAlignment="Center" HorizontalAlignment="Left" StrokeThickness="0"
                        Fill="{Binding Path=CpuLoad, Converter={x:Static inf:Converters.PercentageToColor}}" 
-                       Width="{Binding Path=CpuLoad, Converter={x:Static inf:Converters.PercentageToWidth}}"/>
+                       Width="{Binding Path=CpuLoad, Converter={x:Static inf:Converters.PercentageToWidth}}"
+                       ToolTip="{Binding Path=Tooltip}"/>
             <Rectangle Grid.Row="1" 
                        Height="4" VerticalAlignment="Center" HorizontalAlignment="Left" StrokeThickness="0"
                        Fill="{Binding Path=MemoryLoad, Converter={x:Static inf:Converters.PercentageToColor}}"
-                       Width="{Binding Path=MemoryLoad, Converter={x:Static inf:Converters.PercentageToWidth}}"/>
+                       Width="{Binding Path=MemoryLoad, Converter={x:Static inf:Converters.PercentageToWidth}}"
+                       ToolTip="{Binding Path=Tooltip}"/>
             <Rectangle Grid.Row="2" 
                        Height="4" VerticalAlignment="Center" HorizontalAlignment="Left" StrokeThickness="0"
                        Fill="{Binding Path=NetworkLoad, Converter={x:Static inf:Converters.PercentageToColor}}"
-                       Width="{Binding Path=NetworkLoad, Converter={x:Static inf:Converters.PercentageToWidth}}"/>
+                       Width="{Binding Path=NetworkLoad, Converter={x:Static inf:Converters.PercentageToWidth}}"
+                       ToolTip="{Binding Path=Tooltip}"/>
         </Grid>
     </Border>
 </UserControl>

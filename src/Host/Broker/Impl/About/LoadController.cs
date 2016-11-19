@@ -34,10 +34,11 @@ namespace Microsoft.R.Host.Broker.About {
             _networkSentCounter = new PerformanceCounter(category, "Bytes Sent/sec", _networkInstanceName);
             _networkReceivedCounter = new PerformanceCounter(category, "Bytes Received/sec", _networkInstanceName);
 
-            _timer.Interval = 2000;
+            _timer.Interval = 3000;
             _timer.AutoReset = true;
             _timer.Elapsed += OnTimer;
 
+            _cpuCounter.NextValue(); // first call always returns 0
             UpdateMeasurement();
         }
 
@@ -84,10 +85,10 @@ namespace Microsoft.R.Host.Broker.About {
 
         private double GetCpuLoad() {
             double counter = 0;
-            int iterations = 10;
+            int iterations = 5;
 
             for (int i = 0; i < iterations; i++) {
-                Thread.Sleep(10);
+                Thread.Sleep(200);
                 counter += _cpuCounter.NextValue();
             }
 
@@ -97,10 +98,10 @@ namespace Microsoft.R.Host.Broker.About {
         private double GetNetworkLoad() {
             double sent = 0;
             double received = 0;
-            int iterations = 10;
+            int iterations = 5;
 
             for (int i = 0; i < iterations; i++) {
-                Thread.Sleep(10);
+                Thread.Sleep(100);
                 sent += _networkSentCounter.NextValue();
                 received += _networkReceivedCounter.NextValue();
             }
