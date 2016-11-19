@@ -242,12 +242,12 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             public int Position;
         }
 
-        private readonly ConcurrentStack<MessagePos> _messageStack = new ConcurrentStack<MessagePos>();
+        private readonly Stack<MessagePos> _messageStack = new Stack<MessagePos>();
         private void OutputBuffer_Changed(object sender, TextContentChangedEventArgs e) {
             if (e.After.Length - e.Before.Length == 1) {
                 _coreShell.AssertIsOnMainThread();
-                MessagePos mp;
-                while (_messageStack.TryPop(out mp)) {
+                while (_messageStack.Count > 0) {
+                    var mp = _messageStack.Pop();
                     // Writing messages in the same line (via simulated CR)
 
                     var ch = CurrentWindow.OutputBuffer.CurrentSnapshot[mp.Position];
