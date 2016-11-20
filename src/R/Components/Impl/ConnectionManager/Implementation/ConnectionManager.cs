@@ -76,7 +76,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 .Add(_statusBar.AddItem(new ConnectionStatusBar {
                     DataContext = _statusBarViewModel
                 }))
-                .Add(_statusBar.AddItem(new HostLoadIndicator() {
+                .Add(_statusBar.AddItem(new HostLoadIndicator {
                     DataContext = _hostLoadIndicatorViewModel
                 }));
             await SwitchBrokerToLastConnection();

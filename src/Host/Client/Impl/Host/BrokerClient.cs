@@ -92,9 +92,9 @@ namespace Microsoft.R.Host.Client.Host {
             string result = null;
             try {
                 string endpoint;
-                if (_typeToEndpointMap.TryGetValue(typeof(T), out endpoint)) {
+                if (HttpClient != null && _typeToEndpointMap.TryGetValue(typeof(T), out endpoint)) {
                     var response = await HttpClient.GetAsync(endpoint, cancellationToken);
-                    result = await response.Content.ReadAsStringAsync();
+                    result = await response?.Content.ReadAsStringAsync();
                 }
             } catch (OperationCanceledException) { } catch(HttpRequestException) { }
 

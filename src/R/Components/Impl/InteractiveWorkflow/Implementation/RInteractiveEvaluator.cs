@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -29,6 +28,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         private readonly ICoreShell _coreShell;
         private readonly IRSettings _settings;
         private readonly CountdownDisposable _evaluatorRequest;
+        private CarriageReturnProcessor _crProcessor;
         private int _terminalWidth = 80;
 
         public IRHistory History { get; }
@@ -57,6 +57,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             Session.Disconnected -= SessionOnDisconnected;
             Session.BeforeRequest -= SessionOnBeforeRequest;
             Session.AfterRequest -= SessionOnAfterRequest;
+
+            _crProcessor?.Dispose();
         }
 
         public async Task<ExecutionResult> InitializeAsync() {
@@ -78,7 +80,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
                     if (CurrentWindow != null) {
                         CurrentWindow.TextView.VisualElement.SizeChanged += VisualElement_SizeChanged;
-                        CurrentWindow.OutputBuffer.Changed += OutputBuffer_Changed;
+                        _crProcessor = new CarriageReturnProcessor(_coreShell, CurrentWindow);
                     }
 
                     await Session.EnsureHostStartedAsync(startupInfo, new RSessionCallback(CurrentWindow, Session, _settings, _coreShell, new FileSystem()));
@@ -233,61 +235,11 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             });
         }
 
-        /// <summary>
-        /// Workaround for interactive window that does not currently support
-        /// 'carriage return' i.e. writing into the same line
-        /// </summary>
-        struct MessagePos {
-            public string Message;
-            public int Position;
-        }
 
-        private readonly Stack<MessagePos> _messageStack = new Stack<MessagePos>();
-        private void OutputBuffer_Changed(object sender, TextContentChangedEventArgs e) {
-            if (e.After.Length - e.Before.Length == 1) {
-                _coreShell.AssertIsOnMainThread();
-                while (_messageStack.Count > 0) {
-                    var mp = _messageStack.Pop();
-                    // Writing messages in the same line (via simulated CR)
-
-                    var ch = CurrentWindow.OutputBuffer.CurrentSnapshot[mp.Position];
-                    Debug.Assert(ch == '$');
-                    Debug.Assert(mp.Position + 1 == CurrentWindow.OutputBuffer.CurrentSnapshot.Length);
-
-                    // Replace last written placeholder with the actual message
-                    CurrentWindow.OutputBuffer.Replace(new Span(mp.Position, 1), mp.Message);
-                }
-            }
-        }
 
         private void Write(string message) {
-            if (CurrentWindow != null) {
-                // Note: DispatchOnUIThread is expensive, and can saturate the message pump when there's a lot of output,
-                // making UI non-responsive. So avoid using it unless we need it - and we only need it for FlushOutput,
-                // and we only need it to handle CR.
-                if (message.Length > 1 && message[0] == '\r' && message[1] != '\n') {
-                    _coreShell.DispatchOnUIThread(() => {
-                        // Make sure output buffer is up to date
-                        CurrentWindow.FlushOutput();
-                        
-                        // If message starts with CR we remember current output buffer
-                        // length so we can continue writing lines into the same spot.
-                        // See txtProgressBar in R.
-                        // Store the message and the initial position. All subsequent 
-                        // messages that start with CR. Will be written into the same place.
-                        var mp = new MessagePos() {
-                            Message = message.Substring(1),
-                            Position = CurrentWindow.OutputBuffer.CurrentSnapshot.Length
-                        };
-                        message = "$"; // replacement placeholder so we can receive 'buffer changed' event
-                        _messageStack.Push(mp);
-
-                        CurrentWindow.Write(message);
-                        CurrentWindow.FlushOutput(); // Must flush so we do get 'buffer changed' immediately.
-                    });
-                } else {
-                    CurrentWindow.Write(message);
-                }
+            if (CurrentWindow != null && !_crProcessor.ProcessMessage(message)) {
+                CurrentWindow.Write(message);
             }
         }
 
