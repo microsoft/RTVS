@@ -16,7 +16,7 @@ using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Broker.About {
     [Authorize(Policy = Policies.RUser)]
-    [Route("/HostLoad")]
+    [Route("/info/load")]
     public class LoadController : Controller {
         // https://msdn.microsoft.com/en-us/library/2fh4x1xb(v=vs.100).aspx
         private readonly PerformanceCounter _cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");

@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -82,14 +83,21 @@ namespace Microsoft.R.Host.Client.Host {
             }
         }
 
+        private static IReadOnlyDictionary<Type, string> _typeToEndpointMap = new Dictionary<Type, string>() {
+            { typeof(AboutHost), "info/about"},
+            { typeof(HostLoad), "info/load"}
+        };
+
         public async Task<T> GetHostInformationAsync<T>(CancellationToken cancellationToken) {
             string result = null;
             try {
-                var type = typeof(T);
-                var endPointName = "/" + type.Name.Substring(type.Name.LastIndexOf('.') + 1);
-                var response = await HttpClient.GetAsync(endPointName, cancellationToken);
-                result = await response.Content.ReadAsStringAsync();
-            } catch (OperationCanceledException) { } catch(HttpRequestException) { } 
+                string endpoint;
+                if (_typeToEndpointMap.TryGetValue(typeof(T), out endpoint)) {
+                    var response = await HttpClient.GetAsync(endpoint, cancellationToken);
+                    result = await response.Content.ReadAsStringAsync();
+                }
+            } catch (OperationCanceledException) { } catch(HttpRequestException) { }
+
             return !string.IsNullOrEmpty(result) ? JsonConvert.DeserializeObject<T>(result) : default(T);
         }
 
