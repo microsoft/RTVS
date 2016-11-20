@@ -8,6 +8,7 @@ using System.Timers;
 using Microsoft.Common.Core;
 using Microsoft.Common.Wpf;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Components.Information {
@@ -59,25 +60,27 @@ namespace Microsoft.R.Components.Information {
             }
         }
 
-        internal Task UpdateModelAsync() {
+        internal async Task UpdateModelAsync() {
             _busy = true;
-            return _interactiveWorkflow.RSessions.Broker.GetHostInformationAsync<HostLoad>()
-                .ContinueWith((t) => {
-                    if (t.IsCompleted && t.Result != null) {
-                        _interactiveWorkflow.Shell.DispatchOnUIThread(() => {
-                            CpuLoad = t.Result.CpuLoad;
-                            MemoryLoad = t.Result.MemoryLoad;
-                            NetworkLoad = t.Result.NetworkLoad;
+            try {
+                var result = await _interactiveWorkflow.RSessions.Broker.GetHostInformationAsync<HostLoad>();
+                if (result != null) {
+                    _interactiveWorkflow.Shell.DispatchOnUIThread(() => {
+                        CpuLoad = result.CpuLoad;
+                        MemoryLoad = result.MemoryLoad;
+                        NetworkLoad = result.NetworkLoad;
 
-                            Tooltip = string.Format(CultureInfo.InvariantCulture,
-                                Resources.HostLoad_Tooltip,
-                                (int)Math.Round(100 * CpuLoad),
-                                (int)Math.Round(100 * MemoryLoad),
-                                (int)Math.Round(100 * NetworkLoad));
-                        });
-                    }
-                    _busy = false;
-                });
+                        Tooltip = string.Format(CultureInfo.InvariantCulture,
+                            Resources.HostLoad_Tooltip,
+                            (int)Math.Round(100 * CpuLoad),
+                            (int)Math.Round(100 * MemoryLoad),
+                            (int)Math.Round(100 * NetworkLoad));
+                    });
+                }
+            } catch (RHostDisconnectedException) {
+            } finally {
+                _busy = false;
+            }
         }
 
         public void Dispose() {
