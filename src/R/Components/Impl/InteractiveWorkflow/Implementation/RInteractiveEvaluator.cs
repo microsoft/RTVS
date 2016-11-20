@@ -267,20 +267,21 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 // and we only need it to handle CR.
                 if (message.Length > 1 && message[0] == '\r' && message[1] != '\n') {
                     _coreShell.DispatchOnUIThread(() => {
+                        // Make sure output buffer is up to date
                         CurrentWindow.FlushOutput();
+                        
                         // If message starts with CR we remember current output buffer
                         // length so we can continue writing lines into the same spot.
                         // See txtProgressBar in R.
-                        if (message.Length > 1 && message[0] == '\r' && message[1] != '\n') {
-                            // Store the message and the initial position. All subsequent 
-                            // messages that start with CR. Will be written into the same place.
-                            var mp = new MessagePos() {
-                                Message = message.Substring(1),
-                                Position = CurrentWindow.OutputBuffer.CurrentSnapshot.Length
-                            };
-                            message = "$"; // replacement placeholder so we can receive 'buffer changed' event
-                            _messageStack.Push(mp);
-                        }
+                        // Store the message and the initial position. All subsequent 
+                        // messages that start with CR. Will be written into the same place.
+                        var mp = new MessagePos() {
+                            Message = message.Substring(1),
+                            Position = CurrentWindow.OutputBuffer.CurrentSnapshot.Length
+                        };
+                        message = "$"; // replacement placeholder so we can receive 'buffer changed' event
+                        _messageStack.Push(mp);
+
                         CurrentWindow.Write(message);
                         CurrentWindow.FlushOutput(); // Must flush so we do get 'buffer changed' immediately.
                     });
