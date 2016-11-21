@@ -5,7 +5,6 @@ using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Mocks;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
@@ -63,6 +62,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
         [Category.Repl]
         public void SetDirectoryToProjectTest() {
             var session = new RSessionMock();
+            session.IsHostRunning = true;
+
             var workflow = Substitute.For<IRInteractiveWorkflow>();
             workflow.RSession.Returns(session);
 
