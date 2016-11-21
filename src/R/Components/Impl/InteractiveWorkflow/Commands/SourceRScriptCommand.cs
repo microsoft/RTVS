@@ -54,9 +54,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
             var session = _interactiveWorkflow.RSession;
             if (session.IsRemote) {
                 using (DataTransferSession dts = new DataTransferSession(_interactiveWorkflow.RSession, new FileSystem())) {
-                    string fileName = Path.GetFileName(filePath);
-                    var blobinfo = await dts.SendFileAsync(filePath);
-                    string remotePath = await session.EvaluateAsync<string>($"rtvs:::save_to_temp_folder({blobinfo.Id},'{fileName}')", REvaluationKind.Normal);
+                    string remotePath = await dts.CopyFileToRemoteTempAsync(filePath);
                     await _interactiveWorkflow.Operations.SourceFileAsync(remotePath, _echo, textView.TextBuffer.GetEncoding());
                 }
             } else {
