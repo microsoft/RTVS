@@ -534,4 +534,7 @@ Are you sure you want to terminate R session?</value>
   <data name="VirtualMemory" xml:space="preserve">
     <value>Virtual Memory: {0} MB, {1} MB free</value>
   </data>
+  <data name="HostLoad_Tooltip" xml:space="preserve">
+    <value>Machine utilization: {0}% CPU, {1}% Memory, {2}% Network.</value>
+  </data>
 </root>

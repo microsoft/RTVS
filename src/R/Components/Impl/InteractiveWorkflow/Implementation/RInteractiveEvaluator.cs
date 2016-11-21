@@ -10,9 +10,9 @@ using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager;
-using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.Settings;
+using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
@@ -28,6 +28,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         private readonly ICoreShell _coreShell;
         private readonly IRSettings _settings;
         private readonly CountdownDisposable _evaluatorRequest;
+        private CarriageReturnProcessor _crProcessor;
         private int _terminalWidth = 80;
 
         public IRHistory History { get; }
@@ -56,6 +57,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             Session.Disconnected -= SessionOnDisconnected;
             Session.BeforeRequest -= SessionOnBeforeRequest;
             Session.AfterRequest -= SessionOnAfterRequest;
+
+            _crProcessor?.Dispose();
         }
 
         public async Task<ExecutionResult> InitializeAsync() {
@@ -77,7 +80,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
                     if (CurrentWindow != null) {
                         CurrentWindow.TextView.VisualElement.SizeChanged += VisualElement_SizeChanged;
-                        CurrentWindow.OutputBuffer.Changed += OutputBuffer_Changed;
+                        _crProcessor = new CarriageReturnProcessor(_coreShell, CurrentWindow);
                     }
 
                     await Session.EnsureHostStartedAsync(startupInfo, new RSessionCallback(CurrentWindow, Session, _settings, _coreShell, new FileSystem()));
@@ -120,22 +123,10 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 return true;
             }
 
+            // if we have any errors other than an incomplete statement send the
+            // bad code to R.  Otherwise continue reading input.
             var ast = RParser.Parse(text);
-            if (ast.Errors.Count > 0) {
-                // if we have any errors other than an incomplete statement send the
-                // bad code to R.  Otherwise continue reading input.
-                foreach (var error in ast.Errors) {
-                    if (error.ErrorType != ParseErrorType.CloseCurlyBraceExpected &&
-                        error.ErrorType != ParseErrorType.CloseBraceExpected &&
-                        error.ErrorType != ParseErrorType.CloseSquareBracketExpected &&
-                        error.ErrorType != ParseErrorType.FunctionBodyExpected &&
-                        error.ErrorType != ParseErrorType.RightOperandExpected) {
-                        return true;
-                    }
-                }
-                return false;
-            }
-            return true;
+            return ast.IsCompleteExpression();
         }
 
         public async Task<ExecutionResult> ExecuteCodeAsync(string text) {
@@ -244,52 +235,13 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             });
         }
 
-        /// <summary>
-        /// Workaround for interactive window that does not currently support
-        /// 'carriage return' i.e. writing into the same line
-        /// </summary>
-        private volatile string _lastMessage;
-        private int _lastPosition = -1;
 
-        private void OutputBuffer_Changed(object sender, TextContentChangedEventArgs e) {
-            if (_lastMessage != null) {
-                // Writing messages in the same line (via simulated CR)
-                var m = _lastMessage; // Make sure it is null so we don't re-enter.
-                _lastMessage = null;
-                // Replace last written placeholder with the actual message
-                CurrentWindow.OutputBuffer.Replace(new Span(_lastPosition, 1), m);
-            }
-        }
 
         private void Write(string message) {
-            // If the message starts with \r with no \n following it, it is an attempt to overwrite the previous line
-            // of text in place, as used by e.g. R txtProgressBar() function. Since VS REPL doesn't support it directly,
-            // we need to handle it ourselves here.
-            // Note: DispatchOnUIThread is expensive, and can saturate the message pump when there's a lot of output,
-            // making UI non-responsive. So avoid using it unless we need it - and we only need it for FlushOutput,
-            // and to synchronize _lastMessage.
-            if (message.Length > 1 && message[0] == '\r' && message[1] != '\n') {
-                _coreShell.DispatchOnUIThread(() => {
-                    // Remember current output buffer length so that we can continue writing lines into the same spot.
-                    // Store the message and the initial position. All subsequent messages that start with \r will be
-                    // written into the same place.
-                    _lastMessage = message.Substring(1);
-                    _lastPosition = _lastPosition < 0 ? CurrentWindow.OutputBuffer.CurrentSnapshot.Length : _lastPosition;
-                    message = "|"; // replacement placeholder so we can receive 'buffer changed' event
-
-                    CurrentWindow.Write(message);
-                    CurrentWindow.FlushOutput(); // Must flush so we do get 'buffer changed' immediately.
-                });
-            } else {
-                if (_lastMessage != null) {
-                    // Stop tracking position for \r handling, using UI thread to synchronize access.
-                    _coreShell.DispatchOnUIThread(() => _lastMessage = null);
-                }
-
+            if (CurrentWindow != null && !_crProcessor.ProcessMessage(message)) {
                 CurrentWindow.Write(message);
             }
         }
-
 
         private void WriteError(string message) {
             if (CurrentWindow != null) {

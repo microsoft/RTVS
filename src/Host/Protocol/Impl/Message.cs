@@ -141,7 +141,7 @@ namespace Microsoft.R.Host.Protocol {
 
         public JToken GetArgument(int i, string name, JTokenType expectedType1, JTokenType expectedType2) {
             var arg = this[i];
-            if (arg.Type != expectedType1 && arg.Type != expectedType2) {
+            if (arg.Type != expectedType1 && arg.Type != expectedType2 && expectedType1 != JTokenType.String && expectedType2 != JTokenType.String) {
                 throw ProtocolError($"{name} must be {expectedType1} or {expectedType2}:", this);
             }
             return arg;

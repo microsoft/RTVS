@@ -51,6 +51,10 @@ namespace Microsoft.VisualStudio.R.Package.StatusBar {
         }
 
         private bool TryAddItemsControlToVisualRoot() {
+            if(_itemsControl.Parent != null) {
+                return true;
+            }
+
             if (_visualRoot == null) {
                 _visualRoot = GetRootVisual();
             }

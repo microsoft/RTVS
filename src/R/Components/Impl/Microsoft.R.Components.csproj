@@ -138,9 +138,15 @@
     <Compile Include="History\IRHistoryVisualComponentContainerFactory.cs" />
     <Compile Include="History\RHistoryCommandIds.cs" />
     <Compile Include="ContentTypes\RHistoryContentTypeDefinition.cs" />
+    <Compile Include="Information\Converters.cs" />
+    <Compile Include="Information\HostLoadIndicator.xaml.cs">
+      <DependentUpon>HostLoadIndicator.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Information\HostLoadIndicatorViewModel.cs" />
     <Compile Include="InteractiveWorkflow\Commands\SessionInformationCommand.cs" />
     <Compile Include="InteractiveWorkflow\Commands\TerminateRCommand.cs" />
     <Compile Include="InteractiveWorkflow\Commands\InterruptRCommand.cs" />
+    <Compile Include="InteractiveWorkflow\Implementation\CarriageReturnProcessor.cs" />
     <Compile Include="Plots\Commands\ShowMainPlotWindowCommand.cs" />
     <Compile Include="Plots\Implementation\Commands\PlotHistoryCommand.cs" />
     <Compile Include="Plots\Implementation\RPlot.cs" />
@@ -340,6 +346,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ConnectionManager\Implementation\View\ConnectionStatusBar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Information\HostLoadIndicator.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

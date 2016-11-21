@@ -17,7 +17,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
     /// Base class for 'Help On Current' type of commands.
     /// </summary>
     internal abstract class HelpOnCurrentCommandBase : PackageCommand {
-        private const int MaxHelpItemLength = 128;
+        private const int MaxHelpItemLength = 64;
         private readonly string _baseCommandName;
 
         protected readonly IRInteractiveWorkflow _workflow;
@@ -41,6 +41,9 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             string item = GetItemUnderCaret();
             if (!string.IsNullOrEmpty(item)) {
                 Enabled = true;
+                if(item.Length >= MaxHelpItemLength) {
+                    item = item.Substring(0, MaxHelpItemLength) + (char)0x2026; // Ellipsis
+                }
                 Text = string.Format(CultureInfo.InvariantCulture, _baseCommandName, item);
             } else {
                 Enabled = false;

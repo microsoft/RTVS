@@ -17,23 +17,23 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
             _interactiveWorkflow = interactiveWorkflow;
             _session = interactiveWorkflow.RSession;
             _debuggerModeTracker = debuggerModeTracker;
+
+            _session.Connected += OnConnected;
             _session.Disconnected += OnDisconnected;
+
             _session.BeforeRequest += OnBeforeRequest;
             _session.AfterRequest += OnAfterRequest;
         }
 
-        private void OnDisconnected(object sender, EventArgs e) {
-            _enabled = false;
-        }
+        private void OnConnected(object sender, RConnectedEventArgs e) => _enabled = true;
+        private void OnDisconnected(object sender, EventArgs e) => _enabled = false;
 
         private void OnBeforeRequest(object sender, RBeforeRequestEventArgs e) {
             _enabled = e.Contexts.Count != 1; // Disable command only if prompt is in the top level
         }
 
-        private void OnAfterRequest(object sender, RAfterRequestEventArgs e) {
-            _enabled = true;
-        }
-        
+        private void OnAfterRequest(object sender, RAfterRequestEventArgs e) => _enabled = true;
+
         public CommandStatus Status {
             get {
                 var status = CommandStatus.Supported;

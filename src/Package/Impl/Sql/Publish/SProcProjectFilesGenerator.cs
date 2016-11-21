@@ -29,7 +29,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// Generates SQL scripts for the deployment of R code into SQL database.
         /// Writes scripts to files and pushes files into the target database project.
         /// </summary>
-        public void Generate(SqlSProcPublishSettings settings, EnvDTE.Project targetProject) {
+        public void Generate(SqlSProcPublishSettings settings, IEnumerable<string> sprocFiles, EnvDTE.Project targetProject) {
             var targetFolder = Path.Combine(Path.GetDirectoryName(targetProject.FullName), "R\\");
             if (!_fs.DirectoryExists(targetFolder)) {
                 _fs.CreateDirectory(targetFolder);
@@ -37,7 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
 
             var targetProjectItem = targetProject.ProjectItems.Item("R") ?? targetProject.ProjectItems.AddFolder("R");
 
-            var sprocMap = CreateStoredProcedureFiles(settings, targetProject, targetFolder, targetProjectItem);
+            var sprocMap = CreateStoredProcedureFiles(settings, sprocFiles, targetFolder, targetProjectItem);
             if (settings.CodePlacement == RCodePlacement.Table) {
                 CreateRCodeTableFile(settings, targetProject, targetFolder, targetProjectItem);
                 CreatePostDeploymentScriptFile(settings, targetProject, targetFolder, targetProjectItem, sprocMap);
@@ -75,10 +75,9 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             item.Properties.Item("BuildAction").Value = "PostDeploy";
         }
 
-        private SProcMap CreateStoredProcedureFiles(SqlSProcPublishSettings settings, EnvDTE.Project targetProject, string targetFolder, EnvDTE.ProjectItem targetProjectItem) {
+        private SProcMap CreateStoredProcedureFiles(SqlSProcPublishSettings settings, IEnumerable<string> sprocFiles, string targetFolder, EnvDTE.ProjectItem targetProjectItem) {
             var g = new SProcScriptGenerator(_fs);
 
-            var sprocFiles = targetProject.GetSProcFiles(_pss);
             var sprocMap = g.CreateStoredProcedureScripts(settings, sprocFiles);
 
             foreach (var name in sprocMap) {

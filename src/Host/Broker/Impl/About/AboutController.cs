@@ -14,7 +14,7 @@ using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Broker.About {
     [Authorize(Policy = Policies.RUser)]
-    [Route("/about")]
+    [Route("/info/about")]
     public class AboutController : Controller {
         private readonly InterpreterManager _interpManager;
         private readonly SessionManager _sessionManager;

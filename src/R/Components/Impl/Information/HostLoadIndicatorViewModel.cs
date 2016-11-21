@@ -1,0 +1,92 @@
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
+using System.Globalization;
+using System.Threading.Tasks;
+using System.Timers;
+using Microsoft.Common.Core;
+using Microsoft.Common.Wpf;
+using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Host.Client.Host;
+using Microsoft.R.Host.Protocol;
+
+namespace Microsoft.R.Components.Information {
+    public sealed class HostLoadIndicatorViewModel : BindableBase, IDisposable {
+        private readonly Timer _timer = new Timer();
+        private readonly IRInteractiveWorkflow _interactiveWorkflow;
+        private bool _disposed;
+        private bool _busy;
+
+        private double _cpuLoad;
+        private double _memoryLoad;
+        private double _networkLoad;
+        private string _tooltip;
+
+        public double CpuLoad {
+            get { return _cpuLoad; }
+            set { SetProperty(ref _cpuLoad, value); }
+        }
+
+        public double MemoryLoad {
+            get { return _memoryLoad; }
+            set { SetProperty(ref _memoryLoad, value); }
+        }
+
+        public double NetworkLoad {
+            get { return _networkLoad; }
+            set { SetProperty(ref _networkLoad, value); }
+        }
+
+        public string Tooltip {
+            get { return _tooltip; }
+            set { SetProperty(ref _tooltip, value); }
+        }
+
+        public HostLoadIndicatorViewModel(IRInteractiveWorkflow interactiveWorkflow, int timerInterval = 2000) {
+            _interactiveWorkflow = interactiveWorkflow;
+
+            if (timerInterval > 0) {
+                _timer.Interval = timerInterval;
+                _timer.AutoReset = true;
+                _timer.Elapsed += OnTimer;
+                _timer.Start();
+            }
+        }
+
+        private void OnTimer(object sender, ElapsedEventArgs e) {
+            if (!_disposed && !_busy) {
+                UpdateModelAsync().DoNotWait();
+            }
+        }
+
+        internal async Task UpdateModelAsync() {
+            _busy = true;
+            try {
+                var result = await _interactiveWorkflow.RSessions.Broker.GetHostInformationAsync<HostLoad>();
+                if (result != null) {
+                    _interactiveWorkflow.Shell.DispatchOnUIThread(() => {
+                        CpuLoad = result.CpuLoad;
+                        MemoryLoad = result.MemoryLoad;
+                        NetworkLoad = result.NetworkLoad;
+
+                        Tooltip = string.Format(CultureInfo.InvariantCulture,
+                            Resources.HostLoad_Tooltip,
+                            (int)Math.Round(100 * CpuLoad),
+                            (int)Math.Round(100 * MemoryLoad),
+                            (int)Math.Round(100 * NetworkLoad));
+                    });
+                }
+            } catch (RHostDisconnectedException) {
+            } finally {
+                _busy = false;
+            }
+        }
+
+        public void Dispose() {
+            _timer.Stop();
+            _timer.Dispose();
+            _disposed = true;
+        }
+    }
+}

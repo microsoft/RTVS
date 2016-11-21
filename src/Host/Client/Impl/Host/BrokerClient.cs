@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -75,20 +76,29 @@ namespace Microsoft.R.Host.Client.Host {
             if (HttpClient != null) {
                 // Just in case ping was disable for security reasons, try connecting to the broker anyway.
                 try {
-                    await GetHostInformationAsync(CancellationToken.None);
+                    await GetHostInformationAsync<AboutHost>(CancellationToken.None);
                 } catch (HttpRequestException ex) {
                     throw await HandleHttpRequestExceptionAsync(ex);
                 }
             }
         }
 
-        public async Task<AboutHost> GetHostInformationAsync(CancellationToken cancellationToken) {
+        private static IReadOnlyDictionary<Type, string> _typeToEndpointMap = new Dictionary<Type, string>() {
+            { typeof(AboutHost), "info/about"},
+            { typeof(HostLoad), "info/load"}
+        };
+
+        public async Task<T> GetHostInformationAsync<T>(CancellationToken cancellationToken) {
             string result = null;
             try {
-                var response = await HttpClient.GetAsync("/about", cancellationToken);
-                result = await response.Content.ReadAsStringAsync();
-            } catch (OperationCanceledException) { } catch(HttpRequestException) { } 
-            return !string.IsNullOrEmpty(result) ? JsonConvert.DeserializeObject<AboutHost>(result) : AboutHost.Empty;
+                string endpoint;
+                if (HttpClient != null && _typeToEndpointMap.TryGetValue(typeof(T), out endpoint)) {
+                    var response = await HttpClient.GetAsync(endpoint, cancellationToken);
+                    result = await response?.Content.ReadAsStringAsync();
+                }
+            } catch (OperationCanceledException) { } catch(HttpRequestException) { }
+
+            return !string.IsNullOrEmpty(result) ? JsonConvert.DeserializeObject<T>(result) : default(T);
         }
 
         public virtual async Task<RHost> ConnectAsync(BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken)) {
@@ -109,7 +119,7 @@ namespace Microsoft.R.Host.Client.Host {
                 await CreateBrokerSessionAsync(connectionInfo.Name, connectionInfo.RCommandLineArguments, cancellationToken);
                 var webSocket = await ConnectToBrokerAsync(connectionInfo.Name, cancellationToken);
                 var host = CreateRHost(connectionInfo.Name, connectionInfo.Callbacks, webSocket);
-                await GetHostInformationAsync(cancellationToken);
+                await GetHostInformationAsync<AboutHost>(cancellationToken);
                 return host;
             } catch (HttpRequestException ex) {
                 throw await HandleHttpRequestExceptionAsync(ex);

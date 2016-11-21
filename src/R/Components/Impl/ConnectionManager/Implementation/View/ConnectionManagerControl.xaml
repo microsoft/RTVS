@@ -59,7 +59,8 @@
 
             <DataTemplate x:Key="EditConnectionDataTemplate" DataType="{x:Type viewModel:IConnectionViewModel}">
                 <AdornerDecorator>
-                    <Grid Margin="0,6,0,8">
+                    <Grid Margin="0,6,0,8"
+                          Background="{DynamicResource {x:Static rwpf:Brushes.BackgroundBrushKey}}">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
@@ -75,13 +76,17 @@
 
                         <TextBox Grid.Row="0" Grid.Column="0" Style="{StaticResource InputTextBoxStyle}"
                                  Text="{Binding Path=Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                 controls:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_Name}"/>
+                                 controls:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_Name}"
+                                 Background="{DynamicResource {x:Static rwpf:Brushes.BackgroundBrushKey}}" 
+                                 Foreground="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}"/>
 
                         <TextBox Grid.Row="1" Grid.Column="0" Style="{StaticResource InputTextBoxStyle}" 
                                  Text="{Binding Path=Path, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                  controls:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_Path}" 
                                  IsReadOnly="{Binding Path=IsUserCreated, Converter={x:Static rwpf:Converters.Not}}"
-                                 LostFocus="PathTextBox_LostFocus" TextChanged="PathTextBox_TextChanged" />
+                                 LostFocus="PathTextBox_LostFocus" TextChanged="PathTextBox_TextChanged"
+                                 Background="{DynamicResource {x:Static rwpf:Brushes.BackgroundBrushKey}}"
+                                 Foreground="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}"/>
 
                         <Button Grid.Row="1" Grid.Column="1" Margin="3,0,0,6" Padding="2,0,2,0" Content="..." 
                                 VerticalAlignment="Stretch" MinHeight="0" MinWidth="0" Click="ButtonPath_Click"
@@ -90,7 +95,9 @@
 
                         <TextBox Grid.Row="2" Grid.Column="0" Style="{StaticResource InputTextBoxStyle}" 
                                  Text="{Binding Path=RCommandLineArguments, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                 controls:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_RCommandLineArguments}" />
+                                 controls:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_RCommandLineArguments}"
+                                 Background="{DynamicResource {x:Static rwpf:Brushes.BackgroundBrushKey}}" 
+                                 Foreground="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}"/>
 
                         <WrapPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,0,0">
                             <Button Margin="0,0,4,0" Padding="6,2,6,2" MinWidth="75" MinHeight="23"

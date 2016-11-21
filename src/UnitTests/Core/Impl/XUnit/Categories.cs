@@ -49,6 +49,11 @@ namespace Microsoft.UnitTests.Core.XUnit {
         }
 
         [ExcludeFromCodeCoverage]
+        public class InformationAttribute : CategoryAttribute {
+            public InformationAttribute() : base("Information") { }
+        }
+
+        [ExcludeFromCodeCoverage]
         public static class Md {
             [ExcludeFromCodeCoverage]
             public class ClassifierAttribute : CategoryAttribute {
