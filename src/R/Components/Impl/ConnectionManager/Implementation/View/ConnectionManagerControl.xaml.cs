@@ -15,10 +15,10 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
     /// Interaction logic for ConnectionManagerControl.xaml
     /// </summary>
     public partial class ConnectionManagerControl : UserControl {
-
+        private bool _editing = false;
         private IConnectionManagerViewModel Model => DataContext as IConnectionManagerViewModel;
 
-           
+
         public ConnectionManagerControl(ICoreShell coreShell) {
             InitializeComponent();
 
@@ -49,7 +49,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
 
         private void ButtonEdit_Click(object sender, RoutedEventArgs e) {
             Model?.Edit(GetConnection(e));
-            ScrollEditedIntoView(); ;
+            ScrollEditedIntoView();
         }
 
         private void ButtonDelete_Click(object sender, RoutedEventArgs e) {
@@ -82,12 +82,35 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
         }
 
         private void Connection_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
-            Model?.Connect(GetConnection(e));
+            if (!_editing) {
+                Model?.Connect(GetConnection(e));
+            }
             e.Handled = true;
         }
 
+        private void PathTextBox_GotFocus(object sender, RoutedEventArgs e) {
+            _editing = true;
+        }
+
+        private void CommandlineTextBox_GotFocus(object sender, RoutedEventArgs e) {
+            _editing = true;
+        }
+
+        private void NameTextBox_GotFocus(object sender, RoutedEventArgs e) {
+            _editing = true;
+        }
+
+        private void CommandlineTextBox_LostFocus(object sender, RoutedEventArgs e) {
+            _editing = false;
+        }
+
         private void PathTextBox_LostFocus(object sender, RoutedEventArgs e) {
+            _editing = false;
             ((sender as TextBox)?.DataContext as IConnectionViewModel)?.UpdatePath();
+        }
+
+        private void NameTextBox_LostFocus(object sender, RoutedEventArgs e) {
+            _editing = false;
         }
 
         private void PathTextBox_TextChanged(object sender, TextChangedEventArgs e) {
