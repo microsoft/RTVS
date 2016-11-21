@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Mocks;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
@@ -44,11 +45,18 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
 
             cmd = new SetDirectoryToSourceCommand(workflow, tracker);
             status = cmd.OleStatus;
-            cmd.Enabled.Should().BeTrue();
-            cmd.Supported.Should().BeTrue();
-            cmd.Invoke();
+            cmd.Enabled.Should().BeFalse();
 
+            session.IsHostRunning = true;
+            status = cmd.OleStatus;
+            cmd.Enabled.Should().BeTrue();
+
+            cmd.Invoke();
             session.LastExpression.Should().Be("setwd('c:/dir1/dir2')\n");
+
+            session.IsRemote = true;
+            status = cmd.OleStatus;
+            cmd.Enabled.Should().BeFalse();
         }
 
         [Test]
