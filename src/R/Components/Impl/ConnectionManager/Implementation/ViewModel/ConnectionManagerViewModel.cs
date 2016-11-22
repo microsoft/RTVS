@@ -202,7 +202,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                 connectionViewModel.IsUserCreated);
 
             if (connection.Id != connectionViewModel.Id && connectionViewModel.Id != null) {
-                _connectionManager.TryRemove(connectionViewModel.Id);
+                _connectionManager.TryRemove(connectionViewModel.Name);
             }
 
             EditedConnection = null;
@@ -218,7 +218,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                 var confirm = _shell.ShowMessage(string.Format(CultureInfo.CurrentUICulture, Resources.ConnectionManager_RemoveConnectionConfirmation, connection.Name), MessageButtons.YesNo);
                 if (confirm == MessageButtons.Yes) {
 
-                    var result = _connectionManager.TryRemove(connection.Id);
+                    var result = _connectionManager.TryRemove(connection.Name);
                     UpdateConnections();
                     return result;
                 }

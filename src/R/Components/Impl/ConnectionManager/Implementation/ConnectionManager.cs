@@ -33,7 +33,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         private readonly DisposableBag _disposableBag;
         private readonly ConnectionStatusBarViewModel _statusBarViewModel;
         private readonly HostLoadIndicatorViewModel _hostLoadIndicatorViewModel;
-        private readonly ConcurrentDictionary<Uri, IConnection> _userConnections;
+        private readonly ConcurrentDictionary<string, IConnection> _userConnections;
         private readonly ISecurityService _securityService;
 
         public bool IsConnected { get; private set; }
@@ -64,7 +64,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
             // Get initial values
             var userConnections = CreateConnectionList();
-            _userConnections = new ConcurrentDictionary<Uri, IConnection>(userConnections);
+            _userConnections = new ConcurrentDictionary<string, IConnection>(userConnections);
 
             UpdateRecentConnections(save: false);
             CompleteInitializationAsync().DoNotWait();
@@ -97,24 +97,28 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
         public IConnection AddOrUpdateConnection(string name, string path, string rCommandLineArguments, bool isUserCreated) {
             var newConnection = CreateConnection(name, path, rCommandLineArguments, isUserCreated);
-            var connection = _userConnections.AddOrUpdate(newConnection.Id, newConnection, (k, v) => UpdateConnectionFactory(v, newConnection));
+            var connection = _userConnections.AddOrUpdate(newConnection.Name, newConnection, (k, v) => UpdateConnectionFactory(v, newConnection));
             UpdateRecentConnections();
             return connection;
         }
 
         public IConnection GetOrAddConnection(string name, string path, string rCommandLineArguments, bool isUserCreated) {
             var newConnection = CreateConnection(name, path, rCommandLineArguments, isUserCreated);
-            var connection = _userConnections.GetOrAdd(newConnection.Id, newConnection);
+            var connection = _userConnections.GetOrAdd(newConnection.Name, newConnection);
             UpdateRecentConnections();
             return connection;
         }
 
-        public bool TryRemove(Uri id) {
+        public bool TryRemove(string name) {
             IConnection connection;
-            var isRemoved = _userConnections.TryRemove(id, out connection);
+            var isRemoved = _userConnections.TryRemove(name, out connection);
             if (isRemoved) {
                 UpdateRecentConnections();
-                _securityService.DeleteUserCredentials(id.ToCredentialAuthority());
+
+                // Credentials are saved by URI (connection id). Delete the credentials if there are no other connections using it.
+                if (_userConnections.Where(kvp => kvp.Value.Id == connection.Id).Count() == 0) {
+                    _securityService.DeleteUserCredentials(connection.Id.ToCredentialAuthority());
+                }
             }
             return isRemoved;
         }
@@ -156,7 +160,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         private IConnection GetOrCreateConnection(string name, string path, string rCommandLineArguments, bool isUserCreated) {
             var newConnection = CreateConnection(name, path, rCommandLineArguments, isUserCreated);
             IConnection connection;
-            return _userConnections.TryGetValue(newConnection.Id, out connection) ? connection : newConnection;
+            return _userConnections.TryGetValue(newConnection.Name, out connection) ? connection : newConnection;
         }
 
         private IConnection UpdateConnectionFactory(IConnection oldConnection, IConnection newConnection) {
@@ -168,9 +172,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             return newConnection;
         }
 
-        private Dictionary<Uri, IConnection> GetConnectionsFromSettings() => _settings.Connections
+        private Dictionary<string, IConnection> GetConnectionsFromSettings() => _settings.Connections
             .Select(c => CreateConnection(c.Name, c.Path, c.RCommandLineArguments, c.IsUserCreated))
-            .ToDictionary(k => k.Id);
+            .ToDictionary(k => k.Name);
 
         private void SaveConnectionsToSettings() {
             _settings.Connections = RecentConnections
@@ -191,7 +195,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             RecentConnectionsChanged?.Invoke(this, new EventArgs());
         }
 
-        private Dictionary<Uri, IConnection> CreateConnectionList() {
+        private Dictionary<string, IConnection> CreateConnectionList() {
             var connections = GetConnectionsFromSettings();
             var localEngines = new RInstallation().GetCompatibleEngines();
 
@@ -207,7 +211,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             // Add newly installed engines
             foreach (var e in localEngines) {
                 if (!connections.Values.Any(x => x.Path.PathEquals(e.InstallPath))) {
-                    connections[new Uri(e.InstallPath, UriKind.Absolute)] = CreateConnection(e.Name, e.InstallPath, string.Empty, isUserCreated: false);
+                    connections[e.Name] = CreateConnection(e.Name, e.InstallPath, string.Empty, isUserCreated: false);
                 }
             }
 
@@ -230,7 +234,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 // Add local connections so there is at least something available.
                 foreach (var e in localEngines) {
                     var c = CreateConnection(e.Name, e.InstallPath, string.Empty, isUserCreated: false);
-                    connections[new Uri(e.InstallPath, UriKind.Absolute)] = c;
+                    connections[e.Name] = c;
                 }
             }
             return connections;
