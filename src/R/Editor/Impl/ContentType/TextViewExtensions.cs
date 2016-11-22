@@ -140,8 +140,10 @@ namespace Microsoft.R.Editor {
                     }
                 }
                 if (tokenTypeCheck(token.TokenType)) {
-                    span = new Span(line.Start + token.Start + offset, token.Length);
-                    return lineText.Substring(token.Start + offset, token.Length);
+                    var start = token.Start + offset;
+                    var end = Math.Min(start + token.Length, line.End);
+                    span = Span.FromBounds(start, end);
+                    return lineText.Substring(start, span.Length);
                 }
             }
 
