@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Json;
 using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Settings;
@@ -142,7 +143,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 } else {
                     var s = Store.GetString(_collectionPath, name);
                     if (s != null) {
-                        return JsonConvert.DeserializeObject(s, t);
+                        return Json.DeserializeObject(s, t);
                     }
                 }
             }

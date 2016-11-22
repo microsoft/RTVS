@@ -3,7 +3,6 @@
 
 using System;
 using System.IO.Pipes;
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Security.Principal;
@@ -18,6 +17,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.R.Host.Protocol;
 using Newtonsoft.Json;
 using Odachi.AspNetCore.Authentication.Basic;
+using Microsoft.Common.Core.Json;
 
 namespace Microsoft.R.Host.Broker.Security {
     public class SecurityManager {
@@ -66,7 +66,7 @@ namespace Microsoft.R.Host.Broker.Security {
                     byte[] responseRaw = new byte[1024];
                     var bytesRead = await client.ReadAsync(responseRaw, 0, responseRaw.Length, ct);
                     string jsonResp = Encoding.Unicode.GetString(responseRaw, 0, bytesRead);
-                    return JsonConvert.DeserializeObject<RUserProfileCreateResponse>(jsonResp);
+                    return Json.DeserializeObject<RUserProfileCreateResponse>(jsonResp);
                 } catch (Exception ex) when (!ex.IsCriticalException()) {
                     _logger.LogError(Resources.Error_ProfileCreationFailedIO, request.Username);
                     return RUserProfileCreateResponse.Blank;
