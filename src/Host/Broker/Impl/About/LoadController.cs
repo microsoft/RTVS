@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Management;
@@ -11,7 +10,6 @@ using System.Threading;
 using System.Timers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Common.Core;
 using Microsoft.R.Host.Broker.Security;
 using Microsoft.R.Host.Protocol;
 
