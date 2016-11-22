@@ -12,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Diagnostics;
+using Microsoft.Common.Core.Json;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Shell;
 using Newtonsoft.Json;
@@ -101,7 +102,7 @@ namespace Microsoft.R.Host.Client {
 
             _log.Response(json, _rLoopDepth);
 
-            var token = JToken.Parse(json);
+            var token = Json.ParseToken(json);
 
             var value = token as JValue;
             if (value != null && value.Value == null) {

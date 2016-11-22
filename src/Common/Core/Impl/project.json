@@ -1,12 +1,13 @@
 ﻿{
   "dependencies": {
     "MicroBuild.Core": "0.2.0",
-    "Microsoft.Tpl.Dataflow": "4.5.24"
+    "Microsoft.Tpl.Dataflow": "4.5.24",
+    "Newtonsoft.Json": "8.0.3"
   },
   "frameworks": {
-    "net46": { }
+    "net46": {}
   },
   "runtimes": {
-    "win": { }
+    "win": {}
   }
 }
