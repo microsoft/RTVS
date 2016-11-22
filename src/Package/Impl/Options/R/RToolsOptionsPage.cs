@@ -46,7 +46,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [TypeConverter(typeof(YesNoAskTypeConverter))]
         [DefaultValue(YesNoAsk.No)]
         public YesNoAsk LoadRDataOnProjectLoad {
-            get { return _holder.GetValue<YesNoAsk>(); }
+            get { return _holder.GetValue<YesNoAsk>(YesNoAsk.No); }
             set { _holder.SetValue(value); }
         }
 
@@ -56,7 +56,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [TypeConverter(typeof(YesNoAskTypeConverter))]
         [DefaultValue(YesNoAsk.No)]
         public YesNoAsk SaveRDataOnProjectUnload {
-            get { return _holder.GetValue<YesNoAsk>(); }
+            get { return _holder.GetValue<YesNoAsk>(YesNoAsk.No); }
             set { _holder.SetValue(value); }
         }
 
@@ -65,7 +65,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [LocDescription("Settings_AlwaysSaveHistory_Description")]
         [DefaultValue(true)]
         public bool AlwaysSaveHistory {
-            get { return _holder.GetValue<bool>(); }
+            get { return _holder.GetValue<bool>(true); }
             set { _holder.SetValue(value); }
         }
 
@@ -74,7 +74,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [LocDescription("Settings_ClearFilterOnAddHistory_Description")]
         [DefaultValue(true)]
         public bool ClearFilterOnAddHistory {
-            get { return _holder.GetValue<bool>(); }
+            get { return _holder.GetValue<bool>(true); }
             set { _holder.SetValue(value); }
         }
 
@@ -83,7 +83,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [LocDescription("Settings_MultilineHistorySelection_Description")]
         [DefaultValue(true)]
         public bool MultilineHistorySelection {
-            get { return _holder.GetValue<bool>(); }
+            get { return _holder.GetValue<bool>(true); }
             set { _holder.SetValue(value); }
         }
 
@@ -93,7 +93,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [TypeConverter(typeof(EncodingTypeConverter))]
         [DefaultValue(0)]
         public int RCodePage {
-            get { return _holder.GetValue<int>(); }
+            get { return _holder.GetValue<int>(0); }
             set { _holder.SetValue(value); }
         }
 
@@ -102,7 +102,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [LocDescription("Settings_EvaluateActiveBindings_Description")]
         [DefaultValue(true)]
         public bool EvaluateActiveBindings {
-            get { return _holder.GetValue<bool>(); }
+            get { return _holder.GetValue<bool>(true); }
             set { _holder.SetValue(value); }
         }
 
@@ -111,7 +111,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [LocDescription("Settings_ShowDotPrefixedVariables_Description")]
         [DefaultValue(false)]
         public bool ShowDotPrefixedVariables {
-            get { return _holder.GetValue<bool>(); }
+            get { return _holder.GetValue<bool>(false); }
             set { _holder.SetValue(value); }
         }
 
@@ -121,7 +121,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [TypeConverter(typeof(HelpBrowserTypeConverter))]
         [DefaultValue(HelpBrowserType.Automatic)]
         public HelpBrowserType HelpBrowser {
-            get { return _holder.GetValue<HelpBrowserType>(); }
+            get { return _holder.GetValue<HelpBrowserType>(HelpBrowserType.Automatic); }
             set { _holder.SetValue(value); }
         }
 
@@ -130,7 +130,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [LocDescription("Settings_WebHelpSearchString_Description")]
         [DefaultValue("R site:stackoverflow.com")]
         public string WebHelpSearchString {
-            get { return _holder.GetValue<string>(); }
+            get { return _holder.GetValue<string>("R site:stackoverflow.com", "WebHelpSearchString"); }
             set { _holder.SetValue(value); }
         }
 
@@ -140,7 +140,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [TypeConverter(typeof(BrowserTypeConverter))]
         [DefaultValue(BrowserType.Internal)]
         public BrowserType WebHelpSearchBrowserType {
-            get { return _holder.GetValue<BrowserType>(); }
+            get { return _holder.GetValue<BrowserType>(BrowserType.Internal); }
             set { _holder.SetValue(value); }
         }
 
@@ -150,7 +150,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [TypeConverter(typeof(BrowserTypeConverter))]
         [DefaultValue(BrowserType.Internal)]
         public BrowserType HtmlBrowserType {
-            get { return _holder.GetValue<BrowserType>(); }
+            get { return _holder.GetValue<BrowserType>(BrowserType.Internal); }
             set { _holder.SetValue(value); }
         }
 
@@ -160,7 +160,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [TypeConverter(typeof(BrowserTypeConverter))]
         [DefaultValue(BrowserType.External)]
         public BrowserType MarkdownBrowserType {
-            get { return _holder.GetValue<BrowserType>(); }
+            get { return _holder.GetValue<BrowserType>(BrowserType.External); }
             set { _holder.SetValue(value); }
         }
 
@@ -170,8 +170,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [TypeConverter(typeof(SurveyNewsPolicyTypeConverter))]
         [DefaultValue(SurveyNewsPolicy.CheckOnceWeek)]
         public SurveyNewsPolicy SurveyNewsCheck {
-            get { return RToolsSettings.Current.SurveyNewsCheck; }
-            set { RToolsSettings.Current.SurveyNewsCheck = value; }
+            get { return _holder.GetValue<SurveyNewsPolicy>(SurveyNewsPolicy.CheckOnceWeek); }
+            set { _holder.SetValue(value); }
         }
 
         [LocCategory("Settings_LogCategory")]
@@ -183,8 +183,14 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [DefaultValue(LogVerbosity.Normal)]
 #endif
         public LogVerbosity LogLevel {
-            get { return RToolsSettings.Current.LogVerbosity; }
-            set { RToolsSettings.Current.LogVerbosity = value; }
+            get {
+#if DEBUG
+                return _holder.GetValue<LogVerbosity>(LogVerbosity.Traffic);
+#else
+                return _holder.GetValue<LogVerbosity>(LogVerbosity.Normal);
+#endif
+            }
+            set { _holder.SetValue(value); }
         }
 
 
@@ -213,11 +219,13 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
                 _dict = settings.GetPropertyValueDictionary();
             }
 
-            public T GetValue<T>([CallerMemberName] string name = null) {
+            public T GetValue<T>(T defaultValue, [CallerMemberName] string name = null) {
                 object value;
                 _dict.TryGetValue(name, out value);
-                return (T)value;
+                return value != null ? (T)value : defaultValue;
             }
+
+            public T GetValue<T>([CallerMemberName] string name = null) => GetValue<T>(default(T), name);
 
             public void SetValue(object value, [CallerMemberName] string name = null) {
                 Debug.Assert(_dict.ContainsKey(name), Invariant($"Unknown setting {name}. RToolsOptionsPage property name does not match IRToolsSettings"));
