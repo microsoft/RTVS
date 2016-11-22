@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.Common.Core.Json;
 using Newtonsoft.Json;
 
 namespace Microsoft.R.Components.Plots.Implementation {
@@ -23,9 +24,10 @@ namespace Microsoft.R.Components.Plots.Implementation {
             return JsonConvert.SerializeObject(data);
         }
 
+
         public static PlotClipboardData Parse(string text) {
             try {
-                return JsonConvert.DeserializeObject<PlotClipboardData>(text);
+                return Json.DeserializeObject<PlotClipboardData>(text);
             } catch (JsonReaderException) {
                 return null;
             }
