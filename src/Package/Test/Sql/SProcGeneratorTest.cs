@@ -3,6 +3,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Utility;
@@ -39,7 +40,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             var fs = new FileSystem();
             var g = new SProcProjectFilesGenerator(_pss, fs);
             var settings = new SqlSProcPublishSettings();
-            g.Generate(settings, _project);
+            g.Generate(settings, Enumerable.Empty<string>(), _project);
         }
 
         [CompositeTest]
@@ -63,15 +64,15 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
 
             var templateFile = Path.Combine(_files.DestinationPath, Path.GetFileNameWithoutExtension(rFile) + SProcFileExtensions.SProcFileExtension);
 
-            _pss.GetProjectFiles(_project).Returns(new string[] {
+            var sprocFiles = new string[] {
                 Path.Combine(_files.DestinationPath, rFile),
                 Path.Combine(_files.DestinationPath, Path.GetFileNameWithoutExtension(rFile) + SProcFileExtensions.QueryFileExtension),
-                templateFile });
+                templateFile };
 
             settings.CodePlacement = codePlacement;
             settings.QuoteType = quoteType;
 
-            g.Generate(settings, _project);
+            g.Generate(settings, sprocFiles, _project);
             rootProjItems.Received().AddFolder("R");
 
             var targetFolder = Path.Combine(_files.DestinationPath, "R\\");
