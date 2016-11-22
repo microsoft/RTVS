@@ -59,8 +59,7 @@
 
             <DataTemplate x:Key="EditConnectionDataTemplate" DataType="{x:Type viewModel:IConnectionViewModel}">
                 <AdornerDecorator>
-                    <Grid Margin="0,6,0,8"
-                          Background="{DynamicResource {x:Static rwpf:Brushes.BackgroundBrushKey}}">
+                    <Grid Margin="0,6,0,8">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
@@ -77,7 +76,7 @@
                         <TextBox Grid.Row="0" Grid.Column="0" Style="{StaticResource InputTextBoxStyle}"
                                  Text="{Binding Path=Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                  controls:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_Name}"
-                                 Background="{DynamicResource {x:Static rwpf:Brushes.BackgroundBrushKey}}" 
+                                 Background="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundKey}}" 
                                  Foreground="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}"/>
 
                         <TextBox Grid.Row="1" Grid.Column="0" Style="{StaticResource InputTextBoxStyle}" 
@@ -85,7 +84,7 @@
                                  controls:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_Path}" 
                                  IsReadOnly="{Binding Path=IsUserCreated, Converter={x:Static rwpf:Converters.Not}}"
                                  LostFocus="PathTextBox_LostFocus" TextChanged="PathTextBox_TextChanged"
-                                 Background="{DynamicResource {x:Static rwpf:Brushes.BackgroundBrushKey}}"
+                                 Background="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundKey}}"
                                  Foreground="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}"/>
 
                         <Button Grid.Row="1" Grid.Column="1" Margin="3,0,0,6" Padding="2,0,2,0" Content="..." 
@@ -96,7 +95,7 @@
                         <TextBox Grid.Row="2" Grid.Column="0" Style="{StaticResource InputTextBoxStyle}" 
                                  Text="{Binding Path=RCommandLineArguments, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                  controls:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_RCommandLineArguments}"
-                                 Background="{DynamicResource {x:Static rwpf:Brushes.BackgroundBrushKey}}" 
+                                 Background="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundKey}}" 
                                  Foreground="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}"/>
 
                         <WrapPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,0,0">
@@ -206,7 +205,7 @@
                         <!-- connect button -->
                         <Button x:Name="ButtonConnect" Grid.Row="0"  Grid.Column="5" Style="{StaticResource ToolWindowButtonStyle}" Click="ButtonConnect_Click" 
                                 Visibility="{Binding Path=IsConnected, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}"
-                                Margin="0,0,8,0">
+                                Margin="0,0,8,0" Background="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundKey}}">
                             <Button.ToolTip>
                                 <TextBlock Text="{Binding Path=Name, StringFormat={x:Static components:Resources.ConnectionManager_ConnectTooltip}}" />
                             </Button.ToolTip>
@@ -214,13 +213,15 @@
                         </Button>
 
                         <!-- edit/properties button -->
-                        <Button x:Name="ButtonEdit" Grid.Row="0" Grid.Column="6" Style="{StaticResource EditButtonStyle}" Click="ButtonEdit_Click">
+                        <Button x:Name="ButtonEdit" Grid.Row="0" Grid.Column="6" Style="{StaticResource EditButtonStyle}" 
+                                Click="ButtonEdit_Click" Background="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundKey}}">
                             <imaging:CrispImage  Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.Settings}" />
                         </Button>
 
                         <!-- delete button -->
-                        <Button x:Name="ButtonDelete" Grid.Row="0" Grid.Column="7" Style="{StaticResource DeleteButtonStyle}" Click="ButtonDelete_Click">
-                            <Rectangle Fill="{StaticResource IconUninstall}" Width="16" Height="16" />
+                        <Button x:Name="ButtonDelete" Grid.Row="0" Grid.Column="7" Style="{StaticResource DeleteButtonStyle}"
+                                Click="ButtonDelete_Click" Background="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundKey}}">
+                            <imaging:CrispImage  Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.Cancel}" />
                         </Button>
 
                         <ContentPresenter Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="6"
