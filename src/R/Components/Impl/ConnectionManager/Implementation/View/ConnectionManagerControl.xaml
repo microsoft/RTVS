@@ -220,7 +220,7 @@
 
                         <!-- delete button -->
                         <Button x:Name="ButtonDelete" Grid.Row="0" Grid.Column="7" Style="{StaticResource DeleteButtonStyle}" Click="ButtonDelete_Click">
-                            <Rectangle Fill="{StaticResource IconUninstall}" Width="16" Height="16" />
+                            <imaging:CrispImage  Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.Cancel}" />
                         </Button>
 
                         <ContentPresenter Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="6"
