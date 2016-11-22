@@ -95,7 +95,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             var targetProject = _pss.GetProject(settings.TargetProject);
             if (targetProject != null) {
                 var generator = new SProcProjectFilesGenerator(_pss, _fs);
-                generator.Generate(settings, targetProject);
+                generator.Generate(settings, sprocFiles, targetProject);
                 RtvsTelemetry.Current?.TelemetryService.ReportEvent(TelemetryArea.SQL, SqlTelemetryEvents.SqlProjectPublish);
             }
         }

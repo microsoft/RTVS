@@ -42,6 +42,9 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             string item = GetItemUnderCaret();
             if (!string.IsNullOrEmpty(item)) {
                 Enabled = true;
+                if (item.Length >= MaxHelpItemLength) {
+                    item = item.Substring(0, MaxHelpItemLength) + (char)0x2026; // Ellipsis
+                }
                 Text = string.Format(CultureInfo.InvariantCulture, _baseCommandName, item);
             } else {
                 Enabled = false;
