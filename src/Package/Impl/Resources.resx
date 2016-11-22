@@ -999,7 +999,7 @@ Click OK to open MiKTeX download page in the default browser. You may need to re
 You can modify Visual Studio installation in Control Panel -&gt; Uninstall Program -&gt; Right click on Visual Studio 2015 and select Change.</value>
   </data>
   <data name="SqlPublish_NoSqlToolsVS15" xml:space="preserve">
-    <value>This operation requires SQL Data Tools package. Please add Data Storage and Processign workload to your Visual Studio setup.</value>
+    <value>This operation requires SQL Data Tools package. Please add Data Storage and Processing workload to your Visual Studio setup.</value>
   </data>
   <data name="Error_PandocMissingRemote" xml:space="preserve">
     <value>Publishing markdown requires Pandoc. Please contact the remote machine administrator and ask them to install Pandoc for Windows from http://pandoc.org/installing.html.
