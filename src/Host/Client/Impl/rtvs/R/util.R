@@ -253,6 +253,13 @@ save_to_project_folder <- function(blob_id, project_name, dest_dir) {
     invisible(call_embedded('save_to_project_folder', blob_id, project_name, path.expand(dest_dir), temp_dir));
 }
 
+save_to_temp_folder <- function (blob_id, file_name) {
+    temp_file <- paste0(tempdir(), '/', file_name);
+    unlink(temp_file);
+    writeBin(get_blob(blob_id), temp_file);
+    temp_file;
+}
+
 autosave_filename <- '~/.Autosave.RData';
 
 query_reload_autosave <- function() {
