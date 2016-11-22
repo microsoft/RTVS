@@ -78,14 +78,13 @@
                                  Text="{Binding Path=Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                  controls:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_Name}"
                                  Background="{DynamicResource {x:Static rwpf:Brushes.BackgroundBrushKey}}" 
-                                 Foreground="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}"
-                                 GotFocus="NameTextBox_GotFocus" LostFocus="NameTextBox_LostFocus"/>
+                                 Foreground="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}"/>
 
                         <TextBox Grid.Row="1" Grid.Column="0" Style="{StaticResource InputTextBoxStyle}" 
                                  Text="{Binding Path=Path, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                  controls:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_Path}" 
                                  IsReadOnly="{Binding Path=IsUserCreated, Converter={x:Static rwpf:Converters.Not}}"
-                                 GotFocus="PathTextBox_GotFocus" LostFocus="PathTextBox_LostFocus" TextChanged="PathTextBox_TextChanged"
+                                 LostFocus="PathTextBox_LostFocus" TextChanged="PathTextBox_TextChanged"
                                  Background="{DynamicResource {x:Static rwpf:Brushes.BackgroundBrushKey}}"
                                  Foreground="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}"/>
 
@@ -98,8 +97,7 @@
                                  Text="{Binding Path=RCommandLineArguments, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                  controls:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_RCommandLineArguments}"
                                  Background="{DynamicResource {x:Static rwpf:Brushes.BackgroundBrushKey}}" 
-                                 Foreground="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}"
-                                 GotFocus="CommandlineTextBox_GotFocus" LostFocus="CommandlineTextBox_LostFocus"/>
+                                 Foreground="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}"/>
 
                         <WrapPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,0,0">
                             <Button Margin="0,0,4,0" Padding="6,2,6,2" MinWidth="75" MinHeight="23"
