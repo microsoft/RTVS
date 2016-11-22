@@ -395,7 +395,7 @@ namespace Microsoft.R.Host.Client.Session {
 
                     await LoadRtvsPackage(evaluation, libPath);
 
-                    if (!IsRemote && startupInfo.WorkingDirectory != null) {
+                    if (!IsRemote && !string.IsNullOrEmpty(startupInfo.WorkingDirectory)) {
                         await evaluation.SetWorkingDirectoryAsync(startupInfo.WorkingDirectory);
                     } else {
                         await evaluation.SetDefaultWorkingDirectoryAsync();

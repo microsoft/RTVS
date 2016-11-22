@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
@@ -11,7 +10,6 @@ using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Completion.Providers;
 using Microsoft.R.Editor.Imaging;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
