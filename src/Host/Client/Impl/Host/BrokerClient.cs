@@ -14,11 +14,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebSockets.Client;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.Common.Core.Json;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Net;
 using Microsoft.R.Host.Client.BrokerServices;
 using Microsoft.R.Host.Protocol;
-using Newtonsoft.Json;
 
 namespace Microsoft.R.Host.Client.Host {
     internal abstract class BrokerClient : IBrokerClient {
@@ -98,7 +98,7 @@ namespace Microsoft.R.Host.Client.Host {
                 }
             } catch (OperationCanceledException) { } catch(HttpRequestException) { }
 
-            return !string.IsNullOrEmpty(result) ? JsonConvert.DeserializeObject<T>(result) : default(T);
+            return !string.IsNullOrEmpty(result) ? Json.DeserializeObject<T>(result) : default(T);
         }
 
         public virtual async Task<RHost> ConnectAsync(BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken)) {

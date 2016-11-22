@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Json;
 using Microsoft.Common.Core.OS;
 using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.Threading;
@@ -32,7 +33,7 @@ namespace Microsoft.R.Host.Protocol.Test.UserProfileServicePipe {
                 var bytesRead = await client.ReadAsync(responseRaw, 0, responseRaw.Length, ct);
                 jsonResp = Encoding.Unicode.GetString(responseRaw, 0, bytesRead);
             }
-            return JsonConvert.DeserializeObject<UserProfileResultMock>(jsonResp);
+            return Json.DeserializeObject<UserProfileResultMock>(jsonResp);
         }
 
         private async Task CreateProfileTestRunnerAsync(IUserProfileServices creator, string input, bool isValidParse, bool isValidAccount, bool isExistingAccount, int serverTimeOut, int clientTimeOut) {

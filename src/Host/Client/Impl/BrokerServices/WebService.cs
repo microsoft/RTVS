@@ -10,6 +10,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Json;
 using Microsoft.R.Host.Protocol;
 using Newtonsoft.Json;
 
@@ -72,7 +73,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
 
         public async Task<TResponse> HttpGetAsync<TResponse>(Uri uri, CancellationToken cancellationToken = default(CancellationToken)) {
             using (var response = await RepeatUntilAuthenticatedAsync(async ct => EnsureSuccessStatusCode(await HttpClient.GetAsync(uri, ct)), cancellationToken)) {
-                return JsonConvert.DeserializeObject<TResponse>(await response.Content.ReadAsStringAsync());
+                return Json.DeserializeObject<TResponse>(await response.Content.ReadAsStringAsync());
             }
         }
 
@@ -94,7 +95,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             using (var response = await RepeatUntilAuthenticatedAsync(ct => GetHttpPutResponseAsync(uri, requestBody, ct), cancellationToken))  {
                 var responseBody = await response.Content.ReadAsStringAsync();
                 try {
-                    return JsonConvert.DeserializeObject<TResponse>(responseBody);
+                    return Json.DeserializeObject<TResponse>(responseBody);
                 } catch (JsonSerializationException ex) {
                     throw new ProtocolViolationException(ex.Message);
                 }
