@@ -46,26 +46,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
                 if (_entries.ContainsDirectoryEntry(oldRelativePath)) {
                     _entries.RenameDirectory(oldRelativePath, newRelativePath, _fileSystem.ToShortRelativePath(_fullPath, _rootDirectory));
                 } else {
-                    _entries.AddDirectory(newRelativePath, _fileSystem.ToShortRelativePath(_fullPath, _rootDirectory));
-
-                    Queue<string> directories = new Queue<string>();
-                    directories.Enqueue(_fullPath);
-
-                    while (directories.Count > 0) {
-                        var directoryPath = directories.Dequeue();
-                        var directory = _fileSystem.GetDirectoryInfo(directoryPath);
-                        foreach (var entry in directory.EnumerateFileSystemInfos()) {
-                            if (entry is IDirectoryInfo) {
-                                directories.Enqueue(entry.FullName);
-                            } else {
-                                var relativeFilePath = PathHelper.MakeRelative(_rootDirectory, entry.FullName);
-
-                                if (_fileSystemFilter.IsFileAllowed(relativeFilePath, entry.Attributes)) {
-                                    _entries.AddFile(relativeFilePath, _fileSystem.ToShortRelativePath(entry.FullName, _rootDirectory));
-                                }
-                            }
-                        }
-                    }
+                    (new DirectoryCreated(_entries, _rootDirectory, _fileSystem, _fileSystemFilter, _fullPath)).Apply();
                 }
             }
 
