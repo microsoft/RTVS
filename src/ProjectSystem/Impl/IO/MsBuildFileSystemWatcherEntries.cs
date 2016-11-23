@@ -22,7 +22,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
 
         public bool ContainsDirectoryEntry(string relativePath) {
             relativePath = PathHelper.EnsureTrailingSlash(relativePath);
-            return GetEntries(relativePath).Count() > 0;
+            return GetDirectoryEntries(relativePath).Count() > 0;
         }
 
         public bool RescanRequired { get; private set; }
@@ -57,7 +57,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
         public void DeleteDirectory(string relativePath) {
             try {
                 relativePath = PathHelper.EnsureTrailingSlash(relativePath);
-                foreach (var entry in GetEntries(relativePath).ToList()) {
+                foreach (var entry in GetDirectoryEntries(relativePath).ToList()) {
                     DeleteEntry(entry);
                 }
             } catch (InvalidStateException) {
@@ -73,8 +73,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
                 var newPaths = new HashSet<string>();
                 var entriesToRename = _entries.Values
                     .Where(v => v.State == Unchanged || v.State == Added || v.State == RenamedThenAdded)
-                    .Where(v => v.RelativePath.StartsWithIgnoreCase(previousRelativePath) ||
-                                v.ShortPath.StartsWithIgnoreCase(previousRelativePath)).ToList();
+                    .Where(v => EntryPathStartsWith(v, previousRelativePath)).ToList();
                 foreach (var entry in entriesToRename) {
                     var newEntryPath = entry.RelativePath.Replace(previousRelativePath, relativePath, 0, previousRelativePath.Length);
                     RenameEntry(entry.RelativePath, newEntryPath, shortPath, entry.Type);
@@ -109,10 +108,11 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
             RescanRequired = false;
         }
 
-        private IEnumerable<Entry> GetEntries(string relativeDirectoryPath) {
-            return _entries.Values.Where(v => v.RelativePath.StartsWithIgnoreCase(relativeDirectoryPath) ||
-                                                                 v.ShortPath.StartsWithIgnoreCase(relativeDirectoryPath));
-        }
+        private IEnumerable<Entry> GetDirectoryEntries(string relativeDirectoryPath) => 
+            _entries.Values.Where(v => EntryPathStartsWith(v, relativeDirectoryPath));
+
+        private bool EntryPathStartsWith(Entry v, string relativePath) => 
+            v.RelativePath.StartsWithIgnoreCase(relativePath) || v.ShortPath.StartsWithIgnoreCase(relativePath);
 
         private Entry AddEntry(string relativeFilePath, string shortPath, EntryType type) {
             if (type == EntryType.Directory) {
