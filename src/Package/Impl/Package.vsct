@@ -66,6 +66,19 @@
         </Strings>
       </Menu>
 
+      <!-- REPL window toolbar -->
+      <Menu guid="guidRToolsCmdSet" id="replWindowToolBarId" type="ToolWindowToolbar" priority="0x100">
+        <Parent guid="guidRToolsCmdSet" id="0" />
+        <CommandFlag>DefaultDocked</CommandFlag>
+        <CommandFlag>NoToolbarClose</CommandFlag>
+        <CommandFlag>AlwaysCreate</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <Strings>
+          <ButtonText>R Interactive Window</ButtonText>
+          <CommandName>R Interactive Window</CommandName>
+        </Strings>
+      </Menu>
+
       <!-- Plot window toolbar -->
       <Menu guid="guidRToolsCmdSet" id="plotWindowToolBarId" type="ToolWindowToolbar" priority="0x100">
         <Parent guid="guidRToolsCmdSet" id="0" />
@@ -394,21 +407,21 @@
         <Parent guid="guidRToolsCmdSet" id="dataSubMenu"/>
       </Group>
       <Group guid="guidRToolsCmdSet" id="dataContextMenuSProcGroup" priority="0x0000" />
-      
+
       <!-- Directory flyout -->
       <Group guid="guidRToolsCmdSet" id="directorySubMenuGroup" priority="0x0100">
         <Parent guid="guidRToolsCmdSet" id="directorySubMenu"/>
       </Group>
-      
-        <Group guid="guidRToolsCmdSet" id="directorySelectSubMenuGroup" priority="0x0200">
+
+      <Group guid="guidRToolsCmdSet" id="directorySelectSubMenuGroup" priority="0x0200">
         <Parent guid="guidRToolsCmdSet" id="directorySubMenu"/>
       </Group>
-      
+
       <!-- File EZ MDI tab menu -->
       <Group guid="guidRToolsCmdSet" id="directoryEzMdiGroup" priority="0x0210">
         <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_EZDOCWINTAB"/>
       </Group>
-      
+
       <Group guid="guidRToolsCmdSet" id="plotSubMenuNavGroup" priority="0x0100">
         <Parent guid="guidRToolsCmdSet" id="plotSubMenu"/>
       </Group>
@@ -440,13 +453,8 @@
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
       </Group>
 
-      <Group guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup" priority="0x0300">
-        <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
-      </Group>
-
-      <Group guid="guidRToolsCmdSet" id="sessionRDebugGroup" priority="0x0310">
-        <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
-      </Group>
+      <Group guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup" />
+      <Group guid="guidRToolsCmdSet" id="sessionRDebugGroup" />
 
       <Group guid="guidRToolsCmdSet" id="sessionSubMenuResetGroup" priority="0x0320">
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
@@ -460,9 +468,7 @@
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
       </Group>
 
-      <Group guid="guidRToolsCmdSet" id="sessionSubMenuFileGroup" priority="0x0500">
-        <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
-      </Group>
+      <Group guid="guidRToolsCmdSet" id="sessionSubMenuFileGroup" />
 
       <Group guid="guidRToolsCmdSet" id="sessionSubMenuInformationGroup" priority="0x0600">
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
@@ -570,17 +576,12 @@
       </Group>
 
       <!-- InteractiveWindow -->
-      <Group guid="guidRToolsCmdSet" id="sessionSubMenuFileGroup" priority="0x0510">
-        <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveToolbar"/>
+      <Group guid="guidRToolsCmdSet" id="replGroup" priority="0x0100" >
+        <Parent guid="guidRToolsCmdSet" id="replWindowToolBarId"/>
       </Group>
-      <Group guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup" priority="0x0520">
-        <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveToolbar"/>
-      </Group>
-      <Group guid="guidRToolsCmdSet" id="sessionRDebugGroup" priority="0x0530">
-        <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveToolbar"/>
-      </Group>
+
       <Group guid="guidRToolsCmdSet" id="sessionToolbarDirectoryGroup" priority="0x0650">
-        <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveToolbar"/>
+        <Parent guid="guidRToolsCmdSet" id="replWindowToolBarId"/>
       </Group>
 
       <Group guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup" priority="0x300" />
@@ -618,6 +619,28 @@
         </Strings>
       </Button>
 
+      <Button guid="guidRToolsCmdSet" id="icmdPrevHistoryRepl" priority="0x0120" type="Button">
+        <Icon guid="ImageCatalogGuid" id="MoveUp"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Previous History Entry</ButtonText>
+          <CommandName>PreviousHistoryEntry</CommandName>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdNextHistoryRepl" priority="0x0130" type="Button">
+        <Icon guid="ImageCatalogGuid" id="MoveDown"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Next History Entry</ButtonText>
+          <CommandName>NextHistoryEntry</CommandName>
+        </Strings>
+      </Button>
+      
       <Button guid="guidRToolsCmdSet" id="icmdLoadWorkspace" priority="0x0100" type="Button">
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenuFileGroup"/>
         <Icon guid="ImageCatalogGuid" id="OpenVirtualMachine"/>
@@ -995,7 +1018,7 @@
           <MenuText>Zoom &amp;In</MenuText>
         </Strings>
       </Button>
-      
+
       <Button guid="guidRToolsCmdSet" id="icmdPlotHistoryZoomOut" priority="0x0200" type="Button">
         <Icon guid="ImageCatalogGuid" id="ZoomOut"/>
         <CommandFlag>DefaultDisabled</CommandFlag>
@@ -1005,7 +1028,7 @@
           <MenuText>Zoom &amp;Out</MenuText>
         </Strings>
       </Button>
-      
+
       <Button guid="guidRToolsCmdSet" id="icmdPlotHistoryAutoHide" priority="0x0300" type="Button">
         <Icon guid="ImageCatalogGuid" id="Collapse"/>
         <CommandFlag>DefaultDisabled</CommandFlag>
@@ -1539,7 +1562,7 @@
         </Strings>
       </Button>
       <!-- End history window buttons -->
-      
+
       <!-- Connections Status Bar buttons -->
       <Button guid="guidRToolsCmdSet" id="icmdMruConnectionsDynamic" priority="0x1000"  type="Button">
         <Parent guid="guidRToolsCmdSet" id="connectionsStatusBarMruGroup" />
@@ -2103,7 +2126,7 @@
     <CommandPlacement guid="guidRToolsCmdSet" id="connectionsStatusBarMruGroup" priority="0x100">
       <Parent guid="guidRToolsCmdSet" id="connectionsStatusBarContextMenu"/>
     </CommandPlacement>
-    
+
     <CommandPlacement guid="guidRToolsCmdSet" id="connectionsStatusBarReconnectGroup" priority="0x200">
       <Parent guid="guidRToolsCmdSet" id="connectionsStatusBarContextMenu"/>
     </CommandPlacement>
@@ -2299,15 +2322,15 @@
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdSetDirectoryToSourceCommand" priority="0x0A0">
       <Parent guid="guidRToolsCmdSet" id="sessionToolbarDirectoryGroup"/>
     </CommandPlacement>
-    
+
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdSetDirectoryToProjectCommand" priority="0x0B0">
       <Parent guid="guidRToolsCmdSet" id="sessionToolbarDirectoryGroup"/>
     </CommandPlacement>
-    
+
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdSelectWorkingDirectory" priority="0x200">
       <Parent guid="guidRToolsCmdSet" id="sessionToolbarDirectoryGroup"/>
     </CommandPlacement>
-    
+
     <!-- Directory management in Easy MDI -->
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdSetDirectoryToSourceCommand" priority="0x0010">
       <Parent guid="guidRToolsCmdSet" id="directoryEzMdiGroup"/>
@@ -2394,6 +2417,40 @@
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdSelectWorkingDirectory" priority="0x0100">
       <Parent guid="guidRToolsCmdSet" id="directorySelectSubMenuGroup"/>
     </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="sessionRDebugGroup" priority="0x0310">
+      <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidRToolsCmdSet" id="sessionSubMenuFileGroup" priority="0x0500">
+      <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdResetRepl" priority="0x0100">
+      <Parent guid="guidRToolsCmdSet" id="replGroup"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdClearRepl" priority="0x0110">
+      <Parent guid="guidRToolsCmdSet" id="replGroup"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdPrevHistoryRepl" priority="0x0120">
+      <Parent guid="guidRToolsCmdSet" id="replGroup"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdNextHistoryRepl" priority="0x0130">
+      <Parent guid="guidRToolsCmdSet" id="replGroup"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidRToolsCmdSet" id="sessionSubMenuFileGroup" priority="0x0140">
+      <Parent guid="guidRToolsCmdSet" id="replWindowToolBarId"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup" priority="0x0150">
+      <Parent guid="guidRToolsCmdSet" id="replWindowToolBarId"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidRToolsCmdSet" id="sessionRDebugGroup" priority="0x0160">
+      <Parent guid="guidRToolsCmdSet" id="replWindowToolBarId"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup" priority="0x0300">
+      <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
+    </CommandPlacement>
+
   </CommandPlacements>
 
   <KeyBindings>
@@ -2500,7 +2557,7 @@
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScriptWithEcho" editor="InteractiveWindow" key1="VK_RETURN" mod1="CONTROL SHIFT" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScriptWithEcho" editor="SolutionExplorer" key1="VK_RETURN" mod1="CONTROL SHIFT" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScriptWithEcho" editor="Global" key1="VK_RETURN" mod1="CONTROL SHIFT" />
-    
+
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSetDirectoryToSourceCommand" editor="guidRToolsCmdSet" key1="E" mod1="CONTROL SHIFT" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSetDirectoryToSourceCommand" editor="REditor" key1="E" mod1="CONTROL SHIFT" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSetDirectoryToSourceCommand" editor="RmdEditor" key1="E" mod1="CONTROL SHIFT" />
@@ -2623,7 +2680,6 @@
       <IDSymbol name="icmdLoadWorkspace" value="502" />
       <IDSymbol name="icmdSaveWorkspace" value="503" />
       <IDSymbol name="icmdSelectWorkingDirectory" value="504" />
-      <IDSymbol name="icmdResetRepl" value="505"/>
       <IDSymbol name="icmdInterruptR" value="506" />
       <IDSymbol name="icmdAttachDebugger" value="507" />
       <IDSymbol name="icmdSourceRScript" value="508" />
@@ -2635,12 +2691,17 @@
       <IDSymbol name="icmdStepOut" value="514" />
       <IDSymbol name="icmdStepOver" value="515" />
       <IDSymbol name="icmdAttachToRInteractive" value="516" />
-      <IDSymbol name="icmdClearRepl" value="517" />
       <IDSymbol name="icmdSourceRScriptWithEcho" value="518" />
       <IDSymbol name="icmdSetDirectoryToSourceCommand" value="519"/>
       <IDSymbol name="icmdSetDirectoryToProjectCommand" value="520"/>
       <IDSymbol name="icmdTerminateR" value="521"/>
       <IDSymbol name="icmdSessionInformation" value="522"/>
+
+      <IDSymbol name="replGroup" value="529"/>
+      <IDSymbol name="icmdResetRepl" value="530" />
+      <IDSymbol name="icmdClearRepl" value="531" />
+      <IDSymbol name="icmdNextHistoryRepl" value="532" />
+      <IDSymbol name="icmdPrevHistoryRepl" value="533" />
 
       <IDSymbol name="sessionSubMenuFileGroup" value="551"/>
       <IDSymbol name="sessionSubMenuRGroup" value="552"/>
@@ -2719,7 +2780,7 @@
       <IDSymbol name="icmdHelpRefresh" value="1103" />
       <IDSymbol name="icmdHelpOnCurrent" value="1104"/>
       <IDSymbol name="icmdSearchWebForCurrent" value="1105"/>
-      
+
       <!-- History -->
       <IDSymbol name="icmdLoadHistory" value="1200" />
       <IDSymbol name="icmdSaveHistory" value="1201" />
@@ -2728,7 +2789,7 @@
       <IDSymbol name="icmdDeleteSelectedHistoryEntries" value="1204" />
       <IDSymbol name="icmdDeleteAllHistoryEntries" value="1205" />
       <IDSymbol name="icmdToggleMultilineSelection" value="1206" />
-      
+
       <!-- Connections Status Bar -->
       <IDSymbol name="icmdReconnect" value="1700" />
       <IDSymbol name="icmdMruConnectionsDynamic" value="1750" />
@@ -2773,6 +2834,9 @@
       <!-- Variable Explorer -->
       <IDSymbol name="variableWindowToolBarId" value="0x2030" />
       <IDSymbol name="variableDataGroup" value="0x2031" />
+
+      <!-- REPL -->
+      <IDSymbol name="replWindowToolBarId" value="0x3000" />
 
       <!-- Debugger -->
       <IDSymbol name="icmdShowDotPrefixedVariables" value="1300" />
@@ -2870,11 +2934,10 @@
     <!-- InteractiveWindow Guid -->
     <GuidSymbol name="guidInteractiveWindowCmdSet" value="{00B8868B-F9F5-4970-A048-410B05508506}">
       <!-- https://github.com/dotnet/roslyn/blob/master/src/InteractiveWindow/VisualStudio/InteractiveWindow.vsct -->
-      <IDSymbol name="menuIdInteractiveToolbar" value="0x2000"/>
       <IDSymbol name="menuIdInteractiveContextMenu" value="0x2100" />
-      <IDSymbol name="cmdidAbortExecution" value="0x0104"/>
       <IDSymbol name="cmdidReset" value="0x0105"/>
-      <IDSymbol name="cmdidClearScreen" value="0x0108"/>
+      <IDSymbol name="cmdidHistoryNext" value="0x0106"/>
+      <IDSymbol name="cmdidHistoryPrevious" value="0x0107"/>
     </GuidSymbol>
 
     <GuidSymbol name="replWindowIconGuid" value="{440CC57F-1433-43FB-892E-ECE1A72201FD}">

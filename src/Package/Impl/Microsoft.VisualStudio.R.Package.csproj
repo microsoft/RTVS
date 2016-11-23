@@ -212,6 +212,10 @@
     <Compile Include="ProjectSystem\Commands\IncludeInProjectCommand.cs" />
     <Compile Include="ProjectSystem\Commands\SendFileCommandBase.cs" />
     <Compile Include="ProjectSystem\Commands\SendToRemoteCommand.cs" />
+    <Compile Include="Repl\VsInteractiveWindowDecorator.cs" />
+    <Compile Include="Repl\Workspace\NextHistoryReplCommand.cs" />
+    <Compile Include="Repl\Workspace\PrevHistoryReplCommand.cs" />
+    <Compile Include="Repl\Workspace\ReplCommandBase.cs" />
     <Compile Include="Shell\ApplicationConstants.cs" />
     <Compile Include="Shell\VsFileDialog.cs" />
     <Compile Include="Shell\VsProgressDialog.cs" />

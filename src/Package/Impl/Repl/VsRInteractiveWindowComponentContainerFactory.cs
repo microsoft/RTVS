@@ -18,13 +18,13 @@ using Microsoft.VisualStudio.Utilities;
 namespace Microsoft.VisualStudio.R.Package.Repl {
     [Export(typeof(IInteractiveWindowComponentContainerFactory))]
     internal class VsRInteractiveWindowComponentContainerFactory : IInteractiveWindowComponentContainerFactory {
-        private readonly Lazy<IVsInteractiveWindowFactory> _vsInteractiveWindowFactoryLazy;
+        private readonly Lazy<IVsInteractiveWindowFactory2> _vsInteractiveWindowFactoryLazy;
         private readonly IContentTypeRegistryService _contentTypeRegistryService;
         private readonly ICoreShell _shell;
 
         [ImportingConstructor]
         public VsRInteractiveWindowComponentContainerFactory(
-            Lazy<IVsInteractiveWindowFactory> vsInteractiveWindowFactory,
+            Lazy<IVsInteractiveWindowFactory2> vsInteractiveWindowFactory,
             IContentTypeRegistryService contentTypeRegistryService,
             ICoreShell shell) {
             _vsInteractiveWindowFactoryLazy = vsInteractiveWindowFactory;
@@ -35,7 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         public IInteractiveWindowVisualComponent Create(int instanceId, IInteractiveEvaluator evaluator, IRSessionProvider sessionProvider) {
             VsAppShell.Current.AssertIsOnMainThread();
 
-            var vsWindow = _vsInteractiveWindowFactoryLazy.Value.Create(RGuidList.ReplInteractiveWindowProviderGuid, instanceId, string.Empty, evaluator);
+            var vsWindow = _vsInteractiveWindowFactoryLazy.Value.Create(RGuidList.ReplInteractiveWindowProviderGuid, instanceId, string.Empty, evaluator, new VsInteractiveWindowDecorator());
             var contentType = _contentTypeRegistryService.GetContentType(RContentTypeDefinition.ContentType);
             vsWindow.SetLanguage(RGuidList.RLanguageServiceGuid, contentType);
 
