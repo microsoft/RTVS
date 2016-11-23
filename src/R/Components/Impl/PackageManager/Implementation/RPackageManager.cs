@@ -22,8 +22,6 @@ using static System.FormattableString;
 
 namespace Microsoft.R.Components.PackageManager.Implementation {
     internal class RPackageManager : IRPackageManager {
-        private static readonly Guid SessionId = new Guid("61C93E8D-D24D-4012-82F4-093086A4FB08");
-
         private readonly IRSession _session;
         private readonly IRSettings _settings;
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
@@ -50,7 +48,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
         public IRPackageManagerVisualComponent VisualComponent { get; private set; }
 
         public RPackageManager(IRSettings settings, IRInteractiveWorkflow interactiveWorkflow, Action dispose) {
-            _session = interactiveWorkflow.RSessions.GetOrCreate(SessionId);
+            _session = interactiveWorkflow.RSessions.GetOrCreate(GuidList.PackageManagerRSessionGuid);
             _settings = settings;
             _interactiveWorkflow = interactiveWorkflow;
             _loadedPackagesEvent = new DirtyEventSource(this);

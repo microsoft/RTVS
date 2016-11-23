@@ -81,7 +81,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
         }
 
         private void Connection_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
-            if ((e.Source as ListBoxItem)?.IsSelected == false) {
+            var connection = GetConnection(e);
+            if (connection != Model.EditedConnection) {
+                Model?.CancelEdit();
                 Model?.Connect(GetConnection(e));
             }
             e.Handled = true;

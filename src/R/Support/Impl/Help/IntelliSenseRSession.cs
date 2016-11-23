@@ -14,7 +14,6 @@ using Microsoft.R.Support.Settings;
 namespace Microsoft.R.Support.Help {
     [Export(typeof(IIntellisenseRSession))]
     public sealed class IntelliSenseRSession : IIntellisenseRSession {
-        private static readonly Guid SessionId = new Guid("8BEF9C06-39DC-4A64-B7F3-0C68353362C9");
         private readonly ICoreShell _coreShell;
         private readonly IRSessionProvider _sessionProvider;
         private readonly BinaryAsyncLock _lock = new BinaryAsyncLock();
@@ -46,7 +45,7 @@ namespace Microsoft.R.Support.Help {
                 }
 
                 if (Session == null) {
-                    Session = _sessionProvider.GetOrCreate(SessionId);
+                    Session = _sessionProvider.GetOrCreate(GuidList.IntellisenseRSessionGuid);
                 }
 
                 if (!Session.IsHostRunning) {

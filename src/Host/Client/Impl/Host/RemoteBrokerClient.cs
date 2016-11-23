@@ -77,8 +77,8 @@ namespace Microsoft.R.Host.Client.Host {
                     Log.WriteAsync(LogVerbosity.Minimal, MessageCategory.Warning, Resources.Trace_UntrustedCertificate.FormatInvariant(certificate.Subject)).DoNotWait();
 
                     var message = Resources.CertificateSecurityWarning.FormatInvariant(Uri.Host);
-                    var task = _services.Security.ValidateX509CertificateAsync(certificate, message);
-                    _services.Tasks.Wait(task);
+                    var task = _services.Security.ValidateX509CertificateAsync(certificate, message, _cancellationToken);
+                    _services.Tasks.Wait(task, _cancellationToken);
 
                     _certificateValidationResult = task.Result;
                     if (_certificateValidationResult.Value) {
