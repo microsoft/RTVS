@@ -19,6 +19,7 @@ namespace Microsoft.R.Host.Client.Host {
         private readonly IConsole _console;
         private readonly ICoreServices _services;
         private readonly SemaphoreSlim _verificationSemaphore = new SemaphoreSlim(1, 1);
+        private readonly CancellationToken _cancellationToken;
 
         private string _certificateHash;
         private bool? _certificateValidationResult;
@@ -28,10 +29,11 @@ namespace Microsoft.R.Host.Client.Host {
             ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
         }
 
-        public RemoteBrokerClient(string name, Uri brokerUri, ICoreServices services, IConsole console)
+        public RemoteBrokerClient(string name, Uri brokerUri, ICoreServices services, IConsole console, CancellationToken cancellationToken)
             : base(name, brokerUri, brokerUri.Fragment, new RemoteCredentialsDecorator(brokerUri, services.Security, services.MainThread), services.Log, console) {
             _console = console;
             _services = services;
+            _cancellationToken = cancellationToken;
 
             CreateHttpClient(brokerUri);
             HttpClientHandler.ServerCertificateValidationCallback = ValidateCertificateHttpHandler;
@@ -50,6 +52,10 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         private bool ValidateCertificateHttpHandler(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) {
+            if(_cancellationToken.IsCancellationRequested) {
+                return false;
+            }
+
             IsVerified = sslPolicyErrors == SslPolicyErrors.None;
             if (IsVerified) {
                 return true;
