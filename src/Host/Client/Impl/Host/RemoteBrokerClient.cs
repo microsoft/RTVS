@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Net.Security;
@@ -65,6 +66,13 @@ namespace Microsoft.R.Host.Client.Host {
                 Log.WriteAsync(LogVerbosity.Minimal, MessageCategory.Error, Resources.Error_NoBrokerCertificate).DoNotWait();
                 _console.Write(Resources.Error_NoBrokerCertificate);
                 return false;
+            }
+
+            if (_services.MainThread.ThreadId == Thread.CurrentThread.ManagedThreadId) {
+                // Prevent potential deadlock if handler enters on background thread, then re-enters on main thread
+                // before ValidateX509CertificateAsync is able to transition to the UI thread.
+                // At worst the connection fails
+                return _certificateValidationResult.HasValue ? _certificateValidationResult.Value : false;
             }
 
             lock (_verificationLock) {
