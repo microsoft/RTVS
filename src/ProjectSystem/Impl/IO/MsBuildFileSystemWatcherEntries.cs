@@ -16,6 +16,16 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
     public class MsBuildFileSystemWatcherEntries {
         private readonly Dictionary<string, Entry> _entries = new Dictionary<string, Entry>(StringComparer.OrdinalIgnoreCase);
 
+        public bool ContainsFileEntry(string relativeFilePath) {
+            return _entries.ContainsKey(relativeFilePath);
+        }
+
+        public bool ContainsDirectoryEntry(string relativePath) {
+            relativePath = PathHelper.EnsureTrailingSlash(relativePath);
+            return _entries.Values.Where(v => v.RelativePath.StartsWithIgnoreCase(relativePath) ||
+                                                                 v.ShortPath.StartsWithIgnoreCase(relativePath)).Count() > 0;
+        }
+
         public bool RescanRequired { get; private set; }
 
         public void AddFile(string relativeFilePath, string shortPath) {

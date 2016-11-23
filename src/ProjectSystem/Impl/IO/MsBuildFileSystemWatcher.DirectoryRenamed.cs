@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.Collections.Generic;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Utilities;
@@ -42,14 +43,37 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
                 }
 
                 var oldRelativePath = PathHelper.MakeRelative(_rootDirectory, _oldFullPath);
-                var newRelativePaths = _entries.RenameDirectory(oldRelativePath, newRelativePath, _fileSystem.ToShortRelativePath(_fullPath, _rootDirectory));
+                if (_entries.ContainsDirectoryEntry(oldRelativePath)) {
+                    _entries.RenameDirectory(oldRelativePath, newRelativePath, _fileSystem.ToShortRelativePath(_fullPath, _rootDirectory));
+                } else {
+                    _entries.AddDirectory(newRelativePath, _fileSystem.ToShortRelativePath(_fullPath, _rootDirectory));
+
+                    Queue<string> directories = new Queue<string>();
+                    directories.Enqueue(_fullPath);
+
+                    while (directories.Count > 0) {
+                        var directoryPath = directories.Dequeue();
+                        var directory = _fileSystem.GetDirectoryInfo(directoryPath);
+                        foreach (var entry in directory.EnumerateFileSystemInfos()) {
+                            if (entry is IDirectoryInfo) {
+                                directories.Enqueue(entry.FullName);
+                            } else {
+                                var relativeFilePath = PathHelper.MakeRelative(_rootDirectory, entry.FullName);
+
+                                if (_fileSystemFilter.IsFileAllowed(relativeFilePath, entry.Attributes)) {
+                                    _entries.AddFile(relativeFilePath, _fileSystem.ToShortRelativePath(entry.FullName, _rootDirectory));
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
             private void DeleteInsteadOfRename() {
                 if (!_oldFullPath.StartsWithIgnoreCase(_rootDirectory)) {
                     return;
                 }
-                _entries.DeleteDirectory(PathHelper.MakeRelative(_rootDirectory, _fullPath));
+                _entries.DeleteDirectory(PathHelper.MakeRelative(_rootDirectory, _oldFullPath));
             }
 
             public override string ToString() {
