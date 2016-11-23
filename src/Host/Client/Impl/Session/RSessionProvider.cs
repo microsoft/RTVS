@@ -53,7 +53,7 @@ namespace Microsoft.R.Host.Client.Session {
         public IEnumerable<IRSession> GetSessions() {
             return _sessions.Values;
         }
-        
+
         public void Dispose() {
             if (!_disposeToken.TryMarkDisposed()) {
                 return;
@@ -227,10 +227,8 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         private async Task SwitchBrokerAsync(CancellationToken cancellationToken) {
-            RSession primary;
-            if(_sessions.TryGetValue(GuidList.IntellisenseRSessionGuid, out primary)) {
-                var t = primary.StartSwitchingBroker();
-                var transactions = new List<IRSessionSwitchBrokerTransaction>() { t };
+            var transactions = _sessions.Values.Select(s => s.StartSwitchingBroker()).ExcludeDefault().ToList();
+            if (transactions.Any()) {
                 await SwitchSessionsAsync(transactions, cancellationToken);
             } else {
                 // Ping isn't enough here - need a "full" test with RHost
@@ -297,7 +295,7 @@ namespace Microsoft.R.Host.Client.Session {
                     ct.ThrowIfCancellationRequested();
                 } catch (OperationCanceledException) when (t.IsSessionDisposed) {
                     ct.ThrowIfCancellationRequested();
-                }  
+                }
             }, cancellationToken);
         }
 
@@ -309,7 +307,7 @@ namespace Microsoft.R.Host.Client.Session {
                     ct.ThrowIfCancellationRequested();
                 } catch (OperationCanceledException) when (s.IsDisposed) {
                     ct.ThrowIfCancellationRequested();
-                }  
+                }
             }, cancellationToken);
         }
 

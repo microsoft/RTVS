@@ -239,7 +239,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
         private void Write(string message) {
             if (CurrentWindow != null && !_crProcessor.ProcessMessage(message)) {
-                CurrentWindow.Write(message);
+                _coreShell.DispatchOnUIThread(() => CurrentWindow.Write(message));
             }
         }
 
