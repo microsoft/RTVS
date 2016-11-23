@@ -60,7 +60,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
         }
 
         private void ButtonCancelTestConnection_Click(object sender, RoutedEventArgs e) {
-            Model?.CancelTestConnection(GetConnection(e));
+            Model?.CancelTestConnection();
         }
 
         private static IConnectionViewModel GetConnection(RoutedEventArgs e) => ((FrameworkElement)e.Source).DataContext as IConnectionViewModel;

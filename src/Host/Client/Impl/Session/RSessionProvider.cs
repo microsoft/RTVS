@@ -134,7 +134,7 @@ namespace Microsoft.R.Host.Client.Session {
 
                 // Create random name to avoid collision with actual broker client
                 name = name + Guid.NewGuid().ToString("N");
-                var brokerClient = CreateBrokerClient(name, path);
+                var brokerClient = CreateBrokerClient(name, path, cancellationToken);
                 if (brokerClient == null) {
                     throw new ArgumentException(nameof(path));
                 }
@@ -162,7 +162,7 @@ namespace Microsoft.R.Host.Client.Session {
             using (_disposeToken.Link(ref cancellationToken)) {
                 await TaskUtilities.SwitchToBackgroundThread();
 
-                var brokerClient = CreateBrokerClient(name, path);
+                var brokerClient = CreateBrokerClient(name, path, cancellationToken);
                 if (brokerClient == null) {
                     return false;
                 }
@@ -311,7 +311,7 @@ namespace Microsoft.R.Host.Client.Session {
             }, cancellationToken);
         }
 
-        private IBrokerClient CreateBrokerClient(string name, string path) {
+        private IBrokerClient CreateBrokerClient(string name, string path, CancellationToken cancellationToken) {
             path = path ?? new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath;
 
             Uri uri;
@@ -323,7 +323,7 @@ namespace Microsoft.R.Host.Client.Session {
                 return new LocalBrokerClient(name, uri.LocalPath, _services, _console);
             }
 
-            return new RemoteBrokerClient(name, uri, _services, _console);
+            return new RemoteBrokerClient(name, uri, _services, _console, cancellationToken);
         }
 
         private class IsolatedRSessionEvaluation : IRSessionEvaluation {

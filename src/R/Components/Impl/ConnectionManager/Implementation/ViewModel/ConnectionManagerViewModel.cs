@@ -14,7 +14,6 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Wpf;
 using Microsoft.Common.Wpf.Collections;
 using Microsoft.R.Components.ConnectionManager.ViewModel;
-using Microsoft.R.Components.Extensions;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Interpreters;
@@ -27,6 +26,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private readonly BatchObservableCollection<IConnectionViewModel> _remoteConnections;
         private readonly DisposableBag _disposableBag;
         private IConnectionViewModel _editedConnection;
+        private IConnectionViewModel _testingConnection;
         private bool _isEditingNew;
         private bool _hasLocalConnections;
         private bool _isConnected;
@@ -149,19 +149,22 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             TryStartEditing(connection);
         }
 
-        public void CancelTestConnection(IConnectionViewModel connection) {
+        public void CancelTestConnection() {
             _shell.AssertIsOnMainThread();
-            connection.TestingConnectionCts?.Cancel();
-            connection.TestingConnectionCts = null;
-            connection.IsTestConnectionSucceeded = false;
-            connection.TestConnectionFailedText = null;
+            if (_testingConnection != null) {
+                _testingConnection.TestingConnectionCts?.Cancel();
+                _testingConnection.TestingConnectionCts = null;
+                _testingConnection.IsTestConnectionSucceeded = false;
+                _testingConnection.TestConnectionFailedText = null;
+            }
         }
 
         public async Task TestConnectionAsync(IConnectionViewModel connection) {
             _shell.AssertIsOnMainThread();
-            CancelTestConnection(connection);
+            CancelTestConnection();
 
             connection.TestingConnectionCts = new CancellationTokenSource();
+            _testingConnection = connection;
 
             try {
                 await _connectionManager.TestConnectionAsync(connection, connection.TestingConnectionCts.Token);
@@ -185,6 +188,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             } finally {
                 connection.TestingConnectionCts?.Dispose();
                 connection.TestingConnectionCts = null;
+                _testingConnection = null;
             }
         }
 
@@ -208,29 +212,36 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public bool TryDelete(IConnectionViewModel connection) {
             _shell.AssertIsOnMainThread();
+            CancelTestConnection();
 
-            var confirm = _shell.ShowMessage(string.Format(CultureInfo.CurrentUICulture, Resources.ConnectionManager_RemoveConnectionConfirmation, connection.Name), MessageButtons.YesNo);
-            if (confirm != MessageButtons.Yes) {
-                return false;
+            if (connection != null) {
+                var confirm = _shell.ShowMessage(string.Format(CultureInfo.CurrentUICulture, Resources.ConnectionManager_RemoveConnectionConfirmation, connection.Name), MessageButtons.YesNo);
+                if (confirm == MessageButtons.Yes) {
+
+                    var result = _connectionManager.TryRemove(connection.Id);
+                    UpdateConnections();
+                    return result;
+                }
             }
-
-            var result = _connectionManager.TryRemove(connection.Id);
-            UpdateConnections();
-            return result;
+            return false;
         }
 
         public void Connect(IConnectionViewModel connection) {
             _shell.AssertIsOnMainThread();
-            if (connection.IsActive && !IsConnected) {
-                _shell.ProgressDialog.Show(_connectionManager.ReconnectAsync, Resources.ConnectionManager_ReconnectionToProgressBarMessage.FormatInvariant(connection.Name));
-            } else {
-                var progressBarMessage = _connectionManager.ActiveConnection != null
-                    ? Resources.ConnectionManager_SwitchConnectionProgressBarMessage.FormatInvariant(_connectionManager.ActiveConnection.Name, connection.Name)
-                    : Resources.ConnectionManager_ConnectionToProgressBarMessage.FormatInvariant(connection.Name);
-                _shell.ProgressDialog.Show(ct => _connectionManager.ConnectAsync(connection, ct), progressBarMessage);
-            }
+            CancelTestConnection();
 
-            UpdateConnections();
+            if (connection != null) {
+                if (connection.IsActive && !IsConnected) {
+                    _shell.ProgressDialog.Show(_connectionManager.ReconnectAsync, Resources.ConnectionManager_ReconnectionToProgressBarMessage.FormatInvariant(connection.Name));
+                } else {
+                    var progressBarMessage = _connectionManager.ActiveConnection != null
+                        ? Resources.ConnectionManager_SwitchConnectionProgressBarMessage.FormatInvariant(_connectionManager.ActiveConnection.Name, connection.Name)
+                        : Resources.ConnectionManager_ConnectionToProgressBarMessage.FormatInvariant(connection.Name);
+                    _shell.ProgressDialog.Show(ct => _connectionManager.ConnectAsync(connection, ct), progressBarMessage);
+                }
+
+                UpdateConnections();
+            }
         }
 
         private void UpdateConnections() {

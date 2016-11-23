@@ -18,17 +18,22 @@ namespace Microsoft.R.Host.Client.Host {
     internal sealed class RemoteBrokerClient : BrokerClient {
         private readonly IConsole _console;
         private readonly ICoreServices _services;
-        private string  _certificateHash;
+        private readonly object _verificationLock = new object();
+        private readonly CancellationToken _cancellationToken;
+
+        private string _certificateHash;
+        private bool? _certificateValidationResult;
 
         static RemoteBrokerClient() {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
         }
 
-        public RemoteBrokerClient(string name, Uri brokerUri, ICoreServices services, IConsole console)
+        public RemoteBrokerClient(string name, Uri brokerUri, ICoreServices services, IConsole console, CancellationToken cancellationToken)
             : base(name, brokerUri, brokerUri.Fragment, new RemoteCredentialsDecorator(brokerUri, services.Security, services.MainThread), services.Log, console) {
             _console = console;
             _services = services;
+            _cancellationToken = cancellationToken;
 
             CreateHttpClient(brokerUri);
             HttpClientHandler.ServerCertificateValidationCallback = ValidateCertificateHttpHandler;
@@ -45,8 +50,12 @@ namespace Microsoft.R.Host.Client.Host {
                 ? new RHostDisconnectedException(Resources.Error_BrokerNotRunning, exception)
                 : await base.HandleHttpRequestExceptionAsync(exception);
         }
-        
+
         private bool ValidateCertificateHttpHandler(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) {
+            if (_cancellationToken.IsCancellationRequested) {
+                return false;
+            }
+
             IsVerified = sslPolicyErrors == SslPolicyErrors.None;
             if (IsVerified) {
                 return true;
@@ -55,26 +64,29 @@ namespace Microsoft.R.Host.Client.Host {
             if (sslPolicyErrors.HasFlag(SslPolicyErrors.RemoteCertificateNotAvailable)) {
                 Log.WriteAsync(LogVerbosity.Minimal, MessageCategory.Error, Resources.Error_NoBrokerCertificate).DoNotWait();
                 _console.Write(Resources.Error_NoBrokerCertificate);
-            } else {
-                var hashString = certificate.GetCertHashString();
-                bool accepted = true;
+                return false;
+            }
 
+            lock (_verificationLock) {
+                if (_certificateValidationResult.HasValue) {
+                    return _certificateValidationResult.Value;
+                }
+
+                var hashString = certificate.GetCertHashString();
                 if (_certificateHash == null || !_certificateHash.EqualsOrdinal(hashString)) {
                     Log.WriteAsync(LogVerbosity.Minimal, MessageCategory.Warning, Resources.Trace_UntrustedCertificate.FormatInvariant(certificate.Subject)).DoNotWait();
 
                     var message = Resources.CertificateSecurityWarning.FormatInvariant(Uri.Host);
-                    var certificateTask = _services.Security.ValidateX509CertificateAsync(certificate, message);
-                    _services.Tasks.Wait(certificateTask);
+                    var task = _services.Security.ValidateX509CertificateAsync(certificate, message);
+                    _services.Tasks.Wait(task);
 
-                    accepted = certificateTask.Result;
-                    if (accepted) {
+                    _certificateValidationResult = task.Result;
+                    if (_certificateValidationResult.Value) {
                         _certificateHash = hashString;
                     }
                 }
-                return accepted;
+                return _certificateValidationResult.HasValue ? _certificateValidationResult.Value : false;
             }
-
-            return IsVerified;
         }
     }
 }

@@ -60,7 +60,7 @@
             <DataTemplate x:Key="EditConnectionDataTemplate" DataType="{x:Type viewModel:IConnectionViewModel}">
                 <AdornerDecorator>
                     <Grid Margin="0,6,0,8"
-                          Background="{DynamicResource {x:Static rwpf:Brushes.BackgroundBrushKey}}">
+                          Background="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundKey}}">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
@@ -206,7 +206,7 @@
                         <!-- connect button -->
                         <Button x:Name="ButtonConnect" Grid.Row="0"  Grid.Column="5" Style="{StaticResource ToolWindowButtonStyle}" Click="ButtonConnect_Click" 
                                 Visibility="{Binding Path=IsConnected, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}"
-                                Margin="0,0,8,0">
+                                Margin="0,0,8,0" Background="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundKey}}">
                             <Button.ToolTip>
                                 <TextBlock Text="{Binding Path=Name, StringFormat={x:Static components:Resources.ConnectionManager_ConnectTooltip}}" />
                             </Button.ToolTip>
@@ -214,12 +214,14 @@
                         </Button>
 
                         <!-- edit/properties button -->
-                        <Button x:Name="ButtonEdit" Grid.Row="0" Grid.Column="6" Style="{StaticResource EditButtonStyle}" Click="ButtonEdit_Click">
+                        <Button x:Name="ButtonEdit" Grid.Row="0" Grid.Column="6" Style="{StaticResource EditButtonStyle}" Click="ButtonEdit_Click"
+                                Background="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundKey}}">
                             <imaging:CrispImage  Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.Settings}" />
                         </Button>
 
                         <!-- delete button -->
-                        <Button x:Name="ButtonDelete" Grid.Row="0" Grid.Column="7" Style="{StaticResource DeleteButtonStyle}" Click="ButtonDelete_Click">
+                        <Button x:Name="ButtonDelete" Grid.Row="0" Grid.Column="7" Style="{StaticResource DeleteButtonStyle}" Click="ButtonDelete_Click"
+                                Background="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundKey}}">
                             <imaging:CrispImage  Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.Cancel}" />
                         </Button>
 
