@@ -18,7 +18,10 @@ namespace Microsoft.R.Host.Client.Host {
     internal sealed class RemoteBrokerClient : BrokerClient {
         private readonly IConsole _console;
         private readonly ICoreServices _services;
-        private string  _certificateHash;
+        private readonly SemaphoreSlim _verificationSemaphore = new SemaphoreSlim(1, 1);
+
+        private string _certificateHash;
+        private bool? _certificateValidationResult;
 
         static RemoteBrokerClient() {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
@@ -45,7 +48,7 @@ namespace Microsoft.R.Host.Client.Host {
                 ? new RHostDisconnectedException(Resources.Error_BrokerNotRunning, exception)
                 : await base.HandleHttpRequestExceptionAsync(exception);
         }
-        
+
         private bool ValidateCertificateHttpHandler(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) {
             IsVerified = sslPolicyErrors == SslPolicyErrors.None;
             if (IsVerified) {
@@ -55,26 +58,33 @@ namespace Microsoft.R.Host.Client.Host {
             if (sslPolicyErrors.HasFlag(SslPolicyErrors.RemoteCertificateNotAvailable)) {
                 Log.WriteAsync(LogVerbosity.Minimal, MessageCategory.Error, Resources.Error_NoBrokerCertificate).DoNotWait();
                 _console.Write(Resources.Error_NoBrokerCertificate);
-            } else {
-                var hashString = certificate.GetCertHashString();
-                bool accepted = true;
+                return false;
+            }
 
+            _verificationSemaphore.Wait();
+            try {
+
+                if (_certificateValidationResult.HasValue) {
+                    return _certificateValidationResult.Value;
+                }
+
+                var hashString = certificate.GetCertHashString();
                 if (_certificateHash == null || !_certificateHash.EqualsOrdinal(hashString)) {
                     Log.WriteAsync(LogVerbosity.Minimal, MessageCategory.Warning, Resources.Trace_UntrustedCertificate.FormatInvariant(certificate.Subject)).DoNotWait();
 
                     var message = Resources.CertificateSecurityWarning.FormatInvariant(Uri.Host);
-                    var certificateTask = _services.Security.ValidateX509CertificateAsync(certificate, message);
-                    _services.Tasks.Wait(certificateTask);
+                    var task = _services.Security.ValidateX509CertificateAsync(certificate, message);
+                    _services.Tasks.Wait(task);
 
-                    accepted = certificateTask.Result;
-                    if (accepted) {
+                    _certificateValidationResult = task.Result;
+                    if (_certificateValidationResult.Value) {
                         _certificateHash = hashString;
                     }
                 }
-                return accepted;
+                return _certificateValidationResult.HasValue ? _certificateValidationResult.Value : false;
+            } finally {
+                _verificationSemaphore.Release();
             }
-
-            return IsVerified;
         }
     }
 }
