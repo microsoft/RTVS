@@ -18,7 +18,7 @@ namespace Microsoft.R.Host.Client.Host {
     internal sealed class RemoteBrokerClient : BrokerClient {
         private readonly IConsole _console;
         private readonly ICoreServices _services;
-        private readonly SemaphoreSlim _verificationSemaphore = new SemaphoreSlim(1, 1);
+        private readonly object _verificationLock = new object();
         private readonly CancellationToken _cancellationToken;
 
         private string _certificateHash;
@@ -52,7 +52,7 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         private bool ValidateCertificateHttpHandler(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) {
-            if(_cancellationToken.IsCancellationRequested) {
+            if (_cancellationToken.IsCancellationRequested) {
                 return false;
             }
 
@@ -67,9 +67,7 @@ namespace Microsoft.R.Host.Client.Host {
                 return false;
             }
 
-            _verificationSemaphore.Wait();
-            try {
-
+            lock (_verificationLock) {
                 if (_certificateValidationResult.HasValue) {
                     return _certificateValidationResult.Value;
                 }
@@ -88,8 +86,6 @@ namespace Microsoft.R.Host.Client.Host {
                     }
                 }
                 return _certificateValidationResult.HasValue ? _certificateValidationResult.Value : false;
-            } finally {
-                _verificationSemaphore.Release();
             }
         }
     }
