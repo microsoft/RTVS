@@ -12,12 +12,14 @@ using System.Linq;
 
 namespace Microsoft.R.Host.Client {
     public class DataTransferSession : IDisposable {
+        private readonly IRSession _session;
         private readonly IRBlobService _blobService;
         private readonly IFileSystem _fs;
         private readonly List<IRBlobInfo> _cleanup;
 
-        public DataTransferSession(IRBlobService service, IFileSystem fs) {
-            _blobService = service;
+        public DataTransferSession(IRSession session, IFileSystem fs) {
+            _session = session;
+            _blobService = _session;
             _fs = fs;
             _cleanup = new List<IRBlobInfo>();
         }
@@ -148,6 +150,18 @@ namespace Microsoft.R.Host.Client {
             }
 
             return data;
+        }
+
+        /// <summary>
+        /// Copies file from local file path to Temp folder on the remote session.
+        /// </summary>
+        /// <param name="filePath">Path to the file to be sent to remote session.</param>
+        /// <param name="doCleanUp">true to add blob upon transfer for cleanup on dispose, false to ignore it after transfer.</param>
+        /// <returns>Path to the file on the remote machine.</returns>
+        public async Task<string> CopyFileToRemoteTempAsync(string filePath, bool doCleanUp = true, IProgress<long> progress = null) {
+            string fileName = Path.GetFileName(filePath);
+            var blobinfo = await SendFileAsync(filePath, doCleanUp, progress);
+            return await _session.EvaluateAsync<string>($"rtvs:::save_to_temp_folder({blobinfo.Id}, '{fileName}')", REvaluationKind.Normal);
         }
 
         public void Dispose() {

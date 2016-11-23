@@ -15,10 +15,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
     /// Interaction logic for ConnectionManagerControl.xaml
     /// </summary>
     public partial class ConnectionManagerControl : UserControl {
-
         private IConnectionManagerViewModel Model => DataContext as IConnectionManagerViewModel;
 
-           
+
         public ConnectionManagerControl(ICoreShell coreShell) {
             InitializeComponent();
 
@@ -49,7 +48,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
 
         private void ButtonEdit_Click(object sender, RoutedEventArgs e) {
             Model?.Edit(GetConnection(e));
-            ScrollEditedIntoView(); ;
+            ScrollEditedIntoView();
         }
 
         private void ButtonDelete_Click(object sender, RoutedEventArgs e) {
@@ -82,7 +81,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
         }
 
         private void Connection_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
-            Model?.Connect(GetConnection(e));
+            if ((e.Source as ListBoxItem)?.IsSelected == false) {
+                Model?.Connect(GetConnection(e));
+            }
             e.Handled = true;
         }
 

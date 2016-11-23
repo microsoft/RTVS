@@ -1,10 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.IO;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.Extensions;
+using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
@@ -47,7 +50,16 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
 
             _interactiveWorkflow.Shell.SaveFileIfDirty(filePath);
             activeWindow.Container.Show(focus: false, immediate: false);
-            await _interactiveWorkflow.Operations.SourceFileAsync(filePath, _echo, textView.TextBuffer.GetEncoding());
+
+            var session = _interactiveWorkflow.RSession;
+            if (session.IsRemote) {
+                using (DataTransferSession dts = new DataTransferSession(_interactiveWorkflow.RSession, new FileSystem())) {
+                    string remotePath = await dts.CopyFileToRemoteTempAsync(filePath);
+                    await _interactiveWorkflow.Operations.SourceFileAsync(remotePath, _echo, textView.TextBuffer.GetEncoding());
+                }
+            } else {
+                await _interactiveWorkflow.Operations.SourceFileAsync(filePath, _echo, textView.TextBuffer.GetEncoding());
+            }
             return CommandResult.Executed;
         }
 

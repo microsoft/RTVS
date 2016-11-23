@@ -12,6 +12,7 @@ using Microsoft.Common.Core.OS;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
+using Microsoft.Common.Core.Json;
 
 namespace Microsoft.R.Host.Protocol {
     public class RUserProfileCreator {
@@ -79,7 +80,7 @@ namespace Microsoft.R.Host.Protocol {
 
             string json = Encoding.Unicode.GetString(requestRaw, 0, bytesRead);
 
-            var requestData = JsonConvert.DeserializeObject<RUserProfileCreateRequest>(json);
+            var requestData = Json.DeserializeObject<RUserProfileCreateRequest>(json);
 
             var result = userProfileService.CreateUserProfile(requestData, logger);
 
