@@ -22,6 +22,8 @@ namespace Microsoft.Common.Core.Disposables {
 
         public bool IsDisposed => _cts.IsCancellationRequested;
 
+        public CancellationToken CancellationToken => _cts.Token;
+
         public void ThrowIfDisposed() {
             if (!_cts.IsCancellationRequested) {
                 return;
