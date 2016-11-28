@@ -35,13 +35,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
         }
 
         private void ButtonConnect_Click(object sender, RoutedEventArgs e) {
-            var connection = GetConnection(e);
-            if (connection != Model.EditedConnection) {
-                Model?.CancelEdit();
-            } else {
-                Model?.Save(connection);
-            }
-            Model?.Connect(connection);
+            HandleConnect(e);
         }
 
         private void ButtonAdd_Click(object sender, RoutedEventArgs e) {
@@ -87,11 +81,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
         }
 
         private void Connection_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
-            var connection = GetConnection(e);
-            if (connection != Model.EditedConnection) {
-                Model?.CancelEdit();
-                Model?.Connect(GetConnection(e));
-            }
+            HandleConnect(e);
             e.Handled = true;
         }
 
@@ -101,6 +91,16 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
 
         private void PathTextBox_TextChanged(object sender, TextChangedEventArgs e) {
             ((sender as TextBox)?.DataContext as IConnectionViewModel)?.UpdateName();
+        }
+
+        private void HandleConnect(RoutedEventArgs e) {
+            var connection = GetConnection(e);
+            if (connection != Model.EditedConnection) {
+                Model?.CancelEdit();
+            } else {
+                Model?.Save(connection);
+            }
+            Model?.Connect(connection);
         }
     }
 }
