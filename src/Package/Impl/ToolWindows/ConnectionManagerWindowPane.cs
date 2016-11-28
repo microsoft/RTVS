@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.ConnectionManager.Implementation;
-using Microsoft.R.Host.Client;
+using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -25,6 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
         public ConnectionManagerWindowPane(IConnectionManager connectionManager, ICoreShell coreShell) {
             _connectionManager = connectionManager;
             _coreShell = coreShell;
+            BitmapImageMoniker = KnownMonikers.ImmediateWindow;
             Caption = Resources.WorkspacesWindowCaption;
         }
 

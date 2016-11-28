@@ -182,7 +182,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
 #else
         [DefaultValue(LogVerbosity.Normal)]
 #endif
-        public LogVerbosity LogLevel {
+        public LogVerbosity LogVerbosity {
             get {
 #if DEBUG
                 return _holder.GetValue<LogVerbosity>(LogVerbosity.Traffic);
