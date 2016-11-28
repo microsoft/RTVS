@@ -13,7 +13,6 @@ namespace Microsoft.R.Host.Client.Host {
         Uri Uri { get; }
         bool IsVerified { get; }
 
-        Task PingAsync();
         Task<RHost> ConnectAsync(BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken));
         Task TerminateSessionAsync(string name, CancellationToken cancellationToken = default(CancellationToken));
         Task<string> HandleUrlAsync(string url, CancellationToken cancellationToken);

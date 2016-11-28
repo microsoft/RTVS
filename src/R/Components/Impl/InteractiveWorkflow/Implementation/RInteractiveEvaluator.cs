@@ -239,13 +239,13 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
         private void Write(string message) {
             if (CurrentWindow != null && !_crProcessor.ProcessMessage(message)) {
-                _coreShell.DispatchOnUIThread(() => CurrentWindow.Write(message));
+                _coreShell.DispatchOnUIThread(() => CurrentWindow?.Write(message));
             }
         }
 
         private void WriteError(string message) {
             if (CurrentWindow != null) {
-                _coreShell.DispatchOnUIThread(() => CurrentWindow.WriteError(message));
+                _coreShell.DispatchOnUIThread(() => CurrentWindow?.WriteError(message));
             }
         }
 

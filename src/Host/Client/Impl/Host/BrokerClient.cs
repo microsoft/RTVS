@@ -30,6 +30,10 @@ namespace Microsoft.R.Host.Client.Host {
 #else
             TimeSpan.FromSeconds(5);
 #endif
+        private static IReadOnlyDictionary<Type, string> _typeToEndpointMap = new Dictionary<Type, string>() {
+            { typeof(AboutHost), "info/about"},
+            { typeof(HostLoad), "info/load"}
+        };
 
         private readonly string _interpreterId;
         private readonly ICredentialsDecorator _credentials;
@@ -72,33 +76,23 @@ namespace Microsoft.R.Host.Client.Host {
 
         public void Dispose() => DisposableBag.TryDispose();
 
-        public async Task PingAsync() {
-            if (HttpClient != null) {
-                // Just in case ping was disable for security reasons, try connecting to the broker anyway.
-                try {
-                    await GetHostInformationAsync<AboutHost>(CancellationToken.None);
-                } catch (HttpRequestException ex) {
-                    throw await HandleHttpRequestExceptionAsync(ex);
-                }
-            }
-        }
-
-        private static IReadOnlyDictionary<Type, string> _typeToEndpointMap = new Dictionary<Type, string>() {
-            { typeof(AboutHost), "info/about"},
-            { typeof(HostLoad), "info/load"}
-        };
-
         public async Task<T> GetHostInformationAsync<T>(CancellationToken cancellationToken) {
             string result = null;
             try {
                 string endpoint;
-                if (HttpClient != null && _typeToEndpointMap.TryGetValue(typeof(T), out endpoint)) {
-                    var response = await HttpClient.GetAsync(endpoint, cancellationToken);
-                    result = await response?.Content.ReadAsStringAsync();
+                if (!_typeToEndpointMap.TryGetValue(typeof(T), out endpoint)) {
+                    throw new ArgumentException($"There is no endpoint for type {typeof(T)}");
                 }
-            } catch (OperationCanceledException) { } catch(HttpRequestException) { }
 
-            return !string.IsNullOrEmpty(result) ? Json.DeserializeObject<T>(result) : default(T);
+                if (HttpClient != null) {
+                    var response = await HttpClient.GetAsync(endpoint, cancellationToken);
+                    result = response != null ? await response.Content.ReadAsStringAsync() : null;
+                }
+
+                return !string.IsNullOrEmpty(result) ? Json.DeserializeObject<T>(result) : default(T);
+            } catch (HttpRequestException ex) {
+                throw new RHostDisconnectedException(Resources.Error_HostNotResponding.FormatInvariant(ex.Message), ex);
+            }
         }
 
         public virtual async Task<RHost> ConnectAsync(BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken)) {
@@ -118,9 +112,7 @@ namespace Microsoft.R.Host.Client.Host {
 
                 await CreateBrokerSessionAsync(connectionInfo.Name, connectionInfo.RCommandLineArguments, cancellationToken);
                 var webSocket = await ConnectToBrokerAsync(connectionInfo.Name, cancellationToken);
-                var host = CreateRHost(connectionInfo.Name, connectionInfo.Callbacks, webSocket);
-                await GetHostInformationAsync<AboutHost>(cancellationToken);
-                return host;
+                return CreateRHost(connectionInfo.Name, connectionInfo.Callbacks, webSocket);
             } catch (HttpRequestException ex) {
                 throw await HandleHttpRequestExceptionAsync(ex);
             }

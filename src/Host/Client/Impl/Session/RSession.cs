@@ -63,6 +63,7 @@ namespace Microsoft.R.Host.Client.Session {
         public bool IsHostRunning => _isHostRunning;
         public Task HostStarted => _initializationTcs.Task;
         public bool IsRemote => BrokerClient.IsRemote;
+        public bool RestartOnBrokerSwitch { get; set; }
 
         internal IBrokerClient BrokerClient { get; }
         internal bool IsDisposed => _disposeToken.IsDisposed;
@@ -791,8 +792,10 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
                             await _session.CancelAllAsync(cancellationToken);
                         }
 
-                        // Start new RHost
-                        await _session.StartHostAsyncBackground(_hostToSwitch, cancellationToken);
+                        if (_session.RestartOnBrokerSwitch) {
+                            // Start new RHost
+                            await _session.StartHostAsyncBackground(_hostToSwitch, cancellationToken);
+                        }
 
                         // Shut down the old host, gracefully if possible, and wait for old hostRunTask to exit;
                         if (hostRunTask != null) {
