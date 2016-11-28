@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.ComponentModel.Composition;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
@@ -45,7 +44,7 @@ namespace Microsoft.R.Support.Help {
                 }
 
                 if (Session == null) {
-                    Session = _sessionProvider.GetOrCreate(GuidList.IntellisenseRSessionGuid);
+                    Session = _sessionProvider.GetOrCreate(SessionGuids.IntellisenseRSessionGuid);
                 }
 
                 if (!Session.IsHostRunning) {

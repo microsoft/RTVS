@@ -35,7 +35,13 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
         }
 
         private void ButtonConnect_Click(object sender, RoutedEventArgs e) {
-            Model?.Connect(GetConnection(e));
+            var connection = GetConnection(e);
+            if (connection != Model.EditedConnection) {
+                Model?.CancelEdit();
+            } else {
+                Model?.Save(connection);
+            }
+            Model?.Connect(connection);
         }
 
         private void ButtonAdd_Click(object sender, RoutedEventArgs e) {

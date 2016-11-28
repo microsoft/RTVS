@@ -7,7 +7,6 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Events;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -48,7 +47,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
         public IRPackageManagerVisualComponent VisualComponent { get; private set; }
 
         public RPackageManager(IRSettings settings, IRInteractiveWorkflow interactiveWorkflow, Action dispose) {
-            _session = interactiveWorkflow.RSessions.GetOrCreate(GuidList.PackageManagerRSessionGuid);
+            _session = interactiveWorkflow.RSessions.GetOrCreate(SessionGuids.PackageManagerRSessionGuid);
             _settings = settings;
             _interactiveWorkflow = interactiveWorkflow;
             _loadedPackagesEvent = new DirtyEventSource(this);
