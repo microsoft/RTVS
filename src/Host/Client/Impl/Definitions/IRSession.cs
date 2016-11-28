@@ -23,6 +23,7 @@ namespace Microsoft.R.Host.Client {
         bool IsHostRunning { get; }
         Task HostStarted { get; }
         bool IsRemote { get; }
+        bool RestartOnBrokerSwitch { get; set; }
 
         Task<IRSessionInteraction> BeginInteractionAsync(bool isVisible = true, CancellationToken cancellationToken = default(CancellationToken));
         Task<IRSessionEvaluation> BeginEvaluationAsync(CancellationToken cancellationToken = default(CancellationToken));

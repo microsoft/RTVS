@@ -28,7 +28,6 @@ namespace Microsoft.R.Host.Client.Host {
         public Uri Uri => _broker.Uri;
         public bool IsVerified => _broker.IsVerified;
 
-        public Task PingAsync() => _broker.PingAsync();
         public Task<T> GetHostInformationAsync<T>(CancellationToken cancellationToken) => _broker.GetHostInformationAsync<T>(cancellationToken);
 
         public Task<RHost> ConnectAsync(BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken)) 

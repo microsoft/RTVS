@@ -71,17 +71,13 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project {
                     : projectItems.Except(itemsInProjectFolder).ToImmutableArray());
         }
 
-        public Task<ProjectItem> RenameOwnedSourceItemAsync(IProjectItem projectItem, string newValue) {
-            return GetMsBuildItemByProjectItem(projectItem);
-        }
+        public Task<ProjectItem> RenameOwnedSourceItemAsync(IProjectItem projectItem, string newValue) => RenameProjectItem(projectItem, newValue);
 
-        public Task<ProjectItem> SetItemTypeOfOwnedSourceItemAsync(IProjectItem projectItem, string newItemType) {
-            return GetMsBuildItemByProjectItem(projectItem);
-        }
+        public Task<ProjectItem> SetItemTypeOfOwnedSourceItemAsync(IProjectItem projectItem, string newItemType) => GetMsBuildItemByProjectItem(projectItem);
 
-#endregion
+        #endregion
 
-#region IProjectFolderItemProviderExtension implementation
+        #region IProjectFolderItemProviderExtension implementation
 
         public Task<bool> CheckFolderItemOwnershipAsync(string evaluatedInclude) {
             return _unconfiguredProject.IsOutsideProjectDirectory(_unconfiguredProject.MakeRooted(evaluatedInclude))
@@ -106,22 +102,41 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project {
                     : projectItems.Except(itemsInProjectFolder).ToImmutableArray());
         }
 
-        public Task<ProjectItem> RenameOwnedFolderItemAsync(IProjectItem projectItem, string newValue) {
-            return GetMsBuildItemByProjectItem(projectItem);
-        }
+        public Task<ProjectItem> RenameOwnedFolderItemAsync(IProjectItem projectItem, string newValue) => RenameProjectItem(projectItem, newValue);
 
-#endregion
+        #endregion
 
         private bool CheckProjectFileOwnership(string projectFilePath) {
             return _unconfiguredProject.GetInMemoryTargetsFileFullPath().EqualsIgnoreCase(projectFilePath);
         }
 
+        private async Task<ProjectItem> RenameProjectItem(IProjectItem projectItem, string newValue) {
+            using (var access = await _projectLockService.ReadLockAsync()) {
+                var project = await access.GetProjectAsync(_configuredProject);
+                var msbuildItem = project
+                    .GetItemsByEvaluatedInclude(projectItem.EvaluatedInclude)
+                    .FirstOrDefault(pi => pi.ItemType.EqualsIgnoreCase(projectItem.ItemType));
+
+                if (projectItem.UnevaluatedInclude.EqualsOrdinal(newValue)) {
+                    return msbuildItem;
+                }
+
+                newValue = _unconfiguredProject.MakeRooted(newValue);
+                if (!_unconfiguredProject.IsOutsideProjectDirectory(newValue)) {
+                    newValue = _unconfiguredProject.MakeRelative(newValue);
+                }
+                
+                return project.GetItems(projectItem.ItemType)
+                    .FirstOrDefault(pi => pi.UnevaluatedInclude.EqualsIgnoreCase(newValue)) ?? msbuildItem;
+            }
+        }
+
         private async Task<ProjectItem> GetMsBuildItemByProjectItem(IProjectItem projectItem) {
             using (var access = await _projectLockService.ReadLockAsync()) {
                 var project = await access.GetProjectAsync(_configuredProject);
-                var item =  project.GetItemsByEvaluatedInclude(projectItem.EvaluatedInclude)
-                    .FirstOrDefault(pi => StringComparer.OrdinalIgnoreCase.Equals(pi.ItemType, projectItem.ItemType));
-                return item;
+                return project
+                    .GetItemsByEvaluatedInclude(projectItem.EvaluatedInclude)
+                    .FirstOrDefault(pi => pi.ItemType.EqualsIgnoreCase(projectItem.ItemType));
             }
         }
     }
