@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.History.Implementation;
 using Microsoft.R.Support.Settings;
+using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.Commands;
@@ -36,6 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
             _historyProvider = historyProvider;
             _textEditorFactory = textEditorFactory;
 
+            BitmapImageMoniker = KnownMonikers.History;
             Caption = Resources.HistoryWindowCaption;
             ToolBar = new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.historyWindowToolBarId);
         }
