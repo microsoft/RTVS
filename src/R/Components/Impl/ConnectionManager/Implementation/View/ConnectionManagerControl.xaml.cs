@@ -76,7 +76,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
 
         private void Connection_KeyUp(object sender, KeyEventArgs e) {
             if (e.Key == Key.Enter) {
-                Model?.Connect(GetConnection(e));
+                HandleConnect(e);
             }
         }
 
@@ -94,13 +94,16 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
         }
 
         private void HandleConnect(RoutedEventArgs e) {
-            var connection = GetConnection(e);
-            if (connection != Model.EditedConnection) {
-                Model?.CancelEdit();
-            } else {
-                Model?.Save(connection);
+            var model = Model;
+            if (model != null) {
+                var connection = GetConnection(e);
+                if (connection != model.EditedConnection) {
+                    model.CancelEdit();
+                } else {
+                    model.Save(connection);
+                }
+                model.Connect(connection);
             }
-            Model?.Connect(connection);
         }
     }
 }
