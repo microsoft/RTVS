@@ -23,7 +23,7 @@ namespace Microsoft.R.Components.ConnectionManager {
 
         IConnection AddOrUpdateConnection(string name, string path, string rCommandLineArguments, bool isUserCreated);
         IConnection GetOrAddConnection(string name, string path, string rCommandLineArguments, bool isUserCreated);
-        bool TryRemove(Uri id);
+        bool TryRemove(string name);
 
         Task ConnectAsync(IConnectionInfo connection, CancellationToken cancellationToken = default(CancellationToken));
         Task ReconnectAsync(CancellationToken cancellationToken = default(CancellationToken));
