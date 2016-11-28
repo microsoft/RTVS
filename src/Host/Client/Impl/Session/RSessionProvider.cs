@@ -308,12 +308,11 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         private async Task UpdateHostLoadAsync(CancellationToken ct = default(CancellationToken)) {
-            HostLoad hostLoad;
+            HostLoad hostLoad = null;
             using (await _connectArwl.ReaderLockAsync(ct)) {
                 try {
                     hostLoad = await Broker.GetHostInformationAsync<HostLoad>(ct);
                 } catch (RHostDisconnectedException) {
-                    hostLoad = null;
                 }
             }
 
