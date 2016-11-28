@@ -48,7 +48,7 @@ namespace Microsoft.R.Components.Information {
             _sessionProvider.BrokerStateChanged += BrokerStateChanged;
         }
 
-        private void BrokerStateChanged(object sender, BrokerStateChangedEventArgs e) {
+        internal void BrokerStateChanged(object sender, BrokerStateChangedEventArgs e) {
             _shell.DispatchOnUIThread(() => {
                 CpuLoad = e.HostLoad.CpuLoad;
                 MemoryLoad = e.HostLoad.MemoryLoad;
