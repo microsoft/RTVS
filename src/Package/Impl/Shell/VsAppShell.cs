@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Design;
@@ -62,21 +61,12 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             FileDialog = new VsFileDialog(this);
 
             _settings = settings;
-            _settings.PropertyChanged += OnSettingsChanged;
         }
 
         public static void EnsureInitialized() {
             var instance = GetInstance();
             if (instance.MainThread == null) {
                 instance.Initialize();
-            }
-        }
-
-        private void OnSettingsChanged(object sender, PropertyChangedEventArgs e) {
-            if (e.PropertyName == nameof(IRSettings.LogVerbosity)) {
-                // Only set it once per session
-                _settings.PropertyChanged -= OnSettingsChanged;
-                _coreServices.LoggingServices.Permissions.CurrentVerbosity = _settings.LogVerbosity;
             }
         }
 

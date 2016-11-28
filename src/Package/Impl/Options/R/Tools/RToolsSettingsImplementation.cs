@@ -27,6 +27,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
     internal sealed class RToolsSettingsImplementation : BindableBase, IRToolsSettings, IRPersistentSettings {
         private const int MaxDirectoryEntries = 8;
         private readonly ISettingsStorage _settings;
+        private readonly ILoggingPermissions _loggingPermissions;
 
         private string _cranMirror;
         private string _workingDirectory;
@@ -54,8 +55,9 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         private LogVerbosity _logLevel = LogVerbosity.Normal;
 
         [ImportingConstructor]
-        public RToolsSettingsImplementation(ISettingsStorage settings) {
+        public RToolsSettingsImplementation(ISettingsStorage settings, ILoggingPermissions loggingPermissions) {
             _settings = settings;
+            _loggingPermissions = loggingPermissions;
             _workingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         }
 
@@ -208,7 +210,11 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         }
 
         #region IRPersistentSettings
-        public void LoadSettings() => _settings.LoadPropertyValues(this);
+        public void LoadSettings() {
+            _settings.LoadPropertyValues(this);
+            _loggingPermissions.CurrentVerbosity = LogVerbosity;
+        }
+
         public void SaveSettings() {
             _settings.SavePropertyValues(this);
             _settings.Persist();
