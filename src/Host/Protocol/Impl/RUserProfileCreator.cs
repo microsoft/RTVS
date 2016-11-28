@@ -1,18 +1,17 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.IO;
 using System.IO.Pipes;
 using System.Security.Principal;
-using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.OS;
+using Microsoft.Common.Core.Json;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using System;
-using Microsoft.Common.Core.Json;
 
 namespace Microsoft.R.Host.Protocol {
     public class RUserProfileCreator {
@@ -22,7 +21,7 @@ namespace Microsoft.R.Host.Protocol {
             SecurityIdentifier sid = new SecurityIdentifier(WellKnownSidType.AuthenticatedUserSid, null);
             PipeAccessRule par = new PipeAccessRule(sid, PipeAccessRights.ReadWrite, System.Security.AccessControl.AccessControlType.Allow);
             ps.AddAccessRule(par);
-            using (NamedPipeServerStream server = new NamedPipeServerStream("Microsoft.R.Host.UserProfile.Creator{b101cc2d-156e-472e-8d98-b9d999a93c7a}", PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous, 1024, 1024, ps)) {
+            using (NamedPipeServerStream server = new NamedPipeServerStream("Microsoft.R.Host.UserProfile.Creator{b101cc2d-156e-472e-8d98-b9d999a93c7a}", PipeDirection.InOut, NamedPipeServerStream.MaxAllowedServerInstances, PipeTransmissionMode.Byte, PipeOptions.Asynchronous, 1024, 1024, ps)) {
                 await server.WaitForConnectionAsync(ct);
 
                 ManualResetEventSlim forceDisconnect = new ManualResetEventSlim(false);
@@ -81,6 +80,7 @@ namespace Microsoft.R.Host.Protocol {
             string json = Encoding.Unicode.GetString(requestRaw, 0, bytesRead);
 
             var requestData = Json.DeserializeObject<RUserProfileCreateRequest>(json);
+
 
             var result = userProfileService.CreateUserProfile(requestData, logger);
 
