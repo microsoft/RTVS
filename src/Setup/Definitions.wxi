@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Include>
-  <?define ProductName="R Tools for Visual Studio 2015" ?>
+  <?define ProductNamePart1="R Tools " ?>
+  <?define ProductNamePart2=" for Visual Studio 15 Preview" ?>
+  <?define ProductName="$(var.ProductNamePart1)$(var.ProductVersion)$(var.ProductNamePart2)" ?>
 
   <!-- 
      Uncomment this to simulate loc build.

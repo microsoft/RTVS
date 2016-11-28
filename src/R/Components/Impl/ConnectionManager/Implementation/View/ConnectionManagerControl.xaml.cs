@@ -35,7 +35,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
         }
 
         private void ButtonConnect_Click(object sender, RoutedEventArgs e) {
-            Model?.Connect(GetConnection(e));
+            HandleConnect(e);
         }
 
         private void ButtonAdd_Click(object sender, RoutedEventArgs e) {
@@ -76,14 +76,12 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
 
         private void Connection_KeyUp(object sender, KeyEventArgs e) {
             if (e.Key == Key.Enter) {
-                Model?.Connect(GetConnection(e));
+                HandleConnect(e);
             }
         }
 
         private void Connection_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
-            if ((e.Source as ListBoxItem)?.IsSelected == false) {
-                Model?.Connect(GetConnection(e));
-            }
+            HandleConnect(e);
             e.Handled = true;
         }
 
@@ -93,6 +91,19 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
 
         private void PathTextBox_TextChanged(object sender, TextChangedEventArgs e) {
             ((sender as TextBox)?.DataContext as IConnectionViewModel)?.UpdateName();
+        }
+
+        private void HandleConnect(RoutedEventArgs e) {
+            var model = Model;
+            if (model != null) {
+                var connection = GetConnection(e);
+                if (connection != model.EditedConnection) {
+                    model.CancelEdit();
+                } else {
+                    model.Save(connection);
+                }
+                model.Connect(connection);
+            }
         }
     }
 }

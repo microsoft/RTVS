@@ -54,7 +54,7 @@ namespace Microsoft.R.Host.Client.Session {
         public IEnumerable<IRSession> GetSessions() {
             return _sessions.Values;
         }
-        
+
         public void Dispose() {
             if (!_disposeToken.TryMarkDisposed()) {
                 return;
@@ -267,7 +267,7 @@ namespace Microsoft.R.Host.Client.Session {
                     ct.ThrowIfCancellationRequested();
                 } catch (OperationCanceledException) when (t.IsSessionDisposed) {
                     ct.ThrowIfCancellationRequested();
-                }  
+                }
             }, cancellationToken);
         }
 
@@ -279,7 +279,7 @@ namespace Microsoft.R.Host.Client.Session {
                     ct.ThrowIfCancellationRequested();
                 } catch (OperationCanceledException) when (s.IsDisposed) {
                     ct.ThrowIfCancellationRequested();
-                }  
+                }
             }, cancellationToken);
         }
 

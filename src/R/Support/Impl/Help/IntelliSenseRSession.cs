@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.ComponentModel.Composition;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
@@ -14,7 +13,6 @@ using Microsoft.R.Support.Settings;
 namespace Microsoft.R.Support.Help {
     [Export(typeof(IIntellisenseRSession))]
     public sealed class IntelliSenseRSession : IIntellisenseRSession {
-        private static readonly Guid SessionId = new Guid("8BEF9C06-39DC-4A64-B7F3-0C68353362C9");
         private readonly ICoreShell _coreShell;
         private readonly IRSessionProvider _sessionProvider;
         private readonly BinaryAsyncLock _lock = new BinaryAsyncLock();
@@ -46,7 +44,7 @@ namespace Microsoft.R.Support.Help {
                 }
 
                 if (Session == null) {
-                    Session = _sessionProvider.GetOrCreate(SessionId);
+                    Session = _sessionProvider.GetOrCreate(SessionGuids.IntellisenseRSessionGuid);
                 }
 
                 if (!Session.IsHostRunning) {

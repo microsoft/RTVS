@@ -60,7 +60,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             RSessions = new RSessionProvider(coreShell.Services, new InteractiveWindowConsole(this));
             RSessions.BrokerChanging += OnBrokerChanging;
 
-            RSession = RSessions.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
+            RSession = RSessions.GetOrCreate(SessionGuids.InteractiveWindowRSessionGuid);
             RSession.RestartOnBrokerSwitch = true;
             Connections = connectionsProvider.CreateConnectionManager(this);
 
