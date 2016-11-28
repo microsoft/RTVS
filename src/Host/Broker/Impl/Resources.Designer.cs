@@ -223,15 +223,6 @@ namespace Microsoft.R.Host.Broker {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Windows Workstation only allows a single user session..
-        /// </summary>
-        internal static string Exception_MaxAllowedUsers {
-            get {
-                return ResourceManager.GetString("Exception_MaxAllowedUsers", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Pipe already has a client end.
         /// </summary>
         internal static string Exception_PipeHasClientEnd {

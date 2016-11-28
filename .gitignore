@@ -120,3 +120,5 @@ TestFiles/
 *.db
 *.opendb
 *.vstman
+*.db-wal
+*.db-shm
