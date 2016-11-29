@@ -16,17 +16,19 @@ namespace Microsoft.R.Editor.QuickInfo {
     [Name("R ToolTip QuickInfo Controller")]
     [ContentType(RContentTypeDefinition.ContentType)]
     sealed class QuickInfoControllerProvider : IIntellisenseControllerProvider {
-        [Import]
-        private IQuickInfoBroker quickInfoBroker { get; set; }
+        private readonly IQuickInfoBroker _quickInfoBroker;
+        private readonly ICoreShell _shell;
 
-        [Import]
-        private ICoreShell Shell { get; set; }
+        [ImportingConstructor]
+        public QuickInfoControllerProvider(IQuickInfoBroker quickInfoBroker, ICoreShell shell) {
+            _quickInfoBroker = quickInfoBroker;
+            _shell = shell;
+        }
 
         public IIntellisenseController TryCreateIntellisenseController(ITextView textView, IList<ITextBuffer> subjectBuffers) {
             QuickInfoController quickInfoController = ServiceManager.GetService<QuickInfoController>(textView);
             if (quickInfoController == null) {
-                quickInfoController = new QuickInfoController(textView, subjectBuffers, quickInfoBroker);
-                ServiceManager.AddService(quickInfoController, textView, Shell);
+                quickInfoController = new QuickInfoController(textView, subjectBuffers, _quickInfoBroker, _shell);
             }
 
             return quickInfoController;
