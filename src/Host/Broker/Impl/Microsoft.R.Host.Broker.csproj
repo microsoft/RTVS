@@ -76,8 +76,9 @@
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="About\LoadController.cs" />
-    <Compile Include="About\AboutController.cs" />
+    <Compile Include="About\InfoHelper.cs" />
+    <Compile Include="About\LoadInfo.cs" />
+    <Compile Include="About\AboutInfo.cs" />
     <Compile Include="ApiErrorResult.cs" />
     <Compile Include="Extensions\ExceptionExtensions.cs" />
     <Compile Include="Interpreters\Interpreter.cs" />

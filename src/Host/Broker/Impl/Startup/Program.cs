@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Server.Kestrel.Https;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.R.Host.Broker.About;
 using Microsoft.R.Host.Broker.Logging;
 using Microsoft.R.Host.Broker.Security;
 using Microsoft.R.Host.Protocol;
@@ -63,6 +64,8 @@ namespace Microsoft.R.Host.Broker.Startup {
                 CreateWebHost(httpsOptions).Run();
             } catch(AggregateException ex) when (ex.IsPortInUseException()) {
                 _logger.LogError(0, ex.InnerException, Resources.Error_ConfiguredPortNotAvailable, uri?.Port);
+            } finally {
+                LoadInfo.Uninitialize();
             }
         }
 
