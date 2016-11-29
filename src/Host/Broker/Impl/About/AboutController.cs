@@ -5,21 +5,28 @@ using System;
 using System.Linq;
 using System.Management;
 using System.Reflection;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.R.Host.Broker.Interpreters;
+using Microsoft.R.Host.Broker.Security;
 using Microsoft.R.Host.Broker.Sessions;
 using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Broker.About {
-    public class AboutInfo {
-        private static InterpreterManager _interpManager;
-        private static SessionManager _sessionManager;
+    [Authorize(Policy = Policies.RUser)]
+    [Route("/info/about")]
+    public class AboutController : Controller {
+        private readonly InterpreterManager _interpManager;
+        private readonly SessionManager _sessionManager;
 
-        public static void Initialize(InterpreterManager interpManager, SessionManager sessionManager) {
+        public AboutController(InterpreterManager interpManager, SessionManager sessionManager) {
             _interpManager = interpManager;
             _sessionManager = sessionManager;
         }
 
-        public static AboutHost GetAboutHost() {
+        [AllowAnonymous]
+        [HttpGet]
+        public AboutHost Get() {
             var a = new AboutHost();
 
             a.Version = Assembly.GetExecutingAssembly().GetName().Version;
@@ -45,7 +52,7 @@ namespace Microsoft.R.Host.Broker.About {
             return a;
         }
 
-        private static long GetSizeInGB(ManagementBaseObject mo, string name) {
+        private long GetSizeInGB(ManagementBaseObject mo, string name) {
             int result;
             var x = mo[name].ToString();
             return Int32.TryParse(x, out result) ? result / 1024 : 0;

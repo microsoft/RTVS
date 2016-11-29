@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Common.Core.IO;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.R.Host.Broker.About;
 using Microsoft.R.Host.Broker.Interpreters;
 using Microsoft.R.Host.Broker.Lifetime;
 using Microsoft.R.Host.Broker.Logging;
@@ -48,14 +47,10 @@ namespace Microsoft.R.Host.Broker.Startup {
             IHostingEnvironment env,
             LifetimeManager lifetimeManager,
             InterpreterManager interpreterManager,
-            SecurityManager securityManager,
-            SessionManager sessionManager
+            SecurityManager securityManager
         ) {
             lifetimeManager.Initialize();
             interpreterManager.Initialize();
-
-            AboutInfo.Initialize(interpreterManager, sessionManager);
-            LoadInfo.Initialize();
 
             app.UseWebSockets(new WebSocketOptions {
                 ReplaceFeature = true,
@@ -65,14 +60,6 @@ namespace Microsoft.R.Host.Broker.Startup {
 
             var routeBuilder = new RouteBuilder(app, new RouteHandler(RemoteUriHelper.HandlerAsync));
             routeBuilder.MapRoute("help_and_shiny", "remoteuri");
-            app.UseRouter(routeBuilder.Build());
-
-            routeBuilder = new RouteBuilder(app, new RouteHandler(InfoHelper.HandleAboutAsync));
-            routeBuilder.MapRoute("about", "info/about");
-            app.UseRouter(routeBuilder.Build());
-
-            routeBuilder = new RouteBuilder(app, new RouteHandler(InfoHelper.HandleLoadAsync));
-            routeBuilder.MapRoute("load", "info/load");
             app.UseRouter(routeBuilder.Build());
 
             app.UseBasicAuthentication(options => {

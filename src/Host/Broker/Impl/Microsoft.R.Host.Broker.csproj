@@ -76,10 +76,10 @@
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="About\InfoHelper.cs" />
-    <Compile Include="About\LoadInfo.cs" />
-    <Compile Include="About\AboutInfo.cs" />
+    <Compile Include="About\LoadController.cs" />
+    <Compile Include="About\AboutController.cs" />
     <Compile Include="ApiErrorResult.cs" />
+    <Compile Include="Extensions\BasicSignInContextExtensions.cs" />
     <Compile Include="Extensions\ExceptionExtensions.cs" />
     <Compile Include="Interpreters\Interpreter.cs" />
     <Compile Include="Interpreters\InterpreterManager.cs" />

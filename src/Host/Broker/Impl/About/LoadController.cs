@@ -8,16 +8,21 @@ using System.Management;
 using System.Net.NetworkInformation;
 using System.Threading;
 using System.Timers;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.R.Host.Broker.Security;
 using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Broker.About {
-    public class LoadInfo {
+    [Authorize(Policy = Policies.RUser)]
+    [Route("/info/load")]
+    public class LoadController : Controller {
         // https://msdn.microsoft.com/en-us/library/2fh4x1xb(v=vs.100).aspx
-        private static PerformanceCounter _cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
-        private static System.Timers.Timer _timer = new System.Timers.Timer();
-        private static HostLoad _hostLoad = new HostLoad();
+        private readonly PerformanceCounter _cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
+        private readonly System.Timers.Timer _timer = new System.Timers.Timer();
+        private readonly HostLoad _hostLoad = new HostLoad();
 
-        public static void Initialize() {
+        public LoadController() {
             _timer.Interval = 3000;
             _timer.AutoReset = true;
             _timer.Elapsed += OnTimer;
@@ -26,16 +31,13 @@ namespace Microsoft.R.Host.Broker.About {
             UpdateMeasurement();
         }
 
-        public static void Uninitialize() {
-            _timer?.Stop();
-            _timer?.Dispose();
-        }
-
-        public static HostLoad GetLoad() {
+        [AllowAnonymous]
+        [HttpGet]
+        public HostLoad Get() {
             return _hostLoad;
         }
 
-        private static void UpdateMeasurement() {
+        private void UpdateMeasurement() {
             var query = new SelectQuery(@"Select * from Win32_OperatingSystem");
             using (var search = new ManagementObjectSearcher(query)) {
                 foreach (var mo in search.Get()) {
@@ -50,17 +52,23 @@ namespace Microsoft.R.Host.Broker.About {
             _hostLoad.NetworkLoad = GetNetworkLoad();
         }
 
-        private static void OnTimer(object sender, ElapsedEventArgs e) {
+        protected override void Dispose(bool disposing) {
+            _timer?.Stop();
+            _timer?.Dispose();
+            base.Dispose(disposing);
+        }
+
+        private void OnTimer(object sender, ElapsedEventArgs e) {
             UpdateMeasurement();
         }
 
-        private static long GetSizeInGB(ManagementBaseObject mo, string name) {
+        private long GetSizeInGB(ManagementBaseObject mo, string name) {
             int result;
             var x = mo[name].ToString();
             return Int32.TryParse(x, out result) ? result / 1024 : 0;
         }
 
-        private static double GetCpuLoad() {
+        private double GetCpuLoad() {
             double counter = 0;
             int iterations = 5;
 
@@ -72,7 +80,7 @@ namespace Microsoft.R.Host.Broker.About {
             return counter / (iterations * 100);
         }
 
-        private static double GetNetworkLoad() {
+        private double GetNetworkLoad() {
             if (!NetworkInterface.GetIsNetworkAvailable()) {
                 return 0;
             }

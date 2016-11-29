@@ -30,7 +30,15 @@ namespace Microsoft.R.Host.Broker.Security {
         }
 
         public async Task SignInAsync(BasicSignInContext context) {
-            ClaimsPrincipal principal = (_options.Secret != null) ? SignInUsingSecret(context) : await SignInUsingLogonAsync(context);
+            ClaimsPrincipal principal;
+            if (context.IsSignInRequired()) {
+                principal = (_options.Secret != null) ? SignInUsingSecret(context) : await SignInUsingLogonAsync(context);
+            } else {
+                var claims = new[] { new Claim(ClaimTypes.Anonymous, "") };
+                var claimsIdentity = new ClaimsIdentity(claims, context.Options.AuthenticationScheme);
+                principal = new ClaimsPrincipal(claimsIdentity);
+            }
+
             if (principal != null) {
                 context.Ticket = new AuthenticationTicket(principal, new AuthenticationProperties(), context.Options.AuthenticationScheme);
             }
