@@ -31,6 +31,7 @@ namespace Microsoft.R.Host.Broker.About {
             UpdateMeasurement();
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public HostLoad Get() {
             return _hostLoad;

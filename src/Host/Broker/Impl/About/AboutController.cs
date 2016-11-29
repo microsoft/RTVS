@@ -24,6 +24,7 @@ namespace Microsoft.R.Host.Broker.About {
             _sessionManager = sessionManager;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public AboutHost Get() {
             var a = new AboutHost();
