@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.R.Components.Controller;
+using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Protocol;
 
@@ -17,8 +18,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
 
         public SessionInformationCommand(IRInteractiveWorkflow interactiveWorkflow) {
             _interactiveWorkflow = interactiveWorkflow;
+            _interactiveWorkflow.RSession.Initialized += OnRSessionInitialized;
             _interactiveWorkflow.RSession.Disposed += OnRSessionDisposed;
-            _interactiveWorkflow.RSessions.BrokerChanged += OnBrokerChanged;
         }
 
         public CommandStatus Status {
@@ -38,7 +39,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
             return CommandResult.Executed;
         }
 
-        private void OnBrokerChanged(object sender, EventArgs e) {
+        private void OnRSessionInitialized(object sender, EventArgs e) {
             if (_interactiveWorkflow.RSession.IsRemote) {
                 ReplInitComplete().ContinueWith(async (t) => await PrintBrokerInformationAsync(reportTelemetry: true)).DoNotWait();
             }

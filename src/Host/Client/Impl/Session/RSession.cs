@@ -32,6 +32,7 @@ namespace Microsoft.R.Host.Client.Session {
         public event EventHandler<EventArgs> Mutated;
         public event EventHandler<ROutputEventArgs> Output;
         public event EventHandler<RConnectedEventArgs> Connected;
+        public event EventHandler<EventArgs> Initialized;
         public event EventHandler<EventArgs> Disconnected;
         public event EventHandler<EventArgs> Disposed;
         public event EventHandler<EventArgs> DirectoryChanged;
@@ -446,6 +447,8 @@ namespace Microsoft.R.Host.Client.Session {
                                 await WriteErrorAsync(Resources.Error_SessionInitializationAutosave, ex.Message);
                             }
                         }
+
+                        Initialized?.Invoke(this, EventArgs.Empty);
                     }
                 }
             } catch (Exception ex) when (!ex.IsCriticalException()) {
