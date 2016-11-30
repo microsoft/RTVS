@@ -70,7 +70,7 @@ namespace Microsoft.Common.Core.Threading {
             ///          ↓     ↓            ↓        ↓
             ///    R−→W−→W−→E−→R  ―►  R−→W−→W−→E−→E−→R
             ///             ↑                     ↑
-            ///   erLock.Tail               erlTail
+            ///       erlTail               erlTail
             /// </remarks>
             public void AddExclusiveReader(ExclusiveReaderLockSource item, out bool isAddedAfterWriterOrExclusiveReader) {
                 lock (this) {
@@ -134,7 +134,7 @@ namespace Microsoft.Common.Core.Threading {
             public LockSource[] Remove(LockSource item) {
                 lock (this) {
                     var next = item.Next;
-                    Interlocked.CompareExchange(ref _head, next, item);
+                    var oldHead = Interlocked.CompareExchange(ref _head, next, item);
 
                     var previous = item.Previous;
                     Interlocked.CompareExchange(ref _tail, previous, item);
@@ -151,7 +151,7 @@ namespace Microsoft.Common.Core.Threading {
                         return new LockSource[0];
                     }
 
-                    if (_head.IsWriter && next == _head) {
+                    if (_head.IsWriter && item == oldHead) {
                         return new[] { _head };
                     }
 
@@ -159,10 +159,14 @@ namespace Microsoft.Common.Core.Threading {
                         return FilterAndCopyToArray(next);
                     }
 
+                    if (erLock != null) {
+                        return FindFirstExclusiveReader(erLock);
+                    }
+
                     return new LockSource[0];
                 }
             }
-            
+
             private void UpdateTail(LockSource item) {
                 var tail = Interlocked.Exchange(ref _tail, item);
                 if (tail == null) {
@@ -194,6 +198,27 @@ namespace Microsoft.Common.Core.Threading {
                 }
 
                 return items;
+            }
+
+            private LockSource[] FindFirstExclusiveReader(ExclusiveReaderLock erLock) {
+                if (erLock.Tail == null) {
+                    return new LockSource[0];
+                }
+
+                var item = _head;
+                while (item != erLock.Tail) {
+                    if (item.IsWriter) {
+                        return new LockSource[0];
+                    }
+
+                    if ((item as ExclusiveReaderLockSource)?.ExclusiveReaderLock == erLock) {
+                        return new[] { item };
+                    }
+
+                    item = item.Next;
+                }
+
+                return new[] { item };
             }
 
             private bool ReaderCanBeReleased(LockSource source) {

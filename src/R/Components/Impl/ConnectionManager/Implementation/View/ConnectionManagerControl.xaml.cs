@@ -94,16 +94,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
         }
 
         private void HandleConnect(RoutedEventArgs e) {
-            var model = Model;
-            if (model != null) {
-                var connection = GetConnection(e);
-                if (connection != model.EditedConnection) {
-                    model.CancelEdit();
-                } else {
-                    model.Save(connection);
-                }
-                model.Connect(connection);
-            }
+            Model?.Connect(GetConnection(e));
         }
     }
 }

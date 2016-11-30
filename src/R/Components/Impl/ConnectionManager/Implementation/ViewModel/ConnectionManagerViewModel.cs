@@ -117,6 +117,10 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public void BrowseLocalPath(IConnectionViewModel connection) {
             _shell.AssertIsOnMainThread();
+            if (connection == null) {
+                return;    
+            }
+
             string latestLocalPath;
             Uri latestLocalPathUri;
 
@@ -146,6 +150,10 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public void Edit(IConnectionViewModel connection) {
             _shell.AssertIsOnMainThread();
+            if (connection == null) {
+                return;    
+            }
+
             TryStartEditing(connection);
         }
 
@@ -161,6 +169,10 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public async Task TestConnectionAsync(IConnectionViewModel connection) {
             _shell.AssertIsOnMainThread();
+            if (connection == null) {
+                return;
+            }
+
             CancelTestConnection();
 
             connection.TestingConnectionCts = new CancellationTokenSource();
@@ -194,6 +206,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public void Save(IConnectionViewModel connectionViewModel) {
             _shell.AssertIsOnMainThread();
+            if (connectionViewModel == null) {
+                return;    
+            }
 
             var connection = _connectionManager.AddOrUpdateConnection(
                 connectionViewModel.Name,
@@ -228,20 +243,28 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public void Connect(IConnectionViewModel connection) {
             _shell.AssertIsOnMainThread();
+            if (connection == null) {
+                return;    
+            }
+
+            if (connection != EditedConnection) {
+                CancelEdit();
+            } else {
+                Save(connection);
+            }
+
             CancelTestConnection();
 
-            if (connection != null) {
-                if (connection.IsActive && !IsConnected) {
-                    _shell.ProgressDialog.Show(_connectionManager.ReconnectAsync, Resources.ConnectionManager_ReconnectionToProgressBarMessage.FormatInvariant(connection.Name));
-                } else {
-                    var progressBarMessage = _connectionManager.ActiveConnection != null
-                        ? Resources.ConnectionManager_SwitchConnectionProgressBarMessage.FormatInvariant(_connectionManager.ActiveConnection.Name, connection.Name)
-                        : Resources.ConnectionManager_ConnectionToProgressBarMessage.FormatInvariant(connection.Name);
-                    _shell.ProgressDialog.Show(ct => _connectionManager.ConnectAsync(connection, ct), progressBarMessage);
-                }
-
-                UpdateConnections();
+            if (connection.IsActive && !IsConnected) {
+                _shell.ProgressDialog.Show(_connectionManager.ReconnectAsync, Resources.ConnectionManager_ReconnectionToProgressBarMessage.FormatInvariant(connection.Name));
+            } else {
+                var progressBarMessage = _connectionManager.ActiveConnection != null
+                    ? Resources.ConnectionManager_SwitchConnectionProgressBarMessage.FormatInvariant(_connectionManager.ActiveConnection.Name, connection.Name)
+                    : Resources.ConnectionManager_ConnectionToProgressBarMessage.FormatInvariant(connection.Name);
+                _shell.ProgressDialog.Show(ct => _connectionManager.ConnectAsync(connection, ct), progressBarMessage);
             }
+
+            UpdateConnections();
         }
 
         private void UpdateConnections() {

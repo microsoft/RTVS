@@ -4,14 +4,12 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Protocol;
@@ -94,9 +92,14 @@ namespace Microsoft.R.Host.Client.Session {
 
         private void OnBrokerStateChanged(HostLoad hostLoad) {
             Interlocked.Exchange(ref _hostLoad, hostLoad);
-            BrokerStateChanged?.Invoke(this, new BrokerStateChangedEventArgs(hostLoad != null, hostLoad ?? new HostLoad()));
+            var args = new BrokerStateChangedEventArgs(hostLoad != null, hostLoad ?? new HostLoad());
+            Task.Run(() => BrokerStateChanged?.Invoke(this, args)).DoNotWait();
         }
-
+        
+        private void OnBrokerChanged() {
+            Task.Run(() => BrokerChanged?.Invoke(this, new EventArgs())).DoNotWait();
+        }
+        
         public async Task TestBrokerConnectionAsync(string name, string path, CancellationToken cancellationToken = default(CancellationToken)) {
             using (_disposeToken.Link(ref cancellationToken)) {
                 await TaskUtilities.SwitchToBackgroundThread();
@@ -194,32 +197,49 @@ namespace Microsoft.R.Host.Client.Session {
                 }
 
                 OnBrokerStateChanged(new HostLoad());
-                BrokerChanged?.Invoke(this, new EventArgs());
+                OnBrokerChanged();
                 return true;
             }
         }
 
         private async Task SwitchBrokerAsync(CancellationToken cancellationToken) {
-            var transactions = _sessions.Values.Select(s => s.StartSwitchingBroker()).ExcludeDefault().ToList();
+            var transactions = new List<IRSessionSwitchBrokerTransaction>();
+            var sessionsToStop = new List<IRSession>();
+
+            foreach (var session in _sessions.Values) {
+                var transaction = session.StartSwitchingBroker();
+                if (transaction != null) {
+                    transactions.Add(transaction);
+                } else {
+                    sessionsToStop.Add(session);
+                }
+            }
+
             if (transactions.Any()) {
-                await SwitchSessionsAsync(transactions, cancellationToken);
+                await SwitchSessionsAsync(transactions, sessionsToStop, cancellationToken);
             } else {
                 // Ping isn't enough here - need a "full" test with RHost
                 await TestBrokerConnectionWithRHost(_brokerProxy, cancellationToken);
+                await StopSessionsAsync(sessionsToStop);
             }
         }
 
-        private async Task SwitchSessionsAsync(IReadOnlyCollection<IRSessionSwitchBrokerTransaction> transactions, CancellationToken cancellationToken) {
+        private async Task SwitchSessionsAsync(IReadOnlyCollection<IRSessionSwitchBrokerTransaction> transactions, List<IRSession> sessionsToStop, CancellationToken cancellationToken) {
             // All sessions should participate in switch. If any of it didn't start, cancel the rest.
             try {
                 await ConnectToNewBrokerAsync(transactions, cancellationToken);
-                Task.Run(() => OnBrokerStateChanged(null), cancellationToken).DoNotWait();
-                await CompleteSwitchingBrokerAsync(transactions, cancellationToken);
+                await Task.WhenAll(CompleteSwitchingBrokerAsync(transactions, cancellationToken), StopSessionsAsync(sessionsToStop));
             } finally {
                 foreach (var transaction in transactions) {
                     transaction.Dispose();
                 }
             }
+        }
+        
+        private Task StopSessionsAsync(IEnumerable<IRSession> sessions) {
+            var stopSessionsTask = Task.WhenAll(sessions.Select(s => s.StopHostAsync()));
+            OnBrokerStateChanged(null);
+            return stopSessionsTask;
         }
 
         private async Task ReconnectAsync(CancellationToken cancellationToken) {
@@ -240,7 +260,7 @@ namespace Microsoft.R.Host.Client.Session {
 
         private async Task ConnectToNewBrokerAsync(IEnumerable<IRSessionSwitchBrokerTransaction> transactions, CancellationToken cancellationToken) {
             try {
-                await WhenAllCancelOnFailure(transactions, (t, ct) => t.ConnectToNewBrokerAsync(ct), cancellationToken);
+                await WhenAllCancelOnFailure(transactions, ConnectToNewBrokerAsync, cancellationToken);
             } catch (OperationCanceledException ex) when (!(ex is RHostDisconnectedException)) {
                 throw;
             } catch (Exception ex) {
@@ -249,15 +269,21 @@ namespace Microsoft.R.Host.Client.Session {
             }
         }
 
+        private static Task ConnectToNewBrokerAsync(IRSessionSwitchBrokerTransaction transaction, CancellationToken cancellationToken)
+            => transaction.ConnectToNewBrokerAsync(cancellationToken);
+
         private async Task CompleteSwitchingBrokerAsync(IEnumerable<IRSessionSwitchBrokerTransaction> transactions, CancellationToken cancellationToken) {
             try {
-                await WhenAllCancelOnFailure(transactions, (t, ct) => t.CompleteSwitchingBrokerAsync(ct), cancellationToken);
+                await WhenAllCancelOnFailure(transactions, CompleteSwitchingBrokerAsync, cancellationToken);
             } catch (OperationCanceledException ex) when (!(ex is RHostDisconnectedException)) {
             } catch (Exception ex) {
                 _console.Write(Resources.RSessionProvider_ConnectionFailed.FormatInvariant(ex.Message));
                 throw;
             }
         }
+
+        private static Task CompleteSwitchingBrokerAsync(IRSessionSwitchBrokerTransaction transaction, CancellationToken cancellationToken) 
+            => transaction.CompleteSwitchingBrokerAsync(cancellationToken);
 
         private static Task WhenAllCancelOnFailure(IEnumerable<IRSessionSwitchBrokerTransaction> transactions, Func<IRSessionSwitchBrokerTransaction, CancellationToken, Task> taskFactory, CancellationToken cancellationToken) {
             return TaskUtilities.WhenAllCancelOnFailure(transactions, async (t, ct) => {
@@ -308,15 +334,13 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         private async Task UpdateHostLoadAsync(CancellationToken ct = default(CancellationToken)) {
-            HostLoad hostLoad = null;
             using (await _connectArwl.ReaderLockAsync(ct)) {
                 try {
-                    hostLoad = await Broker.GetHostInformationAsync<HostLoad>(ct);
+                    var hostLoad = await Broker.GetHostInformationAsync<HostLoad>(ct);
+                    OnBrokerStateChanged(hostLoad);
                 } catch (RHostDisconnectedException) {
                 }
             }
-
-            OnBrokerStateChanged(hostLoad);
         }
     }
 }

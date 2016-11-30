@@ -418,7 +418,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
 
             if (!lockToken.IsSet) {
                 try {
-                    await LoadInstalledAndLoadedPackagesAsync();
+                    await LoadInstalledAndLoadedPackagesAsync(reload);
                     _errorMessages.Remove(ErrorMessageType.Connection);
                     lockToken.Set();
                 } catch (RPackageManagerException ex) {
@@ -429,14 +429,20 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             }
         }
 
-        private async Task LoadInstalledAndLoadedPackagesAsync() {
+        private async Task LoadInstalledAndLoadedPackagesAsync(bool reload) {
             await TaskUtilities.SwitchToBackgroundThread();
 
-            var markUninstalledAndUnloadedTask = MarkUninstalledAndUnloaded();
-            var getInstalledPackagesTask = _packageManager.GetInstalledPackagesAsync();
-            await Task.WhenAll(markUninstalledAndUnloadedTask, getInstalledPackagesTask);
+            IReadOnlyList<RPackage> installedPackages;
+            if (reload) {
+                _installedPackages = new List<IRPackageViewModel>();
+                installedPackages = await _packageManager.GetInstalledPackagesAsync();
+            } else { 
+                var markUninstalledAndUnloadedTask = MarkUninstalledAndUnloaded();
+                var getInstalledPackagesTask = _packageManager.GetInstalledPackagesAsync();
+                await Task.WhenAll(markUninstalledAndUnloadedTask, getInstalledPackagesTask);
+                installedPackages = getInstalledPackagesTask.Result;
+            }
 
-            var installedPackages = getInstalledPackagesTask.Result;
             if (!_availableLock.IsSet) {
                 var vmInstalledPackages = installedPackages
                     .Select(package => RPackageViewModel.CreateInstalled(package, this))
@@ -687,6 +693,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             }
 
             public void Add(string message, ErrorMessageType type) {
+                message = message.Replace(Environment.NewLine, " ");
                 lock (_errorMessages) {
                     _errorMessages.Add(new ErrorMessage(message, type));
                     if (_errorMessages.Count == 1) {

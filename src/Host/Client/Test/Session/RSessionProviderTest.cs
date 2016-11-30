@@ -107,6 +107,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
             using (var sessionProvider = new RSessionProvider(TestCoreServices.CreateReal())) {
                 var guid = new Guid();
                 var session = sessionProvider.GetOrCreate(guid);
+                session.RestartOnBrokerSwitch = true;
 
                 await sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(SwitchWhenConnecting));
 
@@ -119,32 +120,32 @@ namespace Microsoft.R.Host.Client.Test.Session {
                 var switch1Task = sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(SwitchWhenConnecting) + "1");
                 var switch2Task = sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(SwitchWhenConnecting) + "2");
 
-                await Task.WhenAll(startHostTask, switch1Task, switch2Task);
+                await ParallelTools.WhenAll(startHostTask, switch1Task, switch2Task);
 
                 switch1Task.Status.Should().Be(TaskStatus.RanToCompletion);
                 switch2Task.Status.Should().Be(TaskStatus.RanToCompletion);
                 startHostTask.Status.Should().Be(TaskStatus.RanToCompletion);
 
-                await session.HostStarted;
-                session.HostStarted.Should().BeRanToCompletion();
+                await session.HostStarted.Should().BeCompletedAsync();
             }
         }
 
         [Test]
         public async Task SwitchMultipleSessions() {
             using (var sessionProvider = new RSessionProvider(TestCoreServices.CreateReal())) {
-                await sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(SwitchMultipleSessions));
+                await sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(SwitchMultipleSessions)).Should().BeCompletedAsync();
 
                 var sessions = new IRSession[4];
                 for (var i = 0; i < sessions.Length; i++) {
                     sessions[i] = sessionProvider.GetOrCreate(new Guid());
+                    sessions[i].RestartOnBrokerSwitch = true;
                 }
 
-                await Task.WhenAll(sessions.Select((s, i) => s.EnsureHostStartedAsync(new RHostStartupInfo {
+                await ParallelTools.WhenAll(30000, sessions.Select((s, i) => s.EnsureHostStartedAsync(new RHostStartupInfo {
                     Name = nameof(sessions) + i
-                }, null, 30000)));
+                }, null, 30000)).ToArray());
 
-                await sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(SwitchMultipleSessions) + "1");
+                await sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(SwitchMultipleSessions) + "1").Should().BeCompletedAsync();
 
                 sessions.Should().OnlyContain(s => s.IsHostRunning);
             }
@@ -177,6 +178,8 @@ namespace Microsoft.R.Host.Client.Test.Session {
             using (var sessionProvider = new RSessionProvider(TestCoreServices.CreateReal())) {
                 var guid = new Guid();
                 var session = sessionProvider.GetOrCreate(guid);
+                session.RestartOnBrokerSwitch = true;
+
                 var startTask = session.EnsureHostStartedAsync(new RHostStartupInfo {
                     Name = nameof(session)
                 }, null, 1000);
@@ -193,6 +196,8 @@ namespace Microsoft.R.Host.Client.Test.Session {
             using (var sessionProvider = new RSessionProvider(TestCoreServices.CreateReal())) {
                 var guid = new Guid();
                 var session = sessionProvider.GetOrCreate(guid);
+                session.RestartOnBrokerSwitch = true;
+
                 await sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(SwitchToTheSameBroker));
                 await session.EnsureHostStartedAsync(new RHostStartupInfo {
                     Name = nameof(session)
@@ -283,6 +288,8 @@ namespace Microsoft.R.Host.Client.Test.Session {
             var sessionProvider = new RSessionProvider(TestCoreServices.CreateReal());
             var guid = new Guid();
             var session = sessionProvider.GetOrCreate(guid);
+            session.RestartOnBrokerSwitch = true;
+
             await sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(SwitchBrokerWithCancellation));
             await session.EnsureHostStartedAsync(new RHostStartupInfo
             {
