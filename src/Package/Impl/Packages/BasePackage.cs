@@ -9,8 +9,7 @@ using System.Linq;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.Common.Core.Disposables;
-using Microsoft.Languages.Editor.Tasks;
-using Microsoft.VisualStudio.CommandBars;
+using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Shell;
 using Microsoft.VisualStudio.R.Package.Definitions;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -22,6 +21,8 @@ namespace Microsoft.VisualStudio.R.Package.Packages {
         where TLanguageService : class, new() {
         private readonly IList<IDisposable> _disposables = new List<IDisposable>();
         private Dictionary<IVsProjectGenerator, uint> _projectFileGenerators;
+        private RToolbar _toolbar;
+
         protected abstract IEnumerable<IVsEditorFactory> CreateEditorFactories();
         protected virtual IEnumerable<IVsProjectGenerator> CreateProjectFileGenerators() { return new IVsProjectGenerator[0]; }
         protected virtual IEnumerable<IVsProjectFactory> CreateProjectFactories() { return new IVsProjectFactory[0]; }
@@ -63,15 +64,15 @@ namespace Microsoft.VisualStudio.R.Package.Packages {
                 menuCommandService.AddCommand(commmand);
             }
 
+            var settings = VsAppShell.Current.ExportProvider.GetExportedValue<IRToolsSettings>();
             var dte = VsAppShell.Current.GetGlobalService<DTE2>(typeof(DTE));
-            var cbs = (CommandBars.CommandBars)dte?.CommandBars;
-            Debug.Assert(cbs != null, "Unable to find R Toolbar");
+            _toolbar = new RToolbar(dte, settings);
+            _toolbar.Show();
+        }
 
-            var cb = cbs["R Toolbar"];
-            Debug.Assert(cb != null, "Unable to find R Toolbar");
-            if (cb != null) {
-                cb.Visible = true;
-            }
+        protected override int QueryClose(out bool canClose) {
+            _toolbar.SaveState();
+            return base.QueryClose(out canClose);
         }
 
         protected void AdviseExportedWindowFrameEvents<T>() where T : IVsWindowFrameEvents {
@@ -149,3 +150,4 @@ namespace Microsoft.VisualStudio.R.Package.Packages {
         }
     }
 }
+

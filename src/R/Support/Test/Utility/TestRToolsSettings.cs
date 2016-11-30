@@ -145,6 +145,8 @@ namespace Microsoft.R.Support.Test.Utility {
             set { }
         }
 
+        public bool ShowRToolbar { get; set; } = true;
+
 #pragma warning disable 67
         public event PropertyChangedEventHandler PropertyChanged;
     }
