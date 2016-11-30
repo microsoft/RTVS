@@ -8,6 +8,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Security;
 using System.Security.Principal;
+using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -85,17 +87,19 @@ namespace Microsoft.R.Host.Broker.Sessions {
             Session session;
 
             lock (_sessions) {
-                var userSessions = GetOrCreateSessionList(user);
+                var oldUserSessions = GetOrCreateSessionList(user);
 
-                var oldSession = userSessions.FirstOrDefault(s => s.Id == id);
-                if (oldSession != null) {
+                var oldSessions = oldUserSessions.Where(s => s.Id == id).ToArray();
+                foreach (var oldSession in oldSessions) {
                     try {
-                        oldSession.KillHost();
+                        oldUserSessions.Remove(oldSession);
+                        Task.Run(() => oldSession.KillHost()).DoNotWait();
                     } catch (Exception) { }
 
                     oldSession.State = SessionState.Terminated;
                 }
 
+                var userSessions = GetOrCreateSessionList(user);
                 session = new Session(this, user, id, interpreter, commandLineArguments, _sessionLogger, _messageLogger);
                 session.StateChanged += Session_StateChanged;
 
