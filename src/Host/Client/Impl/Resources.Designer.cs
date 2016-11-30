@@ -113,15 +113,6 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Windows Workstation only allows a single user session..
-        /// </summary>
-        internal static string Error_MaxUsersAllowed {
-            get {
-                return ResourceManager.GetString("Error_MaxUsersAllowed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Remote machine does not have certificate installed for the TLS with the Remote R Service..
         /// </summary>
         internal static string Error_NoBrokerCertificate {

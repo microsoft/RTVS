@@ -30,14 +30,15 @@ namespace Microsoft.R.Components.Test.Information {
         }
 
         [Test]
-        public async Task Update01() {
-            var m = new HostLoadIndicatorViewModel(_sessionProvider, _coreShell);
-            m.BrokerStateChanged(null, new BrokerStateChangedEventArgs(true, _hostLoad));
+        public void Update() {
+            var viewModel = new HostLoadIndicatorViewModel(_sessionProvider, _coreShell);
+            var eventArgs = new BrokerStateChangedEventArgs(true, _hostLoad);
+            _sessionProvider.BrokerStateChanged += Raise.Event<EventHandler<BrokerStateChangedEventArgs>>(_sessionProvider, eventArgs);
 
-            m.CpuLoad.Should().Be(30);
-            m.MemoryLoad.Should().Be(40);
-            m.NetworkLoad.Should().Be(50);
-            m.Tooltip.Should().Contain("30").And.Contain("40").And.Contain("50");
+            viewModel.CpuLoad.Should().Be(30);
+            viewModel.MemoryLoad.Should().Be(40);
+            viewModel.NetworkLoad.Should().Be(50);
+            viewModel.Tooltip.Should().Contain("30").And.Contain("40").And.Contain("50");
          }
     }
 }
