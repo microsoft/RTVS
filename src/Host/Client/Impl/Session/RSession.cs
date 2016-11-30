@@ -214,26 +214,20 @@ namespace Microsoft.R.Host.Client.Session {
             }
         }
 
-        public async Task EnsureHostStartedAsync(RHostStartupInfo startupInfo, IRSessionCallback callback, int timeout = 3000, CancellationToken cancellationToken = default(CancellationToken)) {
+        public Task EnsureHostStartedAsync(RHostStartupInfo startupInfo, IRSessionCallback callback, int timeout = 3000, CancellationToken cancellationToken = default(CancellationToken)) 
+            => StartHostAsync(startupInfo, callback, timeout, false, cancellationToken);
+
+        public Task StartHostAsync(RHostStartupInfo startupInfo, IRSessionCallback callback, int timeout = 3000, CancellationToken cancellationToken = default(CancellationToken)) 
+            => StartHostAsync(startupInfo, callback, timeout, true, cancellationToken);
+
+        private async Task StartHostAsync(RHostStartupInfo startupInfo, IRSessionCallback callback, int timeout, bool throwIfStarted, CancellationToken cancellationToken) {
             using (_disposeToken.Link(ref cancellationToken)) {
                 await TaskUtilities.SwitchToBackgroundThread();
 
                 using (await _initializationLock.WaitAsync(cancellationToken)) {
                     if (_initializationTcs.Task.Status != TaskStatus.RanToCompletion || !_isHostRunning) {
                         await StartHostAsyncBackground(startupInfo, callback, timeout, cancellationToken);
-                    }
-                }
-            }
-        }
-
-        public async Task StartHostAsync(RHostStartupInfo startupInfo, IRSessionCallback callback, int timeout = 3000, CancellationToken cancellationToken = default(CancellationToken)) {
-            using (_disposeToken.Link(ref cancellationToken)) {
-                await TaskUtilities.SwitchToBackgroundThread();
-
-                using (await _initializationLock.WaitAsync(cancellationToken)) {
-                    if (_initializationTcs.Task.Status != TaskStatus.RanToCompletion || !_isHostRunning) {
-                        await StartHostAsyncBackground(startupInfo, callback, timeout, cancellationToken);
-                    } else {
+                    } else if (throwIfStarted) {
                         throw new InvalidOperationException("Another instance of RHost is running for this RSession. Stop it before starting new one.");
                     }
                 }
