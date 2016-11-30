@@ -61,7 +61,7 @@ namespace Microsoft.R.Editor.SuggestedActions {
         public event EventHandler<EventArgs> SuggestedActionsChanged;
 
         public IEnumerable<SuggestedActionSet> GetSuggestedActions(ISuggestedActionCategorySet requestedActionCategories, SnapshotSpan range, CancellationToken cancellationToken) {
-            if (cancellationToken.IsCancellationRequested || 
+            if (cancellationToken.IsCancellationRequested ||
                 !range.Snapshot.TextBuffer.ContentType.TypeName.EqualsOrdinal(RContentTypeDefinition.ContentType)) {
                 return Enumerable.Empty<SuggestedActionSet>();
             }
@@ -108,6 +108,7 @@ namespace Microsoft.R.Editor.SuggestedActions {
 
         public void Dispose() {
             if (_textView != null) {
+                ServiceManager.RemoveService<RSuggestedActionSource>(_textView);
                 _textView.Caret.PositionChanged -= OnCaretPositionChanged;
                 _document = null;
                 _textBuffer = null;
