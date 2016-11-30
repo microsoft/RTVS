@@ -23,6 +23,7 @@ namespace Microsoft.Languages.Editor.Outline {
         protected OutlineRegionCollection CurrentRegions { get; set; }
         protected IdleTimeAsyncTask BackgroundTask { get; set; }
         protected ITextBuffer TextBuffer { get; set; }
+        protected virtual bool IsEnabled { get; } = true;
 
         private long _disposed = 0;
         private readonly object _regionsLock = new object();
@@ -34,7 +35,9 @@ namespace Microsoft.Languages.Editor.Outline {
             TextBuffer.Changed += OnTextBufferChanged;
 
             BackgroundTask = new IdleTimeAsyncTask(TaskAction, MainThreadAction, editorShell);
-            BackgroundTask.DoTaskOnIdle(300);
+            if (IsEnabled) {
+                BackgroundTask.DoTaskOnIdle(300);
+            }
         }
 
         public virtual bool IsReady => !BackgroundTask.TaskRunning;
@@ -45,7 +48,7 @@ namespace Microsoft.Languages.Editor.Outline {
             // regions optimistically and report changes without going through
             // async or idle processing. Idle/async is still going to hit later.
 
-            if (e.Changes.Count > 0) {
+            if (IsEnabled && e.Changes.Count > 0) {
                 int start, oldLength, newLength;
                 TextUtility.CombineChanges(e, out start, out oldLength, out newLength);
 

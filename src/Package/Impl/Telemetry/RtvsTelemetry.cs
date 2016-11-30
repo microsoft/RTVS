@@ -19,6 +19,7 @@ using Microsoft.VisualStudio.R.Package.Telemetry.Data;
 using Microsoft.VisualStudio.R.Package.Telemetry.Definitions;
 using Microsoft.VisualStudio.R.Package.Telemetry.Windows;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Telemetry;
 
 namespace Microsoft.VisualStudio.R.Package.Telemetry {
     /// <summary>
@@ -112,22 +113,22 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
             }
 
             if (_packageIndex != null) {
-                foreach(var p in _packageIndex.Packages) {
-                    TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RPackages, p.Name.GetSHA512Hash());
+                foreach (var p in _packageIndex.Packages) {
+                    TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RPackages, new TelemetryPiiProperty(p.Name));
                 }
             }
         }
 
         private void ReportConnectionsConfiguration() {
             var connections = _settings.Connections;
-            if(connections != null) {
+            if (connections != null) {
                 foreach (var c in connections) {
                     Uri uri;
                     if (Uri.TryCreate(c.Path, UriKind.Absolute, out uri)) {
                         if (uri.IsFile) {
                             TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.LocalConnection, uri.ToString());
                         } else {
-                            TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RemoteConnection, uri.ToString().GetSHA512Hash());
+                            TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RemoteConnection, new TelemetryPiiProperty(uri.ToString()));
                         }
                     }
                 }

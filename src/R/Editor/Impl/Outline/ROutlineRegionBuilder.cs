@@ -13,6 +13,7 @@ using Microsoft.Languages.Editor.Utility;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Scopes;
 using Microsoft.R.Editor.Document;
+using Microsoft.R.Editor.Settings;
 using Microsoft.R.Editor.Tree;
 using Microsoft.VisualStudio.Text;
 
@@ -48,15 +49,17 @@ namespace Microsoft.R.Editor.Outline {
             EditorTree.Closing += OnEditorTreeClosing;
         }
 
+        protected override bool IsEnabled => REditorSettings.EnableOutlining;
+
         protected override void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
-            if (e.Before.LineCount != e.After.LineCount) {
+            if (IsEnabled && e.Before.LineCount != e.After.LineCount) {
                 BackgroundTask.DoTaskOnIdle();
             }
             base.OnTextBufferChanged(sender, e);
         }
 
         private void OnTreeUpdateCompleted(object sender, TreeUpdatedEventArgs e) {
-            if (e.UpdateType != TreeUpdateType.PositionsOnly || (_sections != null && _sections.Changed)) {
+            if (IsEnabled && (e.UpdateType != TreeUpdateType.PositionsOnly || (_sections != null && _sections.Changed))) {
                 BackgroundTask.DoTaskOnIdle();
             }
         }
