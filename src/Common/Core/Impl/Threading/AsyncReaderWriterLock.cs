@@ -58,6 +58,8 @@ namespace Microsoft.Common.Core.Threading {
         }
 
         public Task<IAsyncReaderWriterLockToken> ReaderLockAsync(CancellationToken cancellationToken = default(CancellationToken), ReentrancyToken reentrancyToken = default(ReentrancyToken)) {
+            TaskUtilities.AssertIsOnBackgroundThread();
+
             var task = ReentrantOrCanceled(false, cancellationToken, reentrancyToken);
             if (task != null) {
                 return task;
@@ -76,6 +78,8 @@ namespace Microsoft.Common.Core.Threading {
         }
 
         public Task<IAsyncReaderWriterLockToken> WriterLockAsync(CancellationToken cancellationToken = default(CancellationToken), ReentrancyToken reentrancyToken = default(ReentrancyToken)) {
+            TaskUtilities.AssertIsOnBackgroundThread();
+
             var task = ReentrantOrCanceled(true, cancellationToken, reentrancyToken);
             if (task != null) {
                 return task;
@@ -96,6 +100,8 @@ namespace Microsoft.Common.Core.Threading {
         public IExclusiveReaderLock CreateExclusiveReaderLock() => new ExclusiveReaderLock(this);
 
         private Task<IAsyncReaderWriterLockToken> ExclusiveReaderLockAsync(ExclusiveReaderLock erLock, CancellationToken cancellationToken = default(CancellationToken)) {
+            TaskUtilities.AssertIsOnBackgroundThread();
+
             if (cancellationToken.IsCancellationRequested) {
                 return Task.FromCanceled<IAsyncReaderWriterLockToken>(cancellationToken);
             }

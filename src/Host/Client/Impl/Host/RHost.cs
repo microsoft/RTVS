@@ -43,6 +43,7 @@ namespace Microsoft.R.Host.Client {
 
         private int _rLoopDepth;
         private long _lastMessageId;
+        private readonly string _name;
         private IRCallbacks _callbacks;
 
         private TaskCompletionSource<object> _cancelAllTcs;
@@ -51,6 +52,7 @@ namespace Microsoft.R.Host.Client {
         public RHost(string name, IRCallbacks callbacks, IMessageTransport transport, IActionLog log) {
             Check.ArgumentStringNullOrEmpty(nameof(name), name);
 
+            _name = name;
             _callbacks = callbacks;
             _transport = transport;
             _log = log;

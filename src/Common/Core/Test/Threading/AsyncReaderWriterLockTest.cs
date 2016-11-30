@@ -1201,7 +1201,23 @@ namespace Microsoft.Common.Core.Test.Threading {
             task1.Should().BeRanToCompletion();
             task2.Should().BeRanToCompletion();
         }
-        
+
+        [Test]
+        public void Read_ExclusiveRead_Write_ExclusiveRead_ReleaseSecond() {
+            var erl = _arwl.CreateExclusiveReaderLock();
+            var task1 = _arwl.ReaderLockAsync();
+            var task2 = erl.WaitAsync();
+            var task3 = _arwl.WriterLockAsync();
+            var task4 = erl.WaitAsync();
+
+            task2.Result.Dispose();
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().BeRanToCompletion();
+            task3.Should().NotBeCompleted();
+            task4.Should().BeRanToCompletion();
+        }
+
         [Test]
         public void ExclusiveRead_Read() {
             var erl = _arwl.CreateExclusiveReaderLock();
@@ -1321,17 +1337,19 @@ namespace Microsoft.Common.Core.Test.Threading {
         }
 
         [Test]
-        public void ExclusiveRead_SecondExclusiveRead_SecondExclusiveRead_ExclusiveRead() {
+        public void ExclusiveRead_SecondExclusiveRead_SecondExclusiveRead_Write_ReleaseSecond() {
             var erl1 = _arwl.CreateExclusiveReaderLock();
             var erl2 = _arwl.CreateExclusiveReaderLock();
             var task1 = erl1.WaitAsync();
             var task2 = erl2.WaitAsync();
             var task3 = erl2.WaitAsync();
-            var task4 = erl1.WaitAsync();
+            var task4 = _arwl.WriterLockAsync();
+
+            task2.Result.Dispose();
 
             task1.Should().BeRanToCompletion();
             task2.Should().BeRanToCompletion();
-            task3.Should().NotBeCompleted();
+            task3.Should().BeRanToCompletion();
             task4.Should().NotBeCompleted();
         } 
 
@@ -1534,6 +1552,21 @@ namespace Microsoft.Common.Core.Test.Threading {
             task3.Should().BeRanToCompletion();
             task4.Should().NotBeCompleted();
             task5.Should().NotBeCompleted();
+        }
+
+        [Test]
+        public void ExclusiveRead_Write_ExclusiveRead_ReleaseFirst() {
+            var erl = _arwl.CreateExclusiveReaderLock();
+
+            var task1 = erl.WaitAsync();
+            var task2 = _arwl.WriterLockAsync();
+            var task3 = erl.WaitAsync();
+
+            task1.Result.Dispose();
+
+            task1.Should().BeRanToCompletion();
+            task2.Should().NotBeCompleted();
+            task3.Should().BeRanToCompletion();
         }
 
         [Test]

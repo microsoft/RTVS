@@ -33,14 +33,14 @@ namespace Microsoft.R.Host.Client.Host {
         public NetworkCredential GetCredential(Uri uri, string authType) => new NetworkCredential(_credentials.UserName, _credentials.Password);
 
         public async Task<IDisposable> LockCredentialsAsync(CancellationToken cancellationToken = default(CancellationToken)) {
-            await _mainThread.SwitchToAsync(cancellationToken);
-
-            Credentials credentials;
-
             // If there is already a LockCredentialsAsync request for which there hasn't been a validation yet, wait until it completes.
             // This can happen when two sessions are being created concurrently, and we don't want to pop the credential prompt twice -
             // the first prompt should be validated and saved, and then the same credentials will be reused for the second session.
             var token = await _lock.WriterLockAsync(cancellationToken);
+
+            await _mainThread.SwitchToAsync(cancellationToken);
+
+            Credentials credentials;
             try {
                 var invalidateStoredCredentials = !Volatile.Read(ref _credentialsAreValid);
                 credentials = await _securityService.GetUserCredentialsAsync(_authority, invalidateStoredCredentials, cancellationToken);

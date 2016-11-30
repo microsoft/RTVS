@@ -144,6 +144,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
                 await _session.SetVsCranSelectionAsync(CranMirrorList.UrlFromName(_settings.CranMirror), cancellationToken);
                 await _session.SetCodePageAsync(_settings.RCodePage, cancellationToken);
 
+                using (await _session.BeginInteractionAsync(true, cancellationToken)) {}
+
                 // Get the repos and libpaths from the REPL session and set them
                 // in the package query session
                 var repositories = (await DeparseRepositoriesAsync());
@@ -219,7 +221,9 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
         }
         
         private void RSessionMutated(object sender, EventArgs e) {
-            _loadedPackagesEvent.FireOnce();
+            if (_interactiveWorkflow.RSessions.IsConnected) {
+                _loadedPackagesEvent.FireOnce();
+            }
         }
     }
 }
