@@ -281,5 +281,13 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
             { "[3,]",   "1",        "20" },
         }, sort: new[] { 1, 2 });
 
+        [Test]
+        [Category.R.DataGrid]
+        public Task ExternalPtrGrid() => Test("matrix(list(1, .Internal(address(2)), 3, 4), 2, 2)", 1, 1, new[,] {
+            { null,     "[,1]",             "[,2]" },
+            { "[1,]",   "1",                "3" },
+            { "[2,]",   "<externalptr> ",    "4" },
+        });
+
     }
 }
