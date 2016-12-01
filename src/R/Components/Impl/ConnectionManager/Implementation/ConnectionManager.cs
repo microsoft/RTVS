@@ -58,9 +58,11 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             _disposableBag = DisposableBag.Create<ConnectionManager>()
                 .Add(_statusBarViewModel)
                 .Add(_hostLoadIndicatorViewModel)
-                .Add(() => _sessionProvider.BrokerStateChanged -= BrokerStateChanged);
+                .Add(() => _sessionProvider.BrokerStateChanged -= BrokerStateChanged)
+                .Add(() => _interactiveWorkflow.ActiveWindowChanged -= ActiveWindowChanged);
 
             _sessionProvider.BrokerStateChanged += BrokerStateChanged;
+            _interactiveWorkflow.ActiveWindowChanged += ActiveWindowChanged;
 
             // Get initial values
             var userConnections = CreateConnectionList();
@@ -275,8 +277,13 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         private void BrokerStateChanged(object sender, BrokerStateChangedEventArgs eventArgs) {
-            IsConnected = eventArgs.IsConnected;
+            IsConnected = eventArgs.IsConnected && _interactiveWorkflow.ActiveWindow != null;
             UpdateActiveConnection();
+            ConnectionStateChanged?.Invoke(this, new ConnectionEventArgs(IsConnected, ActiveConnection));
+        }
+
+        private void ActiveWindowChanged(object sender, ActiveWindowChangedEventArgs eventArgs) {
+            IsConnected = _sessionProvider.IsConnected && eventArgs.Window != null;
             ConnectionStateChanged?.Invoke(this, new ConnectionEventArgs(IsConnected, ActiveConnection));
         }
 

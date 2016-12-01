@@ -143,6 +143,7 @@
       <DependentUpon>HostLoadIndicator.xaml</DependentUpon>
     </Compile>
     <Compile Include="Information\HostLoadIndicatorViewModel.cs" />
+    <Compile Include="InteractiveWorkflow\ActiveWindowChangedEventArgs.cs" />
     <Compile Include="InteractiveWorkflow\Commands\SessionInformationCommand.cs" />
     <Compile Include="InteractiveWorkflow\Commands\TerminateRCommand.cs" />
     <Compile Include="InteractiveWorkflow\Commands\InterruptRCommand.cs" />

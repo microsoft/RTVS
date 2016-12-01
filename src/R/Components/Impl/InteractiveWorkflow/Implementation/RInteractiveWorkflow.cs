@@ -3,6 +3,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
@@ -28,6 +29,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         private readonly IRSettings _settings;
         private readonly RInteractiveWorkflowOperations _operations;
 
+        private TaskCompletionSource<IInteractiveWindowVisualComponent> _visualComponentTcs;
         private bool _replLostFocus;
         private bool _debuggerJustEnteredBreakMode;
 
@@ -42,6 +44,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         public IRInteractiveWorkflowOperations Operations => _operations;
 
         public IInteractiveWindowVisualComponent ActiveWindow { get; private set; }
+
+        public event EventHandler<ActiveWindowChangedEventArgs> ActiveWindowChanged;
 
         public RInteractiveWorkflow(IConnectionManagerProvider connectionsProvider
             , IRHistoryProvider historyProvider
@@ -150,28 +154,35 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             return wss.IsRProjectActive;
         }
 
-        public async Task<IInteractiveWindowVisualComponent> GetOrCreateVisualComponentAsync(int instanceId = 0) {
+        public Task<IInteractiveWindowVisualComponent> GetOrCreateVisualComponentAsync(int instanceId = 0) {
             Shell.AssertIsOnMainThread();
 
-            if (ActiveWindow != null) {
+            if (_visualComponentTcs == null) {
+                _visualComponentTcs = new TaskCompletionSource<IInteractiveWindowVisualComponent>();
+                CreateVisualComponentAsync(instanceId).DoNotWait();
+            } else if (instanceId != 0) {
                 // Right now only one instance of interactive window is allowed
-                if (instanceId != 0) {
-                    throw new InvalidOperationException("Right now only one instance of interactive window is allowed");
-                }
-
-                return ActiveWindow;
+                throw new InvalidOperationException("Right now only one instance of interactive window is allowed");
             }
 
+            return _visualComponentTcs.Task;
+        }
+
+        private async Task CreateVisualComponentAsync(int instanceId) {
             var factory = Shell.ExportProvider.GetExportedValue<IInteractiveWindowComponentContainerFactory>();
             var evaluator = new RInteractiveEvaluator(RSessions, RSession, History, Connections, Shell, _settings);
 
-            ActiveWindow = factory.Create(instanceId, evaluator, RSessions);
-            var interactiveWindow = ActiveWindow.InteractiveWindow;
+            var window = factory.Create(instanceId, evaluator, RSessions);
+            var interactiveWindow = window.InteractiveWindow;
             interactiveWindow.TextView.Closed += (_, __) => evaluator.Dispose();
             _operations.InteractiveWindow = interactiveWindow;
+
             await interactiveWindow.InitializeAsync();
+
+            ActiveWindow = window;
             ActiveWindow.Container.UpdateCommandStatus(true);
-            return ActiveWindow;
+            _visualComponentTcs.SetResult(ActiveWindow);
+            ActiveWindowChanged?.Invoke(this, new ActiveWindowChangedEventArgs(window));
         }
 
         public void Dispose() {

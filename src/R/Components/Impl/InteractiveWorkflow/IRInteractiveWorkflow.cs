@@ -22,6 +22,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow {
         IRInteractiveWorkflowOperations Operations { get; }
         IInteractiveWindowVisualComponent ActiveWindow { get; }
 
+        event EventHandler<ActiveWindowChangedEventArgs> ActiveWindowChanged;
+
         Task<IInteractiveWindowVisualComponent> GetOrCreateVisualComponentAsync(int instanceId = 0);
     }
 }
