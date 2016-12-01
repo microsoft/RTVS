@@ -238,6 +238,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             // Verify that most recently used connection is still valid
             var last = _settings.LastActiveConnection;
             if (last != null && !IsRemoteConnection(last.Path) && !IsValidLocalConnection(last.Name, last.Path)) {
+                // Installation was removed or otherwise disappeared
                 _settings.LastActiveConnection = null;
             }
 
@@ -256,7 +257,12 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                     var c = CreateConnection(e.Name, e.InstallPath, string.Empty, isUserCreated: false);
                     connections[e.Name] = c;
                 }
+            } else if (_settings.LastActiveConnection == null) {
+                // Perhaps first time launch with R preinstalled.
+                var c = PickBestLocalRConnection(connections.Values);
+                _settings.LastActiveConnection = new ConnectionInfo(c.Name, c.Path, c.RCommandLineArguments, c.LastUsed, c.IsUserCreated);
             }
+
             return connections;
         }
 
@@ -308,6 +314,27 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                     Path = ActiveConnection.Path,
                     RCommandLineArguments = ActiveConnection.RCommandLineArguments
                 });
+        }
+
+        private IConnection PickBestLocalRConnection(IEnumerable<IConnection> connections) {
+            // Get highest version engine
+            var engines = new RInstallation().GetCompatibleEngines();
+            IRInterpreterInfo rInfo = null;
+            if (engines.Any()) {
+                var highest = engines.Max(e => e.Version);
+                rInfo = engines.First(e => e.Version == highest);
+            }
+
+            if (rInfo != null) {
+                // Find connection matching the highest version
+                var c = connections.FirstOrDefault(e => e.Path.PathEquals(rInfo.InstallPath));
+                if (c != null) {
+                    return c;
+                }
+            }
+
+            // Nothing found or incompatible. Try first user connection in the list, if any
+            return connections.FirstOrDefault();
         }
     }
 }
