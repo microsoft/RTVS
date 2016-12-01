@@ -12,7 +12,7 @@ namespace Microsoft.R.Components.Information {
         public static IValueConverter PercentageToColor { get; } = LambdaConverter.Create<double>((x) => {
             Color c;
             if (x < 0.4) {
-                c = Colors.LawnGreen;
+                c = Color.FromArgb(0xFF, 0x4C, 0xBB, 0x17);
             } else if (x < 0.7) {
                 c = Colors.Yellow;
             } else {
