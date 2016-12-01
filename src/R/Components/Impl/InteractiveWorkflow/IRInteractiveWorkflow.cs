@@ -22,6 +22,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow {
         IRInteractiveWorkflowOperations Operations { get; }
         IInteractiveWindowVisualComponent ActiveWindow { get; }
 
-        Task<IInteractiveWindowVisualComponent> GetOrCreateVisualComponent(IInteractiveWindowComponentContainerFactory componentContainerFactory, int instanceId = 0);
+        event EventHandler<ActiveWindowChangedEventArgs> ActiveWindowChanged;
+
+        Task<IInteractiveWindowVisualComponent> GetOrCreateVisualComponentAsync(int instanceId = 0);
     }
 }

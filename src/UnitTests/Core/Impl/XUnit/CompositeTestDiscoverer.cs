@@ -16,7 +16,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
         }
 
         protected override IXunitTestCase CreateTestCaseForDataRow(ITestFrameworkDiscoveryOptions discoveryOptions, ITestMethod testMethod, IAttributeInfo theoryAttribute, object[] dataRow) {
-            var parameters = new TestParameters(theoryAttribute);
+            var parameters = new TestParameters(testMethod, theoryAttribute);
             return new TestCase(_diagnosticMessageSink, discoveryOptions.MethodDisplayOrDefault(), testMethod, parameters, dataRow);
         }
     }

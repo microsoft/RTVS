@@ -31,14 +31,12 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
         private readonly MethodInfo _testMethod;
         private readonly IExportProvider _exportProvider;
         private readonly IRInteractiveWorkflow _workflow;
-        private readonly IInteractiveWindowComponentContainerFactory _componentContainerFactory;
         private IRSettings _settings;
 
         public RInteractiveWorkflowCommandTest(RComponentsMefCatalogFixture catalog, TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo;
             _exportProvider = catalog.CreateExportProvider();
             _workflow = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
-            _componentContainerFactory = _exportProvider.GetExportedValue<IInteractiveWindowComponentContainerFactory>();
             _settings = _exportProvider.GetExportedValue<IRSettings>();
         }
 
@@ -69,7 +67,7 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
             command.Should().BeSupported()
                 .And.BeInvisibleAndDisabled();
 
-            using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
+            using (await _workflow.GetOrCreateVisualComponentAsync()) {
                 const string code = "sourced <- TRUE";
                 var textBuffer = new TextBufferMock(code, RContentTypeDefinition.ContentType);
                 var textView = new WpfTextViewMock(textBuffer);
@@ -92,9 +90,9 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
 
                     var mutatedTask = EventTaskSources.IRSession.Mutated.Create(session);
 
-                    await command.InvokeAsync();
+                    await command.InvokeAsync().Should().BeCompletedAsync();
 
-                    await mutatedTask;
+                    await mutatedTask.Should().BeCompletedAsync();
                     (await session.EvaluateAsync<bool>("sourced", REvaluationKind.Normal)).Should().BeTrue();
                 }
             }
@@ -107,7 +105,7 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
             var command = new InterruptRCommand(_workflow, debuggerModeTracker);
             command.Should().BeInvisibleAndDisabled();
 
-            using (await UIThreadHelper.Instance.Invoke(() => _workflow.GetOrCreateVisualComponent(_componentContainerFactory))) {
+            using (await UIThreadHelper.Instance.Invoke(() => _workflow.GetOrCreateVisualComponentAsync())) {
                 command.Should().BeVisibleAndDisabled();
 
                 await _workflow.RSessions.TrySwitchBrokerAsync(nameof(RInteractiveWorkflowCommandTest));

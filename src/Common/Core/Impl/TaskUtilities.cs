@@ -31,7 +31,8 @@ namespace Microsoft.Common.Core {
         public static bool IsOnBackgroundThread() {
             var taskScheduler = TaskScheduler.Current;
             var syncContext = SynchronizationContext.Current;
-            return taskScheduler == TaskScheduler.Default && (syncContext == null || syncContext.GetType() == typeof(SynchronizationContext));
+            return taskScheduler == TaskScheduler.Default 
+                && (syncContext == null || syncContext.GetType() == typeof(SynchronizationContext) || Thread.CurrentThread.IsThreadPoolThread);
         }
 
         /// <summary>
@@ -64,21 +65,28 @@ namespace Microsoft.Common.Core {
             => ct => taskFactory(source, ct);
 
         public static Task WhenAllCancelOnFailure(IEnumerable<Func<CancellationToken, Task>> functions, CancellationToken cancellationToken) {
-            var functionsList = functions.ToList();
-            CancellationTokenSource cts = null;
+            var functionsArray = functions.AsArray();
+            if (functionsArray.Length == 0) {
+                return Task.CompletedTask;
+            }
+
+            if (functionsArray.Length == 1) {
+                return functionsArray[0](cancellationToken);
+            }
+
+            CancellationTokenSource cts;
             try {
                 cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
             } catch (Exception) when (cancellationToken.IsCancellationRequested) {
-                cancellationToken.ThrowIfCancellationRequested();
+                return Task.FromCanceled(cancellationToken);
             }
 
             var tcs = new TaskCompletionSourceEx<bool>();
-            var state = new WhenAllCancelOnFailureContinuationState(functionsList.Count, tcs, cts);
-
-            Parallel.ForEach(functionsList, function => {
-                var task = function(cts.Token);
-                task.ContinueWith(WhenAllCancelOnFailureContinuation, state, default(CancellationToken), TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
-            });
+            var state = new WhenAllCancelOnFailureContinuationState(functionsArray.Length, tcs, cts);
+            foreach (var function in functionsArray) {
+                Task.Run(() => function(cts.Token)
+                    .ContinueWith(WhenAllCancelOnFailureContinuation, state, default(CancellationToken), TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default));
+            }
 
             return tcs.Task;
         }

@@ -52,7 +52,32 @@ grid_data <- function(x, rows, cols, row_selector) {
     # Process and format values column by column, then flatten the resulting list of character vectors.
     max_length <- 100 - 3
     data <- c(lapply(1:ncol(x), function(i) {
-        lapply(format(x[, i], trim = TRUE, justify = "none"), function(s) {
+        col <- x[, i]
+
+        if (is.atomic(col)) {
+            # For atomic vectors, we want to apply format() to the whole thing at once,
+            # so that it can determine the number of decimal places accordingly - e.g.
+            # for c(1.5, 2, 3.04), we want the output to be "1.50 2.00 3.04".
+            col <- format(col, trim = TRUE, justify = "none")
+        }
+
+        lapply(col, function(s) {
+            # If it's already a string, use as is (this also will be the case if format was already applied above).
+            # If it's something else, try format() on this individual value.
+            # If that fails (e.g. for externalptr), try str().
+            # If that also fails, give up and display the value as <?>.
+            if (!is.character(s) || length(s) != 1) {
+                s <- tryCatch({
+                    paste0(format(s, trim = TRUE, justify = "none"), collapse = '')
+                }, error = function(e) {
+                    tryCatch({
+                        make_repr_str(max_length = 100)(s) 
+                    }, error = function(e) {
+                        "<?>"
+                    })
+                })
+            }
+
             if (is.na(s)) { 'NA' }
             else if (nchar(s) <= max_length) { s }
             else { paste0(substr(s, 1, max_length), '...', collapse = '') }

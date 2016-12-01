@@ -30,6 +30,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         private readonly CountdownDisposable _evaluatorRequest;
         private CarriageReturnProcessor _crProcessor;
         private int _terminalWidth = 80;
+        private IInteractiveWindow _currentWindow;
 
         public IRHistory History { get; }
         public IRSession Session { get; }
@@ -61,9 +62,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             _crProcessor?.Dispose();
         }
 
-        public async Task<ExecutionResult> InitializeAsync() {
-            return await InitializeAsync(false);
-        }
+        public Task<ExecutionResult> InitializeAsync() => InitializeAsync(false);
 
         private async Task<ExecutionResult> InitializeAsync(bool isResetting) {
             try {
@@ -77,11 +76,6 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                         TerminalWidth = _terminalWidth,
                         EnableAutosave = !isResetting
                     };
-
-                    if (CurrentWindow != null) {
-                        CurrentWindow.TextView.VisualElement.SizeChanged += VisualElement_SizeChanged;
-                        _crProcessor = new CarriageReturnProcessor(_coreShell, CurrentWindow);
-                    }
 
                     await Session.EnsureHostStartedAsync(startupInfo, new RSessionCallback(CurrentWindow, Session, _settings, _coreShell, new FileSystem()));
                 }
@@ -100,7 +94,6 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
         public async Task<ExecutionResult> ResetAsync(bool initialize = true) {
             try {
-                CurrentWindow.TextView.VisualElement.SizeChanged -= VisualElement_SizeChanged;
                 if (Session.IsHostRunning) {
                     CurrentWindow.WriteError(Resources.MicrosoftRHostStopping + Environment.NewLine);
                     await Session.StopHostAsync();
@@ -190,7 +183,19 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             return Session.Prompt;
         }
 
-        public IInteractiveWindow CurrentWindow { get; set; }
+        public IInteractiveWindow CurrentWindow {
+            get { return _currentWindow; }
+            set {
+                if (_currentWindow != null) {
+                    CurrentWindow.TextView.VisualElement.SizeChanged -= VisualElement_SizeChanged;
+                }
+                _currentWindow = value;
+                if (_currentWindow != null) {
+                    _currentWindow.TextView.VisualElement.SizeChanged += VisualElement_SizeChanged;
+                    _crProcessor = new CarriageReturnProcessor(_coreShell, _currentWindow);
+                }
+            }
+        }
 
         private void SessionOnOutput(object sender, ROutputEventArgs args) {
             if (args.OutputType == OutputType.Output) {

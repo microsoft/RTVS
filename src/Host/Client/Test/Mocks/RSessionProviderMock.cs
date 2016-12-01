@@ -14,6 +14,7 @@ namespace Microsoft.R.Host.Client.Mocks {
         private readonly Dictionary<Guid, IRSession> _sessions = new Dictionary<Guid, IRSession>();
 
         public void Dispose() { }
+        public bool HasBroker { get; } = true;
         public bool IsConnected { get; } = true;
         public IBrokerClient Broker { get; } = new NullBrokerClient();
 
@@ -26,18 +27,14 @@ namespace Microsoft.R.Host.Client.Mocks {
             return session;
         }
 
-        public IEnumerable<IRSession> GetSessions() {
-            return _sessions.Values;
-        }
+        public IEnumerable<IRSession> GetSessions() => _sessions.Values;
 
         public Task<IRSessionEvaluation> BeginEvaluationAsync(RHostStartupInfo startupInfo, CancellationToken cancellationToken = new CancellationToken()) 
             => new RSessionMock().BeginEvaluationAsync(cancellationToken);
 
         public Task TestBrokerConnectionAsync(string name, string path, CancellationToken cancellationToken = default(CancellationToken)) => Task.FromResult(true);
 
-        public Task<bool> TrySwitchBrokerAsync(string name, string path = null, CancellationToken cancellationToken = default(CancellationToken)) {
-            return Task.FromResult(true);
-        }
+        public Task<bool> TrySwitchBrokerAsync(string name, string path = null, CancellationToken cancellationToken = default(CancellationToken)) => Task.FromResult(true);
 
 #pragma warning disable 67
         public event EventHandler BrokerChanging;

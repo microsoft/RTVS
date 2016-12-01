@@ -20,7 +20,6 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
         private readonly IExportProvider _exportProvider;
         private readonly IRInteractiveWorkflowProvider _workflowProvider;
         private readonly IRInteractiveWorkflow _workflow;
-        private readonly IInteractiveWindowComponentContainerFactory _interactiveWindowComponentContainerFactory;
 
         public RInteractiveEvaluatorTest(RComponentsMefCatalogFixture catalog) {
             _exportProvider = catalog.CreateExportProvider();
@@ -30,12 +29,10 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
 
             _workflowProvider = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
             _workflow = UIThreadHelper.Instance.Invoke(() => _workflowProvider.GetOrCreate());
-            _interactiveWindowComponentContainerFactory = _exportProvider.GetExportedValue<IInteractiveWindowComponentContainerFactory>();
         }
 
         public async Task InitializeAsync() {
             await _workflow.RSessions.TrySwitchBrokerAsync(nameof(RInteractiveEvaluatorTest));
-            await _workflow.RSession.HostStarted.Should().BeCompletedAsync(50000);
         }
 
         public async Task DisposeAsync() {
@@ -47,7 +44,7 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
         [Category.Interactive]
         public async Task EvaluatorTest01() {
             var session = _workflow.RSession;
-            using (await UIThreadHelper.Instance.Invoke(() => _workflow.GetOrCreateVisualComponent(_interactiveWindowComponentContainerFactory))) {
+            using (await UIThreadHelper.Instance.Invoke(() => _workflow.GetOrCreateVisualComponentAsync())) {
                 _workflow.ActiveWindow.Should().NotBeNull();
                 session.IsHostRunning.Should().BeTrue();
 
@@ -102,7 +99,7 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
         [Category.Interactive]
         public async Task EvaluatorTest02() {
             var session = _workflow.RSession;
-            using (await UIThreadHelper.Instance.Invoke(() => _workflow.GetOrCreateVisualComponent(_interactiveWindowComponentContainerFactory))) {
+            using (await UIThreadHelper.Instance.Invoke(() => _workflow.GetOrCreateVisualComponentAsync())) {
                 _workflow.ActiveWindow.Should().NotBeNull();
                 session.IsHostRunning.Should().BeTrue();
 

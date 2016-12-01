@@ -87,6 +87,7 @@
     <Compile Include="Threading\BinaryAsyncLockTest.cs" />
     <Compile Include="Threading\DelayedAsyncActionTest.cs" />
     <Compile Include="Threading\MainThreadAwaitableTest.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utility\CommonTestData.cs" />
     <Compile Include="Fakes\Shell\TestCoreServices.cs" />
     <Compile Include="Utility\SupportedWpfProperties.cs" />

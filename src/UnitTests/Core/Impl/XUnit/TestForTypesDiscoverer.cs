@@ -18,7 +18,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
 
         public IEnumerable<IXunitTestCase> Discover(ITestFrameworkDiscoveryOptions discoveryOptions, ITestMethod testMethod, IAttributeInfo factAttribute)
         {
-            TestForTypesParameters parameters = new TestForTypesParameters(factAttribute);
+            TestForTypesParameters parameters = new TestForTypesParameters(testMethod, factAttribute);
             var methodDisplay = discoveryOptions.MethodDisplayOrDefault();
 
             if (testMethod.Method.GetParameters().Count() != 1) {

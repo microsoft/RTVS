@@ -21,8 +21,7 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
         }
 
         public async Task InitializeAsync() {
-            var componentFactory = _exportProvider.GetExportedValue<IInteractiveWindowComponentContainerFactory>();
-            _workflowComponent = await UIThreadHelper.Instance.Invoke(() => _workflow.GetOrCreateVisualComponent(componentFactory));
+            _workflowComponent = await UIThreadHelper.Instance.Invoke(() => _workflow.GetOrCreateVisualComponentAsync());
         }
 
         public Task DisposeAsync() {

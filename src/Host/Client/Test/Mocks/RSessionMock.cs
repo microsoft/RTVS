@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Disposables;
-using Microsoft.R.Host.Client.Host;
 
 namespace Microsoft.R.Host.Client.Test.Mocks {
     public sealed class RSessionMock : IRSession {
@@ -111,7 +110,7 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
             return Task.CompletedTask;
         }
 
-        public Task StopHostAsync() {
+        public Task StopHostAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             IsHostRunning = false;
             Disconnected?.Invoke(this, EventArgs.Empty);
             return Task.CompletedTask;
