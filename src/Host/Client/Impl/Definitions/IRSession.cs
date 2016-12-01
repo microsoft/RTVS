@@ -30,7 +30,7 @@ namespace Microsoft.R.Host.Client {
         Task CancelAllAsync(CancellationToken cancellationToken = default(CancellationToken));
         Task StartHostAsync(RHostStartupInfo startupInfo, IRSessionCallback callback, int timeout = 3000, CancellationToken cancellationToken = default(CancellationToken));
         Task EnsureHostStartedAsync(RHostStartupInfo startupInfo, IRSessionCallback callback, int timeout = 3000, CancellationToken cancellationToken = default(CancellationToken));
-        Task StopHostAsync();
+        Task StopHostAsync(CancellationToken cancellationToken = default(CancellationToken));
 
         IDisposable DisableMutatedOnReadConsole();
 

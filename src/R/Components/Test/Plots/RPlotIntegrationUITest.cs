@@ -34,6 +34,7 @@ namespace Microsoft.R.Components.Test.Plots {
         private readonly IRPlotHistoryVisualComponentContainerFactory _plotHistoryVisualComponentContainerFactory;
         private readonly IRPlotDeviceVisualComponent _plotVisualComponent;
         private IDisposable _containerDisposable;
+        private IInteractiveWindowVisualComponent _interactiveWindow;
         private const int PlotWindowInstanceId = 1;
 
         public RPlotIntegrationUITest(RComponentsMefCatalogFixture catalog, ContainerHostMethodFixture containerHost) {
@@ -52,7 +53,7 @@ namespace Microsoft.R.Components.Test.Plots {
 
         public async Task InitializeAsync() {
             await _workflow.RSessions.TrySwitchBrokerAsync(nameof(RPlotIntegrationUITest));
-            await _workflow.RSession.HostStarted.Should().BeCompletedAsync(50000);
+            _interactiveWindow = await _workflow.GetOrCreateVisualComponentAsync();
 
             _plotVisualComponent.Control.Width = 600;
             _plotVisualComponent.Control.Height = 500;
@@ -62,6 +63,7 @@ namespace Microsoft.R.Components.Test.Plots {
         public Task DisposeAsync() {
             UIThreadHelper.Instance.Invoke(() => {
                 _plotVisualComponent.Dispose();
+                _interactiveWindow.Dispose();
             });
 
             _containerDisposable?.Dispose();
@@ -96,6 +98,7 @@ namespace Microsoft.R.Components.Test.Plots {
         [Test(ThreadType.UI)]
         public async Task ResizePlotError() {
             using (_workflow.Plots.GetOrCreateVisualComponent(_plotHistoryVisualComponentContainerFactory, 0)) {
+                await _workflow.RSession.HostStarted.Should().BeCompletedAsync(50000);
                 await InitializeGraphicsDevice();
                 await ExecuteAndWaitForPlotsAsync(new string[] {
                     "plot(mtcars)",

@@ -205,7 +205,7 @@ namespace Microsoft.R.Host.Client.Session {
 
         private async Task SwitchBrokerAsync(CancellationToken cancellationToken) {
             var transactions = new List<IRSessionSwitchBrokerTransaction>();
-            var sessionsToStop = new List<IRSession>();
+            var sessionsToStop = new List<RSession>();
 
             foreach (var session in _sessions.Values) {
                 var transaction = session.StartSwitchingBroker();
@@ -221,15 +221,15 @@ namespace Microsoft.R.Host.Client.Session {
             } else {
                 // Ping isn't enough here - need a "full" test with RHost
                 await TestBrokerConnectionWithRHost(_brokerProxy, cancellationToken);
-                await StopSessionsAsync(sessionsToStop);
+                await StopSessionsAsync(sessionsToStop, cancellationToken);
             }
         }
 
-        private async Task SwitchSessionsAsync(IReadOnlyCollection<IRSessionSwitchBrokerTransaction> transactions, List<IRSession> sessionsToStop, CancellationToken cancellationToken) {
+        private async Task SwitchSessionsAsync(IReadOnlyCollection<IRSessionSwitchBrokerTransaction> transactions, List<RSession> sessionsToStop, CancellationToken cancellationToken) {
             // All sessions should participate in switch. If any of it didn't start, cancel the rest.
             try {
                 await ConnectToNewBrokerAsync(transactions, cancellationToken);
-                await Task.WhenAll(CompleteSwitchingBrokerAsync(transactions, cancellationToken), StopSessionsAsync(sessionsToStop));
+                await Task.WhenAll(CompleteSwitchingBrokerAsync(transactions, cancellationToken), StopSessionsAsync(sessionsToStop, cancellationToken));
             } finally {
                 foreach (var transaction in transactions) {
                     transaction.Dispose();
@@ -237,8 +237,8 @@ namespace Microsoft.R.Host.Client.Session {
             }
         }
         
-        private Task StopSessionsAsync(IEnumerable<IRSession> sessions) {
-            var stopSessionsTask = Task.WhenAll(sessions.Select(s => s.StopHostAsync()));
+        private Task StopSessionsAsync(IEnumerable<RSession> sessions, CancellationToken cancellationToken) {
+            var stopSessionsTask = WhenAllCancelOnFailure(sessions, (s, ct) => s.StopHostAsync(cancellationToken), cancellationToken);
             OnBrokerStateChanged(null);
             return stopSessionsTask;
         }
