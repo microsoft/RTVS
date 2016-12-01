@@ -1,13 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Diagnostics;
-using EnvDTE;
 using EnvDTE80;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.CommandBars;
-using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Packages {
     internal sealed class RToolbar {
@@ -22,29 +19,28 @@ namespace Microsoft.VisualStudio.R.Package.Packages {
         public void Show() {
             // First time we show it (default is true in settings). When package closes, 
             // it saves the state so if user closed it it won't be forcibly coming back.
-            if (_settings.ShowRToolbar) {
-                RToolbarAction((cb) => {
-                    cb.Visible = true;
-                });
+            var tb = GetToolbar();
+            if (tb != null) {
+                tb.Visible = true;
             }
         }
 
         public void SaveState() {
-            RToolbarAction((cb) => {
-                _settings.ShowRToolbar = cb.Visible;
-            });
+            var tb = GetToolbar();
+            if (tb != null) {
+                _settings.ShowRToolbar = tb.Visible;
+            }
         }
 
-        private void RToolbarAction(Action<CommandBar> action) {
+        private CommandBar GetToolbar() {
             var cbs = (CommandBars.CommandBars)_dte2.CommandBars;
             Debug.Assert(cbs != null, "Unable to find R Toolbar");
             if (cbs != null) {
                 var cb = cbs["R Toolbar"];
                 Debug.Assert(cb != null, "Unable to find R Toolbar");
-                if (cb != null) {
-                    action(cb);
-                }
+                return cb;
             }
+            return null;
         }
     }
 }
