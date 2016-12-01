@@ -5,7 +5,7 @@ using Microsoft.Common.Core;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.R.Package.Commands;
 
-namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
+namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     internal sealed class ResetReplCommand : ReplCommandBase {
         public ResetReplCommand(IRInteractiveWorkflow interactiveWorkflow) : 
             base(interactiveWorkflow, RPackageCommandId.icmdResetRepl) { }

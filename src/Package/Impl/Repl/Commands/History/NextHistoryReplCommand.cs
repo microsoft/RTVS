@@ -4,9 +4,9 @@
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.R.Package.Commands;
 
-namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
+namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     internal sealed class NextHistoryReplCommand : ReplCommandBase {
-        public NextHistoryReplCommand(IRInteractiveWorkflow interactiveWorkflow) : 
+        public NextHistoryReplCommand(IRInteractiveWorkflow interactiveWorkflow) :
             base(interactiveWorkflow, RPackageCommandId.icmdNextHistoryRepl) { }
 
         protected override void DoOperation() => Workflow.ActiveWindow.InteractiveWindow.Operations.HistoryNext();

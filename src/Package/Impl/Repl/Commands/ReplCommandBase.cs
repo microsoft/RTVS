@@ -6,11 +6,11 @@ using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Packages.R;
 
-namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
+namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     internal abstract class ReplCommandBase : PackageCommand {
         protected IRInteractiveWorkflow Workflow { get; }
 
-        public ReplCommandBase(IRInteractiveWorkflow interactiveWorkflow, int id) : 
+        public ReplCommandBase(IRInteractiveWorkflow interactiveWorkflow, int id) :
             base(RGuidList.RCmdSetGuid, id) {
             Workflow = interactiveWorkflow;
         }

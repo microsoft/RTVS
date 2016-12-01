@@ -212,10 +212,9 @@
     <Compile Include="ProjectSystem\Commands\IncludeInProjectCommand.cs" />
     <Compile Include="ProjectSystem\Commands\SendFileCommandBase.cs" />
     <Compile Include="ProjectSystem\Commands\SendToRemoteCommand.cs" />
-    <Compile Include="Repl\VsInteractiveWindowDecorator.cs" />
-    <Compile Include="Repl\Workspace\NextHistoryReplCommand.cs" />
-    <Compile Include="Repl\Workspace\PrevHistoryReplCommand.cs" />
-    <Compile Include="Repl\Workspace\ReplCommandBase.cs" />
+    <Compile Include="Repl\Commands\History\NextHistoryReplCommand.cs" />
+    <Compile Include="Repl\Commands\History\PrevHistoryReplCommand.cs" />
+    <Compile Include="Repl\Commands\ReplCommandBase.cs" />
     <Compile Include="Shell\ApplicationConstants.cs" />
     <Compile Include="Shell\VsFileDialog.cs" />
     <Compile Include="Shell\VsProgressDialog.cs" />
@@ -285,9 +284,9 @@
     <Compile Include="ProjectSystem\WorkspaceServices.cs" />
     <Compile Include="RClient\MicrosoftRClient.cs" />
     <Compile Include="RClient\MicrosoftRClientInstaller.cs" />
-    <Compile Include="Repl\Commands\SetDirectoryToProjectCommand.cs" />
-    <Compile Include="Repl\Commands\SetDirectoryToSourceCommand.cs" />
-    <Compile Include="Repl\Commands\WorkingDirectoryCommand.cs" />
+    <Compile Include="Repl\Commands\Directory\SetDirectoryToProjectCommand.cs" />
+    <Compile Include="Repl\Commands\Directory\SetDirectoryToSourceCommand.cs" />
+    <Compile Include="Repl\Commands\Directory\WorkingDirectoryCommand.cs" />
     <Compile Include="Repl\Editor\KeyProcessor.cs" />
     <Compile Include="Repl\Editor\KeyProcessorProvider.cs" />
     <Compile Include="Repl\Shiny\StopShinyAppCommand.cs" />
@@ -360,13 +359,13 @@
     <Compile Include="Publishing\Commands\PreviewWordCommand.cs" />
     <Compile Include="Publishing\Commands\PreviewPdfCommand.cs" />
     <Compile Include="Publishing\Commands\PreviewHtmlCommand.cs" />
-    <Compile Include="Repl\Commands\PasteCurrentCodeCommand.cs" />
-    <Compile Include="Repl\Commands\ExecuteCurrentCodeCommand.cs" />
-    <Compile Include="Repl\Commands\HistoryNavigationCommand.cs" />
-    <Compile Include="Repl\Commands\ReplFormatDocumentCommand.cs" />
-    <Compile Include="Repl\Commands\ClearReplCommand.cs" />
-    <Compile Include="Repl\Commands\SelectWorkingDirectoryCommand.cs" />
-    <Compile Include="Repl\Commands\RExecuteCommand.cs" />
+    <Compile Include="Repl\Commands\Code\PasteCurrentCodeCommand.cs" />
+    <Compile Include="Repl\Commands\Code\ExecuteCurrentCodeCommand.cs" />
+    <Compile Include="Repl\Commands\History\HistoryNavigationCommand.cs" />
+    <Compile Include="Repl\Commands\Code\ReplFormatDocumentCommand.cs" />
+    <Compile Include="Repl\Commands\General\ClearReplCommand.cs" />
+    <Compile Include="Repl\Commands\Directory\SelectWorkingDirectoryCommand.cs" />
+    <Compile Include="Repl\Commands\Code\RExecuteCommand.cs" />
     <Compile Include="Repl\Debugger\AttachToRInteractiveCommand.cs" />
     <Compile Include="Repl\Debugger\DebuggerCommandVisibility.cs" />
     <Compile Include="Repl\Debugger\StepIntoCommand.cs" />
@@ -381,7 +380,7 @@
     <Compile Include="Repl\Debugger\ContinueDebuggingCommand.cs" />
     <Compile Include="Repl\Debugger\AttachDebuggerCommand.cs" />
     <Compile Include="Repl\VsRInteractiveWorkflowProvider.cs" />
-    <Compile Include="Repl\Workspace\ResetReplCommand.cs" />
+    <Compile Include="Repl\Commands\General\ResetReplCommand.cs" />
     <Compile Include="Repl\Workspace\ShowRInteractiveWindowsCommand.cs" />
     <Compile Include="Commands\Markdown\MarkdownContextMenuId.cs" />
     <Compile Include="Commands\Markdown\VsMdCommandFactory.cs" />
@@ -452,7 +451,7 @@
     <Compile Include="Repl\Workspace\SaveWorkspaceCommand.cs" />
     <Compile Include="DataInspect\Commands\ImportDataSetTextFileCommand.cs" />
     <Compile Include="DataInspect\Commands\ImportDataSetUrlCommand.cs" />
-    <Compile Include="Repl\Commands\SendToReplCommand.cs" />
+    <Compile Include="Repl\Commands\Code\SendToReplCommand.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
