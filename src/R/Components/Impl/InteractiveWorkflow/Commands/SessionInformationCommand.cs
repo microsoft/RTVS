@@ -18,7 +18,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
 
         public SessionInformationCommand(IRInteractiveWorkflow interactiveWorkflow) {
             _interactiveWorkflow = interactiveWorkflow;
-            _interactiveWorkflow.RSession.Initialized += OnRSessionInitialized;
+            _interactiveWorkflow.RSession.Interactive += OnRSessionInteractive;
             _interactiveWorkflow.RSession.Disposed += OnRSessionDisposed;
         }
 
@@ -39,7 +39,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
             return CommandResult.Executed;
         }
 
-        private void OnRSessionInitialized(object sender, EventArgs e) {
+        private void OnRSessionInteractive(object sender, EventArgs e) {
             if (_interactiveWorkflow.RSession.IsRemote) {
                 ReplInitComplete().ContinueWith(async (t) => await PrintBrokerInformationAsync(reportTelemetry: true)).DoNotWait();
             }
