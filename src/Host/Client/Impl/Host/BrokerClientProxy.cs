@@ -27,6 +27,7 @@ namespace Microsoft.R.Host.Client.Host {
         public bool IsRemote => _broker.IsRemote;
         public Uri Uri => _broker.Uri;
         public bool IsVerified => _broker.IsVerified;
+        public bool HasBroker => _broker is NullBrokerClient;
 
         public Task<T> GetHostInformationAsync<T>(CancellationToken cancellationToken) => _broker.GetHostInformationAsync<T>(cancellationToken);
 

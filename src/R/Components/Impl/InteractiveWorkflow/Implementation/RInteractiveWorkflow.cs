@@ -62,7 +62,6 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
             Shell = coreShell;
             RSessions = new RSessionProvider(coreShell.Services, new InteractiveWindowConsole(this));
-            RSessions.BrokerChanging += OnBrokerChanging;
 
             RSession = RSessions.GetOrCreate(SessionGuids.InteractiveWindowRSessionGuid);
             RSession.RestartOnBrokerSwitch = true;
@@ -86,7 +85,6 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 .Add(() => _debuggerModeTracker.EnterBreakMode -= DebuggerEnteredBreakMode)
                 .Add(() => _debuggerModeTracker.LeaveBreakMode -= DebuggerLeftBreakMode)
                 .Add(() => _activeTextViewTracker.LastActiveTextViewChanged -= LastActiveTextViewChanged)
-                .Add(() => RSessions.BrokerChanging -= OnBrokerChanging)
                 .Add(() => RSession.Disconnected -= RSessionDisconnected)
                 .Add(RSessions)
                 .Add(Operations)
@@ -134,16 +132,6 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             }
         }
 
-        private void OnBrokerChanging(object sender, EventArgs e) {
-            OnBrokerChangingAsync().DoNotWait();
-        }
-
-        private async Task OnBrokerChangingAsync() {
-            await Shell.SwitchToMainThreadAsync();
-            var component = await GetOrCreateVisualComponentAsync();
-            component.Container.Show(focus: false, immediate: false);
-        }
-
         private void RSessionDisconnected(object o, EventArgs eventArgs) {
             Operations.ClearPendingInputs();
             ActiveWindow?.Container.UpdateCommandStatus(false);
@@ -176,6 +164,13 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             var interactiveWindow = window.InteractiveWindow;
             interactiveWindow.TextView.Closed += (_, __) => evaluator.Dispose();
             _operations.InteractiveWindow = interactiveWindow;
+
+            if (!RSessions.HasBroker) {
+                var connectedToBroker = await Connections.TryConnectToPreviouslyUsedAsync();
+                if (!connectedToBroker) {
+                    Connections.GetOrCreateVisualComponent().Container.Show(focus:false, immediate:false);
+                }
+            }
 
             await interactiveWindow.InitializeAsync();
 

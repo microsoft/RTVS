@@ -29,6 +29,7 @@ namespace Microsoft.R.Host.Client.Session {
         private Task _updateHostLoadLoopTask;
         private HostLoad _hostLoad;
 
+        public bool HasBroker => _brokerProxy.HasBroker;
         public bool IsConnected => _hostLoad != null;
 
         public IBrokerClient Broker => _brokerProxy;

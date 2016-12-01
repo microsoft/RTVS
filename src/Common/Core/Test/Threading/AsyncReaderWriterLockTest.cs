@@ -12,6 +12,7 @@ using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.Common.Core.Test.Threading {
     [ExcludeFromCodeCoverage]
+    [ThreadType(ThreadType.Background)]
     public class AsyncReaderWriterLockTest {
         private readonly AsyncReaderWriterLock _arwl;
 

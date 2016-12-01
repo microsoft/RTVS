@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.R.Components.ConnectionManager {
     public interface IConnectionManager : IDisposable {
-        IConnectionManagerVisualComponent GetOrCreateVisualComponent(IConnectionManagerVisualComponentContainerFactory value, int id);
+        IConnectionManagerVisualComponent GetOrCreateVisualComponent(int id = 0);
 
         bool IsConnected { get; }
         IConnection ActiveConnection { get; }
@@ -28,5 +28,6 @@ namespace Microsoft.R.Components.ConnectionManager {
         Task ConnectAsync(IConnectionInfo connection, CancellationToken cancellationToken = default(CancellationToken));
         Task ReconnectAsync(CancellationToken cancellationToken = default(CancellationToken));
         Task TestConnectionAsync(IConnectionInfo connection, CancellationToken cancellationToken = default(CancellationToken));
+        Task<bool> TryConnectToPreviouslyUsedAsync(CancellationToken cancellationToken = default(CancellationToken));
     }
 }
