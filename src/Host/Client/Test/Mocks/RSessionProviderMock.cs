@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.R.Host.Client.Host;
-using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Mocks;
 
 namespace Microsoft.R.Host.Client.Mocks {
@@ -29,7 +28,7 @@ namespace Microsoft.R.Host.Client.Mocks {
 
         public IEnumerable<IRSession> GetSessions() => _sessions.Values;
 
-        public Task<IRSessionEvaluation> BeginEvaluationAsync(RHostStartupInfo startupInfo, CancellationToken cancellationToken = new CancellationToken()) 
+        public Task<IRSessionEvaluation> BeginEvaluationAsync(RHostStartupInfo startupInfo, CancellationToken cancellationToken = new CancellationToken())
             => new RSessionMock().BeginEvaluationAsync(cancellationToken);
 
         public Task TestBrokerConnectionAsync(string name, string path, CancellationToken cancellationToken = default(CancellationToken)) => Task.FromResult(true);
@@ -41,6 +40,7 @@ namespace Microsoft.R.Host.Client.Mocks {
         public event EventHandler BrokerChangeFailed;
         public event EventHandler BrokerChanged;
         public event EventHandler<BrokerStateChangedEventArgs> BrokerStateChanged;
+        public event EventHandler<HostLoadChangedEventArgs> HostLoadChanged;
 #pragma warning restore
     }
 }

@@ -43,12 +43,12 @@ namespace Microsoft.R.Components.Information {
             _sessionProvider = sessionProvider;
             _shell = shell;
             _disposableBag = DisposableBag.Create<HostLoadIndicatorViewModel>()
-                .Add(() => _sessionProvider.BrokerStateChanged -= BrokerStateChanged);
+                .Add(() => _sessionProvider.HostLoadChanged -= OnHostLoadChanged);
 
-            _sessionProvider.BrokerStateChanged += BrokerStateChanged;
+            _sessionProvider.HostLoadChanged += OnHostLoadChanged;
         }
 
-        private void BrokerStateChanged(object sender, BrokerStateChangedEventArgs e) {
+        private void OnHostLoadChanged(object sender, HostLoadChangedEventArgs e) {
             _shell.DispatchOnUIThread(() => {
                 CpuLoad = e.HostLoad.CpuLoad;
                 MemoryLoad = e.HostLoad.MemoryLoad;

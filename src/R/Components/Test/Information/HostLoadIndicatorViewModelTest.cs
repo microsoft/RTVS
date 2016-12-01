@@ -32,8 +32,8 @@ namespace Microsoft.R.Components.Test.Information {
         [Test]
         public void Update() {
             var viewModel = new HostLoadIndicatorViewModel(_sessionProvider, _coreShell);
-            var eventArgs = new BrokerStateChangedEventArgs(true, _hostLoad);
-            _sessionProvider.BrokerStateChanged += Raise.Event<EventHandler<BrokerStateChangedEventArgs>>(_sessionProvider, eventArgs);
+            var eventArgs = new HostLoadChangedEventArgs(_hostLoad);
+            _sessionProvider.HostLoadChanged += Raise.Event<EventHandler<HostLoadChangedEventArgs>>(_sessionProvider, eventArgs);
 
             viewModel.CpuLoad.Should().Be(30);
             viewModel.MemoryLoad.Should().Be(40);

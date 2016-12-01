@@ -5,10 +5,11 @@ using System;
 using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Client {
-    public class BrokerStateChangedEventArgs : EventArgs {
-        public bool IsConnected { get; }
-        public BrokerStateChangedEventArgs(bool isConnected) {
-            IsConnected = isConnected;
+    public class HostLoadChangedEventArgs : EventArgs {
+        public HostLoad HostLoad { get; }
+
+        public HostLoadChangedEventArgs(HostLoad hostLoad) {
+            HostLoad = hostLoad;
         }
     }
 }

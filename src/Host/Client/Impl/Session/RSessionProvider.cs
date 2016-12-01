@@ -38,6 +38,7 @@ namespace Microsoft.R.Host.Client.Session {
         public event EventHandler BrokerChangeFailed;
         public event EventHandler BrokerChanged;
         public event EventHandler<BrokerStateChangedEventArgs> BrokerStateChanged;
+        public event EventHandler<HostLoadChangedEventArgs> HostLoadChanged;
 
         public RSessionProvider(ICoreServices services, IConsole callback = null) {
             _console = callback ?? new NullConsole();
@@ -91,12 +92,17 @@ namespace Microsoft.R.Host.Client.Session {
             }
         }
 
-        private void OnBrokerStateChanged(HostLoad hostLoad) {
-            Interlocked.Exchange(ref _hostLoad, hostLoad);
-            var args = new BrokerStateChangedEventArgs(hostLoad != null, hostLoad ?? new HostLoad());
+        private void OnBrokerStateChanged(bool connected) {
+            var args = new BrokerStateChangedEventArgs(connected);
             Task.Run(() => BrokerStateChanged?.Invoke(this, args)).DoNotWait();
         }
-        
+
+        private void OnHostLoadChanged(HostLoad hostLoad) {
+            Interlocked.Exchange(ref _hostLoad, hostLoad);
+            var args = new HostLoadChangedEventArgs(hostLoad ?? new HostLoad());
+            Task.Run(() => HostLoadChanged?.Invoke(this, args)).DoNotWait();
+        }
+
         private void OnBrokerChanged() {
             Task.Run(() => BrokerChanged?.Invoke(this, new EventArgs())).DoNotWait();
         }
@@ -167,7 +173,7 @@ namespace Microsoft.R.Host.Client.Session {
                         lockToken.Dispose();
                     }
 
-                    OnBrokerStateChanged(new HostLoad());
+                    OnBrokerStateChanged(connected: true);
                     return true;
                 }
 
@@ -197,7 +203,7 @@ namespace Microsoft.R.Host.Client.Session {
                     lockToken.Dispose();
                 }
 
-                OnBrokerStateChanged(new HostLoad());
+                OnBrokerStateChanged(connected: true);
                 OnBrokerChanged();
                 return true;
             }
@@ -239,7 +245,7 @@ namespace Microsoft.R.Host.Client.Session {
         
         private Task StopSessionsAsync(IEnumerable<RSession> sessions, CancellationToken cancellationToken) {
             var stopSessionsTask = WhenAllCancelOnFailure(sessions, (s, ct) => s.StopHostAsync(cancellationToken), cancellationToken);
-            OnBrokerStateChanged(null);
+            OnBrokerStateChanged(connected: false);
             return stopSessionsTask;
         }
 
@@ -338,7 +344,7 @@ namespace Microsoft.R.Host.Client.Session {
             using (await _connectArwl.ReaderLockAsync(ct)) {
                 try {
                     var hostLoad = await Broker.GetHostInformationAsync<HostLoad>(ct);
-                    OnBrokerStateChanged(hostLoad);
+                    OnHostLoadChanged(hostLoad);
                 } catch (RHostDisconnectedException) {
                 }
             }

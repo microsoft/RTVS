@@ -71,6 +71,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
 
         private void Initialize() {
+            AppConstants.Initialize();
+
             MainThread = Thread.CurrentThread;
             MainThreadDispatcher = Dispatcher.FromThread(MainThread);
 

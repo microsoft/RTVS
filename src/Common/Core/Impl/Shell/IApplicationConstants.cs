@@ -10,6 +10,11 @@ namespace Microsoft.Common.Core.Shell {
     /// </summary>
     public interface IApplicationConstants {
         /// <summary>
+        /// Pre-fetches values so they can be accessed from background threads.
+        /// </summary>
+        void Initialize();
+
+        /// <summary>
         /// Application name to use in log, system events, etc.
         /// </summary>
         string ApplicationName { get; }

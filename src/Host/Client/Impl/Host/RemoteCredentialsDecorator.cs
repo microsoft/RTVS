@@ -38,8 +38,6 @@ namespace Microsoft.R.Host.Client.Host {
             // the first prompt should be validated and saved, and then the same credentials will be reused for the second session.
             var token = await _lock.WriterLockAsync(cancellationToken);
 
-            await _mainThread.SwitchToAsync(cancellationToken);
-
             Credentials credentials;
             try {
                 var invalidateStoredCredentials = !Volatile.Read(ref _credentialsAreValid);
