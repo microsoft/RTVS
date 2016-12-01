@@ -20,8 +20,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         public IInteractiveWindowVisualComponent LastActiveWindow => _lastActiveWindow;
         public bool IsActive => _isActive;
 
-        public event EventHandler<InteractiveWindowChangedEventArgs> LastActiveWindowChanged;
-
         public void OnFrameCreated(IVsWindowFrame frame) {
         }
 
@@ -53,8 +51,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 return;
             }
 
-            var handler = LastActiveWindowChanged;
-            handler?.Invoke(this, new InteractiveWindowChangedEventArgs(oldInteractiveWindow, newInteractiveWindow));
             IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
             shell.UpdateCommandUI(1);
         }

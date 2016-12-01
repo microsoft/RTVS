@@ -61,9 +61,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             _crProcessor?.Dispose();
         }
 
-        public async Task<ExecutionResult> InitializeAsync() {
-            return await InitializeAsync(false);
-        }
+        public Task<ExecutionResult> InitializeAsync() => InitializeAsync(false);
 
         private async Task<ExecutionResult> InitializeAsync(bool isResetting) {
             try {
