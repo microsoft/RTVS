@@ -133,6 +133,7 @@
     <Compile Include="XUnit\TestRunner.cs" />
     <Compile Include="XUnit\TestTraceListener.cs" />
     <Compile Include="XUnit\ThreadType.cs" />
+    <Compile Include="XUnit\ThreadTypeAttribute.cs" />
     <Compile Include="XUnit\TraceFailException.cs" />
     <Compile Include="XUnit\UnitTestTraitDiscoverer.cs" />
     <Compile Include="XUnit\TestForTypesTestCase.cs" />

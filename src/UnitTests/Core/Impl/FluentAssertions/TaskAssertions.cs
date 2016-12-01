@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -54,6 +55,10 @@ namespace Microsoft.UnitTests.Core.FluentAssertions {
         
         public Task<AndConstraint<TaskAssertions>> BeCompletedAsync(int timeout = 10000, string because = "", params object[] reasonArgs) {
             Subject.Should().NotBeNull();
+            if (Debugger.IsAttached) {
+                timeout = Math.Max(100000, timeout);
+            }
+
             var timeoutTask = Task.Delay(timeout);
             var state = new BeCompletedAsyncContinuationState(timeout, because, reasonArgs);
             return Task.WhenAny(timeoutTask, Subject)

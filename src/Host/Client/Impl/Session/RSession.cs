@@ -300,22 +300,23 @@ namespace Microsoft.R.Host.Client.Session {
             }
         }
 
-        public async Task StopHostAsync() {
-            _disposeToken.ThrowIfDisposed();
-            await TaskUtilities.SwitchToBackgroundThread();
+        public async Task StopHostAsync(CancellationToken cancellationToken = default(CancellationToken)) {
+            using (_disposeToken.Link(ref cancellationToken)) {
+                await TaskUtilities.SwitchToBackgroundThread();
 
-            var stopToken = await _stopHostLock.WaitAsync();
-            if (stopToken.IsSet) {
-                return;
-            }
+                var stopToken = await _stopHostLock.WaitAsync(cancellationToken);
+                if (stopToken.IsSet) {
+                    return;
+                }
 
-            try {
-                ResetInitializationTcs();
-                await StopHostAsync(BrokerClient, _startupInfo.Name, _host, _hostRunTask);
+                try {
+                    ResetInitializationTcs();
+                    await StopHostAsync(BrokerClient, _startupInfo.Name, _host, _hostRunTask);
 
-                stopToken.Set();
-            } finally {
-                stopToken.Reset();
+                    stopToken.Set();
+                } finally {
+                    stopToken.Reset();
+                }
             }
         }
 

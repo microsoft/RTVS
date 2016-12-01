@@ -9,6 +9,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Logging;
@@ -74,25 +75,25 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
         private async Task CompleteInitializationAsync() {
             await _shell.SwitchToMainThreadAsync();
-            _disposableBag
-                .Add(_statusBar.AddItem(new ConnectionStatusBar {
-                    DataContext = _statusBarViewModel
-                }))
-                .Add(_statusBar.AddItem(new HostLoadIndicator {
-                    DataContext = _hostLoadIndicatorViewModel
-                }));
-            await SwitchBrokerToLastConnection();
+            AddToStatusBar(new ConnectionStatusBar(), _statusBarViewModel);
+            AddToStatusBar(new HostLoadIndicator(), _hostLoadIndicatorViewModel);
+        }
+
+        private void AddToStatusBar(FrameworkElement element, object dataContext) {
+            element.DataContext = dataContext;
+            _disposableBag.Add(_statusBar.AddItem(element));
         }
 
         public void Dispose() {
             _disposableBag.TryDispose();
         }
 
-        public IConnectionManagerVisualComponent GetOrCreateVisualComponent(IConnectionManagerVisualComponentContainerFactory visualComponentContainerFactory, int instanceId = 0) {
+        public IConnectionManagerVisualComponent GetOrCreateVisualComponent(int instanceId = 0) {
             if (VisualComponent != null) {
                 return VisualComponent;
             }
 
+            var visualComponentContainerFactory = _shell.ExportProvider.GetExportedValue<IConnectionManagerVisualComponentContainerFactory>();
             VisualComponent = visualComponentContainerFactory.GetOrCreate(this, instanceId).Component;
             return VisualComponent;
         }
@@ -118,7 +119,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 UpdateRecentConnections();
 
                 // Credentials are saved by URI (connection id). Delete the credentials if there are no other connections using it.
-                if (_userConnections.Where(kvp => kvp.Value.Id == connection.Id).Count() == 0) {
+                if (_userConnections.All(kvp => kvp.Value.Id != connection.Id)) {
                     _securityService.DeleteUserCredentials(connection.Id.ToCredentialAuthority());
                 }
             }
@@ -139,7 +140,24 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         public async Task ConnectAsync(IConnectionInfo connection, CancellationToken cancellationToken = default(CancellationToken)) {
             if (ActiveConnection == null || !ActiveConnection.Path.PathEquals(connection.Path) || string.IsNullOrEmpty(_sessionProvider.Broker.Name)) {
                 await TrySwitchBrokerAsync(connection, cancellationToken);
+                await _shell.SwitchToMainThreadAsync();
+                var interactiveWindow = await _interactiveWorkflow.GetOrCreateVisualComponentAsync();
+                interactiveWindow.Container.Show(focus: false, immediate: false);
             }
+        }
+        
+        public Task<bool> TryConnectToPreviouslyUsedAsync(CancellationToken cancellationToken = default(CancellationToken)) {
+            var connectionInfo = _settings.LastActiveConnection;
+            if (connectionInfo != null) {
+                var c = GetOrCreateConnection(connectionInfo.Name, connectionInfo.Path, connectionInfo.RCommandLineArguments, connectionInfo.IsUserCreated);
+                if (c.IsRemote) {
+                    return Task.FromResult(false); // Do not restore remote connections automatically
+                }
+            }
+
+            return !string.IsNullOrEmpty(connectionInfo?.Path) 
+                ? TrySwitchBrokerAsync(connectionInfo, cancellationToken) 
+                : Task.FromResult(false);
         }
 
         private Task<bool> TrySwitchBrokerAsync(IConnectionInfo info, CancellationToken cancellationToken = default(CancellationToken)) {
@@ -260,20 +278,6 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 _shell.Services.Log.WriteAsync(LogVerbosity.Normal, MessageCategory.Error, ex.Message).DoNotWait();
             }
             return false;
-        }
-
-        private async Task SwitchBrokerToLastConnection() {
-            var connectionInfo = _settings.LastActiveConnection;
-            if (connectionInfo != null) {
-                var c = GetOrCreateConnection(connectionInfo.Name, connectionInfo.Path, connectionInfo.RCommandLineArguments, connectionInfo.IsUserCreated);
-                if (c.IsRemote) {
-                    return; // Do not restore remote connections automatically
-                }
-            }
-
-            if (!string.IsNullOrEmpty(connectionInfo?.Path)) {
-                await TrySwitchBrokerAsync(connectionInfo);
-            }
         }
 
         private void BrokerStateChanged(object sender, BrokerStateChangedEventArgs eventArgs) {

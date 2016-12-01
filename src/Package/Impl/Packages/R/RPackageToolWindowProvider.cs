@@ -24,8 +24,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         [Import]
         private Lazy<IRHistoryVisualComponentContainerFactory> HistoryComponentContainerFactory { get; set; }
         [Import]
-        private Lazy<IConnectionManagerVisualComponentContainerFactory> ConnectionManagerComponentContainerFactory { get; set; }
-        [Import]
         private Lazy<IRPackageManagerVisualComponentContainerFactory> PackageManagerComponentContainerFactory { get; set; }
         [Import]
         private Lazy<IHelpVisualComponentContainerFactory> HelpVisualComponentContainerFactory { get; set; }
@@ -121,7 +119,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
         private IConnectionManagerVisualComponent CreateConnectionManagerToolWindow(int id) {
             var workflow = WorkflowProvider.Value.GetOrCreate();
-            return workflow.Connections.GetOrCreateVisualComponent(ConnectionManagerComponentContainerFactory.Value, id);
+            return workflow.Connections.GetOrCreateVisualComponent(id);
         }
 
         private IRPackageManagerVisualComponent CreatePackageManagerToolWindow(int id) {

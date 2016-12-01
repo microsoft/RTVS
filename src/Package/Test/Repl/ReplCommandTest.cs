@@ -34,12 +34,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
         private readonly VsDebuggerModeTracker _debuggerModeTracker;
         private readonly IRInteractiveWorkflow _workflow;
         private readonly IRInteractiveWorkflowProvider _workflowProvider;
-        private readonly IInteractiveWindowComponentContainerFactory _componentContainerFactory;
 
         public ReplCommandTest() {
             _debuggerModeTracker = new VsDebuggerModeTracker();
 
-            _componentContainerFactory = new InteractiveWindowComponentContainerFactoryMock(VsAppShell.Current);
             _workflowProvider = TestRInteractiveWorkflowProviderFactory.Create(debuggerModeTracker: _debuggerModeTracker);
             _workflow = _workflowProvider.GetOrCreate();
         }
@@ -56,7 +54,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
             var editorBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
             var tv = new TextViewMock(editorBuffer);
 
-            var commandFactory = new VsRCommandFactory(_workflowProvider, _componentContainerFactory);
+            var commandFactory = new VsRCommandFactory(_workflowProvider);
             var commands = UIThreadHelper.Instance.Invoke(() => commandFactory.GetCommands(tv, editorBuffer));
 
             await _workflow.RSession.HostStarted.Should().BeCompletedAsync();

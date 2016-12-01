@@ -90,9 +90,9 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
 
                     var mutatedTask = EventTaskSources.IRSession.Mutated.Create(session);
 
-                    await command.InvokeAsync();
+                    await command.InvokeAsync().Should().BeCompletedAsync();
 
-                    await mutatedTask;
+                    await mutatedTask.Should().BeCompletedAsync();
                     (await session.EvaluateAsync<bool>("sourced", REvaluationKind.Normal)).Should().BeTrue();
                 }
             }
