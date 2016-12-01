@@ -1024,4 +1024,13 @@ Click OK to open MiKTeX download page in the default browser. R Remote Services 
   <data name="Info_MarkdownSendingInputFile" xml:space="preserve">
     <value>Sending markdown input file to R: {0}</value>
   </data>
+  <data name="Settings_OutliningCategory" xml:space="preserve">
+    <value>Outlining</value>
+  </data>
+  <data name="Setting_EnableOutlining" xml:space="preserve">
+    <value>Code outlining</value>
+  </data>
+  <data name="Setting_EnableOutlining_Description" xml:space="preserve">
+    <value>Outline code regions (collapsible sections)</value>
+  </data>
 </root>

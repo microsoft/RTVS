@@ -120,6 +120,7 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
         public event EventHandler<RAfterRequestEventArgs> AfterRequest;
         public event EventHandler<RBeforeRequestEventArgs> BeforeRequest;
         public event EventHandler<RConnectedEventArgs> Connected;
+        public event EventHandler<EventArgs> Interactive;
         public event EventHandler<EventArgs> DirectoryChanged;
         public event EventHandler<EventArgs> Disconnected;
         public event EventHandler<EventArgs> Disposed;

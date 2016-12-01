@@ -12,6 +12,7 @@ namespace Microsoft.R.Host.Client {
         event EventHandler<EventArgs> Mutated;
         event EventHandler<ROutputEventArgs> Output;
         event EventHandler<RConnectedEventArgs> Connected;
+        event EventHandler<EventArgs> Interactive;
         event EventHandler<EventArgs> Disconnected;
         event EventHandler<EventArgs> Disposed;
         event EventHandler<EventArgs> DirectoryChanged;

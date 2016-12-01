@@ -2,20 +2,24 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.R.Components.Controller;
+using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
     public sealed class SessionInformationCommand : IAsyncCommand {
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
+        private readonly CancellationTokenSource _cts = new CancellationTokenSource();
 
         public SessionInformationCommand(IRInteractiveWorkflow interactiveWorkflow) {
             _interactiveWorkflow = interactiveWorkflow;
-            _interactiveWorkflow.RSessions.BrokerChanged += OnBrokerChanged;
+            _interactiveWorkflow.RSession.Interactive += OnRSessionInteractive;
+            _interactiveWorkflow.RSession.Disposed += OnRSessionDisposed;
         }
 
         public CommandStatus Status {
@@ -35,10 +39,26 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
             return CommandResult.Executed;
         }
 
-        private void OnBrokerChanged(object sender, EventArgs e) {
+        private void OnRSessionInteractive(object sender, EventArgs e) {
             if (_interactiveWorkflow.RSession.IsRemote) {
-                PrintBrokerInformationAsync(reportTelemetry: true).DoNotWait();
+                ReplInitComplete().ContinueWith(async (t) => await PrintBrokerInformationAsync(reportTelemetry: true)).DoNotWait();
             }
+        }
+
+        private void OnRSessionDisposed(object sender, EventArgs e) {
+            _cts.Cancel();
+        }
+
+        private Task ReplInitComplete() {
+            var iw = _interactiveWorkflow.ActiveWindow?.InteractiveWindow;
+            if (iw != null && iw.IsInitializing) {
+                return Task.Run(async () => {
+                    while (iw.IsInitializing && !_cts.IsCancellationRequested) {
+                        await Task.Delay(100);
+                    }
+                });
+            }
+            return Task.CompletedTask;
         }
 
         private async Task PrintBrokerInformationAsync(bool reportTelemetry = false) {

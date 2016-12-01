@@ -197,6 +197,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set { SetProperty(ref _logLevel, value); }
         }
 
+        public bool ShowRToolbar { get; set; } = true;
+
         private void UpdateWorkingDirectoryList(string newDirectory) {
             List<string> list = new List<string>(WorkingDirectoryList);
             if (!list.Contains(newDirectory, StringComparer.OrdinalIgnoreCase)) {
