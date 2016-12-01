@@ -136,11 +136,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
         private async Task OnBrokerChangingAsync() {
             await Shell.SwitchToMainThreadAsync();
-            var factory = Shell.ExportProvider.GetExportedValueOrDefault<IInteractiveWindowComponentContainerFactory>();
-            if (factory != null) {
-                var component = await GetOrCreateVisualComponent(factory);
-                component.Container.Show(focus: false, immediate: false);
-            }
+            var component = await GetOrCreateVisualComponentAsync();
+            component.Container.Show(focus: false, immediate: false);
         }
 
         private void RSessionDisconnected(object o, EventArgs eventArgs) {
@@ -153,7 +150,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             return wss.IsRProjectActive;
         }
 
-        public async Task<IInteractiveWindowVisualComponent> GetOrCreateVisualComponent(IInteractiveWindowComponentContainerFactory componentContainerFactory, int instanceId = 0) {
+        public async Task<IInteractiveWindowVisualComponent> GetOrCreateVisualComponentAsync(int instanceId = 0) {
             Shell.AssertIsOnMainThread();
 
             if (ActiveWindow != null) {
@@ -165,9 +162,10 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 return ActiveWindow;
             }
 
+            var factory = Shell.ExportProvider.GetExportedValue<IInteractiveWindowComponentContainerFactory>();
             var evaluator = new RInteractiveEvaluator(RSessions, RSession, History, Connections, Shell, _settings);
 
-            ActiveWindow = componentContainerFactory.Create(instanceId, evaluator, RSessions);
+            ActiveWindow = factory.Create(instanceId, evaluator, RSessions);
             var interactiveWindow = ActiveWindow.InteractiveWindow;
             interactiveWindow.TextView.Closed += (_, __) => evaluator.Dispose();
             _operations.InteractiveWindow = interactiveWindow;

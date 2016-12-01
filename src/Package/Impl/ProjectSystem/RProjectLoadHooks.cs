@@ -51,7 +51,6 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         private readonly UnconfiguredProject _unconfiguredProject;
         private readonly IEnumerable<Lazy<IVsProject>> _cpsIVsProjects;
         private readonly IRInteractiveWorkflowProvider _workflowProvider;
-        private readonly IInteractiveWindowComponentContainerFactory _componentContainerFactory;
         private readonly IProjectItemDependencyProvider _dependencyProvider;
         private readonly ICoreShell _coreShell;
 
@@ -78,7 +77,6 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             _unconfiguredProject = unconfiguredProject;
             _cpsIVsProjects = cpsIVsProjects;
             _workflowProvider = workflowProvider;
-            _componentContainerFactory = componentContainerFactory;
 
             _toolsSettings = toolsSettings;
             _threadHandling = threadHandling;
@@ -118,7 +116,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             _history = _workflow.History;
 
             if (_workflow.ActiveWindow == null) {
-                var window = await _workflow.GetOrCreateVisualComponent(_componentContainerFactory);
+                var window = await _workflow.GetOrCreateVisualComponentAsync();
                 window.Container.Show(focus: true, immediate: false);
             }
 
