@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -556,7 +557,7 @@ namespace Microsoft.R.Host.Client {
             foreach (var port in ports) {
                 ct.ThrowIfCancellationRequested();
 
-                server = new WebSocketServer(port) {
+                server = new WebSocketServer(IPAddress.Loopback, port) {
                     ReuseAddress = false,
                     WaitTime = HeartbeatTimeout,
                 };
