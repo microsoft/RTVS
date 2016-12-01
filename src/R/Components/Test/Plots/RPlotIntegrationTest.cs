@@ -33,7 +33,6 @@ namespace Microsoft.R.Components.Test.Plots {
         private readonly IExportProvider _exportProvider;
         private readonly TestRInteractiveWorkflowProvider _workflowProvider;
         private readonly IRInteractiveWorkflow _workflow;
-        private readonly IInteractiveWindowComponentContainerFactory _componentContainerFactory;
         private readonly TestRPlotDeviceVisualComponentContainerFactory _plotDeviceVisualComponentContainerFactory;
         private readonly IRPlotHistoryVisualComponentContainerFactory _plotHistoryVisualComponentContainerFactory;
         private readonly MethodInfo _testMethod;
@@ -46,13 +45,12 @@ namespace Microsoft.R.Components.Test.Plots {
             _workflow = _workflowProvider.GetOrCreate();
             _plotDeviceVisualComponentContainerFactory = _exportProvider.GetExportedValue<TestRPlotDeviceVisualComponentContainerFactory>();
             _plotHistoryVisualComponentContainerFactory = _exportProvider.GetExportedValue<IRPlotHistoryVisualComponentContainerFactory>();
-            _componentContainerFactory = _exportProvider.GetExportedValue<IInteractiveWindowComponentContainerFactory>();
             _testMethod = testMethod.MethodInfo;
             _testFiles = testFiles;
         }
 
         public async Task InitializeAsync() {
-            _replVisualComponent = await _workflow.GetOrCreateVisualComponent(_componentContainerFactory);
+            _replVisualComponent = await _workflow.GetOrCreateVisualComponentAsync();
             await _workflow.RSessions.TrySwitchBrokerAsync(nameof(RPlotIntegrationTest));
 
             _plotDeviceVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);

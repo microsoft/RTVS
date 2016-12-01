@@ -24,16 +24,11 @@ namespace Microsoft.VisualStudio.R.Package.Commands.MD {
     [ContentType(MdContentTypeDefinition.ContentType)]
     internal class VsMdCommandFactory : ICommandFactory {
         private readonly IRInteractiveWorkflowProvider _workflowProvider;
-        private readonly IInteractiveWindowComponentContainerFactory _componentContainerFactory;
         private readonly IWebBrowserServices _wbs;
 
         [ImportingConstructor]
-        public VsMdCommandFactory(
-            IRInteractiveWorkflowProvider workflowProvider, 
-            IInteractiveWindowComponentContainerFactory componentContainerFactory,
-            IWebBrowserServices wbs) {
+        public VsMdCommandFactory(IRInteractiveWorkflowProvider workflowProvider,  IWebBrowserServices wbs) {
             _workflowProvider = workflowProvider;
-            _componentContainerFactory = componentContainerFactory;
             _wbs = wbs;
         }
 
@@ -41,8 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.MD {
             var workflow = _workflowProvider.GetOrCreate();
 
             if (workflow.ActiveWindow == null) {
-                workflow
-                    .GetOrCreateVisualComponent(_componentContainerFactory)
+                workflow.GetOrCreateVisualComponentAsync()
                     .ContinueOnRanToCompletion(w => w.Container.Show(focus: false, immediate: false));
             }
 

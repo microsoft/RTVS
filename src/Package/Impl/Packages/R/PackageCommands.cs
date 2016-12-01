@@ -40,7 +40,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         public static IEnumerable<MenuCommand> GetCommands(ExportProvider exportProvider) {
             var appShell = VsAppShell.Current;
             var interactiveWorkflowProvider = exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
-            var interactiveWorkflowComponentContainerFactory = exportProvider.GetExportedValue<IInteractiveWindowComponentContainerFactory>();
             var interactiveWorkflow = interactiveWorkflowProvider.GetOrCreate();
             var projectServiceAccessor = exportProvider.GetExportedValue<IProjectServiceAccessor>();
             var textViewTracker = exportProvider.GetExportedValue<IActiveWpfTextViewTracker>();
@@ -112,7 +111,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new ManageDsnCommand(appShell, interactiveWorkflow),
 
                 // Window commands
-                new ShowRInteractiveWindowsCommand(interactiveWorkflowProvider, interactiveWorkflowComponentContainerFactory),
+                new ShowRInteractiveWindowsCommand(interactiveWorkflowProvider),
                 new ShowVariableWindowCommand(),
 
                 new ShowToolWindowCommand<HelpWindowPane>(RPackageCommandId.icmdShowHelpWindow),
