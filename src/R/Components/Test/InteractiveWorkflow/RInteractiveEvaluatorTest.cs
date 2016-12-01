@@ -33,7 +33,6 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
 
         public async Task InitializeAsync() {
             await _workflow.RSessions.TrySwitchBrokerAsync(nameof(RInteractiveEvaluatorTest));
-            await _workflow.RSession.HostStarted.Should().BeCompletedAsync(50000);
         }
 
         public async Task DisposeAsync() {
