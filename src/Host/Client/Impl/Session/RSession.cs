@@ -325,8 +325,8 @@ namespace Microsoft.R.Host.Client.Session {
             // Try graceful shutdown with q() first.
             if (host != null) {
                 try {
-                    host.QuitAsync().SilenceException<Exception>().DoNotWait();
-                    await Task.WhenAny(hostRunTask, Task.Delay(2000)).Unwrap();
+                    host.QuitAsync().SilenceException<Exception>().DoNotWait(); 
+                    await Task.WhenAny(hostRunTask, Task.Delay(10000)).Unwrap();
                 } catch (Exception) { }
 
                 if (hostRunTask.IsCompleted) {
@@ -337,7 +337,7 @@ namespace Microsoft.R.Host.Client.Session {
             // If it didn't work, tell the broker to forcibly terminate the host process. 
             if (hostName != null) {
                 try {
-                    await brokerClient.TerminateSessionAsync(hostName);
+                    brokerClient.TerminateSessionAsync(hostName).Wait(10000);
                 } catch (Exception) { }
 
                 if (hostRunTask.IsCompleted) {

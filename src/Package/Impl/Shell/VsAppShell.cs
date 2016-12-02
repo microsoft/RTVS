@@ -49,14 +49,16 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private ExportProvider _exportProvider;
         private ICompositionService _compositionService;
 
+        [Export(typeof(IApplicationConstants))]
+        private ApplicationConstants ApplicationConstants { get; }
+
         [ImportingConstructor]
         public VsAppShell(ITelemetryService telemetryService
             , IRSettings settings
-            , ICoreServices coreServices
-            , IApplicationConstants appConstants) {
+            , ICoreServices coreServices) {
 
             _coreServices = coreServices;
-            AppConstants = appConstants;
+            AppConstants = new ApplicationConstants();
             ProgressDialog = new VsProgressDialog(this);
             FileDialog = new VsFileDialog(this);
 
@@ -68,6 +70,10 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             if (instance.MainThread == null) {
                 instance.Initialize();
             }
+        }
+
+        public static void Terminate() {
+            _instance?.Dispose();
         }
 
         private void Initialize() {
@@ -83,6 +89,10 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             _idleTimeSource.OnTerminateApp += OnTerminateApp;
 
             EditorShell.Current = this;
+        }
+
+        private void OnTerminateApp(object sender, EventArgs e) {
+            Terminating?.Invoke(null, EventArgs.Empty);
         }
 
         /// <summary>
@@ -345,9 +355,13 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
         #endregion
 
-        #region Threading
+        #region IMainThread
         public int ThreadId => MainThread.ManagedThreadId;
         public void Post(Action action, CancellationToken cancellationToken) {
+             if(MainThreadDispatcher.HasShutdownStarted) {
+                throw new InvalidOperationException("Unable to transition to UI thread: dispatcher has started shutdown.");
+            }
+
             var awaiter = ThreadHelper.JoinableTaskFactory
                 .SwitchToMainThreadAsync(cancellationToken)
                 .GetAwaiter();
@@ -363,11 +377,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         void OnIdle(object sender, EventArgs args) {
             DoIdle();
-        }
-
-        private void OnTerminateApp(object sender, EventArgs args) {
-            Terminating?.Invoke(null, EventArgs.Empty);
-            Dispose();
         }
 
         private OLEMSGBUTTON GetOleButtonFlags(MessageButtons buttons) {

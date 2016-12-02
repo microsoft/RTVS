@@ -100,6 +100,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     internal class RPackage : BasePackage<RLanguageService>, IRPackage {
         public const string OptionsDialogName = "R Tools";
         private IPackageIndex _packageIndex;
+        private IRPersistentSettings _settings;
 
         public static IRPackage Current { get; private set; }
 
@@ -111,8 +112,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 return;
             }
 
-            var settings = VsAppShell.Current.ExportProvider.GetExportedValue<IRPersistentSettings>();
-            settings.LoadSettings();
+            _settings = VsAppShell.Current.ExportProvider.GetExportedValue<IRPersistentSettings>();
+            _settings.LoadSettings();
 
             VsWpfOverrides.Apply();
             CranMirrorList.Download();
@@ -143,8 +144,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             RtvsTelemetry.Current.Dispose();
 
-            var settings = VsAppShell.Current.ExportProvider.GetExportedValue<IRPersistentSettings>();
-            settings.SaveSettings();
+            _settings?.SaveSettings();
+            VsAppShell.Terminate();
 
             base.Dispose(disposing);
         }

@@ -61,6 +61,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             _settings = settings;
 
             Shell = coreShell;
+            Shell.Terminating += OnApplicationTerminating;
+
             RSessions = new RSessionProvider(coreShell.Services, new InteractiveWindowConsole(this));
 
             RSession = RSessions.GetOrCreate(SessionGuids.InteractiveWindowRSessionGuid);
@@ -89,6 +91,10 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 .Add(RSessions)
                 .Add(Operations)
                 .Add(Connections);
+        }
+
+        private void OnApplicationTerminating(object sender, EventArgs e) {
+            Dispose();
         }
 
         private void DebuggerEnteredBreakMode(object sender, EventArgs e) {

@@ -13,6 +13,7 @@ namespace Microsoft.R.Host.Client {
         event EventHandler BrokerChangeFailed;
         event EventHandler BrokerChanged;
         event EventHandler<BrokerStateChangedEventArgs> BrokerStateChanged;
+        event EventHandler<HostLoadChangedEventArgs> HostLoadChanged;
 
         bool HasBroker { get; }
         bool IsConnected { get; }

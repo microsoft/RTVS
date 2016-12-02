@@ -31,9 +31,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
 
         public int FDoIdle(uint grfidlef) {
-            if (OnIdle != null)
-                OnIdle(this, EventArgs.Empty);
-
+            OnIdle?.Invoke(this, EventArgs.Empty);
             return 0;
         }
 
@@ -42,6 +40,9 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
 
         public int FQueryTerminate(int fPromptUser) {
+            // Although this theoretically can be canceled, it never used in VS
+            // since package QueryClose is the proper way of canceling the shutdown.
+            OnTerminateApp?.Invoke(this, EventArgs.Empty);
             return 1;
         }
 
@@ -66,9 +67,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
 
         public void Terminate() {
-            if (OnTerminateApp != null) {
-                OnTerminateApp(this, EventArgs.Empty);
-            }
         }
 
         #endregion

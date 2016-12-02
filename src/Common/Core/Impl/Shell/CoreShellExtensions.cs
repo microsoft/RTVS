@@ -11,13 +11,13 @@ using Microsoft.Common.Core.Threading;
 namespace Microsoft.Common.Core.Shell {
     public static class CoreShellExtensions {
         public static MainThreadAwaitable SwitchToMainThreadAsync(this ICoreShell coreShell, CancellationToken cancellationToken = default(CancellationToken))
-            => ((IMainThread)coreShell).SwitchToAsync(cancellationToken);
+             => ((IMainThread)coreShell).SwitchToAsync(cancellationToken);
 
         public static async Task ShowErrorMessageAsync(this ICoreShell coreShell, string message, CancellationToken cancellationToken = default(CancellationToken)) {
             await coreShell.SwitchToMainThreadAsync(cancellationToken);
             coreShell.ShowErrorMessage(message);
         }
-        
+
         public static async Task<MessageButtons> ShowMessageAsync(this ICoreShell coreShell, string message, MessageButtons buttons, CancellationToken cancellationToken = default(CancellationToken)) {
             await coreShell.SwitchToMainThreadAsync(cancellationToken);
             return coreShell.ShowMessage(message, buttons);
