@@ -49,14 +49,16 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private ExportProvider _exportProvider;
         private ICompositionService _compositionService;
 
+        [Export(typeof(IApplicationConstants))]
+        private ApplicationConstants ApplicationConstants { get; }
+
         [ImportingConstructor]
         public VsAppShell(ITelemetryService telemetryService
             , IRSettings settings
-            , ICoreServices coreServices
-            , IApplicationConstants appConstants) {
+            , ICoreServices coreServices) {
 
             _coreServices = coreServices;
-            AppConstants = appConstants;
+            AppConstants = new ApplicationConstants();
             ProgressDialog = new VsProgressDialog(this);
             FileDialog = new VsFileDialog(this);
 
@@ -75,8 +77,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
 
         private void Initialize() {
-            AppConstants.Initialize();
-
             MainThread = Thread.CurrentThread;
             MainThreadDispatcher = Dispatcher.FromThread(MainThread);
 
@@ -355,9 +355,13 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
         #endregion
 
-        #region Threading
+        #region IMainThread
         public int ThreadId => MainThread.ManagedThreadId;
         public void Post(Action action, CancellationToken cancellationToken) {
+             if(MainThreadDispatcher.HasShutdownStarted) {
+                throw new InvalidOperationException("Unable to transition to UI thread: dispatcher has started shutdown.");
+            }
+
             var awaiter = ThreadHelper.JoinableTaskFactory
                 .SwitchToMainThreadAsync(cancellationToken)
                 .GetAwaiter();

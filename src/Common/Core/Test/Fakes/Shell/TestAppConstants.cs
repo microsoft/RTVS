@@ -8,7 +8,6 @@ using Microsoft.Common.Core.Shell;
 namespace Microsoft.Common.Core.Test.Fakes.Shell {
     [ExcludeFromCodeCoverage]
     public sealed class TestAppConstants : IApplicationConstants {
-        public void Initialize() { }
         public string ApplicationName => "TestApplication";
         public uint LocaleId => 1033;
         public string LocalMachineHive => null;

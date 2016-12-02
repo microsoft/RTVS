@@ -193,7 +193,6 @@ namespace Microsoft.R.Host.Client {
         }
 
         class AppConstants : IApplicationConstants {
-            public void Initialize() { }
             public string ApplicationName => "Microsoft.R.Host.Client";
             public IntPtr ApplicationWindowHandle => IntPtr.Zero;
             public uint LocaleId => 1033;
