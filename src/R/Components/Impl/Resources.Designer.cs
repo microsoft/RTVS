@@ -1289,6 +1289,33 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Video controller: {0}.
+        /// </summary>
+        public static string VideoCardName {
+            get {
+                return ResourceManager.GetString("VideoCardName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Video processor: {0}.
+        /// </summary>
+        public static string VideoProcessor {
+            get {
+                return ResourceManager.GetString("VideoProcessor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Video memory: {0} MB.
+        /// </summary>
+        public static string VideoRAM {
+            get {
+                return ResourceManager.GetString("VideoRAM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Virtual Memory: {0} MB, {1} MB free.
         /// </summary>
         public static string VirtualMemory {

@@ -98,10 +98,14 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         private void OnHostLoadChanged(HostLoad hostLoad) {
+            bool wasConnected = IsConnected;
             Interlocked.Exchange(ref _hostLoad, hostLoad);
 
-            if (IsConnected && hostLoad == null) {
+            if (wasConnected && hostLoad == null) {
                 OnBrokerStateChanged(connected: false);
+            }
+            else if (!wasConnected && hostLoad != null) {
+                OnBrokerStateChanged(connected: true);
             }
 
             var args = new HostLoadChangedEventArgs(hostLoad ?? new HostLoad());

@@ -80,6 +80,9 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
                 window.WriteErrorLine("\t" + Resources.ProcessorCount.FormatInvariant(aboutHost.ProcessorCount));
                 window.WriteErrorLine("\t" + Resources.PhysicalMemory.FormatInvariant(aboutHost.TotalPhysicalMemory, aboutHost.FreePhysicalMemory));
                 window.WriteErrorLine("\t" + Resources.VirtualMemory.FormatInvariant(aboutHost.TotalVirtualMemory, aboutHost.FreeVirtualMemory));
+                window.WriteErrorLine("\t" + Resources.VideoCardName.FormatInvariant(aboutHost.VideoCardName));
+                window.WriteErrorLine("\t" + Resources.VideoProcessor.FormatInvariant(aboutHost.VideoProcessor));
+                window.WriteErrorLine("\t" + Resources.VideoRAM.FormatInvariant(aboutHost.VideoRAM));
                 window.WriteErrorLine("\t" + Resources.ConnectedUserCount.FormatInvariant(aboutHost.ConnectedUserCount));
                 window.WriteErrorLine(string.Empty);
             }

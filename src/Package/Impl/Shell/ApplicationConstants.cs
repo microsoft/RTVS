@@ -9,13 +9,14 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
+    [Export(typeof(IApplicationConstants))]
     public sealed class ApplicationConstants : IApplicationConstants {
         /// <summary>
         /// Application name to use in log, system events, etc.
         /// </summary>
         public string ApplicationName => "RTVS";
 
-        public ApplicationConstants() {
+        public void Initialize() {
             var hostLocale = ServiceProvider.GlobalProvider.GetService(typeof(SUIHostLocale)) as IUIHostLocale;
             uint lcid;
             hostLocale.GetUILocale(out lcid);
