@@ -21,20 +21,24 @@ using Xunit;
 namespace Microsoft.R.Support.Test.Packages {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
-    public class PackageIndexTest : IDisposable {
+    public class PackageIndexTest : IAsyncLifetime {
         private readonly IExportProvider _exportProvider;
         private readonly ICoreShell _shell;
         private readonly IRInteractiveWorkflowProvider _workflowProvider;
+        private readonly IRSessionProvider _sessionProvider;
 
         public PackageIndexTest(RSupportMefCatalogFixture catalogFixture) {
             _exportProvider = catalogFixture.CreateExportProvider();
             _shell = _exportProvider.GetExportedValue<ICoreShell>();
             _workflowProvider = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
-            UIThreadHelper.Instance.Invoke(() => _workflowProvider.GetOrCreate());
+            _sessionProvider = UIThreadHelper.Instance.Invoke(() => _workflowProvider.GetOrCreate()).RSessions;
         }
+        
+        public Task InitializeAsync() => _sessionProvider.TrySwitchBrokerAsync(nameof(PackageIndexTest));
 
-        public void Dispose() {
+        public Task DisposeAsync() {
             _exportProvider.Dispose();
+            return Task.CompletedTask;
         }
 
         [Test]

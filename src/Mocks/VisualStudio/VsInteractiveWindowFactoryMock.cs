@@ -15,7 +15,7 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
     [Export(typeof(IVsInteractiveWindowFactory))]
     public sealed class VsInteractiveWindowFactoryMock : IVsInteractiveWindowFactory {
         public IVsInteractiveWindow Create(Guid providerId, int instanceId, string title, IInteractiveEvaluator evaluator, __VSCREATETOOLWIN creationFlags = 0) {
-            return new VsInteractiveWindowMock(new WpfTextViewMock(new TextBufferMock(string.Empty, "R")));
+            return new VsInteractiveWindowMock(new WpfTextViewMock(new TextBufferMock(string.Empty, "R")), evaluator);
         }
     }
 }

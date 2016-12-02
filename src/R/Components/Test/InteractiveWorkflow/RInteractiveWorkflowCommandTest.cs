@@ -105,17 +105,10 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
             var command = new InterruptRCommand(_workflow, debuggerModeTracker);
             command.Should().BeInvisibleAndDisabled();
 
+            await _workflow.RSessions.TrySwitchBrokerAsync(nameof(RInteractiveWorkflowCommandTest));
             using (await UIThreadHelper.Instance.Invoke(() => _workflow.GetOrCreateVisualComponentAsync())) {
                 using (await _workflow.RSession.BeginInteractionAsync()) { }
                 command.Should().BeVisibleAndDisabled();
-
-                await _workflow.RSessions.TrySwitchBrokerAsync(nameof(RInteractiveWorkflowCommandTest));
-                await _workflow.RSession.EnsureHostStartedAsync(new RHostStartupInfo {
-                    Name = _testMethod.Name,
-                    RHostCommandLineArguments = _settings.LastActiveConnection.RCommandLineArguments,
-                    CranMirrorName = _settings.CranMirror,
-                    CodePage = _settings.RCodePage
-                }, null, 50000);
 
                 using (var interaction = await _workflow.RSession.BeginInteractionAsync()) {
                     var task = interaction.RespondAsync("while(TRUE) {}");

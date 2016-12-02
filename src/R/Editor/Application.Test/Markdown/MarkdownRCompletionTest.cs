@@ -1,14 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Markdown.Editor.ContentTypes;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Test.Fixtures;
 using Microsoft.UnitTests.Core.Mef;
+using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Xunit;
@@ -16,26 +16,28 @@ using Xunit;
 namespace Microsoft.R.Editor.Application.Test.Markdown {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
-    public class MarkdownRCompletionTest : IDisposable {
+    public class MarkdownRCompletionTest : IAsyncLifetime {
         private readonly IExportProvider _exportProvider;
         private readonly IRSessionProvider _sessionProvider;
         private readonly EditorHostMethodFixture _editorHost;
 
-        public MarkdownRCompletionTest(REditorApplicationMefCatalogFixture catalogFixture, SessionProviderFixture sessionProviderFixture, EditorHostMethodFixture editorHost) {
+        public MarkdownRCompletionTest(REditorApplicationMefCatalogFixture catalogFixture, EditorHostMethodFixture editorHost) {
             _exportProvider = catalogFixture.CreateExportProvider();
-            _sessionProvider = sessionProviderFixture.SessionProvider;
+            _sessionProvider = UIThreadHelper.Instance.Invoke(() => _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate()).RSessions;
             _editorHost = editorHost;
         }
 
-        public void Dispose() {
+        public Task InitializeAsync() => _sessionProvider.TrySwitchBrokerAsync(nameof(MarkdownRCompletionTest));
+
+        public Task DisposeAsync() {
             _exportProvider.Dispose();
+            return Task.CompletedTask;
         }
 
         [Test]
         [Category.Interactive]
         public async Task TypeRBlock() {
             using (var script = await _editorHost.StartScript(_exportProvider, string.Empty, "filename", MdContentTypeDefinition.ContentType, _sessionProvider)) {
-
                 var info = await _editorHost.FunctionIndex.GetFunctionInfoAsync("abbreviate");
                 info.Should().NotBeNull();
 
