@@ -25,12 +25,23 @@ namespace Microsoft.R.Host.Client.Session {
         private readonly ICoreServices _services;
         private readonly IConsole _console;
 
+        private volatile bool _isConnected;
         private int _sessionCounter;
         private Task _updateHostLoadLoopTask;
         private HostLoad _hostLoad;
 
         public bool HasBroker => _brokerProxy.HasBroker;
-        public bool IsConnected => _hostLoad != null;
+
+        public bool IsConnected {
+            get { return _isConnected; }
+            set {
+                if (_isConnected != value) {
+                    _isConnected = value;
+                    var args = new BrokerStateChangedEventArgs(value);
+                    Task.Run(() => BrokerStateChanged?.Invoke(this, args)).DoNotWait();
+                }
+            }
+        }
 
         public IBrokerClient Broker => _brokerProxy;
 
@@ -92,22 +103,10 @@ namespace Microsoft.R.Host.Client.Session {
             }
         }
 
-        private void OnBrokerStateChanged(bool connected) {
-            var args = new BrokerStateChangedEventArgs(connected);
-            Task.Run(() => BrokerStateChanged?.Invoke(this, args)).DoNotWait();
-        }
-
         private void OnHostLoadChanged(HostLoad hostLoad) {
-            bool wasConnected = IsConnected;
             Interlocked.Exchange(ref _hostLoad, hostLoad);
 
-            if (wasConnected && hostLoad == null) {
-                OnBrokerStateChanged(connected: false);
-            }
-            else if (!wasConnected && hostLoad != null) {
-                OnBrokerStateChanged(connected: true);
-            }
-
+            IsConnected = hostLoad != null;
             var args = new HostLoadChangedEventArgs(hostLoad ?? new HostLoad());
             Task.Run(() => HostLoadChanged?.Invoke(this, args)).DoNotWait();
         }
@@ -182,7 +181,7 @@ namespace Microsoft.R.Host.Client.Session {
                         lockToken.Dispose();
                     }
 
-                    OnBrokerStateChanged(connected: true);
+                    IsConnected = true;
                     return true;
                 }
 
@@ -212,7 +211,7 @@ namespace Microsoft.R.Host.Client.Session {
                     lockToken.Dispose();
                 }
 
-                OnBrokerStateChanged(connected: true);
+                IsConnected = true;
                 OnBrokerChanged();
                 return true;
             }
@@ -254,7 +253,7 @@ namespace Microsoft.R.Host.Client.Session {
 
         private Task StopSessionsAsync(IEnumerable<RSession> sessions, CancellationToken cancellationToken) {
             var stopSessionsTask = WhenAllCancelOnFailure(sessions, (s, ct) => s.StopHostAsync(cancellationToken), cancellationToken);
-            OnBrokerStateChanged(connected: false);
+            IsConnected = false;
             return stopSessionsTask;
         }
 

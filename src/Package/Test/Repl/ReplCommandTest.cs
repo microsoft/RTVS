@@ -6,24 +6,22 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.R.Components.ConnectionManager.Implementation;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Implementation;
+using Microsoft.R.Components.Test.Fakes.StatusBar;
 using Microsoft.R.Components.Test.Stubs.VisualComponents;
-using Microsoft.R.Host.Client;
+using Microsoft.R.Support.Settings;
 using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.R.Package.Commands.R;
 using Microsoft.VisualStudio.R.Package.Repl.Commands;
-using Microsoft.VisualStudio.R.Package.Repl.Workspace;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Test.FakeFactories;
-using Microsoft.VisualStudio.R.Package.Test.Mocks;
 using Microsoft.VisualStudio.R.Package.Utilities;
-using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Xunit;
 
@@ -38,7 +36,9 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
         public ReplCommandTest() {
             _debuggerModeTracker = new VsDebuggerModeTracker();
 
-            _workflowProvider = TestRInteractiveWorkflowProviderFactory.Create(debuggerModeTracker: _debuggerModeTracker);
+            _workflowProvider = TestRInteractiveWorkflowProviderFactory.Create(
+                connectionsProvider: new ConnectionManagerProvider(new TestStatusBar(), RToolsSettings.Current),
+                debuggerModeTracker: _debuggerModeTracker);
             _workflow = _workflowProvider.GetOrCreate();
         }
 
@@ -56,24 +56,22 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
 
             var commandFactory = new VsRCommandFactory(_workflowProvider);
             var commands = UIThreadHelper.Instance.Invoke(() => commandFactory.GetCommands(tv, editorBuffer));
-
             await _workflow.RSession.HostStarted.Should().BeCompletedAsync();
+
+            await UIThreadHelper.Instance.Invoke(() => _workflow.GetOrCreateVisualComponentAsync());
             _workflow.ActiveWindow.Should().NotBeNull();
 
             var command = commands.OfType<SendToReplCommand>()
                 .Should().ContainSingle().Which;
 
             var replBuffer = _workflow.ActiveWindow.InteractiveWindow.CurrentLanguageBuffer;
-            var containerStub = (VisualComponentContainerStub<RInteractiveWindowVisualComponent>)_workflow.ActiveWindow.Container;
-            containerStub.IsOnScreen.Should().BeFalse();
+            _workflow.ActiveWindow.Container.IsOnScreen.Should().BeFalse();
 
             Guid group = VSConstants.VsStd11;
             int id = (int)VSConstants.VSStd11CmdID.ExecuteLineInInteractive;
             object o = new object();
 
             command.Status(group, id).Should().Be(CommandStatus.SupportedAndEnabled);
-
-            containerStub.IsOnScreen = false;
             command.Invoke(group, id, null, ref o);
 
             replBuffer.CurrentSnapshot.GetText().Trim().Should().Be("x <- 1");

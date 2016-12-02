@@ -6,31 +6,35 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Components.ContentTypes;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Test.Fixtures;
 using Microsoft.UnitTests.Core.Mef;
+using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
 
 namespace Microsoft.R.Editor.Application.Test.Formatting {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
-    public class SmartIndentTest : IDisposable {
+    public class SmartIndentTest : IAsyncLifetime {
         private readonly IExportProvider _exportProvider;
         private readonly IRSessionProvider _sessionProvider;
         private readonly EditorHostMethodFixture _editorHost;
 
-        public SmartIndentTest(REditorApplicationMefCatalogFixture catalogFixture, SessionProviderFixture sessionProviderFixture, EditorHostMethodFixture editorHost) {
+        public SmartIndentTest(REditorApplicationMefCatalogFixture catalogFixture, EditorHostMethodFixture editorHost) {
             _exportProvider = catalogFixture.CreateExportProvider();
-            _sessionProvider = sessionProviderFixture.SessionProvider;
+            _sessionProvider = UIThreadHelper.Instance.Invoke(() => _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate()).RSessions;
             _editorHost = editorHost;
         }
 
-        public void Dispose() {
+        public Task InitializeAsync() => _sessionProvider.TrySwitchBrokerAsync(nameof(SmartIndentTest));
+
+        public Task DisposeAsync() {
             _exportProvider.Dispose();
+            return Task.CompletedTask;
         }
-        
+
         [Test]
         [Category.Interactive]
         public async Task R_SmartIndentTest01() {
