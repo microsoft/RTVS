@@ -6,22 +6,18 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Threading;
 using Microsoft.Common.Core.Threading;
 
 namespace Microsoft.Common.Core.Shell {
     public static class CoreShellExtensions {
-        public static MainThreadAwaitable SwitchToMainThreadAsync(this ICoreShell coreShell, CancellationToken cancellationToken = default(CancellationToken)) {
-            var disp = Dispatcher.FromThread(coreShell.MainThread);
-            Debug.Assert(!disp.HasShutdownStarted, "Unable to transition to UI thread: dispatcher has started shutdown.");
-            return ((IMainThread)coreShell).SwitchToAsync(cancellationToken);
-        }
+        public static MainThreadAwaitable SwitchToMainThreadAsync(this ICoreShell coreShell, CancellationToken cancellationToken = default(CancellationToken))
+             => ((IMainThread)coreShell).SwitchToAsync(cancellationToken);
 
         public static async Task ShowErrorMessageAsync(this ICoreShell coreShell, string message, CancellationToken cancellationToken = default(CancellationToken)) {
             await coreShell.SwitchToMainThreadAsync(cancellationToken);
             coreShell.ShowErrorMessage(message);
         }
-        
+
         public static async Task<MessageButtons> ShowMessageAsync(this ICoreShell coreShell, string message, MessageButtons buttons, CancellationToken cancellationToken = default(CancellationToken)) {
             await coreShell.SwitchToMainThreadAsync(cancellationToken);
             return coreShell.ShowMessage(message, buttons);

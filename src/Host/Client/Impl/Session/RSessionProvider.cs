@@ -99,6 +99,11 @@ namespace Microsoft.R.Host.Client.Session {
 
         private void OnHostLoadChanged(HostLoad hostLoad) {
             Interlocked.Exchange(ref _hostLoad, hostLoad);
+
+            if (IsConnected && hostLoad == null) {
+                OnBrokerStateChanged(connected: false);
+            }
+
             var args = new HostLoadChangedEventArgs(hostLoad ?? new HostLoad());
             Task.Run(() => HostLoadChanged?.Invoke(this, args)).DoNotWait();
         }
@@ -106,7 +111,7 @@ namespace Microsoft.R.Host.Client.Session {
         private void OnBrokerChanged() {
             Task.Run(() => BrokerChanged?.Invoke(this, new EventArgs())).DoNotWait();
         }
-        
+
         public async Task TestBrokerConnectionAsync(string name, string path, CancellationToken cancellationToken = default(CancellationToken)) {
             using (_disposeToken.Link(ref cancellationToken)) {
                 await TaskUtilities.SwitchToBackgroundThread();
@@ -242,7 +247,7 @@ namespace Microsoft.R.Host.Client.Session {
                 }
             }
         }
-        
+
         private Task StopSessionsAsync(IEnumerable<RSession> sessions, CancellationToken cancellationToken) {
             var stopSessionsTask = WhenAllCancelOnFailure(sessions, (s, ct) => s.StopHostAsync(cancellationToken), cancellationToken);
             OnBrokerStateChanged(connected: false);
@@ -289,7 +294,7 @@ namespace Microsoft.R.Host.Client.Session {
             }
         }
 
-        private static Task CompleteSwitchingBrokerAsync(IRSessionSwitchBrokerTransaction transaction, CancellationToken cancellationToken) 
+        private static Task CompleteSwitchingBrokerAsync(IRSessionSwitchBrokerTransaction transaction, CancellationToken cancellationToken)
             => transaction.CompleteSwitchingBrokerAsync(cancellationToken);
 
         private static Task WhenAllCancelOnFailure(IEnumerable<IRSessionSwitchBrokerTransaction> transactions, Func<IRSessionSwitchBrokerTransaction, CancellationToken, Task> taskFactory, CancellationToken cancellationToken) {

@@ -355,9 +355,14 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
         #endregion
 
-        #region Threading
+        #region IMainThread
         public int ThreadId => MainThread.ManagedThreadId;
         public void Post(Action action, CancellationToken cancellationToken) {
+            var disp = Dispatcher.FromThread(MainThread);
+            if(disp.HasShutdownStarted) {
+                throw new InvalidOperationException("Unable to transition to UI thread: dispatcher has started shutdown.");
+            }
+
             var awaiter = ThreadHelper.JoinableTaskFactory
                 .SwitchToMainThreadAsync(cancellationToken)
                 .GetAwaiter();
