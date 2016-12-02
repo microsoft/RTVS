@@ -14,10 +14,17 @@ namespace Microsoft.R.Host.Protocol {
         public bool Is64BitProcess { get; set; }
         public int ProcessorCount { get; set; }
         public long WorkingSet { get; set; }
+
+
         public long TotalVirtualMemory { get; set; }
         public long FreeVirtualMemory { get; set; }
         public long TotalPhysicalMemory { get; set; }
         public long FreePhysicalMemory { get; set; }
+
+        public string VideoCardName { get; set; }
+        public long VideoRAM { get; set; }
+        public string VideoProcessor { get; set; }
+
         public int ConnectedUserCount { get; set; }
 
         public string[] Interpreters { get; set; }
