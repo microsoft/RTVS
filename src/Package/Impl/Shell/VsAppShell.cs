@@ -86,12 +86,12 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
             _idleTimeSource = new IdleTimeSource();
             _idleTimeSource.OnIdle += OnIdle;
-            _idleTimeSource.OnTerminateApp += _OnTerminateApp;
+            _idleTimeSource.OnTerminateApp += OnTerminateApp;
 
             EditorShell.Current = this;
         }
 
-        private void _OnTerminateApp(object sender, EventArgs e) {
+        private void OnTerminateApp(object sender, EventArgs e) {
             Terminating?.Invoke(null, EventArgs.Empty);
         }
 
