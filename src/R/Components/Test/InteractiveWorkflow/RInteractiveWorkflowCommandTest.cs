@@ -106,6 +106,7 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
             command.Should().BeInvisibleAndDisabled();
 
             using (await UIThreadHelper.Instance.Invoke(() => _workflow.GetOrCreateVisualComponentAsync())) {
+                using (await _workflow.RSession.BeginInteractionAsync()) { }
                 command.Should().BeVisibleAndDisabled();
 
                 await _workflow.RSessions.TrySwitchBrokerAsync(nameof(RInteractiveWorkflowCommandTest));

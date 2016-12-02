@@ -203,14 +203,13 @@ namespace Microsoft.R.Host.Client.Session {
 
         public async Task CancelAllAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             using (_disposeToken.Link(ref cancellationToken)) {
-                var cancelTask = _host.CancelAllAsync(cancellationToken);
+                await _host.CancelAllAsync(cancellationToken);
 
                 var currentRequest = Interlocked.Exchange(ref _currentRequestSource, null);
                 var exception = new OperationCanceledException();
                 currentRequest?.TryCancel(exception);
-                ClearPendingRequests(exception);
 
-                await cancelTask;
+                ClearPendingRequests(exception);
             }
         }
 
