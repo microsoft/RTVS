@@ -537,4 +537,13 @@ Are you sure you want to terminate R session?</value>
   <data name="HostLoad_Tooltip" xml:space="preserve">
     <value>Machine utilization: {0}% CPU, {1}% Memory, {2}% Network.</value>
   </data>
+  <data name="VideoCardName" xml:space="preserve">
+    <value>Video controller: {0}</value>
+  </data>
+  <data name="VideoProcessor" xml:space="preserve">
+    <value>Video processor: {0}</value>
+  </data>
+  <data name="VideoRAM" xml:space="preserve">
+    <value>Video memory: {0} MB</value>
+  </data>
 </root>
