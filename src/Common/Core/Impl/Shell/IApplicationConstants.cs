@@ -9,7 +9,6 @@ namespace Microsoft.Common.Core.Shell {
     /// Implemented by the host application. Imported via MEF.
     /// </summary>
     public interface IApplicationConstants {
-        void Initialize();
         /// <summary>
         /// Application name to use in log, system events, etc.
         /// </summary>

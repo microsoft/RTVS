@@ -23,8 +23,7 @@ namespace Microsoft.Common.Core.Logging {
     ///        in the interactive window.
     ///     c. Admin can limit level of logging and disable feedback sending even if app telemetry is on.
     /// </remarks>
-    [Export(typeof(ILoggingPermissions))]
-    internal sealed class LoggingPermissions : ILoggingPermissions {
+    public sealed class LoggingPermissions : ILoggingPermissions {
         internal const string LogVerbosityValueName = "LogVerbosity";
         internal const string FeedbackValueName = "Feedback";
 
@@ -36,11 +35,10 @@ namespace Microsoft.Common.Core.Logging {
         private LogVerbosity? _registryVerbosity;
         private int? _registryFeedbackSetting;
 
-        [ImportingConstructor]
-        public LoggingPermissions(IApplicationConstants appConstants, ITelemetryService telemetryService, [Import(AllowDefault = true)] IRegistry registry) {
+        public LoggingPermissions(IApplicationConstants appConstants, ITelemetryService telemetryService, IRegistry registry) {
             _appConstants = appConstants;
             _telemetryService = telemetryService;
-            _registry = registry ?? new RegistryImpl();
+            _registry = registry;
 
             _registryVerbosity = GetLogLevelFromRegistry();
             _registryFeedbackSetting = GetFeedbackFromRegistry();

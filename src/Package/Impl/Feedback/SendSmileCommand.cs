@@ -8,8 +8,8 @@ using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Feedback {
     internal sealed class SendSmileCommand : SendMailCommand {
-        public SendSmileCommand(ILoggingPermissions permissions, ICoreServices services) :
-            base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSendSmile, permissions, services) {
+        public SendSmileCommand(ICoreServices services) :
+            base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSendSmile, services) {
         }
 
         protected override void Handle() {

@@ -14,7 +14,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Fixtures {
         private readonly IRInteractiveWorkflow _workflow;
 
         public DisposeRInteractiveWorkflowFixture() {
-            _workflow = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
+            var exportProvider = VsAppShell.Current.ExportProvider;
+            _workflow = exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
         }
         
         public async Task InitializeAsync() {

@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
@@ -13,17 +12,15 @@ using Microsoft.Common.Core.Shell;
 using static Microsoft.Common.Core.NativeMethods;
 
 namespace Microsoft.Common.Core.Security {
-    [Export(typeof(ISecurityService))]
     internal class SecurityService : ISecurityService {
-        private readonly Lazy<ICoreShell> _coreShellLazy;
+        private readonly ICoreShell _coreShell;
 
-        [ImportingConstructor]
-        public SecurityService([Import(AllowDefault = true)] Lazy<ICoreShell> coreShellLazy) {
-            _coreShellLazy = coreShellLazy;
+        public SecurityService(ICoreShell coreShell) {
+            _coreShell = coreShell;
         }
 
         public Task<Credentials> GetUserCredentialsAsync(string authority, bool invalidateStoredCredentials, CancellationToken cancellationToken = default(CancellationToken)) {
-            _coreShellLazy.Value.AssertIsOnMainThread();
+            _coreShell.AssertIsOnMainThread();
 
             var showDialog = invalidateStoredCredentials;
             var credentials = new Credentials();
@@ -41,7 +38,7 @@ namespace Microsoft.Common.Core.Security {
 
                 var credui = new CREDUI_INFO {
                     cbSize = Marshal.SizeOf(typeof(CREDUI_INFO)),
-                    hwndParent = _coreShellLazy.Value.AppConstants.ApplicationWindowHandle
+                    hwndParent = _coreShell.AppConstants.ApplicationWindowHandle
                 };
 
                 // For password, use native memory so it can be securely freed.
@@ -67,8 +64,8 @@ namespace Microsoft.Common.Core.Security {
             var certificate2 = certificate as X509Certificate2;
             Debug.Assert(certificate2 != null);
             if (certificate2 == null || !certificate2.Verify()) {
-                await _coreShellLazy.Value.SwitchToMainThreadAsync(cancellationToken);
-                if (_coreShellLazy.Value.ShowMessage(message, MessageButtons.OKCancel, MessageType.Warning) == MessageButtons.OK) {
+                await _coreShell.SwitchToMainThreadAsync(cancellationToken);
+                if (_coreShell.ShowMessage(message, MessageButtons.OKCancel, MessageType.Warning) == MessageButtons.OK) {
                     certificate2.Reset();
                     return true;
                 }

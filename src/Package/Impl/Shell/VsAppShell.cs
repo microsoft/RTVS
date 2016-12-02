@@ -8,6 +8,10 @@ using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Threading;
 using System.Windows.Threading;
+using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.OS;
+using Microsoft.Common.Core.Security;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
@@ -43,26 +47,19 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private static VsAppShell _instance;
         private static IApplicationShell _testShell;
 
-        private readonly IRSettings _settings;
+        private readonly ApplicationConstants _appConstants;
         private readonly ICoreServices _coreServices;
         private IdleTimeSource _idleTimeSource;
         private ExportProvider _exportProvider;
         private ICompositionService _compositionService;
 
-        private ApplicationConstants ApplicationConstants { get; }
-
         [ImportingConstructor]
-        public VsAppShell(ITelemetryService telemetryService
-            , IRSettings settings
-            , ICoreServices coreServices
-            , IApplicationConstants appConstants) {
-
-            _coreServices = coreServices;
-            AppConstants = appConstants;
+        public VsAppShell(ITelemetryService telemetryService, ISettingsStorage settingsStorage) {
+            _appConstants = new ApplicationConstants();
             ProgressDialog = new VsProgressDialog(this);
             FileDialog = new VsFileDialog(this);
 
-            _settings = settings;
+            _coreServices = new CoreServices(_appConstants, telemetryService, settingsStorage, new VsTaskService(), this, this);
         }
 
         public static void EnsureInitialized() {
@@ -84,7 +81,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             _compositionService = componentModel.DefaultCompositionService;
             _exportProvider = componentModel.DefaultExportProvider;
 
-            AppConstants.Initialize();
+            _appConstants.Initialize();
 
             _idleTimeSource = new IdleTimeSource();
             _idleTimeSource.OnIdle += OnIdle;
@@ -406,7 +403,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
 
         public ICoreServices Services => _coreServices;
-        public IApplicationConstants AppConstants { get; }
+        public IApplicationConstants AppConstants => _appConstants;
         public IProgressDialog ProgressDialog { get; }
         public IFileDialog FileDialog { get; }
     }
