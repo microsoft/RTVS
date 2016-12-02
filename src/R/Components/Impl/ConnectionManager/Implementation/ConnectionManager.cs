@@ -294,6 +294,13 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
         private void ActiveWindowChanged(object sender, ActiveWindowChangedEventArgs eventArgs) {
             IsConnected = _sessionProvider.IsConnected && eventArgs.Window != null;
+            UpdateActiveConnection();
+            ConnectionStateChanged?.Invoke(this, new ConnectionEventArgs(IsConnected, ActiveConnection));
+        }
+
+        private void OnRSessionConnected(object sender, RConnectedEventArgs e) {
+            IsConnected = true;
+            UpdateActiveConnection();
             ConnectionStateChanged?.Invoke(this, new ConnectionEventArgs(IsConnected, ActiveConnection));
         }
 

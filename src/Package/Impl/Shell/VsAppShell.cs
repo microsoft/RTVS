@@ -49,16 +49,16 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private ExportProvider _exportProvider;
         private ICompositionService _compositionService;
 
-        [Export(typeof(IApplicationConstants))]
         private ApplicationConstants ApplicationConstants { get; }
 
         [ImportingConstructor]
         public VsAppShell(ITelemetryService telemetryService
             , IRSettings settings
-            , ICoreServices coreServices) {
+            , ICoreServices coreServices
+            , IApplicationConstants appConstants) {
 
             _coreServices = coreServices;
-            AppConstants = new ApplicationConstants();
+            AppConstants = appConstants;
             ProgressDialog = new VsProgressDialog(this);
             FileDialog = new VsFileDialog(this);
 
@@ -83,6 +83,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             var componentModel = (IComponentModel)VsPackage.GetGlobalService(typeof(SComponentModel));
             _compositionService = componentModel.DefaultCompositionService;
             _exportProvider = componentModel.DefaultExportProvider;
+
+            AppConstants.Initialize();
 
             _idleTimeSource = new IdleTimeSource();
             _idleTimeSource.OnIdle += OnIdle;
