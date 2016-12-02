@@ -13,7 +13,7 @@ namespace Microsoft.R.Components.Test.Fakes.StatusBar {
     [ExcludeFromCodeCoverage]
     [Export(typeof(IStatusBar))]
     [PartMetadata(PartMetadataAttributeNames.SkipInEditorTestCompositionCatalog, null)]
-    internal class TestStatusBar : IStatusBar {
+    public class TestStatusBar : IStatusBar {
         public IDisposable AddItem(UIElement item) => Disposable.Empty;
     }
 }
