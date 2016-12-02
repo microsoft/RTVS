@@ -42,6 +42,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
 
         public int FQueryTerminate(int fPromptUser) {
+            OnTerminateApp?.Invoke(this, EventArgs.Empty);
             return 1;
         }
 
@@ -66,9 +67,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
 
         public void Terminate() {
-            if (OnTerminateApp != null) {
-                OnTerminateApp(this, EventArgs.Empty);
-            }
         }
 
         #endregion

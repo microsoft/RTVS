@@ -70,6 +70,10 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             }
         }
 
+        public static void Terminate() {
+            _instance?.Dispose();
+        }
+
         private void Initialize() {
             AppConstants.Initialize();
 
@@ -82,9 +86,13 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
             _idleTimeSource = new IdleTimeSource();
             _idleTimeSource.OnIdle += OnIdle;
-            _idleTimeSource.OnTerminateApp += OnTerminateApp;
+            _idleTimeSource.OnTerminateApp += _OnTerminateApp;
 
             EditorShell.Current = this;
+        }
+
+        private void _OnTerminateApp(object sender, EventArgs e) {
+            Terminating?.Invoke(null, EventArgs.Empty);
         }
 
         /// <summary>
@@ -365,11 +373,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         void OnIdle(object sender, EventArgs args) {
             DoIdle();
-        }
-
-        private void OnTerminateApp(object sender, EventArgs args) {
-            Terminating?.Invoke(null, EventArgs.Empty);
-            Dispose();
         }
 
         private OLEMSGBUTTON GetOleButtonFlags(MessageButtons buttons) {
