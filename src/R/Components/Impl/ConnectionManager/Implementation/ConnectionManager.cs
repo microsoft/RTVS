@@ -298,12 +298,6 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             ConnectionStateChanged?.Invoke(this, new ConnectionEventArgs(IsConnected, ActiveConnection));
         }
 
-        private void OnRSessionConnected(object sender, RConnectedEventArgs e) {
-            IsConnected = true;
-            UpdateActiveConnection();
-            ConnectionStateChanged?.Invoke(this, new ConnectionEventArgs(IsConnected, ActiveConnection));
-        }
-
         private void UpdateActiveConnection() {
             if (string.IsNullOrEmpty(_sessionProvider.Broker.Name) || ActiveConnection?.Id == _sessionProvider.Broker.Uri) {
                 return;
