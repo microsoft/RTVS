@@ -11,22 +11,48 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Common.Core;
 using Microsoft.R.Host.Protocol;
+using Microsoft.AspNetCore.WebSockets.Protocol;
 
 namespace Microsoft.R.Host.Broker.RemoteUri {
     public class RemoteUriHelper {
+        static RemoteUriHelper() {
+            try {
+                // Only call once
+                WebSocket.RegisterPrefixes();
+            } catch (Exception) {
+                // Already registered
+            }
+        }
+
         public static async Task HandlerAsync(HttpContext context) {
             var url = context.Request.Headers[CustomHttpHeaders.RTVSRequestedURL];
 
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-            request.Method = context.Request.Method;
-
             if (context.WebSockets.IsWebSocketRequest) {
                 UriBuilder ub = new UriBuilder(url) { Scheme = "ws" };
-                ClientWebSocket clientWebsocket = new ClientWebSocket();
-                await clientWebsocket.ConnectAsync(ub.Uri, CancellationToken.None);
-                var serverWebSocket = await context.WebSockets.AcceptWebSocketAsync(string.Join(", ", context.WebSockets.WebSocketRequestedProtocols));
-                await WebSocketHelper.SendReceiveAsync(serverWebSocket, clientWebsocket, CancellationToken.None);
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(ub.Uri);
+                request.Method = context.Request.Method;
+                string subProtocols = string.Join(", ", context.WebSockets.WebSocketRequestedProtocols);
+
+                request.Headers[Constants.Headers.SecWebSocketVersion] = Constants.Headers.SupportedVersion;
+                if (!string.IsNullOrWhiteSpace(subProtocols)) {
+                    request.Headers[Constants.Headers.SecWebSocketProtocol] = subProtocols;
+                }
+
+                HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
+                HttpStatusCode statusCode = response.StatusCode;
+                if (statusCode != HttpStatusCode.SwitchingProtocols) {
+                    response.Dispose();
+                } else {
+                    string respSubProtocol = response.Headers[Constants.Headers.SecWebSocketProtocol];
+                    // TODO: match sub protocols.
+                    
+                    CommonWebSocket clientWebsocket = CommonWebSocket.CreateClientWebSocket(response.GetResponseStream(), respSubProtocol, TimeSpan.FromMinutes(2), receiveBufferSize: 1024 * 16, useZeroMask: false);
+                    var serverWebSocket = await context.WebSockets.AcceptWebSocketAsync();
+                    await WebSocketHelper.SendReceiveAsync(serverWebSocket, clientWebsocket, CancellationToken.None);
+                }
             } else {
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+                request.Method = context.Request.Method;
                 SetRequestHeaders(request, context.Request.Headers);
 
                 if (context.Request.ContentLength > 0) {
@@ -39,8 +65,8 @@ namespace Microsoft.R.Host.Broker.RemoteUri {
                 HttpWebResponse response = null;
                 try {
                     response = (HttpWebResponse)await request.GetResponseAsync();
-                } catch(WebException wex) {
-                    if(wex.Status == WebExceptionStatus.ProtocolError) {
+                } catch (WebException wex) {
+                    if (wex.Status == WebExceptionStatus.ProtocolError) {
                         response = wex.Response as HttpWebResponse;
                     } else {
                         throw wex;
