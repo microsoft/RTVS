@@ -18,10 +18,10 @@ namespace Microsoft.Common.Core.Services {
             , ISettingsStorage settings
             , ITaskService tasks
             , IMainThread mainThread
-            , ICoreShell coreShell) {
+            , ISecurityService security) {
             Telemetry = telemetry;
             Registry = new RegistryImpl();
-            Security = new SecurityService(coreShell);
+            Security = security;
             LoggingServices = new LoggingServices(new LoggingPermissions(appConstants, telemetry, Registry), appConstants);
             Tasks = tasks;
 

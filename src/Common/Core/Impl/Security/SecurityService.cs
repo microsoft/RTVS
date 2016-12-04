@@ -12,7 +12,7 @@ using Microsoft.Common.Core.Shell;
 using static Microsoft.Common.Core.NativeMethods;
 
 namespace Microsoft.Common.Core.Security {
-    internal class SecurityService : ISecurityService {
+    public class SecurityService : ISecurityService {
         private readonly ICoreShell _coreShell;
 
         public SecurityService(ICoreShell coreShell) {
