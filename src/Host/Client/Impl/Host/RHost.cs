@@ -173,9 +173,9 @@ namespace Microsoft.R.Host.Client {
                     response = "Y";
                     break;
                 default: {
-                    FormattableString error = $"YesNoCancel: callback returned an invalid value: {input}";
-                    Trace.Fail(Invariant(error));
-                    throw new InvalidOperationException(Invariant(error));
+                    var error = Invariant($"YesNoCancel: callback returned an invalid value: {input}");
+                    Trace.Fail(error);
+                    throw new InvalidOperationException(error);
                 }
             }
 
@@ -357,26 +357,25 @@ namespace Microsoft.R.Host.Client {
                 return;
             }
 
-            var cancellationRegistration = cancellationToken.Register(() => tcs.TrySetCanceled(cancellationToken));
-
-            try {
-                // Cancel any pending callbacks
-                _cancelAllCts.Cancel();
-                var cts = CancellationTokenSource.CreateLinkedTokenSource(_cts.Token, cancellationToken);
+            using (cancellationToken.Register(() => tcs.TrySetCanceled(cancellationToken))) {
                 try {
-                    await NotifyAsync("!//", cts.Token);
-                } catch (OperationCanceledException) {
-                    return;
-                } catch (MessageTransportException) {
-                    return;
-                } finally {
-                    cts.Dispose();
-                }
+                    // Cancel any pending callbacks
+                    _cancelAllCts.Cancel();
+                    var cts = CancellationTokenSource.CreateLinkedTokenSource(_cts.Token, cancellationToken);
+                    try {
+                        await NotifyAsync("!//", cts.Token);
+                    } catch (OperationCanceledException) {
+                        return;
+                    } catch (MessageTransportException) {
+                        return;
+                    } finally {
+                        cts.Dispose();
+                    }
 
-                await tcs.Task;
-            } finally {
-                cancellationRegistration.Dispose();
-                Volatile.Write(ref _cancelAllTcs, null);
+                    await tcs.Task;
+                } finally {
+                    Volatile.Write(ref _cancelAllTcs, null);
+                }
             }
         }
 

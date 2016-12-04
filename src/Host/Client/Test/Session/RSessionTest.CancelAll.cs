@@ -62,7 +62,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
             [Test]
             [Category.R.Session]
-            public async Task CancelAll_HandingLoop() {
+            public async Task CancelAll_HangingLoop() {
                 var testMrs = new AsyncManualResetEvent();
                 var plotMrs = new AsyncManualResetEvent();
                 _callback.PlotHandler = (message, ct) => {
