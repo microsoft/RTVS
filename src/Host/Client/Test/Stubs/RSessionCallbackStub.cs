@@ -27,6 +27,7 @@ namespace Microsoft.R.Host.Client.Test.Stubs {
             (m, b) => Task.FromResult(b.HasFlag(MessageButtons.Yes) ? MessageButtons.Yes : MessageButtons.OK);
 
         public Func<string, int, CancellationToken, Task<string>> ReadUserInputHandler { get; set; } = (m, l, ct) => Task.FromResult("\n");
+        public Func<PlotMessage, CancellationToken, Task> PlotHandler { get; set; } = (deviceId, ct) => Task.CompletedTask;
         public Func<Guid, CancellationToken, Task<LocatorResult>> LocatorHandler { get; set; } = (deviceId, ct) => Task.FromResult(LocatorResult.CreateNotClicked());
         public Func<Guid, CancellationToken, Task<PlotDeviceProperties>> PlotDeviceCreateHandler { get; set; } = (deviceId, ct) => Task.FromResult(PlotDeviceProperties.Default);
         public Func<Guid, CancellationToken, Task> PlotDeviceDestroyHandler { get; set; } = (deviceId, ct) => Task.CompletedTask;
@@ -54,7 +55,7 @@ namespace Microsoft.R.Host.Client.Test.Stubs {
 
         public Task Plot(PlotMessage plot, CancellationToken ct) {
             PlotCalls.Add(new Tuple<PlotMessage, CancellationToken>(plot, ct));
-            return Task.CompletedTask;
+            return PlotHandler != null ? PlotHandler(plot, ct) : Task.CompletedTask;
         }
 
         public Task<LocatorResult> Locator(Guid deviceId, CancellationToken ct) {
@@ -93,7 +94,7 @@ namespace Microsoft.R.Host.Client.Test.Stubs {
             return Task.CompletedTask;
         }
 
-        public Task ViewFile(string fileName, string tabName, bool deleteFile) {
+        public Task ViewFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken) {
             ShowFileCalls.Add(new Tuple<string, string, bool>(fileName, tabName, deleteFile));
             ShowFileHandler?.Invoke(fileName, tabName, deleteFile);
             return Task.CompletedTask;

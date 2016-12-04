@@ -105,9 +105,9 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             _workflow.Packages.GetOrCreateVisualComponent(containerFactory).Container.Show(focus: true, immediate: false);
         }
 
-        public Task ViewFile(string fileName, string tabName, bool deleteFile) {
+        public Task ViewFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken = default(CancellationToken)) {
             var viewer = _coreShell.ExportProvider.GetExportedValue<IObjectViewer>();
-            return viewer?.ViewFile(fileName, tabName, deleteFile);
+            return viewer?.ViewFile(fileName, tabName, deleteFile, cancellationToken);
         }
 
         public Task<string> SaveFileAsync(string filename, byte[] data) {

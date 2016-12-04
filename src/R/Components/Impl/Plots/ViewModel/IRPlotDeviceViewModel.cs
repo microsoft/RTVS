@@ -67,12 +67,12 @@ namespace Microsoft.R.Components.Plots.ViewModel {
         /// Initialize this view model for the specified device.
         /// </summary>
         /// <param name="device">Device to set.</param>
-        Task AssignAsync(IRPlotDevice device);
+        void Assign(IRPlotDevice device);
 
         /// <summary>
         /// Cleanup this view model so it can be reused later for a different device.
         /// </summary>
-        Task UnassignAsync();
+        void Unassign();
 
         /// <summary>
         /// Resize the plot.

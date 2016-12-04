@@ -33,7 +33,7 @@ namespace Microsoft.R.Host.Client.Host {
         public Task PlotDeviceDestroy(Guid deviceId, CancellationToken ct) => Task.CompletedTask;
         public Task WebBrowser(string url, CancellationToken ct) => Task.CompletedTask;
         public Task ViewLibrary(CancellationToken cancellationToken) => Task.CompletedTask;
-        public Task ShowFile(string fileName, string tabName, bool deleteFile) => Task.CompletedTask;
+        public Task ShowFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken) => Task.CompletedTask;
         public void DirectoryChanged() { }
         public void ViewObject(string expression, string title) { }
         public void PackagesInstalled() { }

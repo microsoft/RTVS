@@ -125,13 +125,13 @@ namespace Microsoft.R.Components.Plots.Implementation {
             }
         }
 
-        public async Task AssignAsync(IRPlotDevice device) {
-            await _viewModel.AssignAsync(device);
+        public void Assign(IRPlotDevice device) {
+            _viewModel.Assign(device);
             Container.UpdateCommandStatus(false);
         }
 
-        public async Task UnassignAsync() {
-            await _viewModel.UnassignAsync();
+        public void Unassign() {
+             _viewModel.Unassign();
             Container.UpdateCommandStatus(false);
         }
 

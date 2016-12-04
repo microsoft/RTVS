@@ -74,7 +74,7 @@ namespace Microsoft.R.Host.Client {
         /// <summary>
         /// Presents file content
         /// </summary>
-        Task ViewFile(string fileName, string tabName, bool deleteFile);
+        Task ViewFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Saves data to file sent from RHost.

@@ -85,7 +85,7 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
             get { return _device != null && _device == _plotManager.ActiveDevice; }
         }
 
-        public Task AssignAsync(IRPlotDevice device) {
+        public void Assign(IRPlotDevice device) {
             _shell.AssertIsOnMainThread();
 
             _device = device;
@@ -94,11 +94,9 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
             _device.DeviceNumChanged += DeviceNumChanged;
 
             Refresh(_device.ActivePlot);
-
-            return Task.CompletedTask;
         }
 
-        public Task UnassignAsync() {
+        public void Unassign() {
             _shell.AssertIsOnMainThread();
 
             if (_device != null) {
@@ -109,8 +107,6 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
 
             _device = null;
             Refresh(null);
-
-            return Task.CompletedTask;
         }
 
         public async Task ResizePlotAsync(int pixelWidth, int pixelHeight, int resolution) {

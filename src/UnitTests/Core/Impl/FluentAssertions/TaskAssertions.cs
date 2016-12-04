@@ -53,23 +53,46 @@ namespace Microsoft.UnitTests.Core.FluentAssertions {
             }
         }
         
-        public Task<AndConstraint<TaskAssertions>> BeCompletedAsync(int timeout = 10000, string because = "", params object[] reasonArgs) {
+        public Task<AndConstraint<TaskAssertions>> BeCompletedAsync(int timeout = 10000, string because = "", params object[] reasonArgs)
+            => BeInTimeAsync(BeCompletedAsyncContinuation, timeout, because:because, reasonArgs:reasonArgs);
+        
+        public Task<AndConstraint<TaskAssertions>> BeCanceledAsync(int timeout = 10000, string because = "", params object[] reasonArgs)
+            => BeInTimeAsync(BeCanceledAsyncContinuation, timeout, because: because, reasonArgs: reasonArgs);
+        
+        public Task<AndConstraint<TaskAssertions>> NotBeCompletedAsync(int timeout = 1000, string because = "", params object[] reasonArgs) 
+            => BeInTimeAsync(NotBeCompletedAsyncContinuation, timeout, 1000, because, reasonArgs);
+
+        private Task<AndConstraint<TaskAssertions>> BeInTimeAsync(Func<Task<Task>, object, AndConstraint<TaskAssertions>> continuation, int timeout = 10000, int debuggerTimeout = 100000, string because = "", params object[] reasonArgs) {
             Subject.Should().NotBeNull();
             if (Debugger.IsAttached) {
-                timeout = Math.Max(100000, timeout);
+                timeout = Math.Max(debuggerTimeout, timeout);
             }
 
             var timeoutTask = Task.Delay(timeout);
-            var state = new BeCompletedAsyncContinuationState(timeout, because, reasonArgs);
+            var state = new TimeoutContinuationState(timeout, because, reasonArgs);
             return Task.WhenAny(timeoutTask, Subject)
-                .ContinueWith(BeCompletedAsyncContinuation, state, default(CancellationToken), TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+                .ContinueWith(continuation, state, default(CancellationToken), TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
         }
 
         private AndConstraint<TaskAssertions> BeCompletedAsyncContinuation(Task<Task> task, object state) {
-            var data = (BeCompletedAsyncContinuationState) state;
-            Execute.Assertion.ForCondition(Subject.IsCompleted)
+            var data = (TimeoutContinuationState) state;
+            AssertStatus(TaskStatus.RanToCompletion, true, data.Because, data.ReasonArgs,
+                "Expected task to be completed in {0} milliseconds{reason}, but it is {1}.", data.Timeout, Subject.Status);
+            return new AndConstraint<TaskAssertions>(this);
+        }
+
+        private AndConstraint<TaskAssertions> BeCanceledAsyncContinuation(Task<Task> task, object state) {
+            var data = (TimeoutContinuationState) state;
+            AssertStatus(TaskStatus.Canceled, true, data.Because, data.ReasonArgs,
+                "Expected task to be canceled in {0} milliseconds{reason}, but it is {1}.", data.Timeout, Subject.Status);
+            return new AndConstraint<TaskAssertions>(this);
+        }
+
+        private AndConstraint<TaskAssertions> NotBeCompletedAsyncContinuation(Task<Task> task, object state) {
+            var data = (TimeoutContinuationState) state;
+            Execute.Assertion.ForCondition(!Subject.IsCompleted)
                 .BecauseOf(data.Because, data.ReasonArgs)
-                .FailWith($"Expected task to be completed in {data.Timeout} milliseconds{{reason}}, but it is {Subject.Status}.");
+                .FailWith($"Expected task not to be completed in {data.Timeout} milliseconds{{reason}}, but {GetNotBeCompletedMessage()}.");
 
             return new AndConstraint<TaskAssertions>(this);
         }
@@ -102,8 +125,8 @@ namespace Microsoft.UnitTests.Core.FluentAssertions {
             return new AndConstraint<TaskAssertions>(this);
         }
 
-        private class BeCompletedAsyncContinuationState {
-            public BeCompletedAsyncContinuationState(int timeout, string because, object[] reasonArgs) {
+        private class TimeoutContinuationState {
+            public TimeoutContinuationState(int timeout, string because, object[] reasonArgs) {
                 Because = because;
                 ReasonArgs = reasonArgs;
                 Timeout = timeout;

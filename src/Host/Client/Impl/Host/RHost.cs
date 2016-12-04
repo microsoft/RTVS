@@ -149,62 +149,55 @@ namespace Microsoft.R.Host.Client {
 
         private void CancelAll() {
             var tcs = Volatile.Read(ref _cancelAllTcs);
-            if (tcs != null) {
-                Volatile.Write(ref _cancelAllCts, new CancellationTokenSource());
-                tcs.TrySetResult(true);
-            }
+            tcs?.TrySetResult(true);
         }
 
         private async Task ShowDialog(Message request, MessageButtons buttons, CancellationToken ct) {
             TaskUtilities.AssertIsOnBackgroundThread();
-            using (CancellationTokenUtilities.Link(ref ct, _cancelAllCts.Token)) {
-                request.ExpectArguments(2);
-                var contexts = GetContexts(request);
-                var s = request.GetString(1, "s", allowNull: true);
+            request.ExpectArguments(2);
+            var contexts = GetContexts(request);
+            var s = request.GetString(1, "s", allowNull: true);
 
-                MessageButtons input = await _callbacks.ShowDialog(contexts, s, buttons, ct);
-                ct.ThrowIfCancellationRequested();
+            MessageButtons input = await _callbacks.ShowDialog(contexts, s, buttons, ct);
+            ct.ThrowIfCancellationRequested();
 
-                string response;
-                switch (input) {
-                    case MessageButtons.No:
-                        response = "N";
-                        break;
-                    case MessageButtons.Cancel:
-                        response = "C";
-                        break;
-                    case MessageButtons.Yes:
-                        response = "Y";
-                        break;
-                    default: {
-                        FormattableString error = $"YesNoCancel: callback returned an invalid value: {input}";
-                        Trace.Fail(Invariant(error));
-                        throw new InvalidOperationException(Invariant(error));
-                    }
+            string response;
+            switch (input) {
+                case MessageButtons.No:
+                    response = "N";
+                    break;
+                case MessageButtons.Cancel:
+                    response = "C";
+                    break;
+                case MessageButtons.Yes:
+                    response = "Y";
+                    break;
+                default: {
+                    var error = Invariant($"YesNoCancel: callback returned an invalid value: {input}");
+                    Trace.Fail(error);
+                    throw new InvalidOperationException(error);
                 }
-
-                await RespondAsync(request, ct, response);
             }
+
+            await RespondAsync(request, ct, response);
         }
 
         private async Task ReadConsole(Message request, CancellationToken ct) {
             TaskUtilities.AssertIsOnBackgroundThread();
 
-            using (CancellationTokenUtilities.Link(ref ct, _cancelAllCts.Token)) {
-                request.ExpectArguments(5);
+            request.ExpectArguments(5);
 
-                var contexts = GetContexts(request);
-                var len = request.GetInt32(1, "len");
-                var addToHistory = request.GetBoolean(2, "addToHistory");
-                var retryReason = request.GetString(3, "retry_reason", allowNull: true);
-                var prompt = request.GetString(4, "prompt", allowNull: true);
+            var contexts = GetContexts(request);
+            var len = request.GetInt32(1, "len");
+            var addToHistory = request.GetBoolean(2, "addToHistory");
+            var retryReason = request.GetString(3, "retry_reason", allowNull: true);
+            var prompt = request.GetString(4, "prompt", allowNull: true);
 
-                string input = await _callbacks.ReadConsole(contexts, prompt, len, addToHistory, ct);
-                ct.ThrowIfCancellationRequested();
+            string input = await _callbacks.ReadConsole(contexts, prompt, len, addToHistory, ct);
+            ct.ThrowIfCancellationRequested();
 
-                input = input.Replace("\r\n", "\n");
-                await RespondAsync(request, ct, input);
-            }
+            input = input.Replace("\r\n", "\n");
+            await RespondAsync(request, ct, input);
         }
 
         public Task<ulong> CreateBlobAsync(CancellationToken cancellationToken) {
@@ -364,23 +357,25 @@ namespace Microsoft.R.Host.Client {
                 return;
             }
 
-            try {
-                // Cancel any pending callbacks
-                _cancelAllCts.Cancel();
-                var cts = CancellationTokenSource.CreateLinkedTokenSource(_cts.Token, cancellationToken);
+            using (cancellationToken.Register(() => tcs.TrySetCanceled(cancellationToken))) {
                 try {
-                    await NotifyAsync("!//", cts.Token);
-                } catch (OperationCanceledException) {
-                    return;
-                } catch (MessageTransportException) {
-                    return;
-                } finally {
-                    cts.Dispose();
-                }
+                    // Cancel any pending callbacks
+                    _cancelAllCts.Cancel();
+                    var cts = CancellationTokenSource.CreateLinkedTokenSource(_cts.Token, cancellationToken);
+                    try {
+                        await NotifyAsync("!//", cts.Token);
+                    } catch (OperationCanceledException) {
+                        return;
+                    } catch (MessageTransportException) {
+                        return;
+                    } finally {
+                        cts.Dispose();
+                    }
 
-                await tcs.Task;
-            } finally {
-                Volatile.Write(ref _cancelAllTcs, null);
+                    await tcs.Task;
+                } finally {
+                    Volatile.Write(ref _cancelAllTcs, null);
+                }
             }
         }
 
@@ -422,13 +417,14 @@ namespace Microsoft.R.Host.Client {
             }
         }
 
-        private async Task<Message> RunLoop(CancellationToken ct) {
+        private async Task<Message> RunLoop(CancellationToken loopCt) {
             TaskUtilities.AssertIsOnBackgroundThread();
-
+            var cancelAllCtsLink = CancellationTokenSource.CreateLinkedTokenSource(loopCt, _cancelAllCts.Token);
+            var ct = cancelAllCtsLink.Token;
             try {
                 _log.EnterRLoop(_rLoopDepth++);
-                while (!ct.IsCancellationRequested) {
-                    var message = await ReceiveMessageAsync(ct);
+                while (!loopCt.IsCancellationRequested) {
+                    var message = await ReceiveMessageAsync(loopCt);
                     if (message == null) {
                         return null;
                     } else if (message.IsResponse) {
@@ -512,7 +508,8 @@ namespace Microsoft.R.Host.Client {
                                 await _callbacks.ShowFile(
                                     message.GetString(0, "file"),
                                     message.GetString(1, "tabName"),
-                                    message.GetBoolean(2, "delete.file"));
+                                    message.GetBoolean(2, "delete.file"),
+                                    ct);
                                 break;
 
                             case "!View":
@@ -567,15 +564,28 @@ namespace Microsoft.R.Host.Client {
                             default:
                                 throw ProtocolError($"Unrecognized host message name:", message);
                         }
-                    } catch (OperationCanceledException) when (!ct.IsCancellationRequested) {
-                        // Canceled via _cancelAllCts - just move onto the next message.
+
+                        if (_cancelAllCts.IsCancellationRequested) {
+                            ct = UpdateCancelAllCtsLink(ref cancelAllCtsLink, loopCt);
+                        }
+                    } catch (OperationCanceledException) when (_cancelAllCts.IsCancellationRequested) {
+                        // Canceled via _cancelAllCts - update cancelAllCtsLink and move on
+                        ct = UpdateCancelAllCtsLink(ref cancelAllCtsLink, loopCt);
                     }
                 }
             } finally {
+                cancelAllCtsLink.Dispose();
                 _log.ExitRLoop(--_rLoopDepth);
             }
 
             return null;
+        }
+
+        private CancellationToken UpdateCancelAllCtsLink(ref CancellationTokenSource cancelAllCtsLink, CancellationToken loopCt) {
+            cancelAllCtsLink.Dispose();
+            Interlocked.Exchange(ref _cancelAllCts, new CancellationTokenSource());
+            cancelAllCtsLink = CancellationTokenSource.CreateLinkedTokenSource(loopCt, _cancelAllCts.Token);
+            return cancelAllCtsLink.Token;
         }
 
         private async Task RunWorker(CancellationToken ct) {
