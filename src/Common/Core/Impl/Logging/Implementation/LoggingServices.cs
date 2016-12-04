@@ -1,14 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System.ComponentModel.Composition;
 using System.Threading;
 using Microsoft.Common.Core.Shell;
 
 namespace Microsoft.Common.Core.Logging.Implementation {
     internal sealed class LoggingServices : ILoggingServices {
-        private static Logger _instance;
         private readonly IApplicationConstants _appConstants;
+        private Logger _instance;
 
         public LoggingServices(ILoggingPermissions permissions, IApplicationConstants appConstants) {
             Permissions = permissions;

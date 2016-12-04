@@ -12,8 +12,8 @@ using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Feedback {
     internal sealed class SendFrownCommand : SendMailCommand {
-        public SendFrownCommand(ILoggingPermissions permissions, ICoreServices services) :
-            base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSendFrown, permissions, services) {
+        public SendFrownCommand(ICoreServices services) :
+            base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSendFrown, services) {
         }
 
         protected override void Handle() {

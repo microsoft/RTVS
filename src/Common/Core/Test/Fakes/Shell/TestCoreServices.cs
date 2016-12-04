@@ -18,15 +18,15 @@ using NSubstitute;
 namespace Microsoft.Common.Core.Test.Fakes.Shell {
     [ExcludeFromCodeCoverage]
     public static class TestCoreServices {
-        public static ICoreServices CreateSubstitute(IFileSystem fs = null, IRegistry registry = null, IProcessServices ps = null) {
+        public static ICoreServices CreateSubstitute(ILoggingPermissions loggingPermissions = null, IFileSystem fs = null, IRegistry registry = null, IProcessServices ps = null) {
             return new CoreServices(
                 Substitute.For<IApplicationConstants>(),
                 Substitute.For<ITelemetryService>(),
-                null,
+                loggingPermissions,
                 Substitute.For<ISecurityService>(),
                 Substitute.For<ITaskService>(),
                 Substitute.For<ISettingsStorage>(),
-                new Lazy<IMainThread>(() => new TestMainThread()),
+                new TestMainThread(),
                 Substitute.For<IActionLog>(),
                 fs ?? Substitute.For<IFileSystem>(),
                 registry ?? Substitute.For<IRegistry>(),
@@ -41,7 +41,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
                 Substitute.For<ISecurityService>(),
                 new TestTaskService(),
                 Substitute.For<ISettingsStorage>(),
-                new Lazy<IMainThread>(() => new TestMainThread()),
+                new TestMainThread(),
                 Substitute.For<IActionLog>(),
                 new FileSystem(),
                 new RegistryImpl(),

@@ -20,24 +20,24 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
 
         public FeedbackCommandTest() {
             _lp = Substitute.For<ILoggingPermissions>();
-            _services = TestCoreServices.CreateSubstitute();
+            _services = TestCoreServices.CreateSubstitute(_lp);
         }
 
         [Test]
         public void ReportIssue() {
-            var cmd = new ReportIssueCommand(_lp, _services.ProcessServices);
+            var cmd = new ReportIssueCommand(_services);
             TestStatus(cmd);
         }
 
         [Test]
         public void SendFrown() {
-            var cmd = new SendFrownCommand(_lp, _services);
+            var cmd = new SendFrownCommand(_services);
             TestStatus(cmd);
         }
 
         [Test]
         public void SendSmile() {
-            var cmd = new SendSmileCommand(_lp, _services);
+            var cmd = new SendSmileCommand(_services);
             TestStatus(cmd);
         }
 

@@ -51,7 +51,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             var pcsp = exportProvider.GetExportedValue<IProjectConfigurationSettingsProvider>();
             var dbcs = exportProvider.GetExportedValue<IDbConnectionService>();
             var settings = exportProvider.GetExportedValue<IRToolsSettings>();
-            var logPerms = exportProvider.GetExportedValue<ILoggingPermissions>();
+            var logPerms = appShell.Services.LoggingServices.Permissions;
 
             return new List<MenuCommand> {
                 new GoToOptionsCommand(),
@@ -62,9 +62,9 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new SurveyNewsCommand(appShell),
                 new SetupRemoteCommand(),
 
-                new ReportIssueCommand(logPerms, appShell.Services.ProcessServices),
-                new SendSmileCommand(logPerms, appShell.Services),
-                new SendFrownCommand(logPerms, appShell.Services),
+                new ReportIssueCommand(appShell.Services),
+                new SendSmileCommand(appShell.Services),
+                new SendFrownCommand(appShell.Services),
 
                 CreateRCmdSetCommand(RPackageCommandId.icmdRDocsIntroToR, new OpenDocumentationCommand(interactiveWorkflow, OnlineDocumentationUrls.CranIntro, LocalDocumentationPaths.CranIntro)),
                 CreateRCmdSetCommand(RPackageCommandId.icmdRDocsDataImportExport, new OpenDocumentationCommand(interactiveWorkflow, OnlineDocumentationUrls.CranData, LocalDocumentationPaths.CranData)),

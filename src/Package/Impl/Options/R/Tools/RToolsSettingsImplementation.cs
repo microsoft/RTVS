@@ -55,9 +55,9 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         private LogVerbosity _logLevel = LogVerbosity.Normal;
 
         [ImportingConstructor]
-        public RToolsSettingsImplementation(ISettingsStorage settings, ILoggingPermissions loggingPermissions) {
+        public RToolsSettingsImplementation(ISettingsStorage settings, ICoreShell coreShell) {
             _settings = settings;
-            _loggingPermissions = loggingPermissions;
+            _loggingPermissions = coreShell.Services.LoggingServices.Permissions;
             _workingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         }
 
