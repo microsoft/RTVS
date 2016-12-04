@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel.Composition;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using EnvDTE;
 using Microsoft.Common.Core.Shell;
@@ -28,8 +29,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             }
         }
 
-        public async Task ViewFile(string fileName, string tabName, bool deleteFile) {
-            await VsAppShell.Current.SwitchToMainThreadAsync();
+        public async Task ViewFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken) {
+            await VsAppShell.Current.SwitchToMainThreadAsync(cancellationToken);
 
             FileViewer.ViewFile(fileName, tabName);
             try {

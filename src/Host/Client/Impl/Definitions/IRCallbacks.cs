@@ -77,7 +77,7 @@ namespace Microsoft.R.Host.Client {
         /// <summary>
         /// Invoked when R calls 'pager'
         /// </summary>
-        Task ShowFile(string fileName, string tabName, bool deleteFile);
+        Task ShowFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken);
 
         /// <summary>
         /// Called when working directory has changed in R.

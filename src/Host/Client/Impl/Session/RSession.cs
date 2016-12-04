@@ -206,11 +206,14 @@ namespace Microsoft.R.Host.Client.Session {
             using (_disposeToken.Link(ref cancellationToken)) {
                 var exception = new OperationCanceledException();
                 ClearPendingRequests(exception);
-
-                await _host.CancelAllAsync(cancellationToken);
-
                 var currentRequest = Interlocked.Exchange(ref _currentRequestSource, null);
-                currentRequest?.TryCancel(exception);
+
+                try {
+                    await _host.CancelAllAsync(cancellationToken);
+                } finally {
+                    // Even if cancellationToken.IsCancellationRequested == true, we can't find out if request was fully completed or not, so we consider it canceled
+                    currentRequest?.TryCancel(exception);
+                }
             }
         }
 
@@ -724,9 +727,9 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
             return callback?.ViewLibraryAsync(cancellationToken);
         }
 
-        Task IRCallbacks.ShowFile(string fileName, string tabName, bool deleteFile) {
+        Task IRCallbacks.ShowFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken) {
             var callback = _callback;
-            return callback?.ViewFile(fileName, tabName, deleteFile);
+            return callback?.ViewFile(fileName, tabName, deleteFile, cancellationToken);
         }
 
         void IRCallbacks.DirectoryChanged() {
@@ -784,7 +787,8 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
                             host.DetachCallback();
 
                             // Cancel all current requests
-                            await _session.CancelAllAsync(cancellationToken);
+                            // If can't be canceled in 10s - just ignore, old host will be stopped later
+                            await Task.WhenAny(_session.CancelAllAsync(cancellationToken), Task.Delay(10000, cancellationToken)).Unwrap();
                         }
 
                         // Start new RHost

@@ -125,7 +125,7 @@ namespace Microsoft.R.Host.Client {
             await Console.Error.WriteLineAsync("ViewLibrary");
         }
 
-        public async Task ShowFile(string fileName, string tabName, bool deleteFile) {
+        public async Task ShowFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken) {
             await Console.Error.WriteAsync(Invariant($"ShowFile({fileName}, {tabName}, {deleteFile})"));
         }
 

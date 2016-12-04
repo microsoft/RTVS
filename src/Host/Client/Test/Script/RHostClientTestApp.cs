@@ -50,7 +50,7 @@ namespace Microsoft.R.Host.Client.Test.Script {
             return Task.CompletedTask;
         }
 
-        public Task ViewFile(string fileName, string tabName, bool deleteFile) {
+        public Task ViewFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken) {
             return Task.CompletedTask;
         }
 
