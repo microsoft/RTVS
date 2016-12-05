@@ -140,7 +140,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         public async Task ConnectAsync(IConnectionInfo connection, CancellationToken cancellationToken = default(CancellationToken)) {
             if (ActiveConnection == null || !ActiveConnection.Path.PathEquals(connection.Path) || string.IsNullOrEmpty(_sessionProvider.Broker.Name)) {
                 await TrySwitchBrokerAsync(connection, cancellationToken);
-                await ShowConnectionsWindowAsync();
+                await _shell.SwitchToMainThreadAsync();
+                var interactiveWindow = await _interactiveWorkflow.GetOrCreateVisualComponentAsync();
+                interactiveWindow.Container.Show(focus: false, immediate: false);
             }
         }
         
@@ -205,12 +207,6 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 .ToArray();
         }
 
-        private async Task ShowConnectionsWindowAsync() {
-            await _shell.SwitchToMainThreadAsync();
-            var interactiveWindow = await _interactiveWorkflow.GetOrCreateVisualComponentAsync();
-            interactiveWindow.Container.Show(focus: false, immediate: false);
-        }
-
         private void UpdateRecentConnections(bool save = true) {
             RecentConnections = new ReadOnlyCollection<IConnection>(_userConnections.Values.OrderByDescending(c => c.LastUsed).ToList());
             if (save) {
@@ -253,8 +249,6 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                         var installer = _shell.ExportProvider.GetExportedValue<IMicrosoftRClientInstaller>();
                         installer.LaunchRClientSetup(_shell);
                         return connections;
-                    } else {
-                        ShowConnectionsWindowAsync().DoNotWait();
                     }
                 }
                 // No connections, may be first use or connections were removed.
