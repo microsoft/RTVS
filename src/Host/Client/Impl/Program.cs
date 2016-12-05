@@ -109,25 +109,20 @@ namespace Microsoft.R.Host.Client {
             await Console.Error.WriteLineAsync(plot.FilePath);
         }
 
-        public async Task WebBrowser(string url, CancellationToken ct) {
-            await Console.Error.WriteLineAsync("Browser: " + url);
-        }
+        public async Task WebBrowser(string url, CancellationToken ct) 
+            => await Console.Error.WriteLineAsync("Browser: " + url);
 
-        public async void DirectoryChanged() {
-            await Console.Error.WriteLineAsync("Directory changed.");
-        }
+        public async void DirectoryChanged() 
+            => await Console.Error.WriteLineAsync("Directory changed.");
 
-        public void ViewObject(string x, string title) {
-            Console.Error.WriteLineAsync(Invariant($"ViewObject({title}): {x}"));
-        }
+        public Task ViewObject(string x, string title, CancellationToken cancellationToken) 
+            => Console.Error.WriteLineAsync(Invariant($"ViewObjectAsync({title}): {x}"));
 
-        public async Task ViewLibrary(CancellationToken cancellationToken) {
-            await Console.Error.WriteLineAsync("ViewLibrary");
-        }
+        public async Task ViewLibrary(CancellationToken cancellationToken) 
+            => await Console.Error.WriteLineAsync("ViewLibrary");
 
-        public async Task ShowFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken) {
-            await Console.Error.WriteAsync(Invariant($"ShowFile({fileName}, {tabName}, {deleteFile})"));
-        }
+        public async Task ShowFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken) 
+            => await Console.Error.WriteAsync(Invariant($"ShowFile({fileName}, {tabName}, {deleteFile})"));
 
         public void PackagesInstalled() {
             Console.Error.WriteLineAsync("PackagesInstalled").DoNotWait();

@@ -63,7 +63,7 @@ namespace Microsoft.R.Host.Client {
         /// Opens viewer for the given object
         /// </summary>
         /// <returns></returns>
-        void ViewObject(string expression, string title);
+        Task ViewObjectAsync(string expression, string title, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Present package list or package manager

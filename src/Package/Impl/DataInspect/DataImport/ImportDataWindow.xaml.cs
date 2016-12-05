@@ -141,10 +141,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport
             FilePathBox.ScrollToEnd();
 
             VariableNameBox.Text = name ?? Path.GetFileNameWithoutExtension(filePath);
-            PreviewContent();
+            PreviewContentAsync().DoNotWait();
         }
 
-        private async void PreviewContent() {
+        private async Task PreviewContentAsync() {
             if (string.IsNullOrEmpty(FilePathBox.Text)) {
                 return;
             }
@@ -244,11 +244,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport
         }
 
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            PreviewContent();
+            PreviewContentAsync().DoNotWait();
         }
 
         private void HeaderCheckBox_Changed(object sender, RoutedEventArgs e) {
-            PreviewContent();
+            PreviewContentAsync().DoNotWait();
         }
 
         private void PreviewFileContent(string file, int codePage) {

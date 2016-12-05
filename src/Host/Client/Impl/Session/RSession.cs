@@ -745,9 +745,9 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
             DirectoryChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        void IRCallbacks.ViewObject(string obj, string title) {
+        Task IRCallbacks.ViewObject(string obj, string title, CancellationToken cancellationToken) {
             var callback = _callback;
-            callback?.ViewObject(obj, title);
+            return callback?.ViewObjectAsync(obj, title, cancellationToken) ?? Task.CompletedTask;
         }
 
         void IRCallbacks.PackagesInstalled() {

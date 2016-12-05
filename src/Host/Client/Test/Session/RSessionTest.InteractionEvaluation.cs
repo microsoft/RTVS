@@ -166,6 +166,18 @@ namespace Microsoft.R.Host.Client.Test.Session {
                 cts.CancelAfter(100);
                 await assertion;
             } 
+            
+            [Test]
+            public async Task EvaluateAsync_Stop_Start_EvaluateAsync() {
+                await _session.EvaluateAsync("x <- 1").Should().BeCompletedAsync();
+
+                await _session.StopHostAsync().Should().BeCompletedAsync();
+                await _session.StartHostAsync(new RHostStartupInfo {
+                    Name = _testMethod.Name
+                }, null, 10000).Should().BeCompletedAsync();
+
+                await _session.EvaluateAsync("x <- 1").Should().BeCompletedAsync();
+            }
 
             [Test]
             public async Task BeginEvaluationAsync_DisconnectedFromTheStart() {

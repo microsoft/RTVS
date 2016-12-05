@@ -22,17 +22,18 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View.DesignTime {
         public string FirstError => null;
         public bool HasMultipleErrors => false;
         public bool IsRemoteSession => false;
+
         public Task SwitchToAvailablePackagesAsync() => Task.CompletedTask;
         public Task SwitchToInstalledPackagesAsync() => Task.CompletedTask;
         public Task SwitchToLoadedPackagesAsync() => Task.CompletedTask;
         public Task ReloadCurrentTabAsync() => Task.CompletedTask;
         public void SelectPackage(IRPackageViewModel package) { }
-        public Task InstallAsync(IRPackageViewModel package) => Task.CompletedTask;
-        public Task UpdateAsync(IRPackageViewModel package) => Task.CompletedTask;
-        public Task UninstallAsync(IRPackageViewModel package) => Task.CompletedTask;
-        public Task LoadAsync(IRPackageViewModel package) => Task.CompletedTask;
-        public Task UnloadAsync(IRPackageViewModel package) => Task.CompletedTask;
-        public Task DefaultActionAsync() => Task.CompletedTask;
+        public Task InstallAsync(IRPackageViewModel package, CancellationToken cancellationToken) => Task.CompletedTask;
+        public Task UpdateAsync(IRPackageViewModel package, CancellationToken cancellationToken) => Task.CompletedTask;
+        public Task UninstallAsync(IRPackageViewModel package, CancellationToken cancellationToken) => Task.CompletedTask;
+        public Task LoadAsync(IRPackageViewModel package, CancellationToken cancellationToken) => Task.CompletedTask;
+        public Task UnloadAsync(IRPackageViewModel package, CancellationToken cancellationToken) => Task.CompletedTask;
+        public Task DefaultActionAsync(CancellationToken cancellationToken = default(CancellationToken)) => Task.CompletedTask;
 
         public void DismissErrorMessage() {
         }

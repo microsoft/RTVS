@@ -22,10 +22,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             _aggregator = aggregator;
         }
 
-        public async Task ViewObjectDetails(IRSession session, string environmentExpression, string expression, string title) {
-            var viewer = await _aggregator.GetViewer(session, environmentExpression, expression);
+        public async Task ViewObjectDetails(IRSession session, string environmentExpression, string expression, string title, CancellationToken cancellationToken) {
+            var viewer = await _aggregator.GetViewer(session, environmentExpression, expression, cancellationToken);
             if (viewer != null) {
-                await viewer?.ViewAsync(expression, title);
+                await viewer.ViewAsync(expression, title, cancellationToken);
             }
         }
 

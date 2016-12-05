@@ -102,7 +102,7 @@ namespace Microsoft.R.Host.Client.Host {
             try {
                 var sessionExists = connectionInfo.PreserveSessionData && await IsSessionRunningAsync(connectionInfo.Name, cancellationToken);
                 if (sessionExists) {
-                    var terminateRDataSave = await _console.PromptYesNoAsync(Resources.AbortRDataAutosave);
+                    var terminateRDataSave = await _console.PromptYesNoAsync(Resources.AbortRDataAutosave, cancellationToken);
                     if (!terminateRDataSave) {
                         while (await IsSessionRunningAsync(connectionInfo.Name, cancellationToken)) {
                             await Task.Delay(500, cancellationToken);

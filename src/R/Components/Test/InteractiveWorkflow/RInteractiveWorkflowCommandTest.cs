@@ -125,7 +125,7 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
                     await command.InvokeAsync();
                     command.Should().BeVisibleAndDisabled();
 
-                    await task.Should().BeCompletedAsync();
+                    await task.Should().BeCanceledAsync();
                 }
             }
 

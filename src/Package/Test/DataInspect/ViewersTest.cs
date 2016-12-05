@@ -55,13 +55,13 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         [Category.Viewers]
         public async Task ViewDataTest01() {
             var cb = Substitute.For<IRSessionCallback>();
-            cb.When(x => x.ViewObject(Arg.Any<string>(), Arg.Any<string>())).Do(x => { });
+            cb.When(x => x.ViewObjectAsync(Arg.Any<string>(), Arg.Any<string>())).Do(x => { });
             using (var hostScript = new RHostScript(_workflow.RSessions, cb)) {
                 using (var inter = await hostScript.Session.BeginInteractionAsync()) {
                     await inter.RespondAsync("View(mtcars)" + Environment.NewLine);
                 }
             }
-            cb.Received().ViewObject("mtcars", "mtcars");
+            cb.Received().ViewObjectAsync("mtcars", "mtcars");
         }
 
         [Test]

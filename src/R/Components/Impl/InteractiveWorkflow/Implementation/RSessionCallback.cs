@@ -43,7 +43,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         /// <summary>
         /// Displays message with specified buttons in a host-specific UI
         /// </summary>
-        public Task<MessageButtons> ShowMessageAsync(string message, MessageButtons buttons, CancellationToken cancellationToken) => _coreShell.ShowMessageAsync(message, buttons);
+        public Task<MessageButtons> ShowMessageAsync(string message, MessageButtons buttons, CancellationToken cancellationToken) => _coreShell.ShowMessageAsync(message, buttons, cancellationToken);
             
         /// <summary>
         /// Displays R help URL in a browser on in the host app-provided window
@@ -62,17 +62,14 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         /// <summary>
         /// Displays R plot in the host app-provided window
         /// </summary>
-        public async Task Plot(PlotMessage plot, CancellationToken ct) {
-            await _workflow.Plots.LoadPlotAsync(plot, ct);
-        }
+        public Task Plot(PlotMessage plot, CancellationToken ct) 
+            => _workflow.Plots.LoadPlotAsync(plot, ct);
 
-        public async Task<LocatorResult> Locator(Guid deviceId, CancellationToken ct) {
-            return await _workflow.Plots.StartLocatorModeAsync(deviceId, ct);
-        }
+        public Task<LocatorResult> Locator(Guid deviceId, CancellationToken ct) 
+            => _workflow.Plots.StartLocatorModeAsync(deviceId, ct);
 
-        public async Task<PlotDeviceProperties> PlotDeviceCreate(Guid deviceId, CancellationToken ct) {
-            return await _workflow.Plots.DeviceCreatedAsync(deviceId, ct);
-        }
+        public Task<PlotDeviceProperties> PlotDeviceCreate(Guid deviceId, CancellationToken ct) 
+            => _workflow.Plots.DeviceCreatedAsync(deviceId, ct);
 
         public async Task PlotDeviceDestroy(Guid deviceId, CancellationToken ct) {
             await _workflow.Plots.DeviceDestroyedAsync(deviceId, ct);
@@ -94,9 +91,9 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             return CranMirrorList.UrlFromName(mirrorName);
         }
 
-        public void ViewObject(string expression, string title) {
+        public Task ViewObjectAsync(string expression, string title, CancellationToken cancellationToken = default(CancellationToken)) {
             var viewer = _coreShell.ExportProvider.GetExportedValue<IObjectViewer>();
-            viewer?.ViewObjectDetails(_session, REnvironments.GlobalEnv, expression, title);
+            return viewer?.ViewObjectDetails(_session, REnvironments.GlobalEnv, expression, title, cancellationToken) ?? Task.CompletedTask;
         }
 
         public async Task ViewLibraryAsync(CancellationToken cancellationToken = default(CancellationToken)) {
