@@ -21,7 +21,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View.DesignTime {
 
         public string FirstError => null;
         public bool HasMultipleErrors => false;
-
+        public bool IsRemoteSession => false;
         public Task SwitchToAvailablePackagesAsync() => Task.CompletedTask;
         public Task SwitchToInstalledPackagesAsync() => Task.CompletedTask;
         public Task SwitchToLoadedPackagesAsync() => Task.CompletedTask;

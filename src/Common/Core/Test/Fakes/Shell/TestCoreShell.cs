@@ -36,6 +36,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
         public Thread MainThread => UIThreadHelper.Instance.Thread;
 
 #pragma warning disable 67
+        public event EventHandler<EventArgs> Started;
         public event EventHandler<EventArgs> Idle;
         public event EventHandler<EventArgs> Terminating;
 

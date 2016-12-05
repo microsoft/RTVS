@@ -8,6 +8,8 @@ using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Threading;
 using System.Windows.Threading;
+using EnvDTE;
+using EnvDTE80;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
@@ -32,6 +34,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using static System.FormattableString;
 using IServiceProvider = System.IServiceProvider;
 using VsPackage = Microsoft.VisualStudio.Shell.Package;
+using Thread = System.Threading.Thread;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
     /// <summary>
@@ -52,6 +55,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private IdleTimeSource _idleTimeSource;
         private ExportProvider _exportProvider;
         private ICompositionService _compositionService;
+        private DTE2 _dte2;
 
         [ImportingConstructor]
         public VsAppShell(ITelemetryService telemetryService, ISettingsStorage settingsStorage) {
@@ -87,11 +91,18 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             _idleTimeSource.OnIdle += OnIdle;
             _idleTimeSource.OnTerminateApp += OnTerminateApp;
 
+            _dte2 = (DTE2)VsPackage.GetGlobalService(typeof(DTE));
+            _dte2.Events.DTEEvents.OnStartupComplete += OnStartupComplete;
+
             EditorShell.Current = this;
         }
 
+        private void OnStartupComplete() {
+            Started?.Invoke(this, EventArgs.Empty);
+        }
+
         private void OnTerminateApp(object sender, EventArgs e) {
-            Terminating?.Invoke(null, EventArgs.Empty);
+            Terminating?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -206,6 +217,11 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// to execute is executing from the right thread.
         /// </summary>
         public Thread MainThread { get; private set; }
+
+        /// <summary>
+        /// Fires when host application has completed it's startup sequence
+        /// </summary>
+        public event EventHandler<EventArgs> Started;
 
         /// <summary>
         /// Fires when host application enters idle state.
@@ -371,7 +387,10 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         #endregion
 
         public void Dispose() {
-            _coreServices.LoggingServices.Dispose();
+            if (_dte2 != null) {
+                _dte2.Events.DTEEvents.OnStartupComplete -= OnStartupComplete;
+            }
+            _coreServices?.LoggingServices?.Dispose();
         }
 
         void OnIdle(object sender, EventArgs args) {

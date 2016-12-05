@@ -62,6 +62,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
 
         public ReadOnlyObservableCollection<object> Items { get; }
 
+        public bool IsRemoteSession => _packageManager.IsRemoteSession;
+
         public IRPackageViewModel SelectedPackage {
             get { return _selectedPackage; }
             private set { SetProperty(ref _selectedPackage, value); }

@@ -32,6 +32,11 @@ namespace Microsoft.Common.Core.Shell {
         Thread MainThread { get; }
 
         /// <summary>
+        /// Fires when host application has completed it's startup sequence
+        /// </summary>
+        event EventHandler<EventArgs> Started;
+
+        /// <summary>
         /// Fires when host application enters idle state.
         /// </summary>
         event EventHandler<EventArgs> Idle;

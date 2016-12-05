@@ -541,7 +541,7 @@ Are you sure you want to terminate R session?</value>
     <value>Video controller: {0}</value>
   </data>
   <data name="VideoProcessor" xml:space="preserve">
-    <value>Video processor: {0}</value>
+    <value>GPU: {0}</value>
   </data>
   <data name="VideoRAM" xml:space="preserve">
     <value>Video memory: {0} MB</value>

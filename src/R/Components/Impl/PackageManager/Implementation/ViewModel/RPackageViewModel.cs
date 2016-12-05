@@ -114,6 +114,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
 
         public bool NeedsCompilation { get; private set; }
 
+        public bool IsRemoteSession => _owner.IsRemoteSession;
+
         public string LibraryPath {
             get { return _libraryPath; }
             private set { SetProperty(ref _libraryPath, value); }

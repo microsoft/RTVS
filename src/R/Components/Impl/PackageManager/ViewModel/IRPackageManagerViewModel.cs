@@ -15,6 +15,7 @@ namespace Microsoft.R.Components.PackageManager.ViewModel {
 
         string FirstError { get; }
         bool HasMultipleErrors { get; }
+        bool IsRemoteSession { get; }
 
         Task SwitchToAvailablePackagesAsync();
         Task SwitchToInstalledPackagesAsync();

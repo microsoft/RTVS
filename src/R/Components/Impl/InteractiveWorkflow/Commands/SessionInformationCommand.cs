@@ -80,9 +80,19 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
                 window.WriteErrorLine("\t" + Resources.ProcessorCount.FormatInvariant(aboutHost.ProcessorCount));
                 window.WriteErrorLine("\t" + Resources.PhysicalMemory.FormatInvariant(aboutHost.TotalPhysicalMemory, aboutHost.FreePhysicalMemory));
                 window.WriteErrorLine("\t" + Resources.VirtualMemory.FormatInvariant(aboutHost.TotalVirtualMemory, aboutHost.FreeVirtualMemory));
-                window.WriteErrorLine("\t" + Resources.VideoCardName.FormatInvariant(aboutHost.VideoCardName));
-                window.WriteErrorLine("\t" + Resources.VideoProcessor.FormatInvariant(aboutHost.VideoProcessor));
-                window.WriteErrorLine("\t" + Resources.VideoRAM.FormatInvariant(aboutHost.VideoRAM));
+
+                if (!string.IsNullOrEmpty(aboutHost.VideoCardName)) {
+                    window.WriteErrorLine("\t" + Resources.VideoCardName.FormatInvariant(aboutHost.VideoCardName));
+                }
+
+                if (!string.IsNullOrEmpty(aboutHost.VideoProcessor)) {
+                    window.WriteErrorLine("\t" + Resources.VideoProcessor.FormatInvariant(aboutHost.VideoProcessor));
+                }
+
+                if (aboutHost.VideoRAM > 0) {
+                    window.WriteErrorLine("\t" + Resources.VideoRAM.FormatInvariant(aboutHost.VideoRAM));
+                }
+
                 window.WriteErrorLine("\t" + Resources.ConnectedUserCount.FormatInvariant(aboutHost.ConnectedUserCount));
                 window.WriteErrorLine(string.Empty);
             }
@@ -94,6 +104,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
                     services.Telemetry.ReportEvent(TelemetryArea.Configuration, "Remote OS", aboutHost.OS.VersionString);
                     services.Telemetry.ReportEvent(TelemetryArea.Configuration, "Remote CPUs", aboutHost.ProcessorCount);
                     services.Telemetry.ReportEvent(TelemetryArea.Configuration, "Remote RAM", aboutHost.TotalPhysicalMemory);
+                    services.Telemetry.ReportEvent(TelemetryArea.Configuration, "Remote Video Card", aboutHost.VideoCardName);
+                    services.Telemetry.ReportEvent(TelemetryArea.Configuration, "Remote GPU", aboutHost.VideoProcessor);
                 }
             }
         }

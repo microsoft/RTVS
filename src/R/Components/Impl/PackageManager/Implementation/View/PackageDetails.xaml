@@ -198,7 +198,9 @@
                             Visibility="{Binding Path=LibraryPath, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
                 <TextBlock Grid.Row="9" Grid.Column="1" Margin="8,8,0,0" 
                             Visibility="{Binding Path=LibraryPath, Converter={x:Static wpf:Converters.NullIsCollapsed}}">
-                    <Hyperlink NavigateUri="{Binding Path=LibraryPath}" Style="{StaticResource HyperlinkStyle}" RequestNavigate="LibraryPath_RequestNavigate">
+                    <Hyperlink NavigateUri="{Binding Path=LibraryPath}" Style="{StaticResource HyperlinkStyle}" 
+                               RequestNavigate="LibraryPath_RequestNavigate" 
+                               IsEnabled="{Binding Path=IsRemoteSession, Converter={x:Static wpf:Converters.Not}}">
                         <Run Text="{Binding Mode=OneTime, Path=LibraryPath}" />
                     </Hyperlink>
                 </TextBlock>

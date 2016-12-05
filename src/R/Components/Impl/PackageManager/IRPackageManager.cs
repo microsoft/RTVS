@@ -135,5 +135,10 @@ namespace Microsoft.R.Components.PackageManager {
         /// <param name="libraryPath">Library path (in any format).</param>
         /// <returns>Lock state.</returns>
         Task<PackageLockState> GetPackageLockStateAsync(string name, string libraryPath);
+
+        /// <summary>
+        /// Indicates if the current session is remote
+        /// </summary>
+        bool IsRemoteSession { get; }
     }
 }

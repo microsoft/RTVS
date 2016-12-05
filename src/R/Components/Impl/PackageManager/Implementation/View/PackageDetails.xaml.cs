@@ -2,7 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
@@ -23,7 +25,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View {
         private void ButtonInstall_Click(object sender, RoutedEventArgs e) {
             Model?.InstallAsync().DoNotWait();
         }
-        
+
         private void ButtonUninstall_Click(object sender, RoutedEventArgs e) {
             Model?.UninstallAsync().DoNotWait();
         }
@@ -37,7 +39,12 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View {
         }
 
         private void LibraryPath_RequestNavigate(object sender, RequestNavigateEventArgs e) {
-            Process.Start(e.Uri.ToString().Replace('/', '\\'));
+            var path = e.Uri.ToString().Replace('/', '\\');
+            if (File.Exists(path)) {
+                try {
+                    Process.Start(path);
+                } catch (Win32Exception) { }
+            }
         }
 
         private void Urls_RequestNavigate(object sender, RequestNavigateEventArgs e) {

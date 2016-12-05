@@ -20,7 +20,9 @@ using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client.Session {
     internal sealed class RSession : IRSession, IRCallbacks {
-        private static readonly string DefaultPrompt = "> ";
+        private static readonly string LocalPrompt = "> ";
+        private static readonly string RemotePrompt = "*> ";
+
         private static readonly Task<IRSessionEvaluation> CanceledBeginEvaluationTask;
         private static readonly Task<IRSessionInteraction> CanceledBeginInteractionTask;
 
@@ -59,7 +61,7 @@ namespace Microsoft.R.Host.Client.Session {
         private volatile RHostStartupInfo _startupInfo;
 
         public int Id { get; }
-        public string Prompt { get; private set; } = DefaultPrompt;
+        public string Prompt { get; private set; } = LocalPrompt;
         public int MaxLength { get; private set; } = 0x1000;
         public bool IsHostRunning => _isHostRunning;
         public Task HostStarted => _initializationTcs.Task;
@@ -99,6 +101,8 @@ namespace Microsoft.R.Host.Client.Session {
             _initializationTcs = new TaskCompletionSourceEx<object>();
             _afterHostStartedTask = TaskUtilities.CreateCanceled(new RHostDisconnectedException());
         }
+
+        private string GetDefaultPrompt()=> IsRemote ? RemotePrompt : LocalPrompt;
 
         private void OnMutated() {
             if (_disableMutatingOnReadConsole.Count == 0) {
@@ -480,7 +484,7 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
         }
 
         Task IRCallbacks.Connected(string rVersion) {
-            Prompt = DefaultPrompt;
+            Prompt = GetDefaultPrompt();
             _isHostRunning = true;
             _initializationTcs.SetResult(null);
             Connected?.Invoke(this, new RConnectedEventArgs(rVersion));
@@ -516,8 +520,9 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
             }
 
             _contexts = null;
-            Prompt = DefaultPrompt;
+            Prompt = GetDefaultPrompt();
         }
+
 
         async Task<string> IRCallbacks.ReadConsole(IReadOnlyList<IRContext> contexts, string prompt, int len, bool addToHistory, CancellationToken ct) {
             await TaskUtilities.SwitchToBackgroundThread();
