@@ -83,9 +83,10 @@ namespace Microsoft.R.Host.Client.Test.Stubs {
             return CranUrlFromNameHandler != null ? CranUrlFromNameHandler(name) : string.Empty;
         }
 
-        public void ViewObject(string expression, string title) {
+        public Task ViewObjectAsync(string expression, string title, CancellationToken cancellationToken) {
             ViewObjectCalls.Add(new Tuple<string, string>(expression, title));
             ViewObjectHandler?.Invoke(expression, title);
+            return Task.CompletedTask;
         }
 
         public Task ViewLibraryAsync(CancellationToken cancellationToken) {

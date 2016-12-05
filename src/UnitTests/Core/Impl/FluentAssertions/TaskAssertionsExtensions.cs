@@ -7,8 +7,12 @@ using System.Threading.Tasks;
 namespace Microsoft.UnitTests.Core.FluentAssertions {
     [ExcludeFromCodeCoverage]
     public static class TaskAssertionsExtensions {
-        public static TaskAssertions Should(this Task task) {
-            return new TaskAssertions(task);
+        public static TaskAssertions<Task> Should(this Task task) {
+            return new TaskAssertions<Task>(task);
+        }
+
+        public static TaskAssertions<Task<TResult>> Should<TResult>(this Task<TResult> task) {
+            return new TaskAssertions<Task<TResult>>(task);
         }
     }
 }

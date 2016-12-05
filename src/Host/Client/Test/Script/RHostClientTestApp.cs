@@ -44,11 +44,9 @@ namespace Microsoft.R.Host.Client.Test.Script {
             return Task.FromResult("\n");
         }
 
-        public void ViewObject(string expression, string title) { }
+        public Task ViewObjectAsync(string expression, string title, CancellationToken cancellationToken) => Task.CompletedTask;
 
-        public Task ViewLibraryAsync(CancellationToken cancellationToken) {
-            return Task.CompletedTask;
-        }
+        public Task ViewLibraryAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
         public Task ViewFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken) {
             return Task.CompletedTask;

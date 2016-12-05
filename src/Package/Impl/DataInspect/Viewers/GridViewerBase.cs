@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using EnvDTE;
 using Microsoft.Common.Core.Shell;
@@ -29,12 +30,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
         #region IObjectDetailsViewer
         public ViewerCapabilities Capabilities => ViewerCapabilities.List | ViewerCapabilities.Table;
 
-        abstract public bool CanView(IRValueInfo evaluation);
+        public abstract bool CanView(IRValueInfo evaluation);
 
-        public async Task ViewAsync(string expression, string title) {
-            var evaluation = await EvaluateAsync(expression, _properties, RValueRepresentations.Str()) as IRValueInfo;
+        public async Task ViewAsync(string expression, string title, CancellationToken cancellationToken = default(CancellationToken)) {
+            var evaluation = await EvaluateAsync(expression, _properties, RValueRepresentations.Str(), cancellationToken);
             if (evaluation != null) {
-                await VsAppShell.Current.SwitchToMainThreadAsync();
+                await VsAppShell.Current.SwitchToMainThreadAsync(cancellationToken);
                 var id = Math.Abs(_toolWindowIdBase + expression.GetHashCode() % (Int32.MaxValue - _toolWindowIdBase));
 
                 var existingPane = ToolWindowUtilities.FindWindowPane<VariableGridWindowPane>(id);

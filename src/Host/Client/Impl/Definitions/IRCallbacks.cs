@@ -88,7 +88,7 @@ namespace Microsoft.R.Host.Client {
         /// Called when used invoked View(obj) in R.
         /// </summary>
         /// <returns></returns>
-        void ViewObject(string expression, string title);
+        Task ViewObject(string expression, string title, CancellationToken cancellationToken);
 
         void PackagesInstalled();
         void PackagesRemoved();

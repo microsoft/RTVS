@@ -35,7 +35,7 @@ namespace Microsoft.R.Host.Client.Host {
         public Task ViewLibrary(CancellationToken cancellationToken) => Task.CompletedTask;
         public Task ShowFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken) => Task.CompletedTask;
         public void DirectoryChanged() { }
-        public void ViewObject(string expression, string title) { }
+        public Task ViewObject(string expression, string title, CancellationToken cancellationToken) => Task.CompletedTask;
         public void PackagesInstalled() { }
         public void PackagesRemoved() {}
         public Task<string> SaveFileAsync(string filename, byte[] data) => Task.FromResult(filename);

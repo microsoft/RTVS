@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel.Composition;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -20,7 +21,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             _workflow = workflowProvider.GetOrCreate();
         }
 
-        public async Task<IREvaluationResultInfo> EvaluateAsync(string expression, REvaluationResultProperties fields, string repr = null) {
+        public async Task<IREvaluationResultInfo> EvaluateAsync(string expression, REvaluationResultProperties fields, string repr, CancellationToken cancellationToken = default(CancellationToken)) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             repr = repr ?? RValueRepresentations.Str();
@@ -29,11 +30,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             // when host is restarts or gets re-created in tests
             var rSession = _workflow.RSession;
 
-            var frames = await rSession.TracebackAsync();
+            var frames = await rSession.TracebackAsync(cancellationToken:cancellationToken);
             if (frames == null || frames.Count == 0) {
                 throw new InvalidOperationException("Debugger frames stack is empty");
             }
-            return await frames.Last().TryEvaluateAndDescribeAsync(expression, fields, repr) as IRValueInfo;
+            return await frames.Last().TryEvaluateAndDescribeAsync(expression, fields, repr, cancellationToken) as IRValueInfo;
         }
     }
 }

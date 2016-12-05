@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -34,16 +35,16 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             return _types.Contains(evaluation?.TypeName);
         }
 
-        public async Task ViewAsync(string expression, string title) {
-            var evaluation = await EvaluateAsync(expression, REvaluationResultProperties.ExpressionProperty, null);
-            if (evaluation == null || string.IsNullOrEmpty(evaluation.Expression)) {
+        public async Task ViewAsync(string expression, string title, CancellationToken cancellationToken = default(CancellationToken)) {
+            var evaluation = await EvaluateAsync(expression, REvaluationResultProperties.ExpressionProperty, null, cancellationToken);
+            if (string.IsNullOrEmpty(evaluation?.Expression)) {
                 return;
             }
 
             var functionName = evaluation.Expression;
             var session = _workflow.RSession;
 
-            string functionCode = await GetFunctionCode(functionName);
+            string functionCode = await GetFunctionCode(functionName, cancellationToken);
             if (!string.IsNullOrEmpty(functionCode)) {
 
                 string tempFile = Path.ChangeExtension(Path.GetTempFileName(), ".r");
@@ -56,7 +57,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
                         sw.Write(functionCode);
                     }
 
-                    await VsAppShell.Current.SwitchToMainThreadAsync();
+                    await VsAppShell.Current.SwitchToMainThreadAsync(cancellationToken);
 
                     FileViewer.ViewFile(tempFile, functionName);
                     try {
@@ -68,11 +69,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
         }
         #endregion
 
-        internal async Task<string> GetFunctionCode(string functionName) {
+        internal async Task<string> GetFunctionCode(string functionName, CancellationToken cancellationToken = default(CancellationToken)) {
             var session = _workflow.RSession;
             string functionCode = null;
             try {
-                functionCode = await session.GetFunctionCodeAsync(functionName);
+                functionCode = await session.GetFunctionCodeAsync(functionName, cancellationToken);
             } catch (RException) { } catch (RHostBrokerBinaryMissingException) { }
 
             if (!string.IsNullOrEmpty(functionCode)) {
