@@ -25,7 +25,6 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
 
         public VariableGridTest(TestFilesFixture files) {
             _files = files;
-            var workflow = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
             _hostScript = new VariableRHostScript(SessionProvider);
         }
 

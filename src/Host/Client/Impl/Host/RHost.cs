@@ -514,7 +514,7 @@ namespace Microsoft.R.Host.Client {
 
                             case "!View":
                                 message.ExpectArguments(2);
-                                _callbacks.ViewObject(message.GetString(0, "x"), message.GetString(1, "title"));
+                                await _callbacks.ViewObject(message.GetString(0, "x"), message.GetString(1, "title"), ct);
                                 break;
 
                             case "!Plot":
@@ -574,6 +574,8 @@ namespace Microsoft.R.Host.Client {
                     }
                 }
             } finally {
+                // asyncronously-running handlers like ReadConsole and ShowDialog that were started in the loop should be canceled
+                cancelAllCtsLink.Cancel();
                 cancelAllCtsLink.Dispose();
                 _log.ExitRLoop(--_rLoopDepth);
             }

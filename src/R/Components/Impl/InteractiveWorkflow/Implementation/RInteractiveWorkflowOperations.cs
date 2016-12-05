@@ -174,10 +174,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             });
         }
 
-        public async Task SourceFileAsync(string file, bool echo, Encoding encoding = null) {
+        public async Task SourceFileAsync(string file, bool echo, Encoding encoding = null, CancellationToken cancellationToken = default(CancellationToken)) {
             await TaskUtilities.SwitchToBackgroundThread();
-            file = await _workflow.RSession.MakeRelativeToRUserDirectoryAsync(file);
-            await _coreShell.SwitchToMainThreadAsync();
+            file = await _workflow.RSession.MakeRelativeToRUserDirectoryAsync(file, cancellationToken);
+            await _coreShell.SwitchToMainThreadAsync(cancellationToken);
             ExecuteExpression(GetSourceExpression(file, echo, encoding));
         }
 

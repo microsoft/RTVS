@@ -18,10 +18,10 @@ namespace Microsoft.Languages.Editor.Test.Shell {
     internal sealed class TestEditorShell : TestShellBase, IEditorShell {
         private static TestEditorShell _instance;
 
-        private TestEditorShell(ICompositionCatalog catalog) {
+        private TestEditorShell(ICompositionCatalog catalog, Thread mainThread) {
             CompositionService = catalog.CompositionService;
             ExportProvider = catalog.ExportProvider;
-            MainThread = Thread.CurrentThread;
+            MainThread = mainThread;
         }
 
         /// <summary>
@@ -32,10 +32,8 @@ namespace Microsoft.Languages.Editor.Test.Shell {
             // Called via reflection in test cases. Creates instance
             // of the test shell that editor code can access during
             // test run.
-            UIThreadHelper.Instance.Invoke(() => {
-                _instance = new TestEditorShell(EditorTestCompositionCatalog.Current);
-                EditorShell.Current = (IEditorShell)(object)_instance;
-            });
+            _instance = new TestEditorShell(EditorTestCompositionCatalog.Current, UIThreadHelper.Instance.Thread);
+            EditorShell.Current = _instance;
         }
 
         #region ICompositionCatalog

@@ -17,8 +17,8 @@ namespace Microsoft.R.Host.Client.Session {
         public static Task QuitAsync(this IRExpressionEvaluator eval) =>
             eval.ExecuteAsync("q()", REvaluationKind.Normal);
 
-        public static async Task<string> GetRUserDirectoryAsync(this IRExpressionEvaluator evaluation) {
-            var result = await evaluation.EvaluateAsync<string>("Sys.getenv('R_USER')", REvaluationKind.Normal);
+        public static async Task<string> GetRUserDirectoryAsync(this IRExpressionEvaluator evaluation, CancellationToken cancellationToken = default(CancellationToken)) {
+            var result = await evaluation.EvaluateAsync<string>("Sys.getenv('R_USER')", REvaluationKind.Normal, cancellationToken);
             return result.Replace('/', '\\');
         }
 
@@ -162,14 +162,14 @@ grDevices::deviceIsInteractive('ide')
             return evaluation.EvaluateAsync<JArray>(script, REvaluationKind.Reentrant);
         }
 
-        public static Task<JArray> LoadedPackagesAsync(this IRExpressionEvaluator evaluation) {
+        public static Task<JArray> LoadedPackagesAsync(this IRExpressionEvaluator evaluation, CancellationToken cancellationToken = default(CancellationToken)) {
             var script = @"rtvs:::packages.loaded()";
-            return evaluation.EvaluateAsync<JArray>(script, REvaluationKind.Normal);
+            return evaluation.EvaluateAsync<JArray>(script, REvaluationKind.Normal, cancellationToken);
         }
 
-        public static Task<string[]> LibraryPathsAsync(this IRExpressionEvaluator evaluation) {
+        public static Task<string[]> LibraryPathsAsync(this IRExpressionEvaluator evaluation, CancellationToken cancellationToken = default(CancellationToken)) {
             var script = @"rtvs:::packages.libpaths()";
-            return evaluation.EvaluateAsync<string[]>(script, REvaluationKind.Normal);
+            return evaluation.EvaluateAsync<string[]>(script, REvaluationKind.Normal, cancellationToken);
         }
         public static Task<ulong> ExportPlotToBitmapAsync(this IRExpressionEvaluator evaluation, Guid deviceId, Guid plotId, string deviceName, string outputFilePath, int widthInPixels, int heightInPixels, int resolution) {
             string script = Invariant($"rtvs:::export_to_image({deviceId.ToString().ToRStringLiteral()}, {plotId.ToString().ToRStringLiteral()}, {deviceName}, {widthInPixels}, {heightInPixels}, {resolution})");
