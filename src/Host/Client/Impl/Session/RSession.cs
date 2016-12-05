@@ -20,7 +20,7 @@ using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client.Session {
     internal sealed class RSession : IRSession, IRCallbacks {
-        private static readonly string RemotePromptPrefix = "\u26ab";
+        private static readonly string RemotePromptPrefix = "\u26b9";
         private static readonly string DefaultPrompt = "> ";
 
         private static readonly Task<IRSessionEvaluation> CanceledBeginEvaluationTask;
