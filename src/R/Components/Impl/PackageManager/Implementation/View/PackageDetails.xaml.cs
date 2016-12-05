@@ -40,7 +40,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View {
 
         private void LibraryPath_RequestNavigate(object sender, RequestNavigateEventArgs e) {
             var path = e.Uri.ToString().Replace('/', '\\');
-            if (File.Exists(path)) {
+            if (Directory.Exists(path)) {
                 try {
                     Process.Start(path);
                 } catch (Win32Exception) { }
