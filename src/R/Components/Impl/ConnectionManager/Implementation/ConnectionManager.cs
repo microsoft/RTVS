@@ -36,7 +36,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         private readonly HostLoadIndicatorViewModel _hostLoadIndicatorViewModel;
         private readonly ConcurrentDictionary<string, IConnection> _userConnections;
         private readonly ISecurityService _securityService;
-        private bool _showWindowAtStartup = false;
+
+        private bool _showWindowAtStartup;
+        private bool _applicationStarted;
 
         public bool IsConnected { get; private set; }
         public IConnection ActiveConnection { get; private set; }
@@ -77,7 +79,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
         private void OnApplicationStarted(object sender, EventArgs e) {
             _shell.Started -= OnApplicationStarted;
-            if(_showWindowAtStartup) {
+            _applicationStarted = true;
+            if (_showWindowAtStartup) {
                 GetOrCreateVisualComponent().Container.Show(focus: true, immediate: false);
             }
         }
@@ -154,7 +157,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 interactiveWindow.Container.Show(focus: false, immediate: false);
             }
         }
-        
+
         public Task<bool> TryConnectToPreviouslyUsedAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             var connectionInfo = _settings.LastActiveConnection;
             if (connectionInfo != null) {
@@ -164,8 +167,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 }
             }
 
-            return !string.IsNullOrEmpty(connectionInfo?.Path) 
-                ? TrySwitchBrokerAsync(connectionInfo, cancellationToken) 
+            return !string.IsNullOrEmpty(connectionInfo?.Path)
+                ? TrySwitchBrokerAsync(connectionInfo, cancellationToken)
                 : Task.FromResult(false);
         }
 
@@ -225,6 +228,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         private Dictionary<string, IConnection> CreateConnectionList() {
+            _shell.AssertIsOnMainThread();
+
             var connections = GetConnectionsFromSettings();
             var localEngines = new RInstallation().GetCompatibleEngines();
 
@@ -258,8 +263,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                         var installer = _shell.ExportProvider.GetExportedValue<IMicrosoftRClientInstaller>();
                         installer.LaunchRClientSetup(_shell);
                     } else {
-                        // VS is still stating, cannot show window right now.
-                        _showWindowAtStartup = true;
+                        ShowWorkspacesWindow();
                     }
                     return connections;
                 }
@@ -277,6 +281,11 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             }
 
             return connections;
+        }
+
+        private void ShowWorkspacesWindow() {
+            // If VS is still stating delay until complete.
+            _showWindowAtStartup = true;
         }
 
         private bool IsValidLocalConnection(string name, string path) {

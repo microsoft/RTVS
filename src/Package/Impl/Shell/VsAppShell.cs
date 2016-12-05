@@ -8,11 +8,6 @@ using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Threading;
 using System.Windows.Threading;
-using EnvDTE;
-using EnvDTE80;
-using Microsoft.Common.Core.IO;
-using Microsoft.Common.Core.Logging;
-using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Security;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
@@ -22,7 +17,6 @@ using Microsoft.Languages.Editor.Host;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.R.Components.Controller;
-using Microsoft.R.Components.Settings;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Interop;
@@ -34,7 +28,6 @@ using Microsoft.VisualStudio.Text.Editor;
 using static System.FormattableString;
 using IServiceProvider = System.IServiceProvider;
 using VsPackage = Microsoft.VisualStudio.Shell.Package;
-using Thread = System.Threading.Thread;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
     /// <summary>
@@ -55,7 +48,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private IdleTimeSource _idleTimeSource;
         private ExportProvider _exportProvider;
         private ICompositionService _compositionService;
-        private DTE2 _dte2;
 
         [ImportingConstructor]
         public VsAppShell(ITelemetryService telemetryService, ISettingsStorage settingsStorage) {
@@ -88,20 +80,18 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             _appConstants.Initialize();
 
             _idleTimeSource = new IdleTimeSource();
-            _idleTimeSource.OnIdle += OnIdle;
-            _idleTimeSource.OnTerminateApp += OnTerminateApp;
-
-            _dte2 = (DTE2)VsPackage.GetGlobalService(typeof(DTE));
-            _dte2.Events.DTEEvents.OnStartupComplete += OnStartupComplete;
+            _idleTimeSource.Idle += OnIdle;
+            _idleTimeSource.ApplicationClosing += OnApplicationClosing;
+            _idleTimeSource.ApplicationStarted += OnApplicationStarted;
 
             EditorShell.Current = this;
         }
 
-        private void OnStartupComplete() {
+        private void OnApplicationStarted(object sender, EventArgs e) {
             Started?.Invoke(this, EventArgs.Empty);
         }
 
-        private void OnTerminateApp(object sender, EventArgs e) {
+        private void OnApplicationClosing(object sender, EventArgs e) {
             Terminating?.Invoke(this, EventArgs.Empty);
         }
 
@@ -387,9 +377,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         #endregion
 
         public void Dispose() {
-            if (_dte2 != null) {
-                _dte2.Events.DTEEvents.OnStartupComplete -= OnStartupComplete;
-            }
             _coreServices?.LoggingServices?.Dispose();
         }
 

@@ -106,7 +106,7 @@ namespace Microsoft.R.Host.Client.Session {
             if (string.IsNullOrEmpty(requestedPrompt)) {
                 requestedPrompt = DefaultPrompt;
             }
-            return IsRemote ? RemotePromptPrefix + DefaultPrompt : DefaultPrompt;
+            return IsRemote ? RemotePromptPrefix + requestedPrompt : requestedPrompt;
         }
 
         private void OnMutated() {
@@ -539,7 +539,7 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
             var currentRequest = Interlocked.Exchange(ref _currentRequestSource, null);
 
             _contexts = contexts;
-            Prompt = IsRemote ? "*" + prompt : prompt;
+            Prompt = GetDefaultPrompt(prompt);
             MaxLength = len;
 
             var requestEventArgs = new RBeforeRequestEventArgs(contexts, Prompt, len, addToHistory);

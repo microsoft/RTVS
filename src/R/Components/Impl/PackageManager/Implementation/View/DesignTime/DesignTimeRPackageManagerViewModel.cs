@@ -23,10 +23,10 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View.DesignTime {
         public bool HasMultipleErrors => false;
         public bool IsRemoteSession => false;
 
-        public Task SwitchToAvailablePackagesAsync() => Task.CompletedTask;
-        public Task SwitchToInstalledPackagesAsync() => Task.CompletedTask;
-        public Task SwitchToLoadedPackagesAsync() => Task.CompletedTask;
-        public Task ReloadCurrentTabAsync() => Task.CompletedTask;
+        public Task SwitchToAvailablePackagesAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+        public Task SwitchToInstalledPackagesAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+        public Task SwitchToLoadedPackagesAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+        public Task ReloadCurrentTabAsync(CancellationToken cancellationToken) => Task.CompletedTask;
         public void SelectPackage(IRPackageViewModel package) { }
         public Task InstallAsync(IRPackageViewModel package, CancellationToken cancellationToken) => Task.CompletedTask;
         public Task UpdateAsync(IRPackageViewModel package, CancellationToken cancellationToken) => Task.CompletedTask;

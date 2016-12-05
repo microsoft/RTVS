@@ -9,10 +9,12 @@ using Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
     public sealed class IdleTimeSource : IOleComponent, IDisposable {
-        public event EventHandler<EventArgs> OnIdle;
-        public event EventHandler<EventArgs> OnTerminateApp;
+        public event EventHandler<EventArgs> Idle;
+        public event EventHandler<EventArgs> ApplicationClosing;
+        public event EventHandler<EventArgs> ApplicationStarted;
 
         private uint _componentID = 0;
+        private bool _startupComplete;
 
         public IdleTimeSource() {
             var crinfo = new OLECRINFO[1];
@@ -26,49 +28,35 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
 
         #region IOleComponent Members
-        public int FContinueMessageLoop(uint uReason, IntPtr pvLoopData, MSG[] pMsgPeeked) {
-            return 0;
-        }
+        public int FContinueMessageLoop(uint uReason, IntPtr pvLoopData, MSG[] pMsgPeeked) => VSConstants.S_OK;
 
         public int FDoIdle(uint grfidlef) {
-            OnIdle?.Invoke(this, EventArgs.Empty);
-            return 0;
+            if(!_startupComplete) {
+                ApplicationStarted?.Invoke(this, EventArgs.Empty);
+                _startupComplete = true;
+            }
+
+            Idle?.Invoke(this, EventArgs.Empty);
+            return VSConstants.S_OK;
         }
 
-        public int FPreTranslateMessage(MSG[] pMsg) {
-            return 0;
-        }
+        public int FPreTranslateMessage(MSG[] pMsg) => 0;
 
         public int FQueryTerminate(int fPromptUser) {
             // Although this theoretically can be canceled, it never used in VS
             // since package QueryClose is the proper way of canceling the shutdown.
-            OnTerminateApp?.Invoke(this, EventArgs.Empty);
+            ApplicationClosing?.Invoke(this, EventArgs.Empty);
             return 1;
         }
 
-        public int FReserved1(uint dwReserved, uint message, IntPtr wParam, IntPtr lParam) {
-            return 0;
-        }
+        public int FReserved1(uint dwReserved, uint message, IntPtr wParam, IntPtr lParam) => 0;
+        public IntPtr HwndGetWindow(uint dwWhich, uint dwReserved) => IntPtr.Zero;
 
-        public IntPtr HwndGetWindow(uint dwWhich, uint dwReserved) {
-            return IntPtr.Zero;
-        }
-
-        public void OnActivationChange(IOleComponent pic, int fSameComponent, OLECRINFO[] pcrinfo, int fHostIsActivating, OLECHOSTINFO[] pchostinfo, uint dwReserved) {
-        }
-
-        public void OnAppActivate(int fActive, uint dwOtherThreadID) {
-        }
-
-        public void OnEnterState(uint uStateID, int fEnter) {
-        }
-
-        public void OnLoseActivation() {
-        }
-
-        public void Terminate() {
-        }
-
+        public void OnActivationChange(IOleComponent pic, int fSameComponent, OLECRINFO[] pcrinfo, int fHostIsActivating, OLECHOSTINFO[] pchostinfo, uint dwReserved) { }
+        public void OnAppActivate(int fActive, uint dwOtherThreadID) { }
+        public void OnEnterState(uint uStateID, int fEnter) { }
+        public void OnLoseActivation() { }
+        public void Terminate() { }
         #endregion
 
         #region IDisposable Members
