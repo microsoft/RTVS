@@ -75,6 +75,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
 
         public event EventHandler<EventArgs> Idle;
 #pragma warning disable 0067
+        public event EventHandler<EventArgs> Started;
         public event EventHandler<EventArgs> Terminating;
 #pragma warning restore 0067
 

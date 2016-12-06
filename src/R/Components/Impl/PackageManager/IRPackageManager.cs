@@ -141,5 +141,10 @@ namespace Microsoft.R.Components.PackageManager {
         /// <param name="cancellationToken"></param>
         /// <returns>Lock state.</returns>
         Task<PackageLockState> GetPackageLockStateAsync(string name, string libraryPath, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Indicates if the current session is remote
+        /// </summary>
+        bool IsRemoteSession { get; }
     }
 }

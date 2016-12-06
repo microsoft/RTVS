@@ -1298,7 +1298,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Video processor: {0}.
+        ///   Looks up a localized string similar to GPU: {0}.
         /// </summary>
         public static string VideoProcessor {
             get {

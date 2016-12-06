@@ -73,7 +73,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View.DesignTime {
         public bool IsLoaded { get; set; }
         public bool CanBeUninstalled { get; set; }
         public bool IsChanging { get; set; }
-
+        public bool IsRemoteSession { get; set; }
         public bool IsUpdateAvailable { get; }
         public bool HasDetails { get; }
         public bool IsChecked { get; set; }

@@ -8,9 +8,6 @@ using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Threading;
 using System.Windows.Threading;
-using Microsoft.Common.Core.IO;
-using Microsoft.Common.Core.Logging;
-using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Security;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
@@ -20,7 +17,6 @@ using Microsoft.Languages.Editor.Host;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.R.Components.Controller;
-using Microsoft.R.Components.Settings;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Interop;
@@ -84,14 +80,19 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             _appConstants.Initialize();
 
             _idleTimeSource = new IdleTimeSource();
-            _idleTimeSource.OnIdle += OnIdle;
-            _idleTimeSource.OnTerminateApp += OnTerminateApp;
+            _idleTimeSource.Idle += OnIdle;
+            _idleTimeSource.ApplicationClosing += OnApplicationClosing;
+            _idleTimeSource.ApplicationStarted += OnApplicationStarted;
 
             EditorShell.Current = this;
         }
 
-        private void OnTerminateApp(object sender, EventArgs e) {
-            Terminating?.Invoke(null, EventArgs.Empty);
+        private void OnApplicationStarted(object sender, EventArgs e) {
+            Started?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void OnApplicationClosing(object sender, EventArgs e) {
+            Terminating?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -206,6 +207,11 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// to execute is executing from the right thread.
         /// </summary>
         public Thread MainThread { get; private set; }
+
+        /// <summary>
+        /// Fires when host application has completed it's startup sequence
+        /// </summary>
+        public event EventHandler<EventArgs> Started;
 
         /// <summary>
         /// Fires when host application enters idle state.
@@ -371,7 +377,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         #endregion
 
         public void Dispose() {
-            _coreServices.LoggingServices.Dispose();
+            _coreServices?.LoggingServices?.Dispose();
         }
 
         void OnIdle(object sender, EventArgs args) {

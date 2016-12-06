@@ -37,6 +37,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         private readonly ConcurrentDictionary<string, IConnection> _userConnections;
         private readonly ISecurityService _securityService;
 
+        private bool _showWindowAtStartup;
+
         public bool IsConnected { get; private set; }
         public IConnection ActiveConnection { get; private set; }
         public ReadOnlyCollection<IConnection> RecentConnections { get; private set; }
@@ -64,6 +66,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
             _sessionProvider.BrokerStateChanged += BrokerStateChanged;
             _interactiveWorkflow.ActiveWindowChanged += ActiveWindowChanged;
+            _shell.Started += OnApplicationStarted;
 
             // Get initial values
             var userConnections = CreateConnectionList();
@@ -71,6 +74,12 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
             UpdateRecentConnections(save: false);
             CompleteInitializationAsync().DoNotWait();
+        }
+
+        private void OnApplicationStarted(object sender, EventArgs e) {
+            if (_showWindowAtStartup) {
+                GetOrCreateVisualComponent().Container.Show(focus: true, immediate: false);
+            }
         }
 
         private async Task CompleteInitializationAsync() {
@@ -145,7 +154,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 interactiveWindow.Container.Show(focus: false, immediate: false);
             }
         }
-        
+
         public Task<bool> TryConnectToPreviouslyUsedAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             var connectionInfo = _settings.LastActiveConnection;
             if (connectionInfo != null) {
@@ -155,8 +164,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 }
             }
 
-            return !string.IsNullOrEmpty(connectionInfo?.Path) 
-                ? TrySwitchBrokerAsync(connectionInfo, cancellationToken) 
+            return !string.IsNullOrEmpty(connectionInfo?.Path)
+                ? TrySwitchBrokerAsync(connectionInfo, cancellationToken)
                 : Task.FromResult(false);
         }
 
@@ -216,6 +225,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         private Dictionary<string, IConnection> CreateConnectionList() {
+            _shell.AssertIsOnMainThread();
+
             var connections = GetConnectionsFromSettings();
             var localEngines = new RInstallation().GetCompatibleEngines();
 
@@ -248,9 +259,13 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                     if (_shell.ShowMessage(message, MessageButtons.YesNo) == MessageButtons.Yes) {
                         var installer = _shell.ExportProvider.GetExportedValue<IMicrosoftRClientInstaller>();
                         installer.LaunchRClientSetup(_shell);
-                        return connections;
+                    } else {
+                        // If VS is still stating delay until complete.
+                        _showWindowAtStartup = true;
                     }
+                    return connections;
                 }
+
                 // No connections, may be first use or connections were removed.
                 // Add local connections so there is at least something available.
                 foreach (var e in localEngines) {

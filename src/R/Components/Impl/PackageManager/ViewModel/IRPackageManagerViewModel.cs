@@ -16,6 +16,7 @@ namespace Microsoft.R.Components.PackageManager.ViewModel {
 
         string FirstError { get; }
         bool HasMultipleErrors { get; }
+        bool IsRemoteSession { get; }
 
         Task SwitchToAvailablePackagesAsync(CancellationToken cancellationToken = default(CancellationToken));
         Task SwitchToInstalledPackagesAsync(CancellationToken cancellationToken = default(CancellationToken));

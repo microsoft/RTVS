@@ -21,11 +21,12 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View.DesignTime {
 
         public string FirstError => null;
         public bool HasMultipleErrors => false;
+        public bool IsRemoteSession => false;
 
-        public Task SwitchToAvailablePackagesAsync(CancellationToken cancellationToken = default(CancellationToken)) => Task.CompletedTask;
-        public Task SwitchToInstalledPackagesAsync(CancellationToken cancellationToken = default(CancellationToken)) => Task.CompletedTask;
-        public Task SwitchToLoadedPackagesAsync(CancellationToken cancellationToken = default(CancellationToken)) => Task.CompletedTask;
-        public Task ReloadCurrentTabAsync(CancellationToken cancellationToken = default(CancellationToken)) => Task.CompletedTask;
+        public Task SwitchToAvailablePackagesAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+        public Task SwitchToInstalledPackagesAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+        public Task SwitchToLoadedPackagesAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+        public Task ReloadCurrentTabAsync(CancellationToken cancellationToken) => Task.CompletedTask;
         public void SelectPackage(IRPackageViewModel package) { }
         public Task InstallAsync(IRPackageViewModel package, CancellationToken cancellationToken) => Task.CompletedTask;
         public Task UpdateAsync(IRPackageViewModel package, CancellationToken cancellationToken) => Task.CompletedTask;

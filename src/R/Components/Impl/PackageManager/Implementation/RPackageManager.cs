@@ -46,6 +46,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
 
         public IRPackageManagerVisualComponent VisualComponent { get; private set; }
 
+        public bool IsRemoteSession => _session.IsRemote;
+
         public RPackageManager(IRSettings settings, IRInteractiveWorkflow interactiveWorkflow, Action dispose) {
             _session = interactiveWorkflow.RSessions.GetOrCreate(SessionGuids.PackageManagerRSessionGuid);
             _settings = settings;
