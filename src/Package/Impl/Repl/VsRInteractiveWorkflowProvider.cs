@@ -48,6 +48,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             _debuggerModeTracker = debuggerModeTracker;
             _shell = shell;
             _settings = settings;
+
+            _shell.Terminating += OnApplicationTerminating;
+        }
+
+        private void OnApplicationTerminating(object sender, EventArgs e) {
+            Dispose();
         }
 
         public void Dispose() {

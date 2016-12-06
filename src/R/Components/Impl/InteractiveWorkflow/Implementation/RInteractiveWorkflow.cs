@@ -3,6 +3,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
@@ -19,6 +20,7 @@ using Microsoft.R.Components.Settings.Mirrors;
 using Microsoft.R.Components.Workspace;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
+using Microsoft.R.Interpreters;
 using Microsoft.VisualStudio.R.Package.Repl;
 
 namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
@@ -61,8 +63,6 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             _settings = settings;
 
             Shell = coreShell;
-            Shell.Terminating += OnApplicationTerminating;
-
             RSessions = new RSessionProvider(coreShell.Services, new InteractiveWindowConsole(this));
 
             RSession = RSessions.GetOrCreate(SessionGuids.InteractiveWindowRSessionGuid);
@@ -91,10 +91,6 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 .Add(RSessions)
                 .Add(Operations)
                 .Add(Connections);
-        }
-
-        private void OnApplicationTerminating(object sender, EventArgs e) {
-            Dispose();
         }
 
         private void DebuggerEnteredBreakMode(object sender, EventArgs e) {
@@ -174,7 +170,18 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             if (!RSessions.HasBroker) {
                 var connectedToBroker = await Connections.TryConnectToPreviouslyUsedAsync();
                 if (!connectedToBroker) {
-                    Connections.GetOrCreateVisualComponent().Container.Show(focus:false, immediate:false);
+                    var showConnectionsWindow = Connections.RecentConnections.Any();
+                    if (!showConnectionsWindow){
+                        var message = Resources.NoLocalR.FormatInvariant(Environment.NewLine + Environment.NewLine, Environment.NewLine);
+                        showConnectionsWindow = Shell.ShowMessage(message, MessageButtons.YesNo) == MessageButtons.Yes;
+                    }
+
+                    if (!showConnectionsWindow) {
+                        var installer = Shell.ExportProvider.GetExportedValue<IMicrosoftRClientInstaller>();
+                        installer.LaunchRClientSetup(Shell);
+                    } else {
+                        Connections.GetOrCreateVisualComponent().Container.Show(focus: false, immediate: false);
+                    }
                 }
             }
 
