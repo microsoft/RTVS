@@ -34,10 +34,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         private readonly DisposableBag _disposableBag;
         private readonly ConnectionStatusBarViewModel _statusBarViewModel;
         private readonly HostLoadIndicatorViewModel _hostLoadIndicatorViewModel;
-        private readonly ConcurrentDictionary<string, IConnection> _userConnections;
+        private readonly ConcurrentDictionary<string, IConnection> _connections;
         private readonly ISecurityService _securityService;
-
-        private bool _showWindowAtStartup;
 
         public bool IsConnected { get; private set; }
         public IConnection ActiveConnection { get; private set; }
@@ -66,20 +64,13 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
             _sessionProvider.BrokerStateChanged += BrokerStateChanged;
             _interactiveWorkflow.ActiveWindowChanged += ActiveWindowChanged;
-            _shell.Started += OnApplicationStarted;
 
             // Get initial values
-            var userConnections = CreateConnectionList();
-            _userConnections = new ConcurrentDictionary<string, IConnection>(userConnections);
+            var connections = CreateConnectionList();
+            _connections = new ConcurrentDictionary<string, IConnection>(connections);
 
             UpdateRecentConnections(save: false);
             CompleteInitializationAsync().DoNotWait();
-        }
-
-        private void OnApplicationStarted(object sender, EventArgs e) {
-            if (_showWindowAtStartup) {
-                GetOrCreateVisualComponent().Container.Show(focus: true, immediate: false);
-            }
         }
 
         private async Task CompleteInitializationAsync() {
@@ -109,26 +100,26 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
         public IConnection AddOrUpdateConnection(string name, string path, string rCommandLineArguments, bool isUserCreated) {
             var newConnection = CreateConnection(name, path, rCommandLineArguments, isUserCreated);
-            var connection = _userConnections.AddOrUpdate(newConnection.Name, newConnection, (k, v) => UpdateConnectionFactory(v, newConnection));
+            var connection = _connections.AddOrUpdate(newConnection.Name, newConnection, (k, v) => UpdateConnectionFactory(v, newConnection));
             UpdateRecentConnections();
             return connection;
         }
 
         public IConnection GetOrAddConnection(string name, string path, string rCommandLineArguments, bool isUserCreated) {
             var newConnection = CreateConnection(name, path, rCommandLineArguments, isUserCreated);
-            var connection = _userConnections.GetOrAdd(newConnection.Name, newConnection);
+            var connection = _connections.GetOrAdd(newConnection.Name, newConnection);
             UpdateRecentConnections();
             return connection;
         }
 
         public bool TryRemove(string name) {
             IConnection connection;
-            var isRemoved = _userConnections.TryRemove(name, out connection);
+            var isRemoved = _connections.TryRemove(name, out connection);
             if (isRemoved) {
                 UpdateRecentConnections();
 
                 // Credentials are saved by URI (connection id). Delete the credentials if there are no other connections using it.
-                if (_userConnections.All(kvp => kvp.Value.Id != connection.Id)) {
+                if (_connections.All(kvp => kvp.Value.Id != connection.Id)) {
                     _securityService.DeleteUserCredentials(connection.Id.ToCredentialAuthority());
                 }
             }
@@ -189,7 +180,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         private IConnection GetOrCreateConnection(string name, string path, string rCommandLineArguments, bool isUserCreated) {
             var newConnection = CreateConnection(name, path, rCommandLineArguments, isUserCreated);
             IConnection connection;
-            return _userConnections.TryGetValue(newConnection.Name, out connection) ? connection : newConnection;
+            return _connections.TryGetValue(newConnection.Name, out connection) ? connection : newConnection;
         }
 
         private IConnection UpdateConnectionFactory(IConnection oldConnection, IConnection newConnection) {
@@ -217,7 +208,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         private void UpdateRecentConnections(bool save = true) {
-            RecentConnections = new ReadOnlyCollection<IConnection>(_userConnections.Values.OrderByDescending(c => c.LastUsed).ToList());
+            RecentConnections = new ReadOnlyCollection<IConnection>(_connections.Values.OrderByDescending(c => c.LastUsed).ToList());
             if (save) {
                 SaveConnectionsToSettings();
             }
@@ -225,10 +216,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         private Dictionary<string, IConnection> CreateConnectionList() {
-            _shell.AssertIsOnMainThread();
-
             var connections = GetConnectionsFromSettings();
-            var localEngines = new RInstallation().GetCompatibleEngines();
+            var localEngines = new RInstallation().GetCompatibleEngines().ToList();
 
             // Remove missing engines and add engines missing from saved connections
             // Set 'is used created' to false if path points to locally found interpreter
@@ -253,28 +242,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 _settings.LastActiveConnection = null;
             }
 
-            if (connections.Count == 0) {
-                if (!localEngines.Any()) {
-                    var message = string.Format(CultureInfo.InvariantCulture, Resources.NoLocalR, Environment.NewLine + Environment.NewLine, Environment.NewLine);
-                    if (_shell.ShowMessage(message, MessageButtons.YesNo) == MessageButtons.Yes) {
-                        var installer = _shell.ExportProvider.GetExportedValue<IMicrosoftRClientInstaller>();
-                        installer.LaunchRClientSetup(_shell);
-                    } else {
-                        // If VS is still stating delay until complete.
-                        _showWindowAtStartup = true;
-                    }
-                    return connections;
-                }
-
-                // No connections, may be first use or connections were removed.
-                // Add local connections so there is at least something available.
-                foreach (var e in localEngines) {
-                    var c = CreateConnection(e.Name, e.InstallPath, string.Empty, isUserCreated: false);
-                    connections[e.Name] = c;
-                }
-            } else if (_settings.LastActiveConnection == null) {
+            if (_settings.LastActiveConnection == null && connections.Any()) {
                 // Perhaps first time launch with R preinstalled.
-                var c = PickBestLocalRConnection(connections.Values);
+                var c = PickBestLocalRConnection(connections.Values, localEngines);
                 _settings.LastActiveConnection = new ConnectionInfo(c.Name, c.Path, c.RCommandLineArguments, c.LastUsed, c.IsUserCreated);
             }
 
@@ -332,13 +302,12 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 });
         }
 
-        private IConnection PickBestLocalRConnection(IEnumerable<IConnection> connections) {
+        private IConnection PickBestLocalRConnection(ICollection<IConnection> connections, ICollection<IRInterpreterInfo> localEngines) {
             // Get highest version engine
-            var engines = new RInstallation().GetCompatibleEngines();
             IRInterpreterInfo rInfo = null;
-            if (engines.Any()) {
-                var highest = engines.Max(e => e.Version);
-                rInfo = engines.First(e => e.Version == highest);
+            if (localEngines.Any()) {
+                var highest = localEngines.Max(e => e.Version);
+                rInfo = localEngines.First(e => e.Version == highest);
             }
 
             if (rInfo != null) {
