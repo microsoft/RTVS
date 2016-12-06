@@ -22,6 +22,7 @@ using Xunit;
 namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]   // required for tests using R Host 
+    [Category.Viewers]
     public class ViewersTest : IAsyncLifetime {
         private readonly IRSessionProvider _sessionProvider;
         private readonly IObjectDetailsViewerAggregator _aggregator;
@@ -39,7 +40,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         public Task DisposeAsync() => Task.CompletedTask;
 
         [Test]
-        [Category.Viewers]
         public async Task ViewLibraryTest() {
             var cb = Substitute.For<IRSessionCallback>();
             cb.ViewLibraryAsync().Returns(Task.CompletedTask);
@@ -52,7 +52,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         }
 
         [Test]
-        [Category.Viewers]
         public async Task ViewDataTest01() {
             var cb = Substitute.For<IRSessionCallback>();
             cb.When(x => x.ViewObjectAsync(Arg.Any<string>(), Arg.Any<string>())).Do(x => { });
@@ -61,11 +60,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                     await inter.RespondAsync("View(mtcars)" + Environment.NewLine);
                 }
             }
-            cb.Received().ViewObjectAsync("mtcars", "mtcars");
+            await cb.Received().ViewObjectAsync("mtcars", "mtcars", Arg.Any<CancellationToken>());
         }
 
         [Test]
-        [Category.Viewers]
         public async Task ViewerExportTest() {
             using (var hostScript = new RHostScript(_sessionProvider)) {
                 var session = hostScript.Session;
@@ -93,7 +91,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         }
 
         [CompositeTest]
-        [Category.Viewers]
         [InlineData(null, "lm", "function(formula, data, subset, weights, na.action")]
         [InlineData("`?` <- function(a, b, c) { }", "`?`", "function(a, b, c)")]
         [InlineData("`?` <- function(a, b, c) { }; x <- `?`", "x", "function(a, b, c)")]
@@ -111,7 +108,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         }
 
         [Test]
-        [Category.Viewers]
         public async Task FormulaViewerTest() {
             using (var hostScript = new RHostScript(_workflow.RSessions)) {
                 string formula = "1 ~ 2";
@@ -125,7 +121,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         }
 
         [Test]
-        [Category.Viewers]
         public void TableViewerTest() {
             var e = Substitute.For<IDataObjectEvaluator>();
             var viewer = new TableViewer(_aggregator, e);
@@ -162,7 +157,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         }
 
         [Test]
-        [Category.Viewers]
         public void Viewer1DTest() {
             var e = Substitute.For<IDataObjectEvaluator>();
             var viewer = new Viewer1D(_aggregator, e);
@@ -201,7 +195,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         }
 
         [Test]
-        [Category.Viewers]
         public async Task ViewDataTest02() {
             var cb = Substitute.For<IRSessionCallback>();
             cb.When(x => x.ViewFile(Arg.Any<string>(), "R data sets", true)).Do(x => { });
@@ -210,7 +203,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                     await inter.RespondAsync("data()" + Environment.NewLine);
                 }
             }
-            await cb.Received().ViewFile(Arg.Any<string>(), "R data sets", true);
+            await cb.Received().ViewFile(Arg.Any<string>(), "R data sets", true, Arg.Any<CancellationToken>());
         }
     }
 }
