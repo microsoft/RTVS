@@ -375,7 +375,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             grid.Grid[1, 2].Should().Be("6");
         }
 
-        [Test]
+        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/2838")]
         [Category.Variable.Explorer]
         public async Task MatrixLargeCellTest() {
             var script = "matrix.largecell <- matrix(list(as.double(1:5000), 2, 3, 4), nrow = 2, ncol = 2);";

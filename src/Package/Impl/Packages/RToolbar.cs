@@ -20,7 +20,7 @@ namespace Microsoft.VisualStudio.R.Package.Packages {
             // First time we show it (default is true in settings). When package closes, 
             // it saves the state so if user closed it it won't be forcibly coming back.
             var tb = GetToolbar();
-            if (tb != null) {
+            if (tb != null && _settings.ShowRToolbar) {
                 tb.Visible = true;
             }
         }
