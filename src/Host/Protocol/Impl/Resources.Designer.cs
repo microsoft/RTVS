@@ -70,6 +70,15 @@ namespace Microsoft.R.Host.Protocol {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to delete user profile for user {0}\{1}, with Win32 error {2}..
+        /// </summary>
+        internal static string Error_DeleteUserProfileFailed {
+            get {
+                return ResourceManager.GetString("Error_DeleteUserProfileFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to logon user {0}\{1}, with Win32 error {2}..
         /// </summary>
         internal static string Error_UserLogonFailed {
@@ -93,6 +102,24 @@ namespace Microsoft.R.Host.Protocol {
         internal static string Error_UserProfileDirectoryWasNotFound {
             get {
                 return ResourceManager.GetString("Error_UserProfileDirectoryWasNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User profile deleted for user {0}\{1}..
+        /// </summary>
+        internal static string Info_DeletedUserProfile {
+            get {
+                return ResourceManager.GetString("Info_DeletedUserProfile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Deleting user profile for user {0}\{1}..
+        /// </summary>
+        internal static string Info_DeletingUserProfile {
+            get {
+                return ResourceManager.GetString("Info_DeletingUserProfile", resourceCulture);
             }
         }
         

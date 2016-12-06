@@ -16,7 +16,7 @@ using Newtonsoft.Json;
 namespace Microsoft.R.Host.Protocol {
     public class RUserProfileCreator {
         public static async Task CreateProfileAsync(int serverTimeOutms = 0, int clientTimeOutms = 0, IUserProfileServices userProfileService = null, CancellationToken ct = default(CancellationToken), ILogger logger = null) {
-            userProfileService = userProfileService ?? new RUserProfileCreatorImpl();
+            userProfileService = userProfileService ?? new RUserProfileServicesImpl();
             PipeSecurity ps = new PipeSecurity();
             SecurityIdentifier sid = new SecurityIdentifier(WellKnownSidType.AuthenticatedUserSid, null);
             PipeAccessRule par = new PipeAccessRule(sid, PipeAccessRights.ReadWrite, System.Security.AccessControl.AccessControlType.Allow);

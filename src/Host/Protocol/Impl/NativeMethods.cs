@@ -47,6 +47,13 @@ namespace Microsoft.R.Host.Protocol {
             [Out][MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszProfilePath,
             uint cchProfilePath);
 
+        [DllImport("userenv.dll", CharSet = CharSet.Auto, SetLastError = true)]
+
+        internal static extern bool DeleteProfile(
+            [MarshalAs(UnmanagedType.LPWStr)] string lpSidString,
+            [MarshalAs(UnmanagedType.LPWStr)] string lpProfilePath,
+            [MarshalAs(UnmanagedType.LPWStr)] string lpComputerName);
+
         [DllImport("kernel32.dll", SetLastError = true)]
         internal static extern bool CloseHandle(IntPtr hObject);
         

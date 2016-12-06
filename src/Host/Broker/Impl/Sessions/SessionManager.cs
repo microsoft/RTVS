@@ -59,6 +59,14 @@ namespace Microsoft.R.Host.Broker.Sessions {
             }
         }
 
+        public bool CloseAndBlockSessionsCreationForUser(IIdentity user) {
+            throw new NotImplementedException();
+        }
+
+        public bool UnblockSessionCreationForUser(IIdentity user) {
+            throw new NotImplementedException();
+        }
+
         public IEnumerable<string> GetUsers() {
             lock (_sessions) {
                 return _sessions.Keys.ToArray();

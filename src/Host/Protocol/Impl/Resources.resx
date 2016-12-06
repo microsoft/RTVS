@@ -120,6 +120,9 @@
   <data name="Error_ClientTimedOut" xml:space="preserve">
     <value>Client took too long to respond.</value>
   </data>
+  <data name="Error_DeleteUserProfileFailed" xml:space="preserve">
+    <value>Failed to delete user profile for user {0}\{1}, with Win32 error {2}.</value>
+  </data>
   <data name="Error_UserLogonFailed" xml:space="preserve">
     <value>Failed to logon user {0}\{1}, with Win32 error {2}.</value>
   </data>
@@ -128,6 +131,12 @@
   </data>
   <data name="Error_UserProfileDirectoryWasNotFound" xml:space="preserve">
     <value>User profile directory expected but not found for user {0}\{1}, Win32 error {0}</value>
+  </data>
+  <data name="Info_DeletedUserProfile" xml:space="preserve">
+    <value>User profile deleted for user {0}\{1}.</value>
+  </data>
+  <data name="Info_DeletingUserProfile" xml:space="preserve">
+    <value>Deleting user profile for user {0}\{1}.</value>
   </data>
   <data name="Info_UserProfileAlreadyExists" xml:space="preserve">
     <value>User profile already exists for user  {0}\{1}.</value>

@@ -35,6 +35,7 @@ namespace Microsoft.R.Host.UserProfile {
             _cts = new CancellationTokenSource();
             _workerdone = new ManualResetEvent(false);
             CreateProfileWorkerAsync(_cts.Token).DoNotWait();
+            DeleteProfileWorkerAsync(_cts.Token).DoNotWait();
         }
 
         protected override void OnStop() {

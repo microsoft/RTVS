@@ -60,10 +60,12 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="RUserProfileCreateRequest.cs" />
-    <Compile Include="RUserProfileCreateResponse.cs" />
-    <Compile Include="RUserProfileCreator.cs" />
-    <Compile Include="RUserProfileCreatorImpl.cs" />
+    <Compile Include="RUserProfile\RUserProfileCreateRequest.cs" />
+    <Compile Include="RUserProfile\RUserProfileCreateResponse.cs" />
+    <Compile Include="RUserProfile\RUserProfileCreator.cs" />
+    <Compile Include="RUserProfile\RUserProfileDeleteResponse.cs" />
+    <Compile Include="RUserProfile\RUserProfileServicesImpl.cs" />
+    <Compile Include="RUserProfile\RUserProfileDeletor.cs" />
     <Compile Include="SecureStringJsonConverter.cs" />
     <Compile Include="SessionCreateRequest.cs" />
     <Compile Include="SessionInfo.cs" />

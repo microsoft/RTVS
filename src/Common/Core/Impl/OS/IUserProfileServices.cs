@@ -6,5 +6,6 @@ using Microsoft.Extensions.Logging;
 namespace Microsoft.Common.Core.OS {
     public interface IUserProfileServices {
         IUserProfileCreatorResult CreateUserProfile(IUserCredentials credentails, ILogger logger);
+        int DeleteUserProfile(IUserCredentials credentails, ILogger logger);
     }
 }
