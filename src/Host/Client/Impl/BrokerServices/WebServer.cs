@@ -85,7 +85,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
                 string localUrl = $"{LocalHost}:{LocalPort}";
                 string remoteUrl = $"{RemoteHost}:{RemotePort}";
 
-                await _remoteUriService.GetResponseAsync(context, localUrl, remoteUrl, ct);
+                _remoteUriService.GetResponseAsync(context, localUrl, remoteUrl, ct).DoNotWait();
             }
         }
 
@@ -106,7 +106,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
                 Servers.Add(remoteUri.Port, server);
             }
 
-            server.DoWorkAsync(ct).DoNotWait();
+            server.DoWorkAsync(CancellationToken.None).DoNotWait();
 
             localUri.Host = server.LocalHost;
             localUri.Port = server.LocalPort;
