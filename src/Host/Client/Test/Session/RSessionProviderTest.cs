@@ -189,7 +189,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
             }
         }
 
-        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/2837")]
+        [Test]
         public async Task SwitchToTheSameBroker() {
             using (var sessionProvider = new RSessionProvider(TestCoreServices.CreateReal())) {
                 var guid = new Guid();
