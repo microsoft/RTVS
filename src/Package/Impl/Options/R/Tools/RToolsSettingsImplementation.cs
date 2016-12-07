@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Enums;
 using Microsoft.Common.Core.Extensions;
@@ -217,9 +218,9 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             _loggingPermissions.CurrentVerbosity = LogVerbosity;
         }
 
-        public void SaveSettings() {
+        public Task SaveSettingsAsync() {
             _settings.SavePropertyValues(this);
-            _settings.Persist();
+            return _settings.PersistAsync();
         }
         #endregion
     }

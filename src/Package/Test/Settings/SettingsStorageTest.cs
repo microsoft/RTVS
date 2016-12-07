@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -22,14 +23,14 @@ namespace Microsoft.VisualStudio.R.Package.Test.Settings {
             SaveRestore("name", new TestSetting("p1", 1));
         }
 
-        public void SaveRestore<T>(string name, T value) {
-            var storage = new VsSettingsStorage(new TestSettingsManager());
+        public async Task SaveRestore<T>(string name, T value) {
+            var storage = new VsSettingsStorage();
             storage.SettingExists(name).Should().BeFalse();
             storage.SetSetting(name, value);
             storage.SettingExists(name).Should().BeTrue();
             storage.GetSetting(name, value.GetType()).Should().Be(value);
 
-            storage.Persist();
+            await storage.PersistAsync();
             storage.ClearCache();
 
             storage.SettingExists(name).Should().BeTrue();

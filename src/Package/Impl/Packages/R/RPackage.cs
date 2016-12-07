@@ -63,6 +63,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     [DeveloperActivity(RContentTypeDefinition.LanguageName, RGuidList.RPackageGuidString, sortPriority: 40)]
     [ProvideCpsProjectFactory(RGuidList.CpsProjectFactoryGuidString, RContentTypeDefinition.LanguageName)]
     [ProvideOptionPage(typeof(RToolsOptionsPage), "R Tools", "Advanced", 20116, 20136, true)]
+    [ProvideProfileAttribute(typeof(RToolsOptionsPage), "R Tools", "Advanced", 20116, 20136, isToolsOptionPage: true, DescriptionResourceID = 20116)]
     //[ProvideOptionPage(typeof(PackageSourceOptionsPage), "R Tools", "Package Sources", 20116, 20135, true)]
     [ProvideObject(typeof(RunPropertyPage))]
     [ProvideObject(typeof(SettingsPropertyPage))]
@@ -98,7 +99,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-graphics", @"Snippets\mrs-graphics")]
     [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-transforms", @"Snippets\mrs-transforms")]
     internal class RPackage : BasePackage<RLanguageService>, IRPackage {
-        public const string OptionsDialogName = "R Tools";
+        public const string ProductName = "R Tools";
+
         private IPackageIndex _packageIndex;
         private IRPersistentSettings _settings;
 
@@ -144,7 +146,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             RtvsTelemetry.Current.Dispose();
 
-            _settings?.SaveSettings();
+            _settings?.SaveSettingsAsync().Wait(5000);
             VsAppShell.Terminate();
 
             base.Dispose(disposing);
@@ -165,7 +167,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         }
 
         protected override object GetAutomationObject(string name) {
-            if (name == OptionsDialogName) {
+            if (name == RPackage.ProductName) {
                 DialogPage page = GetDialogPage(typeof(REditorOptionsDialog));
                 return page.AutomationObject;
             }

@@ -7,7 +7,9 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Microsoft.Common.Core.Enums;
 using Microsoft.Common.Core.Extensions;
+using Microsoft.Common.Core.Json;
 using Microsoft.Common.Core.Logging;
+using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Options.Attributes;
@@ -15,6 +17,7 @@ using Microsoft.VisualStudio.R.Package.Options.R.Tools;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Telemetry;
 using Microsoft.VisualStudio.Shell;
+using Newtonsoft.Json;
 using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R {
@@ -192,7 +195,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             }
             set { _holder.SetValue(value); }
         }
-
 
         /// Overrides default methods since we provide custom settings storage
         public override void LoadSettingsFromStorage() { }

@@ -14,6 +14,6 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
     [Order(Before = "Default")]
     internal sealed class VsREditorSettingsStorage : LanguageSettingsStorageWithDialog {
         public VsREditorSettingsStorage()
-            : base(RGuidList.RLanguageServiceGuid, RGuidList.RPackageGuid, RPackage.OptionsDialogName) { }
+            : base(RGuidList.RLanguageServiceGuid, RGuidList.RPackageGuid, RPackage.ProductName) { }
     }
 }
