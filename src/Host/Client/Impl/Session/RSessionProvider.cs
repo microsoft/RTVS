@@ -354,6 +354,7 @@ namespace Microsoft.R.Host.Client.Session {
                     var hostLoad = await Broker.GetHostInformationAsync<HostLoad>(ct);
                     OnHostLoadChanged(hostLoad);
                 } catch (RHostDisconnectedException) {
+                    OnHostLoadChanged(null);
                 }
             }
         }
