@@ -3,6 +3,7 @@
 
 using System;
 using FluentAssertions;
+using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager;
@@ -54,6 +55,11 @@ namespace Microsoft.R.Components.Test {
         [Test]
         public void RPackageManagerVisualComponentContainerFactory() {
             _exportProvider.GetExportedValue<IRPackageManagerVisualComponentContainerFactory>().Should().NotBeNull();
+        }
+
+        [Test]
+        public void ConnectionManagerVisualComponentContainerFactory() {
+            _exportProvider.GetExportedValue<IConnectionManagerVisualComponentContainerFactory>().Should().NotBeNull();
         }
 
         [Test]

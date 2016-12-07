@@ -17,7 +17,6 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
     public partial class ConnectionManagerControl : UserControl {
         private IConnectionManagerViewModel Model => DataContext as IConnectionManagerViewModel;
 
-
         public ConnectionManagerControl(ICoreShell coreShell) {
             InitializeComponent();
 
@@ -35,7 +34,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
         }
 
         private void ButtonConnect_Click(object sender, RoutedEventArgs e) {
-            HandleConnect(e);
+            HandleConnect(e, true);
         }
 
         private void ButtonAdd_Click(object sender, RoutedEventArgs e) {
@@ -76,12 +75,12 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
 
         private void Connection_KeyUp(object sender, KeyEventArgs e) {
             if (e.Key == Key.Enter) {
-                HandleConnect(e);
+                HandleConnect(e, true);
             }
         }
 
         private void Connection_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
-            HandleConnect(e);
+            HandleConnect(e, false);
             e.Handled = true;
         }
 
@@ -89,12 +88,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
             ((sender as TextBox)?.DataContext as IConnectionViewModel)?.UpdatePath();
         }
 
-        private void PathTextBox_TextChanged(object sender, TextChangedEventArgs e) {
-            ((sender as TextBox)?.DataContext as IConnectionViewModel)?.UpdateName();
-        }
-
-        private void HandleConnect(RoutedEventArgs e) {
-            Model?.Connect(GetConnection(e));
+        private void HandleConnect(RoutedEventArgs e, bool connectToEdited) {
+            Model?.Connect(GetConnection(e), connectToEdited);
         }
     }
 }

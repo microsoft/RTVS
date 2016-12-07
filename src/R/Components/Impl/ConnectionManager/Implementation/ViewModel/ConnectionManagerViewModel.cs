@@ -206,18 +206,18 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public void Save(IConnectionViewModel connectionViewModel) {
             _shell.AssertIsOnMainThread();
-            if (connectionViewModel == null) {
+            if (connectionViewModel == null || !connectionViewModel.HasChanges) {
                 return;    
             }
 
-            var connection = _connectionManager.AddOrUpdateConnection(
+            _connectionManager.AddOrUpdateConnection(
                 connectionViewModel.Name,
                 connectionViewModel.Path,
                 connectionViewModel.RCommandLineArguments,
                 connectionViewModel.IsUserCreated);
 
-            if (connection.Id != connectionViewModel.Id && connectionViewModel.Id != null) {
-                _connectionManager.TryRemove(connectionViewModel.Name);
+            if (connectionViewModel.IsRenamed) {
+                _connectionManager.TryRemove(connectionViewModel.OriginalName);
             }
 
             EditedConnection = null;
@@ -232,7 +232,6 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             if (connection != null) {
                 var confirm = _shell.ShowMessage(string.Format(CultureInfo.CurrentUICulture, Resources.ConnectionManager_RemoveConnectionConfirmation, connection.Name), MessageButtons.YesNo);
                 if (confirm == MessageButtons.Yes) {
-
                     var result = _connectionManager.TryRemove(connection.Name);
                     UpdateConnections();
                     return result;
@@ -241,7 +240,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             return false;
         }
 
-        public void Connect(IConnectionViewModel connection) {
+        public void Connect(IConnectionViewModel connection, bool connectToEdited) {
             _shell.AssertIsOnMainThread();
             if (connection == null) {
                 return;    
@@ -249,8 +248,10 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
             if (connection != EditedConnection) {
                 CancelEdit();
-            } else {
+            } else if (connectToEdited) {
                 Save(connection);
+            } else {
+                return;
             }
 
             CancelTestConnection();
@@ -268,7 +269,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         }
 
         private void UpdateConnections() {
-            var selectedId = EditedConnection?.Id;
+            var selectedConnectionName = EditedConnection?.Name;
 
             _localConnections.ReplaceWith(_connectionManager.RecentConnections
                 .Where(c => !c.IsRemote)
@@ -280,7 +281,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                 .Select(CreateConnectionViewModel)
                 .OrderBy(c => c.Name));
 
-            var editedConnection = RemoteConnections.FirstOrDefault(i => i.Id == selectedId);
+            var editedConnection = RemoteConnections.FirstOrDefault(i => i.Name == selectedConnectionName);
             if (editedConnection != null) {
                 EditedConnection = editedConnection;
             }

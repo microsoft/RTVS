@@ -10,11 +10,11 @@ namespace Microsoft.R.Components.ConnectionManager {
 
         public Connection(string name, string path, string rCommandLineArguments, DateTime lastUsed, bool isUserCreated) :
             base(name, path, rCommandLineArguments, lastUsed, isUserCreated) {
-            Id = new Uri(path);
-            IsRemote = !Id.IsFile;
+            Uri = new Uri(path);
+            IsRemote = !Uri.IsFile;
         }
 
-        public Uri Id { get; }
+        public Uri Uri { get; }
 
         /// <summary>
         /// If true, the connection is to a remote machine

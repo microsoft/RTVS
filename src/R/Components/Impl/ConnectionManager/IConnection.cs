@@ -5,7 +5,7 @@ using System;
 
 namespace Microsoft.R.Components.ConnectionManager {
     public interface IConnection: IConnectionInfo {
-        Uri Id { get; }
+        Uri Uri { get; }
 
         /// <summary>
         /// If true, the connection is to a remote machine

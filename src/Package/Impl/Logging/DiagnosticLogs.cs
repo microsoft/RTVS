@@ -209,7 +209,7 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
                     var connections = workflow.Connections.RecentConnections;
                     writer.WriteLine("Installed R Engines (from registry):");
                     foreach (var connection in connections) {
-                        writer.WriteLine(Invariant($"    {connection.Name}: {connection.Id}"));
+                        writer.WriteLine(Invariant($"    {connection.Name}: {connection.Path}"));
                     }
                     writer.WriteLine();
                 }
@@ -217,7 +217,7 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
                 var activeConnection = workflow.Connections.ActiveConnection;
                 if (activeConnection != null) {
                     writer.WriteLine("Active R URI:");
-                    writer.WriteLine(Invariant($"    {activeConnection.Name}: {activeConnection.Id}"));
+                    writer.WriteLine(Invariant($"    {activeConnection.Name}: {activeConnection.Path}"));
                     writer.WriteLine();
                 }
 

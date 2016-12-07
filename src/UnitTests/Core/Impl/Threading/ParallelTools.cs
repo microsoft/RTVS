@@ -50,7 +50,10 @@ namespace Microsoft.UnitTests.Core.Threading {
             if (timeoutTask.IsCompleted) {
                 var indexes = tasks.IndexWhere(t => !t.IsCompleted).ToList();
                 if (indexes.Any()) {
-                    message = message ?? $"{nameof(WhenAll)} failed by timeout, the tasks at {string.Join(", ", indexes)} are still not completed";
+                    var notCompletedReason = indexes.Count == 1
+                        ? $"the task at {indexes[0]} is still not completed"
+                        : $"the tasks at {string.Join(", ", indexes)} are still not completed";
+                    message = message ?? $"{nameof(WhenAll)} failed by timeout, {notCompletedReason}";
                     throw new TimeoutException(message);
                 }
             }

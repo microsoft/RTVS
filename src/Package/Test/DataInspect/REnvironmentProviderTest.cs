@@ -13,6 +13,7 @@ using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Script;
+using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 using Microsoft.VisualStudio.R.Package.DataInspect;
@@ -100,7 +101,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             // Wait for prompt to appear.
             using (await _session.BeginInteractionAsync()) { }
 
-            var envProvider = new REnvironmentProvider(_session, new TestMainThread());
+            var envProvider = new REnvironmentProvider(_session, UIThreadHelper.Instance);
             var envTcs = new TaskCompletionSource<IREnvironment[]>();
             envProvider.Environments.CollectionChanged += (sender, args) => {
                 envTcs.TrySetResult(envProvider.Environments.ToArray());
