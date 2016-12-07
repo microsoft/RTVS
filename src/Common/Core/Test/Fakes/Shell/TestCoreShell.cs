@@ -29,10 +29,6 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
             UIThreadHelper.Instance.InvokeAsync(action).DoNotWait();
         }
 
-        public Task<TResult> DispatchOnMainThreadAsync<TResult>(Func<TResult> callback, CancellationToken cancellationToken = default(CancellationToken)) {
-            return UIThreadHelper.Instance.InvokeAsync(callback);
-        }
-
         public Thread MainThread => UIThreadHelper.Instance.Thread;
 
 #pragma warning disable 67

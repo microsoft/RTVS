@@ -114,53 +114,44 @@ namespace Microsoft.UnitTests.Core.Threading
                 _futureTaskWaitingCompletionSource.SetResult(null);
             }
 
-            if (_pendingTasks.Count > 0 || _paused)
-            {
+            if (_pendingTasks.Count > 0 || _paused) {
                 _pendingTasks.Enqueue(task);
-            }
-            else
-            {
+            } else {
                 _syncContext.Post(_callback, task);
             }
         }
 
         [SecurityCritical]
-        protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
-        {
+        protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued) {
             return SynchronizationContext.Current == _syncContext && TryExecuteTask(task);
         }
 
         [SecurityCritical]
-        protected override IEnumerable<Task> GetScheduledTasks()
-        {
+        protected override IEnumerable<Task> GetScheduledTasks() {
             return null;
         }
 
-        private void Callback(Task task)
-        {
-            task.ContinueWith(AfterTaskExecuted, TaskContinuationOptions.ExecuteSynchronously);
-            TryExecuteTask(task);
+        private void Callback(Task task) {
+            try {
+                TryExecuteTask(task);
+            } finally {
+                AfterTaskExecuted(task);
+            }
         }
 
-        private void AfterTaskExecuted(Task task)
-        {
-            if (task.IsFaulted && task.Exception != null)
-            {
+        private void AfterTaskExecuted(Task task) {
+            if (task.IsFaulted && task.Exception != null) {
                 _exceptions.AddRange(task.Exception.InnerExceptions);
             }
 
-            if (Interlocked.Decrement(ref _scheduledTasksCount) == 0)
-            {
+            if (Interlocked.Decrement(ref _scheduledTasksCount) == 0) {
                 Interlocked.Exchange(ref _futureTaskWaitingCompletionSource, new TaskCompletionSource<object>());
                 var exceptions = Interlocked.Exchange(ref _exceptions, new List<Exception>());
                 TaskCompletionSource<object> tcs = Interlocked.Exchange(ref _emptyQueueCompletionSource, null);
 
-                if (exceptions.Any())
-                {
+                if (exceptions.Any()) {
                     tcs.SetException(exceptions);
-                }
-                else
-                {
+                } else {
                     tcs.SetResult(null);
                 }
             }
