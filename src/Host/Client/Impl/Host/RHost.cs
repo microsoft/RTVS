@@ -514,7 +514,9 @@ namespace Microsoft.R.Host.Client {
 
                             case "!View":
                                 message.ExpectArguments(2);
-                                await _callbacks.ViewObject(message.GetString(0, "x"), message.GetString(1, "title"), ct);
+                                _callbacks.ViewObject(message.GetString(0, "x"), message.GetString(1, "title"), ct)
+                                    .SilenceException<MessageTransportException>()
+                                    .DoNotWait();
                                 break;
 
                             case "!Plot":
