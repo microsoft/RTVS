@@ -13,17 +13,17 @@ namespace Microsoft.VisualStudio.R.Package.Test.Settings {
     [Category.VsPackage.Settings]
     public sealed class SettingsStorageTest {
         [Test]
-        public void SaveRestore() {
-            SaveRestore("name", -2);
-            SaveRestore("name", true);
-            SaveRestore("name", false);
-            SaveRestore("name", (uint)1);
-            SaveRestore("name", "string");
-            SaveRestore("name", DateTime.Now);
-            SaveRestore("name", new TestSetting("p1", 1));
+        public async Task SaveRestore() {
+            await SaveRestoreAsync("name", -2);
+            await SaveRestoreAsync("name", true);
+            await SaveRestoreAsync("name", false);
+            await SaveRestoreAsync("name", (uint)1);
+            await SaveRestoreAsync("name", "string");
+            await SaveRestoreAsync("name", DateTime.Now);
+            await SaveRestoreAsync("name", new TestSetting("p1", 1));
         }
 
-        public async Task SaveRestore<T>(string name, T value) {
+        public async Task SaveRestoreAsync<T>(string name, T value) {
             var storage = new VsSettingsStorage();
             storage.SettingExists(name).Should().BeFalse();
             storage.SetSetting(name, value);
