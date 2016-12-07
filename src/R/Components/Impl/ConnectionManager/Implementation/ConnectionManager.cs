@@ -118,9 +118,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             if (isRemoved) {
                 UpdateRecentConnections();
 
-                // Credentials are saved by URI (connection id). Delete the credentials if there are no other connections using it.
-                if (_connections.All(kvp => kvp.Value.Id != connection.Id)) {
-                    _securityService.DeleteUserCredentials(connection.Id.ToCredentialAuthority());
+                // Credentials are saved by URI. Delete the credentials if there are no other connections using it.
+                if (_connections.All(kvp => kvp.Value.Uri != connection.Uri)) {
+                    _securityService.DeleteUserCredentials(connection.Uri.ToCredentialAuthority());
                 }
             }
             return isRemoved;
@@ -284,11 +284,11 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         private void UpdateActiveConnection() {
-            if (string.IsNullOrEmpty(_sessionProvider.Broker.Name) || ActiveConnection?.Id == _sessionProvider.Broker.Uri) {
+            if (string.IsNullOrEmpty(_sessionProvider.Broker.Name) || ActiveConnection?.Uri == _sessionProvider.Broker.Uri) {
                 return;
             }
 
-            ActiveConnection = RecentConnections.FirstOrDefault(c => c.Id == _sessionProvider.Broker.Uri);
+            ActiveConnection = RecentConnections.FirstOrDefault(c => c.Uri == _sessionProvider.Broker.Uri);
             SaveActiveConnectionToSettings();
         }
 

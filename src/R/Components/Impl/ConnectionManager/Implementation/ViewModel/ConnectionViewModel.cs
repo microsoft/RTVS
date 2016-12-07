@@ -27,6 +27,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private bool _isRemote;
         private bool _hasChanges;
         private bool _isValid;
+        private bool _isRenamed;
         private string _previousPath;
 
         public ConnectionViewModel() {
@@ -36,12 +37,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public ConnectionViewModel(IConnection connection) {
             _connection = connection;
-
-            Id = _connection.Id;
             Reset();
         }
-
-        public Uri Id { get; }
 
         /// <summary>
         /// User-friendly name of the connection.
@@ -63,6 +60,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             get { return _path; }
             set {
                 SetProperty(ref _path, value);
+                UpdateName();
                 UpdateCalculated();
             }
         }
@@ -111,6 +109,11 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             private set { SetProperty(ref _isValid, value); }
         }
 
+        public bool IsRenamed {
+            get { return _isRenamed; }
+            private set { SetProperty(ref _isRenamed, value); }
+        }
+
         public bool HasChanges {
             get { return _hasChanges; }
             private set { SetProperty(ref _hasChanges, value); }
@@ -150,6 +153,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         }
 
         public DateTime LastUsed => _connection.LastUsed;
+        public string OriginalName => _connection.Name;
 
         public void Reset() {
             Name = _connection?.Name;
@@ -167,11 +171,13 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         }
 
         private void UpdateCalculated() {
-            HasChanges = !Name.EqualsIgnoreCase(_connection?.Name)
+            var nameHasChanged = !Name.EqualsIgnoreCase(_connection?.Name);
+            IsRenamed = nameHasChanged && _connection?.Name != null;
+            HasChanges = nameHasChanged
                 || !Path.EqualsIgnoreCase(_connection?.Path)
                 || !RCommandLineArguments.EqualsIgnoreCase(_connection?.RCommandLineArguments);
 
-            Uri uri = null;
+            Uri uri;
             var isPathValid = Uri.TryCreate(Path, UriKind.Absolute, out uri);
             if (string.IsNullOrEmpty(Name)) {
                 IsValid = false;
@@ -187,7 +193,11 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             IsRemote = !(uri?.IsFile ?? true);
         }
 
-        public void UpdateName() {
+        /// <summary>
+        /// Update the name with a value calculated based on the current path,
+        /// if name is determined to be tracking the path. Otherwise, it is not changed.
+        /// </summary>
+        private void UpdateName() {
             var currentPath = Path?.Trim() ?? string.Empty;
             var previousPath = _previousPath?.Trim() ?? string.Empty;
 
@@ -199,7 +209,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             if (previousProposedName != currentProposedName) {
                 // Check if the name was calculated from the previous path
                 var currentName = Name ?? string.Empty;
-                if (string.IsNullOrEmpty(currentName) || string.Compare(currentName, previousProposedName, StringComparison.CurrentCultureIgnoreCase) == 0) {
+                if (string.IsNullOrEmpty(currentName) ||  string.Compare(currentName, previousProposedName, StringComparison.CurrentCultureIgnoreCase) == 0) {
                     Name = currentProposedName;
                 }
             }
@@ -216,6 +226,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         internal static string GetProposedName(string path) {
             try {
                 Uri uri;
+                path = path.TrimEnd(':');
                 if (Uri.TryCreate(path, UriKind.Absolute, out uri)) {
                     if (!string.IsNullOrEmpty(uri.Host)) {
                         return uri.Host;

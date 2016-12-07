@@ -6,7 +6,6 @@ using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Common.Core;
 using Microsoft.R.Components.ConnectionManager;
-using Microsoft.R.Components.ConnectionManager.Implementation;
 using Microsoft.R.Components.ConnectionManager.Implementation.ViewModel;
 using Microsoft.UnitTests.Core.XUnit;
 using NSubstitute;
@@ -22,7 +21,6 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
             cm.IsUserCreated.Should().BeTrue();
             cm.IsValid.Should().BeFalse();
             cm.IsTestConnectionSucceeded.Should().BeFalse();
-            cm.Id.Should().BeNull();
             cm.Name.Should().BeNull();
         }
 
@@ -30,7 +28,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
         public void Construction02() {
             var uri = new Uri("http://microsoft.com");
             var conn = Substitute.For<IConnection>();
-            conn.Id.Returns(uri);
+            conn.Uri.Returns(uri);
             conn.Name.Returns("name");
             conn.Path.Returns("path");
             conn.RCommandLineArguments.Returns("arg");
@@ -42,7 +40,6 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
             conn.IsUserCreated.Returns(true);
             cm = new ConnectionViewModel(conn);
 
-            cm.Id.Should().Be(uri);
             conn.IsRemote.Should().BeTrue();
             cm.IsUserCreated.Should().BeTrue();
             cm.IsEditing.Should().BeFalse();
@@ -75,7 +72,6 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
 
             // Name is updated to match the host name
             cm.Path = "server";
-            cm.UpdateName();
             cm.Name.Should().Be("server");
             cm.Path.Should().Be("server");
 
@@ -91,7 +87,6 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
 
             // Name doesn't have extra spaces
             cm.Path = "server ";
-            cm.UpdateName();
             cm.Name.Should().Be("server");
             cm.Path.Should().Be("server ");
 
@@ -114,7 +109,6 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
             var cm = new ConnectionViewModel(conn);
 
             cm.Path = changedPath;
-            cm.UpdateName();
             cm.Name.Should().Be(expectedUpdatedName);
         }
 
@@ -125,8 +119,10 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
         [InlineData("http://host:5000", "host")]
         [InlineData("https://host:5100", "host")]
         [InlineData("https://HOST:5100", "host")]
-        [InlineData("HOST", "host")]
         [InlineData("host", "host")]
+        [InlineData("HOST", "host")]
+        [InlineData("host:", "host")]
+        [InlineData("HOST:", "host")]
         [InlineData("host:4000", "4000")] // host == scheme in this case and 4000 is actually a host name
         [InlineData("HOST:4000", "4000")] // host == scheme in this case and 4000 is actually a host name
         [InlineData("c:\\", "c:/")]

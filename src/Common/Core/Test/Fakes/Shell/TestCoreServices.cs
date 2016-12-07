@@ -13,6 +13,7 @@ using Microsoft.Common.Core.Tasks;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Core.Test.Telemetry;
 using Microsoft.Common.Core.Threading;
+using Microsoft.UnitTests.Core.Threading;
 using NSubstitute;
 
 namespace Microsoft.Common.Core.Test.Fakes.Shell {
@@ -26,7 +27,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
                 Substitute.For<ISecurityService>(),
                 Substitute.For<ITaskService>(),
                 Substitute.For<ISettingsStorage>(),
-                new TestMainThread(),
+                UIThreadHelper.Instance,
                 Substitute.For<IActionLog>(),
                 fs ?? Substitute.For<IFileSystem>(),
                 registry ?? Substitute.For<IRegistry>(),
@@ -41,7 +42,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
                 Substitute.For<ISecurityService>(),
                 new TestTaskService(),
                 Substitute.For<ISettingsStorage>(),
-                new TestMainThread(),
+                UIThreadHelper.Instance,
                 Substitute.For<IActionLog>(),
                 new FileSystem(),
                 new RegistryImpl(),

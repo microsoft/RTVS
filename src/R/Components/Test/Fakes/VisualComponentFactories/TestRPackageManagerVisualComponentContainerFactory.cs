@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core.Shell;
@@ -22,8 +25,7 @@ namespace Microsoft.R.Components.Test.Fakes.VisualComponentFactories {
             _coreShell = coreShell;
         }
 
-        public IVisualComponentContainer<IRPackageManagerVisualComponent> GetOrCreate(IRPackageManager packageManager, int instanceId = 0) {
-            return GetOrCreate(instanceId, container => new RPackageManagerVisualComponent(packageManager, container, _searchControlProvider, _settings, _coreShell));
-        }
+        public IVisualComponentContainer<IRPackageManagerVisualComponent> GetOrCreate(IRPackageManager packageManager, int instanceId = 0) 
+            => GetOrCreate(instanceId, container => new RPackageManagerVisualComponent(packageManager, container, _searchControlProvider, _settings, _coreShell));
     }
 }

@@ -50,6 +50,7 @@
     <Compile Include="Assertions\AsyncCommandAssertions.cs" />
     <Compile Include="Configuration\ConfigurationSettingsTest.cs" />
     <Compile Include="Configuration\ConfigurationSettingsCollectionTest.cs" />
+    <Compile Include="ConnectionManager\ConnectionManagerViewModelTest.cs" />
     <Compile Include="ConnectionManager\ConnectionViewModelTest.cs" />
     <Compile Include="EventTaskSources.cs" />
     <Compile Include="Fakes\InteractiveWindow\TestInteractiveWindowEditorsFactoryService.cs" />
@@ -72,11 +73,13 @@
     <Compile Include="Fakes\Undo\WeakReferenceForKey.cs" />
     <Compile Include="Fakes\VisualComponentFactories\Container.cs" />
     <Compile Include="Fakes\VisualComponentFactories\ContainerFactoryBase.cs" />
+    <Compile Include="Fakes\VisualComponentFactories\TestConnectionManagerVisualComponentContainerFactory.cs" />
     <Compile Include="Fakes\VisualComponentFactories\TestRHistoryVisualComponentContainerFactory.cs" />
     <Compile Include="Fakes\VisualComponentFactories\TestRInteractiveWindowComponentContainerFactory.cs" />
     <Compile Include="Fakes\VisualComponentFactories\TestRPlotHistoryVisualComponentContainerFactory.cs" />
     <Compile Include="Fakes\VisualComponentFactories\TestRPlotDeviceVisualComponentContainerFactory.cs" />
     <Compile Include="Fakes\VisualComponentFactories\TestRPackageManagerVisualComponentContainerFactory.cs" />
+    <Compile Include="Fakes\Wpf\TestThemeUtilities.cs" />
     <Compile Include="History\RHistoryIntegrationTest.cs" />
     <Compile Include="History\RHistoryTests.cs" />
     <Compile Include="History\RHistoryViewModelTest.cs" />
@@ -198,6 +201,10 @@
     <ProjectReference Include="..\..\Interpreters\Impl\Microsoft.R.Interpreters.csproj">
       <Project>{8445A4FB-4443-432C-94E8-1408559B7F58}</Project>
       <Name>Microsoft.R.Interpreters</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Wpf\Impl\Microsoft.R.Wpf.csproj">
+      <Project>{F951311C-D665-4987-95A4-72A2DE37E263}</Project>
+      <Name>Microsoft.R.Wpf</Name>
     </ProjectReference>
     <ProjectReference Include="..\Impl\Microsoft.R.Components.csproj">
       <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>
