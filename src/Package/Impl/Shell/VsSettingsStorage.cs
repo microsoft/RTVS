@@ -29,10 +29,19 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
     /// </summary>
     [Export(typeof(ISettingsStorage))]
     internal sealed class VsSettingsStorage : ISettingsStorage {
+        class Setting {
+            public object Value;
+            public bool Changed;
+
+            public Setting(object value) {
+                Value = value;
+            }
+        }
+
         /// <summary>
         /// Settings cache. Persisted to storage when package is unloaded.
         /// </summary>
-        private readonly Dictionary<string, object> _settingsCache = new Dictionary<string, object>();
+        private readonly Dictionary<string, Setting> _settingsCache = new Dictionary<string, Setting>();
         private readonly object _lock = new object();
 
         private ISettingsManager _settingsManager;
@@ -60,14 +69,14 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         public object GetSetting(string name, Type t) {
             lock (_lock) {
-                object value;
-                if (_settingsCache.TryGetValue(name, out value)) {
-                    return value;
+                Setting setting;
+                if (_settingsCache.TryGetValue(name, out setting)) {
+                    return setting.Value;
                 }
 
-                value = GetValueFromStore(name, t);
+                var value = GetValueFromStore(name, t);
                 if (value != null) {
-                    _settingsCache[name] = value;
+                    _settingsCache[name] = new Setting(value);
                     return value;
                 }
             }
@@ -83,32 +92,36 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             return defaultValue;
         }
 
-        public void SetSetting(string name, object value) {
+        public void SetSetting(string name, object newValue) {
             lock (_lock) {
-                _settingsCache[name] = value;
+                if (!_settingsCache.ContainsKey(name)) {
+                    _settingsCache[name] = new Setting(newValue);
+                } else if (!_settingsCache[name].Value.Equals(newValue)) {
+                    _settingsCache[name].Changed = true;
+                    _settingsCache[name].Value = newValue;
+                }
             }
         }
 
         public async Task PersistAsync() {
-            KeyValuePair<string, object>[] kvps;
+            KeyValuePair<string, Setting>[] kvps;
 
             lock (_lock) {
-                kvps = _settingsCache.ToArray();
+                kvps = _settingsCache.Where(k => k.Value.Changed).ToArray();
             }
 
             foreach (var kvp in kvps) {
                 var persistentName = GetPersistentName(kvp.Key);
-                if (kvp.Value != null) {
-                    var t = kvp.Value.GetType();
-                    object value = kvp.Value;
-                    if (!IsSimpleType(t)) {
+                object value = null;
+                var setting = kvp.Value;
+                if (setting.Value != null) {
+                    value = setting.Value;
+                    if (!IsSimpleType(value.GetType())) {
                         // Must escape JSON since VS roaming settings are converted to JSON
                         value = JsonConvert.ToString(JsonConvert.SerializeObject(value));
                     }
-                    await SettingsManager.SetValueAsync(persistentName, value, false);
-                } else {
-                    await SettingsManager.SetValueAsync(persistentName, null, false);
                 }
+                await SettingsManager.SetValueAsync(persistentName, value, false);
             }
         }
         #endregion
@@ -121,10 +134,14 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             if (value is string && !IsSimpleType(t)) {
                 // Must unescape JSON since VS roaming settings are converted to JSON
                 var token = Json.ParseToken((string)value);
-                var str = token.ToObject<string>();
-                value = Json.DeserializeObject(str, t);
-            } else if (value is Int64 && t != typeof(Int64)) {
-                // VS roaming setting manager roams integer values and enums as Int64s
+                try {
+                    var str = token.ToObject<string>();
+                    value = Json.DeserializeObject(str, t);
+                } catch (ArgumentException) {
+                    value = null; // Protect against stale or corrupted data in the roaming storage
+                }
+            } else if ((value is Int64 && t != typeof(Int64)) || (value is Int32 && t != typeof(Int32))) {
+                // VS roaming setting manager roams integer values and enums as integers
                 value = Convert.ToInt32(value);
                 if (t.IsEnum && t.IsEnumDefined(value)) {
                     value = Enum.ToObject(t, value);
