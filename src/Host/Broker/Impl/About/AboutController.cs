@@ -46,8 +46,12 @@ namespace Microsoft.R.Host.Broker.About {
 
         private long ToLong(ManagementBaseObject mo, string name, int divider) {
             int result;
-            var x = mo[name].ToString();
-            return Int32.TryParse(x, out result) ? result / divider : 0;
+            var value = mo[name];
+            if (value != null) {
+                var x = value.ToString();
+                return Int32.TryParse(x, out result) ? result / divider : 0;
+            }
+            return 0;
         }
 
         private void GetMemoryInformation(ref AboutHost a) {
@@ -65,9 +69,9 @@ namespace Microsoft.R.Host.Broker.About {
         private void GetVideoControllerInformation(ref AboutHost a) {
             using (var search = new ManagementObjectSearcher("Select * from Win32_VideoController")) {
                 foreach (var mo in search.Get()) {
-                    a.VideoCardName = mo["Name"].ToString();
+                    a.VideoCardName = mo["Name"]?.ToString();
                     a.VideoRAM = ToLong(mo, "AdapterRAM", 1024 * 1024);
-                    a.VideoProcessor = mo["VideoProcessor"].ToString();
+                    a.VideoProcessor = mo["VideoProcessor"]?.ToString();
                 }
             }
         }
