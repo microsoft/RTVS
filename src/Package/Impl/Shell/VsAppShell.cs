@@ -17,7 +17,6 @@ using Microsoft.Languages.Editor.Host;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.R.Components.Controller;
-using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Packages.R;
@@ -28,6 +27,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using static System.FormattableString;
 using IServiceProvider = System.IServiceProvider;
 using VsPackage = Microsoft.VisualStudio.Shell.Package;
+using Microsoft.VisualStudio.ComponentModelHost;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
     /// <summary>
