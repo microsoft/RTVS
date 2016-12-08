@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Enums;
 using Microsoft.Common.Core.Extensions;
 using Microsoft.Common.Core.Json;
@@ -123,7 +124,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [LocDescription("Settings_HelpBrowser_Description")]
         [TypeConverter(typeof(HelpBrowserTypeConverter))]
         [DefaultValue(HelpBrowserType.Automatic)]
-        public HelpBrowserType HelpBrowser {
+        public HelpBrowserType HelpBrowserType {
             get { return _holder.GetValue<HelpBrowserType>(HelpBrowserType.Automatic); }
             set { _holder.SetValue(value); }
         }
@@ -234,7 +235,10 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
                 _dict[name] = value;
             }
 
-            public void Apply() => _settings.SetProperties(_dict);
+            public void Apply() {
+                _settings.SetProperties(_dict);
+                ((IRPersistentSettings)_settings).SaveSettingsAsync().DoNotWait();
+            }
         }
     }
 }
