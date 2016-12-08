@@ -24,7 +24,7 @@ namespace Microsoft.R.Host.Broker.UserProfile {
         }
 
         [HttpDelete]
-        public async Task<IActionResult> GetAsync() {
+        public async Task<IActionResult> DeleteAsync() {
             RUserProfileServiceResponse result = null;
             try {
                 _sessionManager.CloseAndBlockSessionsCreationForUser(User.Identity);

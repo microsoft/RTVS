@@ -53,7 +53,7 @@ namespace Microsoft.R.Host.UserProfile {
         }
 
         private async Task DeleteProfileWorkerAsync(CancellationToken ct) {
-            await ProfileWorkerAsync(RUserProfileServices.DeleteProfileAsync, ServiceReadAfterConnectTimeoutMs, ClientResponseReadTimeoutMs, _createWorkerDone, ct, _logger);
+            await ProfileWorkerAsync(RUserProfileServices.DeleteProfileAsync, ServiceReadAfterConnectTimeoutMs, ClientResponseReadTimeoutMs, _deleteWorkerDone, ct, _logger);
         }
 
         private static async Task ProfileWorkerAsync( Func<int,int, IUserProfileServices,CancellationToken, ILogger, Task> action, int serverTimeOutms, int clientTimeOutms,  ManualResetEvent workerDone, CancellationToken ct, ILogger logger) {

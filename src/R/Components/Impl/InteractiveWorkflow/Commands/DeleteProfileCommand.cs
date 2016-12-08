@@ -43,9 +43,9 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
                 if(button == MessageButtons.Yes) {
                     bool result = await _interactiveWorkflow.RSessions.Broker.DeleteRemoteUserProfileAsync();
                     if (result) {
-                        OutputWriter.Write(Resources.DeleteProfile_Success.FormatInvariant(host));
+                        OutputWriter.WriteLine(Resources.DeleteProfile_Success.FormatInvariant(host));
                     } else {
-                        OutputWriter.Write(Resources.DeleteProfile_Error.FormatInvariant(host));
+                        OutputWriter.WriteLine(Resources.DeleteProfile_Error.FormatInvariant(host));
                     }
                 }
             } catch (RHostDisconnectedException) {

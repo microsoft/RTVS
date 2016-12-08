@@ -18,16 +18,16 @@ namespace Microsoft.R.Host.Protocol {
     public class RUserProfileServices {
         public static async Task CreateProfileAsync(int serverTimeOutms = 0, int clientTimeOutms = 0, IUserProfileServices userProfileService = null, CancellationToken ct = default(CancellationToken), ILogger logger = null) {
             userProfileService = userProfileService ?? new RUserProfileServicesImpl();
-            await ProfileServiceOperationAsync(userProfileService.CreateUserProfile, serverTimeOutms, clientTimeOutms, ct, logger);
+            await ProfileServiceOperationAsync(userProfileService.CreateUserProfile, NamedPipeServerStreamFactory.CreatorName, serverTimeOutms, clientTimeOutms, ct, logger);
         }
 
         public static async Task DeleteProfileAsync(int serverTimeOutms = 0, int clientTimeOutms = 0, IUserProfileServices userProfileService = null, CancellationToken ct = default(CancellationToken), ILogger logger = null) {
             userProfileService = userProfileService ?? new RUserProfileServicesImpl();
-            await ProfileServiceOperationAsync(userProfileService.DeleteUserProfile, serverTimeOutms, clientTimeOutms, ct, logger);
+            await ProfileServiceOperationAsync(userProfileService.DeleteUserProfile, NamedPipeServerStreamFactory.DeletorName, serverTimeOutms, clientTimeOutms, ct, logger);
         }
 
-        private static async Task ProfileServiceOperationAsync(Func<IUserCredentials, ILogger, IUserProfileServiceResult> operation, int serverTimeOutms = 0, int clientTimeOutms = 0, CancellationToken ct = default(CancellationToken), ILogger logger = null) {
-            using (NamedPipeServerStream server = NamedPipeServerStreamFactory.Create(NamedPipeServerStreamFactory.CreatorName)) {
+        private static async Task ProfileServiceOperationAsync(Func<IUserCredentials, ILogger, IUserProfileServiceResult> operation, string name, int serverTimeOutms = 0, int clientTimeOutms = 0, CancellationToken ct = default(CancellationToken), ILogger logger = null) {
+            using (NamedPipeServerStream server = NamedPipeServerStreamFactory.Create(name)) {
                 await server.WaitForConnectionAsync(ct);
 
                 ManualResetEventSlim forceDisconnect = new ManualResetEventSlim(false);

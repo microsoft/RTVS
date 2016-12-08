@@ -207,7 +207,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
         private void SessionOnDisconnected(object sender, EventArgs args) {
             if (CurrentWindow == null || !CurrentWindow.IsResetting) {
-                WriteError(Resources.MicrosoftRHostStopped);
+                WriteErrorLine(Resources.MicrosoftRHostStopped);
             }
         }
 
@@ -251,6 +251,12 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         private void WriteError(string message) {
             if (CurrentWindow != null) {
                 _coreShell.DispatchOnUIThread(() => CurrentWindow?.WriteError(message));
+            }
+        }
+
+        private void WriteErrorLine(string message) {
+            if (CurrentWindow != null) {
+                _coreShell.DispatchOnUIThread(() => CurrentWindow?.WriteErrorLine(message));
             }
         }
 
