@@ -35,6 +35,10 @@ namespace Microsoft.R.Host.Broker.Sessions {
                 return Task.FromResult<IActionResult>(new ApiErrorResult(BrokerApiError.NoRInterpreters));
             }
 
+            if (_sessionManager.IsSessionCreationBlockedForUser(User.Identity)) {
+                return Task.FromResult<IActionResult>(new ApiErrorResult(BrokerApiError.UnableToStartRHost));
+            }
+
             string profilePath = User.FindFirst(Claims.RUserProfileDir)?.Value;
             var password = User.FindFirst(Claims.Password)?.Value.ToSecureString();
 
@@ -76,6 +80,10 @@ namespace Microsoft.R.Host.Broker.Sessions {
 
         [HttpGet("{id}/pipe")]
         public IActionResult GetPipe(string id) {
+            if (_sessionManager.IsSessionCreationBlockedForUser(User.Identity)) {
+                return Forbid();
+            }
+
             var session = _sessionManager.GetSession(User.Identity, id);
             if (session?.Process?.HasExited ?? true) {
                 return NotFound();

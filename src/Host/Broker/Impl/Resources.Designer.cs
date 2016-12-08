@@ -187,6 +187,15 @@ namespace Microsoft.R.Host.Broker {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Profile deletion failed for user {0}..
+        /// </summary>
+        internal static string Error_ProfileDeletionFailedIO {
+            get {
+                return ResourceManager.GetString("Error_ProfileDeletionFailedIO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R Host process failed to start. Error: {0}.
         /// </summary>
         internal static string Error_RHostFailedToStart {

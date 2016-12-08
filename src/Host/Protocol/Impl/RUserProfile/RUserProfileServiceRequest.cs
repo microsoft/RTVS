@@ -7,9 +7,9 @@ using Microsoft.Common.Core.Security;
 using Newtonsoft.Json;
 
 namespace Microsoft.R.Host.Protocol {
-    public class RUserProfileCreateRequest : IUserCredentials {
+    public class RUserProfileServiceRequest : IUserCredentials {
         [JsonConstructor]
-        private RUserProfileCreateRequest() { }
+        private RUserProfileServiceRequest() { }
 
         public string Username { get; set; }
         public string Domain { get; set; }
@@ -17,8 +17,8 @@ namespace Microsoft.R.Host.Protocol {
         [JsonConverter(typeof(SecureStringJsonConverter))]
         public SecureString Password { get; set; }
 
-        public static RUserProfileCreateRequest Create(string username, string domain, string password) {
-            return new RUserProfileCreateRequest() { Username = username, Domain = domain, Password = password.ToSecureString() };
+        public static RUserProfileServiceRequest Create(string username, string domain, string password) {
+            return new RUserProfileServiceRequest() { Username = username, Domain = domain, Password = password.ToSecureString() };
         }
     }
 }

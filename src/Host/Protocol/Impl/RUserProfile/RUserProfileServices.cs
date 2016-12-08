@@ -12,16 +12,22 @@ using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Json;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System;
 
 namespace Microsoft.R.Host.Protocol {
-    public class RUserProfileCreator {
+    public class RUserProfileServices {
         public static async Task CreateProfileAsync(int serverTimeOutms = 0, int clientTimeOutms = 0, IUserProfileServices userProfileService = null, CancellationToken ct = default(CancellationToken), ILogger logger = null) {
             userProfileService = userProfileService ?? new RUserProfileServicesImpl();
-            PipeSecurity ps = new PipeSecurity();
-            SecurityIdentifier sid = new SecurityIdentifier(WellKnownSidType.AuthenticatedUserSid, null);
-            PipeAccessRule par = new PipeAccessRule(sid, PipeAccessRights.ReadWrite, System.Security.AccessControl.AccessControlType.Allow);
-            ps.AddAccessRule(par);
-            using (NamedPipeServerStream server = new NamedPipeServerStream("Microsoft.R.Host.UserProfile.Creator{b101cc2d-156e-472e-8d98-b9d999a93c7a}", PipeDirection.InOut, NamedPipeServerStream.MaxAllowedServerInstances, PipeTransmissionMode.Byte, PipeOptions.Asynchronous, 1024, 1024, ps)) {
+            await ProfileServiceOperationAsync(userProfileService.CreateUserProfile, serverTimeOutms, clientTimeOutms, ct, logger);
+        }
+
+        public static async Task DeleteProfileAsync(int serverTimeOutms = 0, int clientTimeOutms = 0, IUserProfileServices userProfileService = null, CancellationToken ct = default(CancellationToken), ILogger logger = null) {
+            userProfileService = userProfileService ?? new RUserProfileServicesImpl();
+            await ProfileServiceOperationAsync(userProfileService.DeleteUserProfile, serverTimeOutms, clientTimeOutms, ct, logger);
+        }
+
+        private static async Task ProfileServiceOperationAsync(Func<IUserCredentials, ILogger, IUserProfileServiceResult> operation, int serverTimeOutms = 0, int clientTimeOutms = 0, CancellationToken ct = default(CancellationToken), ILogger logger = null) {
+            using (NamedPipeServerStream server = NamedPipeServerStreamFactory.Create(NamedPipeServerStreamFactory.CreatorName)) {
                 await server.WaitForConnectionAsync(ct);
 
                 ManualResetEventSlim forceDisconnect = new ManualResetEventSlim(false);
@@ -44,7 +50,7 @@ namespace Microsoft.R.Host.Protocol {
                             cts.CancelAfter(serverTimeOutms);
                         }
 
-                        await CreateProfileHandleUserCredentails(userProfileService, server, cts.Token, logger);
+                        await HandleUserCredentailsAsync(server, operation, cts.Token, logger);
                     }
 
                     using (var cts = CancellationTokenSource.CreateLinkedTokenSource(ct)) {
@@ -69,7 +75,7 @@ namespace Microsoft.R.Host.Protocol {
             }
         }
 
-        private static async Task CreateProfileHandleUserCredentails(IUserProfileServices userProfileService, Stream stream,  CancellationToken ct, ILogger logger = null) {
+        private static async Task HandleUserCredentailsAsync(Stream stream, Func<IUserCredentials, ILogger, IUserProfileServiceResult> operation, CancellationToken ct, ILogger logger = null) {
             byte[] requestRaw = new byte[1024];
             int bytesRead = 0;
 
@@ -79,10 +85,9 @@ namespace Microsoft.R.Host.Protocol {
 
             string json = Encoding.Unicode.GetString(requestRaw, 0, bytesRead);
 
-            var requestData = Json.DeserializeObject<RUserProfileCreateRequest>(json);
+            var requestData = Json.DeserializeObject<RUserProfileServiceRequest>(json);
 
-
-            var result = userProfileService.CreateUserProfile(requestData, logger);
+            var result = operation?.Invoke(requestData, logger);
 
             string jsonResp = JsonConvert.SerializeObject(result);
             byte[] respData = Encoding.Unicode.GetBytes(jsonResp);

@@ -68,8 +68,8 @@
   <ItemGroup>
     <Compile Include="ProtocolMessage\ProtocolMessageTest.cs" />
     <Compile Include="RHostPipe\RHostPipeTest.cs" />
-    <Compile Include="UserProfileServicePipe\UserProfileCreatorMock.cs" />
-    <Compile Include="UserProfileServicePipe\UserProfileCreatorFuzzTestMock.cs" />
+    <Compile Include="UserProfileServicePipe\UserProfileServiceMock.cs" />
+    <Compile Include="UserProfileServicePipe\UserProfileServiceFuzzTestMock.cs" />
     <Compile Include="UserProfileServicePipe\UserProfileResultMock.cs" />
     <Compile Include="UserProfileServicePipe\UserProfileServicePipeTest.cs" />
   </ItemGroup>

@@ -12,10 +12,13 @@ using static Microsoft.R.Host.Protocol.NativeMethods;
 
 namespace Microsoft.R.Host.Protocol {
     class RUserProfileServicesImpl : IUserProfileServices {
-        public IUserProfileCreatorResult CreateUserProfile(IUserCredentials credentials, ILogger logger) {
+        public IUserProfileServiceResult CreateUserProfile(IUserCredentials credentials, ILogger logger) {
+            // Future: Switching Broker service to network service will eliminate the need for login here
+            // The same holds true for profile deletion. 
+
             IntPtr token = IntPtr.Zero;
             IntPtr password = IntPtr.Zero;
-            RUserProfileCreateResponse result = RUserProfileCreateResponse.Create(13, false, string.Empty);
+            RUserProfileServiceResponse result = RUserProfileServiceResponse.Create(13, false, string.Empty);
             uint error = 0;
             try {
                 password = Marshal.SecureStringToGlobalAllocUnicode(credentials.Password);
@@ -29,7 +32,7 @@ namespace Microsoft.R.Host.Protocol {
                     // 0x800700b7 - Profile already exists.
                     if (error != 0 && error != 0x800700b7) {
                         logger?.LogError(Resources.Error_UserProfileCreateFailed, credentials.Domain, credentials.Username, error);
-                        result = RUserProfileCreateResponse.Blank;
+                        result = RUserProfileServiceResponse.Blank;
                     } else if (error == 0x800700b7) {
                         profileExists = true;
                         logger?.LogInformation(Resources.Info_UserProfileAlreadyExists, credentials.Domain, credentials.Username);
@@ -41,14 +44,14 @@ namespace Microsoft.R.Host.Protocol {
                     size = (uint)profileDir.Capacity;
                     if (GetUserProfileDirectory(token, profileDir, ref size)) {
                         logger?.LogInformation(Resources.Info_UserProfileDirectoryFound, credentials.Domain, credentials.Username, profileDir.ToString());
-                        result = RUserProfileCreateResponse.Create(0, profileExists, profileDir.ToString());
+                        result = RUserProfileServiceResponse.Create(0, profileExists, profileDir.ToString());
                     } else {
                         logger?.LogError(Resources.Error_UserProfileDirectoryWasNotFound, credentials.Domain, credentials.Username, Marshal.GetLastWin32Error());
-                        result = RUserProfileCreateResponse.Create((uint)Marshal.GetLastWin32Error(), profileExists, profileDir.ToString());
+                        result = RUserProfileServiceResponse.Create((uint)Marshal.GetLastWin32Error(), profileExists, profileDir.ToString());
                     }
                 } else {
                     logger?.LogError(Resources.Error_UserLogonFailed, credentials.Domain, credentials.Username, Marshal.GetLastWin32Error());
-                    result = RUserProfileCreateResponse.Create((uint)Marshal.GetLastWin32Error(), false, null);
+                    result = RUserProfileServiceResponse.Create((uint)Marshal.GetLastWin32Error(), false, null);
                 }
 
             } finally {
@@ -63,7 +66,7 @@ namespace Microsoft.R.Host.Protocol {
             return result;
         }
 
-        public int DeleteUserProfile(IUserCredentials credentials, ILogger logger) {
+        public IUserProfileServiceResult DeleteUserProfile(IUserCredentials credentials, ILogger logger) {
             logger?.LogInformation(Resources.Info_DeletingUserProfile, credentials.Domain, credentials.Username);
             IntPtr token = IntPtr.Zero;
             IntPtr password = IntPtr.Zero;
@@ -72,12 +75,14 @@ namespace Microsoft.R.Host.Protocol {
             string sid=string.Empty;
             StringBuilder profileDir = new StringBuilder(MAX_PATH * 2);
             uint size = (uint)profileDir.Capacity;
+            bool profileExists = false;
             try {
                 password = Marshal.SecureStringToGlobalAllocUnicode(credentials.Password);
                 if (LogonUser(credentials.Username, credentials.Domain, password, (int)LogonType.LOGON32_LOGON_NETWORK, (int)LogonProvider.LOGON32_PROVIDER_DEFAULT, out token)) {
                     WindowsIdentity winIdentity = new WindowsIdentity(token);
                     if (GetUserProfileDirectory(token, profileDir, ref size) && !string.IsNullOrWhiteSpace(profileDir.ToString())) {
                         sid = winIdentity.User.Value;
+                        profileExists = true;
                     } else {
                         error = Marshal.GetLastWin32Error();
                         logger?.LogError(Resources.Error_UserProfileDirectoryWasNotFound, credentials.Domain, credentials.Username, error);
@@ -93,17 +98,18 @@ namespace Microsoft.R.Host.Protocol {
                 }
             }
 
+            string profile = "<deleted>";
             if (!string.IsNullOrWhiteSpace(sid)) {
                 if (DeleteProfile(sid, null, null)) {
                     logger?.LogInformation(Resources.Info_DeletedUserProfile, credentials.Domain, credentials.Username);
-
                 } else {
                     error = Marshal.GetLastWin32Error();
                     logger?.LogError(Resources.Error_DeleteUserProfileFailed, credentials.Domain, credentials.Username, error);
+                    profile = profileDir.ToString();
                 }
             }
             
-            return error;
+            return RUserProfileServiceResponse.Create((uint)error, profileExists, profile);
         }
     }
 }

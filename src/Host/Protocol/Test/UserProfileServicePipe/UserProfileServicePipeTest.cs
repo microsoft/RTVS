@@ -41,10 +41,10 @@ namespace Microsoft.R.Host.Protocol.Test.UserProfileServicePipe {
             Task.Run(async () => {
                 try {
                     if (isValidParse) {
-                        Func<Task> f = async () => await RUserProfileCreator.CreateProfileAsync(serverTimeOutms: serverTimeOut, clientTimeOutms: clientTimeOut, userProfileService: creator);
+                        Func<Task> f = async () => await RUserProfileServices.CreateProfileAsync(serverTimeOutms: serverTimeOut, clientTimeOutms: clientTimeOut, userProfileService: creator);
                         f.ShouldNotThrow();
                     } else {
-                        Func<Task> f = () => RUserProfileCreator.CreateProfileAsync(serverTimeOutms: serverTimeOut, clientTimeOutms: clientTimeOut, userProfileService: creator);
+                        Func<Task> f = () => RUserProfileServices.CreateProfileAsync(serverTimeOutms: serverTimeOut, clientTimeOutms: clientTimeOut, userProfileService: creator);
                         await f.ShouldThrowAsync<Exception>();
                     }
                 } finally {
@@ -68,7 +68,7 @@ namespace Microsoft.R.Host.Protocol.Test.UserProfileServicePipe {
         private async Task CreateProfileFuzzTestRunnerAsync(IUserProfileServices creator, string input, int serverTimeOut, int clientTimeOut) {
             var task = Task.Run(async () => {
                 try {
-                    await RUserProfileCreator.CreateProfileAsync(serverTimeOutms: serverTimeOut, clientTimeOutms: clientTimeOut, userProfileService: creator);
+                    await RUserProfileServices.CreateProfileAsync(serverTimeOutms: serverTimeOut, clientTimeOutms: clientTimeOut, userProfileService: creator);
                 } catch (JsonReaderException) {
                     // expecting JSON parsing to fail
                     // JSON parsing may fail due to randomly generated strings as input.
@@ -102,7 +102,7 @@ namespace Microsoft.R.Host.Protocol.Test.UserProfileServicePipe {
         // empty string
         [InlineData("", null, null, null, false, false, false)]
         public async Task CreateProfileTest(string input, string username, string domain, string password, bool isValidParse, bool isValidAccount, bool isExistingAccount) {
-            var creator = UserProfileCreatorMock.Create(username, domain, password, isValidParse, isValidAccount, isExistingAccount);
+            var creator = UserProfileServiceMock.Create(username, domain, password, isValidParse, isValidAccount, isExistingAccount);
             await CreateProfileTestRunnerAsync(creator, input, isValidParse, isValidAccount, isExistingAccount, 500, 500);
         }
 
@@ -123,7 +123,7 @@ namespace Microsoft.R.Host.Protocol.Test.UserProfileServicePipe {
                 string json = "{" + string.Format(inner, username, domain, password) + "}";
                 
                 string testResult = string.Empty;
-                UserProfileCreatorFuzzTestMock creator = new UserProfileCreatorFuzzTestMock();
+                UserProfileServiceFuzzTestMock creator = new UserProfileServiceFuzzTestMock();
 
                 try {
                     await CreateProfileFuzzTestRunnerAsync(creator, json, 100, 100);

@@ -63,9 +63,9 @@ namespace Microsoft.R.Host.UserProfile {
         /// <summary>
         ///   Looks up a localized string similar to User profile service failed with exception: {0}..
         /// </summary>
-        internal static string Error_UserProfileCreationError {
+        internal static string Error_UserProfileServiceError {
             get {
-                return ResourceManager.GetString("Error_UserProfileCreationError", resourceCulture);
+                return ResourceManager.GetString("Error_UserProfileServiceError", resourceCulture);
             }
         }
     }

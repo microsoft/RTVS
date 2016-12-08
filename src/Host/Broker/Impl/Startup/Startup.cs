@@ -13,6 +13,7 @@ using Microsoft.R.Host.Broker.Logging;
 using Microsoft.R.Host.Broker.RemoteUri;
 using Microsoft.R.Host.Broker.Security;
 using Microsoft.R.Host.Broker.Sessions;
+using Microsoft.R.Host.Broker.UserProfile;
 using Odachi.AspNetCore.Authentication.Basic;
 
 namespace Microsoft.R.Host.Broker.Startup {
@@ -31,7 +32,8 @@ namespace Microsoft.R.Host.Broker.Startup {
                     .AddSingleton<LifetimeManager>()
                     .AddSingleton<SecurityManager>()
                     .AddSingleton<InterpreterManager>()
-                    .AddSingleton<SessionManager>();
+                    .AddSingleton<SessionManager>()
+                    .AddSingleton<UserProfileManager>();
 
             services.AddAuthorization(options => options.AddPolicy(
                 Policies.RUser,

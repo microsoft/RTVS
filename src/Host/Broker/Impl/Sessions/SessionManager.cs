@@ -27,6 +27,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
         private readonly ILogger _hostOutputLogger, _messageLogger, _sessionLogger;
 
         private readonly Dictionary<string, List<Session>> _sessions = new Dictionary<string, List<Session>>();
+        private readonly HashSet<string> _blockedUsers = new HashSet<string>();
 
         [ImportingConstructor]
         public SessionManager(
@@ -59,12 +60,37 @@ namespace Microsoft.R.Host.Broker.Sessions {
             }
         }
 
-        public bool CloseAndBlockSessionsCreationForUser(IIdentity user) {
-            throw new NotImplementedException();
+        public void CloseAndBlockSessionsCreationForUser(IIdentity user) {
+            lock (_sessions) {
+                lock (_blockedUsers) {
+                    var userSessions = GetOrCreateSessionList(user);
+                    var sessions = userSessions.ToArray();
+                    foreach (var session in sessions) {
+                        try {
+                            userSessions.Remove(session);
+                            Task.Run(() => session.KillHost()).DoNotWait();
+                        } catch (Exception) { }
+
+                        session.State = SessionState.Terminated;
+                    }
+
+                    if (!_blockedUsers.Contains(user.Name)) {
+                        _blockedUsers.Add(user.Name);
+                    }
+                }
+            }
         }
 
-        public bool UnblockSessionCreationForUser(IIdentity user) {
-            throw new NotImplementedException();
+        public void UnblockSessionCreationForUser(IIdentity user) {
+            lock (_blockedUsers) {
+                _blockedUsers.Remove(user.Name);
+            }
+        }
+
+        public bool IsSessionCreationBlockedForUser(IIdentity user) {
+            lock (_blockedUsers) {
+                return _blockedUsers.Contains(user.Name);
+            }
         }
 
         public IEnumerable<string> GetUsers() {
