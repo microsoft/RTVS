@@ -409,7 +409,7 @@ namespace Microsoft.R.Host.Client.Session {
                     await LoadRtvsPackage(evaluation, libPath);
 
                     var wd = startupInfo.WorkingDirectory;
-                    if (!IsRemote && !string.IsNullOrEmpty(wd) && wd.HasWritePermission()) {
+                    if (!IsRemote && !string.IsNullOrEmpty(wd) && wd.HasReadPermissions()) {
                         await evaluation.SetWorkingDirectoryAsync(wd);
                     } else {
                         await evaluation.SetDefaultWorkingDirectoryAsync();

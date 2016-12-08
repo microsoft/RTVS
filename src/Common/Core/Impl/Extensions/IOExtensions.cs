@@ -98,6 +98,14 @@ namespace Microsoft.Common.Core {
             return Path.DirectorySeparatorChar.ToString();
         }
 
+        public static bool HasReadPermissions(this string path) {
+            try {
+                Directory.GetFiles(path);
+                return true;
+            } catch(IOException) { } catch(UnauthorizedAccessException) { }
+            return false;
+        }
+
         public static bool HasWritePermission(this string path) {
             var accessControlList = Directory.GetAccessControl(path);
             if (accessControlList == null) {
