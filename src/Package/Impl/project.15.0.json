@@ -1,6 +1,5 @@
 ﻿{
   "dependencies": {
-    "DataConnectionDialog": "1.2.0",
     "MicroBuild.Core": "0.2.0",
     "Microsoft.Build": "15.1.262-preview5",
     "Microsoft.VisualStudio.Debugger.Interop.10.0": "10.0.30319",
