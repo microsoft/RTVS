@@ -147,7 +147,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             ProjectIconProvider.Close();
             CsvAppFileIO.Close(new FileSystem());
 
-            RtvsTelemetry.Current.Dispose();
+            RtvsTelemetry.Current?.Dispose();
 
             _settings?.SaveSettingsAsync().Wait(5000);
             VsAppShell.Terminate();

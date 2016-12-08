@@ -100,7 +100,11 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 var persistentName = GetPersistentName(kvp.Key);
                 if (kvp.Value != null) {
                     var t = kvp.Value.GetType();
-                    var value = IsSimpleType(t) ? kvp.Value : JsonConvert.SerializeObject(kvp.Value);
+                    object value = kvp.Value;
+                    if (!IsSimpleType(t)) {
+                        // Must escape JSON since VS roaming settings are converted to JSON
+                        value = JsonConvert.ToString(JsonConvert.SerializeObject(value));
+                    }
                     await SettingsManager.SetValueAsync(persistentName, value, false);
                 } else {
                     await SettingsManager.SetValueAsync(persistentName, null, false);
@@ -115,7 +119,16 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             object value;
             var result = SettingsManager.TryGetValue(GetPersistentName(name), out value);
             if (value is string && !IsSimpleType(t)) {
-                value = Json.DeserializeObject((string)value, t);
+                // Must unescape JSON since VS roaming settings are converted to JSON
+                var token = Json.ParseToken((string)value);
+                var str = token.ToObject<string>();
+                value = Json.DeserializeObject(str, t);
+            } else if (value is Int64 && t != typeof(Int64)) {
+                // VS roaming setting manager roams integer values and enums as Int64s
+                value = Convert.ToInt32(value);
+                if (t.IsEnum && t.IsEnumDefined(value)) {
+                    value = Enum.ToObject(t, value);
+                }
             }
             return result == GetValueResult.Success ? value : null;
         }
