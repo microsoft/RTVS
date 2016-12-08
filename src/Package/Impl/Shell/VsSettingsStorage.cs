@@ -96,9 +96,11 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             lock (_lock) {
                 if (!_settingsCache.ContainsKey(name)) {
                     _settingsCache[name] = new Setting(newValue);
-                } else if (!_settingsCache[name].Value.Equals(newValue)) {
-                    _settingsCache[name].Changed = true;
-                    _settingsCache[name].Value = newValue;
+                } else {
+                    if (!Object.Equals(_settingsCache[name].Value, newValue)) {
+                        _settingsCache[name].Changed = true;
+                        _settingsCache[name].Value = newValue;
+                    }
                 }
             }
         }
@@ -122,6 +124,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                     }
                 }
                 await SettingsManager.SetValueAsync(persistentName, value, false);
+                setting.Changed = false;
             }
         }
         #endregion
