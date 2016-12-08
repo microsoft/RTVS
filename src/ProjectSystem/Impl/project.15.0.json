@@ -9,7 +9,7 @@
     "Microsoft.VisualStudio.Shell.Interop.11.0": "11.0.61030",
     "Microsoft.Tpl.Dataflow": "4.5.24",
     "Microsoft.CodeAnalysis.CSharp": "1.3.0",
-    "System.Collections.Immutable": "1.2.0"
+    "System.Collections.Immutable": "1.3.0"
   },
   "frameworks": {
     "net46": {}

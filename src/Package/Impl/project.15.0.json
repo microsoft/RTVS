@@ -1,8 +1,8 @@
 ﻿{
   "dependencies": {
-    "DataConnectionDialog": "1.2.0",
     "MicroBuild.Core": "0.2.0",
     "Microsoft.Build": "15.1.262-preview5",
+    "Microsoft.VisualStudio.ComponentModelHost": "15.0.25824-RC",
     "Microsoft.VisualStudio.Debugger.Interop.10.0": "10.0.30319",
     "Microsoft.VisualStudio.Debugger.Interop.14.0": "15.0.25726-Preview5",
     "Microsoft.VisualStudio.Imaging": "15.0.25824-RC",
@@ -21,7 +21,7 @@
     "Microsoft.VisualStudio.Text.UI.Wpf": "15.0.25824-RC",
     "Microsoft.VSSDK.BuildTools": "15.0.25825-RC",
     "System.IO.Compression.ZipFile": "4.0.1",
-    "System.Collections.Immutable": "1.2.0",
+    "System.Collections.Immutable": "1.3.0",
     "VSSDK.DTE.8": "8.0.4"
   },
   "frameworks": {
