@@ -11,18 +11,18 @@ using Microsoft.VisualStudio.Text.Editor;
 namespace Microsoft.VisualStudio.R.Package.Repl.Editor {
     internal sealed class ReplKeyProcessor : KeyProcessor {
         private readonly IWpfTextView _textView;
-        private readonly IRInteractiveWorkflow _workflow;
+        private readonly IRInteractiveWorkflowProvider _provider;
 
         public ReplKeyProcessor(IWpfTextView textView, IRInteractiveWorkflowProvider provider) {
             _textView = textView;
-            _workflow = provider.GetOrCreate();
+            _provider = provider;
         }
 
         public override void PreviewKeyDown(KeyEventArgs args) {
             var vk = KeyInterop.VirtualKeyFromKey(args.Key);
             // VK_0 to VK_Z, VK_OEM*
             if ((vk >= 0x30 && vk <= 0x5A) || (vk >= 0xBA && vk <= 0xC0) || (vk >= 0xDB && vk <= 0xDF)) {
-                var tb = _workflow.ActiveWindow?.InteractiveWindow?.CurrentLanguageBuffer;
+                var tb = _provider.GetOrCreate()?.ActiveWindow?.InteractiveWindow?.CurrentLanguageBuffer;
                 if (tb != null) {
                     var spans = _textView.TextBuffer.GetReadOnlyExtents(new Text.Span(0, _textView.TextBuffer.CurrentSnapshot.Length));
                     var caret = _textView.Caret.Position.BufferPosition;
