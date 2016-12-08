@@ -19,25 +19,32 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Editor {
         }
 
         public override void PreviewKeyDown(KeyEventArgs args) {
+            var iw = _provider.GetOrCreate()?.ActiveWindow?.InteractiveWindow;
+            if (_textView != iw?.TextView) {
+                return;
+            }
+
+            var tb = iw?.CurrentLanguageBuffer;
+            if (tb == null) {
+                return;
+            }
+
             var vk = KeyInterop.VirtualKeyFromKey(args.Key);
             // VK_0 to VK_Z, VK_OEM*
             if ((vk >= 0x30 && vk <= 0x5A) || (vk >= 0xBA && vk <= 0xC0) || (vk >= 0xDB && vk <= 0xDF)) {
-                var tb = _provider.GetOrCreate()?.ActiveWindow?.InteractiveWindow?.CurrentLanguageBuffer;
-                if (tb != null) {
-                    var spans = _textView.TextBuffer.GetReadOnlyExtents(new Text.Span(0, _textView.TextBuffer.CurrentSnapshot.Length));
-                    var caret = _textView.Caret.Position.BufferPosition;
-                    var span = spans.FirstOrDefault(s => s.Contains(caret.Position));
-                    if (span != default(Span)) {
-                        try {
-                            var viewPoint = _textView.BufferGraph.MapUpToBuffer(new SnapshotPoint(tb.CurrentSnapshot, tb.CurrentSnapshot.Length), PointTrackingMode.Positive, PositionAffinity.Predecessor, _textView.TextBuffer);
-                            if (viewPoint.HasValue) {
-                                _textView.Caret.MoveTo(viewPoint.Value);
-                            }
-                        } catch(ArgumentException) { }
-                    }
+                var spans = _textView.TextBuffer.GetReadOnlyExtents(new Text.Span(0, _textView.TextBuffer.CurrentSnapshot.Length));
+                var caret = _textView.Caret.Position.BufferPosition;
+                var span = spans.FirstOrDefault(s => s.Contains(caret.Position));
+                if (span != default(Span)) {
+                    try {
+                        var viewPoint = _textView.BufferGraph.MapUpToBuffer(new SnapshotPoint(tb.CurrentSnapshot, tb.CurrentSnapshot.Length), PointTrackingMode.Positive, PositionAffinity.Predecessor, _textView.TextBuffer);
+                        if (viewPoint.HasValue) {
+                            _textView.Caret.MoveTo(viewPoint.Value);
+                        }
+                    } catch (ArgumentException) { }
                 }
+                base.PreviewKeyDown(args);
             }
-            base.PreviewKeyDown(args);
         }
     }
 }

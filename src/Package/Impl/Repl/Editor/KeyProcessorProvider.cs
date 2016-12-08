@@ -23,10 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Editor {
         }
 
         public KeyProcessor GetAssociatedProcessor(IWpfTextView wpfTextView) {
-            if(wpfTextView == _provider.GetOrCreate()?.ActiveWindow?.InteractiveWindow?.TextView) {
-                return wpfTextView.Properties.GetOrCreateSingletonProperty(() => new ReplKeyProcessor(wpfTextView, _provider));
-            }
-            return null;
+            return wpfTextView.Properties.GetOrCreateSingletonProperty(() => new ReplKeyProcessor(wpfTextView, _provider));
         }
     }
 }
