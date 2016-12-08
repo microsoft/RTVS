@@ -1,6 +1,5 @@
 ﻿{
   "dependencies": {
-    "DataConnectionDialog": "1.2.0",
     "MicroBuild.Core": "0.2.0",
     "Microsoft.Build": "14.3.0",
     "Microsoft.SqlServer.DacFx.x86": "130.3450.1",

@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Security.AccessControl;
+using System.Security.Principal;
 using Microsoft.Common.Core.IO;
 
 namespace Microsoft.Common.Core {
@@ -94,6 +96,42 @@ namespace Microsoft.Common.Core {
                 return path + slash;
             }
             return Path.DirectorySeparatorChar.ToString();
+        }
+
+        public static bool HasReadPermissions(this string path) {
+            try {
+                Directory.GetFiles(path);
+                return true;
+            } catch(IOException) { } catch(UnauthorizedAccessException) { }
+            return false;
+        }
+
+        public static bool HasWritePermission(this string path) {
+            var accessControlList = Directory.GetAccessControl(path);
+            if (accessControlList == null) {
+                return false;
+            }
+
+            var accessRules = accessControlList.GetAccessRules(true, true, typeof(SecurityIdentifier));
+            if (accessRules == null) {
+                return false;
+            }
+
+            bool allowWrite = false;
+            bool denyWrite = false;
+            var currentUser = WindowsIdentity.GetCurrent();
+            var currentPrincipal = new WindowsPrincipal(currentUser);
+
+            foreach (FileSystemAccessRule rule in accessRules) {
+                if ((FileSystemRights.Write & rule.FileSystemRights) == FileSystemRights.Write) {
+                    if (currentUser.User.Equals(rule.IdentityReference) ||
+                        currentPrincipal.IsInRole((SecurityIdentifier)rule.IdentityReference)) {
+                        allowWrite = rule.AccessControlType == AccessControlType.Allow;
+                        denyWrite = rule.AccessControlType == AccessControlType.Deny;
+                    }
+                }
+            }
+            return allowWrite && !denyWrite;
         }
     }
 }
