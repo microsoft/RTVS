@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -410,7 +411,11 @@ namespace Microsoft.R.Host.Client.Session {
 
                     var wd = startupInfo.WorkingDirectory;
                     if (!IsRemote && !string.IsNullOrEmpty(wd) && wd.HasReadPermissions()) {
-                        await evaluation.SetWorkingDirectoryAsync(wd);
+                        try {
+                            await evaluation.SetWorkingDirectoryAsync(wd);
+                        } catch(REvaluationException) {
+                            await evaluation.SetDefaultWorkingDirectoryAsync();
+                        }
                     } else {
                         await evaluation.SetDefaultWorkingDirectoryAsync();
                     }
