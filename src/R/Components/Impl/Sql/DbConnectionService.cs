@@ -24,6 +24,7 @@ namespace Microsoft.R.Components.Sql {
                 using (var dlg = new DataConnectionDialog()) {
                     DataSource.AddStandardDataSources(dlg);
                     dlg.SelectedDataSource = DataSource.SqlDataSource;
+                    dlg.SelectedDataProvider = DataProvider.SqlDataProvider;
                     try {
                         dlg.ConnectionString = (odbcConnectionString.OdbcToSqlClient() 
                                                     ?? _odbcConnectionString.OdbcToSqlClient()) 
