@@ -15,7 +15,8 @@ namespace Microsoft.R.Host.Client.Host {
 
         Task<RHost> ConnectAsync(BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken));
         Task TerminateSessionAsync(string name, CancellationToken cancellationToken = default(CancellationToken));
-        Task<string> HandleUrlAsync(string url, CancellationToken cancellationToken);
+        Task<string> HandleUrlAsync(string url, CancellationToken cancellationToken = default(CancellationToken));
         Task<T> GetHostInformationAsync<T>(CancellationToken cancellationToken = default(CancellationToken));
+        Task<bool> DeleteRemoteUserProfileAsync(CancellationToken cancellationToken = default(CancellationToken));
     }
 }

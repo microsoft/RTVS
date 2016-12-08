@@ -25,29 +25,32 @@ namespace Microsoft.R.Host.Broker.UserProfile {
 
         [HttpDelete]
         public async Task<IActionResult> GetAsync() {
-            _sessionManager.CloseAndBlockSessionsCreationForUser(User.Identity);
+            RUserProfileServiceResponse result = null;
+            try {
+                _sessionManager.CloseAndBlockSessionsCreationForUser(User.Identity);
 
-            var username = new StringBuilder(NativeMethods.CREDUI_MAX_USERNAME_LENGTH + 1);
-            var domain = new StringBuilder(NativeMethods.CREDUI_MAX_PASSWORD_LENGTH + 1);
-            uint error = NativeMethods.CredUIParseUserName(User.Identity.Name, username, username.Capacity, domain, domain.Capacity);
-            if (error != 0) {
-                throw new ArgumentException(Resources.Error_UserNameParse.FormatInvariant(User.Identity.Name, error));
-            }
+                var username = new StringBuilder(NativeMethods.CREDUI_MAX_USERNAME_LENGTH + 1);
+                var domain = new StringBuilder(NativeMethods.CREDUI_MAX_PASSWORD_LENGTH + 1);
+                uint error = NativeMethods.CredUIParseUserName(User.Identity.Name, username, username.Capacity, domain, domain.Capacity);
+                if (error != 0) {
+                    throw new ArgumentException(Resources.Error_UserNameParse.FormatInvariant(User.Identity.Name, error));
+                }
 
 #if DEBUG
-            CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMinutes(10));
+                CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMinutes(10));
 #else
             CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
 #endif
 
-            string password = User.FindFirst(Claims.Password)?.Value;
-            if (string.IsNullOrWhiteSpace(password)) {
-                return NotFound();
+                string password = User.FindFirst(Claims.Password)?.Value;
+                if (string.IsNullOrWhiteSpace(password)) {
+                    return NotFound();
+                }
+
+                result = await _userProfileManager.DeleteProfileAsync(RUserProfileServiceRequest.Create(username.ToString(), domain.ToString(), password), cts.Token);
+            } finally {
+                _sessionManager.UnblockSessionCreationForUser(User.Identity);
             }
-
-            var result = await _userProfileManager.DeleteProfileAsync(RUserProfileServiceRequest.Create(username.ToString(), domain.ToString(), password), cts.Token) ;
-
-            _sessionManager.UnblockSessionCreationForUser(User.Identity);
 
             if(result.Error == 0) {
                 return Ok();

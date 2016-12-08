@@ -83,7 +83,9 @@ namespace Microsoft.R.Host.Broker.Sessions {
 
         public void UnblockSessionCreationForUser(IIdentity user) {
             lock (_blockedUsers) {
-                _blockedUsers.Remove(user.Name);
+                if (_blockedUsers.Contains(user.Name)) {
+                    _blockedUsers.Remove(user.Name);
+                }
             }
         }
 

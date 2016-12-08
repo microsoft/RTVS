@@ -416,6 +416,33 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to User profile and all files under the user directory will be permanently deleted from the remote machine {0}. Your connection will also be disconnected. Reconnecting to the same remote machine will create a new profile. Are you sure you want to delete the user profile from the machine {0}?.
+        /// </summary>
+        public static string DeleteProfile_DeletionWarning {
+            get {
+                return ResourceManager.GetString("DeleteProfile_DeletionWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to delete user profile. Please see longs for the RUserProfileService on the remote machine {0}. Requires admin access to examine the logs..
+        /// </summary>
+        public static string DeleteProfile_Error {
+            get {
+                return ResourceManager.GetString("DeleteProfile_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User profile successfully deleted from remote machine {0}..
+        /// </summary>
+        public static string DeleteProfile_Success {
+            get {
+                return ResourceManager.GetString("DeleteProfile_Success", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Dismiss.
         /// </summary>
         public static string Dismiss {
