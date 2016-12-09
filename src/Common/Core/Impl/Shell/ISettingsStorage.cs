@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Threading.Tasks;
 
 namespace Microsoft.Common.Core.Shell {
     public interface ISettingsStorage {
@@ -9,6 +10,6 @@ namespace Microsoft.Common.Core.Shell {
         object GetSetting(string name, Type t);
         T GetSetting<T>(string name, T defaultValue);
         void SetSetting(string name, object value);
-        void Persist();
+        Task PersistAsync();
     }
 }

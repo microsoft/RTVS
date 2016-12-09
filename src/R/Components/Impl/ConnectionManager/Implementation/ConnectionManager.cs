@@ -192,9 +192,14 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             return newConnection;
         }
 
-        private Dictionary<string, IConnection> GetConnectionsFromSettings() => _settings.Connections
-            .Select(c => CreateConnection(c.Name, c.Path, c.RCommandLineArguments, c.IsUserCreated))
-            .ToDictionary(k => k.Name);
+        private Dictionary<string, IConnection> GetConnectionsFromSettings() {
+            if(_settings.Connections == null) {
+                return new Dictionary<string, IConnection>();
+            }
+            return _settings.Connections
+                            .Select(c => CreateConnection(c.Name, c.Path, c.RCommandLineArguments, c.IsUserCreated))
+                            .ToDictionary(k => k.Name);
+        }
 
         private void SaveConnectionsToSettings() {
             _settings.Connections = RecentConnections

@@ -20,7 +20,6 @@ namespace Microsoft.Common.Core.Services {
         ISecurityService Security { get; }
         ITelemetryService Telemetry { get; }
         ITaskService Tasks { get; }
-        ISettingsStorage Settings { get; }
         IMainThread MainThread { get; }
     }
 }

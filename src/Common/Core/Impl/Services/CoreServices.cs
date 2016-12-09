@@ -15,7 +15,6 @@ namespace Microsoft.Common.Core.Services {
     public sealed class CoreServices : ICoreServices {
         public CoreServices(IApplicationConstants appConstants
             , ITelemetryService telemetry
-            , ISettingsStorage settings
             , ITaskService tasks
             , IMainThread mainThread
             , ISecurityService security) {
@@ -27,7 +26,6 @@ namespace Microsoft.Common.Core.Services {
 
             ProcessServices = new ProcessServices();
             FileSystem = new FileSystem();
-            Settings = settings;
             MainThread = mainThread;
 
             Log = LoggingServices.GetOrCreateLog(appConstants.ApplicationName);
@@ -38,7 +36,6 @@ namespace Microsoft.Common.Core.Services {
             , ILoggingPermissions permissions
             , ISecurityService security
             , ITaskService tasks
-            , ISettingsStorage settings
             , IMainThread mainThread
             , IActionLog log
             , IFileSystem fs
@@ -55,7 +52,6 @@ namespace Microsoft.Common.Core.Services {
             ProcessServices = ps;
             Registry = registry;
             FileSystem = fs;
-            Settings = settings;
             MainThread = mainThread;
         }
 
@@ -67,7 +63,6 @@ namespace Microsoft.Common.Core.Services {
         public ITelemetryService Telemetry { get; }
         public ITaskService Tasks { get; }
         public ILoggingServices LoggingServices { get; }
-        public ISettingsStorage Settings { get; }
         public IMainThread MainThread { get; }
     }
 }

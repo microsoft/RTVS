@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Enums;
 using Microsoft.Common.Core.Extensions;
@@ -24,7 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
     [Export(typeof(IRSettings))]
     [Export(typeof(IRToolsSettings))]
     [Export(typeof(IRPersistentSettings))]
-    internal sealed class RToolsSettingsImplementation : BindableBase, IRToolsSettings, IRPersistentSettings {
+    internal sealed class RToolsSettingsImplementation : BindableBase, IRPersistentSettings {
         private const int MaxDirectoryEntries = 8;
         private readonly ISettingsStorage _settings;
         private readonly ILoggingPermissions _loggingPermissions;
@@ -107,7 +108,10 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
 
         public ConnectionInfo[] Connections {
             get { return _connections; }
-            set { SetProperty(ref _connections, value); }
+            set {
+                SetProperty(ref _connections, value);
+                SaveSettingsAsync().DoNotWait();
+            }
         }
 
         public ConnectionInfo LastActiveConnection {
@@ -217,9 +221,16 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             _loggingPermissions.CurrentVerbosity = LogVerbosity;
         }
 
-        public void SaveSettings() {
+        public Task SaveSettingsAsync() {
             _settings.SavePropertyValues(this);
-            _settings.Persist();
+            return _settings.PersistAsync();
+        }
+
+        public void Dispose() {
+            if (_settings != null) {
+                SaveSettingsAsync().Wait(5000);
+                ((IDisposable)_settings).Dispose();
+            }
         }
         #endregion
     }

@@ -17,6 +17,7 @@ using Microsoft.Languages.Editor.Host;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.R.Components.Controller;
+using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Interop;
@@ -39,23 +40,29 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
     [Export(typeof(IEditorShell))]
     [Export(typeof(IApplicationShell))]
     [Export(typeof(IMainThread))]
-    public sealed class VsAppShell : IApplicationShell, IMainThread, IIdleTimeService, IDisposable {
+    public sealed class VsAppShell : IApplicationShell, IMainThread, IIdleTimeService, IVsShellPropertyEvents, IDisposable {
         private static VsAppShell _instance;
         private static IApplicationShell _testShell;
 
         private readonly ApplicationConstants _appConstants;
         private readonly ICoreServices _coreServices;
+        private readonly IRPersistentSettings _settings;
         private IdleTimeSource _idleTimeSource;
         private ExportProvider _exportProvider;
         private ICompositionService _compositionService;
+        private IVsShell _vsShell;
+        private uint _vsShellEventsCookie;
 
         [ImportingConstructor]
-        public VsAppShell(ITelemetryService telemetryService, ISettingsStorage settingsStorage) {
+        public VsAppShell(ITelemetryService telemetryService, IRPersistentSettings settings) {
             _appConstants = new ApplicationConstants();
             ProgressDialog = new VsProgressDialog(this);
             FileDialog = new VsFileDialog(this);
 
-            _coreServices = new CoreServices(_appConstants, telemetryService, settingsStorage, new VsTaskService(), this, new SecurityService(this));
+            _coreServices = new CoreServices(_appConstants, telemetryService, new VsTaskService(), this, new SecurityService(this));
+
+            _settings = settings;
+            _settings.LoadSettings();
         }
 
         public static void EnsureInitialized() {
@@ -79,16 +86,26 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
             _appConstants.Initialize();
 
+            CheckVsStarted();
+
             _idleTimeSource = new IdleTimeSource();
             _idleTimeSource.Idle += OnIdle;
             _idleTimeSource.ApplicationClosing += OnApplicationClosing;
-            _idleTimeSource.ApplicationStarted += OnApplicationStarted;
 
             EditorShell.Current = this;
         }
 
-        private void OnApplicationStarted(object sender, EventArgs e) {
-            Started?.Invoke(this, EventArgs.Empty);
+        private void CheckVsStarted() {
+            _vsShell = (IVsShell)VsPackage.GetGlobalService(typeof(SVsShell));
+            object value;
+            _vsShell.GetProperty((int)__VSSPROPID4.VSSPROPID_ShellInitialized, out value);
+            if (value is bool) {
+                if ((bool)value) {
+                    Started?.Invoke(this, EventArgs.Empty);
+                } else {
+                    _vsShell.AdviseShellPropertyChanges(this, out _vsShellEventsCookie);
+                }
+            }
         }
 
         private void OnApplicationClosing(object sender, EventArgs e) {
@@ -363,7 +380,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         #region IMainThread
         public int ThreadId => MainThread.ManagedThreadId;
         public void Post(Action action, CancellationToken cancellationToken) {
-             if(MainThreadDispatcher.HasShutdownStarted) {
+            if (MainThreadDispatcher.HasShutdownStarted) {
                 throw new InvalidOperationException("Unable to transition to UI thread: dispatcher has started shutdown.");
             }
 
@@ -377,6 +394,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         #endregion
 
         public void Dispose() {
+            DisconnectFromShellEvents();
+            _settings?.Dispose();
             _coreServices?.LoggingServices?.Dispose();
         }
 
@@ -406,6 +425,21 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 ErrorHandler.ThrowOnFailure(shell.LoadPackage(ref guid, out package), VSConstants.E_FAIL);
             }
             return package;
+        }
+
+        public int OnShellPropertyChange(int propid, object var) {
+            if (propid == (int)__VSSPROPID4.VSSPROPID_ShellInitialized) {
+                Started?.Invoke(this, EventArgs.Empty);
+                DisconnectFromShellEvents();
+            }
+            return VSConstants.S_OK;
+        }
+
+        private void DisconnectFromShellEvents() {
+            if (_vsShell != null && _vsShellEventsCookie != 0) {
+                _vsShell.UnadviseShellPropertyChanges(_vsShellEventsCookie);
+                _vsShellEventsCookie = 0;
+            }
         }
 
         public ICoreServices Services => _coreServices;

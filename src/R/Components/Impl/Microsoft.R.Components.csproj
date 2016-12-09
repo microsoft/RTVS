@@ -24,10 +24,6 @@
     <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Data.ConnectionUI">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(LibDirectory)\Microsoft.Data.ConnectionUI.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Data.ConnectionUI.Dialog">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(LibDirectory)\Microsoft.Data.ConnectionUI.Dialog.dll</HintPath>

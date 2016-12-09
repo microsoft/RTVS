@@ -225,6 +225,7 @@
     <Compile Include="Repl\SetDirectoryCommandTest.cs" />
     <Compile Include="Repl\ReplCommandTest.cs" />
     <Compile Include="Repl\CurrentDirectoryTest.cs" />
+    <Compile Include="Settings\PropertyNameTest.cs" />
     <Compile Include="Settings\SettingsStorageTest.cs" />
     <Compile Include="Settings\TestSettingsManager.cs" />
     <Compile Include="Settings\TestSettingsStore.cs" />
