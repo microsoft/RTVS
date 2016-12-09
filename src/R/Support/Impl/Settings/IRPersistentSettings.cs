@@ -5,7 +5,7 @@ using System;
 using System.Threading.Tasks;
 
 namespace Microsoft.R.Support.Settings {
-    public interface IRPersistentSettings: IDisposable {
+    public interface IRPersistentSettings: IRToolsSettings, IDisposable {
         void LoadSettings();
         Task SaveSettingsAsync();
     }

@@ -17,6 +17,7 @@ using Microsoft.Languages.Editor.Host;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.R.Components.Controller;
+using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Interop;
@@ -45,6 +46,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         private readonly ApplicationConstants _appConstants;
         private readonly ICoreServices _coreServices;
+        private readonly IRPersistentSettings _settings;
         private IdleTimeSource _idleTimeSource;
         private ExportProvider _exportProvider;
         private ICompositionService _compositionService;
@@ -52,12 +54,15 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private uint _vsShellEventsCookie;
 
         [ImportingConstructor]
-        public VsAppShell(ITelemetryService telemetryService, ISettingsStorage settingsStorage) {
+        public VsAppShell(ITelemetryService telemetryService, IRPersistentSettings settings) {
             _appConstants = new ApplicationConstants();
             ProgressDialog = new VsProgressDialog(this);
             FileDialog = new VsFileDialog(this);
 
-            _coreServices = new CoreServices(_appConstants, telemetryService, settingsStorage, new VsTaskService(), this, new SecurityService(this));
+            _coreServices = new CoreServices(_appConstants, telemetryService, new VsTaskService(), this, new SecurityService(this));
+
+            _settings = settings;
+            _settings.LoadSettings();
         }
 
         public static void EnsureInitialized() {
@@ -390,6 +395,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         public void Dispose() {
             DisconnectFromShellEvents();
+            _settings?.Dispose();
             _coreServices?.LoggingServices?.Dispose();
         }
 

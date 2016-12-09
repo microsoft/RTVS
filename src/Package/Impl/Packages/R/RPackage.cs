@@ -102,7 +102,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         public const string ProductName = "R Tools";
 
         private IPackageIndex _packageIndex;
-        private IRPersistentSettings _settings;
 
         public static IRPackage Current { get; private set; }
 
@@ -114,9 +113,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 return;
             }
 
-            _settings = VsAppShell.Current.ExportProvider.GetExportedValue<IRPersistentSettings>();
-            _settings.LoadSettings();
-
             VsWpfOverrides.Apply();
             CranMirrorList.Download();
 
@@ -124,7 +120,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             ProjectIconProvider.LoadProjectImages();
             LogCleanup.DeleteLogsAsync(DiagnosticLogs.DaysToRetain);
-
 
             RtvsTelemetry.Initialize(_packageIndex, VsAppShell.Current.ExportProvider.GetExportedValue<IRSettings>());
 
@@ -145,8 +140,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             CsvAppFileIO.Close(new FileSystem());
 
             RtvsTelemetry.Current?.Dispose();
-
-            _settings.Dispose();
             VsAppShell.Terminate();
 
             base.Dispose(disposing);
