@@ -67,8 +67,9 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
                 var value = GetValueFromStore(name, t);
                 if (value != null) {
-                    _settingsCache[name] = Setting.FromStoredValue(value, t);
-                    return value;
+                    var newSetting = Setting.FromStoredValue(value, t);
+                    _settingsCache[name] = newSetting;
+                    return newSetting.Value;
                 }
             }
             return null;
