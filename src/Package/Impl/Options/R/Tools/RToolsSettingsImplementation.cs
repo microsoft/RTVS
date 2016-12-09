@@ -225,6 +225,13 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             _settings.SavePropertyValues(this);
             return _settings.PersistAsync();
         }
+
+        public void Dispose() {
+            if (_settings != null) {
+                SaveSettingsAsync().Wait(5000);
+                ((IDisposable)_settings).Dispose();
+            }
+        }
         #endregion
     }
 }

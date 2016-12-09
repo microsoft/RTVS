@@ -5,9 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
-using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Settings;
@@ -33,7 +31,6 @@ using Microsoft.VisualStudio.R.Package.Packages;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings;
-using Microsoft.VisualStudio.R.Package.RClient;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Telemetry;
@@ -149,7 +146,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             RtvsTelemetry.Current?.Dispose();
 
-            _settings?.SaveSettingsAsync().Wait(5000);
+            _settings.Dispose();
             VsAppShell.Terminate();
 
             base.Dispose(disposing);

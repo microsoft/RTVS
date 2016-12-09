@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Linq;
@@ -28,7 +29,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
     /// Provides methods for saving values in VS settings.
     /// </summary>
     [Export(typeof(ISettingsStorage))]
-    internal sealed class VsSettingsStorage : ISettingsStorage {
+    internal sealed class VsSettingsStorage : ISettingsStorage, IDisposable {
         /// <summary>
         /// Settings cache. Persisted to storage when package is unloaded.
         /// </summary>
@@ -36,12 +37,27 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private readonly object _lock = new object();
 
         private ISettingsManager _settingsManager;
+        private ISettingsSubset _subset;
+
         private ISettingsManager SettingsManager {
             get {
                 if (_settingsManager == null) {
                     _settingsManager = RPackage.GetGlobalService(typeof(SVsSettingsPersistenceManager)) as ISettingsManager;
+                    _subset = _settingsManager.GetSubset(RPackage.ProductName + "*");
+                    _subset.SettingChangedAsync += OnSettingChangedAsync;
                 }
                 return _settingsManager;
+            }
+        }
+
+        private Task OnSettingChangedAsync(object sender, PropertyChangedEventArgs args) {
+            // TODO: update connections and cache dynamically
+            return Task.CompletedTask;
+        }
+
+        public void Dispose() {
+            if (_subset != null) {
+                _subset.SettingChangedAsync -= OnSettingChangedAsync;
             }
         }
 
