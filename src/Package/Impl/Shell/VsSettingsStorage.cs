@@ -108,7 +108,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         public void SetSetting(string name, object newValue) {
             lock (_lock) {
                 if (!_settingsCache.ContainsKey(name)) {
-                    _settingsCache[name] = new Setting(newValue);
+                    _settingsCache[name] = new Setting(newValue, true);
                 } else {
                     _settingsCache[name].SetValue(newValue);
                 }
@@ -145,8 +145,9 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             public object Value { get; private set; }
             public bool Changed { get; set; }
 
-            public Setting(object value) {
+            public Setting(object value, bool changed = false) {
                 Value = value;
+                Changed = changed;
             }
 
             public object ToSimpleType() {
