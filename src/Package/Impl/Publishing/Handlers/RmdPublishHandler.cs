@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
@@ -55,11 +56,11 @@ namespace Microsoft.VisualStudio.R.Package.Publishing {
                 
                 try {
                     appShell.DispatchOnUIThread(() => { statusBar?.Progress(ref cookie, 1, Resources.Info_MarkdownSendingInputFile.FormatInvariant(Path.GetFileName(inputFilePath)), 0, 3); });
-                    var rmd = await fts.SendFileAsync(inputFilePath);
+                    var rmd = await fts.SendFileAsync(inputFilePath, CancellationToken.None);
                     appShell.DispatchOnUIThread(() => { statusBar?.Progress(ref cookie, 1, Resources.Info_MarkdownPublishingFile.FormatInvariant(Path.GetFileName(inputFilePath)), 1, 3); });
                     var publishResult = await session.EvaluateAsync<ulong>($"rtvs:::rmarkdown_publish(blob_id = {rmd.Id}, output_format = {format.ToRStringLiteral()}, encoding = 'cp{codePage}')", REvaluationKind.Normal);
                     appShell.DispatchOnUIThread(() => { statusBar?.Progress(ref cookie, 1, Resources.Info_MarkdownGetOutputFile.FormatInvariant(Path.GetFileName(outputFilePath)), 2, 3); });
-                    await fts.FetchFileAsync(new RBlobInfo(publishResult), outputFilePath);
+                    await fts.FetchFileAsync(new RBlobInfo(publishResult), outputFilePath, CancellationToken.None);
                     appShell.DispatchOnUIThread(() => { statusBar?.Progress(ref cookie, 1, Resources.Info_MarkdownPublishComplete.FormatInvariant(Path.GetFileName(outputFilePath)), 3, 3); });
                 } finally {
                     appShell.DispatchOnUIThread(() => {

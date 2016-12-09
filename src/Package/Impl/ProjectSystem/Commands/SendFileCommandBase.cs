@@ -32,12 +32,12 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
             _fs = fs;
         }
 
-        protected async Task<bool> SendToRemoteAsync(IEnumerable<string> files, string projectDir, string projectName, string remotePath) {
+        protected async Task<bool> SendToRemoteAsync(IEnumerable<string> files, string projectDir, string projectName, string remotePath, CancellationToken cancellationToken) {
             IVsStatusbar statusBar = _appShell.GetGlobalService<IVsStatusbar>(typeof(SVsStatusbar));
-            return await SendToRemoteWorkerAsync(files, projectDir, projectName, remotePath, statusBar);
+            return await SendToRemoteWorkerAsync(files, projectDir, projectName, remotePath, statusBar, cancellationToken);
         }
 
-        private async Task<bool> SendToRemoteWorkerAsync(IEnumerable<string> files, string projectDir, string projectName, string remotePath, IVsStatusbar statusBar) {
+        private async Task<bool> SendToRemoteWorkerAsync(IEnumerable<string> files, string projectDir, string projectName, string remotePath, IVsStatusbar statusBar, CancellationToken cancellationToken) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             string currentStatusText;
@@ -73,21 +73,19 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
 
                     total = (uint)_fs.FileSize(compressedFilePath);
 
-                    var remoteFile = await fts.SendFileAsync(compressedFilePath, true, new Progress<long>((b) => {
+                    var remoteFile = await fts.SendFileAsync(compressedFilePath, cancellationToken, true, new Progress<long>((b) => {
                         statusBar.Progress(ref cookie, 1, Resources.Info_TransferringFiles, (uint)b, total);
                     }));
 
                     statusBar.SetText(Resources.Info_ExtractingFilesInRHost);
-                    await session.EvaluateAsync<string>($"rtvs:::save_to_project_folder({remoteFile.Id}, {projectName.ToRStringLiteral()}, '{remotePath.ToRPath()}')", REvaluationKind.Normal);
+                    await session.EvaluateAsync<string>($"rtvs:::save_to_project_folder({remoteFile.Id}, {projectName.ToRStringLiteral()}, '{remotePath.ToRPath()}')", REvaluationKind.Normal, cancellationToken);
 
                     _appShell.DispatchOnUIThread(() => {
                         outputWindow.WriteLine(Resources.Info_TransferringFilesDone);
                     });
                 }
-            } catch(UnauthorizedAccessException uaex) {
-                _appShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotTransferFile, uaex.Message));
-            } catch (IOException ioex) {
-                _appShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotTransferFile, ioex.Message));
+            } catch(Exception ex) when (ex is UnauthorizedAccessException || ex is IOException) {
+                _appShell.ShowErrorMessage(Resources.Error_CannotTransferFile.FormatInvariant(ex.Message));
             } catch (RHostDisconnectedException rhdex) {
                 _appShell.DispatchOnUIThread(() => {
                     outputWindow.WriteErrorLine(Resources.Error_CannotTransferNoRSession.FormatInvariant(rhdex.Message));

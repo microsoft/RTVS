@@ -47,7 +47,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
 
             if (context.Request.InputStream.CanSeek && context.Request.InputStream.Length > 0) {
                 using (Stream reqStream = await request.GetRequestStreamAsync()) {
-                    await context.Request.InputStream.CopyAndFlushAsync(reqStream);
+                    await context.Request.InputStream.CopyAndFlushAsync(reqStream, ct);
                 }
             }
 
@@ -73,7 +73,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
                         SetResponseHeaders(response, context.Response, localBaseUrl, remoteBaseUrl);
                         using (Stream respStream = response.GetResponseStream())
                         using (Stream outStream = context.Response.OutputStream) {
-                            await respStream.CopyAndFlushAsync(outStream);
+                            await respStream.CopyAndFlushAsync(outStream, ct);
                         }
                         response.Close();
                     }

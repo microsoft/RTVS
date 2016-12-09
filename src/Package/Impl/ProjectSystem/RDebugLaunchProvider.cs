@@ -96,7 +96,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
             var activeProject = _pss.GetActiveProject();
             if (transferFiles && Session.IsRemote && activeProject != null) {
-                await SendProjectAsync(activeProject, remotePath, filterString);
+                await SendProjectAsync(activeProject, remotePath, filterString, CancellationToken.None);
             }
 
             // user must set the path for local or remote cases
@@ -146,7 +146,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             await _interactiveWorkflow.Operations.SourceFileAsync(file, echo: false).SilenceException<Exception>();
         }
 
-        private async Task SendProjectAsync(EnvDTE.Project project, string remotePath, string filterString) {
+        private async Task SendProjectAsync(EnvDTE.Project project, string remotePath, string filterString, CancellationToken cancellationToken) {
             ProgressOutputWriter.WriteLine(Resources.Info_PreparingProjectForTransfer);
 
             var projectDir = Path.GetDirectoryName(project.FullName);
@@ -168,8 +168,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             
             using (var fts = new DataTransferSession(Session, FileSystem)) {
                 ProgressOutputWriter.WriteLine(Resources.Info_TransferringFiles);
-                var remoteFile = await fts.SendFileAsync(compressedFilePath);
-                await Session.EvaluateAsync<string>($"rtvs:::save_to_project_folder({remoteFile.Id}, {projectName.ToRStringLiteral()}, '{remotePath.ToRPath()}')", REvaluationKind.Normal);
+                var remoteFile = await fts.SendFileAsync(compressedFilePath, cancellationToken);
+                await Session.EvaluateAsync<string>($"rtvs:::save_to_project_folder({remoteFile.Id}, {projectName.ToRStringLiteral()}, '{remotePath.ToRPath()}')", REvaluationKind.Normal, cancellationToken);
             }
 
             ProgressOutputWriter.WriteLine(Resources.Info_TransferringFilesDone);
