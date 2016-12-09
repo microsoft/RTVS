@@ -29,15 +29,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
     /// </summary>
     [Export(typeof(ISettingsStorage))]
     internal sealed class VsSettingsStorage : ISettingsStorage {
-        class Setting {
-            public object Value;
-            public bool Changed;
-
-            public Setting(object value) {
-                Value = value;
-            }
-        }
-
         /// <summary>
         /// Settings cache. Persisted to storage when package is unloaded.
         /// </summary>
@@ -76,7 +67,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
                 var value = GetValueFromStore(name, t);
                 if (value != null) {
-                    _settingsCache[name] = new Setting(value);
+                    _settingsCache[name] = Setting.FromStoredValue(value, t);
                     return value;
                 }
             }
@@ -97,10 +88,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 if (!_settingsCache.ContainsKey(name)) {
                     _settingsCache[name] = new Setting(newValue);
                 } else {
-                    if (!Object.Equals(_settingsCache[name].Value, newValue)) {
-                        _settingsCache[name].Changed = true;
-                        _settingsCache[name].Value = newValue;
-                    }
+                    _settingsCache[name].SetValue(newValue);
                 }
             }
         }
@@ -114,16 +102,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
             foreach (var kvp in kvps) {
                 var persistentName = GetPersistentName(kvp.Key);
-                object value = null;
                 var setting = kvp.Value;
-                if (setting.Value != null) {
-                    value = setting.Value;
-                    if (!IsSimpleType(value.GetType())) {
-                        // Must escape JSON since VS roaming settings are converted to JSON
-                        value = JsonConvert.ToString(JsonConvert.SerializeObject(value));
-                    }
-                }
-                await SettingsManager.SetValueAsync(persistentName, value, false);
+                await SettingsManager.SetValueAsync(persistentName, setting.ToSimpleType(), false);
                 setting.Changed = false;
             }
         }
@@ -134,22 +114,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private object GetValueFromStore(string name, Type t) {
             object value;
             var result = SettingsManager.TryGetValue(GetPersistentName(name), out value);
-            if (value is string && !IsSimpleType(t)) {
-                // Must unescape JSON since VS roaming settings are converted to JSON
-                var token = Json.ParseToken((string)value);
-                try {
-                    var str = token.ToObject<string>();
-                    value = Json.DeserializeObject(str, t);
-                } catch (ArgumentException) {
-                    value = null; // Protect against stale or corrupted data in the roaming storage
-                }
-            } else if ((value is Int64 && t != typeof(Int64)) || (value is Int32 && t != typeof(Int32))) {
-                // VS roaming setting manager roams integer values and enums as integers
-                value = Convert.ToInt32(value);
-                if (t.IsEnum && t.IsEnumDefined(value)) {
-                    value = Enum.ToObject(t, value);
-                }
-            }
             return result == GetValueResult.Success ? value : null;
         }
 
@@ -162,6 +126,57 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                    t == typeof(uint) ||
                    t == typeof(double) ||
                    t == typeof(float);
+        }
+
+        class Setting {
+            public object Value { get; private set; }
+            public bool Changed { get; set; }
+
+            public Setting(object value) {
+                Value = value;
+            }
+
+            public object ToSimpleType() {
+                if (Value != null && !IsSimpleType(Value.GetType())) {
+                    // Must escape JSON since VS roaming settings are converted to JSON
+                    return JsonConvert.ToString(JsonConvert.SerializeObject(Value));
+                }
+                return Value;
+            }
+
+            public void SetValue(object newValue) {
+                if (!Object.Equals(Value, newValue)) {
+                    Changed = true;
+                    Value = newValue;
+                }
+            }
+
+            public static Setting FromStoredValue(object o, Type t) {
+                object value = null;
+
+                if (o is string && !IsSimpleType(t)) {
+                    // Must unescape JSON since VS roaming settings are converted to JSON
+                    var token = Json.ParseToken((string)o);
+                    try {
+                        var str = token.ToObject<string>();
+                        value = Json.DeserializeObject(str, t);
+                    } catch (ArgumentException) {
+                        value = null; // Protect against stale or corrupted data in the roaming storage
+                    }
+                } else {
+                    if (o is Int64 && t != typeof(Int64)) {
+                        o = Convert.ToInt32(o);
+                    }
+
+                    // VS roaming setting manager roams integer values and enums as integers
+                    if (o is Int32 && t.IsEnum && t.IsEnumDefined(o)) {
+                        value = Enum.ToObject(t, o);
+                    } else {
+                        value = o;
+                    }
+                }
+                return new Setting(value);
+            }
         }
     }
 }
