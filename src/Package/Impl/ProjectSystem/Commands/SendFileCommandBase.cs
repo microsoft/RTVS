@@ -73,9 +73,9 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
 
                     total = (uint)_fs.FileSize(compressedFilePath);
 
-                    var remoteFile = await fts.SendFileAsync(compressedFilePath, cancellationToken, true, new Progress<long>((b) => {
+                    var remoteFile = await fts.SendFileAsync(compressedFilePath, true, new Progress<long>((b) => {
                         statusBar.Progress(ref cookie, 1, Resources.Info_TransferringFiles, (uint)b, total);
-                    }));
+                    }), cancellationToken);
 
                     statusBar.SetText(Resources.Info_ExtractingFilesInRHost);
                     await session.EvaluateAsync<string>($"rtvs:::save_to_project_folder({remoteFile.Id}, {projectName.ToRStringLiteral()}, '{remotePath.ToRPath()}')", REvaluationKind.Normal, cancellationToken);

@@ -55,7 +55,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
             var session = _interactiveWorkflow.RSession;
             if (session.IsRemote) {
                 using (DataTransferSession dts = new DataTransferSession(_interactiveWorkflow.RSession, new FileSystem())) {
-                    string remotePath = await dts.CopyFileToRemoteTempAsync(filePath, CancellationToken.None);
+                    // TODO: add progress indication and cancellation
+                    string remotePath = await dts.CopyFileToRemoteTempAsync(filePath, true, null, CancellationToken.None);
                     await _interactiveWorkflow.Operations.SourceFileAsync(remotePath, _echo, textView.TextBuffer.GetEncoding());
                 }
             } else {

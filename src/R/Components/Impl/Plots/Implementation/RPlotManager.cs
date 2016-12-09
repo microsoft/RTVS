@@ -345,7 +345,8 @@ namespace Microsoft.R.Components.Plots.Implementation {
             try {
                 var result = await exportTask;
                 using(DataTransferSession dts = new DataTransferSession(InteractiveWorkflow.RSession, _fileSystem)) {
-                    await dts.FetchFileAsync(new RBlobInfo(result), outputFilePath, CancellationToken.None);
+                    // TODO: add progress indication and cancellation
+                    await dts.FetchFileAsync(new RBlobInfo(result), outputFilePath, true, null, CancellationToken.None);
                 }
             } catch (IOException ex) {
                 throw new RPlotManagerException(ex.Message, ex);

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Common.Core {
     public static class StreamExtensions {
-        public static async Task CopyAndFlushAsync(this Stream source, Stream destination, CancellationToken cancellationToken, IProgress<long> progress = null) {
+        public static async Task CopyAndFlushAsync(this Stream source, Stream destination, IProgress<long> progress, CancellationToken cancellationToken) {
                 await source.CopyToAsync(destination, progress, cancellationToken);
                 await destination.FlushAsync(cancellationToken);
         }

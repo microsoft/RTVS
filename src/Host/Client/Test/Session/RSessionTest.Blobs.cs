@@ -49,7 +49,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
                 using (var session = new RSession(0, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { })) {
                     var data = new byte[] { 1, 2, 3, 4, 5 };
                     using (DataTransferSession dts = new DataTransferSession(session, null)) {
-                        Func<Task> f = () => dts.SendBytesAsync(data, CancellationToken.None, false);
+                        Func<Task> f = () => dts.SendBytesAsync(data, false, null, CancellationToken.None);
                         await f.ShouldThrowAsync<RHostDisconnectedException>();
                     }
                 }
@@ -61,7 +61,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
                 ManualResetEvent testStarted = new ManualResetEvent(false);
                 using (DataTransferSession dts = new DataTransferSession(_session, null)) {
-                    Func<Task> f = () => dts.SendBytesAsync(data, CancellationToken.None, false);
+                    Func<Task> f = () => dts.SendBytesAsync(data, false, null, CancellationToken.None);
                     var assertion = f.ShouldThrowAsync<RHostDisconnectedException>();
                     await Task.Delay(100);
                     await _session.StopHostAsync();
@@ -98,7 +98,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
                 IRBlobInfo blob = null;
                 using (DataTransferSession dts = new DataTransferSession(_session, null)) {
-                    blob = await dts.SendBytesAsync(data, CancellationToken.None, false);
+                    blob = await dts.SendBytesAsync(data, false, null, CancellationToken.None);
                 }
 
                 using (RBlobStream blobStream = await RBlobStream.OpenAsync(blob, _session)) {
@@ -120,7 +120,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
                 IRBlobInfo blob = null;
                 using (DataTransferSession dts = new DataTransferSession(_session, null)) {
-                    blob = await dts.SendBytesAsync(data, CancellationToken.None, false);
+                    blob = await dts.SendBytesAsync(data, false, null, CancellationToken.None);
                 }
 
                 Func<Task> f = async () => {

@@ -75,9 +75,9 @@ namespace Microsoft.R.Host.Client.Test.RtvsPackage {
             var dataSet = new byte[][] { data1, data2, data3 };
 
             using (DataTransferSession dts = new DataTransferSession(_session, null)) {
-                var blob1 = await dts.SendBytesAsync(data1, CancellationToken.None);
-                var blob2 = await dts.SendBytesAsync(data2, CancellationToken.None);
-                var blob3 = await dts.SendBytesAsync(data3, CancellationToken.None);
+                var blob1 = await dts.SendBytesAsync(data1, true, null, CancellationToken.None);
+                var blob2 = await dts.SendBytesAsync(data2, true, null, CancellationToken.None);
+                var blob3 = await dts.SendBytesAsync(data3, true, null, CancellationToken.None);
 
                 blob1.Id.Should().BeGreaterThan(0);
                 blob2.Id.Should().BeGreaterThan(0);
@@ -90,7 +90,7 @@ namespace Microsoft.R.Host.Client.Test.RtvsPackage {
                 var blobIds = new IRBlobInfo[] { blob1, blob2, blob3 };
 
                 for (int i = 0; i < blobIds.Length; ++i) {
-                    var blob = await dts.FetchBytesAsync(blobIds[i], CancellationToken.None, false);
+                    var blob = await dts.FetchBytesAsync(blobIds[i], false, null, CancellationToken.None);
                     blob.Should().Equal(dataSet[i]);
                 }
             }
@@ -207,11 +207,11 @@ namespace Microsoft.R.Host.Client.Test.RtvsPackage {
                 var blobId2 = ((JValue)createCompressedResult.Result).Value<ulong>();
 
                 using (DataTransferSession dts = new DataTransferSession(_session, new FileSystem())) {
-                    var expectedData = await dts.FetchBytesAsync(new RBlobInfo(blobId), CancellationToken.None);
-                    var compressedData = await dts.FetchBytesAsync(new RBlobInfo(blobId2), CancellationToken.None);
+                    var expectedData = await dts.FetchBytesAsync(new RBlobInfo(blobId), true, null, CancellationToken.None);
+                    var compressedData = await dts.FetchBytesAsync(new RBlobInfo(blobId2), true, null, CancellationToken.None);
                     compressedData.Length.Should().BeLessThan(expectedData.Length);
 
-                    var actualData = await dts.FetchAndDecompressBytesAsync(new RBlobInfo(blobId2), CancellationToken.None);
+                    var actualData = await dts.FetchAndDecompressBytesAsync(new RBlobInfo(blobId2), true, null, CancellationToken.None);
                     actualData.Should().Equal(expectedData);
                 }
             }
@@ -230,8 +230,8 @@ namespace Microsoft.R.Host.Client.Test.RtvsPackage {
                 var blobId2 = ((JValue)createCompressedResult.Result).Value<ulong>();
 
                 using (DataTransferSession dts = new DataTransferSession(_session, new FileSystem())) {
-                    var expectedData = await dts.FetchBytesAsync(new RBlobInfo(blobId), CancellationToken.None);
-                    var actualData = await dts.FetchAndDecompressBytesAsync(new RBlobInfo(blobId2), CancellationToken.None);
+                    var expectedData = await dts.FetchBytesAsync(new RBlobInfo(blobId), true, null, CancellationToken.None);
+                    var actualData = await dts.FetchAndDecompressBytesAsync(new RBlobInfo(blobId2), true, null, CancellationToken.None);
                     actualData.Should().Equal(expectedData);
                 }
             }

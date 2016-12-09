@@ -28,7 +28,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             string postUri = null;
 
             if (context.Request.IsWebSocketRequest) {
-                UriBuilder ub = new UriBuilder(PostUri) { Scheme ="wss" };
+                UriBuilder ub = new UriBuilder(PostUri) { Scheme = "wss" };
                 postUri = ub.Uri.ToString();
             } else {
                 postUri = PostUri.ToString();
@@ -47,20 +47,13 @@ namespace Microsoft.R.Host.Client.BrokerServices {
 
             if (context.Request.InputStream.CanSeek && context.Request.InputStream.Length > 0) {
                 using (Stream reqStream = await request.GetRequestStreamAsync()) {
-                    await context.Request.InputStream.CopyAndFlushAsync(reqStream, ct);
+                    await context.Request.InputStream.CopyAndFlushAsync(reqStream, null, ct);
                 }
             }
 
             HttpWebResponse response = null;
             try {
                 response = (HttpWebResponse)await request.GetResponseAsync();
-            } catch (WebException wex) {
-                if (wex.Status == WebExceptionStatus.ProtocolError) {
-                    response = wex.Response as HttpWebResponse;
-                } else {
-                    throw wex;
-                }
-            } finally {
                 if (response != null) {
                     if (context.Request.IsWebSocketRequest && response.StatusCode == HttpStatusCode.SwitchingProtocols) {
                         Stream respStream = response.GetResponseStream();
@@ -73,11 +66,15 @@ namespace Microsoft.R.Host.Client.BrokerServices {
                         SetResponseHeaders(response, context.Response, localBaseUrl, remoteBaseUrl);
                         using (Stream respStream = response.GetResponseStream())
                         using (Stream outStream = context.Response.OutputStream) {
-                            await respStream.CopyAndFlushAsync(outStream, ct);
+                            await respStream.CopyAndFlushAsync(outStream, null, ct);
                         }
                         response.Close();
                     }
                 }
+            } catch (WebException wex) when (wex.Status == WebExceptionStatus.ProtocolError) {
+                response = wex.Response as HttpWebResponse;
+            } finally {
+                response?.Close();
             }
         }
 
