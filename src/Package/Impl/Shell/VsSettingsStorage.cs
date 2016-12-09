@@ -118,15 +118,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
 
         private static string GetPersistentName(string setting) => RPackage.ProductName + "." + setting;
-        private static bool IsSimpleType(Type t) {
-            return t.IsEnum ||
-                   t == typeof(string) ||
-                   t == typeof(bool) ||
-                   t == typeof(int) ||
-                   t == typeof(uint) ||
-                   t == typeof(double) ||
-                   t == typeof(float);
-        }
 
         class Setting {
             public object Value { get; private set; }
@@ -176,6 +167,16 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                     }
                 }
                 return new Setting(value);
+            }
+
+            private static bool IsSimpleType(Type t) {
+                return t.IsEnum ||
+                       t == typeof(string) ||
+                       t == typeof(bool) ||
+                       t == typeof(int) ||
+                       t == typeof(uint) ||
+                       t == typeof(double) ||
+                       t == typeof(float);
             }
         }
     }
