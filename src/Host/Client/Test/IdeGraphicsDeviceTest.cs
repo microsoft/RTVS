@@ -8,6 +8,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
@@ -591,7 +592,7 @@ rtvs:::export_to_image(device_id, rtvs:::graphics.ide.getactiveplotid(device_id)
             var blobid = await session.EvaluateAsync<ulong>(script, REvaluationKind.Normal);
 
             using(DataTransferSession dts = new DataTransferSession(session, new FileSystem())) {
-                await dts.FetchFileAsync(new RBlobInfo(blobid), filePath);
+                await dts.FetchFileAsync(new RBlobInfo(blobid), filePath, true, null, CancellationToken.None);
             }
         }
 
@@ -645,7 +646,7 @@ rtvs:::export_to_pdf(device_id, rtvs:::graphics.ide.getactiveplotid(device_id), 
 ", width, height);
                 var blobid = await session.EvaluateAsync<ulong>(script, REvaluationKind.Normal);
                 using (DataTransferSession dts = new DataTransferSession(session, new FileSystem())) {
-                    await dts.FetchFileAsync(new RBlobInfo(blobid), filePath);
+                    await dts.FetchFileAsync(new RBlobInfo(blobid), filePath, true, null, CancellationToken.None);
                 }
 
                 await session.StopHostAsync();

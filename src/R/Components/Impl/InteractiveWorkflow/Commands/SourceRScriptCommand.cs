@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.IO;
 using Microsoft.R.Components.ContentTypes;
@@ -54,7 +55,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
             var session = _interactiveWorkflow.RSession;
             if (session.IsRemote) {
                 using (DataTransferSession dts = new DataTransferSession(_interactiveWorkflow.RSession, new FileSystem())) {
-                    string remotePath = await dts.CopyFileToRemoteTempAsync(filePath);
+                    // TODO: add progress indication and cancellation
+                    string remotePath = await dts.CopyFileToRemoteTempAsync(filePath, true, null, CancellationToken.None);
                     await _interactiveWorkflow.Operations.SourceFileAsync(remotePath, _echo, textView.TextBuffer.GetEncoding());
                 }
             } else {

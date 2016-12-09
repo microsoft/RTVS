@@ -6,20 +6,19 @@ using System.ComponentModel.Composition;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using EnvDTE;
 using Microsoft.Common.Core.Shell;
-using Microsoft.R.Components.Extensions;
 using Microsoft.R.Host.Client;
-using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     [Export(typeof(IObjectViewer))]
     public sealed class ObjectDetailsViewerProvider : IObjectViewer {
         private readonly IObjectDetailsViewerAggregator _aggregator;
+        private readonly ICoreShell _coreShell;
 
         [ImportingConstructor]
-        public ObjectDetailsViewerProvider(IObjectDetailsViewerAggregator aggregator) {
+        public ObjectDetailsViewerProvider(IObjectDetailsViewerAggregator aggregator, ICoreShell coreShell) {
             _aggregator = aggregator;
+            _coreShell = coreShell;
         }
 
         public async Task ViewObjectDetails(IRSession session, string environmentExpression, string expression, string title, CancellationToken cancellationToken) {
@@ -30,14 +29,18 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
         }
 
         public async Task ViewFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken) {
-            await VsAppShell.Current.SwitchToMainThreadAsync(cancellationToken);
+            await _coreShell.SwitchToMainThreadAsync(cancellationToken);
 
-            FileViewer.ViewFile(fileName, tabName);
             try {
-                if (deleteFile) {
-                    File.Delete(fileName);
+                if (File.Exists(fileName)) {
+                    FileViewer.ViewFile(fileName, tabName);
+                    if (deleteFile) {
+                        File.Delete(fileName);
+                    }
                 }
-            } catch (IOException) { } catch (UnauthorizedAccessException) { }
+            } catch ( Exception ex) when (ex is IOException || ex is UnauthorizedAccessException) {
+                _coreShell.ShowErrorMessage(ex.Message);
+            }
         }
     }
 }

@@ -45,7 +45,7 @@ namespace Microsoft.R.Host.Broker.RemoteUri {
                 } else {
                     string respSubProtocol = response.Headers[Constants.Headers.SecWebSocketProtocol];
                     // TODO: match sub protocols.
-                    
+
                     CommonWebSocket clientWebsocket = CommonWebSocket.CreateClientWebSocket(response.GetResponseStream(), respSubProtocol, TimeSpan.FromMinutes(2), receiveBufferSize: 1024 * 16, useZeroMask: false);
                     var serverWebSocket = await context.WebSockets.AcceptWebSocketAsync();
                     await WebSocketHelper.SendReceiveAsync(serverWebSocket, clientWebsocket, CancellationToken.None);
@@ -65,13 +65,6 @@ namespace Microsoft.R.Host.Broker.RemoteUri {
                 HttpWebResponse response = null;
                 try {
                     response = (HttpWebResponse)await request.GetResponseAsync();
-                } catch (WebException wex) {
-                    if (wex.Status == WebExceptionStatus.ProtocolError) {
-                        response = wex.Response as HttpWebResponse;
-                    } else {
-                        throw wex;
-                    }
-                } finally {
                     if (response != null) {
                         context.Response.StatusCode = (int)response.StatusCode;
                         SetResponseHeaders(response, context.Response);
@@ -79,9 +72,11 @@ namespace Microsoft.R.Host.Broker.RemoteUri {
                             await respStream.CopyToAsync(context.Response.Body);
                             await context.Response.Body.FlushAsync();
                         }
-
-                        response.Close();
                     }
+                } catch (WebException wex) when (wex.Status == WebExceptionStatus.ProtocolError) {
+                    response = wex.Response as HttpWebResponse;
+                } finally {
+                    response?.Close();
                 }
             }
         }
