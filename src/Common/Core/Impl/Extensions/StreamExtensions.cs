@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 namespace Microsoft.Common.Core {
     public static class StreamExtensions {
         public static async Task CopyAndFlushAsync(this Stream source, Stream destination, CancellationToken cancellationToken, IProgress<long> progress = null) {
-                await source.CopyToAsync(destination, cancellationToken, progress);
-                await destination.FlushAsync();
+                await source.CopyToAsync(destination, progress, cancellationToken);
+                await destination.FlushAsync(cancellationToken);
         }
 
-        public static async Task CopyToAsync(this Stream source, Stream destination, CancellationToken cancellationToken, IProgress<long> progress) {
+        public static async Task CopyToAsync(this Stream source, Stream destination, IProgress<long> progress, CancellationToken cancellationToken) {
             byte[] buffer = new byte[81920];
             int bytesRead = 0;
             long bytesTotal = 0;
