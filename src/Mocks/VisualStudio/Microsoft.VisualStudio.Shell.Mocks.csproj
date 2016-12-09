@@ -125,6 +125,7 @@
     <Compile Include="VsInteractiveWindowMock.cs" />
     <Compile Include="VsRegisterEditorsMock.cs" />
     <Compile Include="VsSettingsManagerMock.cs" />
+    <Compile Include="VsSettingsPersistenceManagerMock.cs" />
     <Compile Include="VsSettingsStoreMock.cs" />
     <Compile Include="VsTextBufferMock.cs" />
     <Compile Include="VsTextLinesMock.cs" />

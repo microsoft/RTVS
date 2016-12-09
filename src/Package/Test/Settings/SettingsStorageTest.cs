@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.Settings;
+using Microsoft.VisualStudio.Shell.Mocks;
+using NSubstitute;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Settings {
     [ExcludeFromCodeCoverage]
@@ -24,7 +27,9 @@ namespace Microsoft.VisualStudio.R.Package.Test.Settings {
         }
 
         public async Task SaveRestoreAsync<T>(string name, T value) {
-            var storage = new VsSettingsStorage();
+            var sm = Substitute.For<ISettingsManager>();
+
+            var storage = new VsSettingsStorage(new VsSettingsPersistenceManagerMock());
             storage.SettingExists(name).Should().BeFalse();
             storage.SetSetting(name, value);
             storage.SettingExists(name).Should().BeTrue();

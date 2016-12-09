@@ -39,6 +39,11 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private ISettingsManager _settingsManager;
         private ISettingsSubset _subset;
 
+        public VsSettingsStorage() : this(null) { }
+        public VsSettingsStorage(ISettingsManager settingsManager) {
+            _settingsManager = settingsManager;
+        }
+
         private ISettingsManager SettingsManager {
             get {
                 if (_settingsManager == null) {
@@ -70,7 +75,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
                 object value;
                 var result = SettingsManager.TryGetValue(GetPersistentName(name), out value);
-                return result == GetValueResult.Success;
+                return result == GetValueResult.Success && value != null;
             }
         }
 
