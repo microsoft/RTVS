@@ -61,11 +61,101 @@ namespace Microsoft.R.Host.UserProfile {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Client took too long to respond..
+        /// </summary>
+        internal static string Error_ClientTimedOut {
+            get {
+                return ResourceManager.GetString("Error_ClientTimedOut", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to delete user profile for user {0}\{1}, with Win32 error {2}..
+        /// </summary>
+        internal static string Error_DeleteUserProfileFailed {
+            get {
+                return ResourceManager.GetString("Error_DeleteUserProfileFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to logon user {0}\{1}, with Win32 error {2}..
+        /// </summary>
+        internal static string Error_UserLogonFailed {
+            get {
+                return ResourceManager.GetString("Error_UserLogonFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to create user profile for user {0}\{1}, with Win32 error {2}..
+        /// </summary>
+        internal static string Error_UserProfileCreateFailed {
+            get {
+                return ResourceManager.GetString("Error_UserProfileCreateFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User profile directory expected but not found for user {0}\{1}, Win32 error {0}.
+        /// </summary>
+        internal static string Error_UserProfileDirectoryWasNotFound {
+            get {
+                return ResourceManager.GetString("Error_UserProfileDirectoryWasNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to User profile service failed with exception: {0}..
         /// </summary>
         internal static string Error_UserProfileServiceError {
             get {
                 return ResourceManager.GetString("Error_UserProfileServiceError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User profile deleted for user {0}\{1}..
+        /// </summary>
+        internal static string Info_DeletedUserProfile {
+            get {
+                return ResourceManager.GetString("Info_DeletedUserProfile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Deleting user profile for user {0}\{1}..
+        /// </summary>
+        internal static string Info_DeletingUserProfile {
+            get {
+                return ResourceManager.GetString("Info_DeletingUserProfile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User profile already exists for user  {0}\{1}..
+        /// </summary>
+        internal static string Info_UserProfileAlreadyExists {
+            get {
+                return ResourceManager.GetString("Info_UserProfileAlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Created user profile for user {0}\{1}..
+        /// </summary>
+        internal static string Info_UserProfileCreated {
+            get {
+                return ResourceManager.GetString("Info_UserProfileCreated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User profile directory was found for user {0}\{1}, path: {2}.
+        /// </summary>
+        internal static string Info_UserProfileDirectoryFound {
+            get {
+                return ResourceManager.GetString("Info_UserProfileDirectoryFound", resourceCulture);
             }
         }
     }

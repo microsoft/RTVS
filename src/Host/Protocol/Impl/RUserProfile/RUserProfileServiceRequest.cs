@@ -3,7 +3,6 @@
 
 using System.Security;
 using Microsoft.Common.Core.OS;
-using Microsoft.Common.Core.Security;
 using Newtonsoft.Json;
 
 namespace Microsoft.R.Host.Protocol {
@@ -11,14 +10,16 @@ namespace Microsoft.R.Host.Protocol {
         [JsonConstructor]
         private RUserProfileServiceRequest() { }
 
+        public RUserProfileServiceRequest(string username, string domain, SecureString password) {
+            Username = username;
+            Domain = domain;
+            Password = password;
+        }
+
         public string Username { get; set; }
         public string Domain { get; set; }
 
         [JsonConverter(typeof(SecureStringJsonConverter))]
         public SecureString Password { get; set; }
-
-        public static RUserProfileServiceRequest Create(string username, string domain, string password) {
-            return new RUserProfileServiceRequest() { Username = username, Domain = domain, Password = password.ToSecureString() };
-        }
     }
 }

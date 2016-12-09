@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 using System.IO.Pipes;
-using System.Linq;
 using System.Security.Principal;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Microsoft.R.Host.Protocol {
-    public class NamedPipeServerStreamFactory {
+    public static class NamedPipeServerStreamFactory {
         public static string CreatorName = "Microsoft.R.Host.UserProfile.Creator{b101cc2d-156e-472e-8d98-b9d999a93c7a}";
         public static string DeletorName = "Microsoft.R.Host.UserProfile.Deletor{9c2aa072-7549-4992-8c17-0ccb9b8f196e}";
         public static NamedPipeServerStream Create(string name, int maxInstances = NamedPipeServerStream.MaxAllowedServerInstances) {

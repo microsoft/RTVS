@@ -95,14 +95,11 @@ namespace Microsoft.R.Host.Client.Host {
             }
         }
 
-        public async Task<bool> DeleteRemoteUserProfileAsync(CancellationToken cancellationToken) {
+        public async Task DeleteProfileAsync(CancellationToken cancellationToken) {
+            await TaskUtilities.SwitchToBackgroundThread();
             try {
-                if (HttpClient != null) {
-                    var response = await HttpClient.DeleteAsync("deleteuser", cancellationToken);
-                    return response.IsSuccessStatusCode;
-                } else {
-                    return false;
-                }
+                var sessionsService = new ProfileWebService(HttpClient, _credentials);
+                await sessionsService.DeleteAsync(cancellationToken);
             } catch (HttpRequestException ex) {
                 throw new RHostDisconnectedException(Resources.Error_HostNotResponding.FormatInvariant(ex.Message), ex);
             }

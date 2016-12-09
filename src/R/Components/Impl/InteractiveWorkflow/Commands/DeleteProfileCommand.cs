@@ -1,14 +1,13 @@
-﻿using Microsoft.Common.Core;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.VisualStudio.InteractiveWindow;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
     public sealed class DeleteProfileCommand : IAsyncCommand {
@@ -37,19 +36,16 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
         }
 
         private async Task DeleteProfileWorkerAsync() {
+            var host = string.Empty; 
             try {
-                var host = _interactiveWorkflow.Connections.ActiveConnection.Uri.Host;
+                host = _interactiveWorkflow.Connections.ActiveConnection.Uri.Host;
                 var button = _interactiveWorkflow.Shell.ShowMessage(Resources.DeleteProfile_DeletionWarning.FormatInvariant(host), MessageButtons.YesNo, MessageType.Warning);
                 if(button == MessageButtons.Yes) {
-                    bool result = await _interactiveWorkflow.RSessions.Broker.DeleteRemoteUserProfileAsync();
-                    if (result) {
-                        OutputWriter.WriteLine(Resources.DeleteProfile_Success.FormatInvariant(host));
-                    } else {
-                        OutputWriter.WriteLine(Resources.DeleteProfile_Error.FormatInvariant(host));
-                    }
+                    await _interactiveWorkflow.RSessions.Broker.DeleteProfileAsync();
+                    OutputWriter.WriteLine(Resources.DeleteProfile_Success.FormatInvariant(host));
                 }
             } catch (RHostDisconnectedException) {
-                return;
+                OutputWriter.WriteLine(Resources.DeleteProfile_Error.FormatInvariant(host));
             } 
         }
     }

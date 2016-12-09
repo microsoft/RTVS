@@ -52,9 +52,11 @@
     </Compile>
     <Compile Include="BrokerServices\BrokerApiErrorException.cs" />
     <Compile Include="Blobs\RBlobStream.cs" />
+    <Compile Include="BrokerServices\IProfileWebService.cs" />
     <Compile Include="BrokerServices\IRemoteUriWebService.cs" />
     <Compile Include="BrokerServices\ICredentialsDecorator.cs" />
     <Compile Include="BrokerServices\ISessionsWebService.cs" />
+    <Compile Include="BrokerServices\ProfileWebService.cs" />
     <Compile Include="BrokerServices\RemoteUriWebService.cs" />
     <Compile Include="BrokerServices\WebServer.cs" />
     <Compile Include="BrokerServices\WebService.cs" />

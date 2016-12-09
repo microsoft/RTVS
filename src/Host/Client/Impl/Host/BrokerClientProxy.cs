@@ -39,6 +39,6 @@ namespace Microsoft.R.Host.Client.Host {
 
         public Task<string> HandleUrlAsync(string url, CancellationToken cancellationToken) => _broker.HandleUrlAsync(url, cancellationToken);
 
-        public Task<bool> DeleteRemoteUserProfileAsync(CancellationToken cancellationToken) => _broker.DeleteRemoteUserProfileAsync(cancellationToken);
+        public Task DeleteProfileAsync(CancellationToken cancellationToken) => _broker.DeleteProfileAsync(cancellationToken);
     }
 }

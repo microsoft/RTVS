@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.IO.Pipes;
 using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Security.Principal;
@@ -11,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http.Authentication;
+using Microsoft.Common.Core.Security;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.R.Host.Broker.UserProfile;
@@ -92,7 +92,7 @@ namespace Microsoft.R.Host.Broker.Security {
 #endif
                     _logger.LogTrace(Resources.Trace_UserProfileCreation, context.Username);
 
-                    var result = await _userProfileManager.CreateProfileAsync(RUserProfileServiceRequest.Create(user.ToString(), domain.ToString(), context.Password), cts.Token);
+                    var result = await _userProfileManager.CreateProfileAsync(new RUserProfileServiceRequest(user.ToString(), domain.ToString(), context.Password.ToSecureString()), cts.Token);
                     if (result.IsInvalidResponse()) {
                         _logger.LogError(Resources.Error_ProfileCreationFailedInvalidResponse, context.Username, Resources.Info_UserProfileServiceName);
                         return null;

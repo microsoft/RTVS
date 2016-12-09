@@ -115,6 +115,15 @@ namespace Microsoft.R.Host.Broker {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to User {0} session creation blocked due to pending profile deletion..
+        /// </summary>
+        internal static string Error_BlockedByProfileDeletion {
+            get {
+                return ResourceManager.GetString("Error_BlockedByProfileDeletion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Server port {0} is already in use..
         /// </summary>
         internal static string Error_ConfiguredPortNotAvailable {

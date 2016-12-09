@@ -49,11 +49,11 @@ namespace Microsoft.R.Host.UserProfile {
         }
 
         private async Task CreateProfileWorkerAsync(CancellationToken ct) {
-            await ProfileWorkerAsync(RUserProfileServices.CreateProfileAsync, ServiceReadAfterConnectTimeoutMs, ClientResponseReadTimeoutMs, _createWorkerDone, ct, _logger);
+            await ProfileWorkerAsync(RUserProfileServicesHelper.CreateProfileAsync, ServiceReadAfterConnectTimeoutMs, ClientResponseReadTimeoutMs, _createWorkerDone, ct, _logger);
         }
 
         private async Task DeleteProfileWorkerAsync(CancellationToken ct) {
-            await ProfileWorkerAsync(RUserProfileServices.DeleteProfileAsync, ServiceReadAfterConnectTimeoutMs, ClientResponseReadTimeoutMs, _deleteWorkerDone, ct, _logger);
+            await ProfileWorkerAsync(RUserProfileServicesHelper.DeleteProfileAsync, ServiceReadAfterConnectTimeoutMs, ClientResponseReadTimeoutMs, _deleteWorkerDone, ct, _logger);
         }
 
         private static async Task ProfileWorkerAsync( Func<int,int, IUserProfileServices,CancellationToken, ILogger, Task> action, int serverTimeOutms, int clientTimeOutms,  ManualResetEvent workerDone, CancellationToken ct, ILogger logger) {

@@ -11,6 +11,7 @@ using FluentAssertions;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Json;
 using Microsoft.Common.Core.OS;
+using Microsoft.R.Host.UserProfile;
 using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
@@ -41,10 +42,10 @@ namespace Microsoft.R.Host.Protocol.Test.UserProfileServicePipe {
             Task.Run(async () => {
                 try {
                     if (isValidParse) {
-                        Func<Task> f = async () => await RUserProfileServices.CreateProfileAsync(serverTimeOutms: serverTimeOut, clientTimeOutms: clientTimeOut, userProfileService: creator);
+                        Func<Task> f = async () => await RUserProfileServicesHelper.CreateProfileAsync(serverTimeOutms: serverTimeOut, clientTimeOutms: clientTimeOut, userProfileService: creator);
                         f.ShouldNotThrow();
                     } else {
-                        Func<Task> f = () => RUserProfileServices.CreateProfileAsync(serverTimeOutms: serverTimeOut, clientTimeOutms: clientTimeOut, userProfileService: creator);
+                        Func<Task> f = () => RUserProfileServicesHelper.CreateProfileAsync(serverTimeOutms: serverTimeOut, clientTimeOutms: clientTimeOut, userProfileService: creator);
                         await f.ShouldThrowAsync<Exception>();
                     }
                 } finally {
@@ -68,7 +69,7 @@ namespace Microsoft.R.Host.Protocol.Test.UserProfileServicePipe {
         private async Task CreateProfileFuzzTestRunnerAsync(IUserProfileServices creator, string input, int serverTimeOut, int clientTimeOut) {
             var task = Task.Run(async () => {
                 try {
-                    await RUserProfileServices.CreateProfileAsync(serverTimeOutms: serverTimeOut, clientTimeOutms: clientTimeOut, userProfileService: creator);
+                    await RUserProfileServicesHelper.CreateProfileAsync(serverTimeOutms: serverTimeOut, clientTimeOutms: clientTimeOut, userProfileService: creator);
                 } catch (JsonReaderException) {
                     // expecting JSON parsing to fail
                     // JSON parsing may fail due to randomly generated strings as input.

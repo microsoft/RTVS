@@ -13,16 +13,17 @@ using Microsoft.Common.Core.Json;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
+using Microsoft.R.Host.Protocol;
 
-namespace Microsoft.R.Host.Protocol {
-    public class RUserProfileServices {
+namespace Microsoft.R.Host.UserProfile {
+    public class RUserProfileServicesHelper {
         public static async Task CreateProfileAsync(int serverTimeOutms = 0, int clientTimeOutms = 0, IUserProfileServices userProfileService = null, CancellationToken ct = default(CancellationToken), ILogger logger = null) {
-            userProfileService = userProfileService ?? new RUserProfileServicesImpl();
+            userProfileService = userProfileService ?? new RUserProfileServices();
             await ProfileServiceOperationAsync(userProfileService.CreateUserProfile, NamedPipeServerStreamFactory.CreatorName, serverTimeOutms, clientTimeOutms, ct, logger);
         }
 
         public static async Task DeleteProfileAsync(int serverTimeOutms = 0, int clientTimeOutms = 0, IUserProfileServices userProfileService = null, CancellationToken ct = default(CancellationToken), ILogger logger = null) {
-            userProfileService = userProfileService ?? new RUserProfileServicesImpl();
+            userProfileService = userProfileService ?? new RUserProfileServices();
             await ProfileServiceOperationAsync(userProfileService.DeleteUserProfile, NamedPipeServerStreamFactory.DeletorName, serverTimeOutms, clientTimeOutms, ct, logger);
         }
 
@@ -50,7 +51,24 @@ namespace Microsoft.R.Host.Protocol {
                             cts.CancelAfter(serverTimeOutms);
                         }
 
-                        await HandleUserCredentailsAsync(server, operation, cts.Token, logger);
+                        byte[] requestRaw = new byte[1024];
+                        int bytesRead = 0;
+
+                        while (bytesRead == 0 && !ct.IsCancellationRequested) {
+                            bytesRead = await server.ReadAsync(requestRaw, 0, requestRaw.Length, ct);
+                        }
+
+                        string json = Encoding.Unicode.GetString(requestRaw, 0, bytesRead);
+
+                        var requestData = Json.DeserializeObject<RUserProfileServiceRequest>(json);
+
+                        var result = operation?.Invoke(requestData, logger);
+
+                        string jsonResp = JsonConvert.SerializeObject(result);
+                        byte[] respData = Encoding.Unicode.GetBytes(jsonResp);
+
+                        await server.WriteAsync(respData, 0, respData.Length, ct);
+                        await server.FlushAsync(ct);
                     }
 
                     using (var cts = CancellationTokenSource.CreateLinkedTokenSource(ct)) {
@@ -73,27 +91,6 @@ namespace Microsoft.R.Host.Protocol {
                     forceDisconnect.Set();
                 }
             }
-        }
-
-        private static async Task HandleUserCredentailsAsync(Stream stream, Func<IUserCredentials, ILogger, IUserProfileServiceResult> operation, CancellationToken ct, ILogger logger = null) {
-            byte[] requestRaw = new byte[1024];
-            int bytesRead = 0;
-
-            while (bytesRead == 0 && !ct.IsCancellationRequested) {
-                bytesRead = await stream.ReadAsync(requestRaw, 0, requestRaw.Length, ct);
-            }
-
-            string json = Encoding.Unicode.GetString(requestRaw, 0, bytesRead);
-
-            var requestData = Json.DeserializeObject<RUserProfileServiceRequest>(json);
-
-            var result = operation?.Invoke(requestData, logger);
-
-            string jsonResp = JsonConvert.SerializeObject(result);
-            byte[] respData = Encoding.Unicode.GetBytes(jsonResp);
-
-            await stream.WriteAsync(respData, 0, respData.Length, ct);
-            await stream.FlushAsync(ct);
         }
     }
 }

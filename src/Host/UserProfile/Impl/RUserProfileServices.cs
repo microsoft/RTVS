@@ -6,19 +6,20 @@ using System.Security.Principal;
 using System.Text;
 using System.Runtime.InteropServices;
 using Microsoft.Common.Core.OS;
-using Microsoft.Common.Core.Security;
 using Microsoft.Extensions.Logging;
-using static Microsoft.R.Host.Protocol.NativeMethods;
+using Microsoft.R.Host.Protocol;
+using static Microsoft.Common.Core.NativeMethods;
 
-namespace Microsoft.R.Host.Protocol {
-    class RUserProfileServicesImpl : IUserProfileServices {
+namespace Microsoft.R.Host.UserProfile {
+    class RUserProfileServices : IUserProfileServices {
         public IUserProfileServiceResult CreateUserProfile(IUserCredentials credentials, ILogger logger) {
             // Future: Switching Broker service to network service will eliminate the need for login here
-            // The same holds true for profile deletion. 
+            // The same holds true for profile deletion. The login token can be obtained via cross process 
+            // handle duplication
 
             IntPtr token = IntPtr.Zero;
             IntPtr password = IntPtr.Zero;
-            RUserProfileServiceResponse result = RUserProfileServiceResponse.Create(13, false, string.Empty);
+            RUserProfileServiceResponse result = new RUserProfileServiceResponse(13, false, string.Empty);
             uint error = 0;
             try {
                 password = Marshal.SecureStringToGlobalAllocUnicode(credentials.Password);
@@ -44,14 +45,14 @@ namespace Microsoft.R.Host.Protocol {
                     size = (uint)profileDir.Capacity;
                     if (GetUserProfileDirectory(token, profileDir, ref size)) {
                         logger?.LogInformation(Resources.Info_UserProfileDirectoryFound, credentials.Domain, credentials.Username, profileDir.ToString());
-                        result = RUserProfileServiceResponse.Create(0, profileExists, profileDir.ToString());
+                        result = new RUserProfileServiceResponse(0, profileExists, profileDir.ToString());
                     } else {
                         logger?.LogError(Resources.Error_UserProfileDirectoryWasNotFound, credentials.Domain, credentials.Username, Marshal.GetLastWin32Error());
-                        result = RUserProfileServiceResponse.Create((uint)Marshal.GetLastWin32Error(), profileExists, profileDir.ToString());
+                        result = new RUserProfileServiceResponse((uint)Marshal.GetLastWin32Error(), profileExists, profileDir.ToString());
                     }
                 } else {
                     logger?.LogError(Resources.Error_UserLogonFailed, credentials.Domain, credentials.Username, Marshal.GetLastWin32Error());
-                    result = RUserProfileServiceResponse.Create((uint)Marshal.GetLastWin32Error(), false, null);
+                    result = new RUserProfileServiceResponse((uint)Marshal.GetLastWin32Error(), false, null);
                 }
 
             } finally {
@@ -109,7 +110,7 @@ namespace Microsoft.R.Host.Protocol {
                 }
             }
             
-            return RUserProfileServiceResponse.Create((uint)error, profileExists, profile);
+            return new RUserProfileServiceResponse((uint)error, profileExists, profile);
         }
     }
 }

@@ -66,6 +66,15 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\UserProfile\Impl\Resources.Designer.cs">
+      <Link>Resources.Designer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\UserProfile\Impl\RUserProfileServices.cs">
+      <Link>RUserProfileServices.cs</Link>
+    </Compile>
+    <Compile Include="..\..\UserProfile\Impl\RUserProfileServicesHelper.cs">
+      <Link>RUserProfileServicesHelper.cs</Link>
+    </Compile>
     <Compile Include="ProtocolMessage\ProtocolMessageTest.cs" />
     <Compile Include="RHostPipe\RHostPipeTest.cs" />
     <Compile Include="UserProfileServicePipe\UserProfileServiceMock.cs" />

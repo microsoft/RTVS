@@ -28,6 +28,6 @@ namespace Microsoft.R.Host.Client.Host {
 
         public Task<string> HandleUrlAsync(string url, CancellationToken cancellationToken) => Task.FromResult(url);
 
-        public Task<bool> DeleteRemoteUserProfileAsync(CancellationToken cancellationToken) => Task.FromResult(false);
+        public Task DeleteProfileAsync(CancellationToken cancellationToken) => Task.CompletedTask;
     }
 }
