@@ -107,10 +107,12 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
         public Task ViewFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken = default(CancellationToken)) {
             var viewer = _coreShell.ExportProvider.GetExportedValue<IObjectViewer>();
+            var task = Task.CompletedTask;
 
             if (_session.IsRemote) {
+                // Do not block callback from the host
                 Task.Run(async () => {
-                    using (DataTransferSession dts = new DataTransferSession(_session, _fileSystem)) {
+                    using (var dts = new DataTransferSession(_session, _fileSystem)) {
                         // TODO: handle progress for large files
                         try {
                             await dts.FetchFileToLocalTempAsync(fileName.ToRPath(), cancellationToken);
@@ -119,8 +121,10 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                         } catch (REvaluationException) { } catch (RHostDisconnectedException) { }
                     }
                 }).DoNotWait();
+            } else {
+                task = viewer?.ViewFile(fileName, tabName, deleteFile, cancellationToken);
             }
-            return viewer?.ViewFile(fileName, tabName, deleteFile, cancellationToken);
+            return task;
         }
 
         public Task<string> SaveFileAsync(string fileName, byte[] data) {
