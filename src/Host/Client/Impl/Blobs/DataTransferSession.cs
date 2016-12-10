@@ -12,7 +12,7 @@ using System.Linq;
 using System.Threading;
 
 namespace Microsoft.R.Host.Client {
-    public class DataTransferSession : IDisposable {
+    public sealed class DataTransferSession : IDisposable {
         private readonly IRSession _session;
         private readonly IRBlobService _blobService;
         private readonly IFileSystem _fs;
@@ -163,6 +163,14 @@ namespace Microsoft.R.Host.Client {
             string fileName = Path.GetFileName(filePath);
             var blobinfo = await SendFileAsync(filePath, doCleanUp, progress, cancellationToken);
             return await _session.EvaluateAsync<string>($"rtvs:::save_to_temp_folder({blobinfo.Id}, '{fileName}')", REvaluationKind.Normal, cancellationToken);
+        }
+
+        /// <summary>
+        /// Copies file from remote file path to downloads folder on the local session.
+        /// </summary>
+        /// <param name="filePath">Path to the file on remote machine.</param>
+        public Task TaskFetchFileToLocalTempAsync(string remoteRPath, CancellationToken cancellationToken) {
+            return _session.EvaluateAsync($"rtvs:::fetch_file('{remoteRPath}', silent = TRUE)", REvaluationKind.Normal, cancellationToken);
         }
 
         public void Dispose() {

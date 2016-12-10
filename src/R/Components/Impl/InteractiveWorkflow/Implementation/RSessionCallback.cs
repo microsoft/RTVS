@@ -3,8 +3,10 @@
 
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Help;
@@ -12,6 +14,7 @@ using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Settings.Mirrors;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.VisualStudio.InteractiveWindow;
 using Task = System.Threading.Tasks.Task;
 
@@ -44,7 +47,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         /// Displays message with specified buttons in a host-specific UI
         /// </summary>
         public Task<MessageButtons> ShowMessageAsync(string message, MessageButtons buttons, CancellationToken cancellationToken) => _coreShell.ShowMessageAsync(message, buttons, cancellationToken);
-            
+
         /// <summary>
         /// Displays R help URL in a browser on in the host app-provided window
         /// </summary>
@@ -62,13 +65,13 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         /// <summary>
         /// Displays R plot in the host app-provided window
         /// </summary>
-        public Task Plot(PlotMessage plot, CancellationToken ct) 
+        public Task Plot(PlotMessage plot, CancellationToken ct)
             => _workflow.Plots.LoadPlotAsync(plot, ct);
 
-        public Task<LocatorResult> Locator(Guid deviceId, CancellationToken ct) 
+        public Task<LocatorResult> Locator(Guid deviceId, CancellationToken ct)
             => _workflow.Plots.StartLocatorModeAsync(deviceId, ct);
 
-        public Task<PlotDeviceProperties> PlotDeviceCreate(Guid deviceId, CancellationToken ct) 
+        public Task<PlotDeviceProperties> PlotDeviceCreate(Guid deviceId, CancellationToken ct)
             => _workflow.Plots.DeviceCreatedAsync(deviceId, ct);
 
         public async Task PlotDeviceDestroy(Guid deviceId, CancellationToken ct) {
@@ -104,12 +107,25 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
         public Task ViewFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken = default(CancellationToken)) {
             var viewer = _coreShell.ExportProvider.GetExportedValue<IObjectViewer>();
+
+            if (_session.IsRemote) {
+                Task.Run(async () => {
+                    using (DataTransferSession dts = new DataTransferSession(_session, _fileSystem)) {
+                        // TODO: handle progress for large files
+                        try {
+                            await dts.FetchFileToLocalTempAsync(fileName.ToRPath(), cancellationToken);
+                            fileName = _fileSystem.GetDownloadsPath(Path.GetFileName(fileName));
+                            await viewer?.ViewFile(fileName, tabName, deleteFile, cancellationToken);
+                        } catch (REvaluationException) { } catch (RHostDisconnectedException) { }
+                    }
+                }).DoNotWait();
+            }
             return viewer?.ViewFile(fileName, tabName, deleteFile, cancellationToken);
         }
 
-        public Task<string> SaveFileAsync(string filename, byte[] data) {
+        public Task<string> SaveFileAsync(string fileName, byte[] data) {
             return Task.Run(() => {
-                string destPath = _fileSystem.GetDownloadsPath(filename);
+                string destPath = _fileSystem.GetDownloadsPath(fileName);
                 _fileSystem.FileWriteAllBytes(destPath, data);
                 return destPath;
             });

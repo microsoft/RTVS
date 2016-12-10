@@ -8,7 +8,7 @@ fetch_file(path)
   \item{path}{Path to the file on remote machine}
 }
 \description{
-\code{fetch_file} is used to download file from a remote machine. The file is saved to the local project folder.
+\code{fetch_file} is used to download file from a remote machine. The file is saved to the local downloads folder.
 }
 \examples{
 fetch_file('data.csv')
