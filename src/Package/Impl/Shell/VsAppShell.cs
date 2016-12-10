@@ -89,6 +89,9 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             _idleTimeSource.Idle += OnIdle;
             _idleTimeSource.ApplicationClosing += OnApplicationClosing;
 
+            _settings = _exportProvider.GetExportedValue<IRPersistentSettings>();
+            _settings.LoadSettings();
+
             EditorShell.Current = this;
 
             _settings = _exportProvider.GetExportedValue<IRPersistentSettings>();
