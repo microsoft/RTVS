@@ -169,7 +169,7 @@ namespace Microsoft.R.Host.Client {
         /// Copies file from remote file path to downloads folder on the local session.
         /// </summary>
         /// <param name="filePath">Path to the file on remote machine.</param>
-        public Task TaskFetchFileToLocalTempAsync(string remoteRPath, CancellationToken cancellationToken) {
+        public Task FetchFileToLocalTempAsync(string remoteRPath, CancellationToken cancellationToken) {
             return _session.EvaluateAsync($"rtvs:::fetch_file('{remoteRPath}', silent = TRUE)", REvaluationKind.Normal, cancellationToken);
         }
 
