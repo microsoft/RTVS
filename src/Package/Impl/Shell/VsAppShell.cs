@@ -46,7 +46,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         private readonly ApplicationConstants _appConstants;
         private readonly ICoreServices _coreServices;
-        private readonly IRPersistentSettings _settings;
+        private IRPersistentSettings _settings;
         private IdleTimeSource _idleTimeSource;
         private ExportProvider _exportProvider;
         private ICompositionService _compositionService;
@@ -54,15 +54,12 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private uint _vsShellEventsCookie;
 
         [ImportingConstructor]
-        public VsAppShell(ITelemetryService telemetryService, IRPersistentSettings settings) {
+        public VsAppShell(ITelemetryService telemetryService) {
             _appConstants = new ApplicationConstants();
             ProgressDialog = new VsProgressDialog(this);
             FileDialog = new VsFileDialog(this);
 
             _coreServices = new CoreServices(_appConstants, telemetryService, new VsTaskService(), this, new SecurityService(this));
-
-            _settings = settings;
-            _settings.LoadSettings();
         }
 
         public static void EnsureInitialized() {
@@ -91,6 +88,9 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             _idleTimeSource = new IdleTimeSource();
             _idleTimeSource.Idle += OnIdle;
             _idleTimeSource.ApplicationClosing += OnApplicationClosing;
+
+            _settings = _exportProvider.GetExportedValue<IRPersistentSettings>();
+            _settings.LoadSettings();
 
             EditorShell.Current = this;
         }
