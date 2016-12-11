@@ -279,12 +279,12 @@ query_reload_autosave <- function() {
         });
 
         if (loaded) {
-            message(sprintf('Loaded workspace from autosaved image "%s".\n', autosave_filename));
+            message(sprintf('Loaded workspace from autosaved image "%s".', autosave_filename));
             # If we loaded the file successfully, it's safe to delete it - this session contains the reloaded
             # state now, and if there's another disconnect, it will be autosaved again.
             return(TRUE);
         } else {
-            warning(sprintf('Failed to load workspace from autosaved image "%s".\n', autosave_filename), call. = FALSE, immediate. = TRUE);
+            warning(sprintf('Failed to load workspace from autosaved image "%s".', autosave_filename), call. = FALSE, immediate. = TRUE);
             return(FALSE);
         }
     } else {
@@ -297,7 +297,7 @@ query_reload_autosave <- function() {
 disconnect_callback <- function() {
     message(sprintf('Autosaving workspace to image "%s" ...', autosave_filename));
     save.image(autosave_filename);
-    message(' workspace saved successfully.\n');
+    message(' workspace saved successfully.');
 }
 
 enable_autosave <- function(delete_existing) {
@@ -305,7 +305,7 @@ enable_autosave <- function(delete_existing) {
         set_disconnect_callback(disconnect_callback);
 
         if (delete_existing) {
-            message(sprintf('Deleting autosaved workspace image "%s".\n', autosave_filename));
+            message(sprintf('Deleting autosaved workspace image "%s".', autosave_filename));
             unlink(autosave_filename);
         }
     });

@@ -91,7 +91,7 @@ namespace Microsoft.R.Host.Client.Host {
 
                 return !string.IsNullOrEmpty(result) ? Json.DeserializeObject<T>(result) : default(T);
             } catch (HttpRequestException ex) {
-                throw new RHostDisconnectedException(Resources.Error_HostNotResponding.FormatInvariant(ex.Message), ex);
+                throw new RHostDisconnectedException(Resources.Error_HostNotResponding.FormatInvariant(Name, ex.Message), ex);
             }
         }
 
@@ -124,7 +124,7 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         protected virtual Task<Exception> HandleHttpRequestExceptionAsync(HttpRequestException exception)
-            => Task.FromResult<Exception>(new RHostDisconnectedException(Resources.Error_HostNotResponding.FormatInvariant(exception.Message), exception));
+            => Task.FromResult<Exception>(new RHostDisconnectedException(Resources.Error_HostNotResponding.FormatInvariant(Name, exception.Message), exception));
 
         private async Task<bool> IsSessionRunningAsync(string name, CancellationToken cancellationToken) {
             var sessionsService = new SessionsWebService(HttpClient, _credentials);
@@ -172,7 +172,7 @@ namespace Microsoft.R.Host.Client.Host {
                     } catch (UnauthorizedAccessException) {
                         _credentials.InvalidateCredentials();
                     } catch (Exception ex) when (ex is InvalidOperationException) {
-                        throw new RHostDisconnectedException(Resources.HttpErrorCreatingSession.FormatInvariant(ex.Message), ex);
+                        throw new RHostDisconnectedException(Resources.HttpErrorCreatingSession.FormatInvariant(Name, ex.Message), ex);
                     }
                 }
             }

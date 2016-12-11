@@ -47,7 +47,7 @@ namespace Microsoft.R.Host.Client.Host {
             // Broker is not responsing. Try regular ping.
             string status = await Uri.GetMachineOnlineStatusAsync();
             return string.IsNullOrEmpty(status)
-                ? new RHostDisconnectedException(Resources.Error_BrokerNotRunning, exception)
+                ? new RHostDisconnectedException(Resources.Error_BrokerNotRunning.FormatInvariant(Name), exception)
                 : await base.HandleHttpRequestExceptionAsync(exception);
         }
 
@@ -63,7 +63,7 @@ namespace Microsoft.R.Host.Client.Host {
 
             if (sslPolicyErrors.HasFlag(SslPolicyErrors.RemoteCertificateNotAvailable)) {
                 Log.WriteAsync(LogVerbosity.Minimal, MessageCategory.Error, Resources.Error_NoBrokerCertificate).DoNotWait();
-                _console.Write(Resources.Error_NoBrokerCertificate);
+                _console.Write(Resources.Error_NoBrokerCertificate.FormatInvariant(Name));
                 return false;
             }
 

@@ -201,6 +201,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             if (args.OutputType == OutputType.Output) {
                 Write(args.Message.ToUnicodeQuotes());
             } else {
+
                 WriteError(args.Message);
             }
         }
@@ -249,9 +250,22 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         }
 
         private void WriteError(string message) {
-            if (CurrentWindow != null) {
-                _coreShell.DispatchOnUIThread(() => CurrentWindow?.WriteError(message));
-            }
+            _coreShell.DispatchOnUIThread(() => {
+                if (CurrentWindow != null) {
+                    // Prevent multiple line breaks when various components prepend and append
+                    // extra line breaks to error message. Don't allow more than 2 line breaks.
+                    var snapshot = CurrentWindow.CurrentLanguageBuffer.CurrentSnapshot;
+                    var twoLineBreakLength = 2 * Environment.NewLine.Length;
+                    if (snapshot.Length >= twoLineBreakLength) {
+                        if(snapshot.GetText(new Span(snapshot.Length- twoLineBreakLength, twoLineBreakLength)).EqualsOrdinal(Environment.NewLine + Environment.NewLine)) {
+                            while(message.StartsWithOrdinal(Environment.NewLine)) {
+                                message = message.Substring(0, Environment.NewLine.Length);
+                            }
+                        }
+                    }
+                    CurrentWindow?.WriteError(message + Environment.NewLine);
+                }
+            });
         }
 
         private void WriteRHostDisconnectedError(RHostDisconnectedException exception) {
@@ -262,7 +276,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             await _coreShell.SwitchToMainThreadAsync();
             if (CurrentWindow != null) {
                 CurrentWindow.WriteErrorLine(exception.Message);
-                CurrentWindow.WriteErrorLine(_sessionProvider.IsConnected ? Resources.RestartRHost : Resources.ReconnectToBroker);
+                CurrentWindow.WriteErrorLine((_sessionProvider.IsConnected ? Resources.RestartRHost : Resources.ReconnectToBroker) + Environment.NewLine);
             }
         }
 

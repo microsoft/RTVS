@@ -168,9 +168,9 @@ namespace Microsoft.R.Host.Client.Host {
             if (process.HasExited && process.ExitCode < 0) {
                 var message = ErrorCodeConverter.MessageFromErrorCode(process.ExitCode);
                 if (!string.IsNullOrEmpty(message)) {
-                    throw new RHostDisconnectedException(Resources.Error_UnableToStartBrokerException.FormatInvariant(message), new Win32Exception(message));
+                    throw new RHostDisconnectedException(Resources.Error_UnableToStartBrokerException.FormatInvariant(Name, message), new Win32Exception(message));
                 }
-                throw new RHostDisconnectedException(Resources.Error_UnableToStartBrokerException.FormatInvariant(process.ExitCode), new Win32Exception(process.ExitCode));
+                throw new RHostDisconnectedException(Resources.Error_UnableToStartBrokerException.FormatInvariant(Name, process.ExitCode), new Win32Exception(process.ExitCode));
             }
             return process;
         }
