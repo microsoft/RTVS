@@ -560,8 +560,10 @@ namespace Microsoft.R.Host.Client {
                                 _callbacks.PackagesRemoved();
                                 break;
                             case "!FetchFile":
-                                var destPath = await _callbacks.SaveFileAsync(message.GetString(0, "file_path"), message.Blob);
-                                if (!message.GetBoolean(1, "silent")) {
+                                var remoteFileName = message.GetString(0, "file_remote_name");
+                                var localPath = message.GetString(1, "file_local_path");
+                                var destPath = await _callbacks.SaveFileAsync(remoteFileName, localPath, message.Blob);
+                                if (!message.GetBoolean(2, "silent")) {
                                     await _callbacks.WriteConsoleEx(destPath, OutputType.Error, ct);
                                 }
                                 break;

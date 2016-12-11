@@ -115,7 +115,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                     using (var dts = new DataTransferSession(_session, _fileSystem)) {
                         // TODO: handle progress for large files
                         try {
-                            await dts.FetchFileToLocalTempAsync(fileName.ToRPath(), cancellationToken);
+                            await dts.FetchFileToLocalTempAsync(fileName.ToRPath(), null, cancellationToken);
                             fileName = _fileSystem.GetDownloadsPath(Path.GetFileName(fileName));
                             await viewer?.ViewFile(fileName, tabName, deleteFile, cancellationToken);
                         } catch (REvaluationException) { } catch (RHostDisconnectedException) { }
@@ -127,11 +127,23 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             return task;
         }
 
-        public Task<string> SaveFileAsync(string fileName, byte[] data) {
-            return Task.Run(() => {
-                string destPath = _fileSystem.GetDownloadsPath(fileName);
-                _fileSystem.FileWriteAllBytes(destPath, data);
-                return destPath;
+        public Task<string> SaveFileAsync(string remoteFileName, string localPath, byte[] data) {
+            return Task.Run(async () => {
+                if (!string.IsNullOrEmpty(localPath)) {
+                    if (_fileSystem.DirectoryExists(localPath)) {
+                        localPath = Path.Combine(localPath, remoteFileName);
+                    }
+                } else {
+                    localPath = _fileSystem.GetDownloadsPath(remoteFileName);
+                }
+
+                try {
+                    _fileSystem.FileWriteAllBytes(localPath, data);
+                } catch (Exception ex) {
+                    await _coreShell.ShowErrorMessageAsync(Resources.Error_UnableSaveFile.FormatInvariant(localPath, ex.Message));
+                    return string.Empty;
+                }
+                return localPath;
             });
         }
     }

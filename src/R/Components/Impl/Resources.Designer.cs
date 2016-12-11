@@ -488,6 +488,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to save local file {0}. Exception: {1}..
+        /// </summary>
+        public static string Error_UnableSaveFile {
+            get {
+                return ResourceManager.GetString("Error_UnableSaveFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Machine utilization: {0}% CPU, {1}% Memory, {2}% Network..
         /// </summary>
         public static string HostLoad_Tooltip {

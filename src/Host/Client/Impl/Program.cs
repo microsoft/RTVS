@@ -132,9 +132,9 @@ namespace Microsoft.R.Host.Client {
             Console.Error.WriteLineAsync("PackagesRemoved").DoNotWait();
         }
 
-        public async Task<string> SaveFileAsync(string fileName, byte[] data) {
-            await Console.Error.WriteAsync(Invariant($"fetch_file({fileName})"));
-            return fileName;
+        public async Task<string> SaveFileAsync(string remotePath, string localPath, byte[] data) {
+            await Console.Error.WriteAsync(Invariant($"fetch_file({remotePath}, {localPath})"));
+            return remotePath;
         }
 
         private async Task<string> ReadLineAsync(string prompt, CancellationToken ct) {

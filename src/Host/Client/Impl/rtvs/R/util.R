@@ -244,8 +244,8 @@ package_update <- function(package_name, lib_path) {
 }
 
 # Helper to download a file from remote host
-fetch_file <- function(file_path, silent = FALSE) {
-    invisible(call_embedded('fetch_file', path.expand(file_path), silent));
+fetch_file <- function(remotePath, localPath = '', silent = FALSE) {
+    invisible(call_embedded('fetch_file', path.expand(remotePath), path.expand(localPath), silent));
 }
 
 save_to_project_folder <- function(blob_id, project_name, dest_dir) {

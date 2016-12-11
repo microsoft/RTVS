@@ -546,4 +546,7 @@ Are you sure you want to terminate R session?</value>
   <data name="VideoRAM" xml:space="preserve">
     <value>Video memory: {0} MB</value>
   </data>
+  <data name="Error_UnableSaveFile" xml:space="preserve">
+    <value>Unable to save local file {0}. Exception: {1}.</value>
+  </data>
 </root>
