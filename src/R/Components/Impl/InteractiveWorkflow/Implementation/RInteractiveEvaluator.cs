@@ -287,32 +287,32 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             }
 
             // Trim all line breaks at the end of the message
-            int newLineLength = Environment.NewLine.Length;
-            while (message.EndsWithOrdinal(Environment.NewLine)) {
-                message = message.Substring(0, message.Length - newLineLength);
-            }
-
-            // Count line breaks in the beginning of the message and at the end 
-            // of the line text buffer and ensure no more than 2.
-            var snapshot = CurrentWindow.CurrentLanguageBuffer.CurrentSnapshot;
-            int nlInBuffer = 0;
-            for (int i = snapshot.Length - newLineLength; i >= 0; i -= newLineLength) {
-                if (!snapshot.GetText(i, newLineLength).EqualsOrdinal(Environment.NewLine)) {
-                    break;
-                }
-                nlInBuffer++;
-            }
+            message = message.TrimEnd(CharExtensions.LineBreakChars);
 
             // Trim and count leading new lines in the message
+            int newLineLength = Environment.NewLine.Length;
             int nlInMessage = 0;
             while (message.StartsWithOrdinal(Environment.NewLine) && message.Length > newLineLength) {
                 nlInMessage++;
                 message = message.Substring(newLineLength, message.Length - newLineLength);
             }
 
-            // allow no more than 2 combined
-            for (int i = 0; i < Math.Min(2, nlInBuffer + nlInMessage); i++) {
-                message = Environment.NewLine + message;
+            if (nlInMessage > 0) {
+                // Count line breaks in the beginning of the message and at the end 
+                // of the line text buffer and ensure no more than 2.
+                var snapshot = CurrentWindow.CurrentLanguageBuffer.CurrentSnapshot;
+                int nlInBuffer = 0;
+                for (int i = snapshot.Length - newLineLength; i >= 0; i -= newLineLength) {
+                    if (!snapshot.GetText(i, newLineLength).EqualsOrdinal(Environment.NewLine)) {
+                        break;
+                    }
+                    nlInBuffer++;
+                }
+
+                // allow no more than 2 combined
+                for (int i = 0; i < Math.Min(2, nlInBuffer + nlInMessage); i++) {
+                    message = Environment.NewLine + message;
+                }
             }
 
             return message;

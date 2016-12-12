@@ -505,11 +505,12 @@ namespace Microsoft.R.Host.Client {
 
                             case "!ShowFile":
                                 message.ExpectArguments(3);
-                                await _callbacks.ShowFile(
+                                // Do not await since it blocks callback from calling the host again
+                                _callbacks.ShowFile(
                                     message.GetString(0, "file"),
                                     message.GetString(1, "tabName"),
                                     message.GetBoolean(2, "delete.file"),
-                                    ct);
+                                    ct).DoNotWait();
                                 break;
 
                             case "!View":
