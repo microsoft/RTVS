@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace Microsoft.R.Host.Client {
     public interface IConsole {
         void Write(string text);
+        void WriteLine(string text);
         Task<bool> PromptYesNoAsync(string text, CancellationToken cancellationToken);
     }
 }

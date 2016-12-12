@@ -130,6 +130,9 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         public async Task<string> SaveFileAsync(string remoteFileName, string localPath, byte[] data, CancellationToken cancellationToken) {
             await TaskUtilities.SwitchToBackgroundThread();
 
+            remoteFileName = remoteFileName.FromRStringLiteral();
+            localPath = localPath.FromRStringLiteral();
+
             if (!string.IsNullOrEmpty(localPath)) {
                 if (_fileSystem.DirectoryExists(localPath)) {
                     localPath = Path.Combine(localPath, remoteFileName);

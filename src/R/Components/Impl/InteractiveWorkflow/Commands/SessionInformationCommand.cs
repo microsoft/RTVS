@@ -15,9 +15,12 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
     public sealed class SessionInformationCommand : IAsyncCommand {
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
+        private readonly IConsole _console;
 
-        public SessionInformationCommand(IRInteractiveWorkflow interactiveWorkflow) {
+        public SessionInformationCommand(IRInteractiveWorkflow interactiveWorkflow, IConsole console) {
             _interactiveWorkflow = interactiveWorkflow;
+            _console = console;
+
             _interactiveWorkflow.RSession.Interactive += OnRSessionInteractive;
             _interactiveWorkflow.RSession.Disposed += OnRSessionDisposed;
         }
@@ -72,30 +75,27 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
                 return;
             }
 
-            var window = _interactiveWorkflow.ActiveWindow?.InteractiveWindow;
-            if (window != null) {
-                window.WriteErrorLine(Environment.NewLine + Resources.RServices_Information);
-                window.WriteErrorLine("\t" + Resources.Version.FormatInvariant(aboutHost.Version));
-                window.WriteErrorLine("\t" + Resources.OperatingSystem.FormatInvariant(aboutHost.OS.VersionString));
-                window.WriteErrorLine("\t" + Resources.ProcessorCount.FormatInvariant(aboutHost.ProcessorCount));
-                window.WriteErrorLine("\t" + Resources.PhysicalMemory.FormatInvariant(aboutHost.TotalPhysicalMemory, aboutHost.FreePhysicalMemory));
-                window.WriteErrorLine("\t" + Resources.VirtualMemory.FormatInvariant(aboutHost.TotalVirtualMemory, aboutHost.FreeVirtualMemory));
+            _console.WriteLine(Environment.NewLine + Resources.RServices_Information);
+            _console.WriteLine("\t" + Resources.Version.FormatInvariant(aboutHost.Version));
+            _console.WriteLine("\t" + Resources.OperatingSystem.FormatInvariant(aboutHost.OS.VersionString));
+            _console.WriteLine("\t" + Resources.ProcessorCount.FormatInvariant(aboutHost.ProcessorCount));
+            _console.WriteLine("\t" + Resources.PhysicalMemory.FormatInvariant(aboutHost.TotalPhysicalMemory, aboutHost.FreePhysicalMemory));
+            _console.WriteLine("\t" + Resources.VirtualMemory.FormatInvariant(aboutHost.TotalVirtualMemory, aboutHost.FreeVirtualMemory));
 
-                if (!string.IsNullOrEmpty(aboutHost.VideoCardName)) {
-                    window.WriteErrorLine("\t" + Resources.VideoCardName.FormatInvariant(aboutHost.VideoCardName));
-                }
-
-                if (!string.IsNullOrEmpty(aboutHost.VideoProcessor)) {
-                    window.WriteErrorLine("\t" + Resources.VideoProcessor.FormatInvariant(aboutHost.VideoProcessor));
-                }
-
-                if (aboutHost.VideoRAM > 0) {
-                    window.WriteErrorLine("\t" + Resources.VideoRAM.FormatInvariant(aboutHost.VideoRAM));
-                }
-
-                window.WriteErrorLine("\t" + Resources.ConnectedUserCount.FormatInvariant(aboutHost.ConnectedUserCount));
-                window.WriteErrorLine(string.Empty);
+            if (!string.IsNullOrEmpty(aboutHost.VideoCardName)) {
+                _console.WriteLine("\t" + Resources.VideoCardName.FormatInvariant(aboutHost.VideoCardName));
             }
+
+            if (!string.IsNullOrEmpty(aboutHost.VideoProcessor)) {
+                _console.WriteLine("\t" + Resources.VideoProcessor.FormatInvariant(aboutHost.VideoProcessor));
+            }
+
+            if (aboutHost.VideoRAM > 0) {
+                _console.WriteLine("\t" + Resources.VideoRAM.FormatInvariant(aboutHost.VideoRAM));
+            }
+
+            _console.WriteLine("\t" + Resources.ConnectedUserCount.FormatInvariant(aboutHost.ConnectedUserCount));
+            _console.WriteLine(string.Empty);
 
             if (reportTelemetry) {
                 var services = _interactiveWorkflow.Shell.Services;

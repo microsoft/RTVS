@@ -10,6 +10,7 @@ using Microsoft.R.Components.Documentation;
 using Microsoft.R.Components.Documentation.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Commands;
+using Microsoft.R.Components.InteractiveWorkflow.Implementation;
 using Microsoft.R.Components.Plots.Commands;
 using Microsoft.R.Components.Sql;
 using Microsoft.R.Support.Settings;
@@ -52,6 +53,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             var dbcs = exportProvider.GetExportedValue<IDbConnectionService>();
             var settings = exportProvider.GetExportedValue<IRToolsSettings>();
             var logPerms = appShell.Services.LoggingServices.Permissions;
+            var console = new InteractiveWindowConsole(interactiveWorkflow);
 
             return new List<MenuCommand> {
                 new GoToOptionsCommand(),
@@ -94,7 +96,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
                 CreateRCmdSetCommand(RPackageCommandId.icmdInterruptR, new InterruptRCommand(interactiveWorkflow, debuggerModeTracker)),
                 CreateRCmdSetCommand(RPackageCommandId.icmdTerminateR, new TerminateRCommand(interactiveWorkflow, appShell)),
-                CreateRCmdSetCommand(RPackageCommandId.icmdSessionInformation, new SessionInformationCommand(interactiveWorkflow)),
+                CreateRCmdSetCommand(RPackageCommandId.icmdSessionInformation, new SessionInformationCommand(interactiveWorkflow, console)),
 
                 new ResetReplCommand(interactiveWorkflow),
                 

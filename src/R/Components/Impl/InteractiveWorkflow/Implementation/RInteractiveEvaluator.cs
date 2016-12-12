@@ -27,6 +27,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         private readonly IConnectionManager _connections;
         private readonly ICoreShell _coreShell;
         private readonly IRSettings _settings;
+        private readonly IConsole _console;
         private readonly CountdownDisposable _evaluatorRequest;
         private CarriageReturnProcessor _crProcessor;
         private int _terminalWidth = 80;
@@ -35,7 +36,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         public IRHistory History { get; }
         public IRSession Session { get; }
 
-        public RInteractiveEvaluator(IRSessionProvider sessionProvider, IRSession session, IRHistory history, IConnectionManager connections, ICoreShell coreShell, IRSettings settings) {
+        public RInteractiveEvaluator(IRSessionProvider sessionProvider, IRSession session, IRHistory history, IConnectionManager connections, ICoreShell coreShell, IRSettings settings, IConsole console) {
             History = history;
             Session = session;
             Session.Output += SessionOnOutput;
@@ -46,6 +47,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             _connections = connections;
             _coreShell = coreShell;
             _settings = settings;
+            _console = console;
             _evaluatorRequest = new CountdownDisposable();
         }
 
@@ -95,7 +97,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         public async Task<ExecutionResult> ResetAsync(bool initialize = true) {
             try {
                 if (Session.IsHostRunning) {
-                    CurrentWindow.WriteError(Resources.MicrosoftRHostStopping);
+                    WriteErrorLine(Environment.NewLine + Resources.MicrosoftRHostStopping);
                     await Session.StopHostAsync();
                 }
 
@@ -103,7 +105,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                     return ExecutionResult.Success;
                 }
 
-                CurrentWindow.WriteError(Environment.NewLine + Resources.MicrosoftRHostStarting);
+                WriteErrorLine(Environment.NewLine + Resources.MicrosoftRHostStarting);
                 return await InitializeAsync(true);
             } catch (Exception ex) {
                 Trace.Fail($"Exception in RInteractiveEvaluator.ResetAsync\n{ex}");
@@ -201,13 +203,13 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             if (args.OutputType == OutputType.Output) {
                 Write(args.Message.ToUnicodeQuotes());
             } else {
-                WriteError(args.Message);
+                WriteErrorLine(args.Message);
             }
         }
 
         private void SessionOnDisconnected(object sender, EventArgs args) {
             if (CurrentWindow == null || !CurrentWindow.IsResetting) {
-                WriteError(Resources.MicrosoftRHostStopped);
+                WriteErrorLine(Environment.NewLine + Resources.MicrosoftRHostStopped);
             }
         }
 
@@ -249,36 +251,20 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         }
 
 
-
         private void Write(string message) {
             if (CurrentWindow != null && !_crProcessor.ProcessMessage(message)) {
                 _coreShell.DispatchOnUIThread(() => CurrentWindow?.Write(message));
             }
         }
 
-        private void WriteError(string message) {
-            if (CurrentWindow == null) {
-                return;
-            }
-            _coreShell.DispatchOnUIThread(() => {
-                if (CurrentWindow != null) {
-                    message = TrimExcessiveLineBreaks(message);
-                    // Ensure line break so callers don't have to
-                    CurrentWindow?.WriteError(message + Environment.NewLine);
-                }
-            });
+        private void WriteErrorLine(string message) {
+            message = TrimExcessiveLineBreaks(message);
+            _console.WriteLine(message);
         }
 
         private void WriteRHostDisconnectedError(RHostDisconnectedException exception) {
-            WriteRHostDisconnectedErrorAsync(exception).DoNotWait();
-        }
-
-        private async Task WriteRHostDisconnectedErrorAsync(RHostDisconnectedException exception) {
-            await _coreShell.SwitchToMainThreadAsync();
-            if (CurrentWindow != null) {
-                CurrentWindow.WriteErrorLine(exception.Message + Environment.NewLine);
-                CurrentWindow.WriteErrorLine((_sessionProvider.IsConnected ? Resources.RestartRHost : Resources.ReconnectToBroker) + Environment.NewLine);
-            }
+            WriteErrorLine(Environment.NewLine + exception.Message);
+            WriteErrorLine(_sessionProvider.IsConnected ? Resources.RestartRHost : Resources.ReconnectToBroker);
         }
 
         private void VisualElement_SizeChanged(object sender, System.Windows.SizeChangedEventArgs e) {
@@ -296,6 +282,10 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         /// extra line breaks to the error message. Limits output to 2 line breaks per message.
         /// </summary>
         private string TrimExcessiveLineBreaks(string message) {
+            if (CurrentWindow.CurrentLanguageBuffer == null) {
+                return message.Trim();
+            }
+
             // Trim all line breaks at the end of the message
             int newLineLength = Environment.NewLine.Length;
             while (message.EndsWithOrdinal(Environment.NewLine)) {
@@ -306,8 +296,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             // of the line text buffer and ensure no more than 2.
             var snapshot = CurrentWindow.CurrentLanguageBuffer.CurrentSnapshot;
             int nlInBuffer = 0;
-            for (int i = snapshot.Length - newLineLength; i >= 0; i++) {
-                if (!snapshot.GetText(snapshot.Length - newLineLength, newLineLength).EqualsOrdinal(Environment.NewLine)) {
+            for (int i = snapshot.Length - newLineLength; i >= 0; i -= newLineLength) {
+                if (!snapshot.GetText(i, newLineLength).EqualsOrdinal(Environment.NewLine)) {
                     break;
                 }
                 nlInBuffer++;
@@ -315,9 +305,9 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
             // Trim and count leading new lines in the message
             int nlInMessage = 0;
-            while (message.StartsWithOrdinal(Environment.NewLine)) {
+            while (message.StartsWithOrdinal(Environment.NewLine) && message.Length > newLineLength) {
                 nlInMessage++;
-                message = message.Substring(0, Environment.NewLine.Length);
+                message = message.Substring(newLineLength, message.Length - newLineLength);
             }
 
             // allow no more than 2 combined
