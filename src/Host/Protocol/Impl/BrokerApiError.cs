@@ -8,5 +8,6 @@ namespace Microsoft.R.Host.Protocol {
         UnableToStartRHost,
         UnableToTerminateRHost,
         PipeAlreadyConnected,
+        Win32Error
     }
 }

@@ -8,6 +8,7 @@ using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Threading;
 using System.Windows.Threading;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Security;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
