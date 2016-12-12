@@ -212,6 +212,10 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         }
 
         private void SessionOnAfterRequest(object sender, RAfterRequestEventArgs e) {
+            if (CurrentWindow == null || CurrentWindow.IsResetting) {
+                return;
+            }
+
             if (_evaluatorRequest.Count == 0 && e.AddToHistory && e.IsVisible) {
                 _coreShell.DispatchOnUIThread(() => {
                     if (CurrentWindow == null || CurrentWindow.IsResetting) {
@@ -225,6 +229,10 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         }
 
         private void SessionOnBeforeRequest(object sender, RBeforeRequestEventArgs e) {
+            if (CurrentWindow == null || CurrentWindow.IsRunning) {
+                return;
+            }
+
             _coreShell.DispatchOnUIThread(() => {
                 if (CurrentWindow == null || CurrentWindow.IsRunning) {
                     return;
@@ -249,6 +257,9 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         }
 
         private void WriteError(string message) {
+            if (CurrentWindow == null) {
+                return;
+            }
             _coreShell.DispatchOnUIThread(() => {
                 if (CurrentWindow != null) {
                     message = TrimExcessiveLineBreaks(message);

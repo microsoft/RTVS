@@ -127,24 +127,25 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             return task;
         }
 
-        public Task<string> SaveFileAsync(string remoteFileName, string localPath, byte[] data) {
-            return Task.Run(async () => {
-                if (!string.IsNullOrEmpty(localPath)) {
-                    if (_fileSystem.DirectoryExists(localPath)) {
-                        localPath = Path.Combine(localPath, remoteFileName);
-                    }
-                } else {
-                    localPath = _fileSystem.GetDownloadsPath(remoteFileName);
-                }
+        public async Task<string> SaveFileAsync(string remoteFileName, string localPath, byte[] data, CancellationToken cancellationToken) {
+            await TaskUtilities.SwitchToBackgroundThread();
 
-                try {
-                    _fileSystem.FileWriteAllBytes(localPath, data);
-                } catch (Exception ex) {
-                    await _coreShell.ShowErrorMessageAsync(Resources.Error_UnableSaveFile.FormatInvariant(localPath, ex.Message));
-                    return string.Empty;
+            if (!string.IsNullOrEmpty(localPath)) {
+                if (_fileSystem.DirectoryExists(localPath)) {
+                    localPath = Path.Combine(localPath, remoteFileName);
                 }
-                return localPath;
-            });
+            } else {
+                localPath = _fileSystem.GetDownloadsPath(remoteFileName);
+            }
+
+            try {
+                cancellationToken.ThrowIfCancellationRequested();
+                _fileSystem.FileWriteAllBytes(localPath, data);
+            } catch (Exception ex) {
+                await _coreShell.ShowErrorMessageAsync(Resources.Error_UnableSaveFile.FormatInvariant(localPath, ex.Message), cancellationToken);
+                return string.Empty;
+            }
+            return localPath;
         }
     }
 }

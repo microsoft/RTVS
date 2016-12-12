@@ -38,7 +38,7 @@ namespace Microsoft.R.Host.Client.Host {
         public Task ViewObject(string expression, string title, CancellationToken cancellationToken) => Task.CompletedTask;
         public void PackagesInstalled() { }
         public void PackagesRemoved() {}
-        public Task<string> SaveFileAsync(string remotePath, string localPath, byte[] data) => Task.FromResult(string.Empty);
+        public Task<string> SaveFileAsync(string remotePath, string localPath, byte[] data, CancellationToken cancellationToken) => Task.FromResult(string.Empty);
 
         public async Task<string> ReadConsole(IReadOnlyList<IRContext> contexts, string prompt, int len, bool addToHistory, CancellationToken ct) {
             await _mrs.WaitAsync(ct);
