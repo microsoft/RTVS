@@ -550,7 +550,7 @@ Are you sure you want to terminate R session?</value>
     <value>User profile and all files under the user directory will be permanently deleted from the remote machine {0}. Your connection will also be disconnected. Reconnecting to the same remote machine will create a new profile. Are you sure you want to delete the user profile from the machine {0}?</value>
   </data>
   <data name="DeleteProfile_Error" xml:space="preserve">
-    <value>Failed to delete user profile. Please see longs for the RUserProfileService on the remote machine {0}. Requires admin access to examine the logs.</value>
+    <value>Failed to delete user profile. Please see logs for the RUserProfileService on the remote machine {0}. Requires admin access to examine the logs.</value>
   </data>
   <data name="DeleteProfile_Success" xml:space="preserve">
     <value>User directory and files under it were successfully deleted from remote machine {0}. You can click "Reset" to re-create your user profile and start a new session.</value>

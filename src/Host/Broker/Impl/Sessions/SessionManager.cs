@@ -91,6 +91,10 @@ namespace Microsoft.R.Host.Broker.Sessions {
 
         public Session GetSession(IIdentity user, string id) {
             lock (_sessions) {
+                if (_blockedUsers.Contains(user.Name)) {
+                    return null;
+                }
+
                 return _sessions.Values.SelectMany(sessions => sessions).FirstOrDefault(session => session.User.Name == user.Name && session.Id == id);
             }
         }

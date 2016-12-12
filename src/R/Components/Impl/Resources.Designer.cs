@@ -425,7 +425,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to delete user profile. Please see longs for the RUserProfileService on the remote machine {0}. Requires admin access to examine the logs..
+        ///   Looks up a localized string similar to Failed to delete user profile. Please see logs for the RUserProfileService on the remote machine {0}. Requires admin access to examine the logs..
         /// </summary>
         public static string DeleteProfile_Error {
             get {
