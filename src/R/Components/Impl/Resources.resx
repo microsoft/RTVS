@@ -549,4 +549,10 @@ Are you sure you want to terminate R session?</value>
   <data name="Error_UnableSaveFile" xml:space="preserve">
     <value>Unable to save local file {0}. Exception: {1}.</value>
   </data>
+  <data name="LocalR" xml:space="preserve">
+    <value>Local R: {0}</value>
+  </data>
+  <data name="RemoteConnection" xml:space="preserve">
+    <value>Remote workspace '{0}' : {1}</value>
+  </data>
 </root>

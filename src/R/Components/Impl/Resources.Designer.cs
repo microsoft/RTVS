@@ -542,6 +542,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Local R: {0}.
+        /// </summary>
+        public static string LocalR {
+            get {
+                return ResourceManager.GetString("LocalR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Starting R Session....
         /// </summary>
         public static string MicrosoftRHostStarting {
@@ -1204,6 +1213,15 @@ namespace Microsoft.R.Components {
         public static string ReconnectToBroker {
             get {
                 return ResourceManager.GetString("ReconnectToBroker", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remote workspace &apos;{0}&apos; : {1}.
+        /// </summary>
+        public static string RemoteConnection {
+            get {
+                return ResourceManager.GetString("RemoteConnection", resourceCulture);
             }
         }
         

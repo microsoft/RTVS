@@ -76,6 +76,12 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
             }
 
             _console.WriteLine(Environment.NewLine + Resources.RServices_Information);
+            if (_interactiveWorkflow.RSession.IsRemote) {
+                _console.WriteLine("\t" + Resources.RemoteConnection.FormatInvariant(_interactiveWorkflow.RSessions.Broker.Name, _interactiveWorkflow.RSessions.Broker.Uri));
+            } else {
+                _console.WriteLine("\t" + Resources.LocalR.FormatInvariant(_interactiveWorkflow.RSessions.Broker.Uri.LocalPath));
+            }
+
             _console.WriteLine("\t" + Resources.Version.FormatInvariant(aboutHost.Version));
             _console.WriteLine("\t" + Resources.OperatingSystem.FormatInvariant(aboutHost.OS.VersionString));
             _console.WriteLine("\t" + Resources.ProcessorCount.FormatInvariant(aboutHost.ProcessorCount));
