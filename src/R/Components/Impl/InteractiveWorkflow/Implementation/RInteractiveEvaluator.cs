@@ -95,7 +95,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         public async Task<ExecutionResult> ResetAsync(bool initialize = true) {
             try {
                 if (Session.IsHostRunning) {
-                    CurrentWindow.WriteError(Resources.MicrosoftRHostStopping + Environment.NewLine);
+                    CurrentWindow.WriteError(Resources.MicrosoftRHostStopping);
                     await Session.StopHostAsync();
                 }
 
@@ -103,7 +103,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                     return ExecutionResult.Success;
                 }
 
-                CurrentWindow.WriteError(Environment.NewLine + Resources.MicrosoftRHostStarting + Environment.NewLine);
+                CurrentWindow.WriteError(Environment.NewLine + Resources.MicrosoftRHostStarting);
                 return await InitializeAsync(true);
             } catch (Exception ex) {
                 Trace.Fail($"Exception in RInteractiveEvaluator.ResetAsync\n{ex}");
@@ -201,7 +201,6 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             if (args.OutputType == OutputType.Output) {
                 Write(args.Message.ToUnicodeQuotes());
             } else {
-
                 WriteError(args.Message);
             }
         }
@@ -252,17 +251,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         private void WriteError(string message) {
             _coreShell.DispatchOnUIThread(() => {
                 if (CurrentWindow != null) {
-                    // Prevent multiple line breaks when various components prepend and append
-                    // extra line breaks to error message. Don't allow more than 2 line breaks.
-                    var snapshot = CurrentWindow.CurrentLanguageBuffer.CurrentSnapshot;
-                    var twoLineBreakLength = 2 * Environment.NewLine.Length;
-                    if (snapshot.Length >= twoLineBreakLength) {
-                        if(snapshot.GetText(new Span(snapshot.Length- twoLineBreakLength, twoLineBreakLength)).EqualsOrdinal(Environment.NewLine + Environment.NewLine)) {
-                            while(message.StartsWithOrdinal(Environment.NewLine)) {
-                                message = message.Substring(0, Environment.NewLine.Length);
-                            }
-                        }
-                    }
+                    message = TrimExcessiveLineBreaks(message);
+                    // Ensure line break so callers don't have to
                     CurrentWindow?.WriteError(message + Environment.NewLine);
                 }
             });
@@ -275,7 +265,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         private async Task WriteRHostDisconnectedErrorAsync(RHostDisconnectedException exception) {
             await _coreShell.SwitchToMainThreadAsync();
             if (CurrentWindow != null) {
-                CurrentWindow.WriteErrorLine(exception.Message);
+                CurrentWindow.WriteErrorLine(exception.Message + Environment.NewLine);
                 CurrentWindow.WriteErrorLine((_sessionProvider.IsConnected ? Resources.RestartRHost : Resources.ReconnectToBroker) + Environment.NewLine);
             }
         }
@@ -288,6 +278,43 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             Session.OptionsSetWidthAsync(_terminalWidth)
                 .SilenceException<RException>()
                 .DoNotWait();
+        }
+
+        /// <summary>
+        /// Prevents multiple line breaks in REPL when various components prepend and append
+        /// extra line breaks to the error message. Limits output to 2 line breaks per message.
+        /// </summary>
+        private string TrimExcessiveLineBreaks(string message) {
+            // Trim all line breaks at the end of the message
+            int newLineLength = Environment.NewLine.Length;
+            while (message.EndsWithOrdinal(Environment.NewLine)) {
+                message = message.Substring(0, message.Length - newLineLength);
+            }
+
+            // Count line breaks in the beginning of the message and at the end 
+            // of the line text buffer and ensure no more than 2.
+            var snapshot = CurrentWindow.CurrentLanguageBuffer.CurrentSnapshot;
+            int nlInBuffer = 0;
+            for (int i = snapshot.Length - newLineLength; i >= 0; i++) {
+                if (!snapshot.GetText(snapshot.Length - newLineLength, newLineLength).EqualsOrdinal(Environment.NewLine)) {
+                    break;
+                }
+                nlInBuffer++;
+            }
+
+            // Trim and count leading new lines in the message
+            int nlInMessage = 0;
+            while (message.StartsWithOrdinal(Environment.NewLine)) {
+                nlInMessage++;
+                message = message.Substring(0, Environment.NewLine.Length);
+            }
+
+            // allow no more than 2 combined
+            for (int i = 0; i < Math.Min(2, nlInBuffer + nlInMessage); i++) {
+                message = Environment.NewLine + message;
+            }
+
+            return message;
         }
     }
 }
