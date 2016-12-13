@@ -680,6 +680,19 @@
         </Strings>
       </Button>
 
+      <Button guid="guidRToolsCmdSet" id="icmdDeleteProfile" priority="0x0510" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="sessionSubMenuTerminateRGroup"/>
+        <Icon guid="ImageCatalogGuid" id="Remove"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Delete Profile...</ButtonText>
+          <MenuText>Delete Profile...</MenuText>
+          <CommandName>Delete Profile</CommandName>
+        </Strings>
+      </Button>
+
       <Button guid="guidRToolsCmdSet" id="icmdSessionInformation" priority="0x0500" type="Button">
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenuInformationGroup"/>
         <Icon guid="ImageCatalogGuid" id="StatusInformationOutline"/>
@@ -2641,6 +2654,7 @@
       <IDSymbol name="icmdSetDirectoryToProjectCommand" value="520"/>
       <IDSymbol name="icmdTerminateR" value="521"/>
       <IDSymbol name="icmdSessionInformation" value="522"/>
+      <IDSymbol name="icmdDeleteProfile" value="523"/>
 
       <IDSymbol name="sessionSubMenuFileGroup" value="551"/>
       <IDSymbol name="sessionSubMenuRGroup" value="552"/>

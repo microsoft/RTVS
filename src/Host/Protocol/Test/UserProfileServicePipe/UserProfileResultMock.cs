@@ -5,7 +5,7 @@ using System;
 using Microsoft.Common.Core.OS;
 
 namespace Microsoft.R.Host.Protocol.Test.UserProfileServicePipe {
-    class UserProfileResultMock : IUserProfileCreatorResult {
+    class UserProfileResultMock : IUserProfileServiceResult {
         public uint Error { get; set; }
 
         public bool ProfileExists { get; set; }
