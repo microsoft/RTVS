@@ -262,12 +262,6 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             _console.WriteLine(message);
         }
 
-        private void WriteErrorLine(string message) {
-            if (CurrentWindow != null) {
-                _coreShell.DispatchOnUIThread(() => CurrentWindow?.WriteErrorLine(message));
-            }
-        }
-
         private void WriteRHostDisconnectedError(RHostDisconnectedException exception) {
             WriteErrorLine(Environment.NewLine + exception.Message);
             WriteErrorLine(_sessionProvider.IsConnected ? Resources.RestartRHost : Resources.ReconnectToBroker);
