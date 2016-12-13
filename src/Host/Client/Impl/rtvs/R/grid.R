@@ -68,7 +68,11 @@ grid_data <- function(x, rows, cols, row_selector) {
             # If that also fails, give up and display the value as <?>.
             if (!is.character(s) || length(s) != 1) {
                 s <- tryCatch({
-                    paste0(format(s, trim = TRUE, justify = "none"), collapse = '')
+                    # Preserve the behavior of format() for list elements, documented as follows:
+                    # If x is a list, the result is a character vector obtained by applying format.default(x, ...)
+                    # to each element of the list (after unlisting elements which are themselves lists), and then
+                    # collapsing the result for each element with paste(collapse = ", ").
+                    paste(format.default(unlist(s), trim = TRUE, justify = "none"), collapse = ', ')
                 }, error = function(e) {
                     tryCatch({
                         make_repr_str(max_length = 100)(s) 
