@@ -14,18 +14,19 @@ using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
     [Export(typeof(IInteractiveWindowComponentContainerFactory))]
     internal class VsRInteractiveWindowComponentContainerFactory : IInteractiveWindowComponentContainerFactory {
-        private readonly Lazy<IVsInteractiveWindowFactory2> _vsInteractiveWindowFactoryLazy;
+        private readonly Lazy<IVsInteractiveWindowFactory> _vsInteractiveWindowFactoryLazy;
         private readonly IContentTypeRegistryService _contentTypeRegistryService;
         private readonly ICoreShell _shell;
 
         [ImportingConstructor]
         public VsRInteractiveWindowComponentContainerFactory(
-            Lazy<IVsInteractiveWindowFactory2> vsInteractiveWindowFactory,
+            Lazy<IVsInteractiveWindowFactory> vsInteractiveWindowFactory,
             IContentTypeRegistryService contentTypeRegistryService,
             ICoreShell shell) {
             _vsInteractiveWindowFactoryLazy = vsInteractiveWindowFactory;
@@ -36,12 +37,15 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         public IInteractiveWindowVisualComponent Create(int instanceId, IInteractiveEvaluator evaluator, IRSessionProvider sessionProvider) {
             VsAppShell.Current.AssertIsOnMainThread();
 
-            var parameters = new VsInteractiveWindowCreationParameters(RGuidList.ReplInteractiveWindowProviderGuid, instanceId, string.Empty, evaluator) { 
-                ToolbarCommandSet = RGuidList.RCmdSetGuid,
-                ToolbarId = RPackageCommandId.replWindowToolBarId
-            };
+            IVsInteractiveWindow vsWindow;
+            var vsf2 = _vsInteractiveWindowFactoryLazy.Value as IVsInteractiveWindowFactory2; // Temporary for VS 2017 RC2
+            if (vsf2 != null) {
+                vsWindow = vsf2.Create(RGuidList.ReplInteractiveWindowProviderGuid, instanceId, string.Empty, evaluator, 
+                                      0, RGuidList.RCmdSetGuid, RPackageCommandId.replWindowToolBarId, null);
+            } else {
+                vsWindow = _vsInteractiveWindowFactoryLazy.Value.Create(RGuidList.ReplInteractiveWindowProviderGuid, instanceId, string.Empty, evaluator);
+            }
 
-            var vsWindow = _vsInteractiveWindowFactoryLazy.Value.Create(parameters);
             var contentType = _contentTypeRegistryService.GetContentType(RContentTypeDefinition.ContentType);
             vsWindow.SetLanguage(RGuidList.RLanguageServiceGuid, contentType);
 

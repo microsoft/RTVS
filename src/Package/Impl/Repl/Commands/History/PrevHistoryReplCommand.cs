@@ -6,8 +6,6 @@ using Microsoft.VisualStudio.R.Package.Commands;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     internal sealed class PrevHistoryReplCommand : ReplCommandBase {
-        private readonly IRInteractiveWorkflow _interactiveWorkflow;
-
         public PrevHistoryReplCommand(IRInteractiveWorkflow interactiveWorkflow) :
             base(interactiveWorkflow, RPackageCommandId.icmdPrevHistoryRepl) { }
 

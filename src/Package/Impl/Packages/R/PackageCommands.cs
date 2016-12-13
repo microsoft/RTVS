@@ -98,9 +98,10 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 CreateRCmdSetCommand(RPackageCommandId.icmdSessionInformation, new SessionInformationCommand(interactiveWorkflow)),
 
                 new ResetReplCommand(interactiveWorkflow),
+#if VS15
                 new PrevHistoryReplCommand(interactiveWorkflow),
                 new NextHistoryReplCommand(interactiveWorkflow),
-                
+#endif
                 // Directory management
                 new SetDirectoryToSourceCommand(interactiveWorkflow, textViewTracker),
                 new SetDirectoryToProjectCommand(interactiveWorkflow, pss),
