@@ -3,6 +3,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace Microsoft.UnitTests.Core {
     internal static unsafe class NativeMethods {
@@ -36,5 +37,8 @@ namespace Microsoft.UnitTests.Core {
             public int dwOwningPid;
             TCP_CONNECTION_OFFLOAD_STATE dwOffloadState;
         }
+
+        [DllImport("kernel32.dll")]
+        public static extern uint GetModuleFileName(IntPtr hModule, StringBuilder buffer, int cchBufferSize);
     }
 }
