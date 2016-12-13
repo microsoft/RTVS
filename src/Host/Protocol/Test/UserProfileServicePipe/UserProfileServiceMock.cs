@@ -1,14 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using FluentAssertions;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Security;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.R.Host.Protocol.Test.UserProfileServicePipe {
-    internal class UserProfileCreatorMock : IUserProfileServices {
-        public UserProfileCreatorMock() { }
+    internal class UserProfileServiceMock : IUserProfileServices {
+        public UserProfileServiceMock() { }
 
         public bool TestingValidParse { get; private set; }
         public bool TestingValidAccount { get; private set; }
@@ -19,7 +20,22 @@ namespace Microsoft.R.Host.Protocol.Test.UserProfileServicePipe {
         public string ExpectedPassword { get; private set; }
         
 
-        public IUserProfileCreatorResult CreateUserProfile(IUserCredentials credMock, ILogger logger) {
+        public IUserProfileServiceResult CreateUserProfile(IUserCredentials credMock, ILogger logger) {
+            if (!TestingValidParse) {
+                // If parse succeeded but did not generate an object,
+                // for example, JSON parse of white spaces.
+                credMock.Should().BeNull();
+                return UserProfileResultMock.Create(false, false);
+            }
+
+            ValidateUsername(credMock?.Username);
+            ValidateDomain(credMock?.Domain);
+            ValidatePassword(credMock?.Password.ToUnsecureString());
+
+            return UserProfileResultMock.Create(TestingValidAccount, TestingExistingAccount);
+        }
+
+        public IUserProfileServiceResult DeleteUserProfile(IUserCredentials credMock, ILogger logger) {
             if (!TestingValidParse) {
                 // If parse succeeded but did not generate an object,
                 // for example, JSON parse of white spaces.
@@ -50,8 +66,8 @@ namespace Microsoft.R.Host.Protocol.Test.UserProfileServicePipe {
             ValidateString(password, ExpectedPassword);
         }
 
-        public static UserProfileCreatorMock Create(string username, string domain, string password, bool validParse, bool validAccount, bool existingAccount) {
-            var creator = new UserProfileCreatorMock();
+        public static UserProfileServiceMock Create(string username, string domain, string password, bool validParse, bool validAccount, bool existingAccount) {
+            var creator = new UserProfileServiceMock();
             creator.ExpectedUsername= username;
             creator.ExpectedDomain= domain;
             creator.ExpectedPassword= password;

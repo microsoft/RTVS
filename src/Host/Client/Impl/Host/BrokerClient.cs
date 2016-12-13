@@ -95,6 +95,16 @@ namespace Microsoft.R.Host.Client.Host {
             }
         }
 
+        public async Task DeleteProfileAsync(CancellationToken cancellationToken) {
+            await TaskUtilities.SwitchToBackgroundThread();
+            try {
+                var sessionsService = new ProfileWebService(HttpClient, _credentials);
+                await sessionsService.DeleteAsync(cancellationToken);
+            } catch (HttpRequestException ex) {
+                throw new RHostDisconnectedException(Resources.Error_HostNotResponding.FormatInvariant(ex.Message), ex);
+            }
+        }
+
         public virtual async Task<RHost> ConnectAsync(BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken)) {
             DisposableBag.ThrowIfDisposed();
             await TaskUtilities.SwitchToBackgroundThread();

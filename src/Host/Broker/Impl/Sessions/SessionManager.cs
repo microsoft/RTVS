@@ -27,6 +27,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
         private readonly ILogger _hostOutputLogger, _messageLogger, _sessionLogger;
 
         private readonly Dictionary<string, List<Session>> _sessions = new Dictionary<string, List<Session>>();
+        private readonly HashSet<string> _blockedUsers = new HashSet<string>();
 
         [ImportingConstructor]
         public SessionManager(
@@ -59,6 +60,29 @@ namespace Microsoft.R.Host.Broker.Sessions {
             }
         }
 
+        public IDisposable BlockSessionsCreationForUser(IIdentity user, bool terminateSession) {
+            lock (_sessions) {
+                if (terminateSession) {
+                    var userSessions = GetOrCreateSessionList(user);
+                    var sessions = userSessions.ToArray();
+                    foreach (var session in sessions) {
+                        userSessions.Remove(session);
+                        Task.Run(() => session.KillHost()).SilenceException<Exception>().DoNotWait();
+                        session.State = SessionState.Terminated;
+                    }
+                }
+                _blockedUsers.Add(user.Name);
+
+                return new UserSessionCreationBlocker(this, user);
+            }
+        }
+
+        private void UnblockSessionCreationForUser(IIdentity user) {
+            lock (_sessions) {
+                _blockedUsers.Remove(user.Name);
+            }
+        }
+
         public IEnumerable<string> GetUsers() {
             lock (_sessions) {
                 return _sessions.Keys.ToArray();
@@ -67,6 +91,10 @@ namespace Microsoft.R.Host.Broker.Sessions {
 
         public Session GetSession(IIdentity user, string id) {
             lock (_sessions) {
+                if (_blockedUsers.Contains(user.Name)) {
+                    return null;
+                }
+
                 return _sessions.Values.SelectMany(sessions => sessions).FirstOrDefault(session => session.User.Name == user.Name && session.Id == id);
             }
         }
@@ -87,15 +115,16 @@ namespace Microsoft.R.Host.Broker.Sessions {
             Session session;
 
             lock (_sessions) {
+                if (_blockedUsers.Contains(user.Name)) {
+                    throw new InvalidOperationException(Resources.Error_BlockedByProfileDeletion.FormatInvariant(user.Name));
+                }
+
                 var oldUserSessions = GetOrCreateSessionList(user);
 
                 var oldSessions = oldUserSessions.Where(s => s.Id == id).ToArray();
                 foreach (var oldSession in oldSessions) {
-                    try {
-                        oldUserSessions.Remove(oldSession);
-                        Task.Run(() => oldSession.KillHost()).DoNotWait();
-                    } catch (Exception) { }
-
+                    oldUserSessions.Remove(oldSession);
+                    Task.Run(() => oldSession.KillHost()).SilenceException<Exception>().DoNotWait();
                     oldSession.State = SessionState.Terminated;
                 }
 
@@ -126,6 +155,19 @@ namespace Microsoft.R.Host.Broker.Sessions {
                         _sessions.Remove(session.User.Name);
                     }
                 }
+            }
+        }
+
+        private class UserSessionCreationBlocker : IDisposable {
+            private readonly SessionManager _sessionManager;
+            private readonly IIdentity _user;
+            public UserSessionCreationBlocker(SessionManager sessionManager, IIdentity user) {
+                _sessionManager = sessionManager;
+                _user = user;
+            }
+
+            public void Dispose() {
+                _sessionManager.UnblockSessionCreationForUser(_user);
             }
         }
     }

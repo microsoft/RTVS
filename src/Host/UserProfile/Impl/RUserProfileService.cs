@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Extensions.Logging;
 using Microsoft.R.Host.Protocol;
+using Microsoft.Common.Core.OS;
 
 namespace Microsoft.R.Host.UserProfile {
     partial class RUserProfileService : ServiceBase {
@@ -21,10 +22,12 @@ namespace Microsoft.R.Host.UserProfile {
             InitializeComponent();
         }
 
-        private ManualResetEvent _workerdone;
+        private ManualResetEvent _createWorkerDone;
+        private ManualResetEvent _deleteWorkerDone;
         private CancellationTokenSource _cts;
         private ILogger _logger;
         private ILoggerFactory _loggerFactory;
+
         protected override void OnStart(string[] args) {
             _loggerFactory = new LoggerFactory();
             _loggerFactory
@@ -33,24 +36,35 @@ namespace Microsoft.R.Host.UserProfile {
             _logger = _loggerFactory.CreateLogger<RUserProfileService>();
 
             _cts = new CancellationTokenSource();
-            _workerdone = new ManualResetEvent(false);
+            _createWorkerDone = new ManualResetEvent(false);
+            _deleteWorkerDone = new ManualResetEvent(false);
+
             CreateProfileWorkerAsync(_cts.Token).DoNotWait();
+            DeleteProfileWorkerAsync(_cts.Token).DoNotWait();
         }
 
         protected override void OnStop() {
             _cts.Cancel();
-            _workerdone.WaitOne(TimeSpan.FromMilliseconds(ServiceShutdownTimeoutMs));
+            WaitHandle.WaitAll(new WaitHandle[] { _createWorkerDone, _deleteWorkerDone }, TimeSpan.FromMilliseconds(ServiceShutdownTimeoutMs));
         }
 
-        async Task CreateProfileWorkerAsync(CancellationToken ct) {
+        private async Task CreateProfileWorkerAsync(CancellationToken ct) {
+            await ProfileWorkerAsync(RUserProfileServicesHelper.CreateProfileAsync, ServiceReadAfterConnectTimeoutMs, ClientResponseReadTimeoutMs, _createWorkerDone, ct, _logger);
+        }
+
+        private async Task DeleteProfileWorkerAsync(CancellationToken ct) {
+            await ProfileWorkerAsync(RUserProfileServicesHelper.DeleteProfileAsync, ServiceReadAfterConnectTimeoutMs, ClientResponseReadTimeoutMs, _deleteWorkerDone, ct, _logger);
+        }
+
+        private static async Task ProfileWorkerAsync( Func<int,int, IUserProfileServices,CancellationToken, ILogger, Task> action, int serverTimeOutms, int clientTimeOutms,  ManualResetEvent workerDone, CancellationToken ct, ILogger logger) {
             while (!ct.IsCancellationRequested) {
                 try {
-                    await RUserProfileCreator.CreateProfileAsync(serverTimeOutms: ServiceReadAfterConnectTimeoutMs, clientTimeOutms: ClientResponseReadTimeoutMs, ct: ct, logger: _logger);
+                    await action?.Invoke(ServiceReadAfterConnectTimeoutMs, ClientResponseReadTimeoutMs, null, ct, logger);
                 } catch (Exception ex) when (!ex.IsCriticalException()) {
-                    _logger?.LogError(Resources.Error_UserProfileCreationError, ex.Message);
+                    logger?.LogError(Resources.Error_UserProfileServiceError, ex.Message);
                 }
             }
-            _workerdone.Set();
+            workerDone.Set();
         }
     }
 }

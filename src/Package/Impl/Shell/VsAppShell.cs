@@ -8,6 +8,7 @@ using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Threading;
 using System.Windows.Threading;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Security;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
@@ -81,13 +82,12 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             _compositionService = componentModel.DefaultCompositionService;
             _exportProvider = componentModel.DefaultExportProvider;
 
-            _appConstants.Initialize();
-
             CheckVsStarted();
 
             _idleTimeSource = new IdleTimeSource();
             _idleTimeSource.Idle += OnIdle;
             _idleTimeSource.ApplicationClosing += OnApplicationClosing;
+            _idleTimeSource.ApplicationStarted += OnApplicationStarted;
 
             _settings = _exportProvider.GetExportedValue<IRPersistentSettings>();
             _settings.LoadSettings();
@@ -104,11 +104,16 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             _vsShell.GetProperty((int)__VSSPROPID4.VSSPROPID_ShellInitialized, out value);
             if (value is bool) {
                 if ((bool)value) {
+                    _appConstants.Initialize();
                     Started?.Invoke(this, EventArgs.Empty);
                 } else {
                     _vsShell.AdviseShellPropertyChanges(this, out _vsShellEventsCookie);
                 }
             }
+        }
+
+        private void OnApplicationStarted(object sender, EventArgs e) {
+            _appConstants.Initialize();
         }
 
         private void OnApplicationClosing(object sender, EventArgs e) {

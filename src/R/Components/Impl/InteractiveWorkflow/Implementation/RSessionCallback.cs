@@ -105,46 +105,43 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             _workflow.Packages.GetOrCreateVisualComponent(containerFactory).Container.Show(focus: true, immediate: false);
         }
 
-        public Task ViewFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken = default(CancellationToken)) {
+        public async Task ViewFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken = default(CancellationToken)) {
             var viewer = _coreShell.ExportProvider.GetExportedValue<IObjectViewer>();
             var task = Task.CompletedTask;
 
             if (_session.IsRemote) {
-                // Do not block callback from the host
-                Task.Run(async () => {
-                    using (var dts = new DataTransferSession(_session, _fileSystem)) {
-                        // TODO: handle progress for large files
-                        try {
-                            await dts.FetchFileToLocalTempAsync(fileName.ToRPath(), null, cancellationToken);
-                            fileName = _fileSystem.GetDownloadsPath(Path.GetFileName(fileName));
-                            await viewer?.ViewFile(fileName, tabName, deleteFile, cancellationToken);
-                        } catch (REvaluationException) { } catch (RHostDisconnectedException) { }
-                    }
-                }).DoNotWait();
+                using (var dts = new DataTransferSession(_session, _fileSystem)) {
+                    // TODO: handle progress for large files
+                    try {
+                        await dts.FetchFileToLocalTempAsync(fileName.ToRPath(), null, cancellationToken);
+                        fileName = _fileSystem.GetDownloadsPath(Path.GetFileName(fileName));
+                        await viewer?.ViewFile(fileName, tabName, deleteFile, cancellationToken);
+                    } catch (REvaluationException) { } catch (RHostDisconnectedException) { }
+                }
             } else {
-                task = viewer?.ViewFile(fileName, tabName, deleteFile, cancellationToken);
+                await viewer?.ViewFile(fileName, tabName, deleteFile, cancellationToken);
             }
-            return task;
         }
 
-        public Task<string> SaveFileAsync(string remoteFileName, string localPath, byte[] data) {
-            return Task.Run(async () => {
-                if (!string.IsNullOrEmpty(localPath)) {
-                    if (_fileSystem.DirectoryExists(localPath)) {
-                        localPath = Path.Combine(localPath, remoteFileName);
-                    }
-                } else {
-                    localPath = _fileSystem.GetDownloadsPath(remoteFileName);
-                }
+        public async Task<string> SaveFileAsync(string remoteFileName, string localPath, byte[] data, CancellationToken cancellationToken) {
+            await TaskUtilities.SwitchToBackgroundThread();
 
-                try {
-                    _fileSystem.FileWriteAllBytes(localPath, data);
-                } catch (Exception ex) {
-                    await _coreShell.ShowErrorMessageAsync(Resources.Error_UnableSaveFile.FormatInvariant(localPath, ex.Message));
-                    return string.Empty;
+            if (!string.IsNullOrEmpty(localPath)) {
+                if (_fileSystem.DirectoryExists(localPath)) {
+                    localPath = Path.Combine(localPath, remoteFileName);
                 }
-                return localPath;
-            });
+            } else {
+                localPath = _fileSystem.GetDownloadsPath(remoteFileName);
+            }
+
+            try {
+                cancellationToken.ThrowIfCancellationRequested();
+                _fileSystem.FileWriteAllBytes(localPath, data);
+            } catch (Exception ex) {
+                await _coreShell.ShowErrorMessageAsync(Resources.Error_UnableSaveFile.FormatInvariant(localPath, ex.Message), cancellationToken);
+                return string.Empty;
+            }
+            return localPath;
         }
     }
 }

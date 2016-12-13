@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.IO.Pipes;
 using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Security.Principal;
@@ -11,20 +10,21 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http.Authentication;
-using Microsoft.Common.Core;
+using Microsoft.Common.Core.Security;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.R.Host.Broker.UserProfile;
 using Microsoft.R.Host.Protocol;
-using Newtonsoft.Json;
 using Odachi.AspNetCore.Authentication.Basic;
-using Microsoft.Common.Core.Json;
 
 namespace Microsoft.R.Host.Broker.Security {
     public class SecurityManager {
         private readonly SecurityOptions _options;
         private readonly ILogger _logger;
+        private readonly UserProfileManager _userProfileManager;
 
-        public SecurityManager(IOptions<SecurityOptions> options, ILogger<SecurityManager> logger) {
+        public SecurityManager(UserProfileManager userProfileManager, IOptions<SecurityOptions> options, ILogger<SecurityManager> logger) {
+            _userProfileManager = userProfileManager;
             _options = options.Value;
             _logger = logger;
         }
@@ -60,28 +60,6 @@ namespace Microsoft.R.Host.Broker.Security {
             return new ClaimsPrincipal(identity);
         }
 
-        private async Task<RUserProfileCreateResponse> CreateProfileAsync(RUserProfileCreateRequest request, CancellationToken ct) {
-            using (NamedPipeClientStream client = new NamedPipeClientStream("Microsoft.R.Host.UserProfile.Creator{b101cc2d-156e-472e-8d98-b9d999a93c7a}")) { 
-                try {
-                    await client.ConnectAsync(ct);
-
-                    string jsonReq = JsonConvert.SerializeObject(request);
-                    byte[] data = Encoding.Unicode.GetBytes(jsonReq.ToString());
-
-                    await client.WriteAsync(data, 0, data.Length, ct);
-                    await client.FlushAsync(ct);
-
-                    byte[] responseRaw = new byte[1024];
-                    var bytesRead = await client.ReadAsync(responseRaw, 0, responseRaw.Length, ct);
-                    string jsonResp = Encoding.Unicode.GetString(responseRaw, 0, bytesRead);
-                    return Json.DeserializeObject<RUserProfileCreateResponse>(jsonResp);
-                } catch (Exception ex) when (!ex.IsCriticalException()) {
-                    _logger.LogError(Resources.Error_ProfileCreationFailedIO, request.Username);
-                    return RUserProfileCreateResponse.Blank;
-                }
-            }
-        }
-
         private async Task<ClaimsPrincipal> SignInUsingLogonAsync(BasicSignInContext context) {
             var user = new StringBuilder(NativeMethods.CREDUI_MAX_USERNAME_LENGTH + 1);
             var domain = new StringBuilder(NativeMethods.CREDUI_MAX_PASSWORD_LENGTH + 1);
@@ -114,7 +92,7 @@ namespace Microsoft.R.Host.Broker.Security {
 #endif
                     _logger.LogTrace(Resources.Trace_UserProfileCreation, context.Username);
 
-                    var result = await CreateProfileAsync(RUserProfileCreateRequest.Create(user.ToString(), domain.ToString(), context.Password), cts.Token);
+                    var result = await _userProfileManager.CreateProfileAsync(new RUserProfileServiceRequest(user.ToString(), domain.ToString(), context.Password.ToSecureString()), cts.Token);
                     if (result.IsInvalidResponse()) {
                         _logger.LogError(Resources.Error_ProfileCreationFailedInvalidResponse, context.Username, Resources.Info_UserProfileServiceName);
                         return null;

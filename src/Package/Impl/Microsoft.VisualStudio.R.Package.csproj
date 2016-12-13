@@ -425,7 +425,6 @@
     <Compile Include="Interop\CommandTargetToOleShimVariantStacks.cs" />
     <Compile Include="Interop\ConnectionPoint.cs" />
     <Compile Include="Interop\IOleServiceProvider.cs" />
-    <Compile Include="Interop\NativeMethods.cs" />
     <Compile Include="Interop\OleCommand.cs" />
     <Compile Include="Interop\OleToCommandTargetShim.cs" />
     <Compile Include="Options\Attributes\EnumTypeConverter.cs" />
