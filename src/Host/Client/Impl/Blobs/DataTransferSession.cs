@@ -10,9 +10,10 @@ using Microsoft.Common.Core.IO;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Threading;
+using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client {
-    public class DataTransferSession : IDisposable {
+    public sealed class DataTransferSession : IDisposable {
         private readonly IRSession _session;
         private readonly IRBlobService _blobService;
         private readonly IFileSystem _fs;
@@ -162,7 +163,16 @@ namespace Microsoft.R.Host.Client {
         public async Task<string> CopyFileToRemoteTempAsync(string filePath, bool doCleanUp, IProgress<long> progress, CancellationToken cancellationToken) {
             string fileName = Path.GetFileName(filePath);
             var blobinfo = await SendFileAsync(filePath, doCleanUp, progress, cancellationToken);
-            return await _session.EvaluateAsync<string>($"rtvs:::save_to_temp_folder({blobinfo.Id}, '{fileName}')", REvaluationKind.Normal, cancellationToken);
+            return await _session.EvaluateAsync<string>(Invariant($"rtvs:::save_to_temp_folder({blobinfo.Id}, {fileName.ToRStringLiteral()})"), REvaluationKind.Normal, cancellationToken);
+        }
+
+        /// <summary>
+        /// Copies file from remote file path to downloads folder on the local session.
+        /// </summary>
+        /// <param name="filePath">Path to the file on remote machine.</param>
+        public Task FetchFileToLocalTempAsync(string remoteRPath, string localRPath, CancellationToken cancellationToken) {
+            var arg = !string.IsNullOrEmpty(localRPath) ? Invariant($"localPath = {localRPath.ToRStringLiteral()}") : "localPath = ''";
+            return _session.EvaluateAsync(Invariant($"rtvs:::fetch_file({remoteRPath.ToRStringLiteral()}, {arg}, silent = TRUE)"), REvaluationKind.Normal, cancellationToken);
         }
 
         public void Dispose() {

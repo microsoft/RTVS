@@ -93,6 +93,9 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             _settings.LoadSettings();
 
             EditorShell.Current = this;
+
+            _settings = _exportProvider.GetExportedValue<IRPersistentSettings>();
+            _settings.LoadSettings();
         }
 
         private void CheckVsStarted() {

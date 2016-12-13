@@ -515,6 +515,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to save local file {0}. Exception: {1}..
+        /// </summary>
+        public static string Error_UnableSaveFile {
+            get {
+                return ResourceManager.GetString("Error_UnableSaveFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Machine utilization: {0}% CPU, {1}% Memory, {2}% Network..
         /// </summary>
         public static string HostLoad_Tooltip {
@@ -556,6 +565,15 @@ namespace Microsoft.R.Components {
         public static string LoadingDetails {
             get {
                 return ResourceManager.GetString("LoadingDetails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Local R: {0}.
+        /// </summary>
+        public static string LocalR {
+            get {
+                return ResourceManager.GetString("LocalR", resourceCulture);
             }
         }
         
@@ -1222,6 +1240,15 @@ namespace Microsoft.R.Components {
         public static string ReconnectToBroker {
             get {
                 return ResourceManager.GetString("ReconnectToBroker", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remote workspace &apos;{0}&apos; : {1}.
+        /// </summary>
+        public static string RemoteConnection {
+            get {
+                return ResourceManager.GetString("RemoteConnection", resourceCulture);
             }
         }
         

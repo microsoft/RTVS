@@ -101,9 +101,9 @@ namespace Microsoft.R.Host.Client.Test.Stubs {
             return Task.CompletedTask;
         }
 
-        public Task<string> SaveFileAsync(string fileName, byte[] data) {
-            SaveFileCalls.Add(new Tuple<string, byte[]>(fileName, data));
-            SaveFileHandler?.Invoke(fileName, data);
+        public Task<string> SaveFileAsync(string remotePath, string localPath, byte[] data, CancellationToken cancellationToken) {
+            SaveFileCalls.Add(new Tuple<string, byte[]>(remotePath, data));
+            SaveFileHandler?.Invoke(remotePath, data);
             return Task.FromResult(string.Empty);
         }
     }

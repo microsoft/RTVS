@@ -505,11 +505,12 @@ namespace Microsoft.R.Host.Client {
 
                             case "!ShowFile":
                                 message.ExpectArguments(3);
-                                await _callbacks.ShowFile(
+                                // Do not await since it blocks callback from calling the host again
+                                _callbacks.ShowFile(
                                     message.GetString(0, "file"),
                                     message.GetString(1, "tabName"),
                                     message.GetBoolean(2, "delete.file"),
-                                    ct);
+                                    ct).DoNotWait();
                                 break;
 
                             case "!View":
@@ -560,8 +561,12 @@ namespace Microsoft.R.Host.Client {
                                 _callbacks.PackagesRemoved();
                                 break;
                             case "!FetchFile":
-                                var destPath = await _callbacks.SaveFileAsync(message.GetString(0, "file_path"), message.Blob);
-                                await _callbacks.WriteConsoleEx(destPath, OutputType.Error, ct);
+                                var remoteFileName = message.GetString(0, "file_remote_name");
+                                var localPath = message.GetString(1, "file_local_path");
+                                var destPath = await _callbacks.SaveFileAsync(remoteFileName, localPath, message.Blob, ct);
+                                if (!message.GetBoolean(2, "silent")) {
+                                    await _callbacks.WriteConsoleEx(destPath, OutputType.Error, ct);
+                                }
                                 break;
                             default:
                                 throw ProtocolError($"Unrecognized host message name:", message);

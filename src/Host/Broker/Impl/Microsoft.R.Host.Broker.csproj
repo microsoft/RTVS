@@ -43,6 +43,9 @@
     <CodeAnalysisRuleSet>..\..\..\DevDivRuleSet.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>RFile.ico</ApplicationIcon>
+  </PropertyGroup>
   <Import Project="..\..\..\R.Settings.targets" />
   <PropertyGroup>
     <BaseIntermediateOutputPath>$(ObjDirectory)</BaseIntermediateOutputPath>
@@ -178,6 +181,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Visible>True</Visible>
     </Content>
+    <Content Include="RFile.ico" />
     <None Include="Microsoft.R.Host.Broker.Config.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

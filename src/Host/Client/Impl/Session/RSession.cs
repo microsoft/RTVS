@@ -763,9 +763,9 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
             PackagesRemoved?.Invoke(this, EventArgs.Empty);
         }
 
-        Task<string> IRCallbacks.SaveFileAsync(string filename, byte[] data) {
+        Task<string> IRCallbacks.SaveFileAsync(string remoteFileName, string localPath, byte[] data, CancellationToken cancellationToken) {
             var callback = _callback;
-            return callback != null ? callback.SaveFileAsync(filename, data) : Task.FromResult(string.Empty);
+            return callback != null ? callback.SaveFileAsync(remoteFileName, localPath, data, cancellationToken) : Task.FromResult(string.Empty);
         }
 
         private class BrokerTransaction : IRSessionSwitchBrokerTransaction {

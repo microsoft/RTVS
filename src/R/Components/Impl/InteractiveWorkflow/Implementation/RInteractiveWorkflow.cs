@@ -160,7 +160,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
         private async Task CreateVisualComponentAsync(int instanceId) {
             var factory = Shell.ExportProvider.GetExportedValue<IInteractiveWindowComponentContainerFactory>();
-            var evaluator = new RInteractiveEvaluator(RSessions, RSession, History, Connections, Shell, _settings);
+            var evaluator = new RInteractiveEvaluator(RSessions, RSession, History, Connections, Shell, _settings, new InteractiveWindowConsole(this));
 
             var window = factory.Create(instanceId, evaluator, RSessions);
             var interactiveWindow = window.InteractiveWindow;

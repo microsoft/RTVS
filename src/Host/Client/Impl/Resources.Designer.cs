@@ -84,7 +84,7 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The machine appears to be online, but the Remote R Service is not running..
+        ///   Looks up a localized string similar to Machine &apos;{0}&apos; appears to be online, but the Remote R Service is not running..
         /// </summary>
         internal static string Error_BrokerNotRunning {
             get {
@@ -111,9 +111,9 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Host did not respond to a ping.
+        ///   Looks up a localized string similar to Machine &apos;{0}&apos; did not respond to a ping.
         ///The machine may be offline or the network has been disconnected.
-        ///Error: {0}.
+        ///Error: {1}.
         /// </summary>
         internal static string Error_HostNotResponding {
             get {
@@ -131,7 +131,7 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Remote machine does not have certificate installed for the TLS with the Remote R Service..
+        ///   Looks up a localized string similar to Remote machine &apos;{0}&apos; does not have certificate installed for the TLS with the Remote R Service..
         /// </summary>
         internal static string Error_NoBrokerCertificate {
             get {
@@ -214,7 +214,7 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R broker process did not start:  {0}.
+        ///   Looks up a localized string similar to R broker process did not start on the machine &apos;{0}&apos;. Exception:  {1}.
         /// </summary>
         internal static string Error_UnableToStartBrokerException {
             get {
@@ -223,7 +223,7 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R host process did not start:  {0}.
+        ///   Looks up a localized string similar to R host process did not start on the machine &apos;{0}&apos;. Exception:  {1}.
         /// </summary>
         internal static string Error_UnableToStartHostException {
             get {
@@ -241,7 +241,7 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HTTP error while creating session: {0}.
+        ///   Looks up a localized string similar to HTTP error while creating session on the machine &apos;{0}&apos;. Exception: {1}.
         /// </summary>
         internal static string HttpErrorCreatingSession {
             get {
