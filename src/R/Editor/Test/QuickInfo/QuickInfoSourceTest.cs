@@ -71,7 +71,7 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
 
             applicableSpan.Should().NotBeNull();
             quickInfoContent.Should().ContainSingle()
-                .Which.ToString().Should().StartWith("as.Date(x, ...)");
+                .Which.ToString().Should().StartWith("as.Date.character(x, ...)");
         }
     }
 }
