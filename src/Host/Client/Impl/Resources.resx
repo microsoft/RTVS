@@ -196,4 +196,10 @@ Do you want to abort this operation and start current session immediately?</valu
   <data name="Error_BrokerWin32Error" xml:space="preserve">
     <value>Operation failed with Win32 error: {0}</value>
   </data>
+  <data name="Error_BrokerUnknownWin32Error" xml:space="preserve">
+    <value>Operation failed with unknown Win32 error, please check broker logs.</value>
+  </data>
+  <data name="Error_BrokerWin32Error" xml:space="preserve">
+    <value>Operation failed with Win32 error: {0}</value>
+  </data>
 </root>
