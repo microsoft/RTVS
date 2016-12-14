@@ -27,7 +27,7 @@ namespace Microsoft.R.Host.Client {
         bool RestartOnBrokerSwitch { get; set; }
 
         Task<IRSessionInteraction> BeginInteractionAsync(bool isVisible = true, CancellationToken cancellationToken = default(CancellationToken));
-        Task<IRSessionEvaluation> BeginEvaluationAsync(CancellationToken cancellationToken = default(CancellationToken));
+
         Task CancelAllAsync(CancellationToken cancellationToken = default(CancellationToken));
         Task StartHostAsync(RHostStartupInfo startupInfo, IRSessionCallback callback, int timeout = 3000, CancellationToken cancellationToken = default(CancellationToken));
         Task EnsureHostStartedAsync(RHostStartupInfo startupInfo, IRSessionCallback callback, int timeout = 3000, CancellationToken cancellationToken = default(CancellationToken));

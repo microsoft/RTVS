@@ -12,7 +12,6 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
         private IRSessionInteraction _inter;
 
         public string LastExpression { get; private set; }
-        public RSessionEvaluationMock Evaluation { get; private set; }
 
         public int Id { get; set; }
         public int? ProcessId { get; set; }
@@ -53,15 +52,6 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
             return Task.FromResult(new REvaluationResult());
         }
 
-        public Task<IRSessionEvaluation> BeginEvaluationAsync(CancellationToken cancellationToken = default(CancellationToken)) {
-            Evaluation = new RSessionEvaluationMock();
-            BeforeRequest?.Invoke(this, new RBeforeRequestEventArgs(Evaluation.Contexts, Prompt, 4096, addToHistoty: true));
-            if (Evaluation.IsMutating) {
-                Mutated?.Invoke(this, EventArgs.Empty);
-            }
-            return Task.FromResult((IRSessionEvaluation)Evaluation);
-        }
-
         public Task<IRSessionInteraction> BeginInteractionAsync(bool isVisible = true, CancellationToken cancellationToken = default (CancellationToken)) {
             _inter = new RSessionInteractionMock();
             BeforeRequest?.Invoke(this, new RBeforeRequestEventArgs(_inter.Contexts, Prompt, 4096, addToHistoty: true));
@@ -69,11 +59,7 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
         }
 
         public Task CancelAllAsync(CancellationToken сancellationToken = default(CancellationToken)) {
-            if (Evaluation != null) {
-                AfterRequest?.Invoke(this, new RAfterRequestEventArgs(Evaluation.Contexts, Prompt, string.Empty, addToHistory: true, isVisible: true));
-                Evaluation = null;
-            }
-            else if (_inter != null) {
+            if (_inter != null) {
                 AfterRequest?.Invoke(this, new RAfterRequestEventArgs(_inter.Contexts, Prompt, string.Empty, addToHistory: true, isVisible: true));
                 _inter = null;
             }

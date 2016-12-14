@@ -128,7 +128,6 @@
     <Compile Include="Definitions\IRCallbacks.cs" />
     <Compile Include="Definitions\IRExpressionEvaluator.cs" />
     <Compile Include="Definitions\IRSession.cs" />
-    <Compile Include="Definitions\IRSessionEvaluation.cs" />
     <Compile Include="Definitions\IRSessionProvider.cs" />
     <Compile Include="Definitions\IRSessionInteraction.cs" />
     <Compile Include="Host\RHostBinaryMissingException.cs" />
@@ -153,9 +152,7 @@
     <Compile Include="Session\RConnectedEventArgs.cs" />
     <Compile Include="Session\ROutputEventArgs.cs" />
     <Compile Include="Session\RSession.cs" />
-    <Compile Include="Session\RSessionEvaluation.cs" />
     <Compile Include="Session\RSessionEvaluationCommands.cs" />
-    <Compile Include="Session\RSessionEvaluationSource.cs" />
     <Compile Include="Session\RSessionExtensions.cs" />
     <Compile Include="Session\RSessionInteraction.cs" />
     <Compile Include="Session\RSessionInteractionCommands.cs" />

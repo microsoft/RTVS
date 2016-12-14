@@ -43,7 +43,6 @@
     <Compile Include="Fixtures\GraphicsDeviceTestFilesFixture.cs" />
     <Compile Include="RtvsPackage\JsonTest.cs" />
     <Compile Include="Mocks\RContextMock.cs" />
-    <Compile Include="Mocks\RSessionEvaluationMock.cs" />
     <Compile Include="Mocks\RSessionInteractionMock.cs" />
     <Compile Include="Mocks\RSessionMock.cs" />
     <Compile Include="Mocks\RSessionProviderMock.cs" />

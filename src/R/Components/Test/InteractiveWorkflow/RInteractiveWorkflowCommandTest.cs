@@ -107,13 +107,12 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
 
             await _workflow.RSessions.TrySwitchBrokerAsync(nameof(RInteractiveWorkflowCommandTest));
             using (await UIThreadHelper.Instance.Invoke(() => _workflow.GetOrCreateVisualComponentAsync())) {
-                using (await _workflow.RSession.BeginInteractionAsync()) { }
                 command.Should().BeVisibleAndDisabled();
 
                 using (var interaction = await _workflow.RSession.BeginInteractionAsync()) {
+                    var afterRequestTask = EventTaskSources.IRSession.AfterRequest.Create(_workflow.RSession);
                     var task = interaction.RespondAsync("while(TRUE) {}");
-                    await EventTaskSources.IRSession.AfterRequest.Create(_workflow.RSession);
-                    await Task.Delay(100);
+                    await afterRequestTask;
                     command.Should().BeVisibleAndEnabled();
 
                     debuggerModeTracker.IsInBreakMode = true;

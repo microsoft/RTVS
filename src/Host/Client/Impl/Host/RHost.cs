@@ -22,11 +22,6 @@ using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client {
     public sealed partial class RHost : IDisposable, IRExpressionEvaluator, IRBlobService {
-        private static readonly Task<REvaluationResult> RhostDisconnectedEvaluationResult = TaskUtilities.CreateCanceled<REvaluationResult>(new RHostDisconnectedException());
-        private static readonly Task<ulong> RhostDisconnectedULongResult = TaskUtilities.CreateCanceled<ulong>(new RHostDisconnectedException());
-        private static readonly Task<byte[]> RhostDisconnectedByteArrayResult = TaskUtilities.CreateCanceled<byte[]>(new RHostDisconnectedException());
-        private static readonly Task<long> RhostDisconnectedLongResult = TaskUtilities.CreateCanceled<long>(new RHostDisconnectedException());
-
         public static IRContext TopLevelContext { get; } = new RContext(RContextType.TopLevel);
         
         private readonly IMessageTransport _transport;
@@ -36,10 +31,6 @@ namespace Microsoft.R.Host.Client {
         private readonly BinaryAsyncLock _disconnectLock = new BinaryAsyncLock();
 
         private volatile Task _runTask;
-        private volatile Task<REvaluationResult> _cancelEvaluationAfterRunTask;
-        private volatile Task<ulong> _cancelCreateBlobAfterRunTask;
-        private volatile Task<byte[]> _cancelBlobReadAfterRunTask;
-        private volatile Task<long> _cancelBlobWriteOrSizeAfterRunTask;
 
         private int _rLoopDepth;
         private long _lastMessageId;
@@ -200,22 +191,20 @@ namespace Microsoft.R.Host.Client {
             await RespondAsync(request, ct, input);
         }
 
-        public Task<ulong> CreateBlobAsync(CancellationToken cancellationToken) {
-            if (_cancelCreateBlobAfterRunTask == null || _cancelCreateBlobAfterRunTask.IsCompleted) {
-                return RhostDisconnectedULongResult;
+        public async Task<ulong> CreateBlobAsync(CancellationToken cancellationToken) {
+            if (_runTask == null) {
+                throw new InvalidOperationException("Host was not started");
             }
-
-            if (cancellationToken.IsCancellationRequested) {
-                return Task.FromCanceled<ulong>(cancellationToken);
+            
+            using (CancellationTokenUtilities.Link(ref cancellationToken, _cts.Token)) {
+                try {
+                    await TaskUtilities.SwitchToBackgroundThread();
+                    var request = await CreateBlobRequest.CreateAsync(this, cancellationToken);
+                    return await request.Task;
+                } catch(OperationCanceledException ex) when (_cts.IsCancellationRequested) {
+                    throw new RHostDisconnectedException(Resources.Error_RHostIsStopped, ex);
+                }
             }
-
-            return Task.WhenAny(CreateBlobAsyncWorker(cancellationToken), _cancelCreateBlobAfterRunTask).Unwrap();
-        }
-
-        private async Task<ulong> CreateBlobAsyncWorker(CancellationToken cancellationToken) {
-            await TaskUtilities.SwitchToBackgroundThread();
-            var request = await CreateBlobRequest.CreateAsync(this, cancellationToken);
-            return await request.Task;
         }
 
         public Task DestroyBlobsAsync(IEnumerable<ulong> ids, CancellationToken cancellationToken) =>
@@ -228,116 +217,100 @@ namespace Microsoft.R.Host.Client {
             await NotifyAsync("!DestroyBlob", cancellationToken, ids.Select(x => (object)x));
         }
 
-        public Task<byte[]> BlobReadAllAsync(ulong blobId, CancellationToken cancellationToken = default(CancellationToken)) {
-            if (_cancelBlobReadAfterRunTask == null || _cancelBlobReadAfterRunTask.IsCompleted) {
-                return RhostDisconnectedByteArrayResult;
-            }
-
-            if (cancellationToken.IsCancellationRequested) {
-                return Task.FromCanceled<byte[]>(cancellationToken);
-            }
-
-            return Task.WhenAny(BlobReadAllAsyncWorker(blobId, cancellationToken), _cancelBlobReadAfterRunTask).Unwrap();
-        }
-
-        private async Task<byte[]> BlobReadAllAsyncWorker(ulong blobId, CancellationToken ct = default(CancellationToken)) {
-            await TaskUtilities.SwitchToBackgroundThread();
-            var request = await BlobReadRequest.ReadAllAsync(this, blobId, ct);
-            return await request.Task;
-        }
-
-        public Task<byte[]> BlobReadAsync(ulong blobId, long position, long count, CancellationToken cancellationToken = default(CancellationToken)) {
-            if (_cancelBlobReadAfterRunTask == null || _cancelBlobReadAfterRunTask.IsCompleted) {
-                return RhostDisconnectedByteArrayResult;
-            }
-
-            if (cancellationToken.IsCancellationRequested) {
-                return Task.FromCanceled<byte[]>(cancellationToken);
-            }
-
-            return Task.WhenAny(BlobReadAsyncWorker(blobId, position, count, cancellationToken), _cancelBlobReadAfterRunTask).Unwrap();
-        }
-
-        private async Task<byte[]> BlobReadAsyncWorker(ulong blobId, long position, long count, CancellationToken ct = default(CancellationToken)) {
-            await TaskUtilities.SwitchToBackgroundThread();
-            var request = await BlobReadRequest.ReadAsync(this, blobId, position, count, ct);
-            return await request.Task;
-        }
-
-        public Task<long> BlobWriteAsync(ulong blobId, byte[] data, long position, CancellationToken cancellationToken = default(CancellationToken)) {
-            if (_cancelBlobWriteOrSizeAfterRunTask == null || _cancelBlobWriteOrSizeAfterRunTask.IsCompleted) {
-                return RhostDisconnectedLongResult;
-            }
-
-            if (cancellationToken.IsCancellationRequested) {
-                return Task.FromCanceled<long>(cancellationToken);
-            }
-
-            return Task.WhenAny(BlobWriteAsyncWorker(blobId, data, position, cancellationToken), _cancelBlobWriteOrSizeAfterRunTask).Unwrap();
-        }
-
-        private async Task<long> BlobWriteAsyncWorker(ulong blobId, byte[] data, long position, CancellationToken ct = default(CancellationToken)) {
-            await TaskUtilities.SwitchToBackgroundThread();
-            var request = await BlobWriteRequest.WriteAsync(this, blobId, data, position, ct);
-            return await request.Task;
-        }
-
-        public Task<long> GetBlobSizeAsync(ulong blobId, CancellationToken cancellationToken = default(CancellationToken)) {
-            if (_cancelBlobWriteOrSizeAfterRunTask == null || _cancelBlobWriteOrSizeAfterRunTask.IsCompleted) {
-                return RhostDisconnectedLongResult;
-            }
-
-            if (cancellationToken.IsCancellationRequested) {
-                return Task.FromCanceled<long>(cancellationToken);
-            }
-
-            return Task.WhenAny(GetBlobSizeAsyncWorker(blobId, cancellationToken), _cancelBlobWriteOrSizeAfterRunTask).Unwrap();
-        }
-
-        private async Task<long> GetBlobSizeAsyncWorker(ulong blobId, CancellationToken ct = default(CancellationToken)) {
-            await TaskUtilities.SwitchToBackgroundThread();
-            var request = await BlobSizeRequest.GetSizeAsync(this, blobId, ct);
-            return await request.Task;
-        }
-
-        public Task<long> SetBlobSizeAsync(ulong blobId, long size, CancellationToken cancellationToken = default(CancellationToken)) {
-            if (_cancelBlobWriteOrSizeAfterRunTask == null || _cancelBlobWriteOrSizeAfterRunTask.IsCompleted) {
-                return RhostDisconnectedLongResult;
-            }
-
-            if (cancellationToken.IsCancellationRequested) {
-                return Task.FromCanceled<long>(cancellationToken);
-            }
-
-            return Task.WhenAny(SetBlobSizeAsyncWorker(blobId, size, cancellationToken), _cancelBlobWriteOrSizeAfterRunTask).Unwrap();
-        }
-
-        private async Task<long> SetBlobSizeAsyncWorker(ulong blobId, long size, CancellationToken ct = default(CancellationToken)) {
-            await TaskUtilities.SwitchToBackgroundThread();
-            var request = await BlobSizeRequest.GetSizeAsync(this, blobId, ct);
-            return await request.Task;
-        }
-
-        public Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind, CancellationToken ct) {
-            if (_cancelEvaluationAfterRunTask == null) {
+        public async Task<byte[]> BlobReadAllAsync(ulong blobId, CancellationToken cancellationToken = default(CancellationToken)) {
+            if (_runTask == null) {
                 throw new InvalidOperationException("Host was not started");
             }
-
-            if (_cancelEvaluationAfterRunTask.IsCompleted) { 
-                return RhostDisconnectedEvaluationResult;
+            
+            using (CancellationTokenUtilities.Link(ref cancellationToken, _cts.Token)) {
+                try {
+                    await TaskUtilities.SwitchToBackgroundThread();
+                    var request = await BlobReadRequest.ReadAllAsync(this, blobId, cancellationToken);
+                    return await request.Task;
+                } catch(OperationCanceledException ex) when (_cts.IsCancellationRequested) {
+                    throw new RHostDisconnectedException(Resources.Error_RHostIsStopped, ex);
+                }
             }
-
-            if (ct.IsCancellationRequested) {
-                return Task.FromCanceled<REvaluationResult>(ct);
-            }
-
-            return Task.WhenAny(EvaluateAsyncWorker(expression, kind, ct), _cancelEvaluationAfterRunTask).Unwrap();
         }
 
-        private async Task<REvaluationResult> EvaluateAsyncWorker(string expression, REvaluationKind kind, CancellationToken cancellationToken) {
-            await TaskUtilities.SwitchToBackgroundThread();
-            var request = await EvaluationRequest.SendAsync(this, expression, kind, cancellationToken);
-            return await request.Task;
+        public async Task<byte[]> BlobReadAsync(ulong blobId, long position, long count, CancellationToken cancellationToken = default(CancellationToken)) {
+            if (_runTask == null) {
+                throw new InvalidOperationException("Host was not started");
+            }
+            
+            using (CancellationTokenUtilities.Link(ref cancellationToken, _cts.Token)) {
+                try {
+                    await TaskUtilities.SwitchToBackgroundThread();
+                    var request = await BlobReadRequest.ReadAsync(this, blobId, position, count, cancellationToken);
+                    return await request.Task;
+                } catch(OperationCanceledException ex) when (_cts.IsCancellationRequested) {
+                    throw new RHostDisconnectedException(Resources.Error_RHostIsStopped, ex);
+                }
+            }
+        }
+
+        public async Task<long> BlobWriteAsync(ulong blobId, byte[] data, long position, CancellationToken cancellationToken = default(CancellationToken)) {
+            if (_runTask == null) {
+                throw new InvalidOperationException("Host was not started");
+            }
+            
+            using (CancellationTokenUtilities.Link(ref cancellationToken, _cts.Token)) {
+                try {
+                    await TaskUtilities.SwitchToBackgroundThread();
+                    var request = await BlobWriteRequest.WriteAsync(this, blobId, data, position, cancellationToken);
+                    return await request.Task;
+                } catch(OperationCanceledException ex) when (_cts.IsCancellationRequested) {
+                    throw new RHostDisconnectedException(Resources.Error_RHostIsStopped, ex);
+                }
+            }
+        }
+        
+        public async Task<long> GetBlobSizeAsync(ulong blobId, CancellationToken cancellationToken = default(CancellationToken)) {
+            if (_runTask == null) {
+                throw new InvalidOperationException("Host was not started");
+            }
+            
+            using (CancellationTokenUtilities.Link(ref cancellationToken, _cts.Token)) {
+                try {
+                    await TaskUtilities.SwitchToBackgroundThread();
+                    var request = await BlobSizeRequest.GetSizeAsync(this, blobId, cancellationToken);
+                    return await request.Task;
+                } catch(OperationCanceledException ex) when (_cts.IsCancellationRequested) {
+                    throw new RHostDisconnectedException(Resources.Error_RHostIsStopped, ex);
+                }
+            }
+        }
+
+        public async Task<long> SetBlobSizeAsync(ulong blobId, long size, CancellationToken cancellationToken = default(CancellationToken)) {
+            if (_runTask == null) {
+                throw new InvalidOperationException("Host was not started");
+            }
+            
+            using (CancellationTokenUtilities.Link(ref cancellationToken, _cts.Token)) {
+                try {
+                    await TaskUtilities.SwitchToBackgroundThread();
+                    var request = await BlobSizeRequest.GetSizeAsync(this, blobId, cancellationToken);
+                    return await request.Task;
+                } catch(OperationCanceledException ex) when (_cts.IsCancellationRequested) {
+                    throw new RHostDisconnectedException(Resources.Error_RHostIsStopped, ex);
+                }
+            }
+        }
+
+        public async Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind, CancellationToken cancellationToken) {
+            if (_runTask == null) {
+                throw new InvalidOperationException("Host was not started");
+            }
+            
+            using (CancellationTokenUtilities.Link(ref cancellationToken, _cts.Token)) {
+                try {
+                    await TaskUtilities.SwitchToBackgroundThread();
+                    var request = await EvaluationRequest.SendAsync(this, expression, kind, cancellationToken);
+                    return await request.Task;
+                } catch(OperationCanceledException ex) when (_cts.IsCancellationRequested) {
+                    throw new RHostDisconnectedException(Resources.Error_RHostIsStopped, ex);
+                }
+            }
         }
 
         /// <summary>
@@ -357,7 +330,8 @@ namespace Microsoft.R.Host.Client {
                 return;
             }
 
-            using (cancellationToken.Register(() => tcs.TrySetCanceled(cancellationToken))) {
+            using (tcs.RegisterForCancellation(_cts.Token))
+            using (tcs.RegisterForCancellation(cancellationToken)) {
                 try {
                     // Cancel any pending callbacks
                     _cancelAllCts.Cancel();
@@ -605,12 +579,6 @@ namespace Microsoft.R.Host.Client {
                 await Task.Yield();
             }
 
-            // Create cancellation tasks before proceeding with anything else, to avoid race conditions in usage of those tasks.
-            _cancelEvaluationAfterRunTask = _runTask.ContinueWith(t => RhostDisconnectedEvaluationResult).Unwrap();
-            _cancelCreateBlobAfterRunTask = _runTask.ContinueWith(t => RhostDisconnectedULongResult).Unwrap();
-            _cancelBlobReadAfterRunTask = _runTask.ContinueWith(t => RhostDisconnectedByteArrayResult).Unwrap();
-            _cancelBlobWriteOrSizeAfterRunTask = _runTask.ContinueWith(t => RhostDisconnectedLongResult).Unwrap();
-
             try {
                 var message = await ReceiveMessageAsync(ct);
                 if (message == null || !message.IsNotification || message.Name != "!Microsoft.R.Host") {
@@ -637,21 +605,21 @@ namespace Microsoft.R.Host.Client {
             }
         }
 
-        public async Task Run(CancellationToken ct = default(CancellationToken)) {
+        public async Task Run(CancellationToken cancellationToken = default(CancellationToken)) {
             TaskUtilities.AssertIsOnBackgroundThread();
 
             if (_runTask != null) {
                 throw new InvalidOperationException("This host is already running.");
             }
 
-            var cts = CancellationTokenUtilities.Link(ref ct, _cts.Token);
+            var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _cts.Token);
 
             try {
-                _runTask = RunWorker(ct);
+                _runTask = RunWorker(cts.Token);
                 await _runTask;
-            } catch (OperationCanceledException) when (ct.IsCancellationRequested) {
+            } catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested || _cts.Token.IsCancellationRequested) {
                 // Expected cancellation, do not propagate, just exit process
-            } catch (MessageTransportException ex) when (ct.IsCancellationRequested) {
+            } catch (MessageTransportException ex) when (cancellationToken.IsCancellationRequested || _cts.Token.IsCancellationRequested) {
                 // Network errors during cancellation are expected, but should not be exposed to clients.
                 throw new OperationCanceledException(new OperationCanceledException().Message, ex);
             } catch (Exception ex) {
