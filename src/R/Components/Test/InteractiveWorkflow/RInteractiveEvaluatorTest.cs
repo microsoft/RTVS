@@ -91,7 +91,7 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
                 await eval.ResetAsync(initialize: false);
                 window.FlushOutput();
                 text = window.OutputBuffer.CurrentSnapshot.GetText();
-                text.Should().StartWith(Microsoft.R.Components.Resources.MicrosoftRHostStopping);
+                text.Should().StartWith(Environment.NewLine + Microsoft.R.Components.Resources.MicrosoftRHostStopping + Environment.NewLine + Environment.NewLine + Microsoft.R.Components.Resources.MicrosoftRHostStopped);
             }
         }
 

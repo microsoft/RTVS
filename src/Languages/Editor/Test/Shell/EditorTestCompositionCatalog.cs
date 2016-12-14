@@ -142,7 +142,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
                 AggregateCatalog aggregateCatalog = new AggregateCatalog();
 
                 AddAssembliesToCatalog(_coreEditorAssemblies, AssemblyLocations.EditorPath, aggregateCatalog);
-                AddAssembliesToCatalog(_cpsAssemblies, AssemblyLocations.CpsPath, aggregateCatalog);
+                //AddAssembliesToCatalog(_cpsAssemblies, AssemblyLocations.CpsPath, aggregateCatalog);
                 AddAssembliesToCatalog(_projectAssemblies, AssemblyLocations.PrivatePath, aggregateCatalog);
                 AddAssembliesToCatalog(_privateEditorAssemblies, AssemblyLocations.PrivatePath, aggregateCatalog);
 

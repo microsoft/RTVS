@@ -59,6 +59,13 @@
       "$(MSBuildProjectDirectory)\UpdateReferences.cmd" "$(MSBuildProjectDirectory)" $(VisualStudioVersion)
     </PreBuildEvent>
   </PropertyGroup>
+  <ItemGroup Condition="'$(VisualStudioVersion)'=='14.0'" >
+    <Reference Include="Microsoft.Build, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.ProjectSystem.Interop.dll" />
+    <Reference Include="$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.ProjectSystem.V14Only.dll" />
+    <Reference Include="$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.ProjectSystem.VS.V14Only.dll" />
+    <Reference Include="$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.ProjectSystem.Utilities.v14.0.dll" />
+  </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>

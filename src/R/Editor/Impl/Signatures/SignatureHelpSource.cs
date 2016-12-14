@@ -75,7 +75,7 @@ namespace Microsoft.R.Editor.Signatures {
 
                 if (functionInfo != null && functionInfo.Signatures != null) {
                     foreach (ISignatureInfo signatureInfo in functionInfo.Signatures) {
-                        ISignature signature = CreateSignature(session, functionInfo, signatureInfo, applicableToSpan, ast, position);
+                        ISignature signature = CreateSignature(session, parametersInfo.FunctionName, functionInfo, signatureInfo, applicableToSpan, ast, position);
                         signatures.Add(signature);
                     }
 
@@ -111,14 +111,14 @@ namespace Microsoft.R.Editor.Signatures {
         #endregion
 
         private ISignature CreateSignature(ISignatureHelpSession session,
-                                       IFunctionInfo functionInfo, ISignatureInfo signatureInfo,
+                                       string functionName, IFunctionInfo functionInfo, ISignatureInfo signatureInfo,
                                        ITrackingSpan span, AstRoot ast, int position) {
-            SignatureHelp sig = new SignatureHelp(session, _textBuffer, functionInfo.Name, string.Empty, signatureInfo, _shell);
+            SignatureHelp sig = new SignatureHelp(session, _textBuffer, functionName, string.Empty, signatureInfo, _shell);
             List<IParameter> paramList = new List<IParameter>();
 
             // Locus points in the pretty printed signature (the one displayed in the tooltip)
             var locusPoints = new List<int>();
-            string signatureString = signatureInfo.GetSignatureString(locusPoints);
+            string signatureString = signatureInfo.GetSignatureString(functionName, locusPoints);
             sig.Content = signatureString;
             sig.ApplicableToSpan = span;
 

@@ -54,7 +54,7 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
         [Test]
         public async Task QuickInfoSourceTest02() {
             // 'as.Date.character' RD contains no function info for 'as.Date.character', but the one for 'as.Date'
-            // then, the current code expects to add 'as.Date' quick info, which is the first function info for as.Date.character
+            // and as.Date.character appears as alias. We verify as.Date.character is shown in the signature info.
             string content = @"x <- as.Date.character(x)";
             AstRoot ast = RParser.Parse(content);
 
@@ -71,7 +71,7 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
 
             applicableSpan.Should().NotBeNull();
             quickInfoContent.Should().ContainSingle()
-                .Which.ToString().Should().StartWith("as.Date(x, ...)");
+                .Which.ToString().Should().StartWith("as.Date.character(x, ...)");
         }
     }
 }

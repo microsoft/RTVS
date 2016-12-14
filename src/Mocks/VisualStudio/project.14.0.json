@@ -4,7 +4,6 @@
     "Microsoft.VisualStudio.CoreUtility": "14.3.25407",
     "Microsoft.VisualStudio.Editor": "14.3.25407",
     "Microsoft.VisualStudio.SDK.EmbedInteropTypes": "14.1.4",
-    "Microsoft.VisualStudio.ProjectSystem": "14.1.127-pre",
     "Microsoft.VisualStudio.ImageCatalog": "14.3.25407",
     "Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime": "14.3.25407",
     "Microsoft.VisualStudio.Text.Data": "14.3.25407",
@@ -17,6 +16,7 @@
     "Microsoft.VisualStudio.Shell.Interop.10.0": "10.0.30319",
     "Microsoft.VisualStudio.Shell.Interop.11.0": "11.0.61030",
     "Microsoft.VisualStudio.Shell.Interop.14.0.DesignTime": "14.3.25407",
+    "System.Collections.Immutable": "1.1.37",
     "NSubstitute": "1.10.0",
     "xunit": "2.2.0-beta1-build3239",
     "xunit.runner.visualstudio": "2.2.0-beta1-build1144"

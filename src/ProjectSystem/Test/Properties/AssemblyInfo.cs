@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test;
 [assembly: TestFrameworkOverride]
 #if VS14
 [assembly: Dev14AssemblyLoader]
-[assembly: Dev14CpsAssemblyLoader]
+//[assembly: Dev14CpsAssemblyLoader]
 #endif
 #if VS15
 [assembly: Dev15AssemblyLoader]
