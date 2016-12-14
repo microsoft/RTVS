@@ -6,11 +6,13 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Threading;
 using Microsoft.R.Support.RD.Parser;
+using static System.FormattableString;
 
 namespace Microsoft.R.Support.Help.Functions {
     /// <summary>
@@ -27,7 +29,7 @@ namespace Microsoft.R.Support.Help.Functions {
         /// name by function name as we need both to get the function 
         /// documentation in RD format from the R engine.
         /// </summary>
-        private readonly ConcurrentDictionary<string, string> _functionToPackageMap = new ConcurrentDictionary<string, string>();
+        private readonly ConcurrentDictionary<string, List<string>> _functionToPackageMap = new ConcurrentDictionary<string, List<string>>();
 
         /// <summary>
         /// Map of function names to complete function information.
@@ -57,11 +59,7 @@ namespace Microsoft.R.Support.Help.Functions {
                     // First populate index for popular packages that are commonly preloaded
                     foreach (var pi in packageIndex.Packages) {
                         foreach (var f in pi.Functions) {
-                            // Avoid duplicates. Packages are normally populated from base (intrinsic) 
-                            // to user so we don't want new packages to override base function information
-                            if (!_functionToPackageMap.ContainsKey(f.Name)) {
-                                _functionToPackageMap[f.Name] = pi.Name;
-                            }
+                            RegisterFunction(f.Name, pi.Name);
                         }
                     }
                 }
@@ -70,9 +68,18 @@ namespace Microsoft.R.Support.Help.Functions {
             }
         }
 
+        private void RegisterFunction(string functionName, string packageName) {
+            List<string> packages;
+            if (!_functionToPackageMap.TryGetValue(functionName, out packages)) {
+                _functionToPackageMap[functionName] = new List<string>() { packageName };
+            } else {
+                packages.Add(packageName);
+            }
+        }
+
         public void RegisterPackageFunctions(IPackageInfo package) {
-            foreach(var f in package.Functions) {
-                _functionToPackageMap[f.Name] = package.Name;
+            foreach (var f in package.Functions) {
+                RegisterFunction(f.Name, package.Name);
             }
         }
 
@@ -83,32 +90,49 @@ namespace Microsoft.R.Support.Help.Functions {
         /// callback passing the parameter. This is used for async
         /// intellisense or function signature/parameter help.
         /// </summary>
-        public IFunctionInfo GetFunctionInfo(string functionName, Action<object> infoReadyCallback = null, object parameter = null) {
-            var functionInfo = TryGetCachedFunctionInfo(functionName);
-            if (functionInfo == null) {
-                string packageName;
-                if (_functionToPackageMap.TryGetValue(functionName, out packageName)) {
-                    GetFunctionInfoFromEngineAsync(functionName, packageName, infoReadyCallback, parameter);
-                }
+        public IFunctionInfo GetFunctionInfo(string functionName, string packageName, Action<object, string> infoReadyCallback = null, object parameter = null) {
+            var functionInfo = TryGetCachedFunctionInfo(functionName, packageName);
+            if (functionInfo != null) {
+                return functionInfo;
             }
-            return functionInfo;
+
+            GetFunctionInfoFromEngineAsync(functionName, packageName, infoReadyCallback, parameter).DoNotWait();
+            return null;
         }
 
-        public async Task<IFunctionInfo> GetFunctionInfoAsync(string functionName) {
-            var functionInfo = TryGetCachedFunctionInfo(functionName);
-            if (functionInfo == null) {
-                string packageName;
-                if (_functionToPackageMap.TryGetValue(functionName, out packageName)) {
-                    return await GetFunctionInfoFromEngineAsync(functionName, packageName);
-                }
+        public async Task<IFunctionInfo> GetFunctionInfoAsync(string functionName, string packageName = null) {
+            var functionInfo = TryGetCachedFunctionInfo(functionName, packageName);
+            if (functionInfo != null) {
+                return functionInfo;
             }
-            return functionInfo;
+
+            await GetFunctionInfoFromEngineAsync(functionName, packageName);
+            return TryGetCachedFunctionInfo(functionName, packageName);
         }
 
-        private IFunctionInfo TryGetCachedFunctionInfo(string functionName) {
+        /// <summary>
+        /// Attempts to retrieve function information from cache is a simple manner.
+        /// Specifically, when function name is unique (then package name is irrelevant)
+        /// or the package name is known.
+        /// </summary>
+        private IFunctionInfo TryGetCachedFunctionInfo(string functionName, string packageName) {
+            List<string> packages;
+            if (!_functionToPackageMap.TryGetValue(functionName, out packages)) {
+                return null;
+            }
+
             IFunctionInfo functionInfo = null;
-            _functionToInfoMap?.TryGetValue(functionName, out functionInfo);
+            if (packages.Count == 1) {
+                _functionToInfoMap?.TryGetValue(GetQualifiedName(functionName, packages[0]), out functionInfo);
+            } else if (!string.IsNullOrEmpty(packageName)) {
+                _functionToInfoMap?.TryGetValue(GetQualifiedName(functionName, packageName), out functionInfo);
+            }
+
             return functionInfo;
+        }
+
+        private string GetQualifiedName(string functionName, string packageName) {
+            return Invariant($"{packageName}:::{functionName}");
         }
 
         /// <summary>
@@ -118,46 +142,42 @@ namespace Microsoft.R.Support.Help.Functions {
         /// callback passing the specified parameter. Callback method can now
         /// fetch function information from the index.
         /// </summary>
-        private void GetFunctionInfoFromEngineAsync(string functionName, string packageName, Action<object> infoReadyCallback = null, object parameter = null) {
+        private async Task GetFunctionInfoFromEngineAsync(string functionName, string packageName, Action<object, string> infoReadyCallback = null, object parameter = null) {
+            packageName = packageName ?? await _host.GetFunctionPackageNameAsync(functionName);
+            if (string.IsNullOrEmpty(packageName)) {
+                return;
+            }
             _functionRdDataProvider.GetFunctionRdDataAsync(functionName, packageName,
                 rdData => {
-                    UpdateIndex(functionName, rdData);
+                    UpdateIndex(functionName, packageName, rdData);
                     if (infoReadyCallback != null) {
                         _coreShell.DispatchOnUIThread(() => {
-                            infoReadyCallback(parameter);
+                            infoReadyCallback(parameter, packageName);
                         });
                     }
                 });
         }
 
-        /// <summary>
-        /// Fetches help on the function from R asynchronously.
-        /// </summary>
-        public async Task<IFunctionInfo> GetFunctionInfoFromEngineAsync(string functionName, string packageName) {
-            var rdData = await _functionRdDataProvider.GetFunctionRdDataAsync(functionName, packageName);
-            UpdateIndex(functionName, rdData);
 
-            IFunctionInfo fi;
-            _functionToInfoMap.TryGetValue(functionName, out fi);
-            return fi;
-        }
-
-        private void UpdateIndex(string functionName, string rdData) {
+        private void UpdateIndex(string functionName, string packageName, string rdData) {
             IReadOnlyList<IFunctionInfo> functionInfos = GetFunctionInfosFromRd(rdData);
+
             foreach (IFunctionInfo info in functionInfos) {
-                _functionToInfoMap[info.Name] = info;
+                _functionToInfoMap[GetQualifiedName(info.Name, packageName)] = info;
             }
-            if (!_functionToInfoMap.ContainsKey(functionName)) {
+
+            var qualifiedName = GetQualifiedName(functionName, packageName);
+            if (!_functionToInfoMap.ContainsKey(qualifiedName)) {
                 if (functionInfos.Count > 0) {
                     // RD doesn't contain the requested function.
                     // e.g. as.Date.character has RD for as.Date but not itself
                     // without its own named info, this will request indefinitely many times
                     // as workaround, add the first info with functionName
-                    _functionToInfoMap[functionName] = functionInfos[0];
+                    _functionToInfoMap[qualifiedName] = functionInfos[0];
                 } else {
                     // Add stub function info here to prevent subsequent calls
                     // for the same function as we already know the call will fail.
-                    _functionToInfoMap[functionName] = new FunctionInfo(functionName);
+                    _functionToInfoMap[qualifiedName] = new FunctionInfo(functionName);
                 }
             }
         }

@@ -23,6 +23,7 @@ namespace Microsoft.R.Editor.Signatures {
         private readonly DisposeToken _disposeToken;
         private readonly ITextBuffer _textBuffer;
         private readonly ICoreShell _shell;
+        private string _packageName;
 
         public SignatureHelpSource(ITextBuffer textBuffer, ICoreShell shell) {
             _disposeToken = DisposeToken.Create<SignatureHelpSource>();
@@ -50,7 +51,7 @@ namespace Microsoft.R.Editor.Signatures {
             }
         }
 
-        public bool AugmentSignatureHelpSession(ISignatureHelpSession session, IList<ISignature> signatures, AstRoot ast, Action<object> triggerSession) {
+        public bool AugmentSignatureHelpSession(ISignatureHelpSession session, IList<ISignature> signatures, AstRoot ast, Action<object, string> triggerSession) {
             ITextSnapshot snapshot = _textBuffer.CurrentSnapshot;
             int position = session.GetTriggerPoint(_textBuffer).GetPosition(snapshot);
 
@@ -69,8 +70,10 @@ namespace Microsoft.R.Editor.Signatures {
                 if (functionInfo == null) {
                     var functionIndex = _shell.ExportProvider.GetExportedValue<IFunctionIndex>();
                     // Then try package functions
+                    var packageName = _packageName;
+                    _packageName = null;
                     // Get collection of function signatures from documentation (parsed RD file)
-                    functionInfo = functionIndex.GetFunctionInfo(parametersInfo.FunctionName, triggerSession, session.TextView);
+                    functionInfo = functionIndex.GetFunctionInfo(parametersInfo.FunctionName, packageName, triggerSession, session);
                 }
 
                 if (functionInfo != null && functionInfo.Signatures != null) {
@@ -87,8 +90,12 @@ namespace Microsoft.R.Editor.Signatures {
             return false;
         }
 
-        private void TriggerSignatureHelp(object o) {
-            SignatureHelp.TriggerSignatureHelp(o as ITextView, _shell);
+        private void TriggerSignatureHelp(object o, string packageName) {
+            _packageName = packageName;
+            if (packageName != null) {
+                var session = o as ISignatureHelpSession;
+                SignatureHelp.TriggerSignatureHelp(session.TextView, _shell);
+            }
         }
 
         public ISignature GetBestMatch(ISignatureHelpSession session) {

@@ -98,7 +98,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
                 functionInfo = context.AstRoot.GetUserFunctionInfo(parametersInfo.FunctionName, context.Position);
                 if (functionInfo == null) {
                     // Get collection of function signatures from documentation (parsed RD file)
-                    functionInfo = _functionIndex.GetFunctionInfo(parametersInfo.FunctionName, o => { }, context.Session.TextView);
+                    functionInfo = _functionIndex.GetFunctionInfo(parametersInfo.FunctionName, null, (o, p) => { }, context.Session.TextView);
                 }
             }
             return functionInfo;

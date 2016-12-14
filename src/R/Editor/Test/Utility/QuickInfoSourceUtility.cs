@@ -16,7 +16,7 @@ namespace Microsoft.R.Editor.Test.Utility {
             var tcs = new TaskCompletionSource<ITrackingSpan>();
 
             ITrackingSpan applicableSpan;
-            var ready = quickInfoSource.AugmentQuickInfoSession(ast, caretPosition, quickInfoSession, quickInfoContent, out applicableSpan, o => {
+            var ready = quickInfoSource.AugmentQuickInfoSession(ast, caretPosition, quickInfoSession, quickInfoContent, out applicableSpan, (o, p) => {
                 ITrackingSpan result;
                 quickInfoSource.AugmentQuickInfoSession(ast, caretPosition, quickInfoSession, quickInfoContent, out result, null);
                 tcs.TrySetResult(result);
