@@ -201,14 +201,13 @@ namespace Microsoft.R.Host.Client.Test.RtvsPackage {
             var blobId = ((JValue)createResult.Result).Value<ulong>();
             var blobId2 = ((JValue)createCompressedResult.Result).Value<ulong>();
 
-                using (DataTransferSession dts = new DataTransferSession(_session, new FileSystem())) {
-                    var expectedData = await dts.FetchBytesAsync(new RBlobInfo(blobId), true, null, CancellationToken.None);
-                    var compressedData = await dts.FetchBytesAsync(new RBlobInfo(blobId2), true, null, CancellationToken.None);
-                    compressedData.Length.Should().BeLessThan(expectedData.Length);
+            using (DataTransferSession dts = new DataTransferSession(_session, new FileSystem())) {
+                var expectedData = await dts.FetchBytesAsync(new RBlobInfo(blobId), true, null, CancellationToken.None);
+                var compressedData = await dts.FetchBytesAsync(new RBlobInfo(blobId2), true, null, CancellationToken.None);
+                compressedData.Length.Should().BeLessThan(expectedData.Length);
 
-                    var actualData = await dts.FetchAndDecompressBytesAsync(new RBlobInfo(blobId2), true, null, CancellationToken.None);
-                    actualData.Should().Equal(expectedData);
-                }
+                var actualData = await dts.FetchAndDecompressBytesAsync(new RBlobInfo(blobId2), true, null, CancellationToken.None);
+                actualData.Should().Equal(expectedData);
             }
         }
 
@@ -223,11 +222,10 @@ namespace Microsoft.R.Host.Client.Test.RtvsPackage {
             var blobId = ((JValue)createResult.Result).Value<ulong>();
             var blobId2 = ((JValue)createCompressedResult.Result).Value<ulong>();
 
-                using (DataTransferSession dts = new DataTransferSession(_session, new FileSystem())) {
-                    var expectedData = await dts.FetchBytesAsync(new RBlobInfo(blobId), true, null, CancellationToken.None);
-                    var actualData = await dts.FetchAndDecompressBytesAsync(new RBlobInfo(blobId2), true, null, CancellationToken.None);
-                    actualData.Should().Equal(expectedData);
-                }
+            using (DataTransferSession dts = new DataTransferSession(_session, new FileSystem())) {
+                var expectedData = await dts.FetchBytesAsync(new RBlobInfo(blobId), true, null, CancellationToken.None);
+                var actualData = await dts.FetchAndDecompressBytesAsync(new RBlobInfo(blobId2), true, null, CancellationToken.None);
+                actualData.Should().Equal(expectedData);
             }
         }
     }

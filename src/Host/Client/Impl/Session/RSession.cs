@@ -399,12 +399,12 @@ namespace Microsoft.R.Host.Client.Session {
                     var wd = startupInfo.WorkingDirectory;
                     if (!IsRemote && !string.IsNullOrEmpty(wd) && wd.HasReadPermissions()) {
                         try {
-                            await evaluation.SetWorkingDirectoryAsync(wd);
+                            await evaluator.SetWorkingDirectoryAsync(wd);
                         } catch(REvaluationException) {
-                            await evaluation.SetDefaultWorkingDirectoryAsync();
+                            await evaluator.SetDefaultWorkingDirectoryAsync();
                         }
                     } else {
-                        await evaluation.SetDefaultWorkingDirectoryAsync();
+                        await evaluator.SetDefaultWorkingDirectoryAsync();
                     }
 
                 var callback = _callback;
