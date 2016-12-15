@@ -15,6 +15,7 @@ using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Tasks;
 using Microsoft.Common.Core.Threading;
+using Microsoft.R.Host.Client.BrokerServices;
 using Microsoft.R.Host.Client.Host;
 using static System.FormattableString;
 
@@ -307,6 +308,8 @@ namespace Microsoft.R.Host.Client.Session {
         public async Task StopHostAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             using (_disposeToken.Link(ref cancellationToken)) {
                 await TaskUtilities.SwitchToBackgroundThread();
+
+                WebServer.StopAllAsync().SilenceException<Exception>().DoNotWait();
 
                 Interlocked.Increment(ref _stopCount);
                 var stopToken = await _stopHostLock.WaitAsync(cancellationToken);
