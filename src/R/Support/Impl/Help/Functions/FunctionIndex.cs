@@ -90,7 +90,7 @@ namespace Microsoft.R.Support.Help.Functions {
         /// intellisense or function signature/parameter help.
         /// </summary>
         public IFunctionInfo GetFunctionInfo(string functionName, string packageName, Action<object, string> infoReadyCallback = null, object parameter = null) {
-            var functionInfo = TryGetCachedFunctionInfo(functionName, packageName);
+            var functionInfo = TryGetCachedFunctionInfo(functionName, ref packageName);
             if (functionInfo != null) {
                 return functionInfo;
             }
@@ -100,13 +100,13 @@ namespace Microsoft.R.Support.Help.Functions {
         }
 
         public async Task<IFunctionInfo> GetFunctionInfoAsync(string functionName, string packageName = null) {
-            var functionInfo = TryGetCachedFunctionInfo(functionName, packageName);
+            var functionInfo = TryGetCachedFunctionInfo(functionName, ref packageName);
             if (functionInfo != null) {
                 return functionInfo;
             }
 
-            await GetFunctionInfoFromEngineAsync(functionName, packageName);
-            return TryGetCachedFunctionInfo(functionName, packageName);
+            packageName = await GetFunctionInfoFromEngineAsync(functionName, packageName);
+            return TryGetCachedFunctionInfo(functionName, ref packageName);
         }
 
         /// <summary>
@@ -114,14 +114,15 @@ namespace Microsoft.R.Support.Help.Functions {
         /// Specifically, when function name is unique (then package name is irrelevant)
         /// or the package name is known.
         /// </summary>
-        private IFunctionInfo TryGetCachedFunctionInfo(string functionName, string packageName) {
+        private IFunctionInfo TryGetCachedFunctionInfo(string functionName, ref string packageName) {
             List<string> packages;
             if (!_functionToPackageMap.TryGetValue(functionName, out packages)) {
                 return null;
             }
 
             IFunctionInfo functionInfo = null;
-            if (packages.Count == 1) {
+            if (packages.Count == 1 && (string.IsNullOrEmpty(packageName) || packageName.EqualsOrdinal(packages[0]))) {
+                packageName = packages[0];
                 _functionToInfoMap?.TryGetValue(GetQualifiedName(functionName, packages[0]), out functionInfo);
             } else if (!string.IsNullOrEmpty(packageName)) {
                 _functionToInfoMap?.TryGetValue(GetQualifiedName(functionName, packageName), out functionInfo);
@@ -141,8 +142,9 @@ namespace Microsoft.R.Support.Help.Functions {
         /// callback passing the specified parameter. Callback method can now
         /// fetch function information from the index.
         /// </summary>
-        private async Task GetFunctionInfoFromEngineAsync(string functionName, string packageName, Action<object, string> infoReadyCallback = null, object parameter = null) {
+        private async Task<string> GetFunctionInfoFromEngineAsync(string functionName, string packageName, Action<object, string> infoReadyCallback = null, object parameter = null) {
             packageName = packageName ?? await _host.GetFunctionPackageNameAsync(functionName);
+
             if (string.IsNullOrEmpty(packageName)) {
                 // Even if nothing is found, still notify the callback
                 if (infoReadyCallback != null) {
@@ -150,20 +152,28 @@ namespace Microsoft.R.Support.Help.Functions {
                         infoReadyCallback(null, null);
                     });
                 }
-            } else {
-                _functionRdDataProvider.GetFunctionRdDataAsync(functionName, packageName,
-                    rdData => {
-                        if (!string.IsNullOrEmpty(packageName)) {
-                            // If package is found update data in the index
-                            UpdateIndex(functionName, packageName, rdData);
-                        }
-                        if (infoReadyCallback != null) {
-                            _coreShell.DispatchOnUIThread(() => {
-                                infoReadyCallback(parameter, packageName);
-                            });
-                        }
-                    });
+                return packageName;
             }
+
+            if (infoReadyCallback == null) {
+                // regular async call
+                var rdData = await _functionRdDataProvider.GetFunctionRdDataAsync(functionName, packageName);
+                if (!string.IsNullOrEmpty(rdData)) {
+                    // If package is found update data in the index
+                    UpdateIndex(functionName, packageName, rdData);
+                }
+                return packageName;
+            }
+
+            _functionRdDataProvider.GetFunctionRdDataAsync(functionName, packageName,
+                rdData => {
+                    if (!string.IsNullOrEmpty(packageName) && !string.IsNullOrEmpty(rdData)) {
+                        // If package is found update data in the index
+                        UpdateIndex(functionName, packageName, rdData);
+                    }
+                    _coreShell.DispatchOnUIThread(() => infoReadyCallback(parameter, packageName));
+                });
+            return packageName;
         }
 
 

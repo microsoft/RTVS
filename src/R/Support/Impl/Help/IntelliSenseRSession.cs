@@ -41,21 +41,31 @@ namespace Microsoft.R.Support.Help {
         }
 
         public async Task<string> GetFunctionPackageNameAsync(string functionName) {
-            if(_workflow.RSession.IsHostRunning) {
+            IRSession session = null;
+            string packageName = null;
+
+            if (_workflow.RSession.IsHostRunning) {
+                session = _workflow.RSession;
+            } else if (_coreShell.IsUnitTestEnvironment) {
+                session = Session;
+            }
+
+            if (session != null && session.IsHostRunning) {
                 try {
-                    return await _workflow.RSession.EvaluateAsync<string>(
+                    packageName = await session.EvaluateAsync<string>(
                         Invariant(
                             $"if(exists({functionName.ToRStringLiteral()})) getPackageName(environment({functionName})) else NULL"
                         ), REvaluationKind.Normal);
-                } catch(Exception) { }
+                } catch (Exception) { }
             }
-            return string.Empty;
+
+            return packageName;
         }
 
         public async Task CreateSessionAsync() {
             var token = await _lock.ResetAsync();
             try {
-                if(string.IsNullOrEmpty(_sessionProvider.Broker.Name)) {
+                if (string.IsNullOrEmpty(_sessionProvider.Broker.Name)) {
                     throw new RHostDisconnectedException();
                 }
 
