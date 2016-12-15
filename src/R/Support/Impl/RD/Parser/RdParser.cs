@@ -132,7 +132,7 @@ namespace Microsoft.R.Support.RD.Parser {
                 if (functionInfos.TryGetValue(primaryName, out functionInfo)) {
                     foreach (var alias in aliases) {
                         if (!functionInfos.ContainsKey(alias)) {
-                            functionInfos[alias] = functionInfo;
+                            functionInfos[alias] = new FunctionInfo(alias, functionInfo);
                         }
                     }
                 }

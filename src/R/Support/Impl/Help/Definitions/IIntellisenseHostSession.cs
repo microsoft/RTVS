@@ -9,5 +9,6 @@ namespace Microsoft.R.Support.Help {
     public interface IIntellisenseRSession : IDisposable {
         IRSession Session { get; }
         Task CreateSessionAsync();
+        Task<string> GetFunctionPackageNameAsync(string functionName);
     }
 }

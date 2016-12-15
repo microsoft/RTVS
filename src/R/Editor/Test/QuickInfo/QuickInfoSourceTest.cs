@@ -11,6 +11,8 @@ using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.QuickInfo;
 using Microsoft.R.Editor.Signatures;
 using Microsoft.R.Editor.Test.Utility;
+using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.R.Support.Help.Packages;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
@@ -22,56 +24,87 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
     [Category.R.Signatures]
     [Collection(CollectionNames.NonParallel)]
     public class FunctionIndexTest : FunctionIndexBasedTest {
-        public FunctionIndexTest(REditorMefCatalogFixture catalog) : base(catalog) { }
+        class Session {
+            public AstRoot Ast;
+            public ITrackingSpan ApplicableSpan;
+            public List<object> QuickInfoContent;
+            public ITextBuffer TextBuffer;
+        }
 
+        public FunctionIndexTest(REditorMefCatalogFixture catalog) : base(catalog) { }
 
         [CompositeTest]
         [InlineData(true)]
         [InlineData(false)]
-        public async Task QuickInfoSourceTest01(bool cached) {
-            if(!cached) {
+        public async Task CacheTest(bool cached) {
+            if (!cached) {
                 Support.Help.Packages.PackageIndex.ClearCache();
             }
+
             string content = @"x <- as.matrix(x)";
-            AstRoot ast = RParser.Parse(content);
+            var session = await TriggerSessionAsync(content, 15);
+            var parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(session.Ast, session.TextBuffer.CurrentSnapshot, 10);
 
-            int caretPosition = 15; // in arguments
-            ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            QuickInfoSource quickInfoSource = new QuickInfoSource(textBuffer, EditorShell);
-            QuickInfoSessionMock quickInfoSession = new QuickInfoSessionMock(textBuffer, caretPosition);
-            List<object> quickInfoContent = new List<object>();
-
-            quickInfoSession.TriggerPoint = new SnapshotPoint(textBuffer.CurrentSnapshot, caretPosition);
-            var applicableSpan = await quickInfoSource.AugmentQuickInfoSessionAsync(ast, caretPosition, quickInfoSession, quickInfoContent);
-
-            ParameterInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, textBuffer.CurrentSnapshot, 10);
-
-            applicableSpan.Should().NotBeNull();
-            quickInfoContent.Should().ContainSingle()
+            session.ApplicableSpan.Should().NotBeNull();
+            session.QuickInfoContent.Should().ContainSingle()
                 .Which.ToString().Should().StartWith("as.matrix(x, ..., data, nrow, ncol, byrow, dimnames, rownames.force)");
         }
 
         [Test]
-        public async Task QuickInfoSourceTest02() {
+        public async Task AliasTest() {
             // 'as.Date.character' RD contains no function info for 'as.Date.character', but the one for 'as.Date'
             // and as.Date.character appears as alias. We verify as.Date.character is shown in the signature info.
             string content = @"x <- as.Date.character(x)";
-            AstRoot ast = RParser.Parse(content);
 
-            int caretPosition = 23; // in arguments
-            ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            QuickInfoSource quickInfoSource = new QuickInfoSource(textBuffer, EditorShell);
-            QuickInfoSessionMock quickInfoSession = new QuickInfoSessionMock(textBuffer, caretPosition);
-            List<object> quickInfoContent = new List<object>();
+            var session = await TriggerSessionAsync(content, 23);
+            var parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(session.Ast, session.TextBuffer.CurrentSnapshot, 10);
 
-            quickInfoSession.TriggerPoint = new SnapshotPoint(textBuffer.CurrentSnapshot, caretPosition);
-            var applicableSpan = await quickInfoSource.AugmentQuickInfoSessionAsync(ast, caretPosition, quickInfoSession, quickInfoContent);
-
-            ParameterInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, textBuffer.CurrentSnapshot, 10);
-
-            applicableSpan.Should().NotBeNull();
-            quickInfoContent.Should().ContainSingle()
+            session.ApplicableSpan.Should().NotBeNull();
+            session.QuickInfoContent.Should().ContainSingle()
                 .Which.ToString().Should().StartWith("as.Date.character(x, ...)");
+        }
+
+
+        [Test]
+        public async Task NonUniqueNameTest() {
+            string content = @"x <- select()";
+
+            using (var hostScript = new RHostScript(Workflow.RSessions)) {
+                //await Workflow.RSession.ExecuteAsync("install.packages('dplyr')");
+
+                var session = await TriggerSessionAsync(content, 12);
+                var parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(session.Ast, session.TextBuffer.CurrentSnapshot, 10);
+
+                session.ApplicableSpan.Should().NotBeNull();
+                session.QuickInfoContent.Should().BeEmpty();
+
+                await Workflow.RSession.ExecuteAsync("library(MASS)");
+                session = await TriggerSessionAsync(content, 12);
+
+                session.ApplicableSpan.Should().NotBeNull();
+                session.QuickInfoContent.Should().ContainSingle().Which.ToString().Should().StartWith("select(formula");
+
+                await Workflow.RSession.ExecuteAsync("library(dplyr)");
+                session = await TriggerSessionAsync(content, 12);
+
+                session.ApplicableSpan.Should().NotBeNull();
+                session.QuickInfoContent.Should().ContainSingle().Which.ToString().Should().StartWith("select(.data");
+            }
+        }
+
+        private async Task<Session> TriggerSessionAsync(string content, int caretPosition) {
+            var s = new Session();
+
+            s.Ast = RParser.Parse(content);
+            s.TextBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
+            QuickInfoSource quickInfoSource = new QuickInfoSource(s.TextBuffer, EditorShell);
+            QuickInfoSessionMock quickInfoSession = new QuickInfoSessionMock(s.TextBuffer, caretPosition);
+            s.QuickInfoContent = new List<object>();
+
+            quickInfoSession.TriggerPoint = new SnapshotPoint(s.TextBuffer.CurrentSnapshot, caretPosition);
+            s.ApplicableSpan = await quickInfoSource.AugmentQuickInfoSessionAsync(s.Ast, caretPosition, quickInfoSession, s.QuickInfoContent);
+
+            return s;
         }
     }
 }
