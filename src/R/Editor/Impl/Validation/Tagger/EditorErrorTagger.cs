@@ -225,11 +225,11 @@ namespace Microsoft.R.Editor.Validation.Tagger {
                     start = Math.Min(start, _textBuffer.CurrentSnapshot.Length);
                     int end = Math.Min(changedRange.End, _textBuffer.CurrentSnapshot.Length);
 
-                    if (changedRange.Length > 0 && TagsChanged != null)
+                    if (changedRange.Length > 0 && TagsChanged != null) {
                         TagsChanged(this, new SnapshotSpanEventArgs(new SnapshotSpan(_textBuffer.CurrentSnapshot, start, end - start)));
+                    }
 
-                    if (BeginUpdatingTasks != null)
-                        BeginUpdatingTasks(this, EventArgs.Empty);
+                    BeginUpdatingTasks?.Invoke(this, EventArgs.Empty);
 
                     try {
                         if (addedTags.Count > 0 && TasksAdded != null)
@@ -245,12 +245,12 @@ namespace Microsoft.R.Editor.Validation.Tagger {
                                 }
                             }
 
-                            if (TasksRemoved != null && removedTags.Count > 0)
+                            if (TasksRemoved != null && removedTags.Count > 0) {
                                 TasksRemoved(this, new TasksListItemsChangedEventArgs(removedTags));
+                            }
                         }
                     } finally {
-                        if (EndUpdatingTasks != null)
-                            EndUpdatingTasks(this, EventArgs.Empty);
+                        EndUpdatingTasks?.Invoke(this, EventArgs.Empty);
                     }
 
                     timer.Stop();

@@ -2,17 +2,14 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Text;
 using Microsoft.Common.Core;
-using Microsoft.Win32;
-using static System.FormattableString;
 
 namespace Microsoft.UnitTests.Core {
     public static class Paths {
         private static string _vsRoot;
-        private static string VsRoot {
+        public static string VsRoot {
             get {
                 if (_vsRoot == null) {
 #if VS14
