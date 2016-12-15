@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel.Composition;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Threading;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -54,8 +55,11 @@ namespace Microsoft.R.Support.Help {
                 try {
                     packageName = await session.EvaluateAsync<string>(
                         Invariant(
-                            $"if(exists({functionName.ToRStringLiteral()})) getPackageName(environment({functionName})) else NULL"
+                            $"as.list(find('{functionName}', mode='function')[1])[[1]]"
                         ), REvaluationKind.Normal);
+                    if(packageName != null && packageName.StartsWithOrdinal("package:")) {
+                        packageName = packageName.Substring(8);
+                    }
                 } catch (Exception) { }
             }
 
