@@ -39,12 +39,11 @@ namespace Microsoft.R.Host.Client.Host {
             HttpClientHandler.ServerCertificateValidationCallback = ValidateCertificateHttpHandler;
         }
 
-        public override Task<string> HandleUrlAsync(string url, CancellationToken cancellationToken) {
-            return WebServer.CreateWebServerAsync(url, HttpClient.BaseAddress.ToString(), cancellationToken);
-        }
+        public override Task<string> HandleUrlAsync(string url, CancellationToken cancellationToken) =>
+            WebServer.CreateWebServerAsync(url, HttpClient.BaseAddress.ToString(), Name, _services, _console, cancellationToken);
 
         protected override async Task<Exception> HandleHttpRequestExceptionAsync(HttpRequestException exception) {
-            // Broker is not responsing. Try regular ping.
+            // Broker is not responding. Try regular ping.
             string status = await Uri.GetMachineOnlineStatusAsync();
             return string.IsNullOrEmpty(status)
                 ? new RHostDisconnectedException(Resources.Error_BrokerNotRunning.FormatInvariant(Name), exception)

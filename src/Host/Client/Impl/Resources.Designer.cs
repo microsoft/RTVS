@@ -176,6 +176,24 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to create HTTP server for remote {0}..
+        /// </summary>
+        internal static string Error_RemoteWebServerCreationFailed {
+            get {
+                return ResourceManager.GetString("Error_RemoteWebServerCreationFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to HTTP server for remote {0} failed : {1}.
+        /// </summary>
+        internal static string Error_RemoteWebServerFailed {
+            get {
+                return ResourceManager.GetString("Error_RemoteWebServerFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The following exception occurred during initialization of R session, and the session has been terminated:
         ///
         ///{0}.
@@ -255,6 +273,43 @@ namespace Microsoft.R.Host.Client {
         internal static string HttpErrorCreatingSession {
             get {
                 return ResourceManager.GetString("HttpErrorCreatingSession", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to HTTP server for remote allows you to connect to a HTTP server created on a remote R machine.
+        ///Server at {0} http://{1}:{2} connects to {3} http://{4}:{5}..
+        /// </summary>
+        internal static string Info_RemoteWebServerDetails {
+            get {
+                return ResourceManager.GetString("Info_RemoteWebServerDetails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to HTTP server for remote {0} listening on http://{1}:{2}. .
+        /// </summary>
+        internal static string Info_RemoteWebServerStarted {
+            get {
+                return ResourceManager.GetString("Info_RemoteWebServerStarted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to HTTP server for remote {0} starting ....
+        /// </summary>
+        internal static string Info_RemoteWebServerStarting {
+            get {
+                return ResourceManager.GetString("Info_RemoteWebServerStarting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to HTTP server for remote {0} stopped..
+        /// </summary>
+        internal static string Info_RemoteWebServerStopped {
+            get {
+                return ResourceManager.GetString("Info_RemoteWebServerStopped", resourceCulture);
             }
         }
         

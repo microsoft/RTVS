@@ -524,7 +524,8 @@ namespace Microsoft.R.Host.Client {
                                 break;
 
                             case "!WebBrowser":
-                                await _callbacks.WebBrowser(message.GetString(0, "url"), ct);
+                                _callbacks.WebBrowser(message.GetString(0, "url"), ct)
+                                    .DoNotWait();
                                 break;
 
                             case "!PackagesInstalled":
