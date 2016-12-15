@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Globalization;
 using System.IO;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Enums;
@@ -50,6 +52,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         private readonly IThreadHandling _threadHandling;
         private readonly UnconfiguredProject _unconfiguredProject;
         private readonly IEnumerable<Lazy<IVsProject>> _cpsIVsProjects;
+        private readonly IProjectLockService _projectLockService;
         private readonly IRInteractiveWorkflowProvider _workflowProvider;
         private readonly IProjectItemDependencyProvider _dependencyProvider;
         private readonly ICoreShell _coreShell;
@@ -76,6 +79,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
             _unconfiguredProject = unconfiguredProject;
             _cpsIVsProjects = cpsIVsProjects;
+            _projectLockService = projectLockService;
             _workflowProvider = workflowProvider;
 
             _toolsSettings = toolsSettings;
@@ -86,6 +90,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
             _projectDirectory = unconfiguredProject.GetProjectDirectory();
 
+            unconfiguredProject.ProjectRenamedOnWriter += ProjectRenamedOnWriter;
             unconfiguredProject.ProjectUnloading += ProjectUnloading;
             _fileWatcher = new MsBuildFileSystemWatcher(_projectDirectory, "*", 25, 1000, _coreShell.Services.FileSystem, new RMsBuildFileSystemFilter(), coreShell.Services.Log);
             _fileWatcher.Error += FileWatcherError;
@@ -178,10 +183,26 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                 }
             });
         }
+        
+        private async Task ProjectRenamedOnWriter(object sender, ProjectRenamedEventArgs args) {
+            var oldImportName = FileSystemMirroringProjectUtilities.GetInMemoryTargetsFileName(args.OldFullPath);
+            var newImportName = FileSystemMirroringProjectUtilities.GetInMemoryTargetsFileName(args.NewFullPath);
+            using (var access = await _projectLockService.WriteLockAsync()) {
+                await access.CheckoutAsync(_unconfiguredProject.FullPath);
+                var xml = await access.GetProjectXmlAsync(_unconfiguredProject.FullPath);
+                var import = xml.Imports.FirstOrDefault(i => i.Project.EqualsIgnoreCase(oldImportName));
+                if (import != null) {
+                    import.Project = newImportName;
+                    import.Condition = $"Exists('{newImportName}')";
+                    await Project.UpdateFullPathAsync(access);
+                }
+            }
+        }
 
         private async Task ProjectUnloading(object sender, EventArgs args) {
             _coreShell.AssertIsOnMainThread();
 
+            _unconfiguredProject.ProjectRenamedOnWriter -= ProjectRenamedOnWriter;
             _unconfiguredProject.ProjectUnloading -= ProjectUnloading;
             _fileWatcher.Dispose();
 

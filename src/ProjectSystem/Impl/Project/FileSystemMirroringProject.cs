@@ -31,11 +31,11 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project {
         private readonly IActionLog _log;
         private readonly CancellationToken _unloadCancellationToken;
         private readonly string _projectDirectory;
-        private readonly string _inMemoryImportFullPath;
         private readonly Dictionary<string, ProjectItemElement> _fileItems;
         private readonly Dictionary<string, ProjectItemElement> _directoryItems;
         private readonly IProjectItemDependencyProvider _dependencyProvider;
 
+        private string _inMemoryImportFullPath;
         private ProjectRootElement _inMemoryImport;
         private ProjectItemGroupElement _filesItemGroup;
         private ProjectItemGroupElement _directoriesItemGroup;
@@ -93,6 +93,12 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project {
                 _directoriesItemGroup = _inMemoryImport.AddItemGroup();
                 _temporaryAddedItemGroup = _inMemoryImport.AddItemGroup();
             }
+        }
+
+        public Task UpdateFullPathAsync(ProjectWriteLockReleaser access, CancellationToken cancellationToken = default(CancellationToken)) {
+            _inMemoryImportFullPath = _unconfiguredProject.GetInMemoryTargetsFileFullPath();
+            _inMemoryImport.FullPath = _inMemoryImportFullPath;
+            return ReevaluateLoadedConfiguredProjects(cancellationToken, access);
         }
 
         public Task<IReadOnlyCollection<string>> AddTemporaryFiles(ConfiguredProject configuredProject, IEnumerable<string> filesToAdd) {
