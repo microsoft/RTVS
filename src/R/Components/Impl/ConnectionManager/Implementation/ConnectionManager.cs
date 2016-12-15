@@ -126,9 +126,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             return isRemoved;
         }
 
-        //public Task TestConnectionAsync(IConnectionInfo connection, CancellationToken cancellationToken = default(CancellationToken)) {
-        //    return _sessionProvider.TestBrokerConnectionAsync(connection.Name, connection.Path, cancellationToken);
-        //}
+        public Task TestConnectionAsync(IConnectionInfo connection, CancellationToken cancellationToken = default(CancellationToken)) {
+            return _sessionProvider.TestBrokerConnectionAsync(connection.Name, connection.Path, cancellationToken);
+        }
 
         public async Task ReconnectAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             var connection = ActiveConnection;

@@ -167,42 +167,42 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             }
         }
 
-        //public async Task TestConnectionAsync(IConnectionViewModel connection) {
-        //    _shell.AssertIsOnMainThread();
-        //    if (connection == null) {
-        //        return;
-        //    }
+        public async Task TestConnectionAsync(IConnectionViewModel connection) {
+            _shell.AssertIsOnMainThread();
+            if (connection == null) {
+                return;
+            }
 
-        //    CancelTestConnection();
+            CancelTestConnection();
 
-        //    connection.TestingConnectionCts = new CancellationTokenSource();
-        //    _testingConnection = connection;
+            connection.TestingConnectionCts = new CancellationTokenSource();
+            _testingConnection = connection;
 
-        //    try {
-        //        await _connectionManager.TestConnectionAsync(connection, connection.TestingConnectionCts.Token);
-        //        connection.IsTestConnectionSucceeded = true;
-        //    } catch (ArgumentException) {
-        //        if (connection.TestingConnectionCts != null) {
-        //            connection.TestConnectionFailedText = Resources.ConnectionManager_TestConnectionFailed_PathIsInvalid;
-        //        }
-        //    } catch (RHostDisconnectedException exception) {
-        //        if (connection.TestingConnectionCts != null) {
-        //            connection.TestConnectionFailedText = Resources.ConnectionManager_TestConnectionFailed_Format.FormatInvariant(exception.Message);
-        //        }
-        //    } catch (RHostBrokerBinaryMissingException) {
-        //        if (connection.TestingConnectionCts != null) {
-        //            connection.TestConnectionFailedText = Resources.ConnectionManager_TestConnectionFailed_RHostIsMissing;
-        //        }
-        //    } catch (OperationCanceledException) {
-        //        if (connection.TestingConnectionCts != null) {
-        //            connection.TestConnectionFailedText = Resources.ConnectionManager_TestConnectionCanceled;
-        //        }
-        //    } finally {
-        //        connection.TestingConnectionCts?.Dispose();
-        //        connection.TestingConnectionCts = null;
-        //        _testingConnection = null;
-        //    }
-        //}
+            try {
+                await _connectionManager.TestConnectionAsync(connection, connection.TestingConnectionCts.Token);
+                connection.IsTestConnectionSucceeded = true;
+            } catch (ArgumentException) {
+                if (connection.TestingConnectionCts != null) {
+                    connection.TestConnectionFailedText = Resources.ConnectionManager_TestConnectionFailed_PathIsInvalid;
+                }
+            } catch (RHostDisconnectedException exception) {
+                if (connection.TestingConnectionCts != null) {
+                    connection.TestConnectionFailedText = Resources.ConnectionManager_TestConnectionFailed_Format.FormatInvariant(exception.Message);
+                }
+            } catch (RHostBrokerBinaryMissingException) {
+                if (connection.TestingConnectionCts != null) {
+                    connection.TestConnectionFailedText = Resources.ConnectionManager_TestConnectionFailed_RHostIsMissing;
+                }
+            } catch (OperationCanceledException) {
+                if (connection.TestingConnectionCts != null) {
+                    connection.TestConnectionFailedText = Resources.ConnectionManager_TestConnectionCanceled;
+                }
+            } finally {
+                connection.TestingConnectionCts?.Dispose();
+                connection.TestingConnectionCts = null;
+                _testingConnection = null;
+            }
+        }
 
         public void Save(IConnectionViewModel connectionViewModel) {
             _shell.AssertIsOnMainThread();

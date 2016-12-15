@@ -54,13 +54,13 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
             Model?.TryDelete(GetConnection(e));
         }
 
-        //private void ButtonTestConnection_Click(object sender, RoutedEventArgs e) {
-        //    Model?.TestConnectionAsync(GetConnection(e)).DoNotWait();
-        //}
+        private void ButtonTestConnection_Click(object sender, RoutedEventArgs e) {
+            Model?.TestConnectionAsync(GetConnection(e)).DoNotWait();
+        }
 
-        //private void ButtonCancelTestConnection_Click(object sender, RoutedEventArgs e) {
-        //    Model?.CancelTestConnection();
-        //}
+        private void ButtonCancelTestConnection_Click(object sender, RoutedEventArgs e) {
+            Model?.CancelTestConnection();
+        }
 
         private static IConnectionViewModel GetConnection(RoutedEventArgs e) => ((FrameworkElement)e.Source).DataContext as IConnectionViewModel;
 

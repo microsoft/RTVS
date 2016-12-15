@@ -106,7 +106,6 @@
                                     Content="{x:Static components:Resources.ConnectionManager_Save}" 
                                     ToolTip="{Binding Path=SaveButtonTooltip}"/>
 
-                            <!--
                             <Button VerticalAlignment="Center" Click="ButtonTestConnection_Click"
                                     Style="{StaticResource HyperlinkButton}"
                                     Content="{x:Static components:Resources.ConnectionManager_TestConnection}"
@@ -118,7 +117,6 @@
                                     </MultiBinding>
                                 </Button.IsEnabled>
                             </Button>
-                            -->
 
                             <Separator Margin="4,4,4,3" BorderThickness="0"
                                        Style="{StaticResource VerticalSeparator}" 
@@ -131,7 +129,7 @@
                         </WrapPanel>
 
                         <!-- Test connection -->
-                        <!--<WrapPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Margin="0">
+                        <WrapPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Margin="0">
                             <controls:Spinner Width="16" Height="16" Margin="3" HorizontalAlignment="Center" VerticalAlignment="Center"
                                        Visibility="{Binding Path=TestingConnectionCts, Converter={x:Static rwpf:Converters.NullIsCollapsed}}" />
                             <TextBlock Margin="0,4,6,5" Text="{x:Static components:Resources.ConnectionManager_TestingConnection}"
@@ -146,7 +144,7 @@
                             <Button VerticalAlignment="Center" Click="ButtonCancelTestConnection_Click"
                                     Style="{StaticResource HyperlinkButton}" Content="{x:Static components:Resources.ConnectionManager_Cancel}"
                                     Visibility="{Binding Path=TestingConnectionCts, Converter={x:Static rwpf:Converters.NullIsCollapsed}}" />
-                        </WrapPanel>-->
+                        </WrapPanel>
                     </Grid>
                 </AdornerDecorator>
             </DataTemplate>
