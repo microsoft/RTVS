@@ -396,16 +396,16 @@ namespace Microsoft.R.Host.Client.Session {
 
                 await LoadRtvsPackage(evaluator, libPath);
 
-                    var wd = startupInfo.WorkingDirectory;
-                    if (!IsRemote && !string.IsNullOrEmpty(wd) && wd.HasReadPermissions()) {
-                        try {
-                            await evaluator.SetWorkingDirectoryAsync(wd);
-                        } catch(REvaluationException) {
-                            await evaluator.SetDefaultWorkingDirectoryAsync();
-                        }
-                    } else {
+                var wd = startupInfo.WorkingDirectory;
+                if (!IsRemote && !string.IsNullOrEmpty(wd) && wd.HasReadPermissions()) {
+                    try {
+                        await evaluator.SetWorkingDirectoryAsync(wd);
+                    } catch(REvaluationException) {
                         await evaluator.SetDefaultWorkingDirectoryAsync();
                     }
+                } else {
+                    await evaluator.SetDefaultWorkingDirectoryAsync();
+                }
 
                 var callback = _callback;
                 if (callback != null) {
