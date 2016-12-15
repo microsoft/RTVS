@@ -16,7 +16,7 @@
     "Microsoft.VisualStudio.Shell.Interop.10.0": "10.0.30319",
     "Microsoft.VisualStudio.Shell.Interop.11.0": "11.0.61030",
     "Microsoft.VisualStudio.Shell.Interop.14.0.DesignTime": "14.3.25407",
-    "System.Collections.Immutable": "1.1.37",
+    "Microsoft.VisualStudio.ProjectSystem": "14.1.170-pre",
     "NSubstitute": "1.10.0",
     "xunit": "2.2.0-beta1-build3239",
     "xunit.runner.visualstudio": "2.2.0-beta1-build1144"
