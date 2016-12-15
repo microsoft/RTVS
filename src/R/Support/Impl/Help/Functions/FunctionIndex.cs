@@ -6,7 +6,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
@@ -145,17 +144,26 @@ namespace Microsoft.R.Support.Help.Functions {
         private async Task GetFunctionInfoFromEngineAsync(string functionName, string packageName, Action<object, string> infoReadyCallback = null, object parameter = null) {
             packageName = packageName ?? await _host.GetFunctionPackageNameAsync(functionName);
             if (string.IsNullOrEmpty(packageName)) {
-                return;
+                // Even if nothing is found, still notify the callback
+                if (infoReadyCallback != null) {
+                    _coreShell.DispatchOnUIThread(() => {
+                        infoReadyCallback(null, null);
+                    });
+                }
+            } else {
+                _functionRdDataProvider.GetFunctionRdDataAsync(functionName, packageName,
+                    rdData => {
+                        if (!string.IsNullOrEmpty(packageName)) {
+                            // If package is found update data in the index
+                            UpdateIndex(functionName, packageName, rdData);
+                        }
+                        if (infoReadyCallback != null) {
+                            _coreShell.DispatchOnUIThread(() => {
+                                infoReadyCallback(parameter, packageName);
+                            });
+                        }
+                    });
             }
-            _functionRdDataProvider.GetFunctionRdDataAsync(functionName, packageName,
-                rdData => {
-                    UpdateIndex(functionName, packageName, rdData);
-                    if (infoReadyCallback != null) {
-                        _coreShell.DispatchOnUIThread(() => {
-                            infoReadyCallback(parameter, packageName);
-                        });
-                    }
-                });
         }
 
 

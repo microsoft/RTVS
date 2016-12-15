@@ -18,9 +18,9 @@ namespace Microsoft.R.Editor.Test.Utility {
             ITrackingSpan applicableSpan;
             var ready = quickInfoSource.AugmentQuickInfoSession(ast, caretPosition, quickInfoSession, quickInfoContent, out applicableSpan, (o, p) => {
                 ITrackingSpan result;
-                quickInfoSource.AugmentQuickInfoSession(ast, caretPosition, quickInfoSession, quickInfoContent, out result, null);
+                quickInfoSource.AugmentQuickInfoSession(ast, caretPosition, quickInfoSession, quickInfoContent, out result, null, p);
                 tcs.TrySetResult(result);
-            });
+            }, null);
 
             if (ready) {
                 tcs.TrySetResult(applicableSpan);

@@ -92,7 +92,7 @@ namespace Microsoft.R.Editor.Signatures {
 
         private void TriggerSignatureHelp(object o, string packageName) {
             _packageName = packageName;
-            if (packageName != null) {
+            if (o != null && packageName != null) {
                 var session = o as ISignatureHelpSession;
                 SignatureHelp.TriggerSignatureHelp(session.TextView, _shell);
             }

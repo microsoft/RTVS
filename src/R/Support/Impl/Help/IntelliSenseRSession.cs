@@ -4,7 +4,6 @@
 using System;
 using System.ComponentModel.Composition;
 using System.Threading.Tasks;
-using Microsoft.Common.Core.Exceptions;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Threading;
 using Microsoft.R.Components.InteractiveWorkflow;

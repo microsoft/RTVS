@@ -59,7 +59,7 @@ namespace Microsoft.R.Editor.QuickInfo {
                         // getting set immediately or may change as user moves mouse over.
                         AugmentQuickInfoSession(document.EditorTree.AstRoot, position,
                                                 session, quickInfoContent, out applicableToSpan,
-                                                (object o, string p) => RetriggerQuickInfoSession(o as IQuickInfoSession, p));
+                                                (object o, string p) => RetriggerQuickInfoSession(o as IQuickInfoSession, p), null);
                     }
                 }
             }
@@ -67,7 +67,7 @@ namespace Microsoft.R.Editor.QuickInfo {
 
         internal bool AugmentQuickInfoSession(AstRoot ast, int position, IQuickInfoSession session,
                                               IList<object> quickInfoContent, out ITrackingSpan applicableToSpan,
-                                              Action<object, string> retriggerAction) {
+                                              Action<object, string> retriggerAction, string packageName) {
             int signatureEnd = position;
             applicableToSpan = null;
 
@@ -80,7 +80,7 @@ namespace Microsoft.R.Editor.QuickInfo {
                 int end = Math.Min(signatureEnd, snapshot.Length);
 
                 applicableToSpan = snapshot.CreateTrackingSpan(Span.FromBounds(start, end), SpanTrackingMode.EdgeInclusive);
-                var packageName = _packageName;
+                packageName = packageName ?? _packageName;
                 _packageName = null;
 
                 var functionInfo = FunctionIndex.GetFunctionInfo(functionName, packageName, retriggerAction, session);
