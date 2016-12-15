@@ -83,17 +83,16 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
 
             var sep = CultureInfo.CurrentCulture.TextInfo.ListSeparator;
             var dec = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
-            using (var e = await session.BeginEvaluationAsync(cancellationToken)) {
-                var csvDataBlobId = await e.EvaluateAsync<ulong>($"rtvs:::export_to_csv({result.Expression}, sep={sep.ToRStringLiteral()}, dec={dec.ToRStringLiteral()})", REvaluationKind.Normal, cancellationToken);
-                using (DataTransferSession dts = new DataTransferSession(session, fileSystem)) {
-                    var total = await session.GetBlobSizeAsync(csvDataBlobId, cancellationToken);
-                    progress.Report(new ProgressDialogData(0, statusBarText: Resources.Status_WritingCSV, waitMessage: Resources.Status_WritingCSV));
-                    await dts.FetchAndDecompressFileAsync(new RBlobInfo(csvDataBlobId), fileName, true, new Progress<long>(b => {
-                        var step = (int)(b * 100 / total);
-                        progress.Report(new ProgressDialogData(step, statusBarText: Resources.Status_WritingCSV, waitMessage: Resources.Status_WritingCSV));
-                    }), cancellationToken);
-                    progress.Report(new ProgressDialogData(100, statusBarText: Resources.Status_WritingCSV, waitMessage: Resources.Status_WritingCSV));
-                }
+
+            var csvDataBlobId = await session.EvaluateAsync<ulong>($"rtvs:::export_to_csv({result.Expression}, sep={sep.ToRStringLiteral()}, dec={dec.ToRStringLiteral()})", REvaluationKind.Normal, cancellationToken);
+            using (DataTransferSession dts = new DataTransferSession(session, fileSystem)) {
+                var total = await session.GetBlobSizeAsync(csvDataBlobId, cancellationToken);
+                progress.Report(new ProgressDialogData(0, statusBarText: Resources.Status_WritingCSV, waitMessage: Resources.Status_WritingCSV));
+                await dts.FetchAndDecompressFileAsync(new RBlobInfo(csvDataBlobId), fileName, true, new Progress<long>(b => {
+                    var step = (int)(b * 100 / total);
+                    progress.Report(new ProgressDialogData(step, statusBarText: Resources.Status_WritingCSV, waitMessage: Resources.Status_WritingCSV));
+                }), cancellationToken);
+                progress.Report(new ProgressDialogData(100, statusBarText: Resources.Status_WritingCSV, waitMessage: Resources.Status_WritingCSV));
             }
         }
 

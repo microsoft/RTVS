@@ -41,7 +41,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
             }
 
             public async Task DisposeAsync() {
-                await _session.StopHostAsync();
+                await _session.StopHostAsync().Should().BeCompletedAsync();
                 _session.Dispose();
                 _brokerClient.Dispose();
             }
@@ -62,7 +62,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
             [Test]
             [Category.R.Session]
-            public async Task CancelAll_HangingLoop() {
+            public async Task CancelAll_CancellableHangingLoop() {
                 var testMrs = new AsyncManualResetEvent();
                 var plotMrs = new AsyncManualResetEvent();
                 _callback.PlotHandler = (message, ct) => {
@@ -85,7 +85,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
             [Test]
             [Category.R.Session]
-            public async Task CancelAll_Cancel() {
+            public async Task CancelAll_HangingLoop_Cancel() {
                 var testMrs = new AsyncManualResetEvent();
                 var plotMrs = new AsyncManualResetEvent();
                 _callback.PlotHandler = (message, ct) => {
@@ -109,9 +109,8 @@ namespace Microsoft.R.Host.Client.Test.Session {
                 await cancelAllAsyncTask.Should().BeCanceledAsync();
 
                 _session.IsHostRunning.Should().BeTrue();
-                plotMrs.Set();
-
                 await responceTask.Should().BeCanceledAsync();
+                plotMrs.Set();
             }
         }
     }

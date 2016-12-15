@@ -167,6 +167,15 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to RHost is stopped.
+        /// </summary>
+        internal static string Error_RHostIsStopped {
+            get {
+                return ResourceManager.GetString("Error_RHostIsStopped", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The following exception occurred during initialization of R session, and the session has been terminated:
         ///
         ///{0}.
