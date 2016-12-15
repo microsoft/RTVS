@@ -61,6 +61,9 @@ namespace Microsoft.R.Host.Client.Test.Script {
             if (disposing) {
                 if (Session != null) {
                     Session.StopHostAsync().Wait(15000);
+                    if (Session.IsHostRunning) {
+                        Debugger.Launch();
+                    }
                     Debug.Assert(!Session.IsHostRunning);
                 }
 

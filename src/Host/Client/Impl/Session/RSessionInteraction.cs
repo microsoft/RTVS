@@ -13,12 +13,7 @@ namespace Microsoft.R.Host.Client.Session {
         public int MaxLength { get; }
         public IReadOnlyList<IRContext> Contexts { get; }
 
-        public RSessionInteraction(
-            TaskCompletionSource<string> requestTcs,
-            Task responseTask,
-            string prompt,
-            int maxLength,
-            IReadOnlyList<IRContext> contexts) {
+        public RSessionInteraction(TaskCompletionSource<string> requestTcs, Task responseTask, string prompt, int maxLength, IReadOnlyList<IRContext> contexts) {
             _requestTcs = requestTcs;
             _responseTask = responseTask;
             Prompt = prompt;

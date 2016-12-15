@@ -54,8 +54,8 @@ namespace Microsoft.R.Host.UserProfile {
                         byte[] requestRaw = new byte[1024];
                         int bytesRead = 0;
 
-                        while (bytesRead == 0 && !ct.IsCancellationRequested) {
-                            bytesRead = await server.ReadAsync(requestRaw, 0, requestRaw.Length, ct);
+                        while (bytesRead == 0 && !cts.IsCancellationRequested) {
+                            bytesRead = await server.ReadAsync(requestRaw, 0, requestRaw.Length, cts.Token);
                         }
 
                         string json = Encoding.Unicode.GetString(requestRaw, 0, bytesRead);
@@ -67,8 +67,8 @@ namespace Microsoft.R.Host.UserProfile {
                         string jsonResp = JsonConvert.SerializeObject(result);
                         byte[] respData = Encoding.Unicode.GetBytes(jsonResp);
 
-                        await server.WriteAsync(respData, 0, respData.Length, ct);
-                        await server.FlushAsync(ct);
+                        await server.WriteAsync(respData, 0, respData.Length, cts.Token);
+                        await server.FlushAsync(cts.Token);
                     }
 
                     using (var cts = CancellationTokenSource.CreateLinkedTokenSource(ct)) {

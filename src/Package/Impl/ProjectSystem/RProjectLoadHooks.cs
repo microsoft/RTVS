@@ -131,13 +131,11 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             if (!_session.IsRemote) {
                 var rdataPath = Path.Combine(_projectDirectory, DefaultRDataName);
                 bool loadDefaultWorkspace = _coreShell.Services.FileSystem.FileExists(rdataPath) && await GetLoadDefaultWorkspace(rdataPath);
-                using (var evaluation = await _session.BeginEvaluationAsync()) {
-                    if (loadDefaultWorkspace) {
-                        await evaluation.LoadWorkspaceAsync(rdataPath);
-                    }
 
-                    await evaluation.SetWorkingDirectoryAsync(_projectDirectory);
+                if (loadDefaultWorkspace) {
+                    await _session.LoadWorkspaceAsync(rdataPath);
                 }
+                await _session.SetWorkingDirectoryAsync(_projectDirectory);
 
                 _toolsSettings.WorkingDirectory = _projectDirectory;
             }
@@ -202,12 +200,10 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             }
 
             Task.Run(async () => {
-                using (var evaluation = await _session.BeginEvaluationAsync()) {
-                    if (saveDefaultWorkspace) {
-                        await evaluation.SaveWorkspaceAsync(rdataPath);
-                    }
-                    await evaluation.SetDefaultWorkingDirectoryAsync();
+                if (saveDefaultWorkspace) {
+                    await _session.SaveWorkspaceAsync(rdataPath);
                 }
+                await _session.SetDefaultWorkingDirectoryAsync();
             }).SilenceException<RException>().DoNotWait();
         }
 
