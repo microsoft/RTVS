@@ -25,8 +25,8 @@ namespace Microsoft.Common.Core.Shell {
 
         [Conditional("TRACE")]
         public static void AssertIsOnMainThread(this ICoreShell coreShell, [CallerMemberName] string memberName = "", [CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0) {
-            if (coreShell.MainThread != Thread.CurrentThread) {
-                Trace.Fail(FormattableString.Invariant($"{memberName} at {sourceFilePath}:{sourceLineNumber} was incorrectly called from a background thread."));
+            if (coreShell.MainThread.ManagedThreadId != Thread.CurrentThread.ManagedThreadId) {
+                Debug.Fail(FormattableString.Invariant($"{memberName} at {sourceFilePath}:{sourceLineNumber} was incorrectly called from a background thread."));
             }
         }
     }
