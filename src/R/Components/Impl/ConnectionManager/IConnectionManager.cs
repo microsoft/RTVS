@@ -11,6 +11,7 @@ namespace Microsoft.R.Components.ConnectionManager {
         IConnectionManagerVisualComponent GetOrCreateVisualComponent(int id = 0);
 
         bool IsConnected { get; }
+        bool IsRunning { get; }
         IConnection ActiveConnection { get; }
 
         /// <summary>
@@ -19,7 +20,7 @@ namespace Microsoft.R.Components.ConnectionManager {
         ReadOnlyCollection<IConnection> RecentConnections { get; }
 
         event EventHandler RecentConnectionsChanged;
-        event EventHandler<ConnectionEventArgs> ConnectionStateChanged;
+        event EventHandler ConnectionStateChanged;
 
         IConnection AddOrUpdateConnection(string name, string path, string rCommandLineArguments, bool isUserCreated);
         IConnection GetOrAddConnection(string name, string path, string rCommandLineArguments, bool isUserCreated);

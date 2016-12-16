@@ -14,9 +14,11 @@ namespace Microsoft.R.Host.Client {
         event EventHandler BrokerChanged;
         event EventHandler<BrokerStateChangedEventArgs> BrokerStateChanged;
         event EventHandler<HostLoadChangedEventArgs> HostLoadChanged;
+        event EventHandler SessionStateChanged;
 
         bool HasBroker { get; }
         bool IsConnected { get; }
+        bool IsRunning { get; }
         IBrokerClient Broker { get; }
 
         IRSession GetOrCreate(Guid guid);

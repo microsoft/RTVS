@@ -22,6 +22,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private bool _isActive;
         private bool _isEditing;
         private bool _isConnected;
+        private bool _isRunning;
         private CancellationTokenSource _testingConnectionCts;
         private bool _isTestConnectionSucceeded;
         private bool _isRemote;
@@ -121,7 +122,22 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public bool IsConnected {
             get { return _isConnected; }
-            set { SetProperty(ref _isConnected, value); }
+            set {
+                SetProperty(ref _isConnected, value);
+                if (!value) {
+                    IsRunning = false;
+                }
+            }
+        }
+
+        public bool IsRunning {
+            get { return _isRunning; }
+            set {
+                SetProperty(ref _isRunning, value);
+                if (value) {
+                    IsConnected = true;
+                }
+            }
         }
 
         public CancellationTokenSource TestingConnectionCts {

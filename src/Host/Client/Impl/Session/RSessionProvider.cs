@@ -26,6 +26,8 @@ namespace Microsoft.R.Host.Client.Session {
         private readonly IConsole _console;
 
         private volatile bool _isConnected;
+        private volatile bool _isRunning;
+
         private int _sessionCounter;
         private Task _updateHostLoadLoopTask;
         private HostLoad _hostLoad;
@@ -43,6 +45,16 @@ namespace Microsoft.R.Host.Client.Session {
             }
         }
 
+        public bool IsRunning {
+            get { return _isRunning; }
+            set {
+                if (_isRunning != value) {
+                    _isRunning = value;
+                    Task.Run(() => SessionStateChanged?.Invoke(this, EventArgs.Empty)).DoNotWait();
+                }
+            }
+        }
+
         public IBrokerClient Broker => _brokerProxy;
 
         public event EventHandler BrokerChanging;
@@ -50,6 +62,7 @@ namespace Microsoft.R.Host.Client.Session {
         public event EventHandler BrokerChanged;
         public event EventHandler<BrokerStateChangedEventArgs> BrokerStateChanged;
         public event EventHandler<HostLoadChangedEventArgs> HostLoadChanged;
+        public event EventHandler SessionStateChanged;
 
         public RSessionProvider(ICoreServices services, IConsole callback = null) {
             _console = callback ?? new NullConsole();
@@ -87,6 +100,7 @@ namespace Microsoft.R.Host.Client.Session {
         private RSession CreateRSession(Guid guid) {
             var session = new RSession(Interlocked.Increment(ref _sessionCounter), Broker, _connectArwl.CreateExclusiveReaderLock(), () => DisposeSession(guid));
             session.Connected += RSessionOnConnected;
+            session.Disconnected += RSessionOnDisconnected;
             return session;
         }
 
@@ -94,6 +108,7 @@ namespace Microsoft.R.Host.Client.Session {
             RSession session;
             if (_sessions.TryRemove(guid, out session)) {
                 session.Connected -= RSessionOnConnected;
+                session.Disconnected -= RSessionOnDisconnected;
             }
         }
 
@@ -101,7 +116,10 @@ namespace Microsoft.R.Host.Client.Session {
             if (_hostLoad == null) {
                 UpdateHostLoadAsync().DoNotWait();
             }
+            IsRunning = true;
         }
+
+        private void RSessionOnDisconnected(object sender, EventArgs e) => IsRunning = false;
 
         private void OnHostLoadChanged(HostLoad hostLoad) {
             Interlocked.Exchange(ref _hostLoad, hostLoad);
