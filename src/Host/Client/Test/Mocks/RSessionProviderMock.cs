@@ -15,7 +15,6 @@ namespace Microsoft.R.Host.Client.Mocks {
         public void Dispose() { }
         public bool HasBroker { get; } = true;
         public bool IsConnected { get; } = true;
-        public bool IsRunning { get; } = true;
         public IBrokerClient Broker { get; } = new NullBrokerClient();
 
         public IRSession GetOrCreate(Guid guid) {
@@ -39,7 +38,6 @@ namespace Microsoft.R.Host.Client.Mocks {
         public event EventHandler BrokerChanged;
         public event EventHandler<BrokerStateChangedEventArgs> BrokerStateChanged;
         public event EventHandler<HostLoadChangedEventArgs> HostLoadChanged;
-        public event EventHandler SessionStateChanged;
 #pragma warning restore
     }
 }

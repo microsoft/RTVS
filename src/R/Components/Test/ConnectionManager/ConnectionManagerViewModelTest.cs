@@ -4,10 +4,12 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.ConnectionManager.Implementation.ViewModel;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
@@ -39,9 +41,15 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
             var connection = _cmvm.LocalConnections.First();
             _cmvm.Connect(connection, true);
 
-            var conns = _cmvm.LocalConnections.Where(c => c.Name == connection.Name);
-            conns.Should().ContainSingle();
-            var conn = conns.First();
+            _cmvm.LocalConnections.Should().ContainSingle(c => c.Name == connection.Name)
+                .Which.IsConnected.Should().BeTrue();
+        }
+
+        [Test(ThreadType.UI)]
+        public void Properties() {
+            var conn = _cmvm.LocalConnections.First();
+            _cmvm.Connect(conn, true);
+
             conn.IsConnected.Should().BeTrue();
             conn.IsRunning.Should().BeTrue();
 
@@ -52,6 +60,29 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
             conn.IsConnected = false;
             conn.IsRunning.Should().BeFalse();
         }
+
+        [Test(ThreadType.UI)]
+        public async Task StopInteractiveWindowSession() {
+            var connection = _cmvm.LocalConnections.First();
+            _cmvm.Connect(connection, true);
+            await _workflow.RSession.StopHostAsync().Should().BeCompletedAsync();
+
+            var conn = _cmvm.LocalConnections.Should().ContainSingle(c => c.Name == connection.Name).Which;
+            conn.IsConnected.Should().BeTrue();
+            conn.IsRunning.Should().BeFalse();
+        }
+
+        [Test(ThreadType.UI)]
+        public async Task ResetInteractiveWindow() {
+            var connection = _cmvm.LocalConnections.First();
+            _cmvm.Connect(connection, true);
+            await _workflow.Operations.ResetAsync().Should().BeCompletedAsync();
+
+            var conn = _cmvm.LocalConnections.Should().ContainSingle(c => c.Name == connection.Name).Which;
+            conn.IsConnected.Should().BeTrue();
+            conn.IsRunning.Should().BeTrue();
+        }
+
 
         [CompositeTest(ThreadType.UI)]
         [InlineData(true)]

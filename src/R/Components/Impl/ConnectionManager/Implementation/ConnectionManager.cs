@@ -60,11 +60,14 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 .Add(_statusBarViewModel)
                 .Add(_hostLoadIndicatorViewModel)
                 .Add(() => _sessionProvider.BrokerStateChanged -= BrokerStateChanged)
-                .Add(() => _sessionProvider.SessionStateChanged -= SessionStateChanged)
+                .Add(() => _interactiveWorkflow.RSession.Connected -= SessionConnected)
+                .Add(() => _interactiveWorkflow.RSession.Disconnected -= SessionDisconnected)
                 .Add(() => _interactiveWorkflow.ActiveWindowChanged -= ActiveWindowChanged);
 
             _sessionProvider.BrokerStateChanged += BrokerStateChanged;
-            _sessionProvider.SessionStateChanged += SessionStateChanged;
+
+            _interactiveWorkflow.RSession.Connected += SessionConnected;
+            _interactiveWorkflow.RSession.Disconnected += SessionDisconnected;
             _interactiveWorkflow.ActiveWindowChanged += ActiveWindowChanged;
 
             // Get initial values
@@ -281,13 +284,17 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
         private void BrokerStateChanged(object sender, BrokerStateChangedEventArgs eventArgs) {
             IsConnected = _sessionProvider.IsConnected;
-            IsRunning = _sessionProvider.IsRunning;
             UpdateActiveConnection();
             ConnectionStateChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        private void SessionStateChanged(object sender, EventArgs args) {
-            IsRunning = _sessionProvider.IsRunning;
+        private void SessionConnected(object sender, EventArgs args) {
+            IsRunning = IsConnected;
+            ConnectionStateChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void SessionDisconnected(object sender, EventArgs args) {
+            IsRunning = false;
             ConnectionStateChanged?.Invoke(this, EventArgs.Empty);
         }
 
