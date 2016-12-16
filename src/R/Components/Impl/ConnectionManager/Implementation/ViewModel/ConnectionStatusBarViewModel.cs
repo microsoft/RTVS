@@ -8,12 +8,11 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager.ViewModel;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
-    internal class ConnectionStatusBarViewModel : ConnectionStatusBase, IConnectionStatusBarViewModel {
+    internal class ConnectionStatusBarViewModel : ConnectionStatusBaseViewModel, IConnectionStatusBarViewModel {
         private string _selectedConnection;
 
         public ConnectionStatusBarViewModel(IConnectionManager connectionManager, ICoreShell shell): 
             base(connectionManager, shell) {
-
             SelectedConnection = connectionManager.ActiveConnection?.Name;
         }
 

@@ -17,7 +17,7 @@ using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Interpreters;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
-    internal sealed class ConnectionManagerViewModel : ConnectionStatusBase, IConnectionManagerViewModel {
+    internal sealed class ConnectionManagerViewModel : ConnectionStatusBaseViewModel, IConnectionManagerViewModel {
         private readonly BatchObservableCollection<IConnectionViewModel> _localConnections;
         private readonly BatchObservableCollection<IConnectionViewModel> _remoteConnections;
         private IConnectionViewModel _editedConnection;

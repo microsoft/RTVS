@@ -7,7 +7,7 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Wpf;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
-    internal abstract class ConnectionStatusBase: BindableBase, IDisposable {
+    internal abstract class ConnectionStatusBaseViewModel: BindableBase, IDisposable {
         private readonly DisposableBag _disposableBag;
 
         private bool _isRemote;
@@ -18,7 +18,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         protected ICoreShell Shell { get; }
         protected IConnectionManager ConnectionManager { get; }
 
-        public ConnectionStatusBase(IConnectionManager connectionManager, ICoreShell shell) {
+        public ConnectionStatusBaseViewModel(IConnectionManager connectionManager, ICoreShell shell) {
             ConnectionManager = connectionManager;
             Shell = shell;
 
@@ -43,7 +43,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private void ConnectionStateChanged(object sender, EventArgs e) {
             Shell.DispatchOnUIThread(() => {
                 IsConnected = ConnectionManager.IsConnected;
-                IsRunning = ConnectionManager.IsRunning;
+                IsRunning = ConnectionManager.IsConnected && ConnectionManager.IsRunning;
                 IsActive = ConnectionManager.ActiveConnection != null;
                 IsRemote = ConnectionManager.ActiveConnection?.IsRemote ?? false;
 

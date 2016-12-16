@@ -94,7 +94,7 @@
     <Compile Include="ConnectionManager\Implementation\ConnectionManagerVisualComponent.cs" />
     <Compile Include="ConnectionManager\Implementation\ViewModel\ConnectionManagerViewModel.cs" />
     <Compile Include="ConnectionManager\Implementation\ViewModel\ConnectionStatusBarViewModel.cs" />
-    <Compile Include="ConnectionManager\Implementation\ViewModel\ConnectionStatusBase.cs" />
+    <Compile Include="ConnectionManager\Implementation\ViewModel\ConnectionStatusBaseViewModel.cs" />
     <Compile Include="ConnectionManager\Implementation\ViewModel\ConnectionViewModel.cs" />
     <Compile Include="ConnectionManager\Implementation\View\ConnectionManagerControl.xaml.cs">
       <DependentUpon>ConnectionManagerControl.xaml</DependentUpon>
