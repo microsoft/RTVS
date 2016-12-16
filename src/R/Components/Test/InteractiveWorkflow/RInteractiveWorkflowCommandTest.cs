@@ -51,8 +51,6 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
         public async Task SourceRScriptTest(bool echo, string encoding) {
             await _workflow.RSessions.TrySwitchBrokerAsync(nameof(RInteractiveWorkflowCommandTest));
             await _workflow.RSession.EnsureHostStartedAsync(new RHostStartupInfo {
-                Name = _testMethod.Name,
-                RHostCommandLineArguments = _settings.LastActiveConnection.RCommandLineArguments,
                 CranMirrorName = _settings.CranMirror,
                 CodePage = _settings.RCodePage
             }, null, 50000);

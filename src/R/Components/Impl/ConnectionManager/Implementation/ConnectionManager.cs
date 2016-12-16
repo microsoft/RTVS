@@ -113,6 +113,10 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         public bool TryRemove(string name) {
+            if (name.Equals(ActiveConnection?.Name)) {
+                return false;
+            }
+
             IConnection connection;
             var isRemoved = _connections.TryRemove(name, out connection);
             if (isRemoved) {
@@ -123,7 +127,18 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                     _securityService.DeleteUserCredentials(connection.Uri.ToCredentialAuthority());
                 }
             }
+
             return isRemoved;
+        }
+
+        public async Task RemoveAsync(string connectionName, CancellationToken cancellationToken = default(CancellationToken)) {
+            if (connectionName.Equals(ActiveConnection?.Name)) {
+                await _sessionProvider.RemoveBrokerAsync(cancellationToken);
+                ActiveConnection = null;
+                SaveActiveConnectionToSettings();
+            }
+
+            TryRemove(connectionName);
         }
 
         public Task TestConnectionAsync(IConnectionInfo connection, CancellationToken cancellationToken = default(CancellationToken)) {
@@ -133,12 +148,12 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         public async Task ReconnectAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             var connection = ActiveConnection;
             if (connection != null && !_sessionProvider.IsConnected) {
-                await _sessionProvider.TrySwitchBrokerAsync(connection.Name, connection.Path, cancellationToken);
+                await _sessionProvider.TrySwitchBrokerAsync(connection.Name, connection.Path, connection.RCommandLineArguments, cancellationToken);
             }
         }
 
         public async Task ConnectAsync(IConnectionInfo connection, CancellationToken cancellationToken = default(CancellationToken)) {
-            if (ActiveConnection == null || !ActiveConnection.Path.PathEquals(connection.Path) || string.IsNullOrEmpty(_sessionProvider.Broker.Name)) {
+            if (!ConnectionInfo.AreIdentical(connection, ActiveConnection) || !_sessionProvider.HasBroker) {
                 if (await TrySwitchBrokerAsync(connection, cancellationToken)) {
                     await _shell.SwitchToMainThreadAsync(cancellationToken);
                     var interactiveWindow = await _interactiveWorkflow.GetOrCreateVisualComponentAsync();
@@ -167,7 +182,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         private async Task<bool> TrySwitchBrokerAsync(IConnection connection, CancellationToken cancellationToken = default(CancellationToken)) {
-            var brokerSwitched = await _sessionProvider.TrySwitchBrokerAsync(connection.Name, connection.Path, cancellationToken);
+            var brokerSwitched = await _sessionProvider.TrySwitchBrokerAsync(connection.Name, connection.Path, connection.RCommandLineArguments, cancellationToken);
             if (brokerSwitched) {
                 ActiveConnection = connection;
                 SaveActiveConnectionToSettings();

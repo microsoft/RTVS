@@ -11,6 +11,7 @@ namespace Microsoft.R.Host.Client.Host {
         string Name { get; }
         bool IsRemote { get; }
         Uri Uri { get; }
+        string RCommandLineArguments { get; }
         bool IsVerified { get; }
 
         Task<RHost> ConnectAsync(BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken));

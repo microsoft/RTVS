@@ -12,6 +12,7 @@ namespace Microsoft.R.Host.Client.Host {
         private static Task<RHost> Result { get; } = TaskUtilities.CreateCanceled<RHost>(
             new RHostDisconnectedException(Resources.RHostDisconnected));
 
+        public string RCommandLineArguments { get; } = string.Empty;
         public Uri Uri { get; } = new Uri("http://localhost");
         public string Name { get; } = string.Empty;
         public bool IsRemote { get; } = true;

@@ -63,9 +63,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         public async Task RemoteFiles() {
             using (var workflow = UIThreadHelper.Instance.Invoke(() => _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate())) {
                 await workflow.RSessions.TrySwitchBrokerAsync(nameof(FileCompletionProviderTest));
-                await workflow.RSession.EnsureHostStartedAsync(new RHostStartupInfo {
-                    Name = nameof(RemoteFiles)
-                }, null, 50000);
+                await workflow.RSession.EnsureHostStartedAsync(new RHostStartupInfo(), null, 50000);
 
                 var provider = new FilesCompletionProvider(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), workflow, _imagesProvider, _glyphService, forceR: true);
                 var entries = provider.GetEntries(null);

@@ -20,21 +20,17 @@ using Xunit;
 namespace Microsoft.R.Host.Client.Test.RtvsPackage {
     [ExcludeFromCodeCoverage]
     public class BlobsTest : IAsyncLifetime {
-        private readonly MethodInfo _testMethod;
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _session;
 
         public BlobsTest(TestMethodFixture testMethod) {
-            _testMethod = testMethod.MethodInfo;
             _sessionProvider = new RSessionProvider(TestCoreServices.CreateReal());
-            _session = _sessionProvider.GetOrCreate(Guid.NewGuid());
+            _session = _sessionProvider.GetOrCreate(testMethod.MethodInfo.Name);
         }
 
         public async Task InitializeAsync() {
             await _sessionProvider.TrySwitchBrokerAsync(nameof(BlobsTest));
-            await _session.StartHostAsync(new RHostStartupInfo {
-                Name = _testMethod.Name
-            }, new RHostClientTestApp(), 50000);
+            await _session.StartHostAsync(new RHostStartupInfo(), new RHostClientTestApp(), 50000);
         }
 
         public async Task DisposeAsync() {

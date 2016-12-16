@@ -67,7 +67,7 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
         }
 
         public void Dispose() {
-            StopHostAsync().Wait(5000);
+            StopHostAsync(true).Wait(5000);
             Disposed?.Invoke(this, EventArgs.Empty);
         }
 
@@ -96,7 +96,7 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
             return Task.CompletedTask;
         }
 
-        public Task StopHostAsync(CancellationToken cancellationToken = default(CancellationToken)) {
+        public Task StopHostAsync(bool waitForShutdown, CancellationToken cancellationToken = default(CancellationToken)) {
             IsHostRunning = false;
             Disconnected?.Invoke(this, EventArgs.Empty);
             return Task.CompletedTask;

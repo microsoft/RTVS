@@ -17,7 +17,7 @@ using Microsoft.R.Interpreters;
 
 namespace Microsoft.R.Host.Client.Session {
     public class RSessionProvider : IRSessionProvider {
-        private readonly ConcurrentDictionary<Guid, RSession> _sessions = new ConcurrentDictionary<Guid, RSession>();
+        private readonly ConcurrentDictionary<string, RSession> _sessions = new ConcurrentDictionary<string, RSession>();
         private readonly DisposeToken _disposeToken = DisposeToken.Create<RSessionProvider>();
         private readonly AsyncReaderWriterLock _connectArwl = new AsyncReaderWriterLock();
 
@@ -57,9 +57,9 @@ namespace Microsoft.R.Host.Client.Session {
             _services = services;
         }
 
-        public IRSession GetOrCreate(Guid guid) {
+        public IRSession GetOrCreate(string sessionId) {
             _disposeToken.ThrowIfDisposed();
-            return _sessions.GetOrAdd(guid, id => CreateRSession(guid));
+            return _sessions.GetOrAdd(sessionId, CreateRSession);
         }
 
         public IEnumerable<IRSession> GetSessions() {
@@ -72,7 +72,7 @@ namespace Microsoft.R.Host.Client.Session {
             }
 
             var sessions = GetSessions().ToList();
-            var stopHostTasks = sessions.Select(session => session.StopHostAsync());
+            var stopHostTasks = sessions.Select(session => session.StopHostAsync(false));
             try {
                 _services.Tasks.Wait(Task.WhenAll(stopHostTasks));
             } catch (Exception ex) when (!ex.IsCriticalException()) { }
@@ -84,15 +84,15 @@ namespace Microsoft.R.Host.Client.Session {
             Broker.Dispose();
         }
 
-        private RSession CreateRSession(Guid guid) {
-            var session = new RSession(Interlocked.Increment(ref _sessionCounter), Broker, _connectArwl.CreateExclusiveReaderLock(), () => DisposeSession(guid));
+        private RSession CreateRSession(string sessionId) {
+            var session = new RSession(Interlocked.Increment(ref _sessionCounter), sessionId, Broker, _connectArwl.CreateExclusiveReaderLock(), () => DisposeSession(sessionId));
             session.Connected += RSessionOnConnected;
             return session;
         }
 
-        private void DisposeSession(Guid guid) {
+        private void DisposeSession(string sessionId) {
             RSession session;
-            if (_sessions.TryRemove(guid, out session)) {
+            if (_sessions.TryRemove(sessionId, out session)) {
                 session.Connected -= RSessionOnConnected;
             }
         }
@@ -115,13 +115,13 @@ namespace Microsoft.R.Host.Client.Session {
             Task.Run(() => BrokerChanged?.Invoke(this, new EventArgs())).DoNotWait();
         }
 
-        public async Task TestBrokerConnectionAsync(string name, string path, CancellationToken cancellationToken = default(CancellationToken)) {
+        public async Task TestBrokerConnectionAsync(string name, string path = null, CancellationToken cancellationToken = default(CancellationToken)) {
             using (_disposeToken.Link(ref cancellationToken)) {
                 await TaskUtilities.SwitchToBackgroundThread();
 
                 // Create random name to avoid collision with actual broker client
                 name = name + Guid.NewGuid().ToString("N");
-                var brokerClient = CreateBrokerClient(name, path, cancellationToken);
+                var brokerClient = CreateBrokerClient(name, path, null, cancellationToken);
                 if (brokerClient == null) {
                     throw new ArgumentException(nameof(path));
                 }
@@ -145,11 +145,25 @@ namespace Microsoft.R.Host.Client.Session {
             }
         }
 
-        public async Task<bool> TrySwitchBrokerAsync(string name, string path = null, CancellationToken cancellationToken = default(CancellationToken)) {
+        public async Task RemoveBrokerAsync(CancellationToken cancellationToken = default(CancellationToken)) {
+            using (_disposeToken.Link(ref cancellationToken)) {
+                await TaskUtilities.SwitchToBackgroundThread();
+                using (await _connectArwl.WriterLockAsync(cancellationToken)) {
+                    BrokerChanging?.Invoke(this, EventArgs.Empty);
+
+                    await StopSessionsAsync(_sessions.Values, false, cancellationToken);
+                    _brokerProxy.Set(new NullBrokerClient());
+
+                    OnBrokerChanged();
+                }
+            }
+        }
+
+        public async Task<bool> TrySwitchBrokerAsync(string name, string path = null, string rCommandLineArguments = null, CancellationToken cancellationToken = default(CancellationToken)) {
             using (_disposeToken.Link(ref cancellationToken)) {
                 await TaskUtilities.SwitchToBackgroundThread();
 
-                var brokerClient = CreateBrokerClient(name, path, cancellationToken);
+                var brokerClient = CreateBrokerClient(name, path, rCommandLineArguments, cancellationToken);
                 if (brokerClient == null) {
                     return false;
                 }
@@ -164,7 +178,8 @@ namespace Microsoft.R.Host.Client.Session {
                 }
 
                 if (brokerClient.Name.EqualsOrdinal(_brokerProxy.Name) &&
-                    brokerClient.Uri.AbsoluteUri.PathEquals(_brokerProxy.Uri.AbsoluteUri)) {
+                    brokerClient.Uri.AbsoluteUri.PathEquals(_brokerProxy.Uri.AbsoluteUri) &&
+                    brokerClient.RCommandLineArguments.EqualsIgnoreCase(_brokerProxy.RCommandLineArguments)) {
 
                     brokerClient.Dispose();
 
@@ -235,7 +250,7 @@ namespace Microsoft.R.Host.Client.Session {
             } else {
                 // Ping isn't enough here - need a "full" test with RHost
                 await TestBrokerConnectionWithRHost(_brokerProxy, cancellationToken);
-                await StopSessionsAsync(sessionsToStop, cancellationToken);
+                await StopSessionsAsync(sessionsToStop, true, cancellationToken);
             }
         }
 
@@ -243,7 +258,7 @@ namespace Microsoft.R.Host.Client.Session {
             // All sessions should participate in switch. If any of it didn't start, cancel the rest.
             try {
                 await ConnectToNewBrokerAsync(transactions, cancellationToken);
-                await Task.WhenAll(CompleteSwitchingBrokerAsync(transactions, cancellationToken), StopSessionsAsync(sessionsToStop, cancellationToken));
+                await Task.WhenAll(CompleteSwitchingBrokerAsync(transactions, cancellationToken), StopSessionsAsync(sessionsToStop, true, cancellationToken));
             } finally {
                 foreach (var transaction in transactions) {
                     transaction.Dispose();
@@ -251,8 +266,8 @@ namespace Microsoft.R.Host.Client.Session {
             }
         }
 
-        private Task StopSessionsAsync(IEnumerable<RSession> sessions, CancellationToken cancellationToken) {
-            var stopSessionsTask = WhenAllCancelOnFailure(sessions, (s, ct) => s.StopHostAsync(cancellationToken), cancellationToken);
+        private Task StopSessionsAsync(IEnumerable<RSession> sessions, bool waitForShutdown, CancellationToken cancellationToken) {
+            var stopSessionsTask = WhenAllCancelOnFailure(sessions, (s, ct) => s.StopHostAsync(waitForShutdown, cancellationToken), cancellationToken);
             IsConnected = false;
             return stopSessionsTask;
         }
@@ -324,7 +339,7 @@ namespace Microsoft.R.Host.Client.Session {
             }, cancellationToken);
         }
 
-        private IBrokerClient CreateBrokerClient(string name, string path, CancellationToken cancellationToken) {
+        private IBrokerClient CreateBrokerClient(string name, string path, string rCommandLineArguments, CancellationToken cancellationToken) {
             path = path ?? new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath;
 
             Uri uri;
@@ -333,10 +348,10 @@ namespace Microsoft.R.Host.Client.Session {
             }
 
             if (uri.IsFile) {
-                return new LocalBrokerClient(name, uri.LocalPath, _services, _console);
+                return new LocalBrokerClient(name, uri.LocalPath, rCommandLineArguments, _services, _console);
             }
 
-            return new RemoteBrokerClient(name, uri, _services, _console, cancellationToken);
+            return new RemoteBrokerClient(name, uri, rCommandLineArguments, _services, _console, cancellationToken);
         }
 
         private async Task UpdateHostLoadLoopAsync() {

@@ -7,14 +7,14 @@ namespace Microsoft.R.Host.Client.Host {
 
         public string Name { get; }
         public IRCallbacks Callbacks { get; }
-        public string RCommandLineArguments { get; }
         public int Timeout { get; }
+        public bool UseRHostCommandLineArguments { get; }
         public bool PreserveSessionData { get; }
 
-        public BrokerConnectionInfo(string name, IRCallbacks callbacks, string rCommandLineArguments = null, int timeout = 3000, bool preserveSessionData = false) {
+        public BrokerConnectionInfo(string name, IRCallbacks callbacks, bool useRHostCommandLineArguments = false, int timeout = 3000, bool preserveSessionData = false) {
             Name = name;
             Callbacks = callbacks ?? _nullCallbacks;
-            RCommandLineArguments = rCommandLineArguments;
+            UseRHostCommandLineArguments = useRHostCommandLineArguments;
             Timeout = timeout;
             PreserveSessionData = preserveSessionData;
         }

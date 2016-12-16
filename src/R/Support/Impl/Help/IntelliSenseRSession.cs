@@ -69,18 +69,17 @@ namespace Microsoft.R.Support.Help {
         public async Task CreateSessionAsync() {
             var token = await _lock.ResetAsync();
             try {
-                if (string.IsNullOrEmpty(_sessionProvider.Broker.Name)) {
+                if (!_sessionProvider.HasBroker) {
                     throw new RHostDisconnectedException();
                 }
 
                 if (Session == null) {
-                    Session = _sessionProvider.GetOrCreate(SessionGuids.IntellisenseRSessionGuid);
+                    Session = _sessionProvider.GetOrCreate(SessionNames.Intellisense);
                 }
 
                 if (!Session.IsHostRunning) {
                     int timeout = _coreShell.IsUnitTestEnvironment ? 10000 : 3000;
                     await Session.EnsureHostStartedAsync(new RHostStartupInfo {
-                        Name = "IntelliSense",
                         CranMirrorName = RToolsSettings.Current.CranMirror,
                         CodePage = RToolsSettings.Current.RCodePage
                     }, null, timeout);

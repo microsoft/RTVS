@@ -41,9 +41,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
             await _workflow.RSessions.TrySwitchBrokerAsync(nameof(RPackageManagerViewModelTest));
 
             await _workflow.RSession.EnsureHostStartedAsync(new RHostStartupInfo {
-                Name = _testMethod.Name,
                 CranMirrorName = settings.CranMirror,
-                RHostCommandLineArguments = settings.LastActiveConnection.RCommandLineArguments,
                 CodePage = settings.RCodePage,
             }, null, 50000);
 

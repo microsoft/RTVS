@@ -35,16 +35,14 @@ namespace Microsoft.R.Host.Client.Test.Script {
         public async Task InitializeAsync(IRSessionCallback clientApp = null) {
             _clientApp = clientApp ?? _clientApp;
 
-            Session = SessionProvider.GetOrCreate(SessionGuids.InteractiveWindowRSessionGuid);
+            Session = SessionProvider.GetOrCreate(SessionNames.InteractiveWindow);
             if (Session.IsHostRunning) {
                 await Session.StopHostAsync();
             }
 
             await Session.StartHostAsync(new RHostStartupInfo {
-                Name = "RHostScript",
                 CranMirrorName = RToolsSettings.Current.CranMirror,
-                CodePage = RToolsSettings.Current.RCodePage,
-                RHostCommandLineArguments = RToolsSettings.Current.LastActiveConnection.RCommandLineArguments
+                CodePage = RToolsSettings.Current.RCodePage
             }, _clientApp ?? new RHostClientTestApp(), 50000);
         }
 

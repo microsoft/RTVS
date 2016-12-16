@@ -19,7 +19,7 @@ namespace Microsoft.R.Host.Client {
         bool IsConnected { get; }
         IBrokerClient Broker { get; }
 
-        IRSession GetOrCreate(Guid guid);
+        IRSession GetOrCreate(string sessionId);
         IEnumerable<IRSession> GetSessions();
 
         /// <summary>
@@ -35,7 +35,14 @@ namespace Microsoft.R.Host.Client {
         /// </summary>
         /// <param name="name">Name of the broker. Will be displayed in REPL.</param>
         /// <param name="path">Either a local path to the R binary or a URL to the broker.</param>
+        /// <param name="rCommandLineArguments">Command-line arguments for R.</param>
         /// <param name="cancellationToken"></param>
-        Task<bool> TrySwitchBrokerAsync(string name, string path = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<bool> TrySwitchBrokerAsync(string name, string path = null, string rCommandLineArguments = null, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Removes current broker, switching all sessions to the disconnected state
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        Task RemoveBrokerAsync(CancellationToken cancellationToken = default(CancellationToken));
     }
 }

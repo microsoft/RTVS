@@ -3,12 +3,11 @@
 
 namespace Microsoft.R.Host.Client {
     public class RHostStartupInfo {
-        public string Name { get; set; }
-        public string RHostCommandLineArguments { get; set; }
         public string CranMirrorName { get; set; }
         public string WorkingDirectory { get; set; }
         public int CodePage { get; set; }
         public int TerminalWidth { get; set; } = 80;
         public bool EnableAutosave { get; set; }
+        public bool UseRHostCommandLineArguments { get; set; }
     }
 }

@@ -23,7 +23,21 @@ namespace Microsoft.R.Components.ConnectionManager {
 
         IConnection AddOrUpdateConnection(string name, string path, string rCommandLineArguments, bool isUserCreated);
         IConnection GetOrAddConnection(string name, string path, string rCommandLineArguments, bool isUserCreated);
+
+        /// <summary>
+        /// Tries to remove connection.
+        /// </summary>
+        /// <param name="name">Name of the connection</param>
+        /// <returns>True if connection is actually removed by this call. False if connection is removed already or if it is active connection.</returns>
         bool TryRemove(string name);
+
+        /// <summary>
+        /// Removes connection. If connection is active, disconnects all sessions from it.
+        /// </summary>
+        /// <param name="connectionName">Name of the connection</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task RemoveAsync(string connectionName, CancellationToken cancellationToken = default(CancellationToken));
 
         Task ConnectAsync(IConnectionInfo connection, CancellationToken cancellationToken = default(CancellationToken));
         Task ReconnectAsync(CancellationToken cancellationToken = default(CancellationToken));

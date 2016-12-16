@@ -26,6 +26,7 @@ namespace Microsoft.R.Host.Client.Host {
         public string Name => _broker.Name;
         public bool IsRemote => _broker.IsRemote;
         public Uri Uri => _broker.Uri;
+        public string RCommandLineArguments => _broker.RCommandLineArguments;
         public bool IsVerified => _broker.IsVerified;
         public bool HasBroker => !(_broker is NullBrokerClient);
 

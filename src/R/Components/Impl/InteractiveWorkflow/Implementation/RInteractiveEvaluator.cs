@@ -70,13 +70,12 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             try {
                 if (!Session.IsHostRunning) {
                     var startupInfo = new RHostStartupInfo {
-                        Name = "REPL",
-                        RHostCommandLineArguments = _connections.ActiveConnection?.RCommandLineArguments,
                         CranMirrorName = _settings.CranMirror,
                         CodePage = _settings.RCodePage,
                         WorkingDirectory = _settings.WorkingDirectory,
                         TerminalWidth = _terminalWidth,
-                        EnableAutosave = !isResetting
+                        EnableAutosave = !isResetting,
+                        UseRHostCommandLineArguments = true
                     };
 
                     await Session.EnsureHostStartedAsync(startupInfo, new RSessionCallback(CurrentWindow, Session, _settings, _coreShell, new FileSystem()));
@@ -98,7 +97,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             try {
                 if (Session.IsHostRunning) {
                     WriteErrorLine(Environment.NewLine + Resources.MicrosoftRHostStopping);
-                    await Session.StopHostAsync();
+                    await Session.StopHostAsync(true);
                 }
 
                 if (!initialize) {
@@ -282,7 +281,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         /// extra line breaks to the error message. Limits output to 2 line breaks per message.
         /// </summary>
         private string TrimExcessiveLineBreaks(string message) {
-            if (CurrentWindow.CurrentLanguageBuffer == null) {
+            if (CurrentWindow?.CurrentLanguageBuffer == null) {
                 return message.Trim();
             }
 

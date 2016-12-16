@@ -124,6 +124,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Connection &quot;{0}&quot; won&apos;t be switched to &quot;{1}&quot; because are identical..
+        /// </summary>
+        public static string ConnectionManager_ConnectionsAreIdentical {
+            get {
+                return ResourceManager.GetString("ConnectionManager_ConnectionsAreIdentical", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Connecting to &quot;{0}&quot;.
         /// </summary>
         public static string ConnectionManager_ConnectionToProgressBarMessage {
@@ -138,6 +147,15 @@ namespace Microsoft.R.Components {
         public static string ConnectionManager_ConnectTooltip {
             get {
                 return ResourceManager.GetString("ConnectionManager_ConnectTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Deleting &quot;{0}&quot;.
+        /// </summary>
+        public static string ConnectionManager_DeleteConnectionProgressBarMessage {
+            get {
+                return ResourceManager.GetString("ConnectionManager_DeleteConnectionProgressBarMessage", resourceCulture);
             }
         }
         
@@ -294,6 +312,19 @@ namespace Microsoft.R.Components {
         public static string ConnectionManager_RemoteConnectionsTooltip {
             get {
                 return ResourceManager.GetString("ConnectionManager_RemoteConnectionsTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to remove the &apos;{0}&apos; connection?
+        ///Deleting it will disconnect you from RHost, all unsaved data will be lost.
+        ///Deletion of the connection does not delete remote files.
+        ///If you want to delete them, you have to delete the profile first.
+        ///.
+        /// </summary>
+        public static string ConnectionManager_RemoveActiveConnectionConfirmation {
+            get {
+                return ResourceManager.GetString("ConnectionManager_RemoveActiveConnectionConfirmation", resourceCulture);
             }
         }
         

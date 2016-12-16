@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.Common.Core;
 
 namespace Microsoft.R.Components.ConnectionManager {
     public class ConnectionInfo : IConnectionInfo {
@@ -18,6 +19,31 @@ namespace Microsoft.R.Components.ConnectionManager {
             RCommandLineArguments = rCommandLineArguments;
             IsUserCreated = isUserCreated;
             LastUsed = lastUsed;
+        }
+
+        /// <summary>
+        /// Checks if two connection infos have equal path and command line arguments,
+        /// hence will create identical connection to the broker
+        /// </summary>
+        /// <returns>True if connections are identical</returns>
+        public static bool AreIdentical(IConnectionInfo connectionInfo1, IConnectionInfo connectionInfo2) {
+            if (connectionInfo1 == null && connectionInfo2 == null) {
+                return true;
+            }
+
+            if (connectionInfo1 != null && connectionInfo2 != null) {
+                if (!connectionInfo1.Path.PathEquals(connectionInfo2.Path)) {
+                    return false;
+                }
+
+                if (string.IsNullOrEmpty(connectionInfo1.RCommandLineArguments) && string.IsNullOrEmpty(connectionInfo2.RCommandLineArguments)) {
+                    return true;
+                }
+
+                return connectionInfo1.RCommandLineArguments.EqualsIgnoreCase(connectionInfo2.RCommandLineArguments);
+            }
+
+            return false;
         }
     }
 }
