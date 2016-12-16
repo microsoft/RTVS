@@ -39,8 +39,18 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
             var connection = _cmvm.LocalConnections.First();
             _cmvm.Connect(connection, true);
 
-            _cmvm.LocalConnections.Should().ContainSingle(c => c.Name == connection.Name)
-                .Which.IsConnected.Should().BeTrue();
+            var conns = _cmvm.LocalConnections.Where(c => c.Name == connection.Name);
+            conns.Should().ContainSingle();
+            var conn = conns.First();
+            conn.IsConnected.Should().BeTrue();
+            conn.IsRunning.Should().BeTrue();
+
+            conn.IsRunning = false;
+            conn.IsConnected.Should().BeTrue();
+
+            conn.IsRunning = true;
+            conn.IsConnected = false;
+            conn.IsRunning.Should().BeFalse();
         }
 
         [CompositeTest(ThreadType.UI)]
