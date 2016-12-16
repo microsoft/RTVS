@@ -79,10 +79,7 @@ namespace Microsoft.R.Support.Help {
 
                 if (!Session.IsHostRunning) {
                     int timeout = _coreShell.IsUnitTestEnvironment ? 10000 : 3000;
-                    await Session.EnsureHostStartedAsync(new RHostStartupInfo {
-                        CranMirrorName = RToolsSettings.Current.CranMirror,
-                        CodePage = RToolsSettings.Current.RCodePage
-                    }, null, timeout);
+                    await Session.EnsureHostStartedAsync(new RHostStartupInfo (RToolsSettings.Current.CranMirror, codePage: RToolsSettings.Current.RCodePage), null, timeout);
                 }
             } finally {
                 token.Set();

@@ -40,10 +40,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
             var settings = _exportProvider.GetExportedValue<IRSettings>();
             await _workflow.RSessions.TrySwitchBrokerAsync(nameof(RPackageManagerViewModelTest));
 
-            await _workflow.RSession.EnsureHostStartedAsync(new RHostStartupInfo {
-                CranMirrorName = settings.CranMirror,
-                CodePage = settings.RCodePage,
-            }, null, 50000);
+            await _workflow.RSession.EnsureHostStartedAsync(new RHostStartupInfo(settings.CranMirror, codePage: settings.RCodePage), null, 50000);
 
             await TestRepositories.SetLocalRepoAsync(_workflow.RSession, _testFiles);
             await TestLibraries.SetLocalLibraryAsync(_workflow.RSession, _testMethod, _testFiles);

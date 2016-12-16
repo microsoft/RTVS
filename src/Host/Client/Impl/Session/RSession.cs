@@ -99,6 +99,7 @@ namespace Microsoft.R.Host.Client.Session {
             _initializationLock = initializationLock;
             _stopHostLock = new BinaryAsyncLock(true);
             _hostStartedTcs = new TaskCompletionSourceEx<object>();
+            _startupInfo = new RHostStartupInfo();
         }
 
         private string GetDefaultPrompt(string requestedPrompt = null) {
@@ -241,7 +242,7 @@ namespace Microsoft.R.Host.Client.Session {
             TaskUtilities.AssertIsOnBackgroundThread();
 
             _callback = callback;
-            _startupInfo = startupInfo;
+            _startupInfo = startupInfo ?? new RHostStartupInfo();
             RHost host;
             try {
                 var connectionInfo = new BrokerConnectionInfo(Name, this, startupInfo.UseRHostCommandLineArguments, timeout);

@@ -69,15 +69,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         private async Task<ExecutionResult> InitializeAsync(bool isResetting) {
             try {
                 if (!Session.IsHostRunning) {
-                    var startupInfo = new RHostStartupInfo {
-                        CranMirrorName = _settings.CranMirror,
-                        CodePage = _settings.RCodePage,
-                        WorkingDirectory = _settings.WorkingDirectory,
-                        TerminalWidth = _terminalWidth,
-                        EnableAutosave = !isResetting,
-                        UseRHostCommandLineArguments = true
-                    };
-
+                    var startupInfo = new RHostStartupInfo (_settings.CranMirror, _settings.WorkingDirectory, _settings.RCodePage, _terminalWidth, !isResetting, true);
                     await Session.EnsureHostStartedAsync(startupInfo, new RSessionCallback(CurrentWindow, Session, _settings, _coreShell, new FileSystem()));
                 }
                 return ExecutionResult.Success;
