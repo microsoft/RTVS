@@ -26,7 +26,6 @@ namespace Microsoft.R.Host.Client.Session {
         private readonly IConsole _console;
 
         private volatile bool _isConnected;
-        private volatile bool _isRunning;
 
         private int _sessionCounter;
         private Task _updateHostLoadLoopTask;
