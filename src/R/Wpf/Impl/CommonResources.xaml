@@ -173,7 +173,7 @@
         </DrawingBrush.Drawing>
     </DrawingBrush>
 
-    <DrawingBrush x:Key="IconRLocalConnected">
+    <DrawingBrush x:Key="IconRLocalRunning">
         <DrawingBrush.Drawing>
             <DrawingGroup>
                 <DrawingGroup.Children>
@@ -197,6 +197,18 @@
         </DrawingBrush.Drawing>
     </DrawingBrush>
 
+    <DrawingBrush x:Key="IconRLocalConnected">
+        <DrawingBrush.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Children>
+                    <GeometryDrawing Brush="#FFFFCC0E" Geometry="{StaticResource GeometryCircle18}" />
+                    <GeometryDrawing Brush="#FF000000" Geometry="{StaticResource GeometryLocal}" />
+                    <GeometryDrawing Brush="#FFF6F6F6" Geometry="{StaticResource GeometryR}" />
+                </DrawingGroup.Children>
+            </DrawingGroup>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+
     <DrawingBrush x:Key="IconRCloudInactive">
         <DrawingBrush.Drawing>
             <DrawingGroup>
@@ -209,7 +221,7 @@
         </DrawingBrush.Drawing>
     </DrawingBrush>
 
-    <DrawingBrush x:Key="IconRCloudConnected">
+    <DrawingBrush x:Key="IconRCloudRunning">
         <DrawingBrush.Drawing>
             <DrawingGroup>
                 <DrawingGroup.Children>
@@ -226,6 +238,18 @@
             <DrawingGroup>
                 <DrawingGroup.Children>
                     <GeometryDrawing Brush="#FFA6270D" Geometry="{StaticResource GeometryCircle18}" />
+                    <GeometryDrawing Brush="#FF000000" Geometry="{StaticResource GeometryCloud}" />
+                    <GeometryDrawing Brush="#FFF6F6F6" Geometry="{StaticResource GeometryR}" />
+                </DrawingGroup.Children>
+            </DrawingGroup>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+
+    <DrawingBrush x:Key="IconRCloudConnected">
+        <DrawingBrush.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Children>
+                    <GeometryDrawing Brush="#FFFFCC0E" Geometry="{StaticResource GeometryCircle18}" />
                     <GeometryDrawing Brush="#FF000000" Geometry="{StaticResource GeometryCloud}" />
                     <GeometryDrawing Brush="#FFF6F6F6" Geometry="{StaticResource GeometryR}" />
                 </DrawingGroup.Children>
@@ -515,5 +539,94 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type Rectangle}" x:Key="ConnectionStyle">
+        <Style.Triggers>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding Path=IsRemote}" Value="True" />
+                    <Condition Binding="{Binding Path=IsRunning}" Value="True" />
+                    <Condition Binding="{Binding Path=IsConnected}" Value="True" />
+                    <Condition Binding="{Binding Path=IsActive}" Value="True" />
+                </MultiDataTrigger.Conditions>
+                <MultiDataTrigger.Setters>
+                    <Setter Property="Fill" Value="{StaticResource IconRCloudRunning}"/>
+                </MultiDataTrigger.Setters>
+            </MultiDataTrigger>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding Path=IsRemote}" Value="False" />
+                    <Condition Binding="{Binding Path=IsRunning}" Value="True" />
+                    <Condition Binding="{Binding Path=IsConnected}" Value="True" />
+                    <Condition Binding="{Binding Path=IsActive}" Value="True" />
+                </MultiDataTrigger.Conditions>
+                <MultiDataTrigger.Setters>
+                    <Setter Property="Fill" Value="{StaticResource IconRLocalRunning}"/>
+                </MultiDataTrigger.Setters>
+            </MultiDataTrigger>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding Path=IsRemote}" Value="True" />
+                    <Condition Binding="{Binding Path=IsRunning}" Value="False" />
+                    <Condition Binding="{Binding Path=IsConnected}" Value="True" />
+                    <Condition Binding="{Binding Path=IsActive}" Value="True" />
+                </MultiDataTrigger.Conditions>
+                <MultiDataTrigger.Setters>
+                    <Setter Property="Fill" Value="{StaticResource IconRCloudConnected}"/>
+                </MultiDataTrigger.Setters>
+            </MultiDataTrigger>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding Path=IsRemote}" Value="False" />
+                    <Condition Binding="{Binding Path=IsRunning}" Value="False" />
+                    <Condition Binding="{Binding Path=IsConnected}" Value="True" />
+                    <Condition Binding="{Binding Path=IsActive}" Value="True" />
+                </MultiDataTrigger.Conditions>
+                <MultiDataTrigger.Setters>
+                    <Setter Property="Fill" Value="{StaticResource IconRLocalConnected}"/>
+                </MultiDataTrigger.Setters>
+            </MultiDataTrigger>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding Path=IsRemote}" Value="True" />
+                    <Condition Binding="{Binding Path=IsRunning}" Value="False" />
+                    <Condition Binding="{Binding Path=IsConnected}" Value="False" />
+                    <Condition Binding="{Binding Path=IsActive}" Value="True" />
+                </MultiDataTrigger.Conditions>
+                <MultiDataTrigger.Setters>
+                    <Setter Property="Fill" Value="{StaticResource IconRCloudDisconnected}"/>
+                </MultiDataTrigger.Setters>
+            </MultiDataTrigger>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding Path=IsRemote}" Value="False" />
+                    <Condition Binding="{Binding Path=IsRunning}" Value="False" />
+                    <Condition Binding="{Binding Path=IsConnected}" Value="False" />
+                    <Condition Binding="{Binding Path=IsActive}" Value="True" />
+                </MultiDataTrigger.Conditions>
+                <MultiDataTrigger.Setters>
+                    <Setter Property="Fill" Value="{StaticResource IconRLocalDisconnected}"/>
+                </MultiDataTrigger.Setters>
+            </MultiDataTrigger>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding Path=IsRemote}" Value="True" />
+                    <Condition Binding="{Binding Path=IsActive}" Value="False" />
+                </MultiDataTrigger.Conditions>
+                <MultiDataTrigger.Setters>
+                    <Setter Property="Fill" Value="{StaticResource IconRCloudInactive}"/>
+                </MultiDataTrigger.Setters>
+            </MultiDataTrigger>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding Path=IsRemote}" Value="False" />
+                    <Condition Binding="{Binding Path=IsActive}" Value="False" />
+                </MultiDataTrigger.Conditions>
+                <MultiDataTrigger.Setters>
+                    <Setter Property="Fill" Value="{StaticResource IconRLocalInactive}"/>
+                </MultiDataTrigger.Setters>
+            </MultiDataTrigger>
+        </Style.Triggers>
     </Style>
 </ResourceDictionary>

@@ -87,6 +87,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             // Filter out localhost help URL from absolute URLs
             // except when the URL is the main landing page.
             if (RToolsSettings.Current.HelpBrowserType == HelpBrowserType.Automatic && IsHelpUrl(url)) {
+                Container.Show(focus: false, immediate: false);
                 NavigateTo(url);
             } else {
                 var wbs = VsAppShell.Current.ExportProvider.GetExportedValue<IWebBrowserServices>();

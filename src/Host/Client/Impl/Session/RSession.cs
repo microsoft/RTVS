@@ -49,6 +49,7 @@ namespace Microsoft.R.Host.Client.Session {
         private TaskCompletionSourceEx<object> _hostStartedTcs;
         private RSessionRequestSource _currentRequestSource;
         private TaskCompletionSourceEx<object> _initializedTcs;
+        private bool _processingChangeDirectoryCommand;
         private readonly Action _onDispose;
         private readonly IExclusiveReaderLock _initializationLock;
         private readonly BinaryAsyncLock _stopHostLock;
@@ -565,6 +566,10 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
                 }
             } while (consoleInput == null);
 
+            
+            // We only want to fire 'directory changed' events when it is initiated by the user
+            _processingChangeDirectoryCommand = consoleInput.StartsWithOrdinal("setwd");
+
             consoleInput = consoleInput.EnsureLineBreak();
             AfterRequest?.Invoke(this, new RAfterRequestEventArgs(contexts, Prompt, consoleInput, addToHistory, currentRequest?.IsVisible ?? false));
 
@@ -692,7 +697,10 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
         }
 
         void IRCallbacks.DirectoryChanged() {
-            DirectoryChanged?.Invoke(this, EventArgs.Empty);
+            if (_processingChangeDirectoryCommand) {
+                DirectoryChanged?.Invoke(this, EventArgs.Empty);
+                _processingChangeDirectoryCommand = false;
+            }
         }
 
         Task IRCallbacks.ViewObject(string obj, string title, CancellationToken cancellationToken) {

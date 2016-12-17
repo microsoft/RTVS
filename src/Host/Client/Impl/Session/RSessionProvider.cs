@@ -26,6 +26,7 @@ namespace Microsoft.R.Host.Client.Session {
         private readonly IConsole _console;
 
         private volatile bool _isConnected;
+
         private int _sessionCounter;
         private Task _updateHostLoadLoopTask;
         private HostLoad _hostLoad;
@@ -101,7 +102,7 @@ namespace Microsoft.R.Host.Client.Session {
             if (_hostLoad == null) {
                 UpdateHostLoadAsync().DoNotWait();
             }
-        }
+       }
 
         private void OnHostLoadChanged(HostLoad hostLoad) {
             Interlocked.Exchange(ref _hostLoad, hostLoad);

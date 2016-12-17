@@ -20,19 +20,20 @@ namespace Microsoft.R.Components.Sql {
         }
 
         public string EditConnectionString(string odbcConnectionString) {
+            var originalConnectionString = (odbcConnectionString.OdbcToSqlClient()
+                                                    ?? _odbcConnectionString.OdbcToSqlClient())
+                                                    ?? _defaultSqlConnectionString;
             do {
                 using (var dlg = new DataConnectionDialog()) {
                     DataSource.AddStandardDataSources(dlg);
                     dlg.SelectedDataSource = DataSource.SqlDataSource;
                     dlg.SelectedDataProvider = DataProvider.SqlDataProvider;
                     try {
-                        dlg.ConnectionString = (odbcConnectionString.OdbcToSqlClient() 
-                                                    ?? _odbcConnectionString.OdbcToSqlClient()) 
-                                                        ?? _defaultSqlConnectionString;
+                        dlg.ConnectionString = originalConnectionString;
                         var result = DataConnectionDialog.Show(dlg);
                         switch(result) {
                             case DialogResult.Cancel:
-                                return null;
+                                return originalConnectionString;
                             case DialogResult.OK:
                                 _odbcConnectionString = dlg.ConnectionString.SqlClientToOdbc();
                                 break;
@@ -42,7 +43,7 @@ namespace Microsoft.R.Components.Sql {
                         if (_coreShell.ShowMessage(Resources.Error_ConnectionStringFormat, MessageButtons.YesNo) == MessageButtons.No) {
                             break;
                         }
-                        _odbcConnectionString = _defaultSqlConnectionString.SqlClientToOdbc();
+                        _odbcConnectionString = originalConnectionString;
                     }
                 }
             } while (true);

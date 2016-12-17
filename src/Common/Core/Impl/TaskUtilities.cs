@@ -50,7 +50,7 @@ namespace Microsoft.Common.Core {
             [CallerLineNumber] int sourceLineNumber = 0
         ) {
             if (!IsOnBackgroundThread()) {
-                Trace.Fail(Invariant($"{memberName} at {sourceFilePath}:{sourceLineNumber} was incorrectly called from a non-background thread."));
+                Debug.Fail(Invariant($"{memberName} at {sourceFilePath}:{sourceLineNumber} was incorrectly called from a non-background thread."));
             }
         }
 

@@ -32,21 +32,11 @@
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
+
         </ResourceDictionary>
     </UserControl.Resources>
     <StackPanel>
-        <Grid Margin="0,0,7,0" Visibility="{Binding Path=IsRemote, Converter={x:Static wpf:Converters.FalseIsNotCollapsed}}">
-            <Rectangle Fill="{StaticResource IconRLocalConnected}" Width="18"
-                       Visibility="{Binding Path=IsConnected, Converter={x:Static wpf:Converters.TrueIsNotCollapsed}}"/>
-            <Rectangle Fill="{StaticResource IconRLocalDisconnected}" Width="18"
-                       Visibility="{Binding Path=IsConnected, Converter={x:Static wpf:Converters.FalseIsNotCollapsed}}" />
-        </Grid>
-        <Grid Margin="0,0,7,0" Visibility="{Binding Path=IsRemote, Converter={x:Static wpf:Converters.TrueIsNotCollapsed}}">
-            <Rectangle Fill="{StaticResource IconRCloudConnected}" Width="18"
-                       Visibility="{Binding Path=IsConnected, Converter={x:Static wpf:Converters.TrueIsNotCollapsed}}"/>
-            <Rectangle Fill="{StaticResource IconRCloudDisconnected}" Width="18"
-                       Visibility="{Binding Path=IsConnected, Converter={x:Static wpf:Converters.FalseIsNotCollapsed}}" />
-        </Grid>
+        <Rectangle Margin="0,0,7,0" Width="18" Style="{StaticResource ConnectionStyle}"/>
         <TextBlock Text="{Binding Path=SelectedConnection}" Margin="0,0,7,0" MaxWidth="300"
                    Foreground="{DynamicResource {x:Static wpf:Brushes.StatusBarDefaultTextBrushKey}}"
                    FontSize="{DynamicResource {x:Static wpf:FontKeys.EnvironmentFontSizeKey}}"
