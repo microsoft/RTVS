@@ -98,11 +98,10 @@ namespace Microsoft.R.Interpreters {
             List<IRInterpreterInfo> engines = new List<IRInterpreterInfo>();
 
             // HKEY_LOCAL_MACHINE\SOFTWARE\R-core
-            // HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\R-core
             // HKEY_LOCAL_MACHINE\SOFTWARE\R-core\R64\3.3.0 Pre-release
             using (IRegistryKey hklm = _registry.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64)) {
                 try {
-                    using (var rKey = hklm.OpenSubKey(@"SOFTWARE\R-core\R")) {
+                    using (var rKey = hklm.OpenSubKey(@"SOFTWARE\R-core\R64")) {
                         foreach (var name in rKey.GetSubKeyNames()) {
                             using (var subKey = rKey.OpenSubKey(name)) {
                                 var path = subKey.GetValue("InstallPath") as string;
