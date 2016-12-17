@@ -47,18 +47,15 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
 
         [Test(ThreadType.UI)]
         public void Properties() {
-            var conn = _cmvm.LocalConnections.First();
-            _cmvm.Connect(conn, true);
+            var connection = _cmvm.LocalConnections.First();
+            _cmvm.Connect(connection, true);
 
+            var conn = _cmvm.LocalConnections.First(c => c.Name == connection.Name);
             conn.IsConnected.Should().BeTrue();
             conn.IsRunning.Should().BeTrue();
 
             conn.IsRunning = false;
             conn.IsConnected.Should().BeTrue();
-
-            conn.IsRunning = true;
-            conn.IsConnected = false;
-            conn.IsRunning.Should().BeFalse();
         }
 
         [Test(ThreadType.UI)]
@@ -67,7 +64,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
             _cmvm.Connect(connection, true);
             await _workflow.RSession.StopHostAsync().Should().BeCompletedAsync();
 
-            var conn = _cmvm.LocalConnections.Should().ContainSingle(c => c.Name == connection.Name).Which;
+            var conn = _cmvm.LocalConnections.First(c => c.Name == connection.Name);
             conn.IsConnected.Should().BeTrue();
             conn.IsRunning.Should().BeFalse();
         }
@@ -78,7 +75,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
             _cmvm.Connect(connection, true);
             await _workflow.Operations.ResetAsync().Should().BeCompletedAsync();
 
-            var conn = _cmvm.LocalConnections.Should().ContainSingle(c => c.Name == connection.Name).Which;
+            var conn = _cmvm.LocalConnections.First(c => c.Name == connection.Name);
             conn.IsConnected.Should().BeTrue();
             conn.IsRunning.Should().BeTrue();
         }

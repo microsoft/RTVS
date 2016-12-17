@@ -40,12 +40,8 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
             m.IsRunning.Should().BeFalse();
 
             m.IsRunning = true;
-            m.IsConnected = false;
-            m.IsRunning.Should().BeFalse();
-
             m.IsRunning = false;
-            m.IsConnected = true;
-            m.IsRunning.Should().BeFalse();
+            m.IsConnected.Should().BeTrue();
         }
 
         [Test]
@@ -63,6 +59,12 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
 
             m.IsConnected.Should().BeTrue();
             m.IsRunning.Should().BeTrue();
+
+            _cm.IsRunning.Returns(false);
+            _cm.ConnectionStateChanged += Raise.EventWith(_cm, EventArgs.Empty);
+
+            m.IsConnected.Should().BeTrue();
+            m.IsRunning.Should().BeFalse();
 
             _cm.IsConnected.Returns(false);
             _cm.ConnectionStateChanged += Raise.EventWith(_cm, EventArgs.Empty);
