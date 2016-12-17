@@ -113,7 +113,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
 
             IRPlotDeviceVisualComponent component;
             if (_assignedVisualComponents.TryGetValue(deviceId, out component)) {
-                await component.UnassignAsync();
+                component.Unassign();
                 _assignedVisualComponents.Remove(deviceId);
                 _unassignedVisualComponents.Add(component);
             } else {
@@ -148,7 +148,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
                 device.AddOrUpdate(plot.PlotId, null);
             }
 
-            var visualComponent = await GetVisualComponentForDevice(plot.DeviceId);
+            var visualComponent = GetVisualComponentForDevice(plot.DeviceId);
             if (visualComponent != null) {
                 visualComponent.Container.Show(focus: false, immediate: false);
                 visualComponent.Container.UpdateCommandStatus(false);
@@ -163,7 +163,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
 
             PlotDeviceProperties props;
 
-            var visualComponent = await GetVisualComponentForDevice(deviceId);
+            var visualComponent = GetVisualComponentForDevice(deviceId);
             if (visualComponent != null) {
                 visualComponent.Container.Show(focus: false, immediate: true);
                 props = visualComponent.GetDeviceProperties();
@@ -184,7 +184,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
         public async Task<LocatorResult> StartLocatorModeAsync(Guid deviceId, CancellationToken cancellationToken) {
             await _shell.SwitchToMainThreadAsync(cancellationToken);
 
-            var visualComponent = await GetVisualComponentForDevice(deviceId);
+            var visualComponent = GetVisualComponentForDevice(deviceId);
             if (visualComponent == null) {
                 return default(LocatorResult);
             }
@@ -307,7 +307,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
 
                     // Removing that plot may activate the device from the removed plot,
                     // which would hide this device. So we re-show it.
-                    await ShowDeviceAsync(targetDevice);
+                    ShowDevice(targetDevice);
                 }
             }
         }
@@ -334,20 +334,19 @@ namespace Microsoft.R.Components.Plots.Implementation {
             }
         }
 
-        private async Task ShowDeviceAsync(IRPlotDevice device) {
+        private void ShowDevice(IRPlotDevice device) {
             InteractiveWorkflow.Shell.AssertIsOnMainThread();
 
-            var visualComponent = await GetVisualComponentForDevice(device.DeviceId);
-            if (visualComponent != null) {
-                visualComponent.Container.Show(focus: false, immediate: false);
-            }
+            var visualComponent = GetVisualComponentForDevice(device.DeviceId);
+            visualComponent?.Container.Show(focus: false, immediate: false);
         }
 
         private async Task ExportAsync(string outputFilePath, Task<ulong> exportTask) {
             try {
                 var result = await exportTask;
                 using(DataTransferSession dts = new DataTransferSession(InteractiveWorkflow.RSession, _fileSystem)) {
-                    await dts.FetchFileAsync(new RBlobInfo(result), outputFilePath);
+                    // TODO: add progress indication and cancellation
+                    await dts.FetchFileAsync(new RBlobInfo(result), outputFilePath, true, null, CancellationToken.None);
                 }
             } catch (IOException ex) {
                 throw new RPlotManagerException(ex.Message, ex);
@@ -356,7 +355,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
             }
         }
 
-        private async Task<IRPlotDeviceVisualComponent> GetVisualComponentForDevice(Guid deviceId) {
+        private IRPlotDeviceVisualComponent GetVisualComponentForDevice(Guid deviceId) {
             InteractiveWorkflow.Shell.AssertIsOnMainThread();
 
             // If we've already assigned a plot window, reuse it
@@ -369,7 +368,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
             component = GetOrCreatePlotDeviceVisualComponent();
 
             var device = FindDevice(deviceId);
-            await component.AssignAsync(device);
+            component.Assign(device);
 
             _assignedVisualComponents[deviceId] = component;
 
@@ -520,7 +519,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
             RemoveAllDevices();
 
             foreach (var visualComponent in _assignedVisualComponents.Values) {
-                await visualComponent.UnassignAsync();
+                visualComponent.Unassign();
                 _unassignedVisualComponents.Add(visualComponent);
             }
             _assignedVisualComponents.Clear();

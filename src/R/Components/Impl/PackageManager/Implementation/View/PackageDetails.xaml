@@ -140,7 +140,7 @@
                            Visibility="{Binding Path=Title, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
                 <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=Title}" Margin="8,8,0,0" 
                            Visibility="{Binding Path=Title, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
-                
+
                 <!-- descriptions -->
                 <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,8,0,0" Text="{x:Static local:Resources.Package_Description}" FontWeight="Bold" 
                            Visibility="{Binding Path=Description, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
@@ -196,12 +196,16 @@
                 <!--Library -->
                 <TextBlock Grid.Row="9" Grid.Column="0" FontWeight="Bold" Margin="0,8,0,0" Text="{x:Static local:Resources.Package_LibraryPath}"
                             Visibility="{Binding Path=LibraryPath, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
-                <TextBlock Grid.Row="9" Grid.Column="1" Margin="8,8,0,0" 
-                            Visibility="{Binding Path=LibraryPath, Converter={x:Static wpf:Converters.NullIsCollapsed}}">
-                    <Hyperlink NavigateUri="{Binding Path=LibraryPath}" Style="{StaticResource HyperlinkStyle}" RequestNavigate="LibraryPath_RequestNavigate">
-                        <Run Text="{Binding Mode=OneTime, Path=LibraryPath}" />
-                    </Hyperlink>
-                </TextBlock>
+                <StackPanel Grid.Row="9" Grid.Column="1" Margin="8,8,0,0"
+                            Visibility="{Binding Path=RepositoryUri, Converter={x:Static wpf:Converters.NullIsCollapsed}}">
+                    <TextBlock Visibility="{Binding Path=IsRemoteSession, Converter={x:Static wpf:Converters.TrueIsNotCollapsed}}" 
+                                   Text="{Binding Mode=OneTime, Path=LibraryPath}" />
+                    <TextBlock Visibility="{Binding Path=IsRemoteSession, Converter={x:Static wpf:Converters.TrueIsCollapsed}}">
+                        <Hyperlink NavigateUri="{Binding Path=LibraryPath}" Style="{StaticResource HyperlinkStyle}" RequestNavigate="LibraryPath_RequestNavigate">
+                            <Run Text="{Binding Mode=OneTime, Path=LibraryPath}" />
+                        </Hyperlink>
+                    </TextBlock>
+                </StackPanel>
 
                 <!--Repository -->
                 <TextBlock Grid.Row="10" Grid.Column="0" FontWeight="Bold" Margin="0,8,0,0" Text="{x:Static local:Resources.Package_Repository}"

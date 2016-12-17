@@ -128,9 +128,12 @@ Reason: {0}</value>
     <value>Web request has timed out.</value>
   </data>
   <data name="Error_HostNotResponding" xml:space="preserve">
-    <value>Host did not respond to a ping.
+    <value>Machine '{0}' did not respond to a ping.
 The machine may be offline or the network has been disconnected.
-Error: {0}</value>
+Error: {1}</value>
+  </data>
+  <data name="Error_RHostIsStopped" xml:space="preserve">
+    <value>RHost is stopped</value>
   </data>
   <data name="Error_InterpreterNotFound" xml:space="preserve">
     <value>Specified R interpreter was not found</value>
@@ -139,22 +142,22 @@ Error: {0}</value>
     <value>No R Interpreters installed</value>
   </data>
   <data name="HttpErrorCreatingSession" xml:space="preserve">
-    <value>HTTP error while creating session: {0}</value>
+    <value>HTTP error while creating session on the machine '{0}'. Exception: {1}</value>
   </data>
   <data name="Error_UnableToStartHostException" xml:space="preserve">
-    <value>R host process did not start:  {0}</value>
+    <value>R host process did not start on the machine '{0}'. Exception:  {1}</value>
   </data>
   <data name="Error_UnknownError" xml:space="preserve">
     <value>Unknown error</value>
   </data>
   <data name="Error_BrokerNotRunning" xml:space="preserve">
-    <value>The machine appears to be online, but the Remote R Service is not running.</value>
+    <value>Machine '{0}' appears to be online, but the Remote R Service is not running.</value>
   </data>
   <data name="Error_UnableToStartBrokerException" xml:space="preserve">
-    <value>R broker process did not start:  {0}</value>
+    <value>R broker process did not start on the machine '{0}'. Exception:  {1}</value>
   </data>
   <data name="Error_NoBrokerCertificate" xml:space="preserve">
-    <value>Remote machine does not have certificate installed for the TLS with the Remote R Service.</value>
+    <value>Remote machine '{0}' does not have certificate installed for the TLS with the Remote R Service.</value>
   </data>
   <data name="Trace_UntrustedCertificate" xml:space="preserve">
     <value>The supplied TLS certificate is not trusted: {0}</value>
@@ -187,10 +190,32 @@ If you using a test Remote R Server with a self-signed certificate and are certa
     <value>Previous R session terminated unexpectedly, and its global workspace is currently being saved.
 Do you want to abort this operation and start current session immediately?</value>
   </data>
-  <data name="Error_MaxUsersAllowed" xml:space="preserve">
-    <value>Windows Workstation only allows a single user session.</value>
-  </data>
   <data name="Error_PipeAlreadyConnected" xml:space="preserve">
     <value>This session already has an active client connection</value>
+  </data>
+  <data name="Error_BrokerUnknownWin32Error" xml:space="preserve">
+    <value>Operation failed with unknown Win32 error, please check broker logs.</value>
+  </data>
+  <data name="Error_BrokerWin32Error" xml:space="preserve">
+    <value>Operation failed with Win32 error: {0}</value>
+  </data>
+  <data name="Error_RemoteWebServerCreationFailed" xml:space="preserve">
+    <value>Failed to create HTTP server for remote {0}.</value>
+  </data>
+  <data name="Error_RemoteWebServerFailed" xml:space="preserve">
+    <value>HTTP server for remote {0} failed : {1}</value>
+  </data>
+  <data name="Info_RemoteWebServerDetails" xml:space="preserve">
+    <value>HTTP server for remote allows you to connect to a HTTP server created on a remote R machine.
+Server at {0} http://{1}:{2} connects to {3} http://{4}:{5}.</value>
+  </data>
+  <data name="Info_RemoteWebServerStarted" xml:space="preserve">
+    <value>HTTP server for remote {0} listening on http://{1}:{2}. </value>
+  </data>
+  <data name="Info_RemoteWebServerStarting" xml:space="preserve">
+    <value>HTTP server for remote {0} starting ...</value>
+  </data>
+  <data name="Info_RemoteWebServerStopped" xml:space="preserve">
+    <value>HTTP server for remote {0} stopped.</value>
   </data>
 </root>

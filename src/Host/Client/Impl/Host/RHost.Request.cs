@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Tasks;
 using Microsoft.R.Host.Protocol;
 using Newtonsoft.Json.Linq;
@@ -36,8 +37,8 @@ namespace Microsoft.R.Host.Client {
 
             protected Request(RHost host, Message message, CancellationToken cancellationToken) : base(host, message) {
                 if (cancellationToken.CanBeCanceled) {
-                    cancellationToken
-                        .Register(() => CompletionSource.TrySetCanceled(cancellationToken))
+                    CompletionSource
+                        .RegisterForCancellation(cancellationToken)
                         .UnregisterOnCompletion(CompletionSource.Task);
                 }
             }

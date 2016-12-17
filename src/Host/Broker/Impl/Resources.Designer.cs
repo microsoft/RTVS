@@ -115,6 +115,15 @@ namespace Microsoft.R.Host.Broker {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to User {0} session creation blocked due to pending profile deletion..
+        /// </summary>
+        internal static string Error_BlockedByProfileDeletion {
+            get {
+                return ResourceManager.GetString("Error_BlockedByProfileDeletion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Server port {0} is already in use..
         /// </summary>
         internal static string Error_ConfiguredPortNotAvailable {
@@ -187,6 +196,15 @@ namespace Microsoft.R.Host.Broker {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Profile deletion failed for user {0}..
+        /// </summary>
+        internal static string Error_ProfileDeletionFailedIO {
+            get {
+                return ResourceManager.GetString("Error_ProfileDeletionFailedIO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R Host process failed to start. Error: {0}.
         /// </summary>
         internal static string Error_RHostFailedToStart {
@@ -219,15 +237,6 @@ namespace Microsoft.R.Host.Broker {
         internal static string Exception_InvalidIdentityType {
             get {
                 return ResourceManager.GetString("Exception_InvalidIdentityType", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Windows Workstation only allows a single user session..
-        /// </summary>
-        internal static string Exception_MaxAllowedUsers {
-            get {
-                return ResourceManager.GetString("Exception_MaxAllowedUsers", resourceCulture);
             }
         }
         

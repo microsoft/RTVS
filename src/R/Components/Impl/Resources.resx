@@ -537,4 +537,31 @@ Are you sure you want to terminate R session?</value>
   <data name="HostLoad_Tooltip" xml:space="preserve">
     <value>Machine utilization: {0}% CPU, {1}% Memory, {2}% Network.</value>
   </data>
+  <data name="VideoCardName" xml:space="preserve">
+    <value>Video controller: {0}</value>
+  </data>
+  <data name="VideoProcessor" xml:space="preserve">
+    <value>GPU: {0}</value>
+  </data>
+  <data name="VideoRAM" xml:space="preserve">
+    <value>Video memory: {0} MB</value>
+  </data>
+  <data name="DeleteProfile_DeletionWarning" xml:space="preserve">
+    <value>User profile and all files under the user directory will be permanently deleted from the remote machine {0}. Your connection will also be disconnected. Reconnecting to the same remote machine will create a new profile. Are you sure you want to delete the user profile from the machine {0}?</value>
+  </data>
+  <data name="DeleteProfile_Error" xml:space="preserve">
+    <value>Failed to delete user profile. Please see logs for the RUserProfileService on the remote machine {0}. Requires admin access to examine the logs.</value>
+  </data>
+  <data name="DeleteProfile_Success" xml:space="preserve">
+    <value>User directory and files under it were successfully deleted from remote machine {0}. You can click "Reset" to re-create your user profile and start a new session.</value>
+  </data>
+  <data name="Error_UnableSaveFile" xml:space="preserve">
+    <value>Unable to save local file {0}. Exception: {1}.</value>
+  </data>
+  <data name="LocalR" xml:space="preserve">
+    <value>Local R: {0}</value>
+  </data>
+  <data name="RemoteConnection" xml:space="preserve">
+    <value>Remote workspace '{0}' : {1}</value>
+  </data>
 </root>

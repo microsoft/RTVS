@@ -22,11 +22,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         [Import]
         private Lazy<IRInteractiveWorkflowProvider> WorkflowProvider { get; set; }
         [Import]
-        private Lazy<IInteractiveWindowComponentContainerFactory> InteractiveWindowComponentContainerFactory { get; set; }
-        [Import]
         private Lazy<IRHistoryVisualComponentContainerFactory> HistoryComponentContainerFactory { get; set; }
-        [Import]
-        private Lazy<IConnectionManagerVisualComponentContainerFactory> ConnectionManagerComponentContainerFactory { get; set; }
         [Import]
         private Lazy<IRPackageManagerVisualComponentContainerFactory> PackageManagerComponentContainerFactory { get; set; }
         [Import]
@@ -113,7 +109,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
         private Task<IInteractiveWindowVisualComponent> CreateInteractiveWindow(int id) {
             var workflow = WorkflowProvider.Value.GetOrCreate();
-            return workflow.GetOrCreateVisualComponent(InteractiveWindowComponentContainerFactory.Value, id);
+            return workflow.GetOrCreateVisualComponentAsync(id);
         }
 
         private IRHistoryWindowVisualComponent CreateHistoryToolWindow(int id) {
@@ -123,7 +119,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
         private IConnectionManagerVisualComponent CreateConnectionManagerToolWindow(int id) {
             var workflow = WorkflowProvider.Value.GetOrCreate();
-            return workflow.Connections.GetOrCreateVisualComponent(ConnectionManagerComponentContainerFactory.Value, id);
+            return workflow.Connections.GetOrCreateVisualComponent(id);
         }
 
         private IRPackageManagerVisualComponent CreatePackageManagerToolWindow(int id) {

@@ -2,41 +2,36 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
-    [Export(typeof(IApplicationConstants))]
     public sealed class ApplicationConstants : IApplicationConstants {
         /// <summary>
         /// Application name to use in log, system events, etc.
         /// </summary>
         public string ApplicationName => "RTVS";
 
+        public void Initialize() {
+            var hostLocale = ServiceProvider.GlobalProvider.GetService(typeof(SUIHostLocale)) as IUIHostLocale;
+            uint lcid;
+            hostLocale.GetUILocale(out lcid);
+            LocaleId = lcid;
+
+            var uiShell = ServiceProvider.GlobalProvider.GetService(typeof(SVsUIShell)) as IVsUIShell;
+            IntPtr handle;
+            uiShell.GetDialogOwnerHwnd(out handle);
+            ApplicationWindowHandle = handle;
+        }
+
         /// <summary>
         /// Returns host locale ID
         /// </summary>
-        public uint LocaleId {
-            get {
-                var hostLocale = VsAppShell.Current.GetGlobalService<IUIHostLocale>(typeof(SUIHostLocale));
-                uint lcid;
-                if (hostLocale != null && hostLocale.GetUILocale(out lcid) == VSConstants.S_OK) {
-                    return lcid;
-                }
-                return 0;
-            }
-        }
+        public uint LocaleId { get; private set; }
 
-        public IntPtr ApplicationWindowHandle {
-            get {
-                var uiShell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-                IntPtr handle;
-                uiShell.GetDialogOwnerHwnd(out handle);
-                return handle;
-            }
-        }
+        public IntPtr ApplicationWindowHandle { get; private set; }
 
         /// <summary>
         /// Hive under HKLM that can be used by the system administrator to control

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Enums;
 using Microsoft.Common.Core.Extensions;
@@ -24,9 +25,10 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
     [Export(typeof(IRSettings))]
     [Export(typeof(IRToolsSettings))]
     [Export(typeof(IRPersistentSettings))]
-    internal sealed class RToolsSettingsImplementation : BindableBase, IRToolsSettings, IRPersistentSettings {
+    internal sealed class RToolsSettingsImplementation : BindableBase, IRPersistentSettings {
         private const int MaxDirectoryEntries = 8;
         private readonly ISettingsStorage _settings;
+        private readonly ILoggingPermissions _loggingPermissions;
 
         private string _cranMirror;
         private string _workingDirectory;
@@ -54,8 +56,9 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         private LogVerbosity _logLevel = LogVerbosity.Normal;
 
         [ImportingConstructor]
-        public RToolsSettingsImplementation(ISettingsStorage settings) {
+        public RToolsSettingsImplementation(ISettingsStorage settings, ICoreShell coreShell) {
             _settings = settings;
+            _loggingPermissions = coreShell.Services.LoggingServices.Permissions;
             _workingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         }
 
@@ -105,7 +108,10 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
 
         public ConnectionInfo[] Connections {
             get { return _connections; }
-            set { SetProperty(ref _connections, value); }
+            set {
+                SetProperty(ref _connections, value);
+                SaveSettingsAsync().DoNotWait();
+            }
         }
 
         public ConnectionInfo LastActiveConnection {
@@ -195,6 +201,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set { SetProperty(ref _logLevel, value); }
         }
 
+        public bool ShowRToolbar { get; set; } = true;
+
         private void UpdateWorkingDirectoryList(string newDirectory) {
             List<string> list = new List<string>(WorkingDirectoryList);
             if (!list.Contains(newDirectory, StringComparer.OrdinalIgnoreCase)) {
@@ -208,10 +216,21 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         }
 
         #region IRPersistentSettings
-        public void LoadSettings() => _settings.LoadPropertyValues(this);
-        public void SaveSettings() {
+        public void LoadSettings() {
+            _settings.LoadPropertyValues(this);
+            _loggingPermissions.CurrentVerbosity = LogVerbosity;
+        }
+
+        public Task SaveSettingsAsync() {
             _settings.SavePropertyValues(this);
-            _settings.Persist();
+            return _settings.PersistAsync();
+        }
+
+        public void Dispose() {
+            if (_settings != null) {
+                SaveSettingsAsync().Wait(5000);
+                ((IDisposable)_settings).Dispose();
+            }
         }
         #endregion
     }

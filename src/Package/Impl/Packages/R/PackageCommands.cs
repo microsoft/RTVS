@@ -10,6 +10,7 @@ using Microsoft.R.Components.Documentation;
 using Microsoft.R.Components.Documentation.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Commands;
+using Microsoft.R.Components.InteractiveWorkflow.Implementation;
 using Microsoft.R.Components.Plots.Commands;
 using Microsoft.R.Components.Sql;
 using Microsoft.R.Support.Settings;
@@ -40,7 +41,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         public static IEnumerable<MenuCommand> GetCommands(ExportProvider exportProvider) {
             var appShell = VsAppShell.Current;
             var interactiveWorkflowProvider = exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
-            var interactiveWorkflowComponentContainerFactory = exportProvider.GetExportedValue<IInteractiveWindowComponentContainerFactory>();
             var interactiveWorkflow = interactiveWorkflowProvider.GetOrCreate();
             var projectServiceAccessor = exportProvider.GetExportedValue<IProjectServiceAccessor>();
             var textViewTracker = exportProvider.GetExportedValue<IActiveWpfTextViewTracker>();
@@ -52,7 +52,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             var pcsp = exportProvider.GetExportedValue<IProjectConfigurationSettingsProvider>();
             var dbcs = exportProvider.GetExportedValue<IDbConnectionService>();
             var settings = exportProvider.GetExportedValue<IRToolsSettings>();
-            var logPerms = exportProvider.GetExportedValue<ILoggingPermissions>();
+            var logPerms = appShell.Services.LoggingServices.Permissions;
+            var console = new InteractiveWindowConsole(interactiveWorkflow);
 
             return new List<MenuCommand> {
                 new GoToOptionsCommand(),
@@ -63,9 +64,9 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new SurveyNewsCommand(appShell),
                 new SetupRemoteCommand(),
 
-                new ReportIssueCommand(logPerms, appShell.Services.ProcessServices),
-                new SendSmileCommand(logPerms, appShell.Services),
-                new SendFrownCommand(logPerms, appShell.Services),
+                new ReportIssueCommand(appShell.Services),
+                new SendSmileCommand(appShell.Services),
+                new SendFrownCommand(appShell.Services),
 
                 CreateRCmdSetCommand(RPackageCommandId.icmdRDocsIntroToR, new OpenDocumentationCommand(interactiveWorkflow, OnlineDocumentationUrls.CranIntro, LocalDocumentationPaths.CranIntro)),
                 CreateRCmdSetCommand(RPackageCommandId.icmdRDocsDataImportExport, new OpenDocumentationCommand(interactiveWorkflow, OnlineDocumentationUrls.CranData, LocalDocumentationPaths.CranData)),
@@ -95,7 +96,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
                 CreateRCmdSetCommand(RPackageCommandId.icmdInterruptR, new InterruptRCommand(interactiveWorkflow, debuggerModeTracker)),
                 CreateRCmdSetCommand(RPackageCommandId.icmdTerminateR, new TerminateRCommand(interactiveWorkflow, appShell)),
-                CreateRCmdSetCommand(RPackageCommandId.icmdSessionInformation, new SessionInformationCommand(interactiveWorkflow)),
+                CreateRCmdSetCommand(RPackageCommandId.icmdSessionInformation, new SessionInformationCommand(interactiveWorkflow, console)),
+                CreateRCmdSetCommand(RPackageCommandId.icmdDeleteProfile, new DeleteProfileCommand(interactiveWorkflow)),
 
                 new ResetReplCommand(interactiveWorkflow),
 #if VS15
@@ -115,7 +117,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new ManageDsnCommand(appShell, interactiveWorkflow),
 
                 // Window commands
-                new ShowRInteractiveWindowsCommand(interactiveWorkflowProvider, interactiveWorkflowComponentContainerFactory),
+                new ShowRInteractiveWindowsCommand(interactiveWorkflowProvider),
                 new ShowVariableWindowCommand(),
 
                 new ShowToolWindowCommand<HelpWindowPane>(RPackageCommandId.icmdShowHelpWindow),

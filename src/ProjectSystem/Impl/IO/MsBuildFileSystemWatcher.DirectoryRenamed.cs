@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.Collections.Generic;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Utilities;
@@ -42,14 +43,18 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
                 }
 
                 var oldRelativePath = PathHelper.MakeRelative(_rootDirectory, _oldFullPath);
-                var newRelativePaths = _entries.RenameDirectory(oldRelativePath, newRelativePath, _fileSystem.ToShortRelativePath(_fullPath, _rootDirectory));
+                if (_entries.ContainsDirectoryEntry(oldRelativePath)) {
+                    _entries.RenameDirectory(oldRelativePath, newRelativePath, _fileSystem.ToShortRelativePath(_fullPath, _rootDirectory));
+                } else {
+                    (new DirectoryCreated(_entries, _rootDirectory, _fileSystem, _fileSystemFilter, _fullPath)).Apply();
+                }
             }
 
             private void DeleteInsteadOfRename() {
                 if (!_oldFullPath.StartsWithIgnoreCase(_rootDirectory)) {
                     return;
                 }
-                _entries.DeleteDirectory(PathHelper.MakeRelative(_rootDirectory, _fullPath));
+                _entries.DeleteDirectory(PathHelper.MakeRelative(_rootDirectory, _oldFullPath));
             }
 
             public override string ToString() {

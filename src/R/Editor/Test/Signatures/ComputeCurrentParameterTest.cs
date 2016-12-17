@@ -25,7 +25,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
     public class ComputeCurrentParameterTest : FunctionIndexBasedTest {
         public ComputeCurrentParameterTest(REditorMefCatalogFixture catalog) : base(catalog) { }
 
-        [Test]
+        [Test(ThreadType = ThreadType.UI)]
         public async Task ParameterTest_ComputeCurrentParameter01() {
             ITextBuffer textBuffer = new TextBufferMock("aov(", RContentTypeDefinition.ContentType);
             SignatureHelpSource source = new SignatureHelpSource(textBuffer, EditorShell);

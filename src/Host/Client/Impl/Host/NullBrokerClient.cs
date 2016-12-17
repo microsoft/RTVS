@@ -27,5 +27,7 @@ namespace Microsoft.R.Host.Client.Host {
         public void Dispose() { }
 
         public Task<string> HandleUrlAsync(string url, CancellationToken cancellationToken) => Task.FromResult(url);
+
+        public Task DeleteProfileAsync(CancellationToken cancellationToken) => Task.CompletedTask;
     }
 }

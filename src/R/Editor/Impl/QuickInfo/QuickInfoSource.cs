@@ -29,6 +29,7 @@ namespace Microsoft.R.Editor.QuickInfo {
         private ITextBuffer _subjectBuffer;
         private readonly ICompositionCatalog _catalog;
         private int _lastPosition = -1;
+        private string _packageName;
 
         public QuickInfoSource(ITextBuffer subjectBuffer, ICompositionCatalog catalog) {
             _catalog = catalog;
@@ -58,7 +59,7 @@ namespace Microsoft.R.Editor.QuickInfo {
                         // getting set immediately or may change as user moves mouse over.
                         AugmentQuickInfoSession(document.EditorTree.AstRoot, position,
                                                 session, quickInfoContent, out applicableToSpan,
-                                                (object o) => RetriggerQuickInfoSession(o as IQuickInfoSession));
+                                                (object o, string p) => RetriggerQuickInfoSession(o as IQuickInfoSession, p), null);
                     }
                 }
             }
@@ -66,7 +67,7 @@ namespace Microsoft.R.Editor.QuickInfo {
 
         internal bool AugmentQuickInfoSession(AstRoot ast, int position, IQuickInfoSession session,
                                               IList<object> quickInfoContent, out ITrackingSpan applicableToSpan,
-                                              Action<object> retriggerAction) {
+                                              Action<object, string> retriggerAction, string packageName) {
             int signatureEnd = position;
             applicableToSpan = null;
 
@@ -79,11 +80,14 @@ namespace Microsoft.R.Editor.QuickInfo {
                 int end = Math.Min(signatureEnd, snapshot.Length);
 
                 applicableToSpan = snapshot.CreateTrackingSpan(Span.FromBounds(start, end), SpanTrackingMode.EdgeInclusive);
-                var functionInfo = FunctionIndex.GetFunctionInfo(functionName, retriggerAction, session);
+                packageName = packageName ?? _packageName;
+                _packageName = null;
+
+                var functionInfo = FunctionIndex.GetFunctionInfo(functionName, packageName, retriggerAction, session);
 
                 if (functionInfo != null && functionInfo.Signatures != null) {
                     foreach (ISignatureInfo sig in functionInfo.Signatures) {
-                        string signatureString = sig.GetSignatureString();
+                        string signatureString = sig.GetSignatureString(functionName);
                         int wrapLength = Math.Min(SignatureInfo.MaxSignatureLength, signatureString.Length);
                         string text;
 
@@ -108,14 +112,17 @@ namespace Microsoft.R.Editor.QuickInfo {
         }
         #endregion
 
-        private void RetriggerQuickInfoSession(IQuickInfoSession session) {
+        private void RetriggerQuickInfoSession(IQuickInfoSession session, string packageName) {
             if (session != null && !session.IsDismissed) {
                 session.Dismiss();
             }
 
             _lastPosition = -1;
-            IQuickInfoBroker broker = _catalog.ExportProvider.GetExport<IQuickInfoBroker>().Value;
-            broker.TriggerQuickInfo(session.TextView, session.GetTriggerPoint(session.TextView.TextBuffer), session.TrackMouse);
+            _packageName = packageName;
+            if (packageName != null) {
+                IQuickInfoBroker broker = _catalog.ExportProvider.GetExport<IQuickInfoBroker>().Value;
+                broker.TriggerQuickInfo(session.TextView, session.GetTriggerPoint(session.TextView.TextBuffer), session.TrackMouse);
+            }
         }
 
         #region IDisposable

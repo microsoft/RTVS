@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Host.Client;
@@ -15,11 +16,15 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         }
 
         public void Write(string text) {
-            _workflow.Shell.DispatchOnUIThread(() => _workflow.ActiveWindow?.InteractiveWindow?.WriteErrorLine(text));
+            if (_workflow.ActiveWindow != null) {
+                _workflow.Shell.DispatchOnUIThread(() => _workflow.ActiveWindow?.InteractiveWindow?.WriteError(text));
+            }
         }
 
-        public async Task<bool> PromptYesNoAsync(string text) {
-            var result = await _workflow.Shell.ShowMessageAsync(text, MessageButtons.YesNo);
+        public void WriteLine(string text) => Write(text + Environment.NewLine);
+
+        public async Task<bool> PromptYesNoAsync(string text, CancellationToken cancellationToken) {
+            var result = await _workflow.Shell.ShowMessageAsync(text, MessageButtons.YesNo, cancellationToken);
             return result == MessageButtons.Yes;
         }
     }

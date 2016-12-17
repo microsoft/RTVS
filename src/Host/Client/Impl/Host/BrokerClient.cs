@@ -14,11 +14,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebSockets.Client;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.Common.Core.Json;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Net;
 using Microsoft.R.Host.Client.BrokerServices;
 using Microsoft.R.Host.Protocol;
-using Newtonsoft.Json;
 
 namespace Microsoft.R.Host.Client.Host {
     internal abstract class BrokerClient : IBrokerClient {
@@ -30,6 +30,10 @@ namespace Microsoft.R.Host.Client.Host {
 #else
             TimeSpan.FromSeconds(5);
 #endif
+        private static IReadOnlyDictionary<Type, string> _typeToEndpointMap = new Dictionary<Type, string>() {
+            { typeof(AboutHost), "info/about"},
+            { typeof(HostLoad), "info/load"}
+        };
 
         private readonly string _interpreterId;
         private readonly ICredentialsDecorator _credentials;
@@ -72,33 +76,33 @@ namespace Microsoft.R.Host.Client.Host {
 
         public void Dispose() => DisposableBag.TryDispose();
 
-        public async Task PingAsync() {
-            if (HttpClient != null) {
-                // Just in case ping was disable for security reasons, try connecting to the broker anyway.
-                try {
-                    await GetHostInformationAsync<AboutHost>(CancellationToken.None);
-                } catch (HttpRequestException ex) {
-                    throw await HandleHttpRequestExceptionAsync(ex);
-                }
-            }
-        }
-
-        private static IReadOnlyDictionary<Type, string> _typeToEndpointMap = new Dictionary<Type, string>() {
-            { typeof(AboutHost), "info/about"},
-            { typeof(HostLoad), "info/load"}
-        };
-
         public async Task<T> GetHostInformationAsync<T>(CancellationToken cancellationToken) {
             string result = null;
             try {
                 string endpoint;
-                if (HttpClient != null && _typeToEndpointMap.TryGetValue(typeof(T), out endpoint)) {
-                    var response = await HttpClient.GetAsync(endpoint, cancellationToken);
-                    result = await response?.Content.ReadAsStringAsync();
+                if (!_typeToEndpointMap.TryGetValue(typeof(T), out endpoint)) {
+                    throw new ArgumentException($"There is no endpoint for type {typeof(T)}");
                 }
-            } catch (OperationCanceledException) { } catch(HttpRequestException) { }
 
-            return !string.IsNullOrEmpty(result) ? JsonConvert.DeserializeObject<T>(result) : default(T);
+                if (HttpClient != null) {
+                    var response = await HttpClient.GetAsync(endpoint, cancellationToken);
+                    result = response != null ? await response.Content.ReadAsStringAsync() : null;
+                }
+
+                return !string.IsNullOrEmpty(result) ? Json.DeserializeObject<T>(result) : default(T);
+            } catch (HttpRequestException ex) {
+                throw new RHostDisconnectedException(Resources.Error_HostNotResponding.FormatInvariant(Name, ex.Message), ex);
+            }
+        }
+
+        public async Task DeleteProfileAsync(CancellationToken cancellationToken) {
+            await TaskUtilities.SwitchToBackgroundThread();
+            try {
+                var sessionsService = new ProfileWebService(HttpClient, _credentials);
+                await sessionsService.DeleteAsync(cancellationToken);
+            } catch (HttpRequestException ex) {
+                throw new RHostDisconnectedException(Resources.Error_HostNotResponding.FormatInvariant(ex.Message), ex);
+            }
         }
 
         public virtual async Task<RHost> ConnectAsync(BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken)) {
@@ -108,7 +112,7 @@ namespace Microsoft.R.Host.Client.Host {
             try {
                 var sessionExists = connectionInfo.PreserveSessionData && await IsSessionRunningAsync(connectionInfo.Name, cancellationToken);
                 if (sessionExists) {
-                    var terminateRDataSave = await _console.PromptYesNoAsync(Resources.AbortRDataAutosave);
+                    var terminateRDataSave = await _console.PromptYesNoAsync(Resources.AbortRDataAutosave, cancellationToken);
                     if (!terminateRDataSave) {
                         while (await IsSessionRunningAsync(connectionInfo.Name, cancellationToken)) {
                             await Task.Delay(500, cancellationToken);
@@ -118,9 +122,7 @@ namespace Microsoft.R.Host.Client.Host {
 
                 await CreateBrokerSessionAsync(connectionInfo.Name, connectionInfo.RCommandLineArguments, cancellationToken);
                 var webSocket = await ConnectToBrokerAsync(connectionInfo.Name, cancellationToken);
-                var host = CreateRHost(connectionInfo.Name, connectionInfo.Callbacks, webSocket);
-                await GetHostInformationAsync<AboutHost>(cancellationToken);
-                return host;
+                return CreateRHost(connectionInfo.Name, connectionInfo.Callbacks, webSocket);
             } catch (HttpRequestException ex) {
                 throw await HandleHttpRequestExceptionAsync(ex);
             }
@@ -132,7 +134,7 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         protected virtual Task<Exception> HandleHttpRequestExceptionAsync(HttpRequestException exception)
-            => Task.FromResult<Exception>(new RHostDisconnectedException(Resources.Error_HostNotResponding.FormatInvariant(exception.Message), exception));
+            => Task.FromResult<Exception>(new RHostDisconnectedException(Resources.Error_HostNotResponding.FormatInvariant(Name, exception.Message), exception));
 
         private async Task<bool> IsSessionRunningAsync(string name, CancellationToken cancellationToken) {
             var sessionsService = new SessionsWebService(HttpClient, _credentials);
@@ -180,7 +182,7 @@ namespace Microsoft.R.Host.Client.Host {
                     } catch (UnauthorizedAccessException) {
                         _credentials.InvalidateCredentials();
                     } catch (Exception ex) when (ex is InvalidOperationException) {
-                        throw new RHostDisconnectedException(Resources.HttpErrorCreatingSession.FormatInvariant(ex.Message), ex);
+                        throw new RHostDisconnectedException(Resources.HttpErrorCreatingSession.FormatInvariant(Name, ex.Message), ex);
                     }
                 }
             }

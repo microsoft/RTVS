@@ -1389,6 +1389,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Code outlining.
+        /// </summary>
+        public static string Setting_EnableOutlining {
+            get {
+                return ResourceManager.GetString("Setting_EnableOutlining", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Outline code regions (collapsible sections).
+        /// </summary>
+        public static string Setting_EnableOutlining_Description {
+            get {
+                return ResourceManager.GetString("Setting_EnableOutlining_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Always save history.
         /// </summary>
         public static string Settings_AlwaysSaveHistory {
@@ -1799,6 +1817,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Settings_OsDefaultEncoding {
             get {
                 return ResourceManager.GetString("Settings_OsDefaultEncoding", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Outlining.
+        /// </summary>
+        public static string Settings_OutliningCategory {
+            get {
+                return ResourceManager.GetString("Settings_OutliningCategory", resourceCulture);
             }
         }
         
@@ -2219,7 +2246,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This operation requires SQL Data Tools package. Please add Data Storage and Processign workload to your Visual Studio setup..
+        ///   Looks up a localized string similar to This operation requires SQL Data Tools package. Please add Data Storage and Processing workload to your Visual Studio setup..
         /// </summary>
         public static string SqlPublish_NoSqlToolsVS15 {
             get {

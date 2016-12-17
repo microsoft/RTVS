@@ -8,6 +8,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Security;
 using System.Security.Principal;
+using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -25,6 +27,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
         private readonly ILogger _hostOutputLogger, _messageLogger, _sessionLogger;
 
         private readonly Dictionary<string, List<Session>> _sessions = new Dictionary<string, List<Session>>();
+        private readonly HashSet<string> _blockedUsers = new HashSet<string>();
 
         [ImportingConstructor]
         public SessionManager(
@@ -57,6 +60,29 @@ namespace Microsoft.R.Host.Broker.Sessions {
             }
         }
 
+        public IDisposable BlockSessionsCreationForUser(IIdentity user, bool terminateSession) {
+            lock (_sessions) {
+                if (terminateSession) {
+                    var userSessions = GetOrCreateSessionList(user);
+                    var sessions = userSessions.ToArray();
+                    foreach (var session in sessions) {
+                        userSessions.Remove(session);
+                        Task.Run(() => session.KillHost()).SilenceException<Exception>().DoNotWait();
+                        session.State = SessionState.Terminated;
+                    }
+                }
+                _blockedUsers.Add(user.Name);
+
+                return new UserSessionCreationBlocker(this, user);
+            }
+        }
+
+        private void UnblockSessionCreationForUser(IIdentity user) {
+            lock (_sessions) {
+                _blockedUsers.Remove(user.Name);
+            }
+        }
+
         public IEnumerable<string> GetUsers() {
             lock (_sessions) {
                 return _sessions.Keys.ToArray();
@@ -65,6 +91,10 @@ namespace Microsoft.R.Host.Broker.Sessions {
 
         public Session GetSession(IIdentity user, string id) {
             lock (_sessions) {
+                if (_blockedUsers.Contains(user.Name)) {
+                    return null;
+                }
+
                 return _sessions.Values.SelectMany(sessions => sessions).FirstOrDefault(session => session.User.Name == user.Name && session.Id == id);
             }
         }
@@ -81,57 +111,24 @@ namespace Microsoft.R.Host.Broker.Sessions {
             }
         }
 
-        private bool IsUserAllowedToCreateSession(IIdentity user) {
-            lock (_sessions) {
-                int activeUsers = _sessions.Keys.Where((k) => _sessions[k].Count > 0).Count();
-                bool userHasARecord = _sessions.Keys.Contains(user.Name);
-
-                bool userHasActiveSession = false;
-                if (userHasARecord) {
-                    List<Session> userSessions;
-                    _sessions.TryGetValue(user.Name, out userSessions);
-
-                    userHasActiveSession = userSessions?.Count > 0;
-                }
-
-                if (userHasActiveSession) {
-                    // This user's session already exists
-                    return true;
-                }
-
-                if (activeUsers < MaximumConcurrentClientWindowsUsers) {
-                    // User session doesn't exist AND there are slot(s) available for user session
-                    // Allow user to create a session on Client Windows
-                    return true;
-                } 
-
-                // user session doesn't exist AND there are NO slots available for user session
-                // Do NOT allow user to create a session on Client Windows
-                return false;
-                
-            }
-        }
-
         public Session CreateSession(IIdentity user, string id, Interpreter interpreter, SecureString password, string profilePath, string commandLineArguments) {
             Session session;
 
             lock (_sessions) {
-                if (!NativeMethods.IsWindowsServer() && !IsUserAllowedToCreateSession(user)) {
-                    // This is Client Windows, only 1 user is allowed to create sessions at a time.
-                    throw new BrokerMaxedUsersException(Resources.Exception_MaxAllowedUsers);
+                if (_blockedUsers.Contains(user.Name)) {
+                    throw new InvalidOperationException(Resources.Error_BlockedByProfileDeletion.FormatInvariant(user.Name));
                 }
 
-                var userSessions = GetOrCreateSessionList(user);
+                var oldUserSessions = GetOrCreateSessionList(user);
 
-                var oldSession = userSessions.FirstOrDefault(s => s.Id == id);
-                if (oldSession != null) {
-                    try {
-                        oldSession.KillHost();
-                    } catch (Exception) { }
-
+                var oldSessions = oldUserSessions.Where(s => s.Id == id).ToArray();
+                foreach (var oldSession in oldSessions) {
+                    oldUserSessions.Remove(oldSession);
+                    Task.Run(() => oldSession.KillHost()).SilenceException<Exception>().DoNotWait();
                     oldSession.State = SessionState.Terminated;
                 }
 
+                var userSessions = GetOrCreateSessionList(user);
                 session = new Session(this, user, id, interpreter, commandLineArguments, _sessionLogger, _messageLogger);
                 session.StateChanged += Session_StateChanged;
 
@@ -158,6 +155,19 @@ namespace Microsoft.R.Host.Broker.Sessions {
                         _sessions.Remove(session.User.Name);
                     }
                 }
+            }
+        }
+
+        private class UserSessionCreationBlocker : IDisposable {
+            private readonly SessionManager _sessionManager;
+            private readonly IIdentity _user;
+            public UserSessionCreationBlocker(SessionManager sessionManager, IIdentity user) {
+                _sessionManager = sessionManager;
+                _user = user;
+            }
+
+            public void Dispose() {
+                _sessionManager.UnblockSessionCreationForUser(_user);
             }
         }
     }

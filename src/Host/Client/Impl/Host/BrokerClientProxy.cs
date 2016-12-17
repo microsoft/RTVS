@@ -27,8 +27,8 @@ namespace Microsoft.R.Host.Client.Host {
         public bool IsRemote => _broker.IsRemote;
         public Uri Uri => _broker.Uri;
         public bool IsVerified => _broker.IsVerified;
+        public bool HasBroker => !(_broker is NullBrokerClient);
 
-        public Task PingAsync() => _broker.PingAsync();
         public Task<T> GetHostInformationAsync<T>(CancellationToken cancellationToken) => _broker.GetHostInformationAsync<T>(cancellationToken);
 
         public Task<RHost> ConnectAsync(BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken)) 
@@ -38,5 +38,7 @@ namespace Microsoft.R.Host.Client.Host {
             => _broker.TerminateSessionAsync(name, cancellationToken);
 
         public Task<string> HandleUrlAsync(string url, CancellationToken cancellationToken) => _broker.HandleUrlAsync(url, cancellationToken);
+
+        public Task DeleteProfileAsync(CancellationToken cancellationToken) => _broker.DeleteProfileAsync(cancellationToken);
     }
 }

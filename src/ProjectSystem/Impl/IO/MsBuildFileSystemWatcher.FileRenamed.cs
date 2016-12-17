@@ -41,7 +41,11 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
 
                 var oldRelativePath = PathHelper.MakeRelative(_rootDirectory, _oldFullPath);
                 if (IsFileAllowed(_rootDirectory, _fullPath, _fileSystem, _fileSystemFilter, out newRelativePath, out newShortRelativePath)) {
-                    _entries.RenameFile(oldRelativePath, newRelativePath, newShortRelativePath);
+                    if (_entries.ContainsFileEntry(oldRelativePath)) {
+                        _entries.RenameFile(oldRelativePath, newRelativePath, newShortRelativePath);
+                    } else {
+                        _entries.AddFile(newRelativePath, newShortRelativePath);
+                    }
                 } else {
                     _entries.DeleteFile(oldRelativePath);
                 }

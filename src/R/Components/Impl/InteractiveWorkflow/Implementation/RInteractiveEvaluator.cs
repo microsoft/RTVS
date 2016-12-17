@@ -27,14 +27,16 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         private readonly IConnectionManager _connections;
         private readonly ICoreShell _coreShell;
         private readonly IRSettings _settings;
+        private readonly IConsole _console;
         private readonly CountdownDisposable _evaluatorRequest;
         private CarriageReturnProcessor _crProcessor;
         private int _terminalWidth = 80;
+        private IInteractiveWindow _currentWindow;
 
         public IRHistory History { get; }
         public IRSession Session { get; }
 
-        public RInteractiveEvaluator(IRSessionProvider sessionProvider, IRSession session, IRHistory history, IConnectionManager connections, ICoreShell coreShell, IRSettings settings) {
+        public RInteractiveEvaluator(IRSessionProvider sessionProvider, IRSession session, IRHistory history, IConnectionManager connections, ICoreShell coreShell, IRSettings settings, IConsole console) {
             History = history;
             Session = session;
             Session.Output += SessionOnOutput;
@@ -45,6 +47,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             _connections = connections;
             _coreShell = coreShell;
             _settings = settings;
+            _console = console;
             _evaluatorRequest = new CountdownDisposable();
         }
 
@@ -61,9 +64,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             _crProcessor?.Dispose();
         }
 
-        public async Task<ExecutionResult> InitializeAsync() {
-            return await InitializeAsync(false);
-        }
+        public Task<ExecutionResult> InitializeAsync() => InitializeAsync(false);
 
         private async Task<ExecutionResult> InitializeAsync(bool isResetting) {
             try {
@@ -77,11 +78,6 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                         TerminalWidth = _terminalWidth,
                         EnableAutosave = !isResetting
                     };
-
-                    if (CurrentWindow != null) {
-                        CurrentWindow.TextView.VisualElement.SizeChanged += VisualElement_SizeChanged;
-                        _crProcessor = new CarriageReturnProcessor(_coreShell, CurrentWindow);
-                    }
 
                     await Session.EnsureHostStartedAsync(startupInfo, new RSessionCallback(CurrentWindow, Session, _settings, _coreShell, new FileSystem()));
                 }
@@ -100,9 +96,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
         public async Task<ExecutionResult> ResetAsync(bool initialize = true) {
             try {
-                CurrentWindow.TextView.VisualElement.SizeChanged -= VisualElement_SizeChanged;
                 if (Session.IsHostRunning) {
-                    CurrentWindow.WriteError(Resources.MicrosoftRHostStopping + Environment.NewLine);
+                    WriteErrorLine(Environment.NewLine + Resources.MicrosoftRHostStopping);
                     await Session.StopHostAsync();
                 }
 
@@ -110,7 +105,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                     return ExecutionResult.Success;
                 }
 
-                CurrentWindow.WriteError(Environment.NewLine + Resources.MicrosoftRHostStarting + Environment.NewLine);
+                WriteErrorLine(Environment.NewLine + Resources.MicrosoftRHostStarting);
                 return await InitializeAsync(true);
             } catch (Exception ex) {
                 Trace.Fail($"Exception in RInteractiveEvaluator.ResetAsync\n{ex}");
@@ -190,23 +185,39 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             return Session.Prompt;
         }
 
-        public IInteractiveWindow CurrentWindow { get; set; }
+        public IInteractiveWindow CurrentWindow {
+            get { return _currentWindow; }
+            set {
+                if (_currentWindow != null) {
+                    CurrentWindow.TextView.VisualElement.SizeChanged -= VisualElement_SizeChanged;
+                }
+                _currentWindow = value;
+                if (_currentWindow != null) {
+                    _currentWindow.TextView.VisualElement.SizeChanged += VisualElement_SizeChanged;
+                    _crProcessor = new CarriageReturnProcessor(_coreShell, _currentWindow);
+                }
+            }
+        }
 
         private void SessionOnOutput(object sender, ROutputEventArgs args) {
             if (args.OutputType == OutputType.Output) {
                 Write(args.Message.ToUnicodeQuotes());
             } else {
-                WriteError(args.Message);
+                WriteErrorLine(args.Message);
             }
         }
 
         private void SessionOnDisconnected(object sender, EventArgs args) {
             if (CurrentWindow == null || !CurrentWindow.IsResetting) {
-                WriteError(Resources.MicrosoftRHostStopped);
+                WriteErrorLine(Environment.NewLine + Resources.MicrosoftRHostStopped);
             }
         }
 
         private void SessionOnAfterRequest(object sender, RAfterRequestEventArgs e) {
+            if (CurrentWindow == null || CurrentWindow.IsResetting) {
+                return;
+            }
+
             if (_evaluatorRequest.Count == 0 && e.AddToHistory && e.IsVisible) {
                 _coreShell.DispatchOnUIThread(() => {
                     if (CurrentWindow == null || CurrentWindow.IsResetting) {
@@ -220,6 +231,10 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         }
 
         private void SessionOnBeforeRequest(object sender, RBeforeRequestEventArgs e) {
+            if (CurrentWindow == null || CurrentWindow.IsRunning) {
+                return;
+            }
+
             _coreShell.DispatchOnUIThread(() => {
                 if (CurrentWindow == null || CurrentWindow.IsRunning) {
                     return;
@@ -236,29 +251,20 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         }
 
 
-
         private void Write(string message) {
             if (CurrentWindow != null && !_crProcessor.ProcessMessage(message)) {
-                CurrentWindow.Write(message);
+                _coreShell.DispatchOnUIThread(() => CurrentWindow?.Write(message));
             }
         }
 
-        private void WriteError(string message) {
-            if (CurrentWindow != null) {
-                _coreShell.DispatchOnUIThread(() => CurrentWindow.WriteError(message));
-            }
+        private void WriteErrorLine(string message) {
+            message = TrimExcessiveLineBreaks(message);
+            _console.WriteLine(message);
         }
 
         private void WriteRHostDisconnectedError(RHostDisconnectedException exception) {
-            WriteRHostDisconnectedErrorAsync(exception).DoNotWait();
-        }
-
-        private async Task WriteRHostDisconnectedErrorAsync(RHostDisconnectedException exception) {
-            await _coreShell.SwitchToMainThreadAsync();
-            if (CurrentWindow != null) {
-                CurrentWindow.WriteErrorLine(exception.Message);
-                CurrentWindow.WriteErrorLine(_sessionProvider.IsConnected ? Resources.RestartRHost : Resources.ReconnectToBroker);
-            }
+            WriteErrorLine(Environment.NewLine + exception.Message);
+            WriteErrorLine(_sessionProvider.IsConnected ? Resources.RestartRHost : Resources.ReconnectToBroker);
         }
 
         private void VisualElement_SizeChanged(object sender, System.Windows.SizeChangedEventArgs e) {
@@ -269,6 +275,47 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             Session.OptionsSetWidthAsync(_terminalWidth)
                 .SilenceException<RException>()
                 .DoNotWait();
+        }
+
+        /// <summary>
+        /// Prevents multiple line breaks in REPL when various components prepend and append
+        /// extra line breaks to the error message. Limits output to 2 line breaks per message.
+        /// </summary>
+        private string TrimExcessiveLineBreaks(string message) {
+            if (CurrentWindow.CurrentLanguageBuffer == null) {
+                return message.Trim();
+            }
+
+            // Trim all line breaks at the end of the message
+            message = message.TrimEnd(CharExtensions.LineBreakChars);
+
+            // Trim and count leading new lines in the message
+            int newLineLength = Environment.NewLine.Length;
+            int nlInMessage = 0;
+            while (message.StartsWithOrdinal(Environment.NewLine) && message.Length > newLineLength) {
+                nlInMessage++;
+                message = message.Substring(newLineLength, message.Length - newLineLength);
+            }
+
+            if (nlInMessage > 0) {
+                // Count line breaks in the beginning of the message and at the end 
+                // of the line text buffer and ensure no more than 2.
+                var snapshot = CurrentWindow.CurrentLanguageBuffer.CurrentSnapshot;
+                int nlInBuffer = 0;
+                for (int i = snapshot.Length - newLineLength; i >= 0; i -= newLineLength) {
+                    if (!snapshot.GetText(i, newLineLength).EqualsOrdinal(Environment.NewLine)) {
+                        break;
+                    }
+                    nlInBuffer++;
+                }
+
+                // allow no more than 2 combined
+                for (int i = 0; i < Math.Min(2, nlInBuffer + nlInMessage); i++) {
+                    message = Environment.NewLine + message;
+                }
+            }
+
+            return message;
         }
     }
 }

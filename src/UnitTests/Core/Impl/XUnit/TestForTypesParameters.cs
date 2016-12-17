@@ -10,7 +10,7 @@ namespace Microsoft.UnitTests.Core.XUnit
     [ExcludeFromCodeCoverage]
     public class TestForTypesParameters : TestParameters
     {
-        public TestForTypesParameters(IAttributeInfo factAttribute) : base(factAttribute)
+        public TestForTypesParameters(ITestMethod testMethod, IAttributeInfo factAttribute) : base(testMethod, factAttribute)
         {
             Types = factAttribute.GetNamedArgument<Type[]>("Types");
         }

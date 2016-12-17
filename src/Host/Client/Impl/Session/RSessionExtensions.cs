@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
@@ -24,29 +25,28 @@ namespace Microsoft.R.Host.Client.Session {
             return null;
         }
 
-        public static async Task<string> GetRUserDirectoryAsync(this IRSession session) {
+        public static async Task<string> GetRUserDirectoryAsync(this IRSession session, CancellationToken cancellationToken = default(CancellationToken)) {
             if (session.IsHostRunning) {
                 await TaskUtilities.SwitchToBackgroundThread();
                 try {
-                    return await RSessionEvaluationCommands.GetRUserDirectoryAsync(session);
+                    return await RSessionEvaluationCommands.GetRUserDirectoryAsync(session, cancellationToken);
                 } catch (RException) {
                 } catch (OperationCanceledException) { }
             }
             return null;
         }
 
-        public static async Task<string> MakeRelativeToRUserDirectoryAsync(this IRSession session, string name) {
-            var userDirectory = await session.GetRUserDirectoryAsync();
+        public static async Task<string> MakeRelativeToRUserDirectoryAsync(this IRSession session, string name, CancellationToken cancellationToken = default(CancellationToken)) {
+            var userDirectory = await session.GetRUserDirectoryAsync(cancellationToken);
             return name.MakeRRelativePath(userDirectory);
         }
 
-        public static async Task<IEnumerable<string>> MakeRelativeToRUserDirectoryAsync(this IRSession session, IEnumerable<string> names) {
-            var userDirectory = await session.GetRUserDirectoryAsync();
+        public static async Task<IEnumerable<string>> MakeRelativeToRUserDirectoryAsync(this IRSession session, IEnumerable<string> names, CancellationToken cancellationToken = default(CancellationToken)) {
+            var userDirectory = await session.GetRUserDirectoryAsync(cancellationToken);
             return names.Select(n => n.MakeRRelativePath(userDirectory));
         }
 
-        public static Task<string> GetFunctionCodeAsync(this IRSession session, string functionName) {
-            return session.EvaluateAsync<string>(Invariant($"paste0(deparse({functionName}), collapse='\n')"), REvaluationKind.Normal);
-        }
+        public static Task<string> GetFunctionCodeAsync(this IRSession session, string functionName, CancellationToken cancellationToken = default(CancellationToken)) 
+            => session.EvaluateAsync<string>(Invariant($"paste0(deparse({functionName}), collapse='\n')"), REvaluationKind.Normal, cancellationToken);
     }
 }

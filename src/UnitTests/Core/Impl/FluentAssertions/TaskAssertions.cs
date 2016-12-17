@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,31 +11,31 @@ using FluentAssertions.Execution;
 using FluentAssertions.Primitives;
 
 namespace Microsoft.UnitTests.Core.FluentAssertions {
-    public sealed class TaskAssertions : ReferenceTypeAssertions<Task, TaskAssertions> {
-        public TaskAssertions(Task task) {
+    public sealed class TaskAssertions<T> : ReferenceTypeAssertions<T, TaskAssertions<T>> where T : Task {
+        public TaskAssertions(T task) {
             Subject = task;
         }
 
         protected override string Context { get; } = "System.Threading.Tasks.Task";
 
-        public AndConstraint<TaskAssertions> BeCompleted(string because = "", params object[] reasonArgs) {
+        public AndConstraint<TaskAssertions<T>> BeCompleted(string because = "", params object[] reasonArgs) {
             Subject.Should().NotBeNull();
 
             Execute.Assertion.ForCondition(Subject.IsCompleted)
                 .BecauseOf(because, reasonArgs)
                 .FailWith($"Expected task to be completed{{reason}}, but it is {Subject.Status}.");
 
-            return new AndConstraint<TaskAssertions>(this);
+            return new AndConstraint<TaskAssertions<T>>(this);
         }
 
-        public AndConstraint<TaskAssertions> NotBeCompleted(string because = "", params object[] reasonArgs) {
+        public AndConstraint<TaskAssertions<T>> NotBeCompleted(string because = "", params object[] reasonArgs) {
             Subject.Should().NotBeNull();
 
             Execute.Assertion.ForCondition(!Subject.IsCompleted)
                 .BecauseOf(because, reasonArgs)
                 .FailWith($"Expected task not to be completed{{reason}}, but {GetNotBeCompletedMessage()}.");
 
-            return new AndConstraint<TaskAssertions>(this);
+            return new AndConstraint<TaskAssertions<T>>(this);
         }
 
         private string GetNotBeCompletedMessage() { 
@@ -52,53 +53,80 @@ namespace Microsoft.UnitTests.Core.FluentAssertions {
             }
         }
         
-        public Task<AndConstraint<TaskAssertions>> BeCompletedAsync(int timeout = 10000, string because = "", params object[] reasonArgs) {
+        public Task<AndConstraint<TaskAssertions<T>>> BeCompletedAsync(int timeout = 10000, string because = "", params object[] reasonArgs)
+            => BeInTimeAsync(BeCompletedAsyncContinuation, timeout, because:because, reasonArgs:reasonArgs);
+        
+        public Task<AndConstraint<TaskAssertions<T>>> BeCanceledAsync(int timeout = 10000, string because = "", params object[] reasonArgs)
+            => BeInTimeAsync(BeCanceledAsyncContinuation, timeout, because: because, reasonArgs: reasonArgs);
+        
+        public Task<AndConstraint<TaskAssertions<T>>> NotBeCompletedAsync(int timeout = 1000, string because = "", params object[] reasonArgs) 
+            => BeInTimeAsync(NotBeCompletedAsyncContinuation, timeout, 1000, because, reasonArgs);
+
+        private Task<AndConstraint<TaskAssertions<T>>> BeInTimeAsync(Func<Task<Task>, object, AndConstraint<TaskAssertions<T>>> continuation, int timeout = 10000, int debuggerTimeout = 100000, string because = "", params object[] reasonArgs) {
             Subject.Should().NotBeNull();
+            if (Debugger.IsAttached) {
+                timeout = Math.Max(debuggerTimeout, timeout);
+            }
+
             var timeoutTask = Task.Delay(timeout);
-            var state = new BeCompletedAsyncContinuationState(timeout, because, reasonArgs);
+            var state = new TimeoutContinuationState(timeout, because, reasonArgs);
             return Task.WhenAny(timeoutTask, Subject)
-                .ContinueWith(BeCompletedAsyncContinuation, state, default(CancellationToken), TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+                .ContinueWith(continuation, state, default(CancellationToken), TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
         }
 
-        private AndConstraint<TaskAssertions> BeCompletedAsyncContinuation(Task<Task> task, object state) {
-            var data = (BeCompletedAsyncContinuationState) state;
-            Execute.Assertion.ForCondition(Subject.IsCompleted)
+        private AndConstraint<TaskAssertions<T>> BeCompletedAsyncContinuation(Task<Task> task, object state) {
+            var data = (TimeoutContinuationState) state;
+            AssertStatus(TaskStatus.RanToCompletion, true, data.Because, data.ReasonArgs,
+                "Expected task to be completed in {0} milliseconds{reason}, but it is {1}.", data.Timeout, Subject.Status);
+            return new AndConstraint<TaskAssertions<T>>(this);
+        }
+
+        private AndConstraint<TaskAssertions<T>> BeCanceledAsyncContinuation(Task<Task> task, object state) {
+            var data = (TimeoutContinuationState) state;
+            AssertStatus(TaskStatus.Canceled, true, data.Because, data.ReasonArgs,
+                "Expected task to be canceled in {0} milliseconds{reason}, but it is {1}.", data.Timeout, Subject.Status);
+            return new AndConstraint<TaskAssertions<T>>(this);
+        }
+
+        private AndConstraint<TaskAssertions<T>> NotBeCompletedAsyncContinuation(Task<Task> task, object state) {
+            var data = (TimeoutContinuationState) state;
+            Execute.Assertion.ForCondition(!Subject.IsCompleted)
                 .BecauseOf(data.Because, data.ReasonArgs)
-                .FailWith($"Expected task to be completed in {data.Timeout} milliseconds{{reason}}, but it is {Subject.Status}.");
+                .FailWith($"Expected task not to be completed in {data.Timeout} milliseconds{{reason}}, but {GetNotBeCompletedMessage()}.");
 
-            return new AndConstraint<TaskAssertions>(this);
+            return new AndConstraint<TaskAssertions<T>>(this);
         }
 
-        public AndConstraint<TaskAssertions> BeRanToCompletion(string because = "", params object[] reasonArgs) 
+        public AndConstraint<TaskAssertions<T>> BeRanToCompletion(string because = "", params object[] reasonArgs) 
             => AssertStatus(TaskStatus.RanToCompletion, true, because, reasonArgs, "Expected task to completed execution successfully{reason}, but it has status {0}.", Subject.Status);
 
-        public AndConstraint<TaskAssertions> BeCanceled(string because = "", params object[] reasonArgs) 
+        public AndConstraint<TaskAssertions<T>> BeCanceled(string because = "", params object[] reasonArgs) 
             => AssertStatus(TaskStatus.Canceled, true, because, reasonArgs, "Expected task to be canceled{reason}, but it has status {0}.", Subject.Status);
 
-        public AndConstraint<TaskAssertions> NotBeCanceled(string because = "", params object[] reasonArgs) 
+        public AndConstraint<TaskAssertions<T>> NotBeCanceled(string because = "", params object[] reasonArgs) 
             => AssertStatus(TaskStatus.Canceled, false, because, reasonArgs, "Expected task not to be canceled{reason}, but it has status {0}.", Subject.Status);
 
-        public AndConstraint<TaskAssertions> BeFaulted(string because = "", params object[] reasonArgs) 
+        public AndConstraint<TaskAssertions<T>> BeFaulted(string because = "", params object[] reasonArgs) 
             => AssertStatus(TaskStatus.Faulted, true, because, reasonArgs, "Expected task to be faulted{reason}, but it has status {0}.", Subject.Status);
 
-        public AndConstraint<TaskAssertions> BeFaulted<T>(string because = "", params object[] reasonArgs) where T : Exception
-            => AssertStatus(TaskStatus.Faulted, false, because, reasonArgs, "Expected task to be faulted with exception of type {0}{reason}, but it has status {1}.", typeof(T), Subject.Status);
+        public AndConstraint<TaskAssertions<T>> BeFaulted<TException>(string because = "", params object[] reasonArgs) where TException : Exception
+            => AssertStatus(TaskStatus.Faulted, false, because, reasonArgs, "Expected task to be faulted with exception of type {0}{reason}, but it has status {1}.", typeof(TException), Subject.Status);
 
-        public AndConstraint<TaskAssertions> NotBeFaulted(string because = "", params object[] reasonArgs) 
+        public AndConstraint<TaskAssertions<T>> NotBeFaulted(string because = "", params object[] reasonArgs) 
             => AssertStatus(TaskStatus.Faulted, false, because, reasonArgs, "Expected task not to be faulted{reason}, but it has status {0}.", Subject.Status);
 
-        private AndConstraint<TaskAssertions> AssertStatus(TaskStatus status, bool hasStatus, string because, object[] reasonArgs, string message, params object[] messageArgs) {
+        private AndConstraint<TaskAssertions<T>> AssertStatus(TaskStatus status, bool hasStatus, string because, object[] reasonArgs, string message, params object[] messageArgs) {
             Subject.Should().NotBeNull();
 
             Execute.Assertion.ForCondition(status == Subject.Status == hasStatus)
                 .BecauseOf(because, reasonArgs)
                 .FailWith(message, messageArgs);
 
-            return new AndConstraint<TaskAssertions>(this);
+            return new AndConstraint<TaskAssertions<T>>(this);
         }
 
-        private class BeCompletedAsyncContinuationState {
-            public BeCompletedAsyncContinuationState(int timeout, string because, object[] reasonArgs) {
+        private class TimeoutContinuationState {
+            public TimeoutContinuationState(int timeout, string because, object[] reasonArgs) {
                 Because = because;
                 ReasonArgs = reasonArgs;
                 Timeout = timeout;

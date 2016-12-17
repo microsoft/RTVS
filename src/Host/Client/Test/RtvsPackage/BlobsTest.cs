@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.IO;
@@ -74,9 +75,9 @@ namespace Microsoft.R.Host.Client.Test.RtvsPackage {
             var dataSet = new byte[][] { data1, data2, data3 };
 
             using (DataTransferSession dts = new DataTransferSession(_session, null)) {
-                var blob1 = await dts.SendBytesAsync(data1);
-                var blob2 = await dts.SendBytesAsync(data2);
-                var blob3 = await dts.SendBytesAsync(data3);
+                var blob1 = await dts.SendBytesAsync(data1, true, null, CancellationToken.None);
+                var blob2 = await dts.SendBytesAsync(data2, true, null, CancellationToken.None);
+                var blob3 = await dts.SendBytesAsync(data3, true, null, CancellationToken.None);
 
                 blob1.Id.Should().BeGreaterThan(0);
                 blob2.Id.Should().BeGreaterThan(0);
@@ -89,7 +90,7 @@ namespace Microsoft.R.Host.Client.Test.RtvsPackage {
                 var blobIds = new IRBlobInfo[] { blob1, blob2, blob3 };
 
                 for (int i = 0; i < blobIds.Length; ++i) {
-                    var blob = await dts.FetchBytesAsync(blobIds[i], false);
+                    var blob = await dts.FetchBytesAsync(blobIds[i], false, null, CancellationToken.None);
                     blob.Should().Equal(dataSet[i]);
                 }
             }
@@ -163,76 +164,68 @@ namespace Microsoft.R.Host.Client.Test.RtvsPackage {
 
         [Test]
         public async Task RCreateGetDestroyBlobs() {
-            using (var eval = await _session.BeginEvaluationAsync()) {
-                var createResult = await eval.EvaluateAsync("rtvs:::create_blob(as.raw(1:10))", REvaluationKind.Normal);
-                createResult.Result.Should().NotBeNull();
+            var createResult = await _session.EvaluateAsync("rtvs:::create_blob(as.raw(1:10))", REvaluationKind.Normal);
+            createResult.Result.Should().NotBeNull();
 
-                var blobId = ((JValue)createResult.Result).Value<ulong>();
-                var actualData = await eval.EvaluateAsync<byte[]>($"rtvs:::get_blob({blobId})", REvaluationKind.Normal);
+            var blobId = ((JValue) createResult.Result).Value<ulong>();
+            var actualData = await _session.EvaluateAsync<byte[]>($"rtvs:::get_blob({blobId})", REvaluationKind.Normal);
 
-                byte[] expectedData = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-                actualData.Should().Equal(expectedData);
+            byte[] expectedData = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+            actualData.Should().Equal(expectedData);
 
-                await eval.ExecuteAsync($"rtvs:::destroy_blob({blobId})");
-            }
+            await _session.ExecuteAsync($"rtvs:::destroy_blob({blobId})");
         }
 
         [Test]
         public async Task RZeroSizedBlob() {
-            using (var eval = await _session.BeginEvaluationAsync()) {
-                var createResult = await eval.EvaluateAsync("rtvs:::create_blob(raw())", REvaluationKind.Normal);
-                createResult.Result.Should().NotBeNull();
+            var createResult = await _session.EvaluateAsync("rtvs:::create_blob(raw())", REvaluationKind.Normal);
+            createResult.Result.Should().NotBeNull();
 
-                var blobId = ((JValue)createResult.Result).Value<ulong>();
-                var actualData = await eval.EvaluateAsync<byte[]>($"rtvs:::get_blob({blobId})", REvaluationKind.Normal);
+            var blobId = ((JValue)createResult.Result).Value<ulong>();
+            var actualData = await _session.EvaluateAsync<byte[]>($"rtvs:::get_blob({blobId})", REvaluationKind.Normal);
 
-                byte[] expectedData = { };
-                actualData.Should().Equal(expectedData);
+            byte[] expectedData = { };
+            actualData.Should().Equal(expectedData);
 
-                await eval.ExecuteAsync($"rtvs:::destroy_blob({blobId})");
-            }
+            await _session.ExecuteAsync($"rtvs:::destroy_blob({blobId})");
         }
 
         [Test]
         public async Task CompressedBlob() {
-            using (var eval = await _session.BeginEvaluationAsync()) {
-                var createResult = await eval.EvaluateAsync("rtvs:::create_blob(raw(1000000))", REvaluationKind.Normal);
-                createResult.Result.Should().NotBeNull();
+            var createResult = await _session.EvaluateAsync("rtvs:::create_blob(raw(1000000))", REvaluationKind.Normal);
+            createResult.Result.Should().NotBeNull();
 
-                var createCompressedResult = await eval.EvaluateAsync("rtvs:::create_compressed_blob(raw(1000000))", REvaluationKind.Normal);
-                createCompressedResult.Result.Should().NotBeNull();
+            var createCompressedResult = await _session.EvaluateAsync("rtvs:::create_compressed_blob(raw(1000000))", REvaluationKind.Normal);
+            createCompressedResult.Result.Should().NotBeNull();
 
-                var blobId = ((JValue)createResult.Result).Value<ulong>();
-                var blobId2 = ((JValue)createCompressedResult.Result).Value<ulong>();
+            var blobId = ((JValue)createResult.Result).Value<ulong>();
+            var blobId2 = ((JValue)createCompressedResult.Result).Value<ulong>();
 
-                using (DataTransferSession dts = new DataTransferSession(_session, new FileSystem())) {
-                    var expectedData = await dts.FetchBytesAsync(new RBlobInfo(blobId));
-                    var compressedData = await dts.FetchBytesAsync(new RBlobInfo(blobId2));
-                    compressedData.Length.Should().BeLessThan(expectedData.Length);
+            using (DataTransferSession dts = new DataTransferSession(_session, new FileSystem())) {
+                var expectedData = await dts.FetchBytesAsync(new RBlobInfo(blobId), true, null, CancellationToken.None);
+                var compressedData = await dts.FetchBytesAsync(new RBlobInfo(blobId2), true, null, CancellationToken.None);
+                compressedData.Length.Should().BeLessThan(expectedData.Length);
 
-                    var actualData = await dts.FetchAndDecompressBytesAsync(new RBlobInfo(blobId2));
-                    actualData.Should().Equal(expectedData);
-                }
+                var actualData = await dts.FetchAndDecompressBytesAsync(new RBlobInfo(blobId2), true, null, CancellationToken.None);
+                actualData.Should().Equal(expectedData);
             }
         }
 
         [Test]
         public async Task CompressedZeroSizedBlob() {
-            using (var eval = await _session.BeginEvaluationAsync()) {
-                var createResult = await eval.EvaluateAsync("rtvs:::create_blob(raw())", REvaluationKind.Normal);
-                createResult.Result.Should().NotBeNull();
+            var createResult = await _session.EvaluateAsync("rtvs:::create_blob(raw())", REvaluationKind.Normal);
+            createResult.Result.Should().NotBeNull();
 
-                var createCompressedResult = await eval.EvaluateAsync("rtvs:::create_compressed_blob(raw())", REvaluationKind.Normal);
-                createCompressedResult.Result.Should().NotBeNull();
+            var createCompressedResult = await _session.EvaluateAsync("rtvs:::create_compressed_blob(raw())", REvaluationKind.Normal);
+            createCompressedResult.Result.Should().NotBeNull();
 
-                var blobId = ((JValue)createResult.Result).Value<ulong>();
-                var blobId2 = ((JValue)createCompressedResult.Result).Value<ulong>();
+            var blobId = ((JValue)createResult.Result).Value<ulong>();
+            var blobId2 = ((JValue)createCompressedResult.Result).Value<ulong>();
 
-                using (DataTransferSession dts = new DataTransferSession(_session, new FileSystem())) {
-                    var expectedData = await dts.FetchBytesAsync(new RBlobInfo(blobId));
-                    var actualData = await dts.FetchAndDecompressBytesAsync(new RBlobInfo(blobId2));
-                    actualData.Should().Equal(expectedData);
-                }
+            using (DataTransferSession dts = new DataTransferSession(_session, new FileSystem())) {
+                var expectedData = await dts.FetchBytesAsync(new RBlobInfo(blobId), true, null, CancellationToken.None);
+                var actualData = await dts.FetchAndDecompressBytesAsync(new RBlobInfo(blobId2), true, null, CancellationToken.None);
+                actualData.Should().Equal(expectedData);
             }
         }
     }

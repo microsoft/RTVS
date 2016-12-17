@@ -3,15 +3,25 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
-using Microsoft.Common.Core;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
+using Microsoft.Common.Core.Json;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Internal.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Settings;
-using Microsoft.VisualStudio.Shell.Settings;
 using Newtonsoft.Json;
-using static System.FormattableString;
+
+namespace Microsoft.Internal.VisualStudio.Shell.Interop {
+    // The definition is not public for whatever reason
+    [Guid("9B164E40-C3A2-4363-9BC5-EB4039DEF653")]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    public interface SVsSettingsPersistenceManager { }
+}
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
     /// <summary>
@@ -19,44 +29,41 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
     /// Provides methods for saving values in VS settings.
     /// </summary>
     [Export(typeof(ISettingsStorage))]
-    internal sealed class VsSettingsStorage : ISettingsStorage {
-        /// <summary>
-        /// Collection path in VS settings
-        /// </summary>
-        private const string _collectionPath = "R Tools";
-
+    internal sealed class VsSettingsStorage : ISettingsStorage, IDisposable {
         /// <summary>
         /// Settings cache. Persisted to storage when package is unloaded.
         /// </summary>
-        private readonly Dictionary<string, object> _settingsCache = new Dictionary<string, object>();
-
+        private readonly Dictionary<string, Setting> _settingsCache = new Dictionary<string, Setting>();
         private readonly object _lock = new object();
 
-        private SettingsManager _settingsManager;
-        private SettingsManager SettingsManager {
+        private ISettingsManager _settingsManager;
+        private ISettingsSubset _subset;
+
+        public VsSettingsStorage() : this(null) { }
+        public VsSettingsStorage(ISettingsManager settingsManager) {
+            _settingsManager = settingsManager;
+        }
+
+        private ISettingsManager SettingsManager {
             get {
                 if (_settingsManager == null) {
-                    _settingsManager = new ShellSettingsManager(RPackage.Current);
+                    _settingsManager = RPackage.GetGlobalService(typeof(SVsSettingsPersistenceManager)) as ISettingsManager;
+                    _subset = _settingsManager.GetSubset(RPackage.ProductName + "*");
+                    _subset.SettingChangedAsync += OnSettingChangedAsync;
                 }
                 return _settingsManager;
             }
         }
 
-        private WritableSettingsStore _store;
-        private WritableSettingsStore Store {
-            get {
-                if (_store == null) {
-                    _store = SettingsManager.GetWritableSettingsStore(SettingsScope.UserSettings);
-                    EnsureCollectionExists();
-                }
-                return _store;
-            }
+        private Task OnSettingChangedAsync(object sender, PropertyChangedEventArgs args) {
+            // TODO: update connections and cache dynamically
+            return Task.CompletedTask;
         }
 
-        public VsSettingsStorage() : this(null) { }
-
-        public VsSettingsStorage(SettingsManager sm) {
-            _settingsManager = sm;
+        public void Dispose() {
+            if (_subset != null) {
+                _subset.SettingChangedAsync -= OnSettingChangedAsync;
+            }
         }
 
         #region ISettingsStorage
@@ -65,21 +72,25 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 if (_settingsCache.ContainsKey(name)) {
                     return true;
                 }
-                return Store.PropertyExists(_collectionPath, name);
+
+                object value;
+                var result = SettingsManager.TryGetValue(GetPersistentName(name), out value);
+                return result == GetValueResult.Success && value != null;
             }
         }
 
         public object GetSetting(string name, Type t) {
             lock (_lock) {
-                object value;
-                if (_settingsCache.TryGetValue(name, out value)) {
-                    return value;
+                Setting setting;
+                if (_settingsCache.TryGetValue(name, out setting)) {
+                    return setting.Value;
                 }
 
-                value = GetValueFromStore(name, t);
+                var value = GetValueFromStore(name, t);
                 if (value != null) {
-                    _settingsCache[name] = value;
-                    return value;
+                    var newSetting = Setting.FromStoredValue(value, t);
+                    _settingsCache[name] = newSetting;
+                    return newSetting.Value;
                 }
             }
             return null;
@@ -94,35 +105,28 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             return defaultValue;
         }
 
-        public void SetSetting(string name, object value) {
+        public void SetSetting(string name, object newValue) {
             lock (_lock) {
-                _settingsCache[name] = value;
+                if (!_settingsCache.ContainsKey(name)) {
+                    _settingsCache[name] = new Setting(newValue, true);
+                } else {
+                    _settingsCache[name].SetValue(newValue);
+                }
             }
         }
 
-        public void Persist() {
-            lock (_lock) {
-                EnsureCollectionExists();
+        public async Task PersistAsync() {
+            KeyValuePair<string, Setting>[] kvps;
 
-                foreach (var s in _settingsCache) {
-                    if (s.Value != null) {
-                        var t = s.Value.GetType();
-                        if (s.Value is bool) {
-                            Store.SetBoolean(_collectionPath, s.Key, (bool)s.Value);
-                        } else if (s.Value is int || t.IsEnum) {
-                            Store.SetInt32(_collectionPath, s.Key, (int)s.Value);
-                        } else if (s.Value is uint) {
-                            Store.SetUInt32(_collectionPath, s.Key, (uint)s.Value);
-                        } else if (s.Value is string) {
-                            Store.SetString(_collectionPath, s.Key, (string)s.Value);
-                        } else {
-                            var json = JsonConvert.SerializeObject(s.Value);
-                            Store.SetString(_collectionPath, s.Key, json);
-                        }
-                    } else {
-                        Store.DeleteProperty(_collectionPath, s.Key);
-                    }
-                }
+            lock (_lock) {
+                kvps = _settingsCache.Where(k => k.Value.Changed).ToArray();
+            }
+
+            foreach (var kvp in kvps) {
+                var persistentName = GetPersistentName(kvp.Key);
+                var setting = kvp.Value;
+                await SettingsManager.SetValueAsync(persistentName, setting.ToSimpleType(), false);
+                setting.Changed = false;
             }
         }
         #endregion
@@ -130,28 +134,72 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         internal void ClearCache() => _settingsCache.Clear(); // for tests
 
         private object GetValueFromStore(string name, Type t) {
-            if (Store.CollectionExists(_collectionPath) && Store.PropertyExists(_collectionPath, name)) {
-                if (typeof(bool).IsAssignableFrom(t)) {
-                    return Store.GetBoolean(_collectionPath, name);
-                } else if (typeof(int).IsAssignableFrom(t) || t.IsEnum) {
-                    return Store.GetInt32(_collectionPath, name);
-                } else if (typeof(uint).IsAssignableFrom(t)) {
-                    return Store.GetUInt32(_collectionPath, name);
-                } else if (typeof(string).IsAssignableFrom(t)) {
-                    return Store.GetString(_collectionPath, name);
-                } else {
-                    var s = Store.GetString(_collectionPath, name);
-                    if (s != null) {
-                        return JsonConvert.DeserializeObject(s, t);
-                    }
-                }
-            }
-            return null;
+            object value;
+            var result = SettingsManager.TryGetValue(GetPersistentName(name), out value);
+            return result == GetValueResult.Success ? value : null;
         }
 
-        private void EnsureCollectionExists() {
-            if (!Store.CollectionExists(_collectionPath)) {
-                Store.CreateCollection(_collectionPath);
+        private static string GetPersistentName(string setting) => RPackage.ProductName + "." + setting;
+
+        class Setting {
+            public object Value { get; private set; }
+            public bool Changed { get; set; }
+
+            public Setting(object value, bool changed = false) {
+                Value = value;
+                Changed = changed;
+            }
+
+            public object ToSimpleType() {
+                if (Value != null && !IsSimpleType(Value.GetType())) {
+                    // Must escape JSON since VS roaming settings are converted to JSON
+                    return JsonConvert.ToString(JsonConvert.SerializeObject(Value));
+                }
+                return Value;
+            }
+
+            public void SetValue(object newValue) {
+                if (!Object.Equals(Value, newValue)) {
+                    Changed = true;
+                    Value = newValue;
+                }
+            }
+
+            public static Setting FromStoredValue(object o, Type t) {
+                object value = null;
+
+                if (o is string && !IsSimpleType(t)) {
+                    // Must unescape JSON since VS roaming settings are converted to JSON
+                    var token = Json.ParseToken((string)o);
+                    try {
+                        var str = token.ToObject<string>();
+                        value = Json.DeserializeObject(str, t);
+                    } catch (ArgumentException) {
+                        value = null; // Protect against stale or corrupted data in the roaming storage
+                    }
+                } else {
+                    if (o is Int64 && t != typeof(Int64)) {
+                        o = Convert.ToInt32(o);
+                    }
+
+                    // VS roaming setting manager roams integer values and enums as integers
+                    if (o is Int32 && t.IsEnum && t.IsEnumDefined(o)) {
+                        value = Enum.ToObject(t, o);
+                    } else {
+                        value = o;
+                    }
+                }
+                return new Setting(value);
+            }
+
+            private static bool IsSimpleType(Type t) {
+                return t.IsEnum ||
+                       t == typeof(string) ||
+                       t == typeof(bool) ||
+                       t == typeof(int) ||
+                       t == typeof(uint) ||
+                       t == typeof(double) ||
+                       t == typeof(float);
             }
         }
     }

@@ -30,8 +30,8 @@ namespace Microsoft.R.Support.Help.Functions {
         /// locus points (locations withing the string) for each function
         /// parameter.
         /// </summary>
-        public string GetSignatureString(List<int> locusPoints = null) {
-            var sb = new StringBuilder(FunctionName);
+        public string GetSignatureString(string actualName, List<int> locusPoints = null) {
+            var sb = new StringBuilder(actualName);
             int lineCount = 0;
 
             sb.Append('(');

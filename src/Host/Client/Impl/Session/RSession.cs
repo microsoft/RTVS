@@ -15,23 +15,25 @@ using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Tasks;
 using Microsoft.Common.Core.Threading;
+using Microsoft.R.Host.Client.BrokerServices;
 using Microsoft.R.Host.Client.Host;
 using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client.Session {
     internal sealed class RSession : IRSession, IRCallbacks {
+        private static readonly string RemotePromptPrefix = "\u26b9";
         private static readonly string DefaultPrompt = "> ";
-        private static readonly Task<IRSessionEvaluation> CanceledBeginEvaluationTask;
+
         private static readonly Task<IRSessionInteraction> CanceledBeginInteractionTask;
 
         private readonly BufferBlock<RSessionRequestSource> _pendingRequestSources = new BufferBlock<RSessionRequestSource>();
-        private readonly BufferBlock<RSessionEvaluationSource> _pendingEvaluationSources = new BufferBlock<RSessionEvaluationSource>();
 
         public event EventHandler<RBeforeRequestEventArgs> BeforeRequest;
         public event EventHandler<RAfterRequestEventArgs> AfterRequest;
         public event EventHandler<EventArgs> Mutated;
         public event EventHandler<ROutputEventArgs> Output;
         public event EventHandler<RConnectedEventArgs> Connected;
+        public event EventHandler<EventArgs> Interactive;
         public event EventHandler<EventArgs> Disconnected;
         public event EventHandler<EventArgs> Disposed;
         public event EventHandler<EventArgs> DirectoryChanged;
@@ -44,9 +46,9 @@ namespace Microsoft.R.Host.Client.Session {
         private IReadOnlyList<IRContext> _contexts;
         private RHost _host;
         private Task _hostRunTask;
-        private Task _afterHostStartedTask;
-        private TaskCompletionSourceEx<object> _initializationTcs;
+        private TaskCompletionSourceEx<object> _hostStartedTcs;
         private RSessionRequestSource _currentRequestSource;
+        private TaskCompletionSourceEx<object> _initializedTcs;
         private readonly Action _onDispose;
         private readonly IExclusiveReaderLock _initializationLock;
         private readonly BinaryAsyncLock _stopHostLock;
@@ -61,8 +63,9 @@ namespace Microsoft.R.Host.Client.Session {
         public string Prompt { get; private set; } = DefaultPrompt;
         public int MaxLength { get; private set; } = 0x1000;
         public bool IsHostRunning => _isHostRunning;
-        public Task HostStarted => _initializationTcs.Task;
+        public Task HostStarted => _hostStartedTcs.Task;
         public bool IsRemote => BrokerClient.IsRemote;
+        public bool RestartOnBrokerSwitch { get; set; }
 
         internal IBrokerClient BrokerClient { get; }
         internal bool IsDisposed => _disposeToken.IsDisposed;
@@ -74,7 +77,6 @@ namespace Microsoft.R.Host.Client.Session {
         internal RHost RHost => _host;
 
         static RSession() {
-            CanceledBeginEvaluationTask = TaskUtilities.CreateCanceled<IRSessionEvaluation>(new RHostDisconnectedException());
             CanceledBeginInteractionTask = TaskUtilities.CreateCanceled<IRSessionInteraction>(new RHostDisconnectedException());
         }
 
@@ -94,8 +96,14 @@ namespace Microsoft.R.Host.Client.Session {
 
             _initializationLock = initializationLock;
             _stopHostLock = new BinaryAsyncLock(true);
-            _initializationTcs = new TaskCompletionSourceEx<object>();
-            _afterHostStartedTask = TaskUtilities.CreateCanceled(new RHostDisconnectedException());
+            _hostStartedTcs = new TaskCompletionSourceEx<object>();
+        }
+
+        private string GetDefaultPrompt(string requestedPrompt = null) {
+            if (string.IsNullOrEmpty(requestedPrompt)) {
+                requestedPrompt = DefaultPrompt;
+            }
+            return IsRemote ? RemotePromptPrefix + requestedPrompt : requestedPrompt;
         }
 
         private void OnMutated() {
@@ -128,29 +136,22 @@ namespace Microsoft.R.Host.Client.Session {
 
             return _isHostRunning ? requestSource.CreateRequestTask : CanceledBeginInteractionTask;
         }
-
-        public Task<IRSessionEvaluation> BeginEvaluationAsync(CancellationToken cancellationToken = default(CancellationToken)) {
-            _disposeToken.ThrowIfDisposed();
-
-            if (!_isHostRunning) {
-                return CanceledBeginEvaluationTask;
-            }
-
-            var source = new RSessionEvaluationSource(cancellationToken);
-            _pendingEvaluationSources.Post(source);
-
-            return _isHostRunning ? source.Task : CanceledBeginEvaluationTask;
+        
+        public Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind = REvaluationKind.Normal, CancellationToken cancellationToken = default(CancellationToken)) {
+            return EvaluateAsync(expression, kind, true, cancellationToken);
         }
 
-        public async Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind = REvaluationKind.Normal, CancellationToken ct = default(CancellationToken)) {
+        private async Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind, bool waitUntilInitialized, CancellationToken cancellationToken = default(CancellationToken)) {
             if (!IsHostRunning) {
                 throw new RHostDisconnectedException();
             }
 
-            await _afterHostStartedTask;
+            if (waitUntilInitialized) {
+                await _initializedTcs.Task;
+            }
 
             try {
-                var result = await _host.EvaluateAsync(expression, kind, ct);
+                var result = await _host.EvaluateAsync(expression, kind, cancellationToken);
                 if (kind.HasFlag(REvaluationKind.Mutating)) {
                     OnMutated();
                 }
@@ -159,7 +160,6 @@ namespace Microsoft.R.Host.Client.Session {
                 throw new RHostDisconnectedException();
             }
         }
-
 
         public Task<ulong> CreateBlobAsync(CancellationToken ct = default(CancellationToken)) =>
             DoBlobServiceAsync(_host?.CreateBlobAsync(ct));
@@ -185,13 +185,13 @@ namespace Microsoft.R.Host.Client.Session {
 
         public Task<long> SetBlobSizeAsync(ulong blobId, long size, CancellationToken ct = default(CancellationToken)) =>
             DoBlobServiceAsync(_host?.SetBlobSizeAsync(blobId, size, ct));
-        
+
         private async Task<T> DoBlobServiceAsync<T>(Task<T> work) {
             if (!IsHostRunning) {
                 throw new RHostDisconnectedException();
             }
 
-            await _afterHostStartedTask;
+            await _initializedTcs.Task;
 
             try {
                 return await work;
@@ -202,39 +202,41 @@ namespace Microsoft.R.Host.Client.Session {
 
         public async Task CancelAllAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             using (_disposeToken.Link(ref cancellationToken)) {
-                var cancelTask = _host.CancelAllAsync(cancellationToken);
-
-                var currentRequest = Interlocked.Exchange(ref _currentRequestSource, null);
                 var exception = new OperationCanceledException();
-                currentRequest?.TryCancel(exception);
                 ClearPendingRequests(exception);
+                var currentRequest = Interlocked.Exchange(ref _currentRequestSource, null);
 
-                await cancelTask;
-            }
-        }
-
-        public async Task EnsureHostStartedAsync(RHostStartupInfo startupInfo, IRSessionCallback callback, int timeout = 3000, CancellationToken cancellationToken = default(CancellationToken)) {
-            using (_disposeToken.Link(ref cancellationToken))
-            using (await _initializationLock.WaitAsync(cancellationToken)) {
-                if (_initializationTcs.Task.Status != TaskStatus.RanToCompletion || !_isHostRunning) {
-                    await StartHostAsyncBackground(startupInfo, callback, timeout, cancellationToken);
+                try {
+                    await _host.CancelAllAsync(cancellationToken);
+                } finally {
+                    // Even if cancellationToken.IsCancellationRequested == true, we can't find out if request was fully completed or not, so we consider it canceled
+                    currentRequest?.TryCancel(exception);
                 }
             }
         }
 
-        public async Task StartHostAsync(RHostStartupInfo startupInfo, IRSessionCallback callback, int timeout = 3000, CancellationToken cancellationToken = default(CancellationToken)) {
-            using (_disposeToken.Link(ref cancellationToken))
-            using (await _initializationLock.WaitAsync(cancellationToken)) {
-                if (_initializationTcs.Task.Status != TaskStatus.RanToCompletion || !_isHostRunning) {
-                    await StartHostAsyncBackground(startupInfo, callback, timeout, cancellationToken);
-                } else {
-                    throw new InvalidOperationException("Another instance of RHost is running for this RSession. Stop it before starting new one.");
+        public Task EnsureHostStartedAsync(RHostStartupInfo startupInfo, IRSessionCallback callback, int timeout = 3000, CancellationToken cancellationToken = default(CancellationToken))
+            => StartHostAsync(startupInfo, callback, timeout, false, cancellationToken);
+
+        public Task StartHostAsync(RHostStartupInfo startupInfo, IRSessionCallback callback, int timeout = 3000, CancellationToken cancellationToken = default(CancellationToken))
+            => StartHostAsync(startupInfo, callback, timeout, true, cancellationToken);
+
+        private async Task StartHostAsync(RHostStartupInfo startupInfo, IRSessionCallback callback, int timeout, bool throwIfStarted, CancellationToken cancellationToken) {
+            using (_disposeToken.Link(ref cancellationToken)) {
+                await TaskUtilities.SwitchToBackgroundThread();
+
+                using (await _initializationLock.WaitAsync(cancellationToken)) {
+                    if (_hostStartedTcs.Task.Status != TaskStatus.RanToCompletion || !_isHostRunning) {
+                        await StartHostAsyncBackground(startupInfo, callback, timeout, cancellationToken);
+                    } else if (throwIfStarted) {
+                        throw new InvalidOperationException("Another instance of RHost is running for this RSession. Stop it before starting new one.");
+                    }
                 }
             }
         }
 
         private async Task StartHostAsyncBackground(RHostStartupInfo startupInfo, IRSessionCallback callback, int timeout, CancellationToken cancellationToken) {
-            await TaskUtilities.SwitchToBackgroundThread();
+            TaskUtilities.AssertIsOnBackgroundThread();
 
             _callback = callback;
             _startupInfo = startupInfo;
@@ -243,10 +245,10 @@ namespace Microsoft.R.Host.Client.Session {
                 var connectionInfo = new BrokerConnectionInfo(startupInfo.Name, this, startupInfo.RHostCommandLineArguments, timeout);
                 host = await BrokerClient.ConnectAsync(connectionInfo, cancellationToken);
             } catch (OperationCanceledException ex) {
-                _initializationTcs.TrySetCanceled(ex);
+                _hostStartedTcs.TrySetCanceled(ex);
                 throw;
             } catch (Exception ex) {
-                _initializationTcs.TrySetException(ex);
+                _hostStartedTcs.TrySetException(ex);
                 throw;
             }
 
@@ -254,34 +256,37 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         private async Task StartHostAsyncBackground(RHost host, CancellationToken cancellationToken = default(CancellationToken)) {
-            await TaskUtilities.SwitchToBackgroundThread();
+            TaskUtilities.AssertIsOnBackgroundThread();
 
             ResetInitializationTcs();
             ClearPendingRequests(new RHostDisconnectedException());
 
             Interlocked.Exchange(ref _host, host);
+            Interlocked.Exchange(ref _initializedTcs, new TaskCompletionSourceEx<object>());
+
             var initializationCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
             var hostRunTask = RunHost(initializationCts.Token);
             Interlocked.Exchange(ref _hostRunTask, hostRunTask)?.DoNotWait();
 
-            await _initializationTcs.Task;
+            await _hostStartedTcs.Task;
+            await _initializedTcs.Task;
+
             initializationCts.Dispose();
             _stopHostLock.EnqueueReset();
         }
 
         public IRSessionSwitchBrokerTransaction StartSwitchingBroker() =>
-            !_disposeToken.IsDisposed && _startupInfo != null ? new BrokerTransaction(this) : null;
+            !_disposeToken.IsDisposed && _startupInfo != null && RestartOnBrokerSwitch ? new BrokerTransaction(this) : null;
 
         public async Task ReconnectAsync(CancellationToken cancellationToken) {
             if (_startupInfo == null) {
                 return;
             }
 
-            using (_disposeToken.Link(ref cancellationToken)) { 
+            using (_disposeToken.Link(ref cancellationToken)) {
                 var host = _host;
                 // host may be null if previous attempts to start it have failed
-                if (host != null)
-                {
+                if (host != null) {
                     // Detach RHost from RSession
                     host.DetachCallback();
 
@@ -299,22 +304,28 @@ namespace Microsoft.R.Host.Client.Session {
             }
         }
 
-        public async Task StopHostAsync() {
-            _disposeToken.ThrowIfDisposed();
-            await TaskUtilities.SwitchToBackgroundThread();
+        private int _stopCount;
+        public async Task StopHostAsync(CancellationToken cancellationToken = default(CancellationToken)) {
+            using (_disposeToken.Link(ref cancellationToken)) {
+                await TaskUtilities.SwitchToBackgroundThread();
 
-            var stopToken = await _stopHostLock.WaitAsync();
-            if (stopToken.IsSet) {
-                return;
-            }
+                WebServer.StopAllAsync().SilenceException<Exception>().DoNotWait();
 
-            try {
-                ResetInitializationTcs();
-                await StopHostAsync(BrokerClient, _startupInfo.Name, _host, _hostRunTask);
+                Interlocked.Increment(ref _stopCount);
+                var stopToken = await _stopHostLock.WaitAsync(cancellationToken);
+                if (stopToken.IsSet) {
+                    return;
+                }
 
-                stopToken.Set();
-            } finally {
-                stopToken.Reset();
+                try {
+                    ResetInitializationTcs();
+                    await StopHostAsync(BrokerClient, _startupInfo.Name, _host, _hostRunTask);
+
+                    stopToken.Set();
+                } finally {
+                    Interlocked.Decrement(ref _stopCount);
+                    stopToken.Reset();
+                }
             }
         }
 
@@ -323,7 +334,7 @@ namespace Microsoft.R.Host.Client.Session {
             if (host != null) {
                 try {
                     host.QuitAsync().SilenceException<Exception>().DoNotWait();
-                    await Task.WhenAny(hostRunTask, Task.Delay(2000)).Unwrap();
+                    await Task.WhenAny(hostRunTask, Task.Delay(10000)).Unwrap();
                 } catch (Exception) { }
 
                 if (hostRunTask.IsCompleted) {
@@ -334,14 +345,14 @@ namespace Microsoft.R.Host.Client.Session {
             // If it didn't work, tell the broker to forcibly terminate the host process. 
             if (hostName != null) {
                 try {
-                    await brokerClient.TerminateSessionAsync(hostName);
+                    brokerClient.TerminateSessionAsync(hostName).Wait(10000);
                 } catch (Exception) { }
 
                 if (hostRunTask.IsCompleted) {
                     return;
                 }
             }
-            
+
             if (host != null) {
                 // If nothing worked, then just disconnect.
                 await host.DisconnectAsync();
@@ -356,109 +367,117 @@ namespace Microsoft.R.Host.Client.Session {
 
         private async Task RunHost(CancellationToken initializationCt) {
             try {
-                ScheduleAfterHostStarted(_startupInfo);
                 await _host.Run(initializationCt);
             } catch (OperationCanceledException oce) {
-                _initializationTcs.TrySetCanceled(oce);
+                _hostStartedTcs.TrySetCanceled(oce);
             } catch (MessageTransportException mte) {
-                _initializationTcs.TrySetCanceled(new RHostDisconnectedException(string.Empty, mte));
+                _hostStartedTcs.TrySetCanceled(new RHostDisconnectedException(string.Empty, mte));
             } catch (Exception ex) {
-                _initializationTcs.TrySetException(ex);
+                _hostStartedTcs.TrySetException(ex);
             }
         }
 
         private void ResetInitializationTcs() {
             while (true) {
-                var tcs = _initializationTcs;
+                var tcs = _hostStartedTcs;
                 if (!tcs.Task.IsCompleted) {
                     return;
                 }
 
-                if (Interlocked.CompareExchange(ref _initializationTcs, new TaskCompletionSourceEx<object>(), tcs) == tcs) {
+                if (Interlocked.CompareExchange(ref _hostStartedTcs, new TaskCompletionSourceEx<object>(), tcs) == tcs) {
                     return;
                 }
             }
         }
 
-        private void ScheduleAfterHostStarted(RHostStartupInfo startupInfo) {
-            var afterHostStartedEvaluationSource = new RSessionEvaluationSource(CancellationToken.None);
-            _pendingEvaluationSources.Post(afterHostStartedEvaluationSource);
-            Interlocked.Exchange(ref _afterHostStartedTask, AfterHostStarted(afterHostStartedEvaluationSource, startupInfo));
-        }
-
-        private async Task AfterHostStarted(RSessionEvaluationSource evaluationSource, RHostStartupInfo startupInfo) {
+        private async Task AfterHostStarted(RHostStartupInfo startupInfo) {
+            var evaluator = new BeforeInitializedRExpressionEvaluator(this);
             try {
-                using (var evaluation = await evaluationSource.Task) {
-                    // Load RTVS R package before doing anything in R since the calls
-                    // below calls may depend on functions exposed from the RTVS package
-                    var libPath = IsRemote ? "." : Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetAssemblyPath());
+                // Load RTVS R package before doing anything in R since the calls
+                // below calls may depend on functions exposed from the RTVS package
+                var libPath = IsRemote ? "." : Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetAssemblyPath());
 
-                    await LoadRtvsPackage(evaluation, libPath);
+                await LoadRtvsPackage(evaluator, libPath);
 
-                    if (!IsRemote && startupInfo.WorkingDirectory != null) {
-                        await evaluation.SetWorkingDirectoryAsync(startupInfo.WorkingDirectory);
-                    } else {
-                        await evaluation.SetDefaultWorkingDirectoryAsync();
+                var wd = startupInfo.WorkingDirectory;
+                if (!IsRemote && !string.IsNullOrEmpty(wd) && wd.HasReadPermissions()) {
+                    try {
+                        await evaluator.SetWorkingDirectoryAsync(wd);
+                    } catch(REvaluationException) {
+                        await evaluator.SetDefaultWorkingDirectoryAsync();
                     }
-
-                    var callback = _callback;
-                    if (callback != null) {
-                        await evaluation.SetVsGraphicsDeviceAsync();
-
-                        string mirrorUrl = callback.CranUrlFromName(startupInfo.CranMirrorName);
-
-                        try {
-                            await evaluation.SetVsCranSelectionAsync(mirrorUrl);
-                        } catch (REvaluationException ex) {
-                            await WriteErrorAsync(Resources.Error_SessionInitializationMirror, mirrorUrl, ex.Message);
-                        }
-
-                        try {
-                            await evaluation.SetCodePageAsync(startupInfo.CodePage);
-                        } catch (REvaluationException ex) {
-                            await WriteErrorAsync(Resources.Error_SessionInitializationCodePage, startupInfo.CodePage, ex.Message);
-                        }
-
-                        try {
-                            await evaluation.SetROptionsAsync();
-                        } catch (REvaluationException ex) {
-                            await WriteErrorAsync(Resources.Error_SessionInitializationOptions, ex.Message);
-                        }
-
-                        await evaluation.OverrideFunctionAsync("setwd", "base");
-                        await evaluation.SetFunctionRedirectionAsync();
-
-                        try {
-                            await evaluation.OptionsSetWidthAsync(startupInfo.TerminalWidth);
-                        } catch (REvaluationException ex) {
-                            await WriteErrorAsync(Resources.Error_SessionInitializationOptions, ex.Message);
-                        }
-
-                        if (startupInfo.EnableAutosave) {
-                            try {
-                                // Only enable autosave for this session after querying the user about any existing file.
-                                // This way, if they happen to disconnect while still querying, we don't save the new empty
-                                // session and overwrite the old file.
-                                bool deleteExisting = await evaluation.QueryReloadAutosaveAsync();
-                                await evaluation.EnableAutosaveAsync(deleteExisting);
-                            } catch (REvaluationException ex) {
-                                await WriteErrorAsync(Resources.Error_SessionInitializationAutosave, ex.Message);
-                            }
-                        }
-                    }
+                } else {
+                    await evaluator.SetDefaultWorkingDirectoryAsync();
                 }
+
+                var callback = _callback;
+                if (callback != null) {
+                    await evaluator.SetVsGraphicsDeviceAsync();
+
+                    string mirrorUrl = callback.CranUrlFromName(startupInfo.CranMirrorName);
+
+                    try {
+                        await evaluator.SetVsCranSelectionAsync(mirrorUrl);
+                    } catch (REvaluationException ex) {
+                        await WriteErrorAsync(Resources.Error_SessionInitializationMirror, mirrorUrl, ex.Message);
+                    }
+
+                    try {
+                        await evaluator.SetCodePageAsync(startupInfo.CodePage);
+                    } catch (REvaluationException ex) {
+                        await WriteErrorAsync(Resources.Error_SessionInitializationCodePage, startupInfo.CodePage, ex.Message);
+                    }
+
+                    try {
+                        await evaluator.SetROptionsAsync();
+                    } catch (REvaluationException ex) {
+                        await WriteErrorAsync(Resources.Error_SessionInitializationOptions, ex.Message);
+                    }
+
+                    await evaluator.OverrideFunctionAsync("setwd", "base");
+                    await evaluator.SetFunctionRedirectionAsync();
+
+                    try {
+                        await evaluator.OptionsSetWidthAsync(startupInfo.TerminalWidth);
+                    } catch (REvaluationException ex) {
+                        await WriteErrorAsync(Resources.Error_SessionInitializationOptions, ex.Message);
+                    }
+
+                    if (startupInfo.EnableAutosave) {
+                        try {
+                            // Only enable autosave for this session after querying the user about any existing file.
+                            // This way, if they happen to disconnect while still querying, we don't save the new empty
+                            // session and overwrite the old file.
+                            bool deleteExisting = await evaluator.QueryReloadAutosaveAsync();
+                            await evaluator.EnableAutosaveAsync(deleteExisting);
+                        } catch (REvaluationException ex) {
+                            await WriteErrorAsync(Resources.Error_SessionInitializationAutosave, ex.Message);
+                        }
+                    }
+
+                    Interactive?.Invoke(this, EventArgs.Empty);
+                }
+
+                _initializedTcs.SetResult(null);
             } catch (Exception ex) when (!ex.IsCriticalException()) {
                 await WriteErrorAsync(Resources.Error_SessionInitialization, ex);
                 if (!(ex is RHostDisconnectedException)) {
                     StopHostAsync().DoNotWait();
+                }
+
+                var oce = ex as OperationCanceledException;
+                if (oce != null) {
+                    _initializedTcs.SetCanceled(oce);
+                } else {
+                    _initializedTcs.SetException(ex);
                 }
             }
         }
 
         private const int rtvsPackageVersion = 1;
 
-        private static async Task LoadRtvsPackage(IRSessionEvaluation eval, string libPath) {
-            await eval.ExecuteAsync(Invariant($@"
+        private static Task LoadRtvsPackage(IRExpressionEvaluator eval, string libPath) {
+            return eval.ExecuteAsync(Invariant($@"
 if (!base::isNamespaceLoaded('rtvs')) {{
     base::loadNamespace('rtvs', lib.loc = {libPath.ToRStringLiteral()})
 }}
@@ -473,9 +492,9 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
         }
 
         Task IRCallbacks.Connected(string rVersion) {
-            Prompt = DefaultPrompt;
+            Prompt = GetDefaultPrompt();
             _isHostRunning = true;
-            _initializationTcs.SetResult(null);
+            _hostStartedTcs.SetResult(null);
             Connected?.Invoke(this, new RConnectedEventArgs(rVersion));
             Mutated?.Invoke(this, EventArgs.Empty);
             return Task.CompletedTask;
@@ -503,17 +522,17 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
                 requestSource.TryCancel(exception);
             }
 
-            RSessionEvaluationSource evalSource;
-            while (_pendingEvaluationSources.TryReceive(out evalSource)) {
-                evalSource.TryCancel(exception);
-            }
-
             _contexts = null;
-            Prompt = DefaultPrompt;
+            Prompt = GetDefaultPrompt();
         }
+
 
         async Task<string> IRCallbacks.ReadConsole(IReadOnlyList<IRContext> contexts, string prompt, int len, bool addToHistory, CancellationToken ct) {
             await TaskUtilities.SwitchToBackgroundThread();
+
+            if (!_initializedTcs.Task.IsCompleted) {
+                await AfterHostStarted(_startupInfo);
+            }
 
             var callback = _callback;
             if (!addToHistory && callback != null) {
@@ -523,14 +542,13 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
             var currentRequest = Interlocked.Exchange(ref _currentRequestSource, null);
 
             _contexts = contexts;
-            Prompt = prompt;
+            Prompt = GetDefaultPrompt(prompt);
             MaxLength = len;
 
-            var requestEventArgs = new RBeforeRequestEventArgs(contexts, prompt, len, addToHistory);
+            var requestEventArgs = new RBeforeRequestEventArgs(contexts, Prompt, len, addToHistory);
             BeforeRequest?.Invoke(this, requestEventArgs);
 
-            var evaluationCts = new CancellationTokenSource();
-            var evaluationTask = EvaluateUntilCancelled(contexts, evaluationCts.Token, ct);
+            OnMutated();
 
             currentRequest?.CompleteResponse();
 
@@ -538,7 +556,7 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
             do {
                 ct.ThrowIfCancellationRequested();
                 try {
-                    consoleInput = await ReadNextRequest(prompt, len, ct);
+                    consoleInput = await ReadNextRequest(Prompt, len, ct);
                 } catch (OperationCanceledException) {
                     // If request was canceled through means other than our token, it indicates the refusal of
                     // that requestor to respond to that particular prompt, so move on to the next requestor.
@@ -548,12 +566,7 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
             } while (consoleInput == null);
 
             consoleInput = consoleInput.EnsureLineBreak();
-
-            // If evaluation was allowed, cancel evaluation processing but await evaluation that is in progress
-            evaluationCts.Cancel();
-            await evaluationTask;
-
-            AfterRequest?.Invoke(this, new RAfterRequestEventArgs(contexts, prompt, consoleInput, addToHistory, currentRequest?.IsVisible ?? false));
+            AfterRequest?.Invoke(this, new RAfterRequestEventArgs(contexts, Prompt, consoleInput, addToHistory, currentRequest?.IsVisible ?? false));
 
             return consoleInput;
         }
@@ -576,52 +589,6 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
 
                 return response;
             }
-        }
-
-        private async Task EvaluateUntilCancelled(IReadOnlyList<IRContext> contexts, CancellationToken evaluationCancellationToken, CancellationToken hostCancellationToken) {
-            TaskUtilities.AssertIsOnBackgroundThread();
-            using (var cts = CancellationTokenSource.CreateLinkedTokenSource(hostCancellationToken, evaluationCancellationToken)) {
-                var ct = cts.Token;
-                bool mutated = true; // start with true on the assumption that the preceding interaction has mutated something
-                while (!ct.IsCancellationRequested) {
-                    try {
-                        if (await EvaluateAll(contexts, mutated, hostCancellationToken)) {
-                            // EvaluateAll has raised the event already, so reset the flag.
-                            mutated = false;
-                        } else if (mutated) {
-                            // EvaluateAll did not raise the event, but we have a pending mutate to inform about.
-                            OnMutated();
-                        }
-
-                        if (!ct.IsCancellationRequested) {
-                            var evaluationSource = await _pendingEvaluationSources.ReceiveAsync(ct);
-                            mutated |= await evaluationSource.BeginEvaluationAsync(contexts, _host, hostCancellationToken);
-                        }
-                    } catch (OperationCanceledException) {
-                        return;
-                    }
-                }
-            }
-        }
-
-        private async Task<bool> EvaluateAll(IReadOnlyList<IRContext> contexts, bool mutated, CancellationToken hostCancellationToken) {
-            TaskUtilities.AssertIsOnBackgroundThread();
-
-            try {
-                RSessionEvaluationSource source;
-                while (!hostCancellationToken.IsCancellationRequested && _pendingEvaluationSources.TryReceive(out source)) {
-                    mutated |= await source.BeginEvaluationAsync(contexts, _host, hostCancellationToken);
-                }
-            } catch (OperationCanceledException) {
-                // Host is being shut down, so there's no point in raising the event anymore.
-                mutated = false;
-            } finally {
-                if (mutated) {
-                    OnMutated();
-                }
-            }
-
-            return mutated;
         }
 
         private Task WriteErrorAsync(string text) =>
@@ -667,8 +634,7 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
         async Task<MessageButtons> IRCallbacks.ShowDialog(IReadOnlyList<IRContext> contexts, string s, MessageButtons buttons, CancellationToken hostCancellationToken) {
             await TaskUtilities.SwitchToBackgroundThread();
 
-            await EvaluateAll(contexts, true, hostCancellationToken);
-
+            OnMutated();
             var callback = _callback;
             if (callback != null) {
                 return await callback.ShowMessageAsync(s, buttons, hostCancellationToken);
@@ -720,18 +686,18 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
             return callback?.ViewLibraryAsync(cancellationToken);
         }
 
-        Task IRCallbacks.ShowFile(string fileName, string tabName, bool deleteFile) {
+        Task IRCallbacks.ShowFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken) {
             var callback = _callback;
-            return callback?.ViewFile(fileName, tabName, deleteFile);
+            return callback?.ViewFile(fileName, tabName, deleteFile, cancellationToken);
         }
 
         void IRCallbacks.DirectoryChanged() {
             DirectoryChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        void IRCallbacks.ViewObject(string obj, string title) {
+        Task IRCallbacks.ViewObject(string obj, string title, CancellationToken cancellationToken) {
             var callback = _callback;
-            callback?.ViewObject(obj, title);
+            return callback?.ViewObjectAsync(obj, title, cancellationToken) ?? Task.CompletedTask;
         }
 
         void IRCallbacks.PackagesInstalled() {
@@ -742,11 +708,22 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
             PackagesRemoved?.Invoke(this, EventArgs.Empty);
         }
 
-        Task<string> IRCallbacks.SaveFileAsync(string filename, byte[] data) {
+        Task<string> IRCallbacks.SaveFileAsync(string remoteFileName, string localPath, byte[] data, CancellationToken cancellationToken) {
             var callback = _callback;
-            return callback != null ? callback.SaveFileAsync(filename, data) : Task.FromResult(string.Empty);
+            return callback != null ? callback.SaveFileAsync(remoteFileName, localPath, data, cancellationToken) : Task.FromResult(string.Empty);
         }
-        
+
+        private class BeforeInitializedRExpressionEvaluator : IRExpressionEvaluator {
+            private readonly RSession _session;
+
+            public BeforeInitializedRExpressionEvaluator(RSession session) {
+                _session = session;
+            }
+
+            public Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind, CancellationToken cancellationToken = new CancellationToken()) 
+                => _session.EvaluateAsync(expression, kind, false, cancellationToken);
+        }
+
         private class BrokerTransaction : IRSessionSwitchBrokerTransaction {
             private readonly RSession _session;
             private RHost _hostToSwitch;
@@ -758,11 +735,7 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
             }
 
             public async Task ConnectToNewBrokerAsync(CancellationToken cancellationToken) {
-                using (_session._disposeToken.Link(ref cancellationToken)) { 
-                    if (_session._startupInfo == null) {
-                        return;
-                    }
-
+                using (_session._disposeToken.Link(ref cancellationToken)) {
                     var startupInfo = _session._startupInfo;
                     // host requires _startupInfo, so proceed only if session was started at least once
                     var connectionInfo = new BrokerConnectionInfo(startupInfo.Name, _session, startupInfo.RHostCommandLineArguments);
@@ -772,10 +745,6 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
 
             public async Task CompleteSwitchingBrokerAsync(CancellationToken cancellationToken) {
                 using (_session._disposeToken.Link(ref cancellationToken)) {
-                    if (_session._startupInfo == null) {
-                        return;
-                    }
-
                     try {
                         var brokerClient = _session.BrokerClient;
                         var startupInfo = _session._startupInfo;
@@ -788,7 +757,8 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
                             host.DetachCallback();
 
                             // Cancel all current requests
-                            await _session.CancelAllAsync(cancellationToken);
+                            // If can't be canceled in 10s - just ignore, old host will be stopped later
+                            await Task.WhenAny(_session.CancelAllAsync(cancellationToken), Task.Delay(10000, cancellationToken)).Unwrap();
                         }
 
                         // Start new RHost

@@ -12,6 +12,7 @@ using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
+using Microsoft.R.Host.Client.Test.Stubs;
 using Microsoft.R.Interpreters;
 using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.Threading;
@@ -232,6 +233,36 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
             await startTask;
         }
+        
+        [Test]
+        [Category.R.Session]
+        public async Task StopReentrantLoop() {
+            var callback = new RSessionCallbackStub();
+            var session = new RSession(0, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
+
+            await session.StartHostAsync(new RHostStartupInfo {
+                Name = _testMethod.Name
+            }, callback, 50000);
+
+            var testMrs = new AsyncManualResetEvent();
+            callback.PlotHandler = (message, ct) => {
+                testMrs.Set();
+                return session.EvaluateAsync("x <- 1\n");
+            };
+
+            Task responceTask;
+            using (var interaction = await session.BeginInteractionAsync()) {
+                responceTask = interaction.RespondAsync("plot(1)\n");
+            }
+
+            await testMrs.WaitAsync().Should().BeCompletedAsync();
+
+            await session.StopHostAsync().Should().BeCompletedAsync(20000);
+            session.IsHostRunning.Should().BeFalse();
+
+            await responceTask.Should().BeCanceledAsync();
+        }
+
 
         private static IBrokerClient CreateLocalBrokerClient(string name) 
             => new LocalBrokerClient(name, new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath, TestCoreServices.CreateReal(), new NullConsole());

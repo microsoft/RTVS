@@ -44,13 +44,11 @@ namespace Microsoft.R.Host.Client.Test.Script {
             return Task.FromResult("\n");
         }
 
-        public void ViewObject(string expression, string title) { }
+        public Task ViewObjectAsync(string expression, string title, CancellationToken cancellationToken) => Task.CompletedTask;
 
-        public Task ViewLibraryAsync(CancellationToken cancellationToken) {
-            return Task.CompletedTask;
-        }
+        public Task ViewLibraryAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
-        public Task ViewFile(string fileName, string tabName, bool deleteFile) {
+        public Task ViewFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken) {
             return Task.CompletedTask;
         }
 
@@ -61,7 +59,7 @@ namespace Microsoft.R.Host.Client.Test.Script {
             throw new NotImplementedException();
         }
 
-        public Task<string> SaveFileAsync(string fileName, byte[] data) {
+        public Task<string> SaveFileAsync(string remotePath, string localPath, byte[] data, CancellationToken cancellationToken) {
             return Task.FromResult(string.Empty);
         }
 

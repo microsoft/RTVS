@@ -59,13 +59,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
 
             try {
                 statusBar.SetText(Resources.Status_WritingCSV);
-                appShell.ProgressDialog.Show(async (p, ct) => await CreateCsvAndStartProcess(result, session, file, fileSystem, p), Resources.Status_WritingCSV, 100, 500);
+                appShell.ProgressDialog.Show(async (p, ct) => await CreateCsvAndStartProcess(result, session, file, fileSystem, p, ct), Resources.Status_WritingCSV, 100, 500);
                 if (fileSystem.FileExists(file)) {
                     processServices.Start(file);
                 }
-            } catch (Win32Exception ex) {
-                appShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotOpenCsv, ex.Message));
-            } catch (IOException ex) {
+            } catch (Exception ex) when (ex is Win32Exception || ex is IOException || ex is UnauthorizedAccessException) {
                 appShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotOpenCsv, ex.Message));
             } finally {
                 statusBar.SetText(currentStatusText);
@@ -74,22 +72,27 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
             Interlocked.Exchange(ref _busy, 0);
         }
 
-        private static async Task CreateCsvAndStartProcess(IREvaluationResultInfo result, IRSession session, string fileName, IFileSystem fileSystem, IProgress<ProgressDialogData> progress) {
+        private static async Task CreateCsvAndStartProcess(
+            IREvaluationResultInfo result, 
+            IRSession session, 
+            string fileName, 
+            IFileSystem fileSystem, 
+            IProgress<ProgressDialogData> progress,
+            CancellationToken cancellationToken) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             var sep = CultureInfo.CurrentCulture.TextInfo.ListSeparator;
             var dec = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
-            using (var e = await session.BeginEvaluationAsync()) { 
-                var csvDataBlobId = await e.EvaluateAsync<ulong>($"rtvs:::export_to_csv({result.Expression}, sep={sep.ToRStringLiteral()}, dec={dec.ToRStringLiteral()})", REvaluationKind.Normal);
-                using (DataTransferSession dts = new DataTransferSession(session, fileSystem)) {
-                    var total = await session.GetBlobSizeAsync(csvDataBlobId, CancellationToken.None);
-                    progress.Report(new ProgressDialogData(0, statusBarText: Resources.Status_WritingCSV, waitMessage: Resources.Status_WritingCSV));
-                    await dts.FetchAndDecompressFileAsync(new RBlobInfo(csvDataBlobId), fileName, true, new Progress<long>(b => {
-                        var step = (int)(b * 100 / total);
-                        progress.Report(new ProgressDialogData(step, statusBarText: Resources.Status_WritingCSV, waitMessage: Resources.Status_WritingCSV));
-                    }));
-                    progress.Report(new ProgressDialogData(100, statusBarText: Resources.Status_WritingCSV, waitMessage: Resources.Status_WritingCSV));
-                }
+
+            var csvDataBlobId = await session.EvaluateAsync<ulong>($"rtvs:::export_to_csv({result.Expression}, sep={sep.ToRStringLiteral()}, dec={dec.ToRStringLiteral()})", REvaluationKind.Normal, cancellationToken);
+            using (DataTransferSession dts = new DataTransferSession(session, fileSystem)) {
+                var total = await session.GetBlobSizeAsync(csvDataBlobId, cancellationToken);
+                progress.Report(new ProgressDialogData(0, statusBarText: Resources.Status_WritingCSV, waitMessage: Resources.Status_WritingCSV));
+                await dts.FetchAndDecompressFileAsync(new RBlobInfo(csvDataBlobId), fileName, true, new Progress<long>(b => {
+                    var step = (int)(b * 100 / total);
+                    progress.Report(new ProgressDialogData(step, statusBarText: Resources.Status_WritingCSV, waitMessage: Resources.Status_WritingCSV));
+                }), cancellationToken);
+                progress.Report(new ProgressDialogData(100, statusBarText: Resources.Status_WritingCSV, waitMessage: Resources.Status_WritingCSV));
             }
         }
 

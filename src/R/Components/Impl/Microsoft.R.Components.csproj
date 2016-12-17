@@ -24,6 +24,10 @@
     <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Data.ConnectionUI.Dialog">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(LibDirectory)\Microsoft.Data.ConnectionUI.Dialog.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.VisualStudio.InteractiveWindow">
       <Private>True</Private>
       <SpecificVersion>False</SpecificVersion>
@@ -143,9 +147,12 @@
       <DependentUpon>HostLoadIndicator.xaml</DependentUpon>
     </Compile>
     <Compile Include="Information\HostLoadIndicatorViewModel.cs" />
+    <Compile Include="InteractiveWorkflow\ActiveWindowChangedEventArgs.cs" />
+    <Compile Include="InteractiveWorkflow\Commands\DeleteProfileCommand.cs" />
     <Compile Include="InteractiveWorkflow\Commands\SessionInformationCommand.cs" />
     <Compile Include="InteractiveWorkflow\Commands\TerminateRCommand.cs" />
     <Compile Include="InteractiveWorkflow\Commands\InterruptRCommand.cs" />
+    <Compile Include="InteractiveWorkflow\SessionGuids.cs" />
     <Compile Include="InteractiveWorkflow\Implementation\CarriageReturnProcessor.cs" />
     <Compile Include="Plots\Commands\ShowMainPlotWindowCommand.cs" />
     <Compile Include="Plots\Implementation\Commands\PlotHistoryCommand.cs" />

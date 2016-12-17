@@ -24,7 +24,6 @@ namespace Microsoft.R.Components.Test.History {
         private readonly ITextEditorFactoryService _textEditorFactory;
         private readonly IRInteractiveWorkflowProvider _workflowProvider;
         private readonly IContentTypeRegistryService _contentTypeRegistryService;
-        private readonly IInteractiveWindowComponentContainerFactory _interactiveWindowComponentContainerFactory;
         private readonly IRHistoryVisualComponentContainerFactory _historyVisualComponentContainerFactory;
 
         public RHistoryIntegrationTest(RComponentsMefCatalogFixture catalog) {
@@ -33,7 +32,6 @@ namespace Microsoft.R.Components.Test.History {
             _textEditorFactory = _exportProvider.GetExportedValue<ITextEditorFactoryService>();
             _workflowProvider = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
             _contentTypeRegistryService = _exportProvider.GetExportedValue<IContentTypeRegistryService>();
-            _interactiveWindowComponentContainerFactory = _exportProvider.GetExportedValue<IInteractiveWindowComponentContainerFactory>();
             _historyVisualComponentContainerFactory = _exportProvider.GetExportedValue<IRHistoryVisualComponentContainerFactory>();
         }
 
@@ -47,7 +45,7 @@ namespace Microsoft.R.Components.Test.History {
             var workflow = UIThreadHelper.Instance.Invoke(() => _workflowProvider.GetOrCreate());
             var history = workflow.History;
             var session = workflow.RSession;
-            using (await UIThreadHelper.Instance.Invoke(() => workflow.GetOrCreateVisualComponent(_interactiveWindowComponentContainerFactory))) {
+            using (await UIThreadHelper.Instance.Invoke(() => workflow.GetOrCreateVisualComponentAsync())) {
                 workflow.ActiveWindow.Should().NotBeNull();
                 session.IsHostRunning.Should().BeTrue();
 
@@ -76,7 +74,7 @@ namespace Microsoft.R.Components.Test.History {
             var workflow = _workflowProvider.GetOrCreate();
             var history = workflow.History;
             var session = workflow.RSession;
-            using (await workflow.GetOrCreateVisualComponent(_interactiveWindowComponentContainerFactory)) {
+            using (await workflow.GetOrCreateVisualComponentAsync()) {
                 workflow.ActiveWindow.Should().NotBeNull();
                 session.IsHostRunning.Should().BeTrue();
 

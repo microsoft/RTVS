@@ -4,11 +4,7 @@
 using System;
 using System.ComponentModel.Composition;
 using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
-using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -16,12 +12,7 @@ using Microsoft.R.Components.InteractiveWorkflow.Implementation;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Settings;
-using Microsoft.R.Components.Workspace;
-using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Session;
-using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
     [Export(typeof(IRInteractiveWorkflowProvider))]
@@ -35,9 +26,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         private readonly IActiveWpfTextViewTracker _activeTextViewTracker;
         private readonly IDebuggerModeTracker _debuggerModeTracker;
         private readonly IApplicationShell _shell;
-        private readonly IWorkspaceServices _wss;
         private readonly IRSettings _settings;
-        private readonly ICoreServices _services;
 
         private Lazy<IRInteractiveWorkflow> _instanceLazy;
 
@@ -49,9 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             , IActiveWpfTextViewTracker activeTextViewTracker
             , IDebuggerModeTracker debuggerModeTracker
             , IApplicationShell shell
-            , IWorkspaceServices wss
-            , IRSettings settings
-            , ICoreServices services) {
+            , IRSettings settings) {
 
             _connectionsProvider = connectionsProvider;
             _historyProvider = historyProvider;
@@ -60,9 +47,13 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             _activeTextViewTracker = activeTextViewTracker;
             _debuggerModeTracker = debuggerModeTracker;
             _shell = shell;
-            _wss = wss;
             _settings = settings;
-            _services = services;
+
+            _shell.Terminating += OnApplicationTerminating;
+        }
+
+        private void OnApplicationTerminating(object sender, EventArgs e) {
+            Dispose();
         }
 
         public void Dispose() {

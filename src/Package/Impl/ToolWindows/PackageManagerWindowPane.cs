@@ -8,6 +8,7 @@ using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.PackageManager.Implementation;
 using Microsoft.R.Components.Search;
 using Microsoft.R.Components.Settings;
+using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -30,6 +31,7 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
             _searchControlProvider = searchControlProvider;
             _settings = settings;
             _coreShell = coreShell;
+            BitmapImageMoniker = KnownMonikers.Package;
             Caption = Resources.PackageManagerWindowCaption;
         }
 

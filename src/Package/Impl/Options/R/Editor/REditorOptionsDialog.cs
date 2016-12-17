@@ -143,6 +143,17 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor {
             set { REditorSettings.SyntaxCheckInRepl = value; }
         }
 
+        [LocCategory("Settings_OutliningCategory")]
+        [CustomLocDisplayName("Setting_EnableOutlining")]
+        [LocDescription("Setting_EnableOutlining_Description")]
+        [TypeConverter(typeof(OnOffTypeConverter))]
+        [DefaultValue(true)]
+        public bool EnableOutlining
+        {
+            get { return REditorSettings.EnableOutlining; }
+            set { REditorSettings.EnableOutlining = value; }
+        }
+
         public override void ResetSettings() {
             REditorSettings.ResetSettings();
             base.ResetSettings();

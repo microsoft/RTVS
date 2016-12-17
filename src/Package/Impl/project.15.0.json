@@ -1,8 +1,8 @@
 ﻿{
   "dependencies": {
-    "DataConnectionDialog": "1.2.0",
     "MicroBuild.Core": "0.2.0",
     "Microsoft.Build": "15.1.262-preview5",
+    "Microsoft.VisualStudio.ComponentModelHost": "15.0.25824-RC",
     "Microsoft.VisualStudio.Debugger.Interop.10.0": "10.0.30319",
     "Microsoft.VisualStudio.Debugger.Interop.14.0": "15.0.25726-Preview5",
     "Microsoft.VisualStudio.Imaging": "15.0.25901-RC",

@@ -2,13 +2,14 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Threading;
 using System.Windows.Threading;
+using Microsoft.Common.Core;
+using Microsoft.Common.Core.Security;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
@@ -17,7 +18,7 @@ using Microsoft.Languages.Editor.Host;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.R.Components.Controller;
-using Microsoft.R.Components.Settings;
+using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Interop;
@@ -40,29 +41,26 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
     [Export(typeof(IEditorShell))]
     [Export(typeof(IApplicationShell))]
     [Export(typeof(IMainThread))]
-    public sealed class VsAppShell : IApplicationShell, IMainThread, IIdleTimeService, IDisposable {
+    public sealed class VsAppShell : IApplicationShell, IMainThread, IIdleTimeService, IVsShellPropertyEvents, IDisposable {
         private static VsAppShell _instance;
         private static IApplicationShell _testShell;
 
-        private readonly IRSettings _settings;
+        private readonly ApplicationConstants _appConstants;
         private readonly ICoreServices _coreServices;
+        private IRPersistentSettings _settings;
         private IdleTimeSource _idleTimeSource;
         private ExportProvider _exportProvider;
         private ICompositionService _compositionService;
+        private IVsShell _vsShell;
+        private uint _vsShellEventsCookie;
 
         [ImportingConstructor]
-        public VsAppShell(ITelemetryService telemetryService
-            , IRSettings settings
-            , ICoreServices coreServices
-            , IApplicationConstants appConstants) {
-
-            _coreServices = coreServices;
-            AppConstants = appConstants;
+        public VsAppShell(ITelemetryService telemetryService) {
+            _appConstants = new ApplicationConstants();
             ProgressDialog = new VsProgressDialog(this);
             FileDialog = new VsFileDialog(this);
 
-            _settings = settings;
-            _settings.PropertyChanged += OnSettingsChanged;
+            _coreServices = new CoreServices(_appConstants, telemetryService, new VsTaskService(), this, new SecurityService(this));
         }
 
         public static void EnsureInitialized() {
@@ -72,12 +70,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             }
         }
 
-        private void OnSettingsChanged(object sender, PropertyChangedEventArgs e) {
-            if (e.PropertyName == nameof(IRSettings.LogVerbosity)) {
-                // Only set it once per session
-                _settings.PropertyChanged -= OnSettingsChanged;
-                _coreServices.LoggingServices.Permissions.CurrentVerbosity = _settings.LogVerbosity;
-            }
+        public static void Terminate() {
+            _instance?.Dispose();
         }
 
         private void Initialize() {
@@ -88,11 +82,42 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             _compositionService = componentModel.DefaultCompositionService;
             _exportProvider = componentModel.DefaultExportProvider;
 
+            CheckVsStarted();
+
             _idleTimeSource = new IdleTimeSource();
-            _idleTimeSource.OnIdle += OnIdle;
-            _idleTimeSource.OnTerminateApp += OnTerminateApp;
+            _idleTimeSource.Idle += OnIdle;
+            _idleTimeSource.ApplicationClosing += OnApplicationClosing;
+            _idleTimeSource.ApplicationStarted += OnApplicationStarted;
+
+            _settings = _exportProvider.GetExportedValue<IRPersistentSettings>();
+            _settings.LoadSettings();
 
             EditorShell.Current = this;
+
+            _settings = _exportProvider.GetExportedValue<IRPersistentSettings>();
+            _settings.LoadSettings();
+        }
+
+        private void CheckVsStarted() {
+            _vsShell = (IVsShell)VsPackage.GetGlobalService(typeof(SVsShell));
+            object value;
+            _vsShell.GetProperty((int)__VSSPROPID4.VSSPROPID_ShellInitialized, out value);
+            if (value is bool) {
+                if ((bool)value) {
+                    _appConstants.Initialize();
+                    Started?.Invoke(this, EventArgs.Empty);
+                } else {
+                    _vsShell.AdviseShellPropertyChanges(this, out _vsShellEventsCookie);
+                }
+            }
+        }
+
+        private void OnApplicationStarted(object sender, EventArgs e) {
+            _appConstants.Initialize();
+        }
+
+        private void OnApplicationClosing(object sender, EventArgs e) {
+            Terminating?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -207,6 +232,11 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// to execute is executing from the right thread.
         /// </summary>
         public Thread MainThread { get; private set; }
+
+        /// <summary>
+        /// Fires when host application has completed it's startup sequence
+        /// </summary>
+        public event EventHandler<EventArgs> Started;
 
         /// <summary>
         /// Fires when host application enters idle state.
@@ -355,9 +385,13 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
         #endregion
 
-        #region Threading
+        #region IMainThread
         public int ThreadId => MainThread.ManagedThreadId;
         public void Post(Action action, CancellationToken cancellationToken) {
+            if (MainThreadDispatcher.HasShutdownStarted) {
+                throw new InvalidOperationException("Unable to transition to UI thread: dispatcher has started shutdown.");
+            }
+
             var awaiter = ThreadHelper.JoinableTaskFactory
                 .SwitchToMainThreadAsync(cancellationToken)
                 .GetAwaiter();
@@ -368,16 +402,13 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         #endregion
 
         public void Dispose() {
-            _coreServices.LoggingServices.Dispose();
+            DisconnectFromShellEvents();
+            _settings?.Dispose();
+            _coreServices?.LoggingServices?.Dispose();
         }
 
         void OnIdle(object sender, EventArgs args) {
             DoIdle();
-        }
-
-        private void OnTerminateApp(object sender, EventArgs args) {
-            Terminating?.Invoke(null, EventArgs.Empty);
-            Dispose();
         }
 
         private OLEMSGBUTTON GetOleButtonFlags(MessageButtons buttons) {
@@ -404,8 +435,23 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             return package;
         }
 
+        public int OnShellPropertyChange(int propid, object var) {
+            if (propid == (int)__VSSPROPID4.VSSPROPID_ShellInitialized) {
+                Started?.Invoke(this, EventArgs.Empty);
+                DisconnectFromShellEvents();
+            }
+            return VSConstants.S_OK;
+        }
+
+        private void DisconnectFromShellEvents() {
+            if (_vsShell != null && _vsShellEventsCookie != 0) {
+                _vsShell.UnadviseShellPropertyChanges(_vsShellEventsCookie);
+                _vsShellEventsCookie = 0;
+            }
+        }
+
         public ICoreServices Services => _coreServices;
-        public IApplicationConstants AppConstants { get; }
+        public IApplicationConstants AppConstants => _appConstants;
         public IProgressDialog ProgressDialog { get; }
         public IFileDialog FileDialog { get; }
     }

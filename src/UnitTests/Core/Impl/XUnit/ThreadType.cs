@@ -7,6 +7,6 @@ namespace Microsoft.UnitTests.Core.XUnit
     {
         Default = 0,
         UI = 1,
-        Both = 2
+        Background = 2
     }
 }

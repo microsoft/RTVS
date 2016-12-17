@@ -77,7 +77,7 @@ namespace Microsoft.R.Host.Client {
         /// <summary>
         /// Invoked when R calls 'pager'
         /// </summary>
-        Task ShowFile(string fileName, string tabName, bool deleteFile);
+        Task ShowFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken);
 
         /// <summary>
         /// Called when working directory has changed in R.
@@ -88,7 +88,7 @@ namespace Microsoft.R.Host.Client {
         /// Called when used invoked View(obj) in R.
         /// </summary>
         /// <returns></returns>
-        void ViewObject(string expression, string title);
+        Task ViewObject(string expression, string title, CancellationToken cancellationToken);
 
         void PackagesInstalled();
         void PackagesRemoved();
@@ -96,7 +96,6 @@ namespace Microsoft.R.Host.Client {
         /// <summary>
         /// Called when user invokes rtvs:::fetch_file() in R.
         /// </summary>
-        /// <param name="id"></param>
-        Task<string> SaveFileAsync(string filename, byte[] data);
+        Task<string> SaveFileAsync(string remoteFileName, string localPath, byte[] data, CancellationToken cancellationToken);
     }
 }

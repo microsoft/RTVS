@@ -43,7 +43,7 @@ namespace Microsoft.R.Editor.Completion {
 
         private void SetDescription(IFunctionInfo fi) {
             if (fi != null) {
-                string sig = (fi.Signatures.Count > 0) ? fi.Signatures[0].GetSignatureString() : null;
+                string sig = (fi.Signatures.Count > 0) ? fi.Signatures[0].GetSignatureString(DisplayText) : null;
                 this.Description = (sig != null) ? Invariant($"{sig}{Environment.NewLine}{Environment.NewLine}{fi.Description}") : fi.Description;
             }
         }

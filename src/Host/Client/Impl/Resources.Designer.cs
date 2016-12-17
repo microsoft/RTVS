@@ -84,7 +84,7 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The machine appears to be online, but the Remote R Service is not running..
+        ///   Looks up a localized string similar to Machine &apos;{0}&apos; appears to be online, but the Remote R Service is not running..
         /// </summary>
         internal static string Error_BrokerNotRunning {
             get {
@@ -93,9 +93,27 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Host did not respond to a ping.
+        ///   Looks up a localized string similar to Operation failed with unknown Win32 error, please check broker logs..
+        /// </summary>
+        internal static string Error_BrokerUnknownWin32Error {
+            get {
+                return ResourceManager.GetString("Error_BrokerUnknownWin32Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Operation failed with Win32 error: {0}.
+        /// </summary>
+        internal static string Error_BrokerWin32Error {
+            get {
+                return ResourceManager.GetString("Error_BrokerWin32Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Machine &apos;{0}&apos; did not respond to a ping.
         ///The machine may be offline or the network has been disconnected.
-        ///Error: {0}.
+        ///Error: {1}.
         /// </summary>
         internal static string Error_HostNotResponding {
             get {
@@ -113,16 +131,7 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Windows Workstation only allows a single user session..
-        /// </summary>
-        internal static string Error_MaxUsersAllowed {
-            get {
-                return ResourceManager.GetString("Error_MaxUsersAllowed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Remote machine does not have certificate installed for the TLS with the Remote R Service..
+        ///   Looks up a localized string similar to Remote machine &apos;{0}&apos; does not have certificate installed for the TLS with the Remote R Service..
         /// </summary>
         internal static string Error_NoBrokerCertificate {
             get {
@@ -154,6 +163,33 @@ namespace Microsoft.R.Host.Client {
         internal static string Error_PipeAlreadyConnected {
             get {
                 return ResourceManager.GetString("Error_PipeAlreadyConnected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to RHost is stopped.
+        /// </summary>
+        internal static string Error_RHostIsStopped {
+            get {
+                return ResourceManager.GetString("Error_RHostIsStopped", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to create HTTP server for remote {0}..
+        /// </summary>
+        internal static string Error_RemoteWebServerCreationFailed {
+            get {
+                return ResourceManager.GetString("Error_RemoteWebServerCreationFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to HTTP server for remote {0} failed : {1}.
+        /// </summary>
+        internal static string Error_RemoteWebServerFailed {
+            get {
+                return ResourceManager.GetString("Error_RemoteWebServerFailed", resourceCulture);
             }
         }
         
@@ -205,7 +241,7 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R broker process did not start:  {0}.
+        ///   Looks up a localized string similar to R broker process did not start on the machine &apos;{0}&apos;. Exception:  {1}.
         /// </summary>
         internal static string Error_UnableToStartBrokerException {
             get {
@@ -214,7 +250,7 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R host process did not start:  {0}.
+        ///   Looks up a localized string similar to R host process did not start on the machine &apos;{0}&apos;. Exception:  {1}.
         /// </summary>
         internal static string Error_UnableToStartHostException {
             get {
@@ -232,11 +268,48 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HTTP error while creating session: {0}.
+        ///   Looks up a localized string similar to HTTP error while creating session on the machine &apos;{0}&apos;. Exception: {1}.
         /// </summary>
         internal static string HttpErrorCreatingSession {
             get {
                 return ResourceManager.GetString("HttpErrorCreatingSession", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to HTTP server for remote allows you to connect to a HTTP server created on a remote R machine.
+        ///Server at {0} http://{1}:{2} connects to {3} http://{4}:{5}..
+        /// </summary>
+        internal static string Info_RemoteWebServerDetails {
+            get {
+                return ResourceManager.GetString("Info_RemoteWebServerDetails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to HTTP server for remote {0} listening on http://{1}:{2}. .
+        /// </summary>
+        internal static string Info_RemoteWebServerStarted {
+            get {
+                return ResourceManager.GetString("Info_RemoteWebServerStarted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to HTTP server for remote {0} starting ....
+        /// </summary>
+        internal static string Info_RemoteWebServerStarting {
+            get {
+                return ResourceManager.GetString("Info_RemoteWebServerStarting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to HTTP server for remote {0} stopped..
+        /// </summary>
+        internal static string Info_RemoteWebServerStopped {
+            get {
+                return ResourceManager.GetString("Info_RemoteWebServerStopped", resourceCulture);
             }
         }
         

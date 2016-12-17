@@ -141,8 +141,8 @@ namespace Microsoft.R.Editor {
                 if (tokenTypeCheck(token.TokenType)) {
                     var start = token.Start + offset;
                     var end = Math.Min(start + token.Length, line.End);
-                    span = Span.FromBounds(start, end);
-                    return lineText.Substring(start, span.Length);
+                    span = Span.FromBounds(line.Start + start, line.Start + end); // return view span
+                    return lineText.Substring(start, end - start);
                 }
             }
 

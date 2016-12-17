@@ -1,7 +1,7 @@
 ﻿{
   "dependencies": {
     "MicroBuild.Core": "0.2.0",
-    "Microsoft.VisualStudio.Editor": "15.0.25726-Preview5",
+    "Microsoft.VisualStudio.Editor": "15.0.25824-RC",
     "Microsoft.VisualStudio.Language.StandardClassification": "15.0.25824-RC",
     "Microsoft.VisualStudio.Text.UI.Wpf": "15.0.25901-RC",
     "Microsoft.VisualStudio.TextManager.Interop.8.0": "8.0.50727",

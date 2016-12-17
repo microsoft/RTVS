@@ -5,9 +5,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Enums;
 using Microsoft.Common.Core.Extensions;
+using Microsoft.Common.Core.Json;
 using Microsoft.Common.Core.Logging;
+using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Options.Attributes;
@@ -15,15 +18,16 @@ using Microsoft.VisualStudio.R.Package.Options.R.Tools;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Telemetry;
 using Microsoft.VisualStudio.Shell;
+using Newtonsoft.Json;
 using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R {
     public class RToolsOptionsPage : DialogPage {
-        private readonly IRToolsSettings _settings;
+        private readonly IRPersistentSettings _settings;
         private SettingsHolder _holder;
 
         public RToolsOptionsPage() {
-            _settings = VsAppShell.Current.ExportProvider.GetExportedValue<IRToolsSettings>();
+            _settings = VsAppShell.Current.ExportProvider.GetExportedValue<IRPersistentSettings>();
             _holder = new SettingsHolder(_settings);
         }
 
@@ -46,7 +50,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [TypeConverter(typeof(YesNoAskTypeConverter))]
         [DefaultValue(YesNoAsk.No)]
         public YesNoAsk LoadRDataOnProjectLoad {
-            get { return _holder.GetValue<YesNoAsk>(); }
+            get { return _holder.GetValue<YesNoAsk>(YesNoAsk.No); }
             set { _holder.SetValue(value); }
         }
 
@@ -56,7 +60,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [TypeConverter(typeof(YesNoAskTypeConverter))]
         [DefaultValue(YesNoAsk.No)]
         public YesNoAsk SaveRDataOnProjectUnload {
-            get { return _holder.GetValue<YesNoAsk>(); }
+            get { return _holder.GetValue<YesNoAsk>(YesNoAsk.No); }
             set { _holder.SetValue(value); }
         }
 
@@ -65,7 +69,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [LocDescription("Settings_AlwaysSaveHistory_Description")]
         [DefaultValue(true)]
         public bool AlwaysSaveHistory {
-            get { return _holder.GetValue<bool>(); }
+            get { return _holder.GetValue<bool>(true); }
             set { _holder.SetValue(value); }
         }
 
@@ -74,7 +78,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [LocDescription("Settings_ClearFilterOnAddHistory_Description")]
         [DefaultValue(true)]
         public bool ClearFilterOnAddHistory {
-            get { return _holder.GetValue<bool>(); }
+            get { return _holder.GetValue<bool>(true); }
             set { _holder.SetValue(value); }
         }
 
@@ -83,7 +87,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [LocDescription("Settings_MultilineHistorySelection_Description")]
         [DefaultValue(true)]
         public bool MultilineHistorySelection {
-            get { return _holder.GetValue<bool>(); }
+            get { return _holder.GetValue<bool>(true); }
             set { _holder.SetValue(value); }
         }
 
@@ -93,7 +97,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [TypeConverter(typeof(EncodingTypeConverter))]
         [DefaultValue(0)]
         public int RCodePage {
-            get { return _holder.GetValue<int>(); }
+            get { return _holder.GetValue<int>(0); }
             set { _holder.SetValue(value); }
         }
 
@@ -102,7 +106,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [LocDescription("Settings_EvaluateActiveBindings_Description")]
         [DefaultValue(true)]
         public bool EvaluateActiveBindings {
-            get { return _holder.GetValue<bool>(); }
+            get { return _holder.GetValue<bool>(true); }
             set { _holder.SetValue(value); }
         }
 
@@ -111,7 +115,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [LocDescription("Settings_ShowDotPrefixedVariables_Description")]
         [DefaultValue(false)]
         public bool ShowDotPrefixedVariables {
-            get { return _holder.GetValue<bool>(); }
+            get { return _holder.GetValue<bool>(false); }
             set { _holder.SetValue(value); }
         }
 
@@ -120,8 +124,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [LocDescription("Settings_HelpBrowser_Description")]
         [TypeConverter(typeof(HelpBrowserTypeConverter))]
         [DefaultValue(HelpBrowserType.Automatic)]
-        public HelpBrowserType HelpBrowser {
-            get { return _holder.GetValue<HelpBrowserType>(); }
+        public HelpBrowserType HelpBrowserType {
+            get { return _holder.GetValue<HelpBrowserType>(HelpBrowserType.Automatic); }
             set { _holder.SetValue(value); }
         }
 
@@ -130,7 +134,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [LocDescription("Settings_WebHelpSearchString_Description")]
         [DefaultValue("R site:stackoverflow.com")]
         public string WebHelpSearchString {
-            get { return _holder.GetValue<string>(); }
+            get { return _holder.GetValue<string>("R site:stackoverflow.com", "WebHelpSearchString"); }
             set { _holder.SetValue(value); }
         }
 
@@ -140,7 +144,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [TypeConverter(typeof(BrowserTypeConverter))]
         [DefaultValue(BrowserType.Internal)]
         public BrowserType WebHelpSearchBrowserType {
-            get { return _holder.GetValue<BrowserType>(); }
+            get { return _holder.GetValue<BrowserType>(BrowserType.Internal); }
             set { _holder.SetValue(value); }
         }
 
@@ -150,7 +154,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [TypeConverter(typeof(BrowserTypeConverter))]
         [DefaultValue(BrowserType.Internal)]
         public BrowserType HtmlBrowserType {
-            get { return _holder.GetValue<BrowserType>(); }
+            get { return _holder.GetValue<BrowserType>(BrowserType.Internal); }
             set { _holder.SetValue(value); }
         }
 
@@ -160,7 +164,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [TypeConverter(typeof(BrowserTypeConverter))]
         [DefaultValue(BrowserType.External)]
         public BrowserType MarkdownBrowserType {
-            get { return _holder.GetValue<BrowserType>(); }
+            get { return _holder.GetValue<BrowserType>(BrowserType.External); }
             set { _holder.SetValue(value); }
         }
 
@@ -170,8 +174,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [TypeConverter(typeof(SurveyNewsPolicyTypeConverter))]
         [DefaultValue(SurveyNewsPolicy.CheckOnceWeek)]
         public SurveyNewsPolicy SurveyNewsCheck {
-            get { return RToolsSettings.Current.SurveyNewsCheck; }
-            set { RToolsSettings.Current.SurveyNewsCheck = value; }
+            get { return _holder.GetValue<SurveyNewsPolicy>(SurveyNewsPolicy.CheckOnceWeek); }
+            set { _holder.SetValue(value); }
         }
 
         [LocCategory("Settings_LogCategory")]
@@ -182,11 +186,16 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
 #else
         [DefaultValue(LogVerbosity.Normal)]
 #endif
-        public LogVerbosity LogLevel {
-            get { return RToolsSettings.Current.LogVerbosity; }
-            set { RToolsSettings.Current.LogVerbosity = value; }
+        public LogVerbosity LogVerbosity {
+            get {
+#if DEBUG
+                return _holder.GetValue<LogVerbosity>(LogVerbosity.Traffic);
+#else
+                return _holder.GetValue<LogVerbosity>(LogVerbosity.Normal);
+#endif
+            }
+            set { _holder.SetValue(value); }
         }
-
 
         /// Overrides default methods since we provide custom settings storage
         public override void LoadSettingsFromStorage() { }
@@ -205,26 +214,31 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         /// want to apply changes to the actual settings until user clicks OK.
         /// </summary>
         class SettingsHolder {
-            private readonly IRToolsSettings _settings;
+            private readonly IRPersistentSettings _settings;
             private readonly IDictionary<string, object> _dict;
 
-            public SettingsHolder(IRToolsSettings settings) {
+            public SettingsHolder(IRPersistentSettings settings) {
                 _settings = settings;
                 _dict = settings.GetPropertyValueDictionary();
             }
 
-            public T GetValue<T>([CallerMemberName] string name = null) {
+            public T GetValue<T>(T defaultValue, [CallerMemberName] string name = null) {
                 object value;
                 _dict.TryGetValue(name, out value);
-                return (T)value;
+                return value != null ? (T)value : defaultValue;
             }
+
+            public T GetValue<T>([CallerMemberName] string name = null) => GetValue<T>(default(T), name);
 
             public void SetValue(object value, [CallerMemberName] string name = null) {
                 Debug.Assert(_dict.ContainsKey(name), Invariant($"Unknown setting {name}. RToolsOptionsPage property name does not match IRToolsSettings"));
                 _dict[name] = value;
             }
 
-            public void Apply() => _settings.SetProperties(_dict);
+            public void Apply() {
+                _settings.SetProperties(_dict);
+                _settings.SaveSettingsAsync().DoNotWait();
+            }
         }
     }
 }

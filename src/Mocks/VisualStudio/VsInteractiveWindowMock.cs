@@ -13,12 +13,12 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
     public sealed class VsInteractiveWindowMock : ToolWindowPane, IVsInteractiveWindow {
         private IWpfTextView _textView;
 
-        public VsInteractiveWindowMock(IWpfTextView textView) {
+        public VsInteractiveWindowMock(IWpfTextView textView, IInteractiveEvaluator evaluator) {
             _textView = textView;
-            InteractiveWindow = new InteractiveWindowMock(_textView);
+            InteractiveWindow = new InteractiveWindowMock(_textView, evaluator);
         }
 
-        public IInteractiveWindow InteractiveWindow { get; private set; }
+        public IInteractiveWindow InteractiveWindow { get; }
 
         public void SetLanguage(Guid languageServiceGuid, IContentType contentType) {
         }

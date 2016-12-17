@@ -28,5 +28,11 @@ namespace Microsoft.R.Support.Help.Functions {
             base(name, description, NamedItemType.Function) { }
 
         public FunctionInfo(string name) : this(name, string.Empty) { }
+
+        public FunctionInfo(string alias, IFunctionInfo primary) : this(alias, primary.Description) {
+            Signatures = primary.Signatures;
+            ReturnValue = primary.ReturnValue;
+            IsInternal = primary.IsInternal;
+        }
     }
 }

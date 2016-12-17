@@ -52,9 +52,11 @@
     </Compile>
     <Compile Include="BrokerServices\BrokerApiErrorException.cs" />
     <Compile Include="Blobs\RBlobStream.cs" />
+    <Compile Include="BrokerServices\IProfileWebService.cs" />
     <Compile Include="BrokerServices\IRemoteUriWebService.cs" />
     <Compile Include="BrokerServices\ICredentialsDecorator.cs" />
     <Compile Include="BrokerServices\ISessionsWebService.cs" />
+    <Compile Include="BrokerServices\ProfileWebService.cs" />
     <Compile Include="BrokerServices\RemoteUriWebService.cs" />
     <Compile Include="BrokerServices\WebServer.cs" />
     <Compile Include="BrokerServices\WebService.cs" />
@@ -116,7 +118,6 @@
     <Compile Include="Extensions\DirectoryExtensions.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Definitions\GuidList.cs" />
     <Compile Include="Definitions\IRSessionCallback.cs" />
     <Compile Include="Definitions\RHostStartupInfo.cs" />
     <Compile Include="Extensions\RStringExtensions.cs" />
@@ -127,7 +128,6 @@
     <Compile Include="Definitions\IRCallbacks.cs" />
     <Compile Include="Definitions\IRExpressionEvaluator.cs" />
     <Compile Include="Definitions\IRSession.cs" />
-    <Compile Include="Definitions\IRSessionEvaluation.cs" />
     <Compile Include="Definitions\IRSessionProvider.cs" />
     <Compile Include="Definitions\IRSessionInteraction.cs" />
     <Compile Include="Host\RHostBinaryMissingException.cs" />
@@ -139,6 +139,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Session\HostLoadChangedEventArgs.cs" />
     <Compile Include="Session\BrokerStateChangedEventArgs.cs" />
     <Compile Include="Session\NullConsole.cs" />
     <Compile Include="Session\RAfterRequestEventArgs.cs" />
@@ -151,9 +152,7 @@
     <Compile Include="Session\RConnectedEventArgs.cs" />
     <Compile Include="Session\ROutputEventArgs.cs" />
     <Compile Include="Session\RSession.cs" />
-    <Compile Include="Session\RSessionEvaluation.cs" />
     <Compile Include="Session\RSessionEvaluationCommands.cs" />
-    <Compile Include="Session\RSessionEvaluationSource.cs" />
     <Compile Include="Session\RSessionExtensions.cs" />
     <Compile Include="Session\RSessionInteraction.cs" />
     <Compile Include="Session\RSessionInteractionCommands.cs" />

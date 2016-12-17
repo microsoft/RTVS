@@ -14,7 +14,6 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Wpf;
 using Microsoft.Common.Wpf.Collections;
 using Microsoft.R.Components.ConnectionManager.ViewModel;
-using Microsoft.R.Components.Extensions;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Interpreters;
@@ -27,6 +26,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private readonly BatchObservableCollection<IConnectionViewModel> _remoteConnections;
         private readonly DisposableBag _disposableBag;
         private IConnectionViewModel _editedConnection;
+        private IConnectionViewModel _testingConnection;
         private bool _isEditingNew;
         private bool _hasLocalConnections;
         private bool _isConnected;
@@ -117,6 +117,10 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public void BrowseLocalPath(IConnectionViewModel connection) {
             _shell.AssertIsOnMainThread();
+            if (connection == null) {
+                return;    
+            }
+
             string latestLocalPath;
             Uri latestLocalPathUri;
 
@@ -146,22 +150,33 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public void Edit(IConnectionViewModel connection) {
             _shell.AssertIsOnMainThread();
+            if (connection == null) {
+                return;    
+            }
+
             TryStartEditing(connection);
         }
 
-        public void CancelTestConnection(IConnectionViewModel connection) {
+        public void CancelTestConnection() {
             _shell.AssertIsOnMainThread();
-            connection.TestingConnectionCts?.Cancel();
-            connection.TestingConnectionCts = null;
-            connection.IsTestConnectionSucceeded = false;
-            connection.TestConnectionFailedText = null;
+            if (_testingConnection != null) {
+                _testingConnection.TestingConnectionCts?.Cancel();
+                _testingConnection.TestingConnectionCts = null;
+                _testingConnection.IsTestConnectionSucceeded = false;
+                _testingConnection.TestConnectionFailedText = null;
+            }
         }
 
         public async Task TestConnectionAsync(IConnectionViewModel connection) {
             _shell.AssertIsOnMainThread();
-            CancelTestConnection(connection);
+            if (connection == null) {
+                return;
+            }
+
+            CancelTestConnection();
 
             connection.TestingConnectionCts = new CancellationTokenSource();
+            _testingConnection = connection;
 
             try {
                 await _connectionManager.TestConnectionAsync(connection, connection.TestingConnectionCts.Token);
@@ -185,20 +200,24 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             } finally {
                 connection.TestingConnectionCts?.Dispose();
                 connection.TestingConnectionCts = null;
+                _testingConnection = null;
             }
         }
 
         public void Save(IConnectionViewModel connectionViewModel) {
             _shell.AssertIsOnMainThread();
+            if (connectionViewModel == null || !connectionViewModel.HasChanges) {
+                return;    
+            }
 
-            var connection = _connectionManager.AddOrUpdateConnection(
+            _connectionManager.AddOrUpdateConnection(
                 connectionViewModel.Name,
                 connectionViewModel.Path,
                 connectionViewModel.RCommandLineArguments,
                 connectionViewModel.IsUserCreated);
 
-            if (connection.Id != connectionViewModel.Id && connectionViewModel.Id != null) {
-                _connectionManager.TryRemove(connectionViewModel.Id);
+            if (connectionViewModel.IsRenamed) {
+                _connectionManager.TryRemove(connectionViewModel.OriginalName);
             }
 
             EditedConnection = null;
@@ -208,19 +227,35 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public bool TryDelete(IConnectionViewModel connection) {
             _shell.AssertIsOnMainThread();
+            CancelTestConnection();
 
-            var confirm = _shell.ShowMessage(string.Format(CultureInfo.CurrentUICulture, Resources.ConnectionManager_RemoveConnectionConfirmation, connection.Name), MessageButtons.YesNo);
-            if (confirm != MessageButtons.Yes) {
-                return false;
+            if (connection != null) {
+                var confirm = _shell.ShowMessage(string.Format(CultureInfo.CurrentUICulture, Resources.ConnectionManager_RemoveConnectionConfirmation, connection.Name), MessageButtons.YesNo);
+                if (confirm == MessageButtons.Yes) {
+                    var result = _connectionManager.TryRemove(connection.Name);
+                    UpdateConnections();
+                    return result;
+                }
             }
-
-            var result = _connectionManager.TryRemove(connection.Id);
-            UpdateConnections();
-            return result;
+            return false;
         }
 
-        public void Connect(IConnectionViewModel connection) {
+        public void Connect(IConnectionViewModel connection, bool connectToEdited) {
             _shell.AssertIsOnMainThread();
+            if (connection == null) {
+                return;    
+            }
+
+            if (connection != EditedConnection) {
+                CancelEdit();
+            } else if (connectToEdited) {
+                Save(connection);
+            } else {
+                return;
+            }
+
+            CancelTestConnection();
+
             if (connection.IsActive && !IsConnected) {
                 _shell.ProgressDialog.Show(_connectionManager.ReconnectAsync, Resources.ConnectionManager_ReconnectionToProgressBarMessage.FormatInvariant(connection.Name));
             } else {
@@ -234,7 +269,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         }
 
         private void UpdateConnections() {
-            var selectedId = EditedConnection?.Id;
+            var selectedConnectionName = EditedConnection?.Name;
 
             _localConnections.ReplaceWith(_connectionManager.RecentConnections
                 .Where(c => !c.IsRemote)
@@ -246,7 +281,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                 .Select(CreateConnectionViewModel)
                 .OrderBy(c => c.Name));
 
-            var editedConnection = RemoteConnections.FirstOrDefault(i => i.Id == selectedId);
+            var editedConnection = RemoteConnections.FirstOrDefault(i => i.Name == selectedConnectionName);
             if (editedConnection != null) {
                 EditedConnection = editedConnection;
             }

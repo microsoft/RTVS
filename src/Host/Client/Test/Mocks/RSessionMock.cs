@@ -6,19 +6,18 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Disposables;
-using Microsoft.R.Host.Client.Host;
 
 namespace Microsoft.R.Host.Client.Test.Mocks {
     public sealed class RSessionMock : IRSession {
         private IRSessionInteraction _inter;
 
         public string LastExpression { get; private set; }
-        public RSessionEvaluationMock Evaluation { get; private set; }
 
         public int Id { get; set; }
         public int? ProcessId { get; set; }
         public bool IsHostRunning { get; set; }
         public bool IsRemote { get; set; }
+        public bool RestartOnBrokerSwitch { get; set; }
 
         public Task HostStarted => IsHostRunning ? Task.FromResult(0) : Task.FromCanceled(new CancellationToken(true));
 
@@ -53,15 +52,6 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
             return Task.FromResult(new REvaluationResult());
         }
 
-        public Task<IRSessionEvaluation> BeginEvaluationAsync(CancellationToken cancellationToken = default(CancellationToken)) {
-            Evaluation = new RSessionEvaluationMock();
-            BeforeRequest?.Invoke(this, new RBeforeRequestEventArgs(Evaluation.Contexts, Prompt, 4096, addToHistoty: true));
-            if (Evaluation.IsMutating) {
-                Mutated?.Invoke(this, EventArgs.Empty);
-            }
-            return Task.FromResult((IRSessionEvaluation)Evaluation);
-        }
-
         public Task<IRSessionInteraction> BeginInteractionAsync(bool isVisible = true, CancellationToken cancellationToken = default (CancellationToken)) {
             _inter = new RSessionInteractionMock();
             BeforeRequest?.Invoke(this, new RBeforeRequestEventArgs(_inter.Contexts, Prompt, 4096, addToHistoty: true));
@@ -69,11 +59,7 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
         }
 
         public Task CancelAllAsync(CancellationToken сancellationToken = default(CancellationToken)) {
-            if (Evaluation != null) {
-                AfterRequest?.Invoke(this, new RAfterRequestEventArgs(Evaluation.Contexts, Prompt, string.Empty, addToHistory: true, isVisible: true));
-                Evaluation = null;
-            }
-            else if (_inter != null) {
+            if (_inter != null) {
                 AfterRequest?.Invoke(this, new RAfterRequestEventArgs(_inter.Contexts, Prompt, string.Empty, addToHistory: true, isVisible: true));
                 _inter = null;
             }
@@ -110,7 +96,7 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
             return Task.CompletedTask;
         }
 
-        public Task StopHostAsync() {
+        public Task StopHostAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             IsHostRunning = false;
             Disconnected?.Invoke(this, EventArgs.Empty);
             return Task.CompletedTask;
@@ -120,6 +106,7 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
         public event EventHandler<RAfterRequestEventArgs> AfterRequest;
         public event EventHandler<RBeforeRequestEventArgs> BeforeRequest;
         public event EventHandler<RConnectedEventArgs> Connected;
+        public event EventHandler<EventArgs> Interactive;
         public event EventHandler<EventArgs> DirectoryChanged;
         public event EventHandler<EventArgs> Disconnected;
         public event EventHandler<EventArgs> Disposed;

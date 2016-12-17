@@ -5,9 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Help;
-using Microsoft.R.Support.Settings;
 using Microsoft.UnitTests.Core.Mef;
 
 namespace Microsoft.R.Support.Test.Utility {
@@ -15,8 +13,8 @@ namespace Microsoft.R.Support.Test.Utility {
     public static class PackageIndexUtility {
         public static Task<IFunctionInfo> GetFunctionInfoAsync(IFunctionIndex functionIndex, string functionName) {
             var tcs = new TaskCompletionSource<IFunctionInfo>();
-            var result = functionIndex.GetFunctionInfo(functionName, o => {
-                var r = functionIndex.GetFunctionInfo(functionName);
+            var result = functionIndex.GetFunctionInfo(functionName, null, (o, p) => {
+                var r = functionIndex.GetFunctionInfo(functionName, p);
                 tcs.TrySetResult(r);
             });
 

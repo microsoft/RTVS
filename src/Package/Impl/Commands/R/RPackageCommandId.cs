@@ -42,6 +42,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public const int icmdSetDirectoryToProjectCommand = 520;
         public const int icmdTerminateR = 521;
         public const int icmdSessionInformation = 522;
+        public const int icmdDeleteProfile = 523;
 
         public const int icmdResetRepl = 530;
         public const int icmdClearRepl = 531;

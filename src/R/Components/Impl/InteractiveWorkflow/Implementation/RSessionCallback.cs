@@ -3,8 +3,10 @@
 
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Help;
@@ -12,6 +14,7 @@ using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Settings.Mirrors;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.VisualStudio.InteractiveWindow;
 using Task = System.Threading.Tasks.Task;
 
@@ -43,8 +46,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         /// <summary>
         /// Displays message with specified buttons in a host-specific UI
         /// </summary>
-        public Task<MessageButtons> ShowMessageAsync(string message, MessageButtons buttons, CancellationToken cancellationToken) => _coreShell.ShowMessageAsync(message, buttons);
-            
+        public Task<MessageButtons> ShowMessageAsync(string message, MessageButtons buttons, CancellationToken cancellationToken) => _coreShell.ShowMessageAsync(message, buttons, cancellationToken);
+
         /// <summary>
         /// Displays R help URL in a browser on in the host app-provided window
         /// </summary>
@@ -62,17 +65,14 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         /// <summary>
         /// Displays R plot in the host app-provided window
         /// </summary>
-        public async Task Plot(PlotMessage plot, CancellationToken ct) {
-            await _workflow.Plots.LoadPlotAsync(plot, ct);
-        }
+        public Task Plot(PlotMessage plot, CancellationToken ct)
+            => _workflow.Plots.LoadPlotAsync(plot, ct);
 
-        public async Task<LocatorResult> Locator(Guid deviceId, CancellationToken ct) {
-            return await _workflow.Plots.StartLocatorModeAsync(deviceId, ct);
-        }
+        public Task<LocatorResult> Locator(Guid deviceId, CancellationToken ct)
+            => _workflow.Plots.StartLocatorModeAsync(deviceId, ct);
 
-        public async Task<PlotDeviceProperties> PlotDeviceCreate(Guid deviceId, CancellationToken ct) {
-            return await _workflow.Plots.DeviceCreatedAsync(deviceId, ct);
-        }
+        public Task<PlotDeviceProperties> PlotDeviceCreate(Guid deviceId, CancellationToken ct)
+            => _workflow.Plots.DeviceCreatedAsync(deviceId, ct);
 
         public async Task PlotDeviceDestroy(Guid deviceId, CancellationToken ct) {
             await _workflow.Plots.DeviceDestroyedAsync(deviceId, ct);
@@ -94,9 +94,9 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             return CranMirrorList.UrlFromName(mirrorName);
         }
 
-        public void ViewObject(string expression, string title) {
+        public Task ViewObjectAsync(string expression, string title, CancellationToken cancellationToken = default(CancellationToken)) {
             var viewer = _coreShell.ExportProvider.GetExportedValue<IObjectViewer>();
-            viewer?.ViewObjectDetails(_session, REnvironments.GlobalEnv, expression, title);
+            return viewer?.ViewObjectDetails(_session, REnvironments.GlobalEnv, expression, title, cancellationToken) ?? Task.CompletedTask;
         }
 
         public async Task ViewLibraryAsync(CancellationToken cancellationToken = default(CancellationToken)) {
@@ -105,17 +105,43 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             _workflow.Packages.GetOrCreateVisualComponent(containerFactory).Container.Show(focus: true, immediate: false);
         }
 
-        public Task ViewFile(string fileName, string tabName, bool deleteFile) {
+        public async Task ViewFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken = default(CancellationToken)) {
             var viewer = _coreShell.ExportProvider.GetExportedValue<IObjectViewer>();
-            return viewer?.ViewFile(fileName, tabName, deleteFile);
+            var task = Task.CompletedTask;
+
+            if (_session.IsRemote) {
+                using (var dts = new DataTransferSession(_session, _fileSystem)) {
+                    // TODO: handle progress for large files
+                    try {
+                        await dts.FetchFileToLocalTempAsync(fileName.ToRPath(), null, cancellationToken);
+                        fileName = _fileSystem.GetDownloadsPath(Path.GetFileName(fileName));
+                        await viewer?.ViewFile(fileName, tabName, deleteFile, cancellationToken);
+                    } catch (REvaluationException) { } catch (RHostDisconnectedException) { }
+                }
+            } else {
+                await viewer?.ViewFile(fileName, tabName, deleteFile, cancellationToken);
+            }
         }
 
-        public Task<string> SaveFileAsync(string filename, byte[] data) {
-            return Task.Run(() => {
-                string destPath = _fileSystem.GetDownloadsPath(filename);
-                _fileSystem.FileWriteAllBytes(destPath, data);
-                return destPath;
-            });
+        public async Task<string> SaveFileAsync(string remoteFileName, string localPath, byte[] data, CancellationToken cancellationToken) {
+            await TaskUtilities.SwitchToBackgroundThread();
+
+            if (!string.IsNullOrEmpty(localPath)) {
+                if (_fileSystem.DirectoryExists(localPath)) {
+                    localPath = Path.Combine(localPath, remoteFileName);
+                }
+            } else {
+                localPath = _fileSystem.GetDownloadsPath(remoteFileName);
+            }
+
+            try {
+                cancellationToken.ThrowIfCancellationRequested();
+                _fileSystem.FileWriteAllBytes(localPath, data);
+            } catch (Exception ex) {
+                await _coreShell.ShowErrorMessageAsync(Resources.Error_UnableSaveFile.FormatInvariant(localPath, ex.Message), cancellationToken);
+                return string.Empty;
+            }
+            return localPath;
         }
     }
 }

@@ -58,7 +58,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
             }
 
             messageBusOverride.AddAfterStartingBeforeFinished(new VerifyGlobalProviderMessageBusInjection());
-            return runner.RunAsync();
+            return ThreadType == ThreadType.Background ? Task.Run(() => runner.RunAsync()) : runner.RunAsync();
         }
 
         protected virtual object[] GetTestMethodArguments() => TestMethodArguments;

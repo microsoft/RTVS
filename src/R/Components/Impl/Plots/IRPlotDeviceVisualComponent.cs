@@ -10,8 +10,8 @@ using Microsoft.R.Host.Client;
 namespace Microsoft.R.Components.Plots {
     public interface IRPlotDeviceVisualComponent : IVisualComponent {
         PlotDeviceProperties GetDeviceProperties();
-        Task AssignAsync(IRPlotDevice device);
-        Task UnassignAsync();
+        void Assign(IRPlotDevice device);
+        void Unassign();
         int InstanceId { get; }
         bool HasPlot { get; }
         bool LocatorMode { get; }

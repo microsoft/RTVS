@@ -3,20 +3,16 @@
 
 using System;
 using System.Globalization;
-using System.Threading.Tasks;
-using System.Timers;
-using Microsoft.Common.Core;
+using Microsoft.Common.Core.Disposables;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Wpf;
-using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Host.Client.Host;
-using Microsoft.R.Host.Protocol;
+using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Components.Information {
     public sealed class HostLoadIndicatorViewModel : BindableBase, IDisposable {
-        private readonly Timer _timer = new Timer();
-        private readonly IRInteractiveWorkflow _interactiveWorkflow;
-        private bool _disposed;
-        private bool _busy;
+        private readonly IRSessionProvider _sessionProvider;
+        private readonly ICoreShell _shell;
+        private readonly DisposableBag _disposableBag;
 
         private double _cpuLoad;
         private double _memoryLoad;
@@ -43,50 +39,29 @@ namespace Microsoft.R.Components.Information {
             set { SetProperty(ref _tooltip, value); }
         }
 
-        public HostLoadIndicatorViewModel(IRInteractiveWorkflow interactiveWorkflow, int timerInterval = 2000) {
-            _interactiveWorkflow = interactiveWorkflow;
+        public HostLoadIndicatorViewModel(IRSessionProvider sessionProvider, ICoreShell shell) {
+            _sessionProvider = sessionProvider;
+            _shell = shell;
+            _disposableBag = DisposableBag.Create<HostLoadIndicatorViewModel>()
+                .Add(() => _sessionProvider.HostLoadChanged -= OnHostLoadChanged);
 
-            if (timerInterval > 0) {
-                _timer.Interval = timerInterval;
-                _timer.AutoReset = true;
-                _timer.Elapsed += OnTimer;
-                _timer.Start();
-            }
+            _sessionProvider.HostLoadChanged += OnHostLoadChanged;
         }
 
-        private void OnTimer(object sender, ElapsedEventArgs e) {
-            if (!_disposed && !_busy) {
-                UpdateModelAsync().DoNotWait();
-            }
+        private void OnHostLoadChanged(object sender, HostLoadChangedEventArgs e) {
+            _shell.DispatchOnUIThread(() => {
+                CpuLoad = e.HostLoad.CpuLoad;
+                MemoryLoad = e.HostLoad.MemoryLoad;
+                NetworkLoad = e.HostLoad.NetworkLoad;
+
+                Tooltip = string.Format(CultureInfo.InvariantCulture,
+                    Resources.HostLoad_Tooltip,
+                    (int)Math.Round(100 * CpuLoad),
+                    (int)Math.Round(100 * MemoryLoad),
+                    (int)Math.Round(100 * NetworkLoad));
+            });
         }
 
-        internal async Task UpdateModelAsync() {
-            _busy = true;
-            try {
-                var result = await _interactiveWorkflow.RSessions.Broker.GetHostInformationAsync<HostLoad>();
-                if (result != null) {
-                    _interactiveWorkflow.Shell.DispatchOnUIThread(() => {
-                        CpuLoad = result.CpuLoad;
-                        MemoryLoad = result.MemoryLoad;
-                        NetworkLoad = result.NetworkLoad;
-
-                        Tooltip = string.Format(CultureInfo.InvariantCulture,
-                            Resources.HostLoad_Tooltip,
-                            (int)Math.Round(100 * CpuLoad),
-                            (int)Math.Round(100 * MemoryLoad),
-                            (int)Math.Round(100 * NetworkLoad));
-                    });
-                }
-            } catch (RHostDisconnectedException) {
-            } finally {
-                _busy = false;
-            }
-        }
-
-        public void Dispose() {
-            _timer.Stop();
-            _timer.Dispose();
-            _disposed = true;
-        }
+        public void Dispose() => _disposableBag.TryDispose();
     }
 }

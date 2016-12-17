@@ -20,6 +20,7 @@ namespace Microsoft.R.Editor.Settings {
         public const string SendToReplOnCtrlEnterKey = "SendToReplOnCtrlEnter";
         public const string SyntaxCheckInReplKey = "SyntaxCheckInRepl";
         public const string PartialArgumentNameMatchKey = "PartialArgumentNameMatch";
+        public const string EnableOutliningKey = "EnableOutlining";
 
         private static bool _initialized = false;
         private static RFormatOptions _formatOptions = new RFormatOptions();
@@ -134,6 +135,11 @@ namespace Microsoft.R.Editor.Settings {
         public static bool PartialArgumentNameMatch {
             get { return Storage.GetBoolean(REditorSettings.PartialArgumentNameMatchKey, false); }
             set { WritableStorage?.SetBoolean(REditorSettings.PartialArgumentNameMatchKey, value); }
+        }
+
+        public static bool EnableOutlining {
+            get { return Storage.GetBoolean(REditorSettings.EnableOutliningKey, true); }
+            set { WritableStorage?.SetBoolean(REditorSettings.EnableOutliningKey, value); }
         }
 
         public static RFormatOptions FormatOptions {

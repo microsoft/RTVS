@@ -36,9 +36,11 @@ namespace Microsoft.R.Support.RD.Parser {
         private static IReadOnlyList<IFunctionInfo> ParseFunctions(RdParseContext context) {
             IReadOnlyList<ISignatureInfo> signatureInfos = null;
             IReadOnlyDictionary<string, string> argumentDescriptions = null;
+            var aliases = new List<string>();
             string functionDescription = null; // Description is normally one for all similar functions
             bool isInternal = false;
             string returnValue = null;
+            string primaryName = null;
 
             while (!context.Tokens.IsEndOfStream() &&
                    (functionDescription == null || argumentDescriptions == null ||
@@ -61,6 +63,13 @@ namespace Microsoft.R.Support.RD.Parser {
                     } else if (signatureInfos == null && context.IsAtKeyword(@"\usage")) {
                         // Extract signatures with function names
                         signatureInfos = RdFunctionSignature.ExtractSignatures(context);
+                    } else if (context.IsAtKeyword(@"\alias")) {
+                        var alias = RdText.GetText(context);
+                        if (!string.IsNullOrWhiteSpace(alias)) {
+                            aliases.Add(alias);
+                        }
+                    } else if (primaryName == null && context.IsAtKeyword(@"\name")) {
+                        primaryName = RdText.GetText(context);
                     } else {
                         context.Tokens.Advance(2);
                     }
@@ -94,18 +103,17 @@ namespace Microsoft.R.Support.RD.Parser {
             }
 
             // Merge signatures into function infos
-            Dictionary<string, FunctionInfo> functionInfos = new Dictionary<string, FunctionInfo>();
+            var functionInfos = new Dictionary<string, FunctionInfo>();
             if (signatureInfos != null) {
-                Dictionary<string, List<ISignatureInfo>> functionSignatures = new Dictionary<string, List<ISignatureInfo>>();
+                var functionSignatures = new Dictionary<string, List<ISignatureInfo>>();
                 foreach (ISignatureInfo sigInfo in signatureInfos) {
                     FunctionInfo functionInfo;
                     List<ISignatureInfo> sigList;
                     if (!functionInfos.TryGetValue(sigInfo.FunctionName, out functionInfo)) {
                         // Create function info
-                        functionInfo = new FunctionInfo(sigInfo.FunctionName, functionDescription);
+                        functionInfo = CreateFunctionInfo(sigInfo.FunctionName, functionDescription, returnValue, isInternal);
                         functionInfos[sigInfo.FunctionName] = functionInfo;
-                        functionInfo.IsInternal = isInternal;
-                        functionInfo.ReturnValue = returnValue;
+
                         // Create list of signatures for this function
                         sigList = new List<ISignatureInfo>();
                         functionSignatures[sigInfo.FunctionName] = sigList;
@@ -118,7 +126,26 @@ namespace Microsoft.R.Support.RD.Parser {
                 }
             }
 
+            // Propage to aliases
+            if (!string.IsNullOrWhiteSpace(primaryName)) {
+                FunctionInfo functionInfo;
+                if (functionInfos.TryGetValue(primaryName, out functionInfo)) {
+                    foreach (var alias in aliases) {
+                        if (!functionInfos.ContainsKey(alias)) {
+                            functionInfos[alias] = new FunctionInfo(alias, functionInfo);
+                        }
+                    }
+                }
+            }
+
             return functionInfos.Values.ToList();
+        }
+
+        private static FunctionInfo CreateFunctionInfo(string functionName, string functionDescription, string returnValue, bool isInternal) {
+            var functionInfo = new FunctionInfo(functionName, functionDescription);
+            functionInfo.IsInternal = isInternal;
+            functionInfo.ReturnValue = returnValue;
+            return functionInfo;
         }
     }
 }

@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
-using System.ComponentModel.Composition;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Logging.Implementation;
@@ -14,43 +12,50 @@ using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Core.Threading;
 
 namespace Microsoft.Common.Core.Services {
-    [Export(typeof(ICoreServices))]
     public sealed class CoreServices : ICoreServices {
-        private readonly IApplicationConstants _appConstants;
-        private readonly Lazy<IMainThread> _mainThread;
-        private IActionLog _log;
+        public CoreServices(IApplicationConstants appConstants
+            , ITelemetryService telemetry
+            , ITaskService tasks
+            , IMainThread mainThread
+            , ISecurityService security) {
+            Telemetry = telemetry;
+            Registry = new RegistryImpl();
+            Security = security;
+            LoggingServices = new LoggingServices(new LoggingPermissions(appConstants, telemetry, Registry), appConstants);
+            Tasks = tasks;
 
-        [ImportingConstructor]
-        public CoreServices(
-              IApplicationConstants appConstants
+            ProcessServices = new ProcessServices();
+            FileSystem = new FileSystem();
+            MainThread = mainThread;
+
+            Log = LoggingServices.GetOrCreateLog(appConstants.ApplicationName);
+        }
+
+        public CoreServices(IApplicationConstants appConstants
             , ITelemetryService telemetry
             , ILoggingPermissions permissions
             , ISecurityService security
             , ITaskService tasks
-            , ISettingsStorage settings
-            , Lazy<IMainThread> mainThread
-            , [Import(AllowDefault = true)] IActionLog log = null
-            , [Import(AllowDefault = true)] IFileSystem fs = null
-            , [Import(AllowDefault = true)] IRegistry registry = null
-            , [Import(AllowDefault = true)] IProcessServices ps = null) {
+            , IMainThread mainThread
+            , IActionLog log
+            , IFileSystem fs
+            , IRegistry registry
+            , IProcessServices ps) {
 
             LoggingServices = new LoggingServices(permissions, appConstants);
-            _appConstants = appConstants;
-            _log = log;
+            Log = log;
 
             Telemetry = telemetry;
             Security = security;
             Tasks = tasks;
 
-            ProcessServices = ps ?? new ProcessServices();
-            Registry = registry ?? new RegistryImpl();
-            FileSystem = fs ?? new FileSystem();
-            Settings = settings;
-            _mainThread = mainThread;
+            ProcessServices = ps;
+            Registry = registry;
+            FileSystem = fs;
+            MainThread = mainThread;
         }
 
-        public IActionLog Log => _log ?? (_log = LoggingServices.GetOrCreateLog(_appConstants.ApplicationName));
-
+        public IActionLog Log { get; }
         public IFileSystem FileSystem { get; } 
         public IProcessServices ProcessServices { get; }
         public IRegistry Registry { get; } 
@@ -58,7 +63,6 @@ namespace Microsoft.Common.Core.Services {
         public ITelemetryService Telemetry { get; }
         public ITaskService Tasks { get; }
         public ILoggingServices LoggingServices { get; }
-        public ISettingsStorage Settings { get; }
-        public IMainThread MainThread => _mainThread.Value;
+        public IMainThread MainThread { get; }
     }
 }

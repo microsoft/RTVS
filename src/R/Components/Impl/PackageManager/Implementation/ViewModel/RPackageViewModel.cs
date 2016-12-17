@@ -26,6 +26,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         private string _built;
         private bool _isUpdateAvailable;
         private bool _canBeUninstalled;
+        private bool _isRemoteSession;
 
         public static RPackageViewModel CreateAvailable(RPackage package, IRPackageManagerViewModel owner) {
             Uri repositoryUri;
@@ -40,6 +41,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 NeedsCompilation = package.NeedsCompilation != null && !package.NeedsCompilation.EqualsIgnoreCase("no"),
                 RepositoryUri = repositoryUri,
                 RepositoryText = repositoryUri != null ? null : package.Repository,
+                IsRemoteSession = owner.IsRemoteSession,
                 Title = package.Title.NormalizeWhitespace(),
                 Description = package.Description.NormalizeWhitespace(),
                 Built = package.Built,
@@ -64,6 +66,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                     .ToArray() ?? new string[0],
                 NeedsCompilation = package.NeedsCompilation != null && !package.NeedsCompilation.EqualsIgnoreCase("no"),
                 LibraryPath = package.LibPath,
+                IsRemoteSession = owner.IsRemoteSession,
                 RepositoryUri = repositoryUri,
                 RepositoryText = repositoryUri != null ? null : package.Repository,
                 Description = package.Description.NormalizeWhitespace(),
@@ -114,6 +117,10 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
 
         public bool NeedsCompilation { get; private set; }
 
+        public bool IsRemoteSession {
+            get { return _isRemoteSession; }
+            private set { SetProperty(ref _isRemoteSession, value); }
+        }
         public string LibraryPath {
             get { return _libraryPath; }
             private set { SetProperty(ref _libraryPath, value); }

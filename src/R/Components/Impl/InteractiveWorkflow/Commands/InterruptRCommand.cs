@@ -48,9 +48,9 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
 
         public async Task<CommandResult> InvokeAsync() {
             if (_enabled) {
+                _enabled = false;
                 _interactiveWorkflow.Operations.ClearPendingInputs();
                 await _session.CancelAllAsync();
-                _enabled = false;
                 return CommandResult.Executed;
             }
 

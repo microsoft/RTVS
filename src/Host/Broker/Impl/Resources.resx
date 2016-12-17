@@ -237,10 +237,13 @@
   <data name="Trace_UserProfileDirectory" xml:space="preserve">
     <value>User {0} profile directory: {1}</value>
   </data>
-  <data name="Exception_MaxAllowedUsers" xml:space="preserve">
-    <value>Windows Workstation only allows a single user session.</value>
-  </data>
   <data name="Error_ConfiguredPortNotAvailable" xml:space="preserve">
     <value>Server port {0} is already in use.</value>
+  </data>
+  <data name="Error_ProfileDeletionFailedIO" xml:space="preserve">
+    <value>Profile deletion failed for user {0}.</value>
+  </data>
+  <data name="Error_BlockedByProfileDeletion" xml:space="preserve">
+    <value>User {0} session creation blocked due to pending profile deletion.</value>
   </data>
 </root>

@@ -9,7 +9,6 @@ using Microsoft.R.Components.ConnectionManager.ViewModel;
 namespace Microsoft.R.Components.ConnectionManager.Implementation.View.DesignTime {
 #if DEBUG
     internal class DesignTimeConnectionViewModel : IConnectionViewModel {
-        public Uri Id { get; }
         public string Name { get; set; }
         public string Path { get; set; }
         public string RCommandLineArguments { get; set; }
@@ -22,14 +21,15 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View.DesignTim
         public string TestConnectionFailedText { get; set; }
         public bool IsRemote { get; set; }
 
+        public string OriginalName => Name;
         public string SaveButtonTooltip => string.Empty;
         public bool IsValid => false;
         public bool HasChanges => false;
+        public bool IsRenamed => false;
         public DateTime LastUsed => DateTime.Now;
         public void Reset() { }
         public void Dispose() { }
         public string ConnectionTooltip => string.Empty;
-        public void UpdateName() { }
         public void UpdatePath() { }
 #pragma warning disable 67
         public event PropertyChangedEventHandler PropertyChanged;

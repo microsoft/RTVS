@@ -43,6 +43,9 @@
     <CodeAnalysisRuleSet>..\..\..\DevDivRuleSet.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>RFile.ico</ApplicationIcon>
+  </PropertyGroup>
   <Import Project="..\..\..\R.Settings.targets" />
   <PropertyGroup>
     <BaseIntermediateOutputPath>$(ObjDirectory)</BaseIntermediateOutputPath>
@@ -79,6 +82,7 @@
     <Compile Include="About\LoadController.cs" />
     <Compile Include="About\AboutController.cs" />
     <Compile Include="ApiErrorResult.cs" />
+    <Compile Include="Extensions\BasicSignInContextExtensions.cs" />
     <Compile Include="Extensions\ExceptionExtensions.cs" />
     <Compile Include="Interpreters\Interpreter.cs" />
     <Compile Include="Interpreters\InterpreterManager.cs" />
@@ -109,7 +113,6 @@
     <Compile Include="Security\SecurityManager.cs" />
     <Compile Include="Security\Policies.cs" />
     <Compile Include="Security\TlsConfiguration.cs" />
-    <Compile Include="Sessions\BrokerMaxedUsersException.cs" />
     <Compile Include="Sessions\SessionStateChangedEventArgs.cs" />
     <Compile Include="Startup\StartupOptions.cs" />
     <Compile Include="Startup\Program.cs" />
@@ -129,6 +132,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="UserProfile\ProfileController.cs" />
+    <Compile Include="UserProfile\UserProfileManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
@@ -176,6 +181,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Visible>True</Visible>
     </Content>
+    <Content Include="RFile.ico" />
     <None Include="Microsoft.R.Host.Broker.Config.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

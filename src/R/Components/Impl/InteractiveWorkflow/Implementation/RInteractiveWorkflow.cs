@@ -3,6 +3,8 @@
 
 using System;
 using System.ComponentModel;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
@@ -18,6 +20,7 @@ using Microsoft.R.Components.Settings.Mirrors;
 using Microsoft.R.Components.Workspace;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
+using Microsoft.R.Interpreters;
 using Microsoft.VisualStudio.R.Package.Repl;
 
 namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
@@ -28,6 +31,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         private readonly IRSettings _settings;
         private readonly RInteractiveWorkflowOperations _operations;
 
+        private TaskCompletionSource<IInteractiveWindowVisualComponent> _visualComponentTcs;
         private bool _replLostFocus;
         private bool _debuggerJustEnteredBreakMode;
 
@@ -42,6 +46,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         public IRInteractiveWorkflowOperations Operations => _operations;
 
         public IInteractiveWindowVisualComponent ActiveWindow { get; private set; }
+
+        public event EventHandler<ActiveWindowChangedEventArgs> ActiveWindowChanged;
 
         public RInteractiveWorkflow(IConnectionManagerProvider connectionsProvider
             , IRHistoryProvider historyProvider
@@ -58,9 +64,9 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
             Shell = coreShell;
             RSessions = new RSessionProvider(coreShell.Services, new InteractiveWindowConsole(this));
-            RSessions.BrokerChanging += OnBrokerChanging;
 
-            RSession = RSessions.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
+            RSession = RSessions.GetOrCreate(SessionGuids.InteractiveWindowRSessionGuid);
+            RSession.RestartOnBrokerSwitch = true;
             Connections = connectionsProvider.CreateConnectionManager(this);
 
             History = historyProvider.CreateRHistory(this);
@@ -81,7 +87,6 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 .Add(() => _debuggerModeTracker.EnterBreakMode -= DebuggerEnteredBreakMode)
                 .Add(() => _debuggerModeTracker.LeaveBreakMode -= DebuggerLeftBreakMode)
                 .Add(() => _activeTextViewTracker.LastActiveTextViewChanged -= LastActiveTextViewChanged)
-                .Add(() => RSessions.BrokerChanging -= OnBrokerChanging)
                 .Add(() => RSession.Disconnected -= RSessionDisconnected)
                 .Add(RSessions)
                 .Add(Operations)
@@ -129,19 +134,6 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             }
         }
 
-        private void OnBrokerChanging(object sender, EventArgs e) {
-            OnBrokerChangingAsync().DoNotWait();
-        }
-
-        private async Task OnBrokerChangingAsync() {
-            await Shell.SwitchToMainThreadAsync();
-            var factory = Shell.ExportProvider.GetExportedValueOrDefault<IInteractiveWindowComponentContainerFactory>();
-            if (factory != null) {
-                var component = await GetOrCreateVisualComponent(factory);
-                component.Container.Show(focus: false, immediate: false);
-            }
-        }
-
         private void RSessionDisconnected(object o, EventArgs eventArgs) {
             Operations.ClearPendingInputs();
             ActiveWindow?.Container.UpdateCommandStatus(false);
@@ -152,27 +144,53 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             return wss.IsRProjectActive;
         }
 
-        public async Task<IInteractiveWindowVisualComponent> GetOrCreateVisualComponent(IInteractiveWindowComponentContainerFactory componentContainerFactory, int instanceId = 0) {
+        public Task<IInteractiveWindowVisualComponent> GetOrCreateVisualComponentAsync(int instanceId = 0) {
             Shell.AssertIsOnMainThread();
 
-            if (ActiveWindow != null) {
+            if (_visualComponentTcs == null) {
+                _visualComponentTcs = new TaskCompletionSource<IInteractiveWindowVisualComponent>();
+                CreateVisualComponentAsync(instanceId).DoNotWait();
+            } else if (instanceId != 0) {
                 // Right now only one instance of interactive window is allowed
-                if (instanceId != 0) {
-                    throw new InvalidOperationException("Right now only one instance of interactive window is allowed");
-                }
-
-                return ActiveWindow;
+                throw new InvalidOperationException("Right now only one instance of interactive window is allowed");
             }
 
-            var evaluator = new RInteractiveEvaluator(RSessions, RSession, History, Connections, Shell, _settings);
+            return _visualComponentTcs.Task;
+        }
 
-            ActiveWindow = componentContainerFactory.Create(instanceId, evaluator, RSessions);
-            var interactiveWindow = ActiveWindow.InteractiveWindow;
+        private async Task CreateVisualComponentAsync(int instanceId) {
+            var factory = Shell.ExportProvider.GetExportedValue<IInteractiveWindowComponentContainerFactory>();
+            var evaluator = new RInteractiveEvaluator(RSessions, RSession, History, Connections, Shell, _settings, new InteractiveWindowConsole(this));
+
+            var window = factory.Create(instanceId, evaluator, RSessions);
+            var interactiveWindow = window.InteractiveWindow;
             interactiveWindow.TextView.Closed += (_, __) => evaluator.Dispose();
             _operations.InteractiveWindow = interactiveWindow;
+
+            if (!RSessions.HasBroker) {
+                var connectedToBroker = await Connections.TryConnectToPreviouslyUsedAsync();
+                if (!connectedToBroker) {
+                    var showConnectionsWindow = Connections.RecentConnections.Any();
+                    if (!showConnectionsWindow){
+                        var message = Resources.NoLocalR.FormatInvariant(Environment.NewLine + Environment.NewLine, Environment.NewLine);
+                        showConnectionsWindow = Shell.ShowMessage(message, MessageButtons.YesNo) == MessageButtons.Yes;
+                    }
+
+                    if (!showConnectionsWindow) {
+                        var installer = Shell.ExportProvider.GetExportedValue<IMicrosoftRClientInstaller>();
+                        installer.LaunchRClientSetup(Shell);
+                    } else {
+                        Connections.GetOrCreateVisualComponent().Container.Show(focus: false, immediate: false);
+                    }
+                }
+            }
+
             await interactiveWindow.InitializeAsync();
+
+            ActiveWindow = window;
             ActiveWindow.Container.UpdateCommandStatus(true);
-            return ActiveWindow;
+            _visualComponentTcs.SetResult(ActiveWindow);
+            ActiveWindowChanged?.Invoke(this, new ActiveWindowChangedEventArgs(window));
         }
 
         public void Dispose() {

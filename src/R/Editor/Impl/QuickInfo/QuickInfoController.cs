@@ -2,43 +2,40 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.R.Editor.QuickInfo
-{
-    internal sealed class QuickInfoController : IIntellisenseController
-    {
+namespace Microsoft.R.Editor.QuickInfo {
+    internal sealed class QuickInfoController : IIntellisenseController {
+        private readonly IList<ITextBuffer> _subjectBuffers;
+        private readonly IQuickInfoBroker _quickInfoBroker;
+        private readonly ICoreShell _shell;
         private ITextView _textView;
-        private IList<ITextBuffer> _subjectBuffers;
-        private IQuickInfoBroker _quickInfoBroker;
 
-        public QuickInfoController(ITextView textView, IList<ITextBuffer> subjectBuffers, IQuickInfoBroker quickInfoBroker)
-        {
+        public QuickInfoController(ITextView textView, IList<ITextBuffer> subjectBuffers, IQuickInfoBroker quickInfoBroker, ICoreShell shell) {
             _quickInfoBroker = quickInfoBroker;
             _textView = textView;
             _subjectBuffers = subjectBuffers;
+            _shell = shell;
 
             _textView.MouseHover += OnViewMouseHover;
             _textView.TextBuffer.Changing += OnTextBufferChanging;
+
+            ServiceManager.AddService(this, textView, shell);
         }
 
-        private void OnTextBufferChanging(object sender, TextContentChangingEventArgs e)
-        {
-            if (_quickInfoBroker.IsQuickInfoActive(_textView))
-            {
+        private void OnTextBufferChanging(object sender, TextContentChangingEventArgs e) {
+            if (_quickInfoBroker.IsQuickInfoActive(_textView)) {
                 var sessions = _quickInfoBroker.GetSessions(_textView);
-
                 foreach (var session in sessions)
                     session.Dismiss();
             }
-
         }
 
-        void OnViewMouseHover(object sender, MouseHoverEventArgs e)
-        {
+        void OnViewMouseHover(object sender, MouseHoverEventArgs e) {
             //find the mouse position by mapping down to the subject buffer
             SnapshotPoint? point = _textView.BufferGraph.MapDownToFirstMatch
                  (new SnapshotPoint(_textView.TextSnapshot, e.Position),
@@ -46,8 +43,7 @@ namespace Microsoft.R.Editor.QuickInfo
                 snapshot => _subjectBuffers.Contains(snapshot.TextBuffer),
                 PositionAffinity.Predecessor);
 
-            if (point != null)
-            {
+            if (point != null) {
                 ITrackingPoint triggerPoint = point.Value.Snapshot.CreateTrackingPoint(point.Value.Position,
                 PointTrackingMode.Positive);
 
@@ -61,10 +57,9 @@ namespace Microsoft.R.Editor.QuickInfo
         public void ConnectSubjectBuffer(ITextBuffer subjectBuffer) { }
         public void DisconnectSubjectBuffer(ITextBuffer subjectBuffer) { }
 
-        public void Detach(ITextView textView)
-        {
-            if (textView == _textView)
-            {
+        public void Detach(ITextView textView) {
+            if (textView == _textView) {
+                ServiceManager.RemoveService<QuickInfoController>(textView);
                 _textView.TextBuffer.Changing -= OnTextBufferChanging;
                 _textView.MouseHover -= OnViewMouseHover;
                 _textView = null;

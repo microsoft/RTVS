@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Json;
 using Newtonsoft.Json;
 
 namespace Microsoft.VisualStudio.R.Package.SurveyNews {
@@ -59,7 +60,7 @@ namespace Microsoft.VisualStudio.R.Package.SurveyNews {
                     if (endIndex > 0) {
                         text = text.Substring(startIndex + 5, endIndex - startIndex - 5);
                         try {
-                            return JsonConvert.DeserializeObject<SurveyNewsFeed>(text);
+                            return Json.DeserializeObject<SurveyNewsFeed>(text);
                         } catch (JsonReaderException ex) {
                             throw new SurveyNewsFeedException("Error deserializing json of survey/news feed.", ex);
                         }

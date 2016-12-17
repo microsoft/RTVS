@@ -61,7 +61,7 @@ namespace Microsoft.R.Host.Protocol {
                     throw new IndexOutOfRangeException();
                 }
                 string json = Encoding.UTF8.GetString(data, offset, term - offset);
-                message.Json = ((JArray)JsonConvert.DeserializeObject(json)) ?? new JArray();
+                message.Json = Microsoft.Common.Core.Json.Json.ParseToken(json) as JArray ?? new JArray();
                 offset = term + 1;
 
                 message.Blob = new byte[data.Length - offset];

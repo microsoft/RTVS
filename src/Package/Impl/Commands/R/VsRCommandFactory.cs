@@ -18,20 +18,17 @@ namespace Microsoft.VisualStudio.R.Package.Commands.R {
     [ContentType(RContentTypeDefinition.ContentType)]
     internal class VsRCommandFactory : ICommandFactory {
         private readonly IRInteractiveWorkflowProvider _workflowProvider;
-        private readonly IInteractiveWindowComponentContainerFactory _componentContainerFactory;
 
         [ImportingConstructor]
-        public VsRCommandFactory(IRInteractiveWorkflowProvider workflowProvider, IInteractiveWindowComponentContainerFactory componentContainerFactory) {
+        public VsRCommandFactory(IRInteractiveWorkflowProvider workflowProvider) {
             _workflowProvider = workflowProvider;
-            _componentContainerFactory = componentContainerFactory;
         }
 
         public IEnumerable<ICommand> GetCommands(ITextView textView, ITextBuffer textBuffer) {
             var workflow = _workflowProvider.GetOrCreate();
 
             if (workflow.ActiveWindow == null) {
-                workflow
-                    .GetOrCreateVisualComponent(_componentContainerFactory)
+                workflow.GetOrCreateVisualComponentAsync()
                     .ContinueOnRanToCompletion(w => w.Container.Show(focus: false, immediate: false));
             }
 

@@ -3,33 +3,39 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.Settings;
+using Microsoft.VisualStudio.Shell.Mocks;
+using NSubstitute;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Settings {
     [ExcludeFromCodeCoverage]
     [Category.VsPackage.Settings]
     public sealed class SettingsStorageTest {
         [Test]
-        public void SaveRestore() {
-            SaveRestore("name", -2);
-            SaveRestore("name", true);
-            SaveRestore("name", false);
-            SaveRestore("name", (uint)1);
-            SaveRestore("name", "string");
-            SaveRestore("name", DateTime.Now);
-            SaveRestore("name", new TestSetting("p1", 1));
+        public async Task SaveRestore() {
+            await SaveRestoreAsync("name", -2);
+            await SaveRestoreAsync("name", true);
+            await SaveRestoreAsync("name", false);
+            await SaveRestoreAsync("name", (uint)1);
+            await SaveRestoreAsync("name", "string");
+            await SaveRestoreAsync("name", DateTime.Now);
+            await SaveRestoreAsync("name", new TestSetting("p1", 1));
         }
 
-        public void SaveRestore<T>(string name, T value) {
-            var storage = new VsSettingsStorage(new TestSettingsManager());
+        public async Task SaveRestoreAsync<T>(string name, T value) {
+            var sm = Substitute.For<ISettingsManager>();
+
+            var storage = new VsSettingsStorage(new VsSettingsPersistenceManagerMock());
             storage.SettingExists(name).Should().BeFalse();
             storage.SetSetting(name, value);
             storage.SettingExists(name).Should().BeTrue();
             storage.GetSetting(name, value.GetType()).Should().Be(value);
 
-            storage.Persist();
+            await storage.PersistAsync();
             storage.ClearCache();
 
             storage.SettingExists(name).Should().BeTrue();

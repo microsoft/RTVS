@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.Text;
@@ -35,7 +36,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow {
 
         void SourceFiles(IEnumerable<string> files, bool echo);
 
-        Task SourceFileAsync(string file, bool echo, Encoding encoding = null);
+        Task SourceFileAsync(string file, bool echo, Encoding encoding = null, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Attempts to launch Shiny app. Invokes 'library(shiny)'

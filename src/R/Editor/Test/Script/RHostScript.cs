@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.R.Host.Client.Host;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Interpreters;
 using Microsoft.R.Support.Settings;
 
@@ -35,7 +35,7 @@ namespace Microsoft.R.Host.Client.Test.Script {
         public async Task InitializeAsync(IRSessionCallback clientApp = null) {
             _clientApp = clientApp ?? _clientApp;
 
-            Session = SessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
+            Session = SessionProvider.GetOrCreate(SessionGuids.InteractiveWindowRSessionGuid);
             if (Session.IsHostRunning) {
                 await Session.StopHostAsync();
             }
@@ -61,6 +61,9 @@ namespace Microsoft.R.Host.Client.Test.Script {
             if (disposing) {
                 if (Session != null) {
                     Session.StopHostAsync().Wait(15000);
+                    if (Session.IsHostRunning) {
+                        Debugger.Launch();
+                    }
                     Debug.Assert(!Session.IsHostRunning);
                 }
 

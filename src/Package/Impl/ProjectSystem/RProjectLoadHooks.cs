@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Globalization;
 using System.IO;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Enums;
@@ -50,8 +52,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         private readonly IThreadHandling _threadHandling;
         private readonly UnconfiguredProject _unconfiguredProject;
         private readonly IEnumerable<Lazy<IVsProject>> _cpsIVsProjects;
+        private readonly IProjectLockService _projectLockService;
         private readonly IRInteractiveWorkflowProvider _workflowProvider;
-        private readonly IInteractiveWindowComponentContainerFactory _componentContainerFactory;
         private readonly IProjectItemDependencyProvider _dependencyProvider;
         private readonly ICoreShell _coreShell;
 
@@ -77,8 +79,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
             _unconfiguredProject = unconfiguredProject;
             _cpsIVsProjects = cpsIVsProjects;
+            _projectLockService = projectLockService;
             _workflowProvider = workflowProvider;
-            _componentContainerFactory = componentContainerFactory;
 
             _toolsSettings = toolsSettings;
             _threadHandling = threadHandling;
@@ -88,6 +90,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
             _projectDirectory = unconfiguredProject.GetProjectDirectory();
 
+            unconfiguredProject.ProjectRenamedOnWriter += ProjectRenamedOnWriter;
             unconfiguredProject.ProjectUnloading += ProjectUnloading;
             _fileWatcher = new MsBuildFileSystemWatcher(_projectDirectory, "*", 25, 1000, _coreShell.Services.FileSystem, new RMsBuildFileSystemFilter(), coreShell.Services.Log);
             _fileWatcher.Error += FileWatcherError;
@@ -118,7 +121,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             _history = _workflow.History;
 
             if (_workflow.ActiveWindow == null) {
-                var window = await _workflow.GetOrCreateVisualComponent(_componentContainerFactory);
+                var window = await _workflow.GetOrCreateVisualComponentAsync();
                 window.Container.Show(focus: true, immediate: false);
             }
 
@@ -133,13 +136,11 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             if (!_session.IsRemote) {
                 var rdataPath = Path.Combine(_projectDirectory, DefaultRDataName);
                 bool loadDefaultWorkspace = _coreShell.Services.FileSystem.FileExists(rdataPath) && await GetLoadDefaultWorkspace(rdataPath);
-                using (var evaluation = await _session.BeginEvaluationAsync()) {
-                    if (loadDefaultWorkspace) {
-                        await evaluation.LoadWorkspaceAsync(rdataPath);
-                    }
 
-                    await evaluation.SetWorkingDirectoryAsync(_projectDirectory);
+                if (loadDefaultWorkspace) {
+                    await _session.LoadWorkspaceAsync(rdataPath);
                 }
+                await _session.SetWorkingDirectoryAsync(_projectDirectory);
 
                 _toolsSettings.WorkingDirectory = _projectDirectory;
             }
@@ -182,10 +183,26 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                 }
             });
         }
+        
+        private async Task ProjectRenamedOnWriter(object sender, ProjectRenamedEventArgs args) {
+            var oldImportName = FileSystemMirroringProjectUtilities.GetInMemoryTargetsFileName(args.OldFullPath);
+            var newImportName = FileSystemMirroringProjectUtilities.GetInMemoryTargetsFileName(args.NewFullPath);
+            using (var access = await _projectLockService.WriteLockAsync()) {
+                await access.CheckoutAsync(_unconfiguredProject.FullPath);
+                var xml = await access.GetProjectXmlAsync(_unconfiguredProject.FullPath);
+                var import = xml.Imports.FirstOrDefault(i => i.Project.EqualsIgnoreCase(oldImportName));
+                if (import != null) {
+                    import.Project = newImportName;
+                    import.Condition = $"Exists('{newImportName}')";
+                    await Project.UpdateFullPathAsync(access);
+                }
+            }
+        }
 
         private async Task ProjectUnloading(object sender, EventArgs args) {
             _coreShell.AssertIsOnMainThread();
 
+            _unconfiguredProject.ProjectRenamedOnWriter -= ProjectRenamedOnWriter;
             _unconfiguredProject.ProjectUnloading -= ProjectUnloading;
             _fileWatcher.Dispose();
 
@@ -204,12 +221,10 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             }
 
             Task.Run(async () => {
-                using (var evaluation = await _session.BeginEvaluationAsync()) {
-                    if (saveDefaultWorkspace) {
-                        await evaluation.SaveWorkspaceAsync(rdataPath);
-                    }
-                    await evaluation.SetDefaultWorkingDirectoryAsync();
+                if (saveDefaultWorkspace) {
+                    await _session.SaveWorkspaceAsync(rdataPath);
                 }
+                await _session.SetDefaultWorkingDirectoryAsync();
             }).SilenceException<RException>().DoNotWait();
         }
 

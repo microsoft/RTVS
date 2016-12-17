@@ -35,7 +35,6 @@
   <ItemGroup>
     <Compile Include="BreakpointHitDetector.cs" />
     <Compile Include="ExecutionTracing\BreakpointsTest.cs" />
-    <Compile Include="Fixtures\SessionProviderFixture.cs" />
     <Compile Include="RtvsPackage\BlobsTest.cs" />
     <Compile Include="Session\RSessionTest.Blobs.cs" />
     <Compile Include="StackTracing\CallStackTest.cs" />
@@ -44,7 +43,6 @@
     <Compile Include="Fixtures\GraphicsDeviceTestFilesFixture.cs" />
     <Compile Include="RtvsPackage\JsonTest.cs" />
     <Compile Include="Mocks\RContextMock.cs" />
-    <Compile Include="Mocks\RSessionEvaluationMock.cs" />
     <Compile Include="Mocks\RSessionInteractionMock.cs" />
     <Compile Include="Mocks\RSessionMock.cs" />
     <Compile Include="Mocks\RSessionProviderMock.cs" />

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Editor.Test.Utility;
+using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Xunit;
@@ -64,23 +65,28 @@ namespace Microsoft.R.Editor.Test.Completions {
         }
 
         [CompositeTest]
-        [InlineData("utils::", 7, "adist", "approximate string distance")]
-        [InlineData("lm(utils::)", 10, "adist", "approximate string distance")]
-        [InlineData("rtvs::", 6, "fetch_file", "used to download")]
-        public async Task SpecificPackage(string content, int position, string expectedEntry, string expectedDescription) {
-            var info = await FunctionIndex.GetFunctionInfoAsync(expectedEntry);
-            info.Should().NotBeNull();
+        [InlineData("utils::", 7, "adist", "approximate string distance", false)]
+        [InlineData("lm(utils::)", 10, "adist", "approximate string distance", false)]
+        [InlineData("rtvs::", 6, "fetch_file", "used to download", true)]
+        public async Task SpecificPackage(string content, int position, string expectedEntry, string expectedDescription, bool realHost) {
+            var hostScript = realHost ? new RHostScript(Workflow.RSessions) : null;
+            try {
+                var info = await FunctionIndex.GetFunctionInfoAsync(expectedEntry);
+                info.Should().NotBeNull();
 
-            var completionSets = new List<CompletionSet>();
-            RCompletionTestUtilities.GetCompletions(EditorShell, content, position, completionSets);
+                var completionSets = new List<CompletionSet>();
+                RCompletionTestUtilities.GetCompletions(EditorShell, content, position, completionSets);
 
-            completionSets.Should().ContainSingle();
+                completionSets.Should().ContainSingle();
 
-            var entry = completionSets[0].Completions.FirstOrDefault(c => c.DisplayText == expectedEntry);
-            entry.Should().NotBeNull();
+                var entry = completionSets[0].Completions.FirstOrDefault(c => c.DisplayText == expectedEntry);
+                entry.Should().NotBeNull();
 
-            var description = entry.Description;
-            description.Should().Contain(expectedDescription);
+                var description = entry.Description;
+                description.Should().Contain(expectedDescription);
+            } finally {
+                hostScript?.Dispose();
+            }
         }
 
         [Test]

@@ -33,12 +33,12 @@ namespace Microsoft.R.Host.Client.Host {
         public Task PlotDeviceDestroy(Guid deviceId, CancellationToken ct) => Task.CompletedTask;
         public Task WebBrowser(string url, CancellationToken ct) => Task.CompletedTask;
         public Task ViewLibrary(CancellationToken cancellationToken) => Task.CompletedTask;
-        public Task ShowFile(string fileName, string tabName, bool deleteFile) => Task.CompletedTask;
+        public Task ShowFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken) => Task.CompletedTask;
         public void DirectoryChanged() { }
-        public void ViewObject(string expression, string title) { }
+        public Task ViewObject(string expression, string title, CancellationToken cancellationToken) => Task.CompletedTask;
         public void PackagesInstalled() { }
         public void PackagesRemoved() {}
-        public Task<string> SaveFileAsync(string filename, byte[] data) => Task.FromResult(filename);
+        public Task<string> SaveFileAsync(string remotePath, string localPath, byte[] data, CancellationToken cancellationToken) => Task.FromResult(string.Empty);
 
         public async Task<string> ReadConsole(IReadOnlyList<IRContext> contexts, string prompt, int len, bool addToHistory, CancellationToken ct) {
             await _mrs.WaitAsync(ct);

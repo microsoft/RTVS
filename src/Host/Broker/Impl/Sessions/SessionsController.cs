@@ -51,8 +51,6 @@ namespace Microsoft.R.Host.Broker.Sessions {
             try {
                 var session = _sessionManager.CreateSession(User.Identity, id, interp, password, profilePath, request.CommandLineArguments);
                 return Task.FromResult<IActionResult>(new ObjectResult(session.Info));
-            } catch (BrokerMaxedUsersException ex) {
-                return Task.FromResult<IActionResult>(new ApiErrorResult(BrokerApiError.BrokerMaxUsers, ex.Message));
             } catch (Exception ex) {
                 return Task.FromResult<IActionResult>(new ApiErrorResult(BrokerApiError.UnableToStartRHost, ex.Message));
             }

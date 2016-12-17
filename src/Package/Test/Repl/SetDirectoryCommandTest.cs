@@ -44,17 +44,26 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
 
             cmd = new SetDirectoryToSourceCommand(workflow, tracker);
             status = cmd.OleStatus;
-            cmd.Enabled.Should().BeTrue();
-            cmd.Supported.Should().BeTrue();
-            cmd.Invoke();
+            cmd.Enabled.Should().BeFalse();
 
+            session.IsHostRunning = true;
+            status = cmd.OleStatus;
+            cmd.Enabled.Should().BeTrue();
+
+            cmd.Invoke();
             session.LastExpression.Should().Be("setwd('c:/dir1/dir2')\n");
+
+            session.IsRemote = true;
+            status = cmd.OleStatus;
+            cmd.Enabled.Should().BeFalse();
         }
 
         [Test]
         [Category.Repl]
         public void SetDirectoryToProjectTest() {
             var session = new RSessionMock();
+            session.IsHostRunning = true;
+
             var workflow = Substitute.For<IRInteractiveWorkflow>();
             workflow.RSession.Returns(session);
 

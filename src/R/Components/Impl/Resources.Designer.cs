@@ -416,6 +416,33 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to User profile and all files under the user directory will be permanently deleted from the remote machine {0}. Your connection will also be disconnected. Reconnecting to the same remote machine will create a new profile. Are you sure you want to delete the user profile from the machine {0}?.
+        /// </summary>
+        public static string DeleteProfile_DeletionWarning {
+            get {
+                return ResourceManager.GetString("DeleteProfile_DeletionWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to delete user profile. Please see logs for the RUserProfileService on the remote machine {0}. Requires admin access to examine the logs..
+        /// </summary>
+        public static string DeleteProfile_Error {
+            get {
+                return ResourceManager.GetString("DeleteProfile_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User directory and files under it were successfully deleted from remote machine {0}. You can click &quot;Reset&quot; to re-create your user profile and start a new session..
+        /// </summary>
+        public static string DeleteProfile_Success {
+            get {
+                return ResourceManager.GetString("DeleteProfile_Success", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Dismiss.
         /// </summary>
         public static string Dismiss {
@@ -488,6 +515,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to save local file {0}. Exception: {1}..
+        /// </summary>
+        public static string Error_UnableSaveFile {
+            get {
+                return ResourceManager.GetString("Error_UnableSaveFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Machine utilization: {0}% CPU, {1}% Memory, {2}% Network..
         /// </summary>
         public static string HostLoad_Tooltip {
@@ -529,6 +565,15 @@ namespace Microsoft.R.Components {
         public static string LoadingDetails {
             get {
                 return ResourceManager.GetString("LoadingDetails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Local R: {0}.
+        /// </summary>
+        public static string LocalR {
+            get {
+                return ResourceManager.GetString("LocalR", resourceCulture);
             }
         }
         
@@ -1199,6 +1244,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Remote workspace &apos;{0}&apos; : {1}.
+        /// </summary>
+        public static string RemoteConnection {
+            get {
+                return ResourceManager.GetString("RemoteConnection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R Interactive.
         /// </summary>
         public static string ReplWindowName {
@@ -1285,6 +1339,33 @@ namespace Microsoft.R.Components {
         public static string Version {
             get {
                 return ResourceManager.GetString("Version", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Video controller: {0}.
+        /// </summary>
+        public static string VideoCardName {
+            get {
+                return ResourceManager.GetString("VideoCardName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to GPU: {0}.
+        /// </summary>
+        public static string VideoProcessor {
+            get {
+                return ResourceManager.GetString("VideoProcessor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Video memory: {0} MB.
+        /// </summary>
+        public static string VideoRAM {
+            get {
+                return ResourceManager.GetString("VideoRAM", resourceCulture);
             }
         }
         

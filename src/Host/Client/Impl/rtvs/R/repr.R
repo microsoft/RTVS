@@ -39,7 +39,7 @@ make_repr_str <- function(max_length = NULL, expected_length = NULL, overflow_su
         on.exit(close(con), add = TRUE);
 
         tryCatch({
-            if (length(obj) == 1) {
+            if (length(obj) == 1 && typeof(obj) != 'externalptr') {
                 if (any(class(obj) == 'factor')) {
                     if (is.na(obj) && !is.nan(obj)) {
                         cat('NA', file = con);

@@ -6,16 +6,15 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
-using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Json;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Threading;
-using Microsoft.R.Host.Client.Session;
 using Newtonsoft.Json;
 
 namespace Microsoft.R.Host.Client.Host {
@@ -137,7 +136,7 @@ namespace Microsoft.R.Host.Client.Host {
                     string serverUriStr = Encoding.UTF8.GetString(serverUriData.ToArray());
                     Uri[] serverUri;
                     try {
-                        serverUri = JsonConvert.DeserializeObject<Uri[]>(serverUriStr);
+                        serverUri = Json.DeserializeObject<Uri[]>(serverUriStr);
                     } catch (JsonSerializationException ex) {
                         throw new RHostDisconnectedException($"Invalid JSON for endpoint URIs received from broker ({ex.Message}): {serverUriStr}");
                     }
@@ -169,9 +168,9 @@ namespace Microsoft.R.Host.Client.Host {
             if (process.HasExited && process.ExitCode < 0) {
                 var message = ErrorCodeConverter.MessageFromErrorCode(process.ExitCode);
                 if (!string.IsNullOrEmpty(message)) {
-                    throw new RHostDisconnectedException(Resources.Error_UnableToStartBrokerException.FormatInvariant(message), new Win32Exception(message));
+                    throw new RHostDisconnectedException(Resources.Error_UnableToStartBrokerException.FormatInvariant(Name, message), new Win32Exception(message));
                 }
-                throw new RHostDisconnectedException(Resources.Error_UnableToStartBrokerException.FormatInvariant(process.ExitCode), new Win32Exception(process.ExitCode));
+                throw new RHostDisconnectedException(Resources.Error_UnableToStartBrokerException.FormatInvariant(Name, process.ExitCode), new Win32Exception(process.ExitCode));
             }
             return process;
         }

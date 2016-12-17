@@ -63,7 +63,7 @@ namespace Microsoft.R.Host.Client {
         /// Opens viewer for the given object
         /// </summary>
         /// <returns></returns>
-        void ViewObject(string expression, string title);
+        Task ViewObjectAsync(string expression, string title, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Present package list or package manager
@@ -74,12 +74,11 @@ namespace Microsoft.R.Host.Client {
         /// <summary>
         /// Presents file content
         /// </summary>
-        Task ViewFile(string fileName, string tabName, bool deleteFile);
+        Task ViewFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Saves data to file sent from RHost.
         /// </summary>
-        /// <param name="id"></param>
-        Task<string> SaveFileAsync(string filename, byte[] data);
+        Task<string> SaveFileAsync(string remoteName, string localPath, byte[] data, CancellationToken cancellationToken);
     }
 }

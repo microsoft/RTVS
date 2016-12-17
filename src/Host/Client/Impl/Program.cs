@@ -23,7 +23,7 @@ namespace Microsoft.R.Host.Client {
             Console.CancelKeyPress += Console_CancelKeyPress;
 
             using (var logger = new Logger("Program", new MaxLoggingPermissions(), FileLogWriter.InTempFolder("Microsoft.R.Host.Client.Program"))) {
-                var services = new CoreServices(new AppConstants(), null, null, null, null, null, Lazy.Create<IMainThread>(() => null));
+                var services = new CoreServices(new AppConstants(), null, new MaxLoggingPermissions(), null, null, null, null, null, null, null);
                 var localConnector = new LocalBrokerClient("Program", args[0], services, new NullConsole());
                 var host = localConnector.ConnectAsync(new BrokerConnectionInfo("Program", new Program())).GetAwaiter().GetResult();
                 _evaluator = host;
@@ -109,25 +109,20 @@ namespace Microsoft.R.Host.Client {
             await Console.Error.WriteLineAsync(plot.FilePath);
         }
 
-        public async Task WebBrowser(string url, CancellationToken ct) {
-            await Console.Error.WriteLineAsync("Browser: " + url);
-        }
+        public async Task WebBrowser(string url, CancellationToken ct) 
+            => await Console.Error.WriteLineAsync("Browser: " + url);
 
-        public async void DirectoryChanged() {
-            await Console.Error.WriteLineAsync("Directory changed.");
-        }
+        public async void DirectoryChanged() 
+            => await Console.Error.WriteLineAsync("Directory changed.");
 
-        public void ViewObject(string x, string title) {
-            Console.Error.WriteLineAsync(Invariant($"ViewObject({title}): {x}"));
-        }
+        public Task ViewObject(string x, string title, CancellationToken cancellationToken) 
+            => Console.Error.WriteLineAsync(Invariant($"ViewObjectAsync({title}): {x}"));
 
-        public async Task ViewLibrary(CancellationToken cancellationToken) {
-            await Console.Error.WriteLineAsync("ViewLibrary");
-        }
+        public async Task ViewLibrary(CancellationToken cancellationToken) 
+            => await Console.Error.WriteLineAsync("ViewLibrary");
 
-        public async Task ShowFile(string fileName, string tabName, bool deleteFile) {
-            await Console.Error.WriteAsync(Invariant($"ShowFile({fileName}, {tabName}, {deleteFile})"));
-        }
+        public async Task ShowFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken) 
+            => await Console.Error.WriteAsync(Invariant($"ShowFile({fileName}, {tabName}, {deleteFile})"));
 
         public void PackagesInstalled() {
             Console.Error.WriteLineAsync("PackagesInstalled").DoNotWait();
@@ -137,9 +132,9 @@ namespace Microsoft.R.Host.Client {
             Console.Error.WriteLineAsync("PackagesRemoved").DoNotWait();
         }
 
-        public async Task<string> SaveFileAsync(string fileName, byte[] data) {
-            await Console.Error.WriteAsync(Invariant($"fetch_file({fileName})"));
-            return fileName;
+        public async Task<string> SaveFileAsync(string remotePath, string localPath, byte[] data, CancellationToken cancellationToken) {
+            await Console.Error.WriteAsync(Invariant($"fetch_file({remotePath}, {localPath})"));
+            return remotePath;
         }
 
         private async Task<string> ReadLineAsync(string prompt, CancellationToken ct) {
@@ -193,6 +188,7 @@ namespace Microsoft.R.Host.Client {
         }
 
         class AppConstants : IApplicationConstants {
+            public void Initialize() { }
             public string ApplicationName => "Microsoft.R.Host.Client";
             public IntPtr ApplicationWindowHandle => IntPtr.Zero;
             public uint LocaleId => 1033;

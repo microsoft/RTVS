@@ -44,7 +44,7 @@ namespace Microsoft.R.Editor.Navigation.Peek {
             }
 
             // If task is still running, wait a bit, but not too long.
-            LookupTask.Wait(2000);
+            LookupTask.Wait(_shell.IsUnitTestEnvironment ? 50000 : 2000);
             if (_exception != null) {
                 callback.ReportFailure(_exception);
             } else if (LookupTask.IsCompleted && LookupTask.Result != null) {

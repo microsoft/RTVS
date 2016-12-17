@@ -61,6 +61,15 @@
       "$(MSBuildProjectDirectory)\UpdateReferences.cmd" "$(MSBuildProjectDirectory)" $(VisualStudioVersion)
     </PreBuildEvent>
   </PropertyGroup>
+  <!--
+    <ItemGroup Condition="'$(VisualStudioVersion)'=='14.0'" >
+    <Reference Include="Microsoft.Build, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.ProjectSystem.Interop.dll" />
+    <Reference Include="$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.ProjectSystem.V14Only.dll" />
+    <Reference Include="$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.ProjectSystem.VS.V14Only.dll" />
+    <Reference Include="$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.ProjectSystem.Utilities.v14.0.dll" />
+  </ItemGroup>
+  -->
   <ItemGroup>
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
@@ -210,6 +219,7 @@
     <Compile Include="Options\Attributes\SurveyNewsPolicyTypeConverter.cs" />
     <Compile Include="Options\R\Commands\SetupRemoteCommand.cs" />
     <Compile Include="Options\R\Commands\SurveyNewsCommand.cs" />
+    <Compile Include="Packages\RToolbar.cs" />
     <Compile Include="ProjectSystem\Commands\ProjectCommand.cs" />
     <Compile Include="ProjectSystem\Commands\IncludeInProjectCommand.cs" />
     <Compile Include="ProjectSystem\Commands\SendFileCommandBase.cs" />
@@ -429,7 +439,6 @@
     <Compile Include="Interop\CommandTargetToOleShimVariantStacks.cs" />
     <Compile Include="Interop\ConnectionPoint.cs" />
     <Compile Include="Interop\IOleServiceProvider.cs" />
-    <Compile Include="Interop\NativeMethods.cs" />
     <Compile Include="Interop\OleCommand.cs" />
     <Compile Include="Interop\OleToCommandTargetShim.cs" />
     <Compile Include="Options\Attributes\EnumTypeConverter.cs" />
@@ -1039,6 +1048,7 @@
     <Reference Include="Microsoft.VisualStudio.CommandBars, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
+    <Reference Condition="'$(VisualStudioVersion)'=='14.0'" Include="Microsoft.VisualStudio.ComponentModelHost, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.InteractiveWindow">
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
@@ -1062,7 +1072,6 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
       <HintPath>$(LibDirectory)\Microsoft.Office.Interop.Outlook.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.VisualStudio.ComponentModelHost, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />

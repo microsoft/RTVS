@@ -20,7 +20,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
         private readonly int _maxLogLevel;
 
         public LogLevelTypeConverter() {
-            var permissions = VsAppShell.Current.ExportProvider.GetExportedValue<ILoggingPermissions>();
+            var permissions = VsAppShell.Current.Services.LoggingServices.Permissions;
             _maxLogLevel = (int)permissions.MaxVerbosity;
         }
 

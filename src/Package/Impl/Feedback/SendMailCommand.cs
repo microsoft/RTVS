@@ -13,17 +13,15 @@ using Microsoft.VisualStudio.R.Package.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Feedback {
     internal class SendMailCommand : PackageCommand {
-        private readonly ILoggingPermissions _permissions;
         protected ICoreServices Services { get; }
 
-        public SendMailCommand(Guid group, int id, ILoggingPermissions permissions, ICoreServices services) :
+        public SendMailCommand(Guid group, int id, ICoreServices services) :
             base(group, id) {
-            _permissions = permissions;
             Services = services;
         }
 
         protected override void SetStatus() {
-            Enabled = Visible = _permissions.IsFeedbackPermitted;
+            Enabled = Visible = Services.LoggingServices.Permissions.IsFeedbackPermitted;
         }
 
         protected void SendMail(string body, string subject, string attachmentFile) {

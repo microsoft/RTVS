@@ -2,15 +2,14 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Management;
+using System.Net.NetworkInformation;
 using System.Threading;
 using System.Timers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Common.Core;
 using Microsoft.R.Host.Broker.Security;
 using Microsoft.R.Host.Protocol;
 
@@ -20,20 +19,10 @@ namespace Microsoft.R.Host.Broker.About {
     public class LoadController : Controller {
         // https://msdn.microsoft.com/en-us/library/2fh4x1xb(v=vs.100).aspx
         private readonly PerformanceCounter _cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
-        private readonly string _networkInstanceName;
-        private readonly PerformanceCounter _networkSentCounter;
-        private readonly PerformanceCounter _networkReceivedCounter;
-        private readonly double _networkBandwidth;
         private readonly System.Timers.Timer _timer = new System.Timers.Timer();
         private readonly HostLoad _hostLoad = new HostLoad();
 
         public LoadController() {
-            var category = "Network Interface";
-            _networkInstanceName = GetCategoryInstanceName(category, (x) => x.StartsWithOrdinal("Local"));
-            _networkBandwidth = (new PerformanceCounter(category, "Current Bandwidth", _networkInstanceName)).NextValue();
-            _networkSentCounter = new PerformanceCounter(category, "Bytes Sent/sec", _networkInstanceName);
-            _networkReceivedCounter = new PerformanceCounter(category, "Bytes Received/sec", _networkInstanceName);
-
             _timer.Interval = 3000;
             _timer.AutoReset = true;
             _timer.Elapsed += OnTimer;
@@ -42,6 +31,7 @@ namespace Microsoft.R.Host.Broker.About {
             UpdateMeasurement();
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public HostLoad Get() {
             return _hostLoad;
@@ -78,11 +68,6 @@ namespace Microsoft.R.Host.Broker.About {
             return Int32.TryParse(x, out result) ? result / 1024 : 0;
         }
 
-        private static string GetCategoryInstanceName(string category, Func<string, bool> filter) {
-            var cat = new PerformanceCounterCategory(category);
-            return cat.GetInstanceNames().Where(c => filter(c)).FirstOrDefault();
-        }
-
         private double GetCpuLoad() {
             double counter = 0;
             int iterations = 5;
@@ -96,33 +81,49 @@ namespace Microsoft.R.Host.Broker.About {
         }
 
         private double GetNetworkLoad() {
-            double sent = 0;
-            double received = 0;
-            int iterations = 5;
-
-            for (int i = 0; i < iterations; i++) {
-                Thread.Sleep(100);
-                sent += _networkSentCounter.NextValue();
-                received += _networkReceivedCounter.NextValue();
+            if (!NetworkInterface.GetIsNetworkAvailable()) {
+                return 0;
             }
 
-            return (8 * (sent + received)) / (_networkBandwidth * iterations);
+            // Select compatible active network interfaces
+            var interfaces = NetworkInterface.GetAllNetworkInterfaces()
+                                             .Where(x => x.Speed > 0 &&
+                                                         x.Supports(NetworkInterfaceComponent.IPv4) &&
+                                                         x.Supports(NetworkInterfaceComponent.IPv6) &&
+                                                         x.OperationalStatus == OperationalStatus.Up &&
+                                                         x.Speed > 0 &&
+                                                         IsCompatibleInterface(x.NetworkInterfaceType)).ToArray();
+
+            // Take initial measurement, wait 500ms, take another.
+            var stats = interfaces.Select(s => s.GetIPStatistics()).ToArray();
+            var initialBytes = stats.Select(s => s.BytesSent + s.BytesReceived).ToArray();
+
+            Thread.Sleep(500);
+
+            stats = interfaces.Select(s => s.GetIPStatistics()).ToArray();
+            var currentBytes = stats.Select(s => s.BytesSent + s.BytesReceived).ToArray();
+
+            // Figure out how many bytes were sent and received within 500ms
+            // and calculate adapter load depending on speed. Take the highest value.
+            double load = 0;
+            double maxLoad = 0;
+            for (int i = 0; i < initialBytes.Length; i++) {
+                // 16 = 8 bits per byte in 1/2 second. Speed it in bits per second.
+                load = 16.0 * (currentBytes[i] - initialBytes[i]) / (double)interfaces[i].Speed;
+                maxLoad = Math.Max(maxLoad, load);
+            }
+
+            return maxLoad;
         }
 
-        //public static List<string> GetNames(string category) {
-        //    var cat = new PerformanceCounterCategory(category);
-        //    var list = new List<string>();
-        //    try {
-        //        var names = cat.GetInstanceNames();
-        //        if (names.Length == 0) {
-        //            list.AddRange(cat.GetCounters().Select(x => x.CounterName));
-        //        }
-        //        foreach (var n in names) {
-        //            list.AddRange(cat.GetCounters(n).Select(x => x.CounterName));
-        //        }
-        //    } catch (Exception) { }
-
-        //    return list;
-        //}
+        private static bool IsCompatibleInterface(NetworkInterfaceType nit) {
+            switch (nit) {
+                case NetworkInterfaceType.Loopback:
+                case NetworkInterfaceType.HighPerformanceSerialBus:
+                case NetworkInterfaceType.Ppp:
+                    return false;
+            }
+            return true;
+        }
     }
 }

@@ -24,6 +24,7 @@ namespace Microsoft.R.Host.Broker.About {
             _sessionManager = sessionManager;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public AboutHost Get() {
             var a = new AboutHost();
@@ -36,25 +37,43 @@ namespace Microsoft.R.Host.Broker.About {
             a.WorkingSet = Environment.WorkingSet;
             a.ConnectedUserCount = _sessionManager.GetUsers().Count();
 
-            var query = new SelectQuery(@"Select * from Win32_OperatingSystem");
-            using (var search = new ManagementObjectSearcher(query)) {
-                foreach (var mo in search.Get()) {
-                    a.TotalVirtualMemory = GetSizeInGB(mo, "TotalVirtualMemorySize");
-                    a.FreeVirtualMemory = GetSizeInGB(mo, "FreeVirtualMemory");
-                    a.TotalPhysicalMemory = GetSizeInGB(mo, "TotalVisibleMemorySize");
-                    a.FreePhysicalMemory = GetSizeInGB(mo, "FreePhysicalMemory");
-                    break;
-                }
-            }
+            GetMemoryInformation(ref a);
+            GetVideoControllerInformation(ref a);
 
             a.Interpreters = _interpManager.Interpreters.Select(x => x.Name).ToArray();
             return a;
         }
 
-        private long GetSizeInGB(ManagementBaseObject mo, string name) {
+        private long ToLong(ManagementBaseObject mo, string name, int divider) {
             int result;
-            var x = mo[name].ToString();
-            return Int32.TryParse(x, out result) ? result / 1024 : 0;
+            var value = mo[name];
+            if (value != null) {
+                var x = value.ToString();
+                return Int32.TryParse(x, out result) ? result / divider : 0;
+            }
+            return 0;
+        }
+
+        private void GetMemoryInformation(ref AboutHost a) {
+            using (var search = new ManagementObjectSearcher("Select * from Win32_OperatingSystem")) {
+                foreach (var mo in search.Get()) {
+                    a.TotalVirtualMemory = ToLong(mo, "TotalVirtualMemorySize", 1024);
+                    a.FreeVirtualMemory = ToLong(mo, "FreeVirtualMemory", 1024);
+                    a.TotalPhysicalMemory = ToLong(mo, "TotalVisibleMemorySize", 1024);
+                    a.FreePhysicalMemory = ToLong(mo, "FreePhysicalMemory", 1024);
+                    break;
+                }
+            }
+        }
+
+        private void GetVideoControllerInformation(ref AboutHost a) {
+            using (var search = new ManagementObjectSearcher("Select * from Win32_VideoController")) {
+                foreach (var mo in search.Get()) {
+                    a.VideoCardName = mo["Name"]?.ToString();
+                    a.VideoRAM = ToLong(mo, "AdapterRAM", 1024 * 1024);
+                    a.VideoProcessor = mo["VideoProcessor"]?.ToString();
+                }
+            }
         }
     }
 }

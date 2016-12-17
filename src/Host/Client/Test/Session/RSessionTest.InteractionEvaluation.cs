@@ -74,21 +74,6 @@ namespace Microsoft.R.Host.Client.Test.Session {
             }
 
             [Test]
-            public async Task ExclusiveEvaluation() {
-                var interactionTasks = ParallelTools.Invoke(4, i => _session.BeginEvaluationAsync());
-                IList<Task<IRSessionEvaluation>> runningTasks = interactionTasks.ToList();
-
-                while (runningTasks.Count > 0) {
-                    await Task.WhenAny(runningTasks);
-
-                    IList<Task<IRSessionEvaluation>> completedTasks;
-                    runningTasks.Split(t => t.Status == TaskStatus.RanToCompletion, out completedTasks, out runningTasks);
-                    completedTasks.Should().ContainSingle();
-                    completedTasks.Single().Result.Dispose();
-                }
-            }
-
-            [Test]
             public async Task NestedInteraction() {
                 string topLevelPrompt;
                 using (var inter = await _session.BeginInteractionAsync()) {
@@ -161,73 +146,22 @@ namespace Microsoft.R.Host.Client.Test.Session {
             [Test]
             public async Task EvaluateAsync_CanceledDuringEvaluation() {
                 var cts = new CancellationTokenSource();
-                Func<Task> f = () => _session.EvaluateAsync("while(TRUE) {}", ct: cts.Token);
+                Func<Task> f = () => _session.EvaluateAsync("while(TRUE) {}", cancellationToken: cts.Token);
                 var assertion = f.ShouldThrowAsync<OperationCanceledException>();
                 cts.CancelAfter(100);
                 await assertion;
             } 
-
+            
             [Test]
-            public async Task BeginEvaluationAsync_DisconnectedFromTheStart() {
-                using (var session = new RSession(0, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { })) {
-                    // ReSharper disable once AccessToDisposedClosure
-                    Func<Task> f = () => session.BeginEvaluationAsync();
-                    await f.ShouldThrowAsync<RHostDisconnectedException>();
-                }
-            }
+            public async Task EvaluateAsync_Stop_Start_EvaluateAsync() {
+                await _session.EvaluateAsync("x <- 1").Should().BeCompletedAsync();
 
-            [Test]
-            public async Task BeginEvaluationAsync_DisconnectedDuringBeginEvaluation() {
-                using (await _session.BeginEvaluationAsync()) {
-                    Func<Task> f = async () => await _session.BeginEvaluationAsync();
-                    await Task.Delay(100);
-                    await _session.StopHostAsync();
-                    await f.ShouldThrowAsync<RHostDisconnectedException>();
-                }
-            }
+                await _session.StopHostAsync().Should().BeCompletedAsync();
+                await _session.StartHostAsync(new RHostStartupInfo {
+                    Name = _testMethod.Name
+                }, null, 10000).Should().BeCompletedAsync();
 
-            [Test]
-            public async Task BeginEvaluationAsync_CanceledDuringBeginEvaluation() {
-                using (await _session.BeginEvaluationAsync()) {
-                    var cts = new CancellationTokenSource();
-                    Func<Task> f = async () => await _session.BeginEvaluationAsync(cts.Token);
-                    cts.CancelAfter(100);
-                    await f.ShouldThrowAsync<OperationCanceledException>();
-                }
-            }
-
-            [Test]
-            public async Task BeginEvaluationAsync_DisconnectedBeforeEvaluation() {
-                using (var evaluation = await _session.BeginEvaluationAsync()) { 
-                    // ReSharper disable once AccessToDisposedClosure
-                    Func<Task> f = () => evaluation.EvaluateAsync("while(TRUE) {}", REvaluationKind.Normal);
-                    await _session.StopHostAsync();
-                    await f.ShouldThrowAsync<RHostDisconnectedException>();
-                }
-            }
-
-            [Test]
-            public async Task BeginEvaluationAsync_DisconnectedDuringEvaluation() {
-                using (var evaluation = await _session.BeginEvaluationAsync()) {
-                    // ReSharper disable once AccessToDisposedClosure
-                    Func<Task> f = () => evaluation.EvaluateAsync("while(TRUE) {}", REvaluationKind.Normal);
-                    var assertion = f.ShouldThrowAsync<RHostDisconnectedException>();
-                    await Task.Delay(100);
-                    await _session.StopHostAsync();
-                    await assertion;
-                }
-            }
-
-            [Test]
-            public async Task BeginEvaluationAsync_CanceledDuringExecution() {
-                var cts = new CancellationTokenSource();
-                using (var evaluation = await _session.BeginEvaluationAsync()) {
-                    // ReSharper disable once AccessToDisposedClosure
-                    Func<Task> f = () => evaluation.EvaluateAsync("while(TRUE) {}", REvaluationKind.Normal, cancellationToken: cts.Token);
-                    var assertion = f.ShouldThrowAsync<OperationCanceledException>();
-                    cts.CancelAfter(100);
-                    await assertion;
-                }
+                await _session.EvaluateAsync("x <- 1").Should().BeCompletedAsync();
             }
 
             [Test]

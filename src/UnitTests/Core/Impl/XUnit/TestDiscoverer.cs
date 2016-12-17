@@ -16,7 +16,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
         }
 
         protected override IXunitTestCase CreateTestCase(ITestFrameworkDiscoveryOptions discoveryOptions, ITestMethod testMethod, IAttributeInfo factAttribute) {
-            var parameters = new TestParameters(factAttribute);
+            var parameters = new TestParameters(testMethod, factAttribute);
             return new TestCase(_diagnosticMessageSink, discoveryOptions.MethodDisplayOrDefault(), testMethod, parameters);
         }
     }

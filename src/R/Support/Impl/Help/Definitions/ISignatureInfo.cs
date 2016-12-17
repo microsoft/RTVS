@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace Microsoft.R.Support.Help {
     public interface ISignatureInfo {
         /// <summary>
-        /// Function name
+        /// Primary function name (the name that the signature is specified for)
         /// </summary>
         string FunctionName { get; }
         /// <summary>
@@ -20,7 +20,10 @@ namespace Microsoft.R.Support.Help {
         /// locus points (locations withing the string) for each function
         /// parameter.
         /// </summary>
-        string GetSignatureString(List<int> locusPoints = null);
+        /// <param name="actualName">
+        /// Actual function name (may be alias different from <see cref="FunctionName"/> but with the same signature)
+        /// </param>
+        string GetSignatureString(string actualName, List<int> locusPoints = null);
 
         /// <summary>
         /// Given argument name returns index of the argument in the signature.
