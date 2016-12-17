@@ -289,7 +289,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         private void SessionConnected(object sender, EventArgs args) {
-            IsRunning = IsConnected;
+            IsRunning = true;
             ConnectionStateChanged?.Invoke(this, EventArgs.Empty);
         }
 

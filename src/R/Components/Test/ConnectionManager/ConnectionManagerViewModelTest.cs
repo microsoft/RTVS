@@ -56,10 +56,6 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
 
             conn.IsRunning = false;
             conn.IsConnected.Should().BeTrue();
-
-            conn.IsRunning = true;
-            conn.IsConnected = false;
-            conn.IsRunning.Should().BeFalse();
         }
 
         [Test(ThreadType.UI)]

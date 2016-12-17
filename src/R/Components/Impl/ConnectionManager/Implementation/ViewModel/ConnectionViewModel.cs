@@ -122,22 +122,12 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public bool IsConnected {
             get { return _isConnected; }
-            set {
-                SetProperty(ref _isConnected, value);
-                if (!value) {
-                    IsRunning = false;
-                }
-            }
+            set { SetProperty(ref _isConnected, value); }
         }
 
         public bool IsRunning {
             get { return _isRunning; }
-            set {
-                SetProperty(ref _isRunning, value);
-                if (value) {
-                    IsConnected = true;
-                }
-            }
+            set { SetProperty(ref _isRunning, value); }
         }
 
         public CancellationTokenSource TestingConnectionCts {
@@ -225,7 +215,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             if (previousProposedName != currentProposedName) {
                 // Check if the name was calculated from the previous path
                 var currentName = Name ?? string.Empty;
-                if (string.IsNullOrEmpty(currentName) ||  string.Compare(currentName, previousProposedName, StringComparison.CurrentCultureIgnoreCase) == 0) {
+                if (string.IsNullOrEmpty(currentName) || string.Compare(currentName, previousProposedName, StringComparison.CurrentCultureIgnoreCase) == 0) {
                     Name = currentProposedName;
                 }
             }
