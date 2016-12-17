@@ -57,7 +57,6 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 Process.Start(url);
             } else {
                 var container = _coreShell.ExportProvider.GetExportedValue<IHelpVisualComponentContainerFactory>().GetOrCreate();
-                container.Show(focus: false, immediate: false);
                 container.Component.Navigate(url);
             }
         }
