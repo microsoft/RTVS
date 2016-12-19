@@ -434,16 +434,14 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         private async Task LoadInstalledAndLoadedPackagesAsync(bool reload, CancellationToken cancellationToken) {
             await TaskUtilities.SwitchToBackgroundThread();
 
-            IReadOnlyList<RPackage> installedPackages;
+            var markUninstalledAndUnloadedTask = MarkUninstalledAndUnloaded(cancellationToken);
+            var getInstalledPackagesTask = _packageManager.GetInstalledPackagesAsync(cancellationToken);
+            await Task.WhenAll(markUninstalledAndUnloadedTask, getInstalledPackagesTask);
+
             if (reload) {
                 _installedPackages = new List<IRPackageViewModel>();
-                installedPackages = await _packageManager.GetInstalledPackagesAsync(cancellationToken);
-            } else { 
-                var markUninstalledAndUnloadedTask = MarkUninstalledAndUnloaded(cancellationToken);
-                var getInstalledPackagesTask = _packageManager.GetInstalledPackagesAsync(cancellationToken);
-                await Task.WhenAll(markUninstalledAndUnloadedTask, getInstalledPackagesTask);
-                installedPackages = getInstalledPackagesTask.Result;
             }
+            var installedPackages = getInstalledPackagesTask.Result;
 
             if (!_availableLock.IsSet) {
                 var vmInstalledPackages = installedPackages

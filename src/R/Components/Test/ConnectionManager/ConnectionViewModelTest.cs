@@ -134,14 +134,24 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
         [CompositeTest]
         [InlineData("http://host", "http://host:80")]
         [InlineData("http://HOST", "http://host:80")]
+        [InlineData("http://host#1234", "http://host:80#1234")]
+        [InlineData("http://HOST#1234", "http://host:80#1234")]
         [InlineData("https://host", "https://host:443")]
+        [InlineData("https://host#1234", "https://host:443#1234")]
+        [InlineData("https://host/path", "https://host:443/path")]
+        [InlineData("https://host/path#1234", "https://host:443/path#1234")]
         [InlineData("http://host:5000", "http://host:5000")]
+        [InlineData("http://host:5000#1234", "http://host:5000#1234")]
         [InlineData("https://host:5100", "https://host:5100")]
         [InlineData("https://HOST:5100", "https://host:5100")]
+        [InlineData("https://host:5100#1234", "https://host:5100#1234")]
+        [InlineData("https://HOST:5100#1234", "https://host:5100#1234")]
         [InlineData("HOST", "https://host:5444")]
         [InlineData("host", "https://host:5444")]
         [InlineData("host:4000", "host:4000")] // host == scheme in this case and 4000 is actually a host name
         [InlineData("HOST:4000", "HOST:4000")] // host == scheme in this case and 4000 is actually a host name
+        [InlineData("host#1234", "host#1234")]
+        [InlineData("HOST#1234", "HOST#1234")]
         [InlineData("c:\\", "c:\\")]
         public void CompletePath(string original, string expected) {
             ConnectionViewModel.GetCompletePath(original).Should().Be(expected);

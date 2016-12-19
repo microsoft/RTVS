@@ -34,7 +34,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
         public async Task<CommandResult> InvokeAsync() {
             if (_coreShell.ShowMessage(Resources.Warning_TerminateR, MessageButtons.YesNo) == MessageButtons.Yes) {
                 foreach (var s in _interactiveWorkflow.RSessions.GetSessions().ToList()) {
-                    await s.StopHostAsync();
+                    await s.StopHostAsync(true);
                 }
             }
             return CommandResult.Executed;

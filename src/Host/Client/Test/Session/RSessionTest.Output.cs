@@ -15,20 +15,16 @@ using Xunit;
 namespace Microsoft.R.Host.Client.Test.Session {
     public partial class RSessionTest {
         public class Output : IAsyncLifetime {
-            private readonly MethodInfo _testMethod;
             private readonly IBrokerClient _brokerClient;
             private readonly RSession _session;
 
             public Output(TestMethodFixture testMethod) {
-                _testMethod = testMethod.MethodInfo;
                 _brokerClient = CreateLocalBrokerClient(nameof(RSessionTest) + nameof(Output));
-                _session = new RSession(0, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
+                _session = new RSession(0, testMethod.MethodInfo.Name, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
             }
 
             public async Task InitializeAsync() {
-                await _session.StartHostAsync(new RHostStartupInfo {
-                    Name = _testMethod.Name
-                }, null, 50000);
+                await _session.StartHostAsync(new RHostStartupInfo(), null, 50000);
             }
 
             public async Task DisposeAsync() {

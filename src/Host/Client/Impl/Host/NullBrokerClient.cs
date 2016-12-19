@@ -12,15 +12,15 @@ namespace Microsoft.R.Host.Client.Host {
         private static Task<RHost> Result { get; } = TaskUtilities.CreateCanceled<RHost>(
             new RHostDisconnectedException(Resources.RHostDisconnected));
 
-        public Uri Uri { get; } = new Uri("http://localhost");
+        public BrokerConnectionInfo ConnectionInfo { get; } = BrokerConnectionInfo.Create("http://localhost");
         public string Name { get; } = string.Empty;
         public bool IsRemote { get; } = true;
-        public bool IsVerified => true;
+        public bool IsVerified { get; } = true;
 
         public Task<T> GetHostInformationAsync<T>(CancellationToken cancellationToken = default(CancellationToken)) => Task.FromResult(default(T));
         public Task PingAsync() => Result;
 
-        public Task<RHost> ConnectAsync(BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken)) => Result;
+        public Task<RHost> ConnectAsync(HostConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken)) => Result;
 
         public Task TerminateSessionAsync(string name, CancellationToken cancellationToken = new CancellationToken()) => Result;
 

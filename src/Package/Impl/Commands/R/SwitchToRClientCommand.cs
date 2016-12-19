@@ -6,21 +6,17 @@ using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Interpreters;
-using Microsoft.R.Support.Settings;
-
 using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Commands {
     internal sealed class SwitchToRClientCommand : PackageCommand {
         private readonly IConnectionManager _connectionManager;
         private readonly ICoreShell _shell;
-        private readonly IRToolsSettings _settings;
 
-        public SwitchToRClientCommand(IConnectionManager connectionManager, ICoreShell shell, IRToolsSettings settings) :
+        public SwitchToRClientCommand(IConnectionManager connectionManager, ICoreShell shell) :
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSwitchToRClient) {
             _connectionManager = connectionManager;
             _shell = shell;
-            _settings = settings;
         }
 
         protected override void SetStatus() {

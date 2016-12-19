@@ -9,6 +9,8 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Security;
 using System.Net.WebSockets;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebSockets.Client;
@@ -36,6 +38,7 @@ namespace Microsoft.R.Host.Client.Host {
         };
 
         private readonly string _interpreterId;
+        private readonly string _rCommandLineArguments;
         private readonly ICredentialsDecorator _credentials;
         private readonly IConsole _console;
 
@@ -44,19 +47,20 @@ namespace Microsoft.R.Host.Client.Host {
         protected WebRequestHandler HttpClientHandler { get; private set; }
         protected HttpClient HttpClient { get; private set; }
 
+        public BrokerConnectionInfo ConnectionInfo { get; }
         public string Name { get; }
-        public Uri Uri { get; }
-        public bool IsRemote => !Uri.IsFile;
+        public bool IsRemote => ConnectionInfo.IsRemote;
         public bool IsVerified { get; protected set; }
 
-        protected BrokerClient(string name, Uri brokerUri, string interpreterId, ICredentialsDecorator credentials, IActionLog log, IConsole console) {
+        protected BrokerClient(string name, BrokerConnectionInfo connectionInfo, ICredentialsDecorator credentials, IActionLog log, IConsole console) {
             Name = name;
-            Uri = brokerUri;
             Log = log;
 
-            _interpreterId = interpreterId;
+            _rCommandLineArguments = connectionInfo.RCommandLineArguments;
+            _interpreterId = connectionInfo.InterpreterId;
             _credentials = credentials;
             _console = console;
+            ConnectionInfo = connectionInfo;
         }
 
         protected void CreateHttpClient(Uri baseAddress) {
@@ -105,24 +109,25 @@ namespace Microsoft.R.Host.Client.Host {
             }
         }
 
-        public virtual async Task<RHost> ConnectAsync(BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken)) {
+        public virtual async Task<RHost> ConnectAsync(HostConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken)) {
             DisposableBag.ThrowIfDisposed();
             await TaskUtilities.SwitchToBackgroundThread();
 
+            var uniqueSessionName = $"{connectionInfo.Name}_{ConnectionInfo}";
             try {
-                var sessionExists = connectionInfo.PreserveSessionData && await IsSessionRunningAsync(connectionInfo.Name, cancellationToken);
+                var sessionExists = connectionInfo.PreserveSessionData && await IsSessionRunningAsync(uniqueSessionName, cancellationToken);
                 if (sessionExists) {
                     var terminateRDataSave = await _console.PromptYesNoAsync(Resources.AbortRDataAutosave, cancellationToken);
                     if (!terminateRDataSave) {
-                        while (await IsSessionRunningAsync(connectionInfo.Name, cancellationToken)) {
+                        while (await IsSessionRunningAsync(uniqueSessionName, cancellationToken)) {
                             await Task.Delay(500, cancellationToken);
                         }
                     }
                 }
 
-                await CreateBrokerSessionAsync(connectionInfo.Name, connectionInfo.RCommandLineArguments, cancellationToken);
-                var webSocket = await ConnectToBrokerAsync(connectionInfo.Name, cancellationToken);
-                return CreateRHost(connectionInfo.Name, connectionInfo.Callbacks, webSocket);
+                await CreateBrokerSessionAsync(uniqueSessionName, connectionInfo.UseRHostCommandLineArguments, cancellationToken);
+                var webSocket = await ConnectToBrokerAsync(uniqueSessionName, cancellationToken);
+                return CreateRHost(uniqueSessionName, connectionInfo.Callbacks, webSocket);
             } catch (HttpRequestException ex) {
                 throw await HandleHttpRequestExceptionAsync(ex);
             }
@@ -142,8 +147,8 @@ namespace Microsoft.R.Host.Client.Host {
             return sessions.Any(s => s.Id == name);
         }
 
-        private async Task CreateBrokerSessionAsync(string name, string rCommandLineArguments, CancellationToken cancellationToken) {
-            rCommandLineArguments = rCommandLineArguments ?? string.Empty;
+        private async Task CreateBrokerSessionAsync(string name, bool useRCommandLineArguments, CancellationToken cancellationToken) {
+            var rCommandLineArguments = useRCommandLineArguments && _rCommandLineArguments != null ? _rCommandLineArguments : null;
             var sessions = new SessionsWebService(HttpClient, _credentials);
             try {
                 await sessions.PutAsync(name, new SessionCreateRequest {

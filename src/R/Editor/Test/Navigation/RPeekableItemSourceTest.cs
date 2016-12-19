@@ -85,9 +85,7 @@ x <- function(a) {
         public async Task PeekInternalFunction01() {
             using (var workflow = UIThreadHelper.Instance.Invoke(() => _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate())) {
                 await workflow.RSessions.TrySwitchBrokerAsync(nameof(RPeekableItemSourceTest));
-                await workflow.RSession.EnsureHostStartedAsync(new RHostStartupInfo {
-                    Name = nameof(PeekInternalFunction01)
-                }, null, 50000);
+                await workflow.RSession.EnsureHostStartedAsync(new RHostStartupInfo(), null, 50000);
 
                 string content = @"lm()";
                 RunInternalItemPeekTest(content, 0, 1, "lm");

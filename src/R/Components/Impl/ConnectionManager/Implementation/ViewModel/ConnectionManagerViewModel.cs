@@ -191,11 +191,12 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                 return;    
             }
 
-            ConnectionManager.AddOrUpdateConnection(
-                connectionViewModel.Name,
-                connectionViewModel.Path,
-                connectionViewModel.RCommandLineArguments,
-                connectionViewModel.IsUserCreated);
+            if (connectionViewModel.IsRenamed && ConnectionManager.GetConnection(connectionViewModel.Name) != null) {
+                Shell.ShowMessage(Resources.ConnectionManager_CantSaveWithTheSameName.FormatCurrent(connectionViewModel.Name), MessageButtons.OK);
+                return;
+            }
+
+            ConnectionManager.AddOrUpdateConnection(connectionViewModel);
 
             if (connectionViewModel.IsRenamed) {
                 ConnectionManager.TryRemove(connectionViewModel.OriginalName);
@@ -211,11 +212,20 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             CancelTestConnection();
 
             if (connection != null) {
-                var confirm = Shell.ShowMessage(string.Format(CultureInfo.CurrentUICulture, Resources.ConnectionManager_RemoveConnectionConfirmation, connection.Name), MessageButtons.YesNo);
-                if (confirm == MessageButtons.Yes) {
-                    var result = ConnectionManager.TryRemove(connection.Name);
-                    UpdateConnections();
-                    return result;
+                if (connection.IsActive) {
+                    var confirm = Shell.ShowMessage(Resources.ConnectionManager_RemoveActiveConnectionConfirmation.FormatCurrent(connection.Name), MessageButtons.YesNo);
+                    if (confirm == MessageButtons.Yes) {
+                        Shell.ProgressDialog.Show(ct => ConnectionManager.RemoveAsync(connection.Name, ct), Resources.ConnectionManager_DeleteConnectionProgressBarMessage.FormatInvariant(connection.Name));
+                        UpdateConnections();
+                        return true;
+                    }
+                } else {
+                    var confirm = Shell.ShowMessage(Resources.ConnectionManager_RemoveConnectionConfirmation.FormatCurrent(connection.Name), MessageButtons.YesNo);
+                    if (confirm == MessageButtons.Yes) {
+                        var result = ConnectionManager.TryRemove(connection.Name);
+                        UpdateConnections();
+                        return result;
+                    }
                 }
             }
             return false;
@@ -236,14 +246,21 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             }
 
             CancelTestConnection();
-
+            
             if (connection.IsActive && !IsConnected) {
                 Shell.ProgressDialog.Show(ConnectionManager.ReconnectAsync, Resources.ConnectionManager_ReconnectionToProgressBarMessage.FormatInvariant(connection.Name));
             } else {
-                var progressBarMessage = ConnectionManager.ActiveConnection != null
-                    ? Resources.ConnectionManager_SwitchConnectionProgressBarMessage.FormatInvariant(ConnectionManager.ActiveConnection.Name, connection.Name)
-                    : Resources.ConnectionManager_ConnectionToProgressBarMessage.FormatInvariant(connection.Name);
-                Shell.ProgressDialog.Show(ct => ConnectionManager.ConnectAsync(connection, ct), progressBarMessage);
+                var activeConnection = ConnectionManager.ActiveConnection;
+                var connectionToSwitch = ConnectionManager.GetConnection(connection.Name);
+                if (activeConnection != null && connectionToSwitch.BrokerConnectionInfo == activeConnection.BrokerConnectionInfo) {
+                    var text = Resources.ConnectionManager_ConnectionsAreIdentical.FormatCurrent(activeConnection.Name, connection.Name);
+                    Shell.ShowMessage(text, MessageButtons.OK);
+                } else {
+                    var progressBarMessage = activeConnection != null
+                        ? Resources.ConnectionManager_SwitchConnectionProgressBarMessage.FormatInvariant(activeConnection.Name, connection.Name)
+                        : Resources.ConnectionManager_ConnectionToProgressBarMessage.FormatInvariant(connection.Name);
+                    Shell.ProgressDialog.Show(ct => ConnectionManager.ConnectAsync(connection, ct), progressBarMessage);
+                }
             }
 
             UpdateConnections();

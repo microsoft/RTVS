@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -19,23 +18,19 @@ namespace Microsoft.R.Host.Client.Test.Session {
     public partial class RSessionTest {
         public class CancelAll : IAsyncLifetime {
             private readonly TaskObserverMethodFixture _taskObserver;
-            private readonly MethodInfo _testMethod;
             private readonly IBrokerClient _brokerClient;
             private readonly RSession _session;
             private readonly RSessionCallbackStub _callback;
 
             public CancelAll(TestMethodFixture testMethod, TaskObserverMethodFixture taskObserver) {
                 _taskObserver = taskObserver;
-                _testMethod = testMethod.MethodInfo;
                 _brokerClient = CreateLocalBrokerClient(nameof(RSessionTest) + nameof(CancelAll));
                 _callback = new RSessionCallbackStub();
-                _session = new RSession(0, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => {});
+                _session = new RSession(0, testMethod.MethodInfo.Name, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => {});
             }
 
             public async Task InitializeAsync() {
-                await _session.StartHostAsync(new RHostStartupInfo {
-                    Name = _testMethod.Name
-                }, _callback, 50000);
+                await _session.StartHostAsync(new RHostStartupInfo(), _callback, 50000);
 
                 _taskObserver.ObserveTaskFailure(_session.RHost.GetRHostRunTask());
             }

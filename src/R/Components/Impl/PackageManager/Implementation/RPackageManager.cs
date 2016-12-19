@@ -49,7 +49,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
         public bool IsRemoteSession => _session.IsRemote;
 
         public RPackageManager(IRSettings settings, IRInteractiveWorkflow interactiveWorkflow, Action dispose) {
-            _session = interactiveWorkflow.RSessions.GetOrCreate(SessionGuids.PackageManagerRSessionGuid);
+            _session = interactiveWorkflow.RSessions.GetOrCreate(SessionNames.PackageManager);
             _settings = settings;
             _interactiveWorkflow = interactiveWorkflow;
             _loadedPackagesEvent = new DirtyEventSource(this);
@@ -140,9 +140,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             // Fetching of installed and available packages is done in a
             // separate package query session to avoid freezing the REPL.
             try {
-                var startupInfo = new RHostStartupInfo { Name = "PackageManager" };
-
-                await _session.EnsureHostStartedAsync(startupInfo, null, cancellationToken: cancellationToken);
+                await _session.EnsureHostStartedAsync(new RHostStartupInfo(), null, cancellationToken: cancellationToken);
                 await _session.SetVsCranSelectionAsync(CranMirrorList.UrlFromName(_settings.CranMirror), cancellationToken);
                 await _session.SetCodePageAsync(_settings.RCodePage, cancellationToken);
 
@@ -214,7 +212,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             _installedPackagesEvent.FireOnce();
             _loadedPackagesEvent.FireOnce();
         }
-
+        
         private void PackagesRemoved(object sender, EventArgs e) {
             _installedPackagesEvent.FireOnce();
             _loadedPackagesEvent.FireOnce();

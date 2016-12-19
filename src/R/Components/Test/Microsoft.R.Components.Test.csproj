@@ -50,6 +50,7 @@
     <Compile Include="Assertions\AsyncCommandAssertions.cs" />
     <Compile Include="Configuration\ConfigurationSettingsTest.cs" />
     <Compile Include="Configuration\ConfigurationSettingsCollectionTest.cs" />
+    <Compile Include="ConnectionManager\ConnectionManagerTest.cs" />
     <Compile Include="ConnectionManager\ConnectionManagerViewModelTest.cs" />
     <Compile Include="ConnectionManager\ConnectionStatusBarViewModelTest.cs" />
     <Compile Include="ConnectionManager\ConnectionViewModelTest.cs" />

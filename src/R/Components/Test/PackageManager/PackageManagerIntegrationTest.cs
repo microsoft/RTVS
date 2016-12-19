@@ -275,11 +275,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
             var workflow = UIThreadHelper.Instance.Invoke(() => _workflowProvider.GetOrCreate());
             var settings = _exportProvider.GetExportedValue<IRSettings>();
             await workflow.RSessions.TrySwitchBrokerAsync(nameof(PackageManagerIntegrationTest));
-            await workflow.RSession.EnsureHostStartedAsync(new RHostStartupInfo {
-                Name = _testMethod.Name,
-                CranMirrorName = settings.CranMirror,
-                CodePage = settings.RCodePage
-            }, new RHostClientTestApp(), 50000);
+            await workflow.RSession.EnsureHostStartedAsync(new RHostStartupInfo (settings.CranMirror, codePage: settings.RCodePage), new RHostClientTestApp(), 50000);
             return workflow;
         }
         

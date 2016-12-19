@@ -18,7 +18,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
 
         public CommandStatus Status {
             get {
-                if (_interactiveWorkflow.Connections.IsConnected && _interactiveWorkflow.Connections.ActiveConnection.IsRemote) {
+                var connectionManager = _interactiveWorkflow.Connections;
+                if (connectionManager.IsConnected && connectionManager.ActiveConnection.IsRemote) {
                     return CommandStatus.SupportedAndEnabled;
                 } else {
                     return CommandStatus.NotSupported; 

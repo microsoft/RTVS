@@ -36,7 +36,7 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
         }
 
         public async Task DisposeAsync() {
-            await _workflow.RSession.StopHostAsync();
+            await _workflow.RSession.StopHostAsync().Should().BeCompletedAsync();
             _exportProvider?.Dispose();
         }
 
