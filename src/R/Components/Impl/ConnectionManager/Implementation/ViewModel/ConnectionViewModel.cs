@@ -261,19 +261,27 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             } catch (InvalidOperationException) { } catch (ArgumentException) { } catch (UriFormatException) { }
 
             if (uri == null || !(uri.IsFile || string.IsNullOrEmpty(uri.Host))) {
-                bool hasScheme = uri != null && !string.IsNullOrEmpty(uri.Scheme);
-                bool hasPort = uri != null && uri.Port >= 0;
+                var hasScheme = uri != null && !string.IsNullOrEmpty(uri.Scheme);
+                var hasPort = uri != null && uri.Port >= 0;
+                var hasPathOrQuery = uri != null && !string.IsNullOrEmpty(uri.PathAndQuery) && uri.PathAndQuery != "/";
 
                 if (hasScheme) {
+                    var components = UriComponents.Scheme | UriComponents.UserInfo | UriComponents.Host | UriComponents.Fragment;
+
+                    if (hasPathOrQuery) {
+                        components |= UriComponents.Path | UriComponents.Query;
+                    }
+
                     if (hasPort) {
-                        return Invariant($"{uri.Scheme}{Uri.SchemeDelimiter}{uri.Host}:{uri.Port}");
+                        components |= UriComponents.StrongPort;
                     }
-                    return Invariant($"{uri.Scheme}{Uri.SchemeDelimiter}{uri.Host}");
-                } else {
-                    if (Uri.CheckHostName(path) != UriHostNameType.Unknown) {
-                        var port = hasPort ? uri.Port : DefaultPort;
-                        return Invariant($"{Uri.UriSchemeHttps}{Uri.SchemeDelimiter}{path.ToLower()}:{port}");
-                    }
+
+                    return uri.GetComponents(components, UriFormat.UriEscaped);
+                }
+
+                if (Uri.CheckHostName(path) != UriHostNameType.Unknown) {
+                    var port = hasPort ? uri.Port : DefaultPort;
+                    return Invariant($"{Uri.UriSchemeHttps}{Uri.SchemeDelimiter}{path.ToLower()}:{port}");
                 }
             }
             return path;
