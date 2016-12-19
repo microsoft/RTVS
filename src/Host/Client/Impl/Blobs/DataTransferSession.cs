@@ -117,6 +117,7 @@ namespace Microsoft.R.Host.Client {
         /// <param name="filePath">Path to the file where the retrieved data will be written.</param>
         public async Task FetchAndDecompressFileAsync(ulong blobId, string filePath, 
             IProgress<ProgressDialogData> progress, string progressMessage, CancellationToken cancellationToken) {
+            await TaskUtilities.SwitchToBackgroundThread();
             var total = await _session.GetBlobSizeAsync(blobId, cancellationToken);
             progress.Report(new ProgressDialogData(0, statusBarText: progressMessage, waitMessage: progressMessage));
             await FetchAndDecompressFileAsync(new RBlobInfo(blobId), filePath, true, new Progress<long>(b => {

@@ -123,7 +123,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         }
 
         public async Task<string> FetchFileAsync(string remoteFileName, ulong remoteBlobId, string localPath, CancellationToken cancellationToken) {
-            await _coreShell.SwitchToMainThreadAsync();
+            await _coreShell.SwitchToMainThreadAsync(cancellationToken);
 
             if (!string.IsNullOrEmpty(localPath)) {
                 if (_fileSystem.DirectoryExists(localPath)) {
@@ -141,7 +141,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                     }
                 }, message);
             } catch (Exception ex) {
-                await _coreShell.ShowErrorMessageAsync(Resources.Error_UnableToTransferFile.FormatInvariant(localPath, ex.Message), cancellationToken);
+                _coreShell.ShowErrorMessage(Resources.Error_UnableToTransferFile.FormatInvariant(localPath, ex.Message));
                 return string.Empty;
             }
             return localPath;
