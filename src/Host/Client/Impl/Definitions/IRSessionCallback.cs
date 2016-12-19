@@ -79,6 +79,6 @@ namespace Microsoft.R.Host.Client {
         /// <summary>
         /// Saves data to file sent from RHost.
         /// </summary>
-        Task<string> SaveFileAsync(string remoteName, string localPath, byte[] data, CancellationToken cancellationToken);
+        Task<string> FetchFileAsync(string remoteFileName, ulong remoteBlobId, string localPath, CancellationToken cancellationToken);
     }
 }
