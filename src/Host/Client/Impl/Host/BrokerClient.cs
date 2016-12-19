@@ -156,7 +156,7 @@ namespace Microsoft.R.Host.Client.Host {
                     CommandLineArguments = rCommandLineArguments,
                 }, cancellationToken);
             } catch (BrokerApiErrorException apiex) {
-                throw new RHostDisconnectedException(apiex);
+                throw new RHostDisconnectedException(apiex, Name);
             }
         }
 

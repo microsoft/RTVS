@@ -25,11 +25,11 @@ namespace Microsoft.R.Host.Client.Host {
 
         public RHostDisconnectedException(string message, Exception innerException, CancellationToken token) : base(message, innerException, token) { }
 
-        public RHostDisconnectedException(BrokerApiErrorException ex) : base(FromBrokerApiException(ex), ex) { }
+        public RHostDisconnectedException(BrokerApiErrorException ex, string machineName) : base(FromBrokerApiException(ex, machineName), ex) { }
 
         protected RHostDisconnectedException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 
-        private static string FromBrokerApiException(BrokerApiErrorException ex) {
+        private static string FromBrokerApiException(BrokerApiErrorException ex, string machineName) {
             switch (ex.ApiError) {
                 case BrokerApiError.NoRInterpreters:
                     return Resources.Error_NoRInterpreters;
@@ -37,7 +37,7 @@ namespace Microsoft.R.Host.Client.Host {
                     return Resources.Error_InterpreterNotFound;
                 case BrokerApiError.UnableToStartRHost:
                     if (!string.IsNullOrEmpty(ex.Message)) {
-                        return Resources.Error_UnableToStartHostException.FormatInvariant(ex.Message);
+                        return Resources.Error_UnableToStartHostException.FormatInvariant(machineName, ex.Message);
                     }
                     return Resources.Error_UnknownError;
                 case BrokerApiError.PipeAlreadyConnected:
