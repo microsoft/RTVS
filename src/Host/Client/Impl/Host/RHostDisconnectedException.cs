@@ -25,32 +25,6 @@ namespace Microsoft.R.Host.Client.Host {
 
         public RHostDisconnectedException(string message, Exception innerException, CancellationToken token) : base(message, innerException, token) { }
 
-        public RHostDisconnectedException(BrokerApiErrorException ex) : base(FromBrokerApiException(ex), ex) { }
-
         protected RHostDisconnectedException(SerializationInfo info, StreamingContext context) : base(info, context) { }
-
-        private static string FromBrokerApiException(BrokerApiErrorException ex) {
-            switch (ex.ApiError) {
-                case BrokerApiError.NoRInterpreters:
-                    return Resources.Error_NoRInterpreters;
-                case BrokerApiError.InterpreterNotFound:
-                    return Resources.Error_InterpreterNotFound;
-                case BrokerApiError.UnableToStartRHost:
-                    if (!string.IsNullOrEmpty(ex.Message)) {
-                        return Resources.Error_UnableToStartHostException.FormatInvariant(ex.Message);
-                    }
-                    return Resources.Error_UnknownError;
-                case BrokerApiError.PipeAlreadyConnected:
-                    return Resources.Error_PipeAlreadyConnected;
-                case BrokerApiError.Win32Error:
-                    if (!string.IsNullOrEmpty(ex.Message)) {
-                        return Resources.Error_BrokerWin32Error.FormatInvariant(ex.Message);
-                    }
-                    return Resources.Error_BrokerUnknownWin32Error;
-            }
-
-            Debug.Fail("No localized resources for broker API error" + ex.ApiError.ToString());
-            return ex.ApiError.ToString();
-        }
     }
 }
