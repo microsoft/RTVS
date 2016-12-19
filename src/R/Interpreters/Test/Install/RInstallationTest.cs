@@ -78,18 +78,15 @@ namespace Microsoft.R.Interpreters.Test {
         }
 
         private RegistryKeyMock[] SimulateRegistry01() {
-            return new RegistryKeyMock[] {
-                new RegistryKeyMock(
-                     @"SOFTWARE\R-core\R",
-                     new RegistryKeyMock[] {
-                            new RegistryKeyMock(
-                                 @"SOFTWARE\R-core\R\3.2.3",
-                                 new RegistryKeyMock[0],
-                                 new string[] {"InstallPath"},
-                                 new string[] { @"C:\Program Files\MRO\R-3.2.3" }),
-                            new RegistryKeyMock("3.2.2"),
-                            new RegistryKeyMock("8.0.3")
-                     }),
+            return new[] {
+                new RegistryKeyMock(@"SOFTWARE\R-core\R64",
+                    new RegistryKeyMock(@"3.2.3",
+                            new RegistryKeyMock[0],
+                            new[] {"InstallPath"},
+                            new[] { @"C:\Program Files\MRO\R-3.2.3" }),
+                    new RegistryKeyMock("3.2.2"),
+                    new RegistryKeyMock("8.0.3")
+                )
             };
         }
 
@@ -238,10 +235,10 @@ namespace Microsoft.R.Interpreters.Test {
         private RegistryKeyMock[] SimulateRegistry02() {
             return new RegistryKeyMock[] {
                 new RegistryKeyMock(
-                     @"SOFTWARE\R-core\R",
+                     @"SOFTWARE\R-core\R64",
                      new RegistryKeyMock[] {
                             new RegistryKeyMock(
-                                 @"SOFTWARE\R-core\R\3.1.3",
+                                 @"3.1.3",
                                  new RegistryKeyMock[0],
                                  new string[] {"InstallPath"},
                                  new string[] { @"C:\Program Files\R\R-3.1.3" }),
@@ -250,22 +247,17 @@ namespace Microsoft.R.Interpreters.Test {
         }
 
         private RegistryKeyMock[] SimulateDuplicates() {
-            return new RegistryKeyMock[] {
+            return new[] {
                 new RegistryKeyMock(
-                     @"SOFTWARE\R-core\R",
-                     new RegistryKeyMock[] {
-                            new RegistryKeyMock(
-                                 @"SOFTWARE\R-core\R\3.2.2.803",
-                                 new RegistryKeyMock[0],
-                                 new string[] {"InstallPath"},
-                                 new string[] { @"C:\Program Files\Microsoft\R Client\R_SERVER\" }),
-
-                            new RegistryKeyMock(
-                                 @"SOFTWARE\R-core\R\3.2.2.803 Microsoft R Client",
-                                 new RegistryKeyMock[0],
-                                 new string[] {"InstallPath"},
-                                 new string[] { @"C:\Program Files\Microsoft\R Client\R_SERVER" }),
-                     }),
+                     @"SOFTWARE\R-core\R64", 
+                     new RegistryKeyMock(@"3.2.2.803",
+                         new RegistryKeyMock[0],
+                         new[] {"InstallPath"},
+                         new[] { @"C:\Program Files\Microsoft\R Client\R_SERVER\" }),
+                     new RegistryKeyMock(@"3.2.2.803 Microsoft R Client",
+                         new RegistryKeyMock[0],
+                         new[] {"InstallPath"},
+                         new[] { @"C:\Program Files\Microsoft\R Client\R_SERVER" })),
             };
         }
 
