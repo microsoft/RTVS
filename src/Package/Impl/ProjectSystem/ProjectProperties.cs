@@ -140,7 +140,7 @@ namespace Microsoft.VisualStudio.R.Package {
             var runProps = await GetConfigurationRunPropertiesAsync();
             var filter = await runProps.TransferFilesFilter.GetEvaluatedValueAsync();
             if (string.IsNullOrWhiteSpace(filter)) {
-                return "*.r;*.rmd;";
+                return "*.r;*.rmd;*.sql;*.md;*.cpp";
             }
             return filter;
         }
@@ -162,7 +162,7 @@ namespace Microsoft.VisualStudio.R.Package {
         public async Task<bool> GetTransferProjectOnRunAsync() {
             var runProps = await GetConfigurationRunPropertiesAsync();
             var val = await runProps.TransferProjectOnRun.GetEvaluatedValueAsync();
-            return ParseBooleanProperty(val, false);
+            return ParseBooleanProperty(val, true);
         }
 
         /// <summary>

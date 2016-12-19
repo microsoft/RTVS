@@ -52,6 +52,7 @@
     <Compile Include="Configuration\ConfigurationSettingsCollectionTest.cs" />
     <Compile Include="ConnectionManager\ConnectionManagerTest.cs" />
     <Compile Include="ConnectionManager\ConnectionManagerViewModelTest.cs" />
+    <Compile Include="ConnectionManager\ConnectionStatusBarViewModelTest.cs" />
     <Compile Include="ConnectionManager\ConnectionViewModelTest.cs" />
     <Compile Include="EventTaskSources.cs" />
     <Compile Include="Fakes\InteractiveWindow\TestInteractiveWindowEditorsFactoryService.cs" />

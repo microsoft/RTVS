@@ -39,12 +39,13 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         private readonly object _syncObj = new object();
 
         public bool IsConnected { get; private set; }
+        public bool IsRunning { get; private set; }
         public IConnection ActiveConnection { get; private set; }
         public ReadOnlyCollection<IConnection> RecentConnections { get; private set; }
         public IConnectionManagerVisualComponent VisualComponent { get; private set; }
 
         public event EventHandler RecentConnectionsChanged;
-        public event EventHandler<ConnectionEventArgs> ConnectionStateChanged;
+        public event EventHandler ConnectionStateChanged;
 
         public ConnectionManager(IStatusBar statusBar, IRSettings settings, IRInteractiveWorkflow interactiveWorkflow) {
             _statusBar = statusBar;
@@ -61,9 +62,14 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 .Add(_statusBarViewModel)
                 .Add(_hostLoadIndicatorViewModel)
                 .Add(() => _sessionProvider.BrokerStateChanged -= BrokerStateChanged)
+                .Add(() => _interactiveWorkflow.RSession.Connected -= SessionConnected)
+                .Add(() => _interactiveWorkflow.RSession.Disconnected -= SessionDisconnected)
                 .Add(() => _interactiveWorkflow.ActiveWindowChanged -= ActiveWindowChanged);
 
             _sessionProvider.BrokerStateChanged += BrokerStateChanged;
+
+            _interactiveWorkflow.RSession.Connected += SessionConnected;
+            _interactiveWorkflow.RSession.Disconnected += SessionDisconnected;
             _interactiveWorkflow.ActiveWindowChanged += ActiveWindowChanged;
 
             // Get initial values
@@ -292,15 +298,25 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         private void BrokerStateChanged(object sender, BrokerStateChangedEventArgs eventArgs) {
-            IsConnected = eventArgs.IsConnected && _interactiveWorkflow.ActiveWindow != null;
+            IsConnected = _sessionProvider.IsConnected;
             UpdateActiveConnection();
-            ConnectionStateChanged?.Invoke(this, new ConnectionEventArgs(IsConnected, ActiveConnection));
+            ConnectionStateChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void SessionConnected(object sender, EventArgs args) {
+            IsRunning = true;
+            ConnectionStateChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void SessionDisconnected(object sender, EventArgs args) {
+            IsRunning = false;
+            ConnectionStateChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void ActiveWindowChanged(object sender, ActiveWindowChangedEventArgs eventArgs) {
             IsConnected = _sessionProvider.IsConnected && eventArgs.Window != null;
             UpdateActiveConnection();
-            ConnectionStateChanged?.Invoke(this, new ConnectionEventArgs(IsConnected, ActiveConnection));
+            ConnectionStateChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void UpdateActiveConnection() {

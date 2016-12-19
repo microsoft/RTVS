@@ -340,7 +340,7 @@ namespace Microsoft.R.Host.Broker {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Certificale issued by {0}.
+        ///   Looks up a localized string similar to Certificate issued by {0}.
         /// </summary>
         internal static string Trace_CertificateIssuer {
             get {
@@ -349,7 +349,7 @@ namespace Microsoft.R.Host.Broker {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Certificale issued to {0}.
+        ///   Looks up a localized string similar to Certificate issued to {0}.
         /// </summary>
         internal static string Trace_CertificateSubject {
             get {
