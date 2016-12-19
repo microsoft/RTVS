@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -156,7 +157,7 @@ namespace Microsoft.R.Host.Client.Host {
                     CommandLineArguments = rCommandLineArguments,
                 }, cancellationToken);
             } catch (BrokerApiErrorException apiex) {
-                throw new RHostDisconnectedException(apiex, Name);
+                throw new RHostDisconnectedException(MessageFromBrokerApiException(apiex), apiex);
             }
         }
 
@@ -196,6 +197,30 @@ namespace Microsoft.R.Host.Client.Host {
         private RHost CreateRHost(string name, IRCallbacks callbacks, WebSocket socket) {
             var transport = new WebSocketMessageTransport(socket);
             return new RHost(name, callbacks, transport, Log);
+        }
+        
+        private string MessageFromBrokerApiException(BrokerApiErrorException ex) {
+            switch (ex.ApiError) {
+                case BrokerApiError.NoRInterpreters:
+                    return Resources.Error_NoRInterpreters;
+                case BrokerApiError.InterpreterNotFound:
+                    return Resources.Error_InterpreterNotFound;
+                case BrokerApiError.UnableToStartRHost:
+                    if (!string.IsNullOrEmpty(ex.Message)) {
+                        return Resources.Error_UnableToStartHostException.FormatInvariant(Name, ex.Message);
+                    }
+                    return Resources.Error_UnknownError;
+                case BrokerApiError.PipeAlreadyConnected:
+                    return Resources.Error_PipeAlreadyConnected;
+                case BrokerApiError.Win32Error:
+                    if (!string.IsNullOrEmpty(ex.Message)) {
+                        return Resources.Error_BrokerWin32Error.FormatInvariant(ex.Message);
+                    }
+                    return Resources.Error_BrokerUnknownWin32Error;
+            }
+
+            Debug.Fail("No localized resources for broker API error" + ex.ApiError.ToString());
+            return ex.ApiError.ToString();
         }
 
         public virtual Task<string> HandleUrlAsync(string url, CancellationToken cancellationToken)  => Task.FromResult(url);
