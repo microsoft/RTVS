@@ -21,8 +21,9 @@ namespace Microsoft.R.Components.ConnectionManager {
         event EventHandler RecentConnectionsChanged;
         event EventHandler<ConnectionEventArgs> ConnectionStateChanged;
 
-        IConnection AddOrUpdateConnection(string name, string path, string rCommandLineArguments, bool isUserCreated);
+        IConnection AddOrUpdateConnection(IConnectionInfo connectionInfo);
         IConnection GetOrAddConnection(string name, string path, string rCommandLineArguments, bool isUserCreated);
+        IConnection GetConnection(string name);
 
         /// <summary>
         /// Tries to remove connection.

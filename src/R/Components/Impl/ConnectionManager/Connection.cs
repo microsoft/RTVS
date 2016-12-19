@@ -2,23 +2,23 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.R.Host.Client.Host;
 
 namespace Microsoft.R.Components.ConnectionManager {
     internal class Connection : ConnectionInfo, IConnection {
-        public Connection(IConnectionInfo ci) :
-            this(ci.Name, ci.Path, ci.RCommandLineArguments, ci.LastUsed, ci.IsUserCreated) { }
-
-        public Connection(string name, string path, string rCommandLineArguments, DateTime lastUsed, bool isUserCreated) :
-            base(name, path, rCommandLineArguments, lastUsed, isUserCreated) {
-            Uri = new Uri(path);
-            IsRemote = !Uri.IsFile;
+        public Connection(IConnectionInfo connectionInfo) 
+            : base(connectionInfo) {
+            BrokerConnectionInfo = BrokerConnectionInfo.Create(Path, RCommandLineArguments);
         }
 
-        public Uri Uri { get; }
+        public Connection(string name, string path, string rCommandLineArguments, bool isUserCreated) 
+            : base(name, path, rCommandLineArguments, isUserCreated) {
+            BrokerConnectionInfo = BrokerConnectionInfo.Create(path, rCommandLineArguments);
+        }
 
-        /// <summary>
-        /// If true, the connection is to a remote machine
-        /// </summary>
-        public bool IsRemote { get; }
+        public BrokerConnectionInfo BrokerConnectionInfo { get; }
+
+        public Uri Uri => BrokerConnectionInfo.Uri;
+        public bool IsRemote => BrokerConnectionInfo.IsRemote;
     }
 }

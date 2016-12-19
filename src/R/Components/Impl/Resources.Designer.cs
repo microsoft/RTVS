@@ -106,6 +106,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Can&apos;t change connection name to &apos;{0}&apos; because connection with the same name already exists..
+        /// </summary>
+        public static string ConnectionManager_CantSaveWithTheSameName {
+            get {
+                return ResourceManager.GetString("ConnectionManager_CantSaveWithTheSameName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Connect.
         /// </summary>
         public static string ConnectionManager_Connect {

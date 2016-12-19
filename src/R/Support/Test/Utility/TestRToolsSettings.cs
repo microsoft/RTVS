@@ -26,10 +26,12 @@ namespace Microsoft.R.Support.Test.Utility {
         public TestRToolsSettings() : this("Test") {}
 
         public TestRToolsSettings(string connectionName) {
-            _connections = new ConnectionInfo[] { new ConnectionInfo {
-                Name = connectionName ?? "Test",
-                Path = new RInstallation().GetCompatibleEngines().First().InstallPath
-            }};
+            _connections = new[] { new ConnectionInfo (
+                connectionName ?? "Test",
+                new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath,
+                null,
+                false
+            )};
         }
 
         public ConnectionInfo[] Connections {

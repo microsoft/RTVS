@@ -179,7 +179,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [Test]
         [Category.R.Session]
         public void StartRHostMissing() {
-            var brokerClient = new LocalBrokerClient(nameof(RSessionTest), @"C:\", null, TestCoreServices.CreateReal(), new NullConsole(), Environment.SystemDirectory);
+            var brokerClient = new LocalBrokerClient(nameof(RSessionTest), BrokerConnectionInfo.Create(@"C:\"), TestCoreServices.CreateReal(), new NullConsole(), Environment.SystemDirectory);
             var session = new RSession(0, _testMethod.Name, brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo(), null, 10000);
 
@@ -202,7 +202,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [Test]
         [Category.R.Session]
         public async Task StopBeforeInitialized_RHostMissing() {
-            var brokerClient = new LocalBrokerClient(nameof(RSessionTest), @"C:\", null, TestCoreServices.CreateReal(), new NullConsole(), Environment.SystemDirectory);
+            var brokerClient = new LocalBrokerClient(nameof(RSessionTest), BrokerConnectionInfo.Create(@"C:\"), TestCoreServices.CreateReal(), new NullConsole(), Environment.SystemDirectory);
             var session = new RSession(0, _testMethod.Name, brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo (), null, 10000);
             var startTask = Task.Run(start).SilenceException<RHostBrokerBinaryMissingException>();
@@ -242,7 +242,10 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
 
         private static IBrokerClient CreateLocalBrokerClient(string name) 
-            => new LocalBrokerClient(name, new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath, null, TestCoreServices.CreateReal(), new NullConsole());
+            => new LocalBrokerClient(name, 
+                BrokerConnectionInfo.Create(new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath),
+                TestCoreServices.CreateReal(), 
+                new NullConsole());
 
         private static Task<int> GetRSessionProcessId(IRSession session) 
             => session.EvaluateAsync<int>("Sys.getpid()", REvaluationKind.Normal);

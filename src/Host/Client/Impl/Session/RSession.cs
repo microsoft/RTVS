@@ -245,7 +245,7 @@ namespace Microsoft.R.Host.Client.Session {
             _startupInfo = startupInfo ?? new RHostStartupInfo();
             RHost host;
             try {
-                var connectionInfo = new BrokerConnectionInfo(Name, this, startupInfo.UseRHostCommandLineArguments, timeout);
+                var connectionInfo = new HostConnectionInfo(Name, this, _startupInfo.UseRHostCommandLineArguments, timeout);
                 host = await BrokerClient.ConnectAsync(connectionInfo, cancellationToken);
             } catch (OperationCanceledException ex) {
                 _hostStartedTcs.TrySetCanceled(ex);
@@ -296,7 +296,7 @@ namespace Microsoft.R.Host.Client.Session {
                     await _hostRunTask;
                 }
 
-                var connectionInfo = new BrokerConnectionInfo(Name, this, _startupInfo.UseRHostCommandLineArguments);
+                var connectionInfo = new HostConnectionInfo(Name, this, _startupInfo.UseRHostCommandLineArguments);
                 host = await BrokerClient.ConnectAsync(connectionInfo, cancellationToken);
 
                 await StartHostAsyncBackground(host, cancellationToken);
@@ -728,7 +728,7 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
 
             public async Task ConnectToNewBrokerAsync(CancellationToken cancellationToken) {
                 using (_session._disposeToken.Link(ref cancellationToken)) {
-                    var connectionInfo = new BrokerConnectionInfo(_session.Name, _session, _session._startupInfo.UseRHostCommandLineArguments);
+                    var connectionInfo = new HostConnectionInfo(_session.Name, _session, _session._startupInfo.UseRHostCommandLineArguments);
                     _hostToSwitch = await _session.BrokerClient.ConnectAsync(connectionInfo, cancellationToken);
                 }
             }

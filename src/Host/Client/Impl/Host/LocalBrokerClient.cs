@@ -43,17 +43,17 @@ namespace Microsoft.R.Host.Client.Host {
             }
         }
 
-        public LocalBrokerClient(string name, string rHome, string rCommandLineArguments, ICoreServices services, IConsole console, string rhostDirectory = null)
-            : base(name, new Uri(rHome), rCommandLineArguments, InterpreterId, _credentials, services.Log, console) {
+        public LocalBrokerClient(string name, BrokerConnectionInfo connectionInfo, ICoreServices services, IConsole console, string rhostDirectory = null)
+            : base(name, connectionInfo, _credentials, services.Log, console) {
 
             _rhostDirectory = rhostDirectory ?? Path.GetDirectoryName(typeof(RHost).Assembly.GetAssemblyPath());
-            _rHome = rHome;
+            _rHome = connectionInfo.Uri.LocalPath;
             _services = services;
 
             IsVerified = true;
         }
 
-        public override async Task<RHost> ConnectAsync(BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken)) {
+        public override async Task<RHost> ConnectAsync(HostConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken)) {
             await EnsureBrokerStartedAsync();
             return await base.ConnectAsync(connectionInfo, cancellationToken);
         }

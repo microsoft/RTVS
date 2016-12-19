@@ -115,15 +115,15 @@ namespace Microsoft.R.Host.Client.Session {
             Task.Run(() => BrokerChanged?.Invoke(this, new EventArgs())).DoNotWait();
         }
 
-        public async Task TestBrokerConnectionAsync(string name, string path = null, CancellationToken cancellationToken = default(CancellationToken)) {
+        public async Task TestBrokerConnectionAsync(string name, BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken)) {
             using (_disposeToken.Link(ref cancellationToken)) {
                 await TaskUtilities.SwitchToBackgroundThread();
 
                 // Create random name to avoid collision with actual broker client
                 name = name + Guid.NewGuid().ToString("N");
-                var brokerClient = CreateBrokerClient(name, path, null, cancellationToken);
+                var brokerClient = CreateBrokerClient(name, connectionInfo, cancellationToken);
                 if (brokerClient == null) {
-                    throw new ArgumentException(nameof(path));
+                    throw new ArgumentException(nameof(connectionInfo));
                 }
 
                 using (brokerClient) {
@@ -134,7 +134,7 @@ namespace Microsoft.R.Host.Client.Session {
 
         private static async Task TestBrokerConnectionWithRHost(IBrokerClient brokerClient, CancellationToken cancellationToken) {
             var callbacks = new NullRCallbacks();
-            var connectionInfo = new BrokerConnectionInfo(nameof(TestBrokerConnectionAsync), callbacks);
+            var connectionInfo = new HostConnectionInfo(nameof(TestBrokerConnectionAsync), callbacks);
             var rhost = await brokerClient.ConnectAsync(connectionInfo, cancellationToken);
             try {
                 var rhostRunTask = rhost.Run(cancellationToken);
@@ -159,11 +159,11 @@ namespace Microsoft.R.Host.Client.Session {
             }
         }
 
-        public async Task<bool> TrySwitchBrokerAsync(string name, string path = null, string rCommandLineArguments = null, CancellationToken cancellationToken = default(CancellationToken)) {
+        public async Task<bool> TrySwitchBrokerAsync(string name, BrokerConnectionInfo connectionInfo = default(BrokerConnectionInfo), CancellationToken cancellationToken = default(CancellationToken)) {
             using (_disposeToken.Link(ref cancellationToken)) {
                 await TaskUtilities.SwitchToBackgroundThread();
 
-                var brokerClient = CreateBrokerClient(name, path, rCommandLineArguments, cancellationToken);
+                var brokerClient = CreateBrokerClient(name, connectionInfo, cancellationToken);
                 if (brokerClient == null) {
                     return false;
                 }
@@ -177,10 +177,7 @@ namespace Microsoft.R.Host.Client.Session {
                     return false;
                 }
 
-                if (brokerClient.Name.EqualsOrdinal(_brokerProxy.Name) &&
-                    brokerClient.Uri.AbsoluteUri.PathEquals(_brokerProxy.Uri.AbsoluteUri) &&
-                    brokerClient.RCommandLineArguments.EqualsIgnoreCase(_brokerProxy.RCommandLineArguments)) {
-
+                if (brokerClient.ConnectionInfo.Equals(_brokerProxy.ConnectionInfo)) {
                     brokerClient.Dispose();
 
                     try {
@@ -339,19 +336,20 @@ namespace Microsoft.R.Host.Client.Session {
             }, cancellationToken);
         }
 
-        private IBrokerClient CreateBrokerClient(string name, string path, string rCommandLineArguments, CancellationToken cancellationToken) {
-            path = path ?? new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath;
+        private IBrokerClient CreateBrokerClient(string name, BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken) {
+            if (!connectionInfo.IsValid) {
+                connectionInfo = BrokerConnectionInfo.Create(new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath);
+            }
 
-            Uri uri;
-            if (!Uri.TryCreate(path, UriKind.Absolute, out uri)) {
+            if (!connectionInfo.IsValid) {
                 return null;
             }
 
-            if (uri.IsFile) {
-                return new LocalBrokerClient(name, uri.LocalPath, rCommandLineArguments, _services, _console);
-            }
+            if (connectionInfo.IsRemote) {
+                return new RemoteBrokerClient(name, connectionInfo, _services, _console, cancellationToken);
+            } 
 
-            return new RemoteBrokerClient(name, uri, rCommandLineArguments, _services, _console, cancellationToken);
+            return new LocalBrokerClient(name, connectionInfo, _services, _console);
         }
 
         private async Task UpdateHostLoadLoopAsync() {

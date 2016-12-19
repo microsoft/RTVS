@@ -38,31 +38,29 @@ namespace Microsoft.R.Host.Client.Host {
         };
 
         private readonly string _interpreterId;
+        private readonly string _rCommandLineArguments;
         private readonly ICredentialsDecorator _credentials;
         private readonly IConsole _console;
-        private readonly string _parametersHash;
 
         protected DisposableBag DisposableBag { get; } = DisposableBag.Create<BrokerClient>();
         protected IActionLog Log { get; }
         protected WebRequestHandler HttpClientHandler { get; private set; }
         protected HttpClient HttpClient { get; private set; }
 
+        public BrokerConnectionInfo ConnectionInfo { get; }
         public string Name { get; }
-        public Uri Uri { get; }
-        public string RCommandLineArguments { get; }
-        public bool IsRemote => !Uri.IsFile;
+        public bool IsRemote => ConnectionInfo.IsRemote;
         public bool IsVerified { get; protected set; }
 
-        protected BrokerClient(string name, Uri brokerUri, string rCommandLineArguments, string interpreterId, ICredentialsDecorator credentials, IActionLog log, IConsole console) {
+        protected BrokerClient(string name, BrokerConnectionInfo connectionInfo, ICredentialsDecorator credentials, IActionLog log, IConsole console) {
             Name = name;
-            Uri = brokerUri;
             Log = log;
 
-            RCommandLineArguments = rCommandLineArguments?.Trim() ?? string.Empty;
-            _interpreterId = interpreterId;
+            _rCommandLineArguments = connectionInfo.RCommandLineArguments;
+            _interpreterId = connectionInfo.InterpreterId;
             _credentials = credentials;
             _console = console;
-            _parametersHash = CalculateAdditionalParametersHash();
+            ConnectionInfo = connectionInfo;
         }
 
         protected void CreateHttpClient(Uri baseAddress) {
@@ -111,25 +109,25 @@ namespace Microsoft.R.Host.Client.Host {
             }
         }
 
-        public virtual async Task<RHost> ConnectAsync(BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken)) {
+        public virtual async Task<RHost> ConnectAsync(HostConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken)) {
             DisposableBag.ThrowIfDisposed();
             await TaskUtilities.SwitchToBackgroundThread();
 
-            var sessionName = connectionInfo.Name + _parametersHash;
+            var uniqueSessionName = $"{connectionInfo.Name}_{ConnectionInfo}";
             try {
-                var sessionExists = connectionInfo.PreserveSessionData && await IsSessionRunningAsync(sessionName, cancellationToken);
+                var sessionExists = connectionInfo.PreserveSessionData && await IsSessionRunningAsync(uniqueSessionName, cancellationToken);
                 if (sessionExists) {
                     var terminateRDataSave = await _console.PromptYesNoAsync(Resources.AbortRDataAutosave, cancellationToken);
                     if (!terminateRDataSave) {
-                        while (await IsSessionRunningAsync(sessionName, cancellationToken)) {
+                        while (await IsSessionRunningAsync(uniqueSessionName, cancellationToken)) {
                             await Task.Delay(500, cancellationToken);
                         }
                     }
                 }
 
-                await CreateBrokerSessionAsync(sessionName, connectionInfo.UseRHostCommandLineArguments, cancellationToken);
-                var webSocket = await ConnectToBrokerAsync(sessionName, cancellationToken);
-                return CreateRHost(sessionName, connectionInfo.Callbacks, webSocket);
+                await CreateBrokerSessionAsync(uniqueSessionName, connectionInfo.UseRHostCommandLineArguments, cancellationToken);
+                var webSocket = await ConnectToBrokerAsync(uniqueSessionName, cancellationToken);
+                return CreateRHost(uniqueSessionName, connectionInfo.Callbacks, webSocket);
             } catch (HttpRequestException ex) {
                 throw await HandleHttpRequestExceptionAsync(ex);
             }
@@ -143,34 +141,6 @@ namespace Microsoft.R.Host.Client.Host {
         protected virtual Task<Exception> HandleHttpRequestExceptionAsync(HttpRequestException exception)
             => Task.FromResult<Exception>(new RHostDisconnectedException(Resources.Error_HostNotResponding.FormatInvariant(Name, exception.Message), exception));
 
-        private string CalculateAdditionalParametersHash() {
-            if (string.IsNullOrEmpty(RCommandLineArguments)) {
-                return string.Empty;
-            }
-
-            var bytes = Encoding.Unicode.GetBytes(RCommandLineArguments);
-            byte[] hashBytes;
-            using (var hash = new SHA256Cng()) {
-                hashBytes = hash.ComputeHash(bytes);
-            }
-
-            var hashCharsLength = (int)(hashBytes.Length * 4.0d / 3.0d);
-            if (hashCharsLength % 4 != 0) {
-                hashCharsLength += 4 - hashCharsLength % 4;
-            }
-
-            var hashChars = new char[hashCharsLength];
-
-            Convert.ToBase64CharArray(hashBytes, 0, hashBytes.Length, hashChars, 0);
-            return new StringBuilder()
-                .Append("_")
-                .Append(hashChars)
-                .Replace('+', '-')
-                .Replace('/', '.')
-                .Replace('=', '_')
-                .ToString();
-        }
-
         private async Task<bool> IsSessionRunningAsync(string name, CancellationToken cancellationToken) {
             var sessionsService = new SessionsWebService(HttpClient, _credentials);
             var sessions = await sessionsService.GetAsync(cancellationToken);
@@ -178,7 +148,7 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         private async Task CreateBrokerSessionAsync(string name, bool useRCommandLineArguments, CancellationToken cancellationToken) {
-            var rCommandLineArguments = useRCommandLineArguments && RCommandLineArguments != null ? RCommandLineArguments : null;
+            var rCommandLineArguments = useRCommandLineArguments && _rCommandLineArguments != null ? _rCommandLineArguments : null;
             var sessions = new SessionsWebService(HttpClient, _credentials);
             try {
                 await sessions.PutAsync(name, new SessionCreateRequest {

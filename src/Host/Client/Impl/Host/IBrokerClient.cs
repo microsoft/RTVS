@@ -8,13 +8,12 @@ using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Client.Host {
     public interface IBrokerClient : IDisposable {
+        BrokerConnectionInfo ConnectionInfo { get; }
         string Name { get; }
         bool IsRemote { get; }
-        Uri Uri { get; }
-        string RCommandLineArguments { get; }
         bool IsVerified { get; }
 
-        Task<RHost> ConnectAsync(BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken));
+        Task<RHost> ConnectAsync(HostConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken));
         Task TerminateSessionAsync(string name, CancellationToken cancellationToken = default(CancellationToken));
         Task<string> HandleUrlAsync(string url, CancellationToken cancellationToken = default(CancellationToken));
         Task<T> GetHostInformationAsync<T>(CancellationToken cancellationToken = default(CancellationToken));

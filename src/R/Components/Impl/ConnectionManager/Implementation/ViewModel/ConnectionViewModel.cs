@@ -78,7 +78,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public bool IsUserCreated {
             get { return _isUserCreated; }
-            set { SetProperty(ref _isUserCreated, value); }
+            private set { SetProperty(ref _isUserCreated, value); }
         }
 
         public string SaveButtonTooltip {
@@ -152,8 +152,12 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             }
         }
 
-        public DateTime LastUsed => _connection.LastUsed;
-        public string OriginalName => _connection.Name;
+        public DateTime LastUsed {
+            get { return _connection?.LastUsed ?? DateTime.MinValue; }
+            set { _connection.LastUsed = value; }
+        }
+
+        public string OriginalName => _connection?.Name;
 
         public void Reset() {
             Name = _connection?.Name;

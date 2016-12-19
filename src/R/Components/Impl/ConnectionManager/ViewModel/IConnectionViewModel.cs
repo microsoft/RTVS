@@ -7,6 +7,10 @@ using System.Threading;
 
 namespace Microsoft.R.Components.ConnectionManager.ViewModel {
     public interface IConnectionViewModel : IConnectionInfo, INotifyPropertyChanged {
+        new string Name { get; set; }
+        new string Path { get; set; }
+        new string RCommandLineArguments { get; set; }
+
         bool IsActive { get; set; }
         bool IsEditing { get; set; }
         bool IsConnected { get; set; }

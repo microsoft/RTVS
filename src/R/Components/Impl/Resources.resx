@@ -398,6 +398,9 @@ Deletion of the connection does not delete remote files.
 If you want to delete them, you have to delete the profile first.
 </value>
   </data>
+  <data name="ConnectionManager_CantSaveWithTheSameName" xml:space="preserve">
+    <value>Can't change connection name to '{0}' because connection with the same name already exists.</value>
+  </data>
   <data name="ConnectionManager_RemoveConnectionConfirmation" xml:space="preserve">
     <value>Are you sure you want to remove the '{0}' connection?</value>
   </data>

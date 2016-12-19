@@ -162,11 +162,38 @@ namespace Microsoft.Common.Core {
             return "\n"; // default
         }
 
-        public static string GetSHA512Hash(this string input) {
-            SHA512 sha = SHA512.Create();
-            byte[] inputBytes = Encoding.Unicode.GetBytes(input);
-            byte[] hash = sha.ComputeHash(inputBytes);
+        public static string GetSHA512Hash(this string input) => GetHash(input, SHA512.Create());
+
+        public static string GetSHA256Hash(this string input) => GetHash(input, SHA256.Create());
+
+        private static string GetHash(string input, HashAlgorithm hashAlgorithm) {
+            var inputBytes = Encoding.Unicode.GetBytes(input);
+            var hash = hashAlgorithm.ComputeHash(inputBytes);
             return BitConverter.ToString(hash);
+        }
+
+        public static string GetSHA512FileSystemSafeHash(this string input) => GetFileSystemSafeHash(input, SHA512.Create());
+
+        public static string GetSHA256FileSystemSafeHash(this string input) => GetFileSystemSafeHash(input, SHA256.Create());
+
+        private static string GetFileSystemSafeHash(string input, HashAlgorithm hashAlgorithm) {
+            byte[] inputBytes = Encoding.Unicode.GetBytes(input);
+            byte[] hashBytes = hashAlgorithm.ComputeHash(inputBytes);
+
+            var hashCharsLength = (int)(hashBytes.Length * 4.0d / 3.0d);
+            if (hashCharsLength % 4 != 0) {
+                hashCharsLength += 4 - hashCharsLength % 4;
+            }
+
+            var hashChars = new char[hashCharsLength];
+
+            Convert.ToBase64CharArray(hashBytes, 0, hashBytes.Length, hashChars, 0);
+            return new StringBuilder()
+                .Append(hashChars)
+                .Replace('+', '-')
+                .Replace('/', '.')
+                .Replace('=', '_')
+                .ToString();
         }
 
         public static string FormatInvariant(this string format, object arg) =>

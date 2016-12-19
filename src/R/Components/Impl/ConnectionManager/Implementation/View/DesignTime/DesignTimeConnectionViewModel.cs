@@ -26,7 +26,12 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View.DesignTim
         public bool IsValid => false;
         public bool HasChanges => false;
         public bool IsRenamed => false;
-        public DateTime LastUsed => DateTime.Now;
+
+        public DateTime LastUsed {
+            get { return DateTime.Now; }
+            set { throw new NotImplementedException(); }
+        }
+
         public void Reset() { }
         public void Dispose() { }
         public string ConnectionTooltip => string.Empty;

@@ -46,7 +46,7 @@ namespace Microsoft.R.Components.ConnectionManager.Commands {
             if (index < _recentConnections.Count) {
                 var connection = _recentConnections[index];
                 var activeConnection = _connectionManager.ActiveConnection;
-                if (ConnectionInfo.AreIdentical(connection, activeConnection)) {
+                if (activeConnection != null && connection.BrokerConnectionInfo == activeConnection.BrokerConnectionInfo) {
                     var text = Resources.ConnectionManager_ConnectionsAreIdentical.FormatCurrent(activeConnection.Name, connection.Name);
                     _shell.ShowMessage(text, MessageButtons.OK);
                 } else {
