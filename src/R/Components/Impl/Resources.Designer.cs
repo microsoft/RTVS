@@ -515,11 +515,11 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to save local file {0}. Exception: {1}..
+        ///   Looks up a localized string similar to Unable to transfer file {0}. Exception: {1}..
         /// </summary>
-        public static string Error_UnableSaveFile {
+        public static string Error_UnableToTransferFile {
             get {
-                return ResourceManager.GetString("Error_UnableSaveFile", resourceCulture);
+                return ResourceManager.GetString("Error_UnableToTransferFile", resourceCulture);
             }
         }
         
@@ -1222,6 +1222,15 @@ namespace Microsoft.R.Components {
         public static string ProcessorCount {
             get {
                 return ResourceManager.GetString("ProcessorCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fetching file {0}....
+        /// </summary>
+        public static string Progress_FetchingFile {
+            get {
+                return ResourceManager.GetString("Progress_FetchingFile", resourceCulture);
             }
         }
         

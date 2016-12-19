@@ -23,7 +23,7 @@ using static System.FormattableString;
 namespace Microsoft.R.Host.Client {
     public sealed partial class RHost : IDisposable, IRExpressionEvaluator, IRBlobService {
         public static IRContext TopLevelContext { get; } = new RContext(RContextType.TopLevel);
-        
+
         private readonly IMessageTransport _transport;
         private readonly CancellationTokenSource _cts;
         private readonly IActionLog _log;
@@ -164,10 +164,10 @@ namespace Microsoft.R.Host.Client {
                     response = "Y";
                     break;
                 default: {
-                    var error = Invariant($"YesNoCancel: callback returned an invalid value: {input}");
-                    Trace.Fail(error);
-                    throw new InvalidOperationException(error);
-                }
+                        var error = Invariant($"YesNoCancel: callback returned an invalid value: {input}");
+                        Trace.Fail(error);
+                        throw new InvalidOperationException(error);
+                    }
             }
 
             await RespondAsync(request, ct, response);
@@ -195,13 +195,13 @@ namespace Microsoft.R.Host.Client {
             if (_runTask == null) {
                 throw new InvalidOperationException("Host was not started");
             }
-            
+
             using (CancellationTokenUtilities.Link(ref cancellationToken, _cts.Token)) {
                 try {
                     await TaskUtilities.SwitchToBackgroundThread();
                     var request = await CreateBlobRequest.CreateAsync(this, cancellationToken);
                     return await request.Task;
-                } catch(OperationCanceledException ex) when (_cts.IsCancellationRequested) {
+                } catch (OperationCanceledException ex) when (_cts.IsCancellationRequested) {
                     throw new RHostDisconnectedException(Resources.Error_RHostIsStopped, ex);
                 }
             }
@@ -221,13 +221,13 @@ namespace Microsoft.R.Host.Client {
             if (_runTask == null) {
                 throw new InvalidOperationException("Host was not started");
             }
-            
+
             using (CancellationTokenUtilities.Link(ref cancellationToken, _cts.Token)) {
                 try {
                     await TaskUtilities.SwitchToBackgroundThread();
                     var request = await BlobReadRequest.ReadAllAsync(this, blobId, cancellationToken);
                     return await request.Task;
-                } catch(OperationCanceledException ex) when (_cts.IsCancellationRequested) {
+                } catch (OperationCanceledException ex) when (_cts.IsCancellationRequested) {
                     throw new RHostDisconnectedException(Resources.Error_RHostIsStopped, ex);
                 }
             }
@@ -237,13 +237,13 @@ namespace Microsoft.R.Host.Client {
             if (_runTask == null) {
                 throw new InvalidOperationException("Host was not started");
             }
-            
+
             using (CancellationTokenUtilities.Link(ref cancellationToken, _cts.Token)) {
                 try {
                     await TaskUtilities.SwitchToBackgroundThread();
                     var request = await BlobReadRequest.ReadAsync(this, blobId, position, count, cancellationToken);
                     return await request.Task;
-                } catch(OperationCanceledException ex) when (_cts.IsCancellationRequested) {
+                } catch (OperationCanceledException ex) when (_cts.IsCancellationRequested) {
                     throw new RHostDisconnectedException(Resources.Error_RHostIsStopped, ex);
                 }
             }
@@ -253,29 +253,29 @@ namespace Microsoft.R.Host.Client {
             if (_runTask == null) {
                 throw new InvalidOperationException("Host was not started");
             }
-            
+
             using (CancellationTokenUtilities.Link(ref cancellationToken, _cts.Token)) {
                 try {
                     await TaskUtilities.SwitchToBackgroundThread();
                     var request = await BlobWriteRequest.WriteAsync(this, blobId, data, position, cancellationToken);
                     return await request.Task;
-                } catch(OperationCanceledException ex) when (_cts.IsCancellationRequested) {
+                } catch (OperationCanceledException ex) when (_cts.IsCancellationRequested) {
                     throw new RHostDisconnectedException(Resources.Error_RHostIsStopped, ex);
                 }
             }
         }
-        
+
         public async Task<long> GetBlobSizeAsync(ulong blobId, CancellationToken cancellationToken = default(CancellationToken)) {
             if (_runTask == null) {
                 throw new InvalidOperationException("Host was not started");
             }
-            
+
             using (CancellationTokenUtilities.Link(ref cancellationToken, _cts.Token)) {
                 try {
                     await TaskUtilities.SwitchToBackgroundThread();
                     var request = await BlobSizeRequest.GetSizeAsync(this, blobId, cancellationToken);
                     return await request.Task;
-                } catch(OperationCanceledException ex) when (_cts.IsCancellationRequested) {
+                } catch (OperationCanceledException ex) when (_cts.IsCancellationRequested) {
                     throw new RHostDisconnectedException(Resources.Error_RHostIsStopped, ex);
                 }
             }
@@ -285,13 +285,13 @@ namespace Microsoft.R.Host.Client {
             if (_runTask == null) {
                 throw new InvalidOperationException("Host was not started");
             }
-            
+
             using (CancellationTokenUtilities.Link(ref cancellationToken, _cts.Token)) {
                 try {
                     await TaskUtilities.SwitchToBackgroundThread();
                     var request = await BlobSizeRequest.GetSizeAsync(this, blobId, cancellationToken);
                     return await request.Task;
-                } catch(OperationCanceledException ex) when (_cts.IsCancellationRequested) {
+                } catch (OperationCanceledException ex) when (_cts.IsCancellationRequested) {
                     throw new RHostDisconnectedException(Resources.Error_RHostIsStopped, ex);
                 }
             }
@@ -301,13 +301,13 @@ namespace Microsoft.R.Host.Client {
             if (_runTask == null) {
                 throw new InvalidOperationException("Host was not started");
             }
-            
+
             using (CancellationTokenUtilities.Link(ref cancellationToken, _cts.Token)) {
                 try {
                     await TaskUtilities.SwitchToBackgroundThread();
                     var request = await EvaluationRequest.SendAsync(this, expression, kind, cancellationToken);
                     return await request.Task;
-                } catch(OperationCanceledException ex) when (_cts.IsCancellationRequested) {
+                } catch (OperationCanceledException ex) when (_cts.IsCancellationRequested) {
                     throw new RHostDisconnectedException(Resources.Error_RHostIsStopped, ex);
                 }
             }
@@ -537,11 +537,14 @@ namespace Microsoft.R.Host.Client {
                                 break;
                             case "!FetchFile":
                                 var remoteFileName = message.GetString(0, "file_remote_name");
-                                var localPath = message.GetString(1, "file_local_path");
-                                var destPath = await _callbacks.SaveFileAsync(remoteFileName, localPath, message.Blob, ct);
-                                if (!message.GetBoolean(2, "silent")) {
-                                    await _callbacks.WriteConsoleEx(destPath, OutputType.Error, ct);
-                                }
+                                var remoteBlobId = message.GetUInt64(1, "blob_id");
+                                var localPath = message.GetString(2, "file_local_path");
+                                Task.Run(async () => {
+                                    var destPath = await _callbacks.FetchFileAsync(remoteFileName, remoteBlobId, localPath, ct);
+                                    if (!message.GetBoolean(3, "silent")) {
+                                        await _callbacks.WriteConsoleEx(destPath, OutputType.Error, ct);
+                                    }
+                                }).DoNotWait();
                                 break;
                             default:
                                 throw ProtocolError($"Unrecognized host message name:", message);
