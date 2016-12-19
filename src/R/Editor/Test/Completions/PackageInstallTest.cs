@@ -21,7 +21,7 @@ namespace Microsoft.R.Editor.Test.Completions {
 
         [Test]
         public async Task InstallPackageTest() {
-            await Workflow.RSession.EnsureHostStartedAsync(new RHostStartupInfo {Name = nameof(InstallPackageTest)}, null, 50000);
+            await Workflow.RSession.EnsureHostStartedAsync(new RHostStartupInfo(), null, 50000);
 
             var completionSets = new List<CompletionSet>();
             for (int i = 0; i < 2; i++) {

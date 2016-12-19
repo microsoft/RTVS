@@ -569,10 +569,8 @@ dev.off()
         private async Task ExecuteInSession(string[] inputs, IRSessionCallback app) {
             using (var sessionProvider = new RSessionProvider(TestCoreServices.CreateReal())) {
                 await sessionProvider.TrySwitchBrokerAsync(nameof(IdeGraphicsDeviceTest));
-                var session = sessionProvider.GetOrCreate(Guid.NewGuid());
-                await session.StartHostAsync(new RHostStartupInfo {
-                    Name = _testMethod.Name
-                }, app, 50000);
+                var session = sessionProvider.GetOrCreate(_testMethod.Name);
+                await session.StartHostAsync(new RHostStartupInfo(), app, 50000);
 
                 foreach (var input in inputs) {
                     using (var interaction = await session.BeginInteractionAsync()) {
@@ -600,10 +598,8 @@ rtvs:::export_to_image(device_id, rtvs:::graphics.ide.getactiveplotid(device_id)
             var app = new RHostClientTestApp { PlotHandler = OnPlot, PlotDeviceCreateHandler = OnDeviceCreate, PlotDeviceDestroyHandler = OnDeviceDestroy };
             using (var sessionProvider = new RSessionProvider(TestCoreServices.CreateReal())) {
                 await sessionProvider.TrySwitchBrokerAsync(nameof(IdeGraphicsDeviceTest));
-                var session = sessionProvider.GetOrCreate(Guid.NewGuid());
-                await session.StartHostAsync(new RHostStartupInfo {
-                    Name = _testMethod.Name
-                }, app, 50000);
+                var session = sessionProvider.GetOrCreate(_testMethod.Name);
+                await session.StartHostAsync(new RHostStartupInfo(), app, 50000);
 
                 foreach (var input in inputs) {
                     using (var interaction = await session.BeginInteractionAsync()) {
@@ -629,10 +625,8 @@ rtvs:::export_to_image(device_id, rtvs:::graphics.ide.getactiveplotid(device_id)
             var app = new RHostClientTestApp { PlotHandler = OnPlot, PlotDeviceCreateHandler = OnDeviceCreate, PlotDeviceDestroyHandler = OnDeviceDestroy };
             using (var sessionProvider = new RSessionProvider(TestCoreServices.CreateReal())) {
                 await sessionProvider.TrySwitchBrokerAsync(nameof(IdeGraphicsDeviceTest));
-                var session = sessionProvider.GetOrCreate(Guid.NewGuid());
-                await session.StartHostAsync(new RHostStartupInfo {
-                    Name = _testMethod.Name
-                }, app, 50000);
+                var session = sessionProvider.GetOrCreate(_testMethod.Name);
+                await session.StartHostAsync(new RHostStartupInfo(), app, 50000);
 
                 foreach (var input in inputs) {
                     using (var interaction = await session.BeginInteractionAsync()) {

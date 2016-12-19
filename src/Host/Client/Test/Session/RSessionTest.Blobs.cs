@@ -27,13 +27,11 @@ namespace Microsoft.R.Host.Client.Test.Session {
                 _taskObserver = taskObserver;
                 _testMethod = testMethod.MethodInfo;
                 _brokerClient = CreateLocalBrokerClient(nameof(RSessionTest) + nameof(Blobs));
-                _session = new RSession(0, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
+                _session = new RSession(0, _testMethod.Name, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
             }
 
             public async Task InitializeAsync() {
-                await _session.StartHostAsync(new RHostStartupInfo {
-                    Name = _testMethod.Name
-                }, null, 50000);
+                await _session.StartHostAsync(new RHostStartupInfo(), null, 50000);
 
                 _taskObserver.ObserveTaskFailure(_session.RHost.GetRHostRunTask());
             }
@@ -46,7 +44,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
             [Test]
             public async Task CreateBlob_DisconnectedFromTheStart() {
-                using (var session = new RSession(0, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { })) {
+                using (var session = new RSession(0, _testMethod.Name, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { })) {
                     var data = new byte[] { 1, 2, 3, 4, 5 };
                     using (DataTransferSession dts = new DataTransferSession(session, null)) {
                         Func<Task> f = () => dts.SendBytesAsync(data, false, null, CancellationToken.None);
@@ -86,7 +84,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
             [Test]
             public async Task GetBlob_DisconnectedFromTheStart() {
-                using (var session = new RSession(0, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { })) {
+                using (var session = new RSession(0, _testMethod.Name, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { })) {
                     Func<Task> f = () => session.BlobReadAllAsync(1);
                     await f.ShouldThrowAsync<RHostDisconnectedException>();
                 }
@@ -135,7 +133,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
             [Test]
             public async Task DestroyBlob_DisconnectedFromTheStart() {
-                using (var session = new RSession(0, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { })) {
+                using (var session = new RSession(0, _testMethod.Name, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { })) {
                     var blobids = new ulong[] { 1, 2, 3, 4, 5 };
                     Func<Task> f = () => session.DestroyBlobsAsync(blobids);
                     await f.ShouldThrowAsync<RHostDisconnectedException>();

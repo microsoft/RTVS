@@ -10,27 +10,29 @@ using Microsoft.R.Host.Client.Test.Mocks;
 
 namespace Microsoft.R.Host.Client.Mocks {
     public sealed class RSessionProviderMock : IRSessionProvider {
-        private readonly Dictionary<Guid, IRSession> _sessions = new Dictionary<Guid, IRSession>();
+        private readonly Dictionary<string, IRSession> _sessions = new Dictionary<string, IRSession>();
 
         public void Dispose() { }
         public bool HasBroker { get; } = true;
         public bool IsConnected { get; } = true;
         public IBrokerClient Broker { get; } = new NullBrokerClient();
 
-        public IRSession GetOrCreate(Guid guid) {
+        public IRSession GetOrCreate(string sessionId) {
             IRSession session;
-            if (!_sessions.TryGetValue(guid, out session)) {
+            if (!_sessions.TryGetValue(sessionId, out session)) {
                 session = new RSessionMock();
-                _sessions[guid] = session;
+                _sessions[sessionId] = session;
             }
             return session;
         }
 
         public IEnumerable<IRSession> GetSessions() => _sessions.Values;
 
-        public Task TestBrokerConnectionAsync(string name, string path, CancellationToken cancellationToken = default(CancellationToken)) => Task.FromResult(true);
+        public Task TestBrokerConnectionAsync(string name, BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken)) => Task.CompletedTask;
 
-        public Task<bool> TrySwitchBrokerAsync(string name, string path = null, CancellationToken cancellationToken = default(CancellationToken)) => Task.FromResult(true);
+        public Task<bool> TrySwitchBrokerAsync(string name, BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken)) => Task.FromResult(true);
+
+        public Task RemoveBrokerAsync(CancellationToken cancellationToken = default(CancellationToken)) => Task.CompletedTask;
 
 #pragma warning disable 67
         public event EventHandler BrokerChanging;

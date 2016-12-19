@@ -65,8 +65,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             Shell = coreShell;
             RSessions = new RSessionProvider(coreShell.Services, new InteractiveWindowConsole(this));
 
-            RSession = RSessions.GetOrCreate(SessionGuids.InteractiveWindowRSessionGuid);
-            RSession.RestartOnBrokerSwitch = true;
+            RSession = RSessions.GetOrCreate(SessionNames.InteractiveWindow);
             Connections = connectionsProvider.CreateConnectionManager(this);
 
             History = historyProvider.CreateRHistory(this);
@@ -186,6 +185,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             }
 
             await interactiveWindow.InitializeAsync();
+            RSession.RestartOnBrokerSwitch = true;
 
             ActiveWindow = window;
             ActiveWindow.Container.UpdateCommandStatus(true);

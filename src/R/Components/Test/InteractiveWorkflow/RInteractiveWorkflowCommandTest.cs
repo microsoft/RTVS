@@ -50,12 +50,10 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
         [InlineData(true, "Windows-1252")]
         public async Task SourceRScriptTest(bool echo, string encoding) {
             await _workflow.RSessions.TrySwitchBrokerAsync(nameof(RInteractiveWorkflowCommandTest));
-            await _workflow.RSession.EnsureHostStartedAsync(new RHostStartupInfo {
-                Name = _testMethod.Name,
-                RHostCommandLineArguments = _settings.LastActiveConnection.RCommandLineArguments,
-                CranMirrorName = _settings.CranMirror,
-                CodePage = _settings.RCodePage
-            }, null, 50000);
+            await _workflow.RSession.EnsureHostStartedAsync(new RHostStartupInfo (
+                cranMirrorName: _settings.CranMirror,
+                codePage: _settings.RCodePage
+            ), null, 50000);
 
             var session = _workflow.RSession;
             await session.ExecuteAsync("sourced <- FALSE");

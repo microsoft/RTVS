@@ -60,7 +60,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 string text;
                 if(broker.IsRemote) {
                     var verified = broker.IsVerified ? Resources.SecureConnection : Resources.UntrustedConnection;
-                    var machineUrl = broker.Uri.ToString().TrimTrailingSlash();
+                    var machineUrl = broker.ConnectionInfo.Uri.ToString().TrimTrailingSlash();
                     text = Invariant($"{Resources.ReplWindowName} - {broker.Name} ({machineUrl}) : {verified}");
                 } else {
                     text = Invariant($"{Resources.ReplWindowName} - {broker.Name}");

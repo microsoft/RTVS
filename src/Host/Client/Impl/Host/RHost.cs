@@ -23,7 +23,9 @@ using static System.FormattableString;
 namespace Microsoft.R.Host.Client {
     public sealed partial class RHost : IDisposable, IRExpressionEvaluator, IRBlobService {
         public static IRContext TopLevelContext { get; } = new RContext(RContextType.TopLevel);
-        
+
+        public string Name { get; }
+
         private readonly IMessageTransport _transport;
         private readonly CancellationTokenSource _cts;
         private readonly IActionLog _log;
@@ -34,7 +36,6 @@ namespace Microsoft.R.Host.Client {
 
         private int _rLoopDepth;
         private long _lastMessageId;
-        private readonly string _name;
         private IRCallbacks _callbacks;
 
         private TaskCompletionSource<object> _cancelAllTcs;
@@ -43,7 +44,7 @@ namespace Microsoft.R.Host.Client {
         public RHost(string name, IRCallbacks callbacks, IMessageTransport transport, IActionLog log) {
             Check.ArgumentStringNullOrEmpty(nameof(name), name);
 
-            _name = name;
+            Name = name;
             _callbacks = callbacks;
             _transport = transport;
             _log = log;

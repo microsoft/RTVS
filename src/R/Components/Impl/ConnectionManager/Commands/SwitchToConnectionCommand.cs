@@ -45,10 +45,16 @@ namespace Microsoft.R.Components.ConnectionManager.Commands {
 
             if (index < _recentConnections.Count) {
                 var connection = _recentConnections[index];
-                var progressBarMessage = _connectionManager.ActiveConnection != null
-                    ? Resources.ConnectionManager_SwitchConnectionProgressBarMessage.FormatInvariant(_connectionManager.ActiveConnection.Name, connection.Name)
-                    : Resources.ConnectionManager_ConnectionToProgressBarMessage.FormatInvariant(connection.Name);
-                _shell.ProgressDialog.Show(ct => _connectionManager.ConnectAsync(connection, ct), progressBarMessage);
+                var activeConnection = _connectionManager.ActiveConnection;
+                if (activeConnection != null && connection.BrokerConnectionInfo == activeConnection.BrokerConnectionInfo) {
+                    var text = Resources.ConnectionManager_ConnectionsAreIdentical.FormatCurrent(activeConnection.Name, connection.Name);
+                    _shell.ShowMessage(text, MessageButtons.OK);
+                } else {
+                    var progressBarMessage = activeConnection != null
+                        ? Resources.ConnectionManager_SwitchConnectionProgressBarMessage.FormatInvariant(activeConnection.Name, connection.Name)
+                        : Resources.ConnectionManager_ConnectionToProgressBarMessage.FormatInvariant(connection.Name);
+                    _shell.ProgressDialog.Show(ct => _connectionManager.ConnectAsync(connection, ct), progressBarMessage);
+                }
             }
             return Task.FromResult(CommandResult.Executed);
         }

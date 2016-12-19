@@ -114,8 +114,13 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
                 .Which.HasChanges.Should().BeFalse();
         }
 
-        [Test(ThreadType.UI)]
-        public void AddRemote_Edit_ChangePort() {
+        [CompositeTest(ThreadType.UI)]
+        [InlineData("http://machine", "machine", "http://machine:80")]
+        [InlineData("https://machine:5444", "machine", "https://machine:5444")]
+        [InlineData("https://machine#1234", "machine", "https://machine:443#1234")]
+        [InlineData("https://machine2", "machine2", "https://machine2:443")]
+        [InlineData("https://machine2:5444", "machine2", "https://machine2:5444")]
+        public void AddRemote_Edit_ChangePath(string newPath, string expectedMachineName, string expectedPath) {
             _cmvm.EditNew();
 
             _cmvm.EditedConnection.Path = "https://machine";
@@ -125,15 +130,34 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
             var connection = _cmvm.RemoteConnections.Should().ContainSingle(c => c.Name == "machine").Which;
 
             _cmvm.Edit(connection);
-            connection.Path = "https://machine:5444";
+            connection.Path = newPath;
+            _cmvm.EditedConnection.UpdatePath();
             _cmvm.Save(connection);
 
-            _cmvm.RemoteConnections.Should().ContainSingle(c => c.Name == "machine")
-                .Which.Path.Should().Be("https://machine:5444");
+            _cmvm.RemoteConnections.Should().ContainSingle(c => c.Name == expectedMachineName)
+                .Which.Path.Should().Be(expectedPath);
         }
 
         [Test(ThreadType.UI)]
-        public void AddRemote_Edit_ChangeName() {
+        public void AddRemote_Edit_ChangeCommandLine() {
+            _cmvm.EditNew();
+
+            _cmvm.EditedConnection.Path = "https://machine";
+            _cmvm.EditedConnection.UpdatePath();
+            _cmvm.Save(_cmvm.EditedConnection);
+
+            var connection = _cmvm.RemoteConnections.Should().ContainSingle(c => c.Name == "machine").Which;
+
+            _cmvm.Edit(connection);
+            connection.RCommandLineArguments = "--args 5";
+            _cmvm.Save(connection);
+
+            _cmvm.RemoteConnections.Should().ContainSingle(c => c.Name == "machine")
+                .Which.RCommandLineArguments.Should().Be("--args 5");
+        }
+
+        [Test(ThreadType.UI)]
+        public void AddRemote_Edit_Rename() {
             _cmvm.EditNew();
 
             _cmvm.EditedConnection.Path = "https://machine";

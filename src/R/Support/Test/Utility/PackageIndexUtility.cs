@@ -28,7 +28,7 @@ namespace Microsoft.R.Support.Test.Utility {
         public static async Task DisposeAsync(this IPackageIndex packageIndex, IExportProvider exportProvider) {
             var sessionProvider = exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate().RSessions;
             if (sessionProvider != null) {
-                await Task.WhenAll(sessionProvider.GetSessions().Select(s => s.StopHostAsync()));
+                await sessionProvider.RemoveBrokerAsync();
             }
             packageIndex?.Dispose();
         } 

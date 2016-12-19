@@ -29,13 +29,13 @@ namespace Microsoft.R.Host.Client.Host {
             ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
         }
 
-        public RemoteBrokerClient(string name, Uri brokerUri, ICoreServices services, IConsole console, CancellationToken cancellationToken)
-            : base(name, brokerUri, brokerUri.Fragment, new RemoteCredentialsDecorator(brokerUri, services.Security, services.MainThread), services.Log, console) {
+        public RemoteBrokerClient(string name, BrokerConnectionInfo connectionInfo, ICoreServices services, IConsole console, CancellationToken cancellationToken)
+            : base(name, connectionInfo, new RemoteCredentialsDecorator(connectionInfo.Uri, services.Security, services.MainThread), services.Log, console) {
             _console = console;
             _services = services;
             _cancellationToken = cancellationToken;
 
-            CreateHttpClient(brokerUri);
+            CreateHttpClient(connectionInfo.Uri);
             HttpClientHandler.ServerCertificateValidationCallback = ValidateCertificateHttpHandler;
         }
 
@@ -44,7 +44,7 @@ namespace Microsoft.R.Host.Client.Host {
 
         protected override async Task<Exception> HandleHttpRequestExceptionAsync(HttpRequestException exception) {
             // Broker is not responding. Try regular ping.
-            string status = await Uri.GetMachineOnlineStatusAsync();
+            string status = await ConnectionInfo.Uri.GetMachineOnlineStatusAsync();
             return string.IsNullOrEmpty(status)
                 ? new RHostDisconnectedException(Resources.Error_BrokerNotRunning.FormatInvariant(Name), exception)
                 : await base.HandleHttpRequestExceptionAsync(exception);
@@ -82,7 +82,7 @@ namespace Microsoft.R.Host.Client.Host {
                 if (_certificateHash == null || !_certificateHash.EqualsOrdinal(hashString)) {
                     Log.WriteAsync(LogVerbosity.Minimal, MessageCategory.Warning, Resources.Trace_UntrustedCertificate.FormatInvariant(certificate.Subject)).DoNotWait();
 
-                    var message = Resources.CertificateSecurityWarning.FormatInvariant(Uri.Host);
+                    var message = Resources.CertificateSecurityWarning.FormatInvariant(ConnectionInfo.Uri.Host);
                     var task = _services.Security.ValidateX509CertificateAsync(certificate, message, _cancellationToken);
                     _services.Tasks.Wait(task, _cancellationToken);
 
