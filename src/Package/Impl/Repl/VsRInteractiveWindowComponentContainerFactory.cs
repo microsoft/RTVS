@@ -37,13 +37,13 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             VsAppShell.Current.AssertIsOnMainThread();
 
             IVsInteractiveWindow vsWindow;
+#if VS14
+            vsWindow = _vsInteractiveWindowFactoryLazy.Value.Create(RGuidList.ReplInteractiveWindowProviderGuid, instanceId, string.Empty, evaluator);
+#else
             var vsf2 = _vsInteractiveWindowFactoryLazy.Value as IVsInteractiveWindowFactory2; // Temporary for VS 2017 RC2
-            if (vsf2 != null) {
-                vsWindow = vsf2.Create(RGuidList.ReplInteractiveWindowProviderGuid, instanceId, string.Empty, evaluator, 
-                                      0, RGuidList.RCmdSetGuid, RPackageCommandId.replWindowToolBarId, null);
-            } else {
-                vsWindow = _vsInteractiveWindowFactoryLazy.Value.Create(RGuidList.ReplInteractiveWindowProviderGuid, instanceId, string.Empty, evaluator);
-            }
+            vsWindow = vsf2.Create(RGuidList.ReplInteractiveWindowProviderGuid, instanceId, string.Empty, evaluator, 
+                                   0, RGuidList.RCmdSetGuid, RPackageCommandId.replWindowToolBarId, null);
+#endif
 
             var contentType = _contentTypeRegistryService.GetContentType(RContentTypeDefinition.ContentType);
             vsWindow.SetLanguage(RGuidList.RLanguageServiceGuid, contentType);

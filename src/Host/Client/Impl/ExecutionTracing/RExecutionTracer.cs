@@ -48,7 +48,9 @@ namespace Microsoft.R.ExecutionTracing {
         }
 
         internal RExecutionTracer(IRSession session) {
-            session = session ?? throw new ArgumentNullException(nameof(session));
+            if (session == null) {
+                throw new ArgumentNullException(nameof(session));
+            }
 
             Session = session;
             Session.Connected += RSession_Connected;

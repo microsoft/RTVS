@@ -15,8 +15,12 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         public RPackageSourceViewModel(string source, string name) : this(source, name, isEnabled: true) { }
 
         public RPackageSourceViewModel(string source, string name, bool isEnabled) {
-            source = source ?? throw new ArgumentNullException(nameof(source));
-            name = name ?? throw new ArgumentNullException(nameof(name));
+            if (source == null) {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (name == null) {
+                throw new ArgumentNullException(nameof(name));
+            }
 
             Name = name;
             Source = source;

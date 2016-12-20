@@ -5,6 +5,8 @@ using System;
 using System.IO;
 using System.Text;
 using Microsoft.Common.Core;
+using Microsoft.Win32;
+using static System.FormattableString;
 
 namespace Microsoft.UnitTests.Core {
     public static class Paths {
@@ -26,8 +28,8 @@ namespace Microsoft.UnitTests.Core {
                     }
 
                     _vsRoot = testRunnerFolder.Substring(0, index + ideFolder.Length);
-                }
 #endif
+                }
                 return _vsRoot;
             }
         }
