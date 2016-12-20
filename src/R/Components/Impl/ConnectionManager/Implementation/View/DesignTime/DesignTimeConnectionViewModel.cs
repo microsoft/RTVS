@@ -16,6 +16,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View.DesignTim
         public bool IsActive { get; set; }
         public bool IsEditing { get; set; }
         public bool IsConnected { get; set; }
+        public bool IsRunning { get; set; }
         public CancellationTokenSource TestingConnectionCts { get; set; }
         public bool IsTestConnectionSucceeded { get; set; }
         public string TestConnectionFailedText { get; set; }
@@ -26,11 +27,17 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View.DesignTim
         public bool IsValid => false;
         public bool HasChanges => false;
         public bool IsRenamed => false;
-        public DateTime LastUsed => DateTime.Now;
+
+        public DateTime LastUsed {
+            get { return DateTime.Now; }
+            set { throw new NotImplementedException(); }
+        }
+
         public void Reset() { }
         public void Dispose() { }
         public string ConnectionTooltip => string.Empty;
         public void UpdatePath() { }
+
 #pragma warning disable 67
         public event PropertyChangedEventHandler PropertyChanged;
     }

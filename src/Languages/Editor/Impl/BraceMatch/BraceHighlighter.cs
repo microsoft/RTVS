@@ -16,11 +16,12 @@ namespace Microsoft.Languages.Editor.BraceMatch {
     class BraceHighlighter : ITagger<TextMarkerTag>, IDisposable {
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
 
-        private ITextBuffer _textBuffer;
         private readonly ICoreShell _shell;
+        private ITextBuffer _textBuffer;
         private ITextView _textView;
         private SnapshotPoint? _currentChar;
         private bool _highlighted = false;
+        private bool _created;
         private IBraceMatcher _braceMatcher;
 
         public BraceHighlighter(ITextView view, ITextBuffer textBuffer, ICoreShell shell) {
@@ -28,15 +29,24 @@ namespace Microsoft.Languages.Editor.BraceMatch {
             _textView = view;
             _shell = shell;
 
-            var importComposer = new ContentTypeImportComposer<IBraceMatcherProvider>(_shell.CompositionService);
-            var braceMatcherProvider = importComposer.GetImport(textBuffer.ContentType.TypeName);
-            if (braceMatcherProvider != null) {
-                _braceMatcher = braceMatcherProvider.CreateBraceMatcher(view, textBuffer);
+            ServiceManager.AddService(this, _textView, shell);
+        }
 
-                view.LayoutChanged += OnViewLayoutChanged;
-                view.Caret.PositionChanged += OnCaretPositionChanged;
+        private IBraceMatcher BraceMatcher {
+            get {
+                if(_braceMatcher == null && !_created) {
+                    _created = true;
 
-                ServiceManager.AddService(this, _textView, shell);
+                    var importComposer = new ContentTypeImportComposer<IBraceMatcherProvider>(_shell.CompositionService);
+                    var braceMatcherProvider = importComposer.GetImport(_textBuffer.ContentType.TypeName);
+                    if (braceMatcherProvider != null) {
+                        _braceMatcher = braceMatcherProvider.CreateBraceMatcher(_textView, _textBuffer);
+
+                        _textView.LayoutChanged += OnViewLayoutChanged;
+                        _textView.Caret.PositionChanged += OnCaretPositionChanged;
+                    }
+                }
+                return _braceMatcher;
             }
         }
 
@@ -56,7 +66,7 @@ namespace Microsoft.Languages.Editor.BraceMatch {
 
         void UpdateAtCaretPosition() {
             // Check for disposal, this can be disposed while waiting for idle
-            if (_textView != null && _braceMatcher != null && !_textView.Caret.InVirtualSpace) {
+            if (_textView != null && BraceMatcher != null && !_textView.Caret.InVirtualSpace) {
                 var caretPosition = _textView.Caret.Position;
                 _currentChar = caretPosition.Point.GetPoint(_textBuffer, caretPosition.Affinity);
 
@@ -69,11 +79,13 @@ namespace Microsoft.Languages.Editor.BraceMatch {
         }
 
         public IEnumerable<ITagSpan<TextMarkerTag>> GetTags(NormalizedSnapshotSpanCollection spans) {
-            if (spans.Count == 0 || _braceMatcher == null || _textBuffer == null)
+            if (spans.Count == 0 || BraceMatcher == null || _textBuffer == null) {
                 yield break;
+            }
 
-            if (!_currentChar.HasValue || _currentChar.Value.Position > _currentChar.Value.Snapshot.Length)
+            if (!_currentChar.HasValue || _currentChar.Value.Position > _currentChar.Value.Snapshot.Length) {
                 yield break;
+            }
 
             SnapshotPoint position = _currentChar.Value;
             ITextSnapshot snapshot = position.Snapshot;
@@ -88,7 +100,7 @@ namespace Microsoft.Languages.Editor.BraceMatch {
             }
 
             int start, end;
-            if (!_braceMatcher.GetBracesFromPosition(snapshot, position, false, out start, out end)) {
+            if (!BraceMatcher.GetBracesFromPosition(snapshot, position, false, out start, out end)) {
                 yield break;
             }
 

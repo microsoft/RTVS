@@ -57,7 +57,6 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 Process.Start(url);
             } else {
                 var container = _coreShell.ExportProvider.GetExportedValue<IHelpVisualComponentContainerFactory>().GetOrCreate();
-                container.Show(focus: false, immediate: false);
                 container.Component.Navigate(url);
             }
         }
@@ -123,8 +122,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             }
         }
 
-        public async Task<string> SaveFileAsync(string remoteFileName, string localPath, byte[] data, CancellationToken cancellationToken) {
-            await TaskUtilities.SwitchToBackgroundThread();
+        public async Task<string> FetchFileAsync(string remoteFileName, ulong remoteBlobId, string localPath, CancellationToken cancellationToken) {
+            await _coreShell.SwitchToMainThreadAsync(cancellationToken);
 
             if (!string.IsNullOrEmpty(localPath)) {
                 if (_fileSystem.DirectoryExists(localPath)) {
@@ -135,10 +134,14 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             }
 
             try {
-                cancellationToken.ThrowIfCancellationRequested();
-                _fileSystem.FileWriteAllBytes(localPath, data);
+                var message = Resources.Progress_FetchingFile.FormatInvariant(remoteFileName);
+                _coreShell.ProgressDialog.Show(async (progress, ct) => {
+                    using (DataTransferSession dts = new DataTransferSession(_session, _fileSystem)) {
+                        await dts.FetchAndDecompressFileAsync(remoteBlobId, localPath, progress, message, cancellationToken);
+                    }
+                }, message);
             } catch (Exception ex) {
-                await _coreShell.ShowErrorMessageAsync(Resources.Error_UnableSaveFile.FormatInvariant(localPath, ex.Message), cancellationToken);
+                _coreShell.ShowErrorMessage(Resources.Error_UnableToTransferFile.FormatInvariant(localPath, ex.Message));
                 return string.Empty;
             }
             return localPath;

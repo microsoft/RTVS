@@ -7,6 +7,7 @@ using System.Windows;
 namespace Microsoft.R.Components.ConnectionManager.ViewModel {
     public interface IConnectionStatusBarViewModel : IDisposable {
         bool IsConnected { get; set; }
+        bool IsRunning { get; set; }
         bool IsRemote { get; set; }
         string SelectedConnection { get; set; }
 

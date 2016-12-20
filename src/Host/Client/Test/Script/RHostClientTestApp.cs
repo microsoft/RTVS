@@ -59,8 +59,8 @@ namespace Microsoft.R.Host.Client.Test.Script {
             throw new NotImplementedException();
         }
 
-        public Task<string> SaveFileAsync(string remotePath, string localPath, byte[] data, CancellationToken cancellationToken) {
-            return Task.FromResult(string.Empty);
+        public Task<string> FetchFileAsync(string remoteFileName, ulong remoteBlobId, string localPath, CancellationToken cancellationToken) {
+            return Task.FromResult(localPath);
         }
 
         public Task<PlotDeviceProperties> PlotDeviceCreate(Guid deviceId, CancellationToken ct) {

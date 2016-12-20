@@ -75,7 +75,7 @@ namespace Microsoft.R.Host.Client {
         ///
         ///This should never happen with a production Remote R Services, so please check with your server administrator.
         ///
-        ///If you using a test Remote R Server with a self-signed certificate and are certain about the remote machine security, click OK, otherwise cancel the connection..
+        ///If you are using a test Remote R Server with a self-signed certificate and are certain about the remote machine security, click OK, otherwise cancel the connection..
         /// </summary>
         internal static string CertificateSecurityWarning {
             get {
@@ -167,15 +167,6 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to RHost is stopped.
-        /// </summary>
-        internal static string Error_RHostIsStopped {
-            get {
-                return ResourceManager.GetString("Error_RHostIsStopped", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Failed to create HTTP server for remote {0}..
         /// </summary>
         internal static string Error_RemoteWebServerCreationFailed {
@@ -190,6 +181,15 @@ namespace Microsoft.R.Host.Client {
         internal static string Error_RemoteWebServerFailed {
             get {
                 return ResourceManager.GetString("Error_RemoteWebServerFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to RHost is stopped.
+        /// </summary>
+        internal static string Error_RHostIsStopped {
+            get {
+                return ResourceManager.GetString("Error_RHostIsStopped", resourceCulture);
             }
         }
         

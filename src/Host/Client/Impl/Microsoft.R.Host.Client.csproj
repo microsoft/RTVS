@@ -75,6 +75,7 @@
     <Compile Include="Definitions\IConsole.cs" />
     <Compile Include="Definitions\IRSessionSwitchBrokerTransaction.cs" />
     <Compile Include="Host\BrokerConnectionInfo.cs" />
+    <Compile Include="Host\HostConnectionInfo.cs" />
     <Compile Include="Host\LocalCredentialsDecorator.cs" />
     <Compile Include="Host\RemoteCredentialsDecorator.cs" />
     <Compile Include="Host\RHost.BlobWriteRequest.cs" />

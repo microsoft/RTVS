@@ -14,6 +14,7 @@ using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Test.Fakes.Trackers;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Support.Settings;
 using Microsoft.UnitTests.Core.Threading;
@@ -46,7 +47,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
         }
 
         public async Task InitializeAsync() {
-            await _interactiveWorkflow.RSessions.TrySwitchBrokerAsync(RToolsSettings.Current.LastActiveConnection.Name, RToolsSettings.Current.LastActiveConnection.Path);
+            await _interactiveWorkflow.Connections.TryConnectToPreviouslyUsedAsync();
         }
 
         public async Task DisposeAsync() {

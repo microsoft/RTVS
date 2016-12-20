@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Threading;
@@ -20,23 +19,19 @@ namespace Microsoft.R.Host.Client.Test.Session {
     public partial class RSessionTest {
         public class ReadInput : IAsyncLifetime {
             private readonly TaskObserverMethodFixture _taskObserver;
-            private readonly MethodInfo _testMethod;
             private readonly IBrokerClient _brokerClient;
             private readonly RSession _session;
             private readonly RSessionCallbackStub _callback;
 
             public ReadInput(TestMethodFixture testMethod, TaskObserverMethodFixture taskObserver) {
                 _taskObserver = taskObserver;
-                _testMethod = testMethod.MethodInfo;
                 _brokerClient = CreateLocalBrokerClient(nameof(RSessionTest) + nameof(ReadInput));
-                _session = new RSession(0, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
+                _session = new RSession(0, testMethod.MethodInfo.Name, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
                 _callback = new RSessionCallbackStub();
             }
 
             public async Task InitializeAsync() {
-                await _session.StartHostAsync(new RHostStartupInfo {
-                    Name = _testMethod.Name
-                }, _callback, 50000);
+                await _session.StartHostAsync(new RHostStartupInfo (), _callback, 50000);
 
                 _taskObserver.ObserveTaskFailure(_session.RHost.GetRHostRunTask());
             }

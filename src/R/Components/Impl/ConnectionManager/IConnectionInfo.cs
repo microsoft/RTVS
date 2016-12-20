@@ -13,7 +13,7 @@ namespace Microsoft.R.Components.ConnectionManager {
         /// <summary>
         /// Path to local interpreter installation or URL to remote machine.
         /// </summary>
-        string Path { get; set; }
+        string Path { get; }
 
         /// <summary>
         /// Optional command line arguments to R interpreter.
@@ -30,6 +30,6 @@ namespace Microsoft.R.Components.ConnectionManager {
         /// <summary>
         /// When was the connection last used.
         /// </summary>
-        DateTime LastUsed { get; }
+        DateTime LastUsed { get; set; }
     }
 }

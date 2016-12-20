@@ -11,6 +11,7 @@ namespace Microsoft.R.Components.ConnectionManager {
         IConnectionManagerVisualComponent GetOrCreateVisualComponent(int id = 0);
 
         bool IsConnected { get; }
+        bool IsRunning { get; }
         IConnection ActiveConnection { get; }
 
         /// <summary>
@@ -19,15 +20,37 @@ namespace Microsoft.R.Components.ConnectionManager {
         ReadOnlyCollection<IConnection> RecentConnections { get; }
 
         event EventHandler RecentConnectionsChanged;
-        event EventHandler<ConnectionEventArgs> ConnectionStateChanged;
+        event EventHandler ConnectionStateChanged;
 
-        IConnection AddOrUpdateConnection(string name, string path, string rCommandLineArguments, bool isUserCreated);
+        IConnection AddOrUpdateConnection(IConnectionInfo connectionInfo);
         IConnection GetOrAddConnection(string name, string path, string rCommandLineArguments, bool isUserCreated);
+        IConnection GetConnection(string name);
+
+        /// <summary>
+        /// Tries to remove connection.
+        /// </summary>
+        /// <param name="name">Name of the connection</param>
+        /// <returns>True if connection is actually removed by this call. False if connection is removed already or if it is active connection.</returns>
         bool TryRemove(string name);
+
+        /// <summary>
+        /// Removes connection. If connection is active, disconnects all sessions from it.
+        /// </summary>
+        /// <param name="connectionName">Name of the connection</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task RemoveAsync(string connectionName, CancellationToken cancellationToken = default(CancellationToken));
 
         Task ConnectAsync(IConnectionInfo connection, CancellationToken cancellationToken = default(CancellationToken));
         Task ReconnectAsync(CancellationToken cancellationToken = default(CancellationToken));
         Task TestConnectionAsync(IConnectionInfo connection, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Tries to connect to the connection that was last used during previous work session
+        /// Won't do anything if <see cref="ConnectAsync"/> or <see cref="ReconnectAsync"/> was called for the same instance.
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         Task<bool> TryConnectToPreviouslyUsedAsync(CancellationToken cancellationToken = default(CancellationToken));
     }
 }

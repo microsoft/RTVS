@@ -81,7 +81,6 @@
     <Compile Include="Application\Configuration\Definitions\IConfigurationSetting.cs" />
     <Compile Include="Application\Configuration\Definitions\IConfigurationSettingsReader.cs" />
     <Compile Include="ConnectionManager\Commands\ReconnectCommand.cs" />
-    <Compile Include="ConnectionManager\ConnectionEventArgs.cs" />
     <Compile Include="ConnectionManager\IConnectionInfo.cs" />
     <Compile Include="ConnectionManager\IConnection.cs" />
     <Compile Include="ConnectionManager\IConnectionManager.cs" />
@@ -95,6 +94,7 @@
     <Compile Include="ConnectionManager\Implementation\ConnectionManagerVisualComponent.cs" />
     <Compile Include="ConnectionManager\Implementation\ViewModel\ConnectionManagerViewModel.cs" />
     <Compile Include="ConnectionManager\Implementation\ViewModel\ConnectionStatusBarViewModel.cs" />
+    <Compile Include="ConnectionManager\Implementation\ViewModel\ConnectionStatusBaseViewModel.cs" />
     <Compile Include="ConnectionManager\Implementation\ViewModel\ConnectionViewModel.cs" />
     <Compile Include="ConnectionManager\Implementation\View\ConnectionManagerControl.xaml.cs">
       <DependentUpon>ConnectionManagerControl.xaml</DependentUpon>
@@ -152,7 +152,7 @@
     <Compile Include="InteractiveWorkflow\Commands\SessionInformationCommand.cs" />
     <Compile Include="InteractiveWorkflow\Commands\TerminateRCommand.cs" />
     <Compile Include="InteractiveWorkflow\Commands\InterruptRCommand.cs" />
-    <Compile Include="InteractiveWorkflow\SessionGuids.cs" />
+    <Compile Include="InteractiveWorkflow\SessionNames.cs" />
     <Compile Include="InteractiveWorkflow\Implementation\CarriageReturnProcessor.cs" />
     <Compile Include="Plots\Commands\ShowMainPlotWindowCommand.cs" />
     <Compile Include="Plots\Implementation\Commands\PlotHistoryCommand.cs" />

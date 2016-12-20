@@ -21,7 +21,7 @@ namespace Microsoft.R.Host.Client.Test.Stubs {
         public IList<Tuple<string, string>> ViewObjectCalls { get; } = new List<Tuple<string, string>>();
         public IList<int> ViewLibraryCalls { get; } = new List<int>();
         public IList<Tuple<string, string, bool>> ShowFileCalls { get; } = new List<Tuple<string, string, bool>>();
-        public IList<Tuple<string, byte[]>> SaveFileCalls { get; } = new List<Tuple<string, byte[]>>();
+        public IList<Tuple<string, string>> SaveFileCalls { get; } = new List<Tuple<string, string>>();
 
         public Func<string, MessageButtons, Task<MessageButtons>> ShowMessageCallsHandler { get; set; } = 
             (m, b) => Task.FromResult(b.HasFlag(MessageButtons.Yes) ? MessageButtons.Yes : MessageButtons.OK);
@@ -36,7 +36,7 @@ namespace Microsoft.R.Host.Client.Test.Stubs {
         public Func<string, string, Task> ViewObjectHandler { get; set; } = (x, t) => Task.CompletedTask;
         public Action ViewLibraryHandler { get; set; } = () => { };
         public Func<string, string, bool, Task> ShowFileHandler { get; set; } = (f, t, d) => Task.CompletedTask;
-        public Func<string, byte[], Task<string>> SaveFileHandler { get; set; } = (f, d) => Task.FromResult(string.Empty);
+        public Func<string, ulong, string, Task<string>> SaveFileHandler { get; set; } = (r, b, l) => Task.FromResult(string.Empty);
 
         public Task ShowErrorMessage(string message, CancellationToken cancellationToken = default(CancellationToken)) {
             ShowErrorMessageCalls.Add(message);
@@ -101,9 +101,9 @@ namespace Microsoft.R.Host.Client.Test.Stubs {
             return Task.CompletedTask;
         }
 
-        public Task<string> SaveFileAsync(string remotePath, string localPath, byte[] data, CancellationToken cancellationToken) {
-            SaveFileCalls.Add(new Tuple<string, byte[]>(remotePath, data));
-            SaveFileHandler?.Invoke(remotePath, data);
+        public Task<string> FetchFileAsync(string remotePath, ulong remoteBlobId, string localPath, CancellationToken cancellationToken) {
+            SaveFileCalls.Add(new Tuple<string, string>(remotePath, localPath));
+            SaveFileHandler?.Invoke(remotePath, remoteBlobId, localPath);
             return Task.FromResult(string.Empty);
         }
     }

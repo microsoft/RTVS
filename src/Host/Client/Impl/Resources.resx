@@ -167,7 +167,7 @@ Error: {1}</value>
 
 This should never happen with a production Remote R Services, so please check with your server administrator.
 
-If you using a test Remote R Server with a self-signed certificate and are certain about the remote machine security, click OK, otherwise cancel the connection.</value>
+If you are using a test Remote R Server with a self-signed certificate and are certain about the remote machine security, click OK, otherwise cancel the connection.</value>
   </data>
   <data name="Error_SessionInitialization" xml:space="preserve">
     <value>The following exception occurred during initialization of R session, and the session has been terminated:

@@ -391,6 +391,16 @@
   <data name="ConnectionManager_EditedConnectionHasChanges" xml:space="preserve">
     <value>Edited connection has unsaved changes. Do you want to save them?</value>
   </data>
+  <data name="ConnectionManager_RemoveActiveConnectionConfirmation" xml:space="preserve">
+    <value>Are you sure you want to remove the '{0}' connection?
+Deleting it will disconnect you from RHost, all unsaved data will be lost.
+Deletion of the connection does not delete remote files.
+If you want to delete them, you have to delete the profile first.
+</value>
+  </data>
+  <data name="ConnectionManager_CantSaveWithTheSameName" xml:space="preserve">
+    <value>Can't change connection name to '{0}' because connection with the same name already exists.</value>
+  </data>
   <data name="ConnectionManager_RemoveConnectionConfirmation" xml:space="preserve">
     <value>Are you sure you want to remove the '{0}' connection?</value>
   </data>
@@ -496,8 +506,14 @@ Arguments: {1}
   <data name="ConnectionManager_ReconnectionToProgressBarMessage" xml:space="preserve">
     <value>Reconnecting to "{0}"</value>
   </data>
+  <data name="ConnectionManager_DeleteConnectionProgressBarMessage" xml:space="preserve">
+    <value>Deleting "{0}"</value>
+  </data>
   <data name="ConnectionManager_None" xml:space="preserve">
     <value>none specified</value>
+  </data>
+  <data name="ConnectionManager_ConnectionsAreIdentical" xml:space="preserve">
+    <value>Connection "{0}" won't be switched to "{1}" because are identical.</value>
   </data>
   <data name="Warning_TerminateR" xml:space="preserve">
     <value>Terminating R will immediately abort calculations and all workspace objects will be discarded. This action cannot be undone.
@@ -555,13 +571,16 @@ Are you sure you want to terminate R session?</value>
   <data name="DeleteProfile_Success" xml:space="preserve">
     <value>User directory and files under it were successfully deleted from remote machine {0}. You can click "Reset" to re-create your user profile and start a new session.</value>
   </data>
-  <data name="Error_UnableSaveFile" xml:space="preserve">
-    <value>Unable to save local file {0}. Exception: {1}.</value>
+  <data name="Error_UnableToTransferFile" xml:space="preserve">
+    <value>Unable to transfer file {0}. Exception: {1}.</value>
   </data>
   <data name="LocalR" xml:space="preserve">
     <value>Local R: {0}</value>
   </data>
   <data name="RemoteConnection" xml:space="preserve">
     <value>Remote workspace '{0}' : {1}</value>
+  </data>
+  <data name="Progress_FetchingFile" xml:space="preserve">
+    <value>Fetching file {0}...</value>
   </data>
 </root>

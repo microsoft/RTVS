@@ -7,6 +7,7 @@ using System.IO.Compression;
 using System.Collections.Generic;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.Shell;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Threading;
@@ -106,6 +107,24 @@ namespace Microsoft.R.Host.Client {
             if (doCleanUp) {
                 _cleanup.Add(blob);
             }
+        }
+
+        /// <summary>
+        /// Gets the data for a given blob from R-Host. Decompresses it and saves the data to <paramref name="filePath"/>. This 
+        /// method adds the blob for clean up by default.
+        /// </summary>
+        /// <param name="blobId">Data block on remote machine</param>
+        /// <param name="filePath">Path to the file where the retrieved data will be written.</param>
+        public async Task FetchAndDecompressFileAsync(ulong blobId, string filePath, 
+            IProgress<ProgressDialogData> progress, string progressMessage, CancellationToken cancellationToken) {
+            await TaskUtilities.SwitchToBackgroundThread();
+            var total = await _session.GetBlobSizeAsync(blobId, cancellationToken);
+            progress.Report(new ProgressDialogData(0, statusBarText: progressMessage, waitMessage: progressMessage));
+            await FetchAndDecompressFileAsync(new RBlobInfo(blobId), filePath, true, new Progress<long>(b => {
+                var step = (int)(b * 100 / total);
+                progress.Report(new ProgressDialogData(step, statusBarText: progressMessage, waitMessage: progressMessage));
+            }), cancellationToken);
+            progress.Report(new ProgressDialogData(100, statusBarText: progressMessage, waitMessage: progressMessage));
         }
 
         /// <summary>

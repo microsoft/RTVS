@@ -22,6 +22,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private bool _isActive;
         private bool _isEditing;
         private bool _isConnected;
+        private bool _isRunning;
         private CancellationTokenSource _testingConnectionCts;
         private bool _isTestConnectionSucceeded;
         private bool _isRemote;
@@ -78,7 +79,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public bool IsUserCreated {
             get { return _isUserCreated; }
-            set { SetProperty(ref _isUserCreated, value); }
+            private set { SetProperty(ref _isUserCreated, value); }
         }
 
         public string SaveButtonTooltip {
@@ -124,6 +125,11 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             set { SetProperty(ref _isConnected, value); }
         }
 
+        public bool IsRunning {
+            get { return _isRunning; }
+            set { SetProperty(ref _isRunning, value); }
+        }
+
         public CancellationTokenSource TestingConnectionCts {
             get { return _testingConnectionCts; }
             set { SetProperty(ref _testingConnectionCts, value); }
@@ -152,8 +158,12 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             }
         }
 
-        public DateTime LastUsed => _connection.LastUsed;
-        public string OriginalName => _connection.Name;
+        public DateTime LastUsed {
+            get { return _connection?.LastUsed ?? DateTime.MinValue; }
+            set { _connection.LastUsed = value; }
+        }
+
+        public string OriginalName => _connection?.Name;
 
         public void Reset() {
             Name = _connection?.Name;
@@ -209,7 +219,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             if (previousProposedName != currentProposedName) {
                 // Check if the name was calculated from the previous path
                 var currentName = Name ?? string.Empty;
-                if (string.IsNullOrEmpty(currentName) ||  string.Compare(currentName, previousProposedName, StringComparison.CurrentCultureIgnoreCase) == 0) {
+                if (string.IsNullOrEmpty(currentName) || string.Compare(currentName, previousProposedName, StringComparison.CurrentCultureIgnoreCase) == 0) {
                     Name = currentProposedName;
                 }
             }
@@ -251,19 +261,27 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             } catch (InvalidOperationException) { } catch (ArgumentException) { } catch (UriFormatException) { }
 
             if (uri == null || !(uri.IsFile || string.IsNullOrEmpty(uri.Host))) {
-                bool hasScheme = uri != null && !string.IsNullOrEmpty(uri.Scheme);
-                bool hasPort = uri != null && uri.Port >= 0;
+                var hasScheme = uri != null && !string.IsNullOrEmpty(uri.Scheme);
+                var hasPort = uri != null && uri.Port >= 0;
+                var hasPathOrQuery = uri != null && !string.IsNullOrEmpty(uri.PathAndQuery) && uri.PathAndQuery != "/";
 
                 if (hasScheme) {
+                    var components = UriComponents.Scheme | UriComponents.UserInfo | UriComponents.Host | UriComponents.Fragment;
+
+                    if (hasPathOrQuery) {
+                        components |= UriComponents.Path | UriComponents.Query;
+                    }
+
                     if (hasPort) {
-                        return Invariant($"{uri.Scheme}{Uri.SchemeDelimiter}{uri.Host}:{uri.Port}");
+                        components |= UriComponents.StrongPort;
                     }
-                    return Invariant($"{uri.Scheme}{Uri.SchemeDelimiter}{uri.Host}");
-                } else {
-                    if (Uri.CheckHostName(path) != UriHostNameType.Unknown) {
-                        var port = hasPort ? uri.Port : DefaultPort;
-                        return Invariant($"{Uri.UriSchemeHttps}{Uri.SchemeDelimiter}{path.ToLower()}:{port}");
-                    }
+
+                    return uri.GetComponents(components, UriFormat.UriEscaped);
+                }
+
+                if (Uri.CheckHostName(path) != UriHostNameType.Unknown) {
+                    var port = hasPort ? uri.Port : DefaultPort;
+                    return Invariant($"{Uri.UriSchemeHttps}{Uri.SchemeDelimiter}{path.ToLower()}:{port}");
                 }
             }
             return path;

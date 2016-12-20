@@ -69,16 +69,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         private async Task<ExecutionResult> InitializeAsync(bool isResetting) {
             try {
                 if (!Session.IsHostRunning) {
-                    var startupInfo = new RHostStartupInfo {
-                        Name = "REPL",
-                        RHostCommandLineArguments = _connections.ActiveConnection?.RCommandLineArguments,
-                        CranMirrorName = _settings.CranMirror,
-                        CodePage = _settings.RCodePage,
-                        WorkingDirectory = _settings.WorkingDirectory,
-                        TerminalWidth = _terminalWidth,
-                        EnableAutosave = !isResetting
-                    };
-
+                    var startupInfo = new RHostStartupInfo (_settings.CranMirror, _settings.WorkingDirectory, _settings.RCodePage, _terminalWidth, !isResetting, true);
                     await Session.EnsureHostStartedAsync(startupInfo, new RSessionCallback(CurrentWindow, Session, _settings, _coreShell, new FileSystem()));
                 }
                 return ExecutionResult.Success;
@@ -98,7 +89,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             try {
                 if (Session.IsHostRunning) {
                     WriteErrorLine(Environment.NewLine + Resources.MicrosoftRHostStopping);
-                    await Session.StopHostAsync();
+                    await Session.StopHostAsync(true);
                 }
 
                 if (!initialize) {
@@ -282,7 +273,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         /// extra line breaks to the error message. Limits output to 2 line breaks per message.
         /// </summary>
         private string TrimExcessiveLineBreaks(string message) {
-            if (CurrentWindow.CurrentLanguageBuffer == null) {
+            if (CurrentWindow?.CurrentLanguageBuffer == null) {
                 return message.Trim();
             }
 

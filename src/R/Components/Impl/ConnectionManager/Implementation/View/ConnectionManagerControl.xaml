@@ -102,7 +102,7 @@
                         <WrapPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,0,0">
                             <Button Margin="0,0,4,0" Padding="6,2,6,2" MinWidth="75" MinHeight="23"
                                     VerticalAlignment="Center" Click="ButtonSave_Click" 
-                                    IsEnabled="{Binding Path=HasChanges}" ToolTipService.ShowOnDisabled="True"
+                                    IsEnabled="{Binding Path=HasChanges, Mode=OneWay}" ToolTipService.ShowOnDisabled="True"
                                     Content="{x:Static components:Resources.ConnectionManager_Save}" 
                                     ToolTip="{Binding Path=SaveButtonTooltip}"/>
 
@@ -151,23 +151,7 @@
 
             <DataTemplate x:Key="ConnectButtonDataTemplate" DataType="{x:Type viewModel:IConnectionViewModel}">
                 <!-- Connection icon -->
-                <StackPanel Margin="4,1,6,1">
-                    <Grid Visibility="{Binding Path=IsConnected, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}">
-                        <Grid Visibility="{Binding Path=IsActive, Converter={x:Static rwpf:Converters.FalseIsNotCollapsed}}">
-                            <Rectangle Width="18" Height="18" SnapsToDevicePixels="True" Fill="{StaticResource IconRLocalInactive}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}" />
-                            <Rectangle Width="18" Height="18" SnapsToDevicePixels="True" Fill="{StaticResource IconRCloudInactive}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"/>
-                        </Grid>
-                        <Grid Visibility="{Binding Path=IsActive, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}">
-                            <Rectangle Width="18" Height="18" SnapsToDevicePixels="True" Fill="{StaticResource IconRLocalDisconnected}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}" />
-                            <Rectangle Width="18" Height="18" SnapsToDevicePixels="True" Fill="{StaticResource IconRCloudDisconnected}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"/>
-                        </Grid>
-                    </Grid>
-
-                    <Grid Visibility="{Binding Path=IsConnected, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}" VerticalAlignment="Center">
-                        <Rectangle Width="18" Height="18" SnapsToDevicePixels="True" Fill="{StaticResource IconRLocalConnected}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}" />
-                        <Rectangle Width="18" Height="18" SnapsToDevicePixels="True" Fill="{StaticResource IconRCloudConnected}" Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"/>
-                    </Grid>
-                </StackPanel>
+                <Rectangle Margin="4,1,6,1" Width="18" Height="18" SnapsToDevicePixels="True" Style="{StaticResource ConnectionStyle}" />
             </DataTemplate>
 
             <DataTemplate DataType="{x:Type viewModel:IConnectionViewModel}">
