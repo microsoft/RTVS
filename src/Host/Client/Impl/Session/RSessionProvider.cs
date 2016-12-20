@@ -135,7 +135,7 @@ namespace Microsoft.R.Host.Client.Session {
 
         private static async Task TestBrokerConnectionWithRHost(IBrokerClient brokerClient, CancellationToken cancellationToken) {
             var callbacks = new NullRCallbacks();
-            var connectionInfo = new HostConnectionInfo(nameof(TestBrokerConnectionAsync), callbacks);
+            var connectionInfo = new HostConnectionInfo(nameof(TestBrokerConnectionAsync), callbacks, useRHostCommandLineArguments:true);
             var rhost = await brokerClient.ConnectAsync(connectionInfo, cancellationToken);
             try {
                 var rhostRunTask = rhost.Run(cancellationToken);
@@ -243,19 +243,26 @@ namespace Microsoft.R.Host.Client.Session {
                 }
             }
 
-            if (transactions.Any()) {
-                await SwitchSessionsAsync(transactions, sessionsToStop, cancellationToken);
-            } else {
-                // Ping isn't enough here - need a "full" test with RHost
-                await TestBrokerConnectionWithRHost(_brokerProxy, cancellationToken);
-                await StopSessionsAsync(sessionsToStop, true, cancellationToken);
+            try {
+                if (transactions.Any()) {
+                    await SwitchSessionsAsync(transactions, sessionsToStop, cancellationToken);
+                } else {
+                    // Ping isn't enough here - need a "full" test with RHost cause command line parameters may not allow host to run
+                    await TestBrokerConnectionWithRHost(_brokerProxy, cancellationToken);
+                    await StopSessionsAsync(sessionsToStop, true, cancellationToken);
+                }
+            } catch (OperationCanceledException ex) when (!(ex is RHostDisconnectedException)) {
+                throw;
+            } catch (Exception ex) {
+                _console.Write(Resources.RSessionProvider_ConnectionFailed.FormatInvariant(ex.Message) + Environment.NewLine);
+                throw;
             }
         }
 
         private async Task SwitchSessionsAsync(IReadOnlyCollection<IRSessionSwitchBrokerTransaction> transactions, List<RSession> sessionsToStop, CancellationToken cancellationToken) {
             // All sessions should participate in switch. If any of it didn't start, cancel the rest.
             try {
-                await ConnectToNewBrokerAsync(transactions, cancellationToken);
+                await WhenAllCancelOnFailure(transactions, ConnectToNewBrokerAsync, cancellationToken);
                 await Task.WhenAll(CompleteSwitchingBrokerAsync(transactions, cancellationToken), StopSessionsAsync(sessionsToStop, true, cancellationToken));
             } finally {
                 foreach (var transaction in transactions) {
@@ -272,23 +279,12 @@ namespace Microsoft.R.Host.Client.Session {
 
         private async Task ReconnectAsync(CancellationToken cancellationToken) {
             var sessions = _sessions.Values.ToList();
-            if (sessions.Any()) {
-                try {
-                    await WhenAllCancelOnFailure(sessions, (s, ct) => s.ReconnectAsync(ct), cancellationToken);
-                } catch (OperationCanceledException ex) when (!(ex is RHostDisconnectedException)) {
-                    throw;
-                } catch (Exception ex) {
-                    _console.Write(Resources.RSessionProvider_ConnectionFailed.FormatInvariant(ex.Message) + Environment.NewLine);
-                    throw;
-                }
-            } else {
-                await TestBrokerConnectionWithRHost(_brokerProxy, cancellationToken);
-            }
-        }
-
-        private async Task ConnectToNewBrokerAsync(IEnumerable<IRSessionSwitchBrokerTransaction> transactions, CancellationToken cancellationToken) {
             try {
-                await WhenAllCancelOnFailure(transactions, ConnectToNewBrokerAsync, cancellationToken);
+                if (sessions.Any()) {
+                    await WhenAllCancelOnFailure(sessions, (s, ct) => s.ReconnectAsync(ct), cancellationToken);
+                } else {
+                    await TestBrokerConnectionWithRHost(_brokerProxy, cancellationToken);
+                }
             } catch (OperationCanceledException ex) when (!(ex is RHostDisconnectedException)) {
                 throw;
             } catch (Exception ex) {
