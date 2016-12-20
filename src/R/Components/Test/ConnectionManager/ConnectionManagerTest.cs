@@ -4,14 +4,22 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Security;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.Mef;
+using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
+using NSubstitute;
+using NSubstitute.ExceptionExtensions;
+using NSubstitute.Extensions;
 
 namespace Microsoft.R.Components.Test.ConnectionManager {
     [ExcludeFromCodeCoverage]
@@ -36,6 +44,10 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
 
             var cm = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate().Connections;
             cm.RecentConnections.Should().StartWith(new [] { "C", "A", "D", "B" }, (ci, s) => ci.Name == s);
+        }
+
+        public void Dispose() {
+            _exportProvider.Dispose();
         }
 
         [Test]
@@ -76,8 +88,33 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
             cm.ActiveConnection.Should().Be(connection);
         }
 
-        public void Dispose() {
-            _exportProvider.Dispose();
+        [Test]
+        public async Task TryConnectToPreviouslyUsedAsync() {
+            var connectionManager = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate().Connections;
+            await connectionManager.TryConnectToPreviouslyUsedAsync().Should().HaveResultAsync(true);
+        }
+
+        [Test]
+        public async Task TryConnectToPreviouslyUsedAsync_AfterConnectAsyncFailed() {
+            var unreachableConnection = new ConnectionInfo("A", "http://127.0.0.1", null, true);
+            var settings = _exportProvider.GetExportedValue<IRSettings>();
+            settings.Connections = new[] {
+                unreachableConnection,
+                settings.LastActiveConnection
+            };
+
+            using (var workflow = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate()) {
+                var security = workflow.Shell.Services.Security;
+                security.GetUserCredentialsAsync(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+                    .ThrowsForAnyArgs(new RHostDisconnectedException());
+
+                var connectionManager = workflow.Connections;
+                await connectionManager.ConnectAsync(unreachableConnection).Should().BeCompletedAsync();
+
+                await connectionManager.TryConnectToPreviouslyUsedAsync().Should().HaveResultAsync(false);
+
+                await UIThreadHelper.Instance.TaskScheduler;
+            }
         }
     }
 }
