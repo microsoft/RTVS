@@ -37,6 +37,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         private readonly ConcurrentDictionary<string, IConnection> _connections;
         private readonly ISecurityService _securityService;
         private readonly object _syncObj = new object();
+        private volatile bool _isFirstConnectionAttempt = true;
 
         public bool IsConnected { get; private set; }
         public bool IsRunning { get; private set; }
@@ -173,6 +174,10 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         public Task<bool> TryConnectToPreviouslyUsedAsync(CancellationToken cancellationToken = default(CancellationToken)) {
+            if (!_isFirstConnectionAttempt) {
+                return Task.FromResult(false);
+            }
+
             var connectionInfo = _settings.LastActiveConnection;
             if (connectionInfo != null) {
                 var connection = GetOrCreateConnection(connectionInfo);
@@ -192,6 +197,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 return false;
             }
 
+            _isFirstConnectionAttempt = false;
             var brokerSwitched = await _sessionProvider.TrySwitchBrokerAsync(connection.Name, connection.BrokerConnectionInfo, cancellationToken);
             if (brokerSwitched) {
                 UpdateActiveConnection();

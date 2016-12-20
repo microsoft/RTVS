@@ -4,21 +4,30 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
     public sealed class InteractiveWindowConsole : IConsole {
         private readonly IRInteractiveWorkflow _workflow;
+        private IInteractiveWindowVisualComponent _component;
 
         public InteractiveWindowConsole(IRInteractiveWorkflow workflow) {
             _workflow = workflow;
         }
 
         public void Write(string text) {
-            if (_workflow.ActiveWindow != null) {
-                _workflow.Shell.DispatchOnUIThread(() => _workflow.ActiveWindow?.InteractiveWindow?.WriteError(text));
+            WriteAsync(text).DoNotWait();
+        }
+
+        private async Task WriteAsync(string text) {
+            await _workflow.Shell.SwitchToMainThreadAsync();
+            if (_component == null) {
+                _component = await _workflow.GetOrCreateVisualComponentAsync();
+                _component.Container.Show(focus: false, immediate: false);
             }
+            _component.InteractiveWindow.WriteError(text);
         }
 
         public void WriteLine(string text) => Write(text + Environment.NewLine);
