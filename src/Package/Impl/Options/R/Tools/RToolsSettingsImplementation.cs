@@ -36,6 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         private ConnectionInfo[] _connections = new ConnectionInfo[0];
         private ConnectionInfo _lastActiveConnection;
 
+        private YesNo _showConfirmationDialogWhenSwitch = YesNo.Yes;
         private YesNoAsk _loadRDataOnProjectLoad = YesNoAsk.No;
         private YesNoAsk _saveRDataOnProjectUnload = YesNoAsk.No;
         private bool _alwaysSaveHistory = true;
@@ -60,6 +61,11 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             _settings = settings;
             _loggingPermissions = coreShell.Services.LoggingServices.Permissions;
             _workingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+        }
+
+        public YesNo ShowWorkspaceSwitchConfirmationDialog {
+            get { return _showConfirmationDialogWhenSwitch; }
+            set { SetProperty(ref _showConfirmationDialogWhenSwitch, value); }
         }
 
         /// <summary>

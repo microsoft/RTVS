@@ -20,6 +20,7 @@ using Microsoft.UnitTests.Core.XUnit;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NSubstitute.Extensions;
+using Xunit;
 
 namespace Microsoft.R.Components.Test.ConnectionManager {
     [ExcludeFromCodeCoverage]
@@ -29,6 +30,36 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
 
         public ConnectionManagerTest(RComponentsMefCatalogFixture mefCatalogFixture) {
             _exportProvider = mefCatalogFixture.CreateExportProvider();
+        }
+
+        public void Dispose() {
+            _exportProvider.Dispose();
+        }
+
+        [Test]
+        public async Task DisconnectAsync() {
+            var connection = _exportProvider.GetExportedValue<IRSettings>().LastActiveConnection;
+
+            var workflow = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
+            var connectionManager = workflow.Connections;
+            await connectionManager.ConnectAsync(connection).Should().BeCompletedAsync();
+            await connectionManager.DisconnectAsync().Should().BeCompletedAsync();
+
+            workflow.RSessions.HasBroker.Should().BeFalse();
+            workflow.RSession.IsHostRunning.Should().BeFalse();
+        }
+
+        [Test]
+        public async Task DisconnectAsync_Canceled() {
+            var connection = _exportProvider.GetExportedValue<IRSettings>().LastActiveConnection;
+
+            var connectionManager = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate().Connections;
+            await connectionManager.ConnectAsync(connection).Should().BeCompletedAsync();
+
+            var cts = new CancellationTokenSource();
+            var disconnectAsyncTask = connectionManager.DisconnectAsync(cts.Token);
+            cts.Cancel();
+            await disconnectAsyncTask.Should().BeCanceledAsync();
         }
 
         [Test]
@@ -44,10 +75,6 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
 
             var cm = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate().Connections;
             cm.RecentConnections.Should().StartWith(new [] { "C", "A", "D", "B" }, (ci, s) => ci.Name == s);
-        }
-
-        public void Dispose() {
-            _exportProvider.Dispose();
         }
 
         [Test]

@@ -3,6 +3,7 @@
 
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Common.Core.Enums;
 using Microsoft.Common.Core.Logging;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.Settings;
@@ -10,6 +11,7 @@ using Microsoft.R.Components.Settings;
 namespace Microsoft.R.Components.Test.Stubs {
     [ExcludeFromCodeCoverage]
     public sealed class RSettingsStub : IRSettings {
+        public YesNo ShowWorkspaceSwitchConfirmationDialog { get; set; }
         public bool AlwaysSaveHistory { get; set; }
         public bool ClearFilterOnAddHistory { get; set; }
         public bool MultilineHistorySelection { get; set; }

@@ -391,12 +391,20 @@
   <data name="ConnectionManager_EditedConnectionHasChanges" xml:space="preserve">
     <value>Edited connection has unsaved changes. Do you want to save them?</value>
   </data>
+  <data name="ConnectionManager_SwitchConfirmation" xml:space="preserve">
+    <value>Are you sure you want to switch from '{0}' to '{1}'?
+Switching will stop your current session, all unsaved data will be lost.</value>
+  </data>
+  <data name="ConnectionManager_RenameActiveConnectionConfirmation" xml:space="preserve">
+    <value>You are going to change connection '{0}' that you're currently using.
+Saving these changes will disconnect you from RHost, all unsaved data will be lost.
+Do you wish to proceed?</value>
+  </data>
   <data name="ConnectionManager_RemoveActiveConnectionConfirmation" xml:space="preserve">
     <value>Are you sure you want to remove the '{0}' connection?
 Deleting it will disconnect you from RHost, all unsaved data will be lost.
 Deletion of the connection does not delete remote files.
-If you want to delete them, you have to delete the profile first.
-</value>
+If you want to delete them, you have to delete the profile first.</value>
   </data>
   <data name="ConnectionManager_CantSaveWithTheSameName" xml:space="preserve">
     <value>Can't change connection name to '{0}' because connection with the same name already exists.</value>
@@ -508,6 +516,9 @@ Arguments: {1}
   </data>
   <data name="ConnectionManager_DeleteConnectionProgressBarMessage" xml:space="preserve">
     <value>Deleting "{0}"</value>
+  </data>
+  <data name="ConnectionManager_RenameConnectionProgressBarMessage" xml:space="preserve">
+    <value>Renaming "{0}" to "{1}"</value>
   </data>
   <data name="ConnectionManager_None" xml:space="preserve">
     <value>none specified</value>

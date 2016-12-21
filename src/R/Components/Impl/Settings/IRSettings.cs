@@ -2,11 +2,13 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.ComponentModel;
+using Microsoft.Common.Core.Enums;
 using Microsoft.Common.Core.Logging;
 using Microsoft.R.Components.ConnectionManager;
 
 namespace Microsoft.R.Components.Settings {
     public interface IRSettings : INotifyPropertyChanged {
+        YesNo ShowWorkspaceSwitchConfirmationDialog { get; set; }
 
         bool AlwaysSaveHistory { get; set; }
         bool ClearFilterOnAddHistory { get; set; }

@@ -13,12 +13,12 @@ namespace Microsoft.R.Components.Test.StubFactories {
     [ExcludeFromCodeCoverage]
     public sealed class RSettingsStubFactory {
         public static RSettingsStub CreateForExistingRPath(string connectionName) {
-            var connection = new ConnectionInfo (
+            var connection = new ConnectionInfo(
                 connectionName ?? "Test",
                 new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath,
                 null,
-                false
-            );
+                true
+            ) { LastUsed = DateTime.Now.AddHours(-1) };
 
             return new RSettingsStub {
                 Connections = new[] { connection },
