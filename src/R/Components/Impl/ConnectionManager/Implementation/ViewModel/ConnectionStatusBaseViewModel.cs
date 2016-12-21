@@ -18,7 +18,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         protected ICoreShell Shell { get; }
         protected IConnectionManager ConnectionManager { get; }
 
-        public ConnectionStatusBaseViewModel(IConnectionManager connectionManager, ICoreShell shell) {
+        protected ConnectionStatusBaseViewModel(IConnectionManager connectionManager, ICoreShell shell) {
             ConnectionManager = connectionManager;
             Shell = shell;
 
@@ -38,17 +38,19 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             Dispose(true);
         }
 
-        protected virtual void ConnectionStateChanged() { }
+        protected abstract void ConnectionStateChanged();
 
         private void ConnectionStateChanged(object sender, EventArgs e) {
-            Shell.DispatchOnUIThread(() => {
-                IsConnected = ConnectionManager.IsConnected;
-                IsRunning = ConnectionManager.IsConnected && ConnectionManager.IsRunning;
-                IsActive = ConnectionManager.ActiveConnection != null;
-                IsRemote = ConnectionManager.ActiveConnection?.IsRemote ?? false;
+            Shell.DispatchOnUIThread(ConnectionStateChangedOnMainThread);
+        }
 
-                ConnectionStateChanged();
-            });
+        private void ConnectionStateChangedOnMainThread() {
+            IsConnected = ConnectionManager.IsConnected;
+            IsRunning = ConnectionManager.IsConnected && ConnectionManager.IsRunning;
+            IsActive = ConnectionManager.ActiveConnection != null;
+            IsRemote = ConnectionManager.ActiveConnection?.IsRemote ?? false;
+            ConnectionStateChanged();
+            Microsoft.R.Components.ConnectionManager.Implementation.ConnectionManager.Events.Enqueue($"After {nameof(ConnectionStateChanged)} ConnectionManager.IsRunning: {ConnectionManager.IsRunning}, {GetHashCode()}.IsRunning: {IsRunning}");
         }
 
         public bool IsConnected {

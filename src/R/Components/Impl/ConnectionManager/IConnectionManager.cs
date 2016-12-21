@@ -34,12 +34,11 @@ namespace Microsoft.R.Components.ConnectionManager {
         bool TryRemove(string name);
 
         /// <summary>
-        /// Removes connection. If connection is active, disconnects all sessions from it.
+        /// Disconnects all sessions from active connection and switches to disconnected state
         /// </summary>
-        /// <param name="connectionName">Name of the connection</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task RemoveAsync(string connectionName, CancellationToken cancellationToken = default(CancellationToken));
+        Task DisconnectAsync(CancellationToken cancellationToken = default(CancellationToken));
 
         Task ConnectAsync(IConnectionInfo connection, CancellationToken cancellationToken = default(CancellationToken));
         Task ReconnectAsync(CancellationToken cancellationToken = default(CancellationToken));

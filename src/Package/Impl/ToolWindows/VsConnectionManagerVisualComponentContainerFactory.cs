@@ -4,14 +4,14 @@
 using System.ComponentModel.Composition;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.View;
+using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Windows;
 
 namespace Microsoft.VisualStudio.R.Package.ToolWindows {
     [Export(typeof(IConnectionManagerVisualComponentContainerFactory))]
     internal class VsConnectionManagerVisualComponentContainerFactory : ToolWindowPaneFactory<ConnectionManagerWindowPane>, IConnectionManagerVisualComponentContainerFactory {
-        public IVisualComponentContainer<IConnectionManagerVisualComponent> GetOrCreate(IConnectionManager connectionManager, int instanceId = 0) {
-            return GetOrCreate(instanceId, i => new ConnectionManagerWindowPane(connectionManager, VsAppShell.Current));
-        }
+        public IVisualComponentContainer<IConnectionManagerVisualComponent> GetOrCreate(IConnectionManager connectionManager, int instanceId = 0) 
+            => GetOrCreate(instanceId, i => new ConnectionManagerWindowPane(connectionManager, RToolsSettings.Current, VsAppShell.Current));
     }
 }

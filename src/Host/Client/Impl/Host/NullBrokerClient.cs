@@ -12,7 +12,7 @@ namespace Microsoft.R.Host.Client.Host {
         private static Task<RHost> Result { get; } = TaskUtilities.CreateCanceled<RHost>(
             new RHostDisconnectedException(Resources.RHostDisconnected));
 
-        public BrokerConnectionInfo ConnectionInfo { get; } = BrokerConnectionInfo.Create("http://localhost");
+        public BrokerConnectionInfo ConnectionInfo { get; } = default(BrokerConnectionInfo);
         public string Name { get; } = string.Empty;
         public bool IsRemote { get; } = true;
         public bool IsVerified { get; } = true;
