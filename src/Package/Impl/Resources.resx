@@ -368,6 +368,12 @@
   <data name="VariableExplorer_ValueHeader" xml:space="preserve">
     <value>Value</value>
   </data>
+  <data name="Settings_ShowWorkspaceSwitchConfirmationDialog" xml:space="preserve">
+    <value>Show confirmation dialog before switching workspaces</value>
+  </data>
+  <data name="Settings_ShowWorkspaceSwitchConfirmationDialog_Description" xml:space="preserve">
+    <value>Show confirmation dialog before switching workspaces</value>
+  </data>
   <data name="Settings_LoadRDataOnProjectLoad" xml:space="preserve">
     <value>Load workspace when project opens</value>
   </data>

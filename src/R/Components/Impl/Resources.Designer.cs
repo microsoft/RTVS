@@ -328,8 +328,7 @@ namespace Microsoft.R.Components {
         ///   Looks up a localized string similar to Are you sure you want to remove the &apos;{0}&apos; connection?
         ///Deleting it will disconnect you from RHost, all unsaved data will be lost.
         ///Deletion of the connection does not delete remote files.
-        ///If you want to delete them, you have to delete the profile first.
-        ///.
+        ///If you want to delete them, you have to delete the profile first..
         /// </summary>
         public static string ConnectionManager_RemoveActiveConnectionConfirmation {
             get {
@@ -343,6 +342,26 @@ namespace Microsoft.R.Components {
         public static string ConnectionManager_RemoveConnectionConfirmation {
             get {
                 return ResourceManager.GetString("ConnectionManager_RemoveConnectionConfirmation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You are going to change connection &apos;{0}&apos; that you&apos;re currently using.
+        ///Saving these changes will disconnect you from RHost, all unsaved data will be lost.
+        ///Do you wish to proceed?.
+        /// </summary>
+        public static string ConnectionManager_RenameActiveConnectionConfirmation {
+            get {
+                return ResourceManager.GetString("ConnectionManager_RenameActiveConnectionConfirmation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Renaming &quot;{0}&quot; to &quot;{1}&quot;.
+        /// </summary>
+        public static string ConnectionManager_RenameConnectionProgressBarMessage {
+            get {
+                return ResourceManager.GetString("ConnectionManager_RenameConnectionProgressBarMessage", resourceCulture);
             }
         }
         
@@ -370,6 +389,16 @@ namespace Microsoft.R.Components {
         public static string ConnectionManager_ShouldHavePath {
             get {
                 return ResourceManager.GetString("ConnectionManager_ShouldHavePath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to switch from &apos;{0}&apos; to &apos;{1}&apos;?
+        ///Switching will stop your current session, all unsaved data will be lost..
+        /// </summary>
+        public static string ConnectionManager_SwitchConfirmation {
+            get {
+                return ResourceManager.GetString("ConnectionManager_SwitchConfirmation", resourceCulture);
             }
         }
         

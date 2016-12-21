@@ -9,15 +9,18 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Enums;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Wpf.Collections;
 using Microsoft.R.Components.ConnectionManager.ViewModel;
+using Microsoft.R.Components.Settings;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Interpreters;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
     internal sealed class ConnectionManagerViewModel : ConnectionStatusBaseViewModel, IConnectionManagerViewModel {
+        private readonly IRSettings _settings;
         private readonly BatchObservableCollection<IConnectionViewModel> _localConnections;
         private readonly BatchObservableCollection<IConnectionViewModel> _remoteConnections;
         private IConnectionViewModel _editedConnection;
@@ -25,8 +28,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private bool _isEditingNew;
         private bool _hasLocalConnections;
 
-        public ConnectionManagerViewModel(IConnectionManager connectionManager, ICoreShell shell): 
+        public ConnectionManagerViewModel(IConnectionManager connectionManager, IRSettings settings, ICoreShell shell) :
             base(connectionManager, shell) {
+            _settings = settings;
 
             _remoteConnections = new BatchObservableCollection<IConnectionViewModel>();
             RemoteConnections = new ReadOnlyObservableCollection<IConnectionViewModel>(_remoteConnections);
@@ -62,7 +66,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             // When 'Edit' button is clicked second time, we close the panel.
             // If panel has changes, offer save the changes. 
             if (EditedConnection != null && EditedConnection.HasChanges) {
-                var dialogResult = Shell.ShowMessage(Resources.ConnectionManager_EditedConnectionHasChanges, MessageButtons.YesNoCancel);
+                var dialogResult = Shell.ShowMessage(Resources.ConnectionManager_EditedConnectionHasChanges,
+                    MessageButtons.YesNoCancel);
                 switch (dialogResult) {
                     case MessageButtons.Yes:
                         Save(EditedConnection);
@@ -99,13 +104,14 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         public void BrowseLocalPath(IConnectionViewModel connection) {
             Shell.AssertIsOnMainThread();
             if (connection == null) {
-                return;    
+                return;
             }
 
             string latestLocalPath;
             Uri latestLocalPathUri;
 
-            if (connection.Path != null && Uri.TryCreate(connection.Path, UriKind.Absolute, out latestLocalPathUri) && latestLocalPathUri.IsFile && !latestLocalPathUri.IsUnc) {
+            if (connection.Path != null && Uri.TryCreate(connection.Path, UriKind.Absolute, out latestLocalPathUri) &&
+                latestLocalPathUri.IsFile && !latestLocalPathUri.IsUnc) {
                 latestLocalPath = latestLocalPathUri.LocalPath;
             } else {
                 latestLocalPath = Environment.SystemDirectory;
@@ -116,7 +122,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                         // Force 64-bit PF
                         latestLocalPath = Environment.GetEnvironmentVariable("ProgramW6432");
                     }
-                } catch (ArgumentException) { } catch (IOException) { }
+                } catch (ArgumentException) {} catch (IOException) {}
             }
 
             var path = Shell.FileDialog.ShowBrowseDirectoryDialog(latestLocalPath);
@@ -132,7 +138,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         public void Edit(IConnectionViewModel connection) {
             Shell.AssertIsOnMainThread();
             if (connection == null) {
-                return;    
+                return;
             }
 
             TryStartEditing(connection);
@@ -188,12 +194,25 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         public void Save(IConnectionViewModel connectionViewModel) {
             Shell.AssertIsOnMainThread();
             if (connectionViewModel == null || !connectionViewModel.HasChanges) {
-                return;    
+                return;
             }
 
-            if (connectionViewModel.IsRenamed && ConnectionManager.GetConnection(connectionViewModel.Name) != null) {
+            if ((connectionViewModel.IsRenamed || IsEditingNew) &&
+                ConnectionManager.GetConnection(connectionViewModel.Name) != null) {
                 Shell.ShowMessage(Resources.ConnectionManager_CantSaveWithTheSameName.FormatCurrent(connectionViewModel.Name), MessageButtons.OK);
                 return;
+            }
+
+            if (connectionViewModel.IsConnected) {
+                var confirm = Shell.ShowMessage(Resources.ConnectionManager_RenameActiveConnectionConfirmation.FormatCurrent(connectionViewModel.OriginalName), MessageButtons.YesNo);
+                if (confirm == MessageButtons.Yes) {
+                    var message = Resources.ConnectionManager_RenameConnectionProgressBarMessage.FormatInvariant(connectionViewModel.OriginalName, connectionViewModel.Name);
+                    try {
+                        Shell.ProgressDialog.Show(ct => ConnectionManager.DisconnectAsync(ct), message);
+                    } catch (OperationCanceledException) {
+                        return;
+                    }
+                }
             }
 
             ConnectionManager.AddOrUpdateConnection(connectionViewModel);
@@ -211,24 +230,30 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             Shell.AssertIsOnMainThread();
             CancelTestConnection();
 
-            if (connection != null) {
-                if (connection.IsActive) {
-                    var confirm = Shell.ShowMessage(Resources.ConnectionManager_RemoveActiveConnectionConfirmation.FormatCurrent(connection.Name), MessageButtons.YesNo);
-                    if (confirm == MessageButtons.Yes) {
-                        Shell.ProgressDialog.Show(ct => ConnectionManager.RemoveAsync(connection.Name, ct), Resources.ConnectionManager_DeleteConnectionProgressBarMessage.FormatInvariant(connection.Name));
-                        UpdateConnections();
-                        return true;
-                    }
-                } else {
-                    var confirm = Shell.ShowMessage(Resources.ConnectionManager_RemoveConnectionConfirmation.FormatCurrent(connection.Name), MessageButtons.YesNo);
-                    if (confirm == MessageButtons.Yes) {
-                        var result = ConnectionManager.TryRemove(connection.Name);
-                        UpdateConnections();
-                        return result;
-                    }
+            if (connection == null) {
+                return false;
+            }
+
+            var confirmMessage = connection.IsActive
+                ? Resources.ConnectionManager_RemoveActiveConnectionConfirmation.FormatCurrent(connection.Name)
+                : Resources.ConnectionManager_RemoveConnectionConfirmation.FormatCurrent(connection.Name);
+
+            var confirm = Shell.ShowMessage(confirmMessage, MessageButtons.YesNo);
+            if (confirm == MessageButtons.No) {
+                return false;
+            }
+
+            if (connection.IsActive) {
+                try {
+                    Shell.ProgressDialog.Show(ct => ConnectionManager.DisconnectAsync(ct), Resources.ConnectionManager_DeleteConnectionProgressBarMessage.FormatInvariant(connection.Name));
+                } catch (OperationCanceledException) {
+                    return false;
                 }
             }
-            return false;
+
+            var result = ConnectionManager.TryRemove(connection.Name);
+            UpdateConnections();
+            return result;
         }
 
         public void Connect(IConnectionViewModel connection, bool connectToEdited) {
@@ -256,10 +281,20 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                     var text = Resources.ConnectionManager_ConnectionsAreIdentical.FormatCurrent(activeConnection.Name, connection.Name);
                     Shell.ShowMessage(text, MessageButtons.OK);
                 } else {
-                    var progressBarMessage = activeConnection != null
-                        ? Resources.ConnectionManager_SwitchConnectionProgressBarMessage.FormatInvariant(activeConnection.Name, connection.Name)
-                        : Resources.ConnectionManager_ConnectionToProgressBarMessage.FormatInvariant(connection.Name);
-                    Shell.ProgressDialog.Show(ct => ConnectionManager.ConnectAsync(connection, ct), progressBarMessage);
+                    var connect = true;
+                    if (activeConnection != null && _settings.ShowWorkspaceSwitchConfirmationDialog == YesNo.Yes) {
+                        var message = Resources.ConnectionManager_SwitchConfirmation.FormatCurrent(activeConnection.Name, connection.Name);
+                        if (Shell.ShowMessage(message, MessageButtons.YesNo) == MessageButtons.No) {
+                            connect = false;
+                        }
+                    }
+
+                    if (connect) {
+                        var progressBarMessage = activeConnection != null
+                            ? Resources.ConnectionManager_SwitchConnectionProgressBarMessage.FormatCurrent(activeConnection.Name, connection.Name)
+                            : Resources.ConnectionManager_ConnectionToProgressBarMessage.FormatCurrent(connection.Name);
+                        Shell.ProgressDialog.Show(ct => ConnectionManager.ConnectAsync(connection, ct), progressBarMessage);
+                    }
                 }
             }
 

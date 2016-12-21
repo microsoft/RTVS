@@ -2010,6 +2010,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Show confirmation dialog before switching workspaces.
+        /// </summary>
+        public static string Settings_ShowWorkspaceSwitchConfirmationDialog {
+            get {
+                return ResourceManager.GetString("Settings_ShowWorkspaceSwitchConfirmationDialog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show confirmation dialog before switching workspaces.
+        /// </summary>
+        public static string Settings_ShowWorkspaceSwitchConfirmationDialog_Description {
+            get {
+                return ResourceManager.GetString("Settings_ShowWorkspaceSwitchConfirmationDialog_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Space after comma.
         /// </summary>
         public static string Settings_SpaceAfterComma {
