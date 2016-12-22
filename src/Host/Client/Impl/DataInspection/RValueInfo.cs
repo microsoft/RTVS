@@ -63,7 +63,7 @@ namespace Microsoft.R.DataInspection {
         }
 
         internal RValueInfo(
-            IRSession session,
+            IRExpressionEvaluator evaluator,
             string environmentExpression,
             string expression,
             string name,
@@ -78,7 +78,7 @@ namespace Microsoft.R.DataInspection {
             IReadOnlyList<int> dim,
             RValueFlags flags,
             bool canCoerceToDataFrame
-        ) : base(session, environmentExpression, expression, name) {
+        ) : base(evaluator, environmentExpression, expression, name) {
 
             Representation = representation;
             AccessorKind = accessorKind;
@@ -93,8 +93,8 @@ namespace Microsoft.R.DataInspection {
             CanCoerceToDataFrame = canCoerceToDataFrame;
         }
 
-        internal RValueInfo(IRSession session, string environmentExpression, string expression, string name, JObject json)
-            : base(session, environmentExpression, expression, name) {
+        internal RValueInfo(IRExpressionEvaluator evaluator, string environmentExpression, string expression, string name, JObject json)
+            : base(evaluator, environmentExpression, expression, name) {
 
             Representation = json.Value<string>(FieldNames.Repr);
             TypeName = json.Value<string>(FieldNames.Type);
@@ -153,7 +153,7 @@ namespace Microsoft.R.DataInspection {
         }
 
         public override IREvaluationResultInfo ToEnvironmentIndependentResult() =>
-            new RValueInfo(Session, EnvironmentExpression, this.GetEnvironmentIndependentExpression(), Name, Representation,
+            new RValueInfo(Evaluator, EnvironmentExpression, this.GetEnvironmentIndependentExpression(), Name, Representation,
                 AccessorKind, TypeName, Classes, Length, AttributeCount, SlotCount, NameCount, Dim, Flags, CanCoerceToDataFrame);
     }
 }

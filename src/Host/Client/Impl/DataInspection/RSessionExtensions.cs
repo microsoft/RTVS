@@ -15,11 +15,11 @@ using static System.FormattableString;
 namespace Microsoft.R.DataInspection {
     public static class RSessionExtensions {
         /// <summary>
-        /// Like <see cref="TryEvaluateAndDescribeAsync(IRSession, string, string, string, REvaluationResultProperties, string, CancellationToken)"/>,
+        /// Like <see cref="TryEvaluateAndDescribeAsync(IRExpressionEvaluator, string, string, string, REvaluationResultProperties, string, CancellationToken)"/>,
         /// but evaluates in the global environment (<c>.GlobalEnv</c>), and the result is not named.
         /// </summary>
         public static Task<IREvaluationResultInfo> TryEvaluateAndDescribeAsync(
-            this IRSession session,
+            this IRExpressionEvaluator session,
             string expression,
             REvaluationResultProperties properties,
             string repr,
@@ -52,7 +52,7 @@ namespace Microsoft.R.DataInspection {
         /// This method never returns <see cref="IRActiveBindingInfo"/> or <see cref="IRPromiseInfo"/>.
         /// </returns>
         public static async Task<IREvaluationResultInfo> TryEvaluateAndDescribeAsync(
-            this IRSession session,
+            this IRExpressionEvaluator session,
             string environmentExpression,
             string expression,
             string name,
@@ -80,7 +80,7 @@ namespace Microsoft.R.DataInspection {
         /// but throws <see cref="RException"/> if result is an <see cref="IRErrorInfo"/>.
         /// </summary>
         public static Task<IRValueInfo> EvaluateAndDescribeAsync(
-            this IRSession session,
+            this IRExpressionEvaluator session,
             string expression,
             REvaluationResultProperties properties,
             string repr,
@@ -93,7 +93,7 @@ namespace Microsoft.R.DataInspection {
         /// but throws <see cref="RException"/> if result is an <see cref="IRErrorInfo"/>.
         /// </summary>
         public static async Task<IRValueInfo> EvaluateAndDescribeAsync(
-            this IRSession session,
+            this IRExpressionEvaluator session,
             string environmentExpression,
             string expression,
             string name,
@@ -140,7 +140,7 @@ namespace Microsoft.R.DataInspection {
         /// children are represented by <see cref="IRErrorInfo"/> instances in the returned collection instead).
         /// </exception>
         public static async Task<IReadOnlyList<IREvaluationResultInfo>> DescribeChildrenAsync(
-            this IRSession session,
+            this IRExpressionEvaluator session,
             string environmentExpression,
             string expression,
             REvaluationResultProperties properties,

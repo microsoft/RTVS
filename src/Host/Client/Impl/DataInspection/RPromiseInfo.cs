@@ -8,8 +8,8 @@ namespace Microsoft.R.DataInspection {
     internal sealed class RPromiseInfo : REvaluationResultInfo, IRPromiseInfo {
         public string Code { get; }
 
-        internal RPromiseInfo(IRSession session, string environmentExpression, string expression, string name, string code)
-            : base(session, environmentExpression, expression, name) {
+        internal RPromiseInfo(IRExpressionEvaluator evaluator, string environmentExpression, string expression, string name, string code)
+            : base(evaluator, environmentExpression, expression, name) {
             Code = code;
         }
 
@@ -18,6 +18,6 @@ namespace Microsoft.R.DataInspection {
         }
 
         public override IREvaluationResultInfo ToEnvironmentIndependentResult() =>
-            new RPromiseInfo(Session, EnvironmentExpression, this.GetEnvironmentIndependentExpression(), Name, Code);
+            new RPromiseInfo(Evaluator, EnvironmentExpression, this.GetEnvironmentIndependentExpression(), Name, Code);
     }
 }
