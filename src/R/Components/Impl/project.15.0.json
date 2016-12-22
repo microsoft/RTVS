@@ -6,7 +6,6 @@
     "Microsoft.VisualStudio.Text.Data": "15.0.25901-RC",
     "Microsoft.VisualStudio.Text.Logic": "15.0.25901-RC",
     "Microsoft.VisualStudio.Text.UI": "15.0.25901-RC",
-    "Microsoft.VisualStudio.Text.UI.Wpf": "15.0.25901-RC",
     "Microsoft.VisualStudio.Imaging": "15.0.25901-RC",
     "Microsoft.VisualStudio.ImageCatalog": "15.0.25824-RC",
     "Newtonsoft.Json": "9.0.1"
