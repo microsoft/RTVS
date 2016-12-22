@@ -10,27 +10,30 @@ using static System.FormattableString;
 
 namespace Microsoft.UnitTests.Core {
     public static class Paths {
+        private static object _lock = new object();
         private static string _vsRoot;
         public static string VsRoot {
             get {
-                if (_vsRoot == null) {
+                lock (_lock) {
+                    if (_vsRoot == null) {
 #if VS14
-                    _vsRoot = (string)Registry.GetValue(Invariant($"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\{Toolset.Version}"), "InstallDir", string.Empty);
+                        _vsRoot = (string)Registry.GetValue(Invariant($"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\{Toolset.Version}"), "InstallDir", string.Empty);
 #else
-                    var buffer = new StringBuilder(512);
-                    string ideFolder = @"Common7\IDE";
-                    NativeMethods.GetModuleFileName(IntPtr.Zero, buffer, buffer.Capacity);
+                        var buffer = new StringBuilder(512);
+                        string ideFolder = @"Common7\IDE";
+                        NativeMethods.GetModuleFileName(IntPtr.Zero, buffer, buffer.Capacity);
 
-                    var testRunnerFolder = buffer.ToString();
-                    var index = testRunnerFolder.IndexOfIgnoreCase(ideFolder);
-                    if (index < 0) {
-                        throw new InvalidOperationException("Unable to find VS IDE folder");
-                    }
+                        var testRunnerFolder = buffer.ToString();
+                        var index = testRunnerFolder.IndexOfIgnoreCase(ideFolder);
+                        if (index < 0) {
+                            throw new InvalidOperationException("Unable to find VS IDE folder");
+                        }
 
-                    _vsRoot = testRunnerFolder.Substring(0, index + ideFolder.Length);
+                        _vsRoot = testRunnerFolder.Substring(0, index + ideFolder.Length);
 #endif
+                    }
+                    return _vsRoot;
                 }
-                return _vsRoot;
             }
         }
 
