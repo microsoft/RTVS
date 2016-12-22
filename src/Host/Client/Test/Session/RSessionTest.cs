@@ -179,7 +179,8 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [Test]
         [Category.R.Session]
         public void StartRHostMissing() {
-            var brokerClient = new LocalBrokerClient(nameof(RSessionTest), BrokerConnectionInfo.Create(@"C:\"), TestCoreServices.CreateReal(), new NullConsole(), Environment.SystemDirectory);
+            var ts = TestCoreServices.CreateReal();
+            var brokerClient = new LocalBrokerClient(nameof(RSessionTest), BrokerConnectionInfo.Create(@"C:\"), ts.FileSystem, ts.ProcessServices, ts.Log, new NullConsole(), Environment.SystemDirectory);
             var session = new RSession(0, _testMethod.Name, brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo(), null, 10000);
 
@@ -202,7 +203,8 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [Test]
         [Category.R.Session]
         public async Task StopBeforeInitialized_RHostMissing() {
-            var brokerClient = new LocalBrokerClient(nameof(RSessionTest), BrokerConnectionInfo.Create(@"C:\"), TestCoreServices.CreateReal(), new NullConsole(), Environment.SystemDirectory);
+            var ts = TestCoreServices.CreateReal();
+            var brokerClient = new LocalBrokerClient(nameof(RSessionTest), BrokerConnectionInfo.Create(@"C:\"), ts.FileSystem, ts.ProcessServices, ts.Log, new NullConsole(), Environment.SystemDirectory);
             var session = new RSession(0, _testMethod.Name, brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo (), null, 10000);
             var startTask = Task.Run(start).SilenceException<RHostBrokerBinaryMissingException>();
@@ -241,11 +243,13 @@ namespace Microsoft.R.Host.Client.Test.Session {
         }
 
 
-        private static IBrokerClient CreateLocalBrokerClient(string name) 
-            => new LocalBrokerClient(name, 
+        private static IBrokerClient CreateLocalBrokerClient(string name) {
+            var ts = TestCoreServices.CreateReal();
+            return new LocalBrokerClient(name,
                 BrokerConnectionInfo.Create(new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath),
-                TestCoreServices.CreateReal(), 
+                ts.FileSystem, ts.ProcessServices, ts.Log,
                 new NullConsole());
+        }
 
         private static Task<int> GetRSessionProcessId(IRSession session) 
             => session.EvaluateAsync<int>("Sys.getpid()", REvaluationKind.Normal);

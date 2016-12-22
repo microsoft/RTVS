@@ -9,7 +9,6 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
 using static System.FormattableString;
@@ -24,7 +23,7 @@ namespace Microsoft.R.Host.Client {
 
             using (var logger = new Logger("Program", new MaxLoggingPermissions(), FileLogWriter.InTempFolder("Microsoft.R.Host.Client.Program"))) {
                 var services = new CoreServices(new AppConstants(), null, new MaxLoggingPermissions(), null, null, null, null, null, null, null);
-                var localConnector = new LocalBrokerClient("Program", BrokerConnectionInfo.Create(args[0]), services, new NullConsole());
+                var localConnector = new LocalBrokerClient("Program", BrokerConnectionInfo.Create(args[0]), services.FileSystem, services.ProcessServices, services.Log, new NullConsole());
                 var host = localConnector.ConnectAsync(new HostConnectionInfo("Program", new Program())).GetAwaiter().GetResult();
                 _evaluator = host;
                 host.Run().GetAwaiter().GetResult();

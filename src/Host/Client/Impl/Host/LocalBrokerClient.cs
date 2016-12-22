@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Json;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
@@ -28,7 +29,8 @@ namespace Microsoft.R.Host.Client.Host {
         private readonly string _rhostDirectory;
         private readonly string _rHome;
         private readonly BinaryAsyncLock _connectLock = new BinaryAsyncLock();
-        private readonly ICoreServices _services;
+        private readonly IFileSystem _fs;
+        private readonly IProcessServices _ps;
 
         private Process _brokerProcess;
 
@@ -43,12 +45,13 @@ namespace Microsoft.R.Host.Client.Host {
             }
         }
 
-        public LocalBrokerClient(string name, BrokerConnectionInfo connectionInfo, ICoreServices services, IConsole console, string rhostDirectory = null)
-            : base(name, connectionInfo, _credentials, services.Log, console) {
+        public LocalBrokerClient(string name, BrokerConnectionInfo connectionInfo, IFileSystem fs, IProcessServices ps, IActionLog log, IConsole console, string rhostDirectory = null)
+            : base(name, connectionInfo, _credentials, log, console) {
 
             _rhostDirectory = rhostDirectory ?? Path.GetDirectoryName(typeof(RHost).Assembly.GetAssemblyPath());
             _rHome = connectionInfo.Uri.LocalPath;
-            _services = services;
+            _fs = fs;
+            _ps = ps;
 
             IsVerified = true;
         }
@@ -77,7 +80,7 @@ namespace Microsoft.R.Host.Client.Host {
             Trace.Assert(_brokerProcess == null);
 
             string rhostBrokerExe = Path.Combine(_rhostDirectory, RHostBrokerExe);
-            if (!_services.FileSystem.FileExists(rhostBrokerExe)) {
+            if (!_fs.FileExists(rhostBrokerExe)) {
                 throw new RHostBrokerBinaryMissingException();
             }
 
@@ -163,7 +166,7 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         private Process StartBroker(ProcessStartInfo psi) {
-            var process = _services.ProcessServices.Start(psi);
+            var process = _ps.Start(psi);
             process.WaitForExit(250);
             if (process.HasExited && process.ExitCode < 0) {
                 var message = ErrorCodeConverter.MessageFromErrorCode(process.ExitCode);

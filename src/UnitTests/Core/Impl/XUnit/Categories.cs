@@ -211,6 +211,14 @@ namespace Microsoft.UnitTests.Core.XUnit {
             }
 
             [ExcludeFromCodeCoverage]
+            public static class Session { 
+                [ExcludeFromCodeCoverage]
+                public class ApiAttribute : CategoryAttribute {
+                    public ApiAttribute() : base("R.Session.API") { }
+                }
+            }
+
+            [ExcludeFromCodeCoverage]
             public class SettingsAttribute : CategoryAttribute {
                 public SettingsAttribute() : base("R.Settings") { }
             }
