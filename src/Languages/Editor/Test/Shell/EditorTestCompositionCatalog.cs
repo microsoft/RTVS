@@ -81,6 +81,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
             "Microsoft.VisualStudio.Platform.VSEditor.Interop.dll"
         };
 
+#if VS14
         /// <summary>
         /// VS CPS assemblies
         /// </summary>
@@ -88,7 +89,6 @@ namespace Microsoft.Languages.Editor.Test.Shell {
             "Microsoft.VisualStudio.ProjectSystem.Implementation.dll",
             "Microsoft.VisualStudio.ProjectSystem.VS.Implementation.dll"
         };
-#if VS14
         /// <summary>
         /// VS project system assemblies
         /// </summary>
@@ -104,6 +104,8 @@ namespace Microsoft.Languages.Editor.Test.Shell {
         private static string[] _projectAssemblies = {
             "Microsoft.VisualStudio.ProjectSystem.dll",
             "Microsoft.VisualStudio.ProjectSystem.VS.dll",
+            "Microsoft.VisualStudio.ProjectSystem.Implementation.dll",
+            "Microsoft.VisualStudio.ProjectSystem.VS.Implementation.dll"
          };
 #endif
         /// <summary>
@@ -142,8 +144,12 @@ namespace Microsoft.Languages.Editor.Test.Shell {
                 AggregateCatalog aggregateCatalog = new AggregateCatalog();
 
                 AddAssembliesToCatalog(_coreEditorAssemblies, AssemblyLocations.EditorPath, aggregateCatalog);
-                //AddAssembliesToCatalog(_cpsAssemblies, AssemblyLocations.CpsPath, aggregateCatalog);
+#if VS14
+                AddAssembliesToCatalog(_cpsAssemblies, AssemblyLocations.CpsPath, aggregateCatalog);
                 AddAssembliesToCatalog(_projectAssemblies, AssemblyLocations.PrivatePath, aggregateCatalog);
+#else
+                AddAssembliesToCatalog(_projectAssemblies, AssemblyLocations.CpsPath, aggregateCatalog);
+#endif
                 AddAssembliesToCatalog(_privateEditorAssemblies, AssemblyLocations.PrivatePath, aggregateCatalog);
 
                 foreach (string assemblyName in _rtvsEditorAssemblies) {

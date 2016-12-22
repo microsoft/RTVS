@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using Microsoft.UnitTests.Core;
 
 namespace Microsoft.Languages.Editor.Test.Shell {
     /// <summary>
@@ -26,7 +27,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
             }
 
             if (asm == null) {
-                path = Path.Combine(AssemblyLocations.IdePath, name);
+                path = Path.Combine(Paths.VsRoot, name);
                 if (File.Exists(path)) {
                     asm = Assembly.LoadFrom(path);
                 }

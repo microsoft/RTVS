@@ -22,9 +22,7 @@ namespace Microsoft.Languages.Core.Tokens {
         private bool _isEndOfStream;
 
         public TokenStream(IReadOnlyTextRangeCollection<T> tokens, T endOfStreamToken) {
-            if (tokens == null) {
-                throw new ArgumentNullException(nameof(tokens));
-            }
+            tokens = tokens ?? throw new ArgumentNullException(nameof(tokens));
 
             _index = 0;
             _tokens = tokens;

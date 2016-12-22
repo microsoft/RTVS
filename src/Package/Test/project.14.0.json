@@ -2,7 +2,7 @@
   "dependencies": {
     "FluentAssertions": "4.16.0",
     "MicroBuild.Core": "0.2.0",
-    "Microsoft.SqlServer.DacFx.x86": "130.3450.1",
+    "Microsoft.SqlServer.DacFx.x86": "130.3485.1",
     "Microsoft.VisualStudio.CoreUtility": "14.3.25407",
     "Microsoft.VisualStudio.Editor": "14.3.25407",
     "Microsoft.VisualStudio.ImageCatalog": "14.3.25407",

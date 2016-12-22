@@ -10,6 +10,7 @@ using Microsoft.R.Components.InteractiveWorkflow.Implementation;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.InteractiveWindow.Shell;
+using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
@@ -35,7 +36,15 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         public IInteractiveWindowVisualComponent Create(int instanceId, IInteractiveEvaluator evaluator, IRSessionProvider sessionProvider) {
             VsAppShell.Current.AssertIsOnMainThread();
 
-            var vsWindow = _vsInteractiveWindowFactoryLazy.Value.Create(RGuidList.ReplInteractiveWindowProviderGuid, instanceId, string.Empty, evaluator);
+            IVsInteractiveWindow vsWindow;
+            var vsf2 = _vsInteractiveWindowFactoryLazy.Value as IVsInteractiveWindowFactory2; // Temporary for VS 2017 RC2
+            if (vsf2 != null) {
+                vsWindow = vsf2.Create(RGuidList.ReplInteractiveWindowProviderGuid, instanceId, string.Empty, evaluator, 
+                                      0, RGuidList.RCmdSetGuid, RPackageCommandId.replWindowToolBarId, null);
+            } else {
+                vsWindow = _vsInteractiveWindowFactoryLazy.Value.Create(RGuidList.ReplInteractiveWindowProviderGuid, instanceId, string.Empty, evaluator);
+            }
+
             var contentType = _contentTypeRegistryService.GetContentType(RContentTypeDefinition.ContentType);
             vsWindow.SetLanguage(RGuidList.RLanguageServiceGuid, contentType);
 

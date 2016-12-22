@@ -140,8 +140,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Session\HostLoadChangedEventArgs.cs" />
     <Compile Include="Session\BrokerStateChangedEventArgs.cs" />
+    <Compile Include="Session\HostLoadChangedEventArgs.cs" />
     <Compile Include="Session\NullConsole.cs" />
     <Compile Include="Session\RAfterRequestEventArgs.cs" />
     <Compile Include="Session\RBeforeRequestEventArgs.cs" />

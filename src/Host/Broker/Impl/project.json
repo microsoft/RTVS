@@ -1,12 +1,12 @@
 ﻿{
   "dependencies": {
-    "Libuv": "1.9.0",
+    "Libuv": "1.9.1",
     "MicroBuild.Core": "0.2.0",
     "Microsoft.AspNetCore.Authentication": "1.0.0",
     "Microsoft.AspNetCore.Mvc": "1.0.0",
     "Microsoft.AspNetCore.Server.Kestrel": "1.0.0",
     "Microsoft.AspNetCore.Server.Kestrel.Https": "1.0.0",
-    "Microsoft.AspNetCore.Server.WebListener": "0.1.0",
+    "Microsoft.AspNetCore.Server.WebListener": "1.0.0",
     "Microsoft.AspNetCore.WebSockets.Server": "0.1.0",
     "Microsoft.Extensions.Configuration.CommandLine": "1.0.0",
     "Microsoft.Extensions.Configuration.Json": "1.0.0",
