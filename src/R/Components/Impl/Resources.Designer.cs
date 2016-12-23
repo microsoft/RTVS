@@ -1347,7 +1347,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to If you want to select specific R version, specify its id number in the connection URL in the form  &apos;https://remote:5444#2&apos;.
+        ///   Looks up a localized string similar to If you want to select specific R version, specify its id number in the connection URL in the form &apos;https://remote:5444#2&apos;.
         /// </summary>
         public static string SelectInterpreterInstruction {
             get {

@@ -587,6 +587,6 @@ Are you sure you want to terminate R session?</value>
     <value>Installed R versions:</value>
   </data>
   <data name="SelectInterpreterInstruction" xml:space="preserve">
-    <value>If you want to select specific R version, specify its id number in the connection URL in the form  'https://remote:5444#2'</value>
+    <value>If you want to select specific R version, specify its id number in the connection URL in the form 'https://remote:5444#2'</value>
   </data>
 </root>
