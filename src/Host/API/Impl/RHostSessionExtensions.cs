@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.R.DataInspection;
@@ -22,27 +23,27 @@ namespace Microsoft.R.Host.Client {
     }
 
     public static class RHostSessionExtensions {
-        private static readonly Dictionary<string, Type> _types = new Dictionary<string, Type>() {
+        private static readonly Dictionary<string, Type> _types = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase) {
             { "integer", typeof(int) }
         };
 
-        public static async Task<List<object>> GetList(this IRHostSession session, string expression, CancellationToken cancellationToken = default(CancellationToken)) {
-            var children = await session.DescribeChildrenAsync(expression, HasChildrenProperty, null);
+        public static async Task<List<object>> GetListAsync(this IRHostSession session, string expression, CancellationToken cancellationToken = default(CancellationToken)) {
+            var children = await session.DescribeChildrenAsync(expression, HasChildrenProperty, null, cancellationToken);
             var list = new List<object>();
             foreach (var c in children) {
-                var value = await session.EvaluateAsync(c.Expression, REvaluationKind.Normal);
-                list.Add(value);
+                REvaluationResult r = await session.EvaluateAsync(c.Expression, REvaluationKind.Normal);
+                list.Add(r.Result.ToObject<object>());
             }
             return list;
         }
 
-        public static async Task<RDataFrame> GetDataFrame(this IRHostSession session, string expression, CancellationToken cancellationToken = default(CancellationToken)) {
-            var children = await session.DescribeChildrenAsync(expression, HasChildrenProperty, null);
+        public static async Task<RDataFrame> GetDataFrameAsync(this IRHostSession session, string expression, CancellationToken cancellationToken = default(CancellationToken)) {
+            var children = await session.DescribeChildrenAsync(expression, HasChildrenProperty, null, cancellationToken);
             return new RDataFrame(new List<string>(), new List<string>(), new List<List<object>>());
         }
 
-        public static async Task<T[,]> GetMatrix<T>(this IRHostSession session, string expression, CancellationToken cancellationToken = default(CancellationToken)) {
-            var children = await session.DescribeChildrenAsync(expression, HasChildrenProperty, null);
+        public static async Task<T[,]> GetMatrixAsync<T>(this IRHostSession session, string expression, CancellationToken cancellationToken = default(CancellationToken)) {
+            var children = await session.DescribeChildrenAsync(expression, HasChildrenProperty, null, cancellationToken);
             var m = new T[0, 0];
             return m;
         }
@@ -52,12 +53,8 @@ namespace Microsoft.R.Host.Client {
             return _types.TryGetValue(vi.TypeName, out t) ? t : typeof(object);
         }
 
-        public static List<T> ToList<T>(this IEnumerable<object> e) {
-            var list = new List<T>();
-            foreach (T o in e) {
-                list.Add(o);
-            }
-            return list;
+        public static List<T> ToListOf<T>(this IEnumerable<object> e) {
+            return new List<T>(e.Select(x => (T)Convert.ChangeType(x, typeof(T))));
         }
     }
 }

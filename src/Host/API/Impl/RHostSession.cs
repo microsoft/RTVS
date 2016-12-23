@@ -70,11 +70,11 @@ namespace Microsoft.R.Host.Client.API {
         public Task StopHostAsync(bool waitForShutdown = true, CancellationToken cancellationToken = default(CancellationToken))
             => _session.StopHostAsync(waitForShutdown, cancellationToken);
 
+        public Task ExecuteAsync(string expression, CancellationToken cancellationToken = default(CancellationToken))
+            => _session.ExecuteAsync(expression, cancellationToken);
+
         public Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind, CancellationToken cancellationToken = default(CancellationToken))
             => _session.EvaluateAsync(expression, kind, cancellationToken);
-
-        public Task ExecuteAsync(string expression, CancellationToken cancellationToken = default(CancellationToken))
-            => _session.EvaluateAsync(expression, REvaluationKind.Normal, cancellationToken);
 
         public Task<T> EvaluateAsync<T>(string expression, CancellationToken cancellationToken = default(CancellationToken))
             => _session.EvaluateAsync<T>(expression, REvaluationKind.Normal, cancellationToken);

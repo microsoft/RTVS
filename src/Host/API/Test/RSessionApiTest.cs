@@ -45,14 +45,17 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [Test]
         public async Task List() {
             await _session.ExecuteAsync("x <- c(1:10)");
-            var r1 = await _session.EvaluateAndDescribeAsync("x", TypeNameProperty | ClassesProperty | DimProperty | LengthProperty, CancellationToken.None);
-            var r2 = await _session.DescribeChildrenAsync("x", HasChildrenProperty | AccessorKindProperty, null);
+            var ol = await _session.GetListAsync("x");
+            ol.Count.Should().Be(10);
 
-            var list = new List<object>();
-            foreach(var result in r2) {
-                var value = await _session.EvaluateAsync(result.Expression, REvaluationKind.Normal);
-                list.Add(value);
-            }
+            var li = ol.ToListOf<int>();
+            li.Count.Should().Be(10);
+        }
+
+        [Test]
+        public async Task DataFrame() {
+            await _session.ExecuteAsync("x <- mtcars");
+            var df = _session.GetDataFrameAsync("x");
         }
     }
 }
