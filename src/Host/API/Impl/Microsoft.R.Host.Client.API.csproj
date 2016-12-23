@@ -44,6 +44,7 @@
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="RHostSessionExtensions.cs" />
     <Compile Include="IRHostSession.cs" />
     <Compile Include="IRHostSessionCallback.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

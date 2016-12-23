@@ -6,7 +6,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client.API;
 using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.XUnit;
@@ -39,15 +38,15 @@ namespace Microsoft.R.Host.Client.Test.Session {
             _session.IsHostRunning.Should().BeTrue();
             _session.IsRemote.Should().BeFalse();
 
-            var result = await _session.EvaluateAsync<int>("1+1", REvaluationKind.Normal);
+            var result = await _session.EvaluateAsync<int>("1+1");
             result.Should().Be(2);
         }
 
         [Test]
         public async Task List() {
-            await _session.ExecuteAsync("x <- c(1:10)", REvaluationKind.Normal);
-            var r1 = await _session.EvaluateAndDescribeAsync("x", TypeNameProperty | ClassesProperty | DimProperty | LengthProperty, null, CancellationToken.None);
-            var r2 = await _session.DescribeChildrenAsync(REnvironments.GlobalEnv, "x", HasChildrenProperty | AccessorKindProperty, null);
+            await _session.ExecuteAsync("x <- c(1:10)");
+            var r1 = await _session.EvaluateAndDescribeAsync("x", TypeNameProperty | ClassesProperty | DimProperty | LengthProperty, CancellationToken.None);
+            var r2 = await _session.DescribeChildrenAsync("x", HasChildrenProperty | AccessorKindProperty, null);
 
             var list = new List<object>();
             foreach(var result in r2) {

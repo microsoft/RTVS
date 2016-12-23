@@ -13,6 +13,8 @@ using Microsoft.Common.Core.Threading;
 using Microsoft.R.Interpreters;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
+using System.Collections.Generic;
+using Microsoft.R.DataInspection;
 
 namespace Microsoft.R.Host.Client.API {
     public sealed class RHostSession : IRHostSession {
@@ -58,8 +60,10 @@ namespace Microsoft.R.Host.Client.API {
         private void OnSessionConnected(object sender, RConnectedEventArgs e) => Connected?.Invoke(this, EventArgs.Empty);
         private void OnSessionDisconnected(object sender, EventArgs e) => Connected?.Invoke(this, EventArgs.Empty);
 
+        #region IRHostSession
         public Task CancelAllAsync(CancellationToken cancellationToken = default(CancellationToken))
             => _session.CancelAllAsync(cancellationToken);
+
         public Task StartHostAsync(IRHostSessionCallback callback, string workingDirectory = null, int codePage = 0, int timeout = 3000, CancellationToken cancellationToken = default(CancellationToken))
             => _session.StartHostAsync(new RHostStartupInfo(null, workingDirectory, codePage), new RSessionSimpleCallback(callback), timeout, cancellationToken);
 
@@ -68,6 +72,19 @@ namespace Microsoft.R.Host.Client.API {
 
         public Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind, CancellationToken cancellationToken = default(CancellationToken))
             => _session.EvaluateAsync(expression, kind, cancellationToken);
+
+        public Task ExecuteAsync(string expression, CancellationToken cancellationToken = default(CancellationToken))
+            => _session.EvaluateAsync(expression, REvaluationKind.Normal, cancellationToken);
+
+        public Task<T> EvaluateAsync<T>(string expression, CancellationToken cancellationToken = default(CancellationToken))
+            => _session.EvaluateAsync<T>(expression, REvaluationKind.Normal, cancellationToken);
+
+        public Task<IRValueInfo> EvaluateAndDescribeAsync(string expression, REvaluationResultProperties properties, CancellationToken cancellationToken = default(CancellationToken))
+            => _session.EvaluateAndDescribeAsync(expression, properties, null, cancellationToken);
+
+        public Task<IReadOnlyList<IREvaluationResultInfo>> DescribeChildrenAsync(string expression, REvaluationResultProperties properties, int? maxCount = null, CancellationToken cancellationToken = default(CancellationToken))
+            => _session.DescribeChildrenAsync(REnvironments.GlobalEnv, expression, properties, null, maxCount, cancellationToken);
+        #endregion
 
         private class NullLog : IActionLog {
             public LogVerbosity LogVerbosity => LogVerbosity.None;
