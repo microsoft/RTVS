@@ -5,9 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.R.DataInspection;
 
-namespace Microsoft.R.Host.Client {
+namespace Microsoft.R.Host.Client.API {
     public interface IRHostSession : IDisposable {
         event EventHandler<EventArgs> Connected;
         event EventHandler<EventArgs> Disconnected;
@@ -18,10 +17,16 @@ namespace Microsoft.R.Host.Client {
         Task StartHostAsync(IRHostSessionCallback callback, string workingDirectory = null, int codePage = 0, int timeout = 3000, CancellationToken cancellationToken = default(CancellationToken));
         Task StopHostAsync(bool waitForShutdown = true, CancellationToken cancellationToken = default(CancellationToken));
         Task CancelAllAsync(CancellationToken cancellationToken = default(CancellationToken));
+
         Task ExecuteAsync(string expression, CancellationToken cancellationToken = default(CancellationToken));
+
         Task<T> EvaluateAsync<T>(string expression, CancellationToken cancellationToken = default(CancellationToken));
-        Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind, CancellationToken cancellationToken = default(CancellationToken));
-        Task<IRValueInfo> EvaluateAndDescribeAsync(string expression, REvaluationResultProperties properties, CancellationToken cancellationToken = default(CancellationToken));
-        Task<IReadOnlyList<IREvaluationResultInfo>> DescribeChildrenAsync(string expression, REvaluationResultProperties properties, int? maxCount = null, CancellationToken cancellationToken = default(CancellationToken));
+
+        Task InvokeAsync(string function, IEnumerable<RFunctionArg> arguments, CancellationToken cancellationToken = default(CancellationToken));
+        Task<string> InvokeAndReturnAsync(string function, IEnumerable<RFunctionArg> arguments, CancellationToken cancellationToken = default(CancellationToken));
+
+            Task<List<object>> GetListAsync(string expression, CancellationToken cancellationToken = default(CancellationToken));
+        Task<RDataFrame> GetDataFrameAsync(string expression, CancellationToken cancellationToken = default(CancellationToken));
+        Task<T[,]> GetMatrixAsync<T>(string expression, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

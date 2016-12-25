@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
 
-namespace Microsoft.R.Host.Client.Session {
+namespace Microsoft.R.Host.Client.API {
     internal sealed class RSessionSimpleCallback : IRSessionCallback {
         private readonly IRHostSessionCallback _cb;
 

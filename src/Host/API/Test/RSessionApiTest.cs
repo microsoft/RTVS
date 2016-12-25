@@ -1,7 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System.Collections.Generic;
+using System.Collections;
+using System.Linq;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ using Microsoft.UnitTests.Core.XUnit;
 using NSubstitute;
 using Xunit;
 using static Microsoft.R.DataInspection.REvaluationResultProperties;
+using System.Collections.Generic;
 
 namespace Microsoft.R.Host.Client.Test.Session {
     [ExcludeFromCodeCoverage]
@@ -53,8 +55,19 @@ namespace Microsoft.R.Host.Client.Test.Session {
         }
 
         [Test]
+        public async Task Invoke() {
+            var func = "f <- function() { c(1:10); }";
+            await _session.ExecuteAsync(func);
+            var result = await _session.InvokeAndReturnAsync("f", Enumerable.Empty<RFunctionArg>());
+            var ol = await _session.GetListAsync(result);
+
+            var li = ol.ToListOf<int>();
+            li.Count.Should().Be(10);
+        }
+
+        [Test]
         public async Task DataFrame() {
-            await _session.ExecuteAsync("x <- mtcars");
+            await _session.ExecuteAsync("x <- datasets::mtcars");
             var df = _session.GetDataFrameAsync("x");
         }
     }
