@@ -55,14 +55,24 @@ namespace Microsoft.R.Host.Client.Test.Session {
         }
 
         [Test]
-        public async Task Invoke() {
+        public async Task InvokeReturnList() {
             var func = "f <- function() { c(1:10); }";
             await _session.ExecuteAsync(func);
-            var result = await _session.InvokeAndReturnAsync("f", Enumerable.Empty<RFunctionArg>());
+            var result = await _session.InvokeAndReturnAsync("f");
             var ol = await _session.GetListAsync(result);
 
             var li = ol.ToListOf<int>();
             li.Count.Should().Be(10);
+        }
+
+        [Test]
+        public async Task InvokeSimpleParams() {
+            var func = "f <- function(a, b) { a+b }";
+            await _session.ExecuteAsync(func);
+            var result = await _session.InvokeAndReturnAsync("f", CancellationToken.None, 1, 2);
+            var r = await _session.EvaluateAsync<int>(result);
+
+            r.Should().Be(3);
         }
 
         [Test]

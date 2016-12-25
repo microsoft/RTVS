@@ -13,7 +13,7 @@ namespace Microsoft.R.Host.Client.API {
             return new List<T>(e.Select(x => (T)Convert.ChangeType(x, typeof(T))));
         }
 
-        public static string GetRepresentation(this object value) {
+        public static string ToRLiteral(this object value) {
             string rvalue;
             var t = value.GetType();
             if (t == typeof(int) || t == typeof(long) || t == typeof(uint) || t == typeof(ulong) || t == typeof(float) || t == typeof(double)) {
@@ -40,14 +40,14 @@ namespace Microsoft.R.Host.Client.API {
                 } else {
                     sb.Append(", ");
                 }
-                var s = o.GetRepresentation();
+                var s = o.ToRLiteral();
                 sb.Append(s);
             }
             sb.Append(')');
             return sb.ToString();
         }
 
-        public static string ToRFunctionCall(this string function, IEnumerable<RFunctionArg> arguments) {
+        public static string ToRFunctionCall(this string function, params object[] arguments) {
             var sb = new StringBuilder(function);
             sb.Append('(');
 
@@ -56,9 +56,16 @@ namespace Microsoft.R.Host.Client.API {
                 if (sb.Length > function.Length + 1) {
                     sb.Append(", ");
                 }
-                sb.Append(arg.Name);
-                sb.Append(" = ");
-                sb.Append(arg.Value);
+                if (arg is RFunctionArg) {
+                    var r = (RFunctionArg)arg;
+                    if (!string.IsNullOrEmpty(r.Name)) {
+                        sb.Append(r.Name);
+                        sb.Append(" = ");
+                    }
+                    sb.Append(r.Value);
+                } else {
+                    sb.Append($"{arg.ToRLiteral()}");
+                }
             }
             sb.Append(')');
             return sb.ToString();

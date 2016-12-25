@@ -22,8 +22,8 @@ namespace Microsoft.R.Host.Client.API {
 
         Task<T> EvaluateAsync<T>(string expression, CancellationToken cancellationToken = default(CancellationToken));
 
-        Task InvokeAsync(string function, IEnumerable<RFunctionArg> arguments, CancellationToken cancellationToken = default(CancellationToken));
-        Task<string> InvokeAndReturnAsync(string function, IEnumerable<RFunctionArg> arguments, CancellationToken cancellationToken = default(CancellationToken));
+        Task InvokeAsync(string function, CancellationToken cancellationToken = default(CancellationToken), params object[] args);
+        Task<string> InvokeAndReturnAsync(string function, CancellationToken cancellationToken = default(CancellationToken), params object[] args);
 
             Task<List<object>> GetListAsync(string expression, CancellationToken cancellationToken = default(CancellationToken));
         Task<RDataFrame> GetDataFrameAsync(string expression, CancellationToken cancellationToken = default(CancellationToken));

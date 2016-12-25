@@ -11,15 +11,15 @@ using static Microsoft.R.DataInspection.REvaluationResultProperties;
 
 namespace Microsoft.R.Host.Client.API {
     public partial class RHostSession {
-        public async Task InvokeAsync(string function, IEnumerable<RFunctionArg> arguments, CancellationToken cancellationToken = default(CancellationToken)) {
-            var fc = function.ToRFunctionCall(arguments);
-            await ExecuteAsync(fc);
+        public async Task InvokeAsync(string function, CancellationToken cancellationToken = default(CancellationToken), params object[] args) {
+            var fc = function.ToRFunctionCall(args);
+            await ExecuteAsync(fc, cancellationToken);
         }
-        public async Task<string> InvokeAndReturnAsync(string function, IEnumerable<RFunctionArg> arguments, CancellationToken cancellationToken = default(CancellationToken)) {
-            var fc = function.ToRFunctionCall(arguments);
+        public async Task<string> InvokeAndReturnAsync(string function, CancellationToken cancellationToken = default(CancellationToken), params object[] args) {
+            var fc = function.ToRFunctionCall(args);
             var result = Invariant($"rtvs.{function}.result");
             string statement = Invariant($"{result} <- {fc}");
-            await ExecuteAsync(statement);
+            await ExecuteAsync(statement, cancellationToken);
             return result;
         }
 
