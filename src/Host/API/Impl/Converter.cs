@@ -5,6 +5,7 @@ using System.Text;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Common.Core;
 using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client.API {
@@ -14,25 +15,35 @@ namespace Microsoft.R.Host.Client.API {
         }
 
         public static string ToRLiteral(this object value) {
+            if (value == null) {
+                return "NULL";
+            }
+
             string rvalue;
             var t = value.GetType();
             if (t == typeof(int) || t == typeof(long) || t == typeof(uint) || t == typeof(ulong) || t == typeof(float) || t == typeof(double)) {
                 rvalue = Invariant($"{value}");
+            } else if (t == typeof(bool)) {
+                rvalue = ((bool)value) ? "TRUE" : "FALSE";
             } else if (t == typeof(string)) {
-                rvalue = Invariant($"{((string)value).ToRStringLiteral()}'");
+                var s = (string)value;
+                if (s.EqualsOrdinal("...")) {
+                    return "...";
+                }
+                rvalue = Invariant($"{s.ToRStringLiteral()}");
             } else if (t == typeof(char)) {
                 rvalue = Invariant($"'{(char)value}'");
             } else if (t == typeof(RObject)) {
                 rvalue = ((RObject)value).Name;
             } else if (value is IEnumerable<object>) {
-                rvalue = ((IEnumerable<object>)value).ToRList();
+                rvalue = ((IEnumerable<object>)value).ToRListConstructor();
             } else {
                 throw new ArgumentException(Invariant($"Unsupported value type of {nameof(value)}: {t}"));
             }
             return rvalue;
         }
 
-        private static string ToRList(this IEnumerable<object> list) {
+        public static string ToRListConstructor<T>(this IEnumerable<T> list) {
             var sb = new StringBuilder();
             foreach (var o in list) {
                 if (sb.Length == 0) {
@@ -44,6 +55,20 @@ namespace Microsoft.R.Host.Client.API {
                 sb.Append(s);
             }
             sb.Append(')');
+            return sb.ToString();
+        }
+
+        public static string ToRDataFrameConstructor(this DataFrame df) {
+            var sb = new StringBuilder();
+            foreach (var list in df.Data) {
+                if (sb.Length == 0) {
+                    sb.Append("data.frame(");
+                } else {
+                    sb.Append(", ");
+                }
+                sb.Append(list.ToRListConstructor());
+            }
+            sb.Append(", stringsAsFactors=FALSE)");
             return sb.ToString();
         }
 

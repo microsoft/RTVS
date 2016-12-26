@@ -44,8 +44,9 @@
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="RDataFrame.cs" />
+    <Compile Include="DataFrame.cs" />
     <Compile Include="RFunctionArg.cs" />
+    <Compile Include="RHostSessionExtensions.cs" />
     <Compile Include="RHostSession.Support.cs" />
     <Compile Include="RHostSession.Interop.cs" />
     <Compile Include="Definitions\IRHostSession.cs" />

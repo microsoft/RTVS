@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.R.DataInspection;
 using static System.FormattableString;
 using static Microsoft.R.DataInspection.REvaluationResultProperties;
 
@@ -34,16 +33,14 @@ namespace Microsoft.R.Host.Client.API {
         }
 
         private const string _dfTempVariableName = ".rtvs.gdf.temp";
-        public async Task<RDataFrame> GetDataFrameAsync(string expression, CancellationToken cancellationToken = default(CancellationToken)) {
+        public async Task<DataFrame> GetDataFrameAsync(string expression, CancellationToken cancellationToken = default(CancellationToken)) {
             await ExecuteAsync(Invariant($"{_dfTempVariableName} <- {expression}"), cancellationToken);
 
-            var properties = LengthProperty | DimProperty | CanCoerceToDataFrameProperty;
+            var properties = CanCoerceToDataFrameProperty;
             var info = await EvaluateAndDescribeAsync(expression, properties, cancellationToken);
             if (!info.CanCoerceToDataFrame) {
                 throw new ArgumentException(Invariant($"{nameof(expression)} cannot be coerced to the data frame"));
             }
-
-            await ExecuteAsync(Invariant($"{_dfTempVariableName}.df <- as.data.frame({_dfTempVariableName})"), cancellationToken);
 
             await ExecuteAsync(Invariant($"{_dfTempVariableName}.rn <- rownames({_dfTempVariableName})"), cancellationToken);
             var rowNames = (await GetListAsync(Invariant($"{_dfTempVariableName}.rn"), cancellationToken)).ToListOf<string>();
@@ -51,7 +48,9 @@ namespace Microsoft.R.Host.Client.API {
             await ExecuteAsync(Invariant($"{_dfTempVariableName}.cn <- colnames({_dfTempVariableName})"), cancellationToken);
             var colNames = (await GetListAsync(Invariant($"{_dfTempVariableName}.cn"), cancellationToken)).ToListOf<string>();
 
+            await ExecuteAsync(Invariant($"{_dfTempVariableName}.df <- as.data.frame({_dfTempVariableName})"), cancellationToken);
             var data = new List<List<object>>();
+
             for(int i = 1; i <= colNames.Count; i++) {
                  var list = await GetListAsync(Invariant($"{_dfTempVariableName}.df[[{i}]]"), cancellationToken);
                 data.Add(list);
@@ -62,7 +61,7 @@ namespace Microsoft.R.Host.Client.API {
             await ExecuteAsync(Invariant($"rm({_dfTempVariableName}.df)"));
             await ExecuteAsync(Invariant($"rm({_dfTempVariableName})"));
 
-            return new RDataFrame(rowNames, colNames, data);
+            return new DataFrame(rowNames, colNames, data);
         }
 
         public async Task<T[,]> GetMatrixAsync<T>(string expression, CancellationToken cancellationToken = default(CancellationToken)) {
