@@ -33,33 +33,36 @@ namespace Microsoft.R.Host.Client.API {
             return list;
         }
 
-        private const string _tempVariableName = ".rtvs.temp";
+        private const string _dfTempVariableName = ".rtvs.gdf.temp";
         public async Task<RDataFrame> GetDataFrameAsync(string expression, CancellationToken cancellationToken = default(CancellationToken)) {
-            await ExecuteAsync(Invariant($".rtvs.temp <- {expression}"), cancellationToken);
-            await ExecuteAsync(".rtvs.temp.rn <- rownames(.rtvs.temp)", cancellationToken);
+            await ExecuteAsync(Invariant($"{_dfTempVariableName} <- {expression}"), cancellationToken);
 
-            REvaluationResultProperties properties =
-                         ExpressionProperty |
-                         AccessorKindProperty |
-                         TypeNameProperty |
-                         ClassesProperty |
-                         LengthProperty |
-                         SlotCountProperty |
-                         AttributeCountProperty |
-                         DimProperty |
-                         FlagsProperty |
-                         CanCoerceToDataFrameProperty;
-            var r = await DescribeChildrenAsync(expression, properties, 100, cancellationToken);
-
+            var properties = LengthProperty | DimProperty | CanCoerceToDataFrameProperty;
             var info = await EvaluateAndDescribeAsync(expression, properties, cancellationToken);
-            //var info = await session.EvaluateAndDescribeAsync(expression, CanCoerceToDataFrameProperty, cancellationToken);
-            if(!info.CanCoerceToDataFrame) {
+            if (!info.CanCoerceToDataFrame) {
                 throw new ArgumentException(Invariant($"{nameof(expression)} cannot be coerced to the data frame"));
             }
-            await ExecuteAsync(Invariant($"{_tempVariableName} < - as.dataframe({expression})"), cancellationToken);
-            info = await EvaluateAndDescribeAsync(Invariant($"{_tempVariableName}"), DimProperty, cancellationToken);
-            //var children = await session.DescribeChildrenAsync(expression, HasChildrenProperty, null, cancellationToken);
-            return new RDataFrame(new List<string>(), new List<string>(), new List<List<object>>());
+
+            await ExecuteAsync(Invariant($"{_dfTempVariableName}.df <- as.data.frame({_dfTempVariableName})"), cancellationToken);
+
+            await ExecuteAsync(Invariant($"{_dfTempVariableName}.rn <- rownames({_dfTempVariableName})"), cancellationToken);
+            var rowNames = (await GetListAsync(Invariant($"{_dfTempVariableName}.rn"), cancellationToken)).ToListOf<string>();
+
+            await ExecuteAsync(Invariant($"{_dfTempVariableName}.cn <- colnames({_dfTempVariableName})"), cancellationToken);
+            var colNames = (await GetListAsync(Invariant($"{_dfTempVariableName}.cn"), cancellationToken)).ToListOf<string>();
+
+            var data = new List<List<object>>();
+            for(int i = 1; i <= colNames.Count; i++) {
+                 var list = await GetListAsync(Invariant($"{_dfTempVariableName}.df[[{i}]]"), cancellationToken);
+                data.Add(list);
+            }
+
+            await ExecuteAsync(Invariant($"rm({_dfTempVariableName}.rn)"));
+            await ExecuteAsync(Invariant($"rm({_dfTempVariableName}.cn)"));
+            await ExecuteAsync(Invariant($"rm({_dfTempVariableName}.df)"));
+            await ExecuteAsync(Invariant($"rm({_dfTempVariableName})"));
+
+            return new RDataFrame(rowNames, colNames, data);
         }
 
         public async Task<T[,]> GetMatrixAsync<T>(string expression, CancellationToken cancellationToken = default(CancellationToken)) {

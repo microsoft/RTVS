@@ -77,8 +77,8 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
         [Test]
         public async Task DataFrame() {
-            await _session.ExecuteAsync("x <- datasets::mtcars");
-            var df = _session.GetDataFrameAsync("x");
+            await _session.ExecuteAsync("x <- mtcars");
+            var df = await _session.GetDataFrameAsync("x");
         }
     }
 }
