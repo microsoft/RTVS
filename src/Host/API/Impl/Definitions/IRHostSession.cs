@@ -8,25 +8,121 @@ using System.Threading.Tasks;
 
 namespace Microsoft.R.Host.Client.API {
     public interface IRHostSession : IDisposable {
+        /// <summary>
+        /// Fires when R Host process has started. It is not fully initialized yet. 
+        /// Await on <see cref="HostStarted"/> task to detect when host is fully initialized.
+        /// </summary>
         event EventHandler<EventArgs> Connected;
+
+        /// <summary>
+        /// Fires when host has been terminated. It may have crashed or exited normally.
+        /// </summary>
         event EventHandler<EventArgs> Disconnected;
 
+        /// <summary>
+        /// Awaitable task that completes when R host process has completed initialization.
+        /// </summary>
+        Task HostStarted { get; }
+
+        /// <summary>
+        /// Indicates if host process is currently running.
+        /// </summary>
         bool IsHostRunning { get; }
+
+        /// <summary>
+        /// Indicates if R session is remote.
+        /// </summary>
         bool IsRemote { get; }
 
+        /// <summary>
+        /// Starts R host process.
+        /// </summary>
+        /// <param name="callback">
+        /// A set of callbacks that are called when R engine requests certain operation
+        /// that are usually provided by the application
+        /// </param>
+        /// <param name="workingDirectory">R working directly</param>
+        /// <param name="codePage">R code page to set</param>
+        /// <param name="timeout">Timeout to wait for the host process to start</param>
+        /// <param name="cancellationToken">Cancellation token</param>
         Task StartHostAsync(IRHostSessionCallback callback, string workingDirectory = null, int codePage = 0, int timeout = 3000, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Stops R host process
+        /// </summary>
+        /// <param name="waitForShutdown">
+        /// If true, the method will wait for the R Host process to exit.
+        /// If false, the process will receive termination request and the call will return immediately.
+        /// </param>
+        /// <param name="cancellationToken">Cancellation token</param>
         Task StopHostAsync(bool waitForShutdown = true, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Attempts to cancel all running tasks in the R Host. 
+        /// This is similar to 'Interrupt R' command.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token</param>
         Task CancelAllAsync(CancellationToken cancellationToken = default(CancellationToken));
 
+        /// <summary>
+        /// Executes R code
+        /// </summary>
+        /// <param name="expression">Expression or block of R code to execute</param>
+        /// <param name="cancellationToken">Cancellation token</param>
         Task ExecuteAsync(string expression, CancellationToken cancellationToken = default(CancellationToken));
 
+        /// <summary>
+        /// Evaluates the provided expression and returns the result.
+        /// This method is typically used to fetch variable value and return it to .NET code.
+        /// </summary>
+        /// <typeparam name="T">
+        /// Type of the variable expected. This must be a simple type.
+        /// To return collections use <see cref="GetListAsync"/> and <see cref="GetDataFrameAsync"/>
+        /// </typeparam>
+        /// <param name="expression">Expression or block of R code to execute</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>The variable or expression value</returns>
         Task<T> EvaluateAsync<T>(string expression, CancellationToken cancellationToken = default(CancellationToken));
 
+        /// <summary>
+        /// Invokes R function. 
+        /// </summary>
+        /// <param name="function">Function name</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <param name="args">Function arguments</param>
         Task InvokeAsync(string function, CancellationToken cancellationToken = default(CancellationToken), params object[] args);
+
+        /// <summary>
+        /// Invokes R function. 
+        /// </summary>
+        /// <param name="function">Function name</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <param name="args">Function arguments</param>
+        /// <returns>Name of the variable that holds data returned by the function</returns>
         Task<string> InvokeAndReturnAsync(string function, CancellationToken cancellationToken = default(CancellationToken), params object[] args);
 
+        /// <summary>
+        /// Retrieves list of unknown type from R variable
+        /// </summary>
+        /// <param name="expression">Expression (variable name) to fetch as list</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>List of objects</returns>
         Task<List<object>> GetListAsync(string expression, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Retrieves list of specific type from R variable
+        /// </summary>
+        /// <param name="expression">Expression (variable name) to fetch as list</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>List of values of the provided type</returns>
         Task<List<T>> GetListAsync<T>(string expression, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Retrieves data frame from R variable
+        /// </summary>
+        /// <param name="expression">Expression (variable name) to fetch as data frame</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>Data frame</returns>
         Task<DataFrame> GetDataFrameAsync(string expression, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

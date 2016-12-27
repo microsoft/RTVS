@@ -19,6 +19,7 @@ namespace Microsoft.R.Host.Client.API {
         private readonly IRSession _session;
         private readonly DisposableBag _disposableBag;
 
+        public Task HostStarted => _session.HostStarted;
         public bool IsHostRunning => _session.IsHostRunning;
         public bool IsRemote => false;
 
