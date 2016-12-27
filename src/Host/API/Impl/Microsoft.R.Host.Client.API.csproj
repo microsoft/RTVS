@@ -53,7 +53,6 @@
     <Compile Include="Definitions\IRHostSessionCallback.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RHostSession.cs" />
-    <Compile Include="RObject.cs" />
     <Compile Include="RSessionSimpleCallback.cs" />
     <Compile Include="Converter.cs" />
   </ItemGroup>

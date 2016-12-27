@@ -1,10 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System.Text;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Microsoft.Common.Core;
 using static System.FormattableString;
 
@@ -20,39 +21,34 @@ namespace Microsoft.R.Host.Client.API {
             }
 
             string rvalue;
-            var t = value.GetType();
-            if (t == typeof(int) || t == typeof(long) || t == typeof(uint) || t == typeof(ulong) || t == typeof(float) || t == typeof(double)) {
+            if (value is int || value is long || value is uint || value is ulong || value is float || value is double) {
                 rvalue = Invariant($"{value}");
-            } else if (t == typeof(bool)) {
+            } else if (value is bool) {
                 rvalue = ((bool)value) ? "TRUE" : "FALSE";
-            } else if (t == typeof(string)) {
+            } else if (value is string) {
                 var s = (string)value;
                 if (s.EqualsOrdinal("...")) {
                     return "...";
                 }
                 rvalue = Invariant($"{s.ToRStringLiteral()}");
-            } else if (t == typeof(char)) {
+            } else if (value is char) {
                 rvalue = Invariant($"'{(char)value}'");
-            } else if (t == typeof(RObject)) {
-                rvalue = ((RObject)value).Name;
-            } else if (value is IEnumerable<object>) {
-                rvalue = ((IEnumerable<object>)value).ToRListConstructor();
+            } else if (value is IEnumerable) {
+                rvalue = ((IEnumerable)value).ToRListConstructor();
             } else {
-                throw new ArgumentException(Invariant($"Unsupported value type of {nameof(value)}: {t}"));
+                throw new ArgumentException(Invariant($"Unsupported value type of {nameof(value)}: {value.GetType()}"));
             }
             return rvalue;
         }
 
-        public static string ToRListConstructor<T>(this IEnumerable<T> list) {
+        public static string ToRListConstructor(this IEnumerable e) {
             var sb = new StringBuilder();
-            foreach (var o in list) {
-                if (sb.Length == 0) {
-                    sb.Append("c(");
-                } else {
+            sb.Append("c(");
+            foreach (var o in e) {
+                if (sb.Length > 2) {
                     sb.Append(", ");
                 }
-                var s = o.ToRLiteral();
-                sb.Append(s);
+                sb.Append(o.ToRLiteral());
             }
             sb.Append(')');
             return sb.ToString();
@@ -81,16 +77,17 @@ namespace Microsoft.R.Host.Client.API {
                 if (sb.Length > function.Length + 1) {
                     sb.Append(", ");
                 }
+
+                object a = arg;
                 if (arg is RFunctionArg) {
                     var r = (RFunctionArg)arg;
                     if (!string.IsNullOrEmpty(r.Name)) {
                         sb.Append(r.Name);
                         sb.Append(" = ");
                     }
-                    sb.Append(r.Value);
-                } else {
-                    sb.Append($"{arg.ToRLiteral()}");
+                    a = r.Value;
                 }
+                sb.Append(a.ToRLiteral());
             }
             sb.Append(')');
             return sb.ToString();

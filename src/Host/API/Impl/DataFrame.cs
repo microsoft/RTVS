@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Diagnostics;
 
 namespace Microsoft.R.Host.Client.API {
@@ -11,16 +12,26 @@ namespace Microsoft.R.Host.Client.API {
         public IReadOnlyList<string> RowNames { get; }
         public IReadOnlyList<IReadOnlyList<object>> Data { get; }
 
-        public DataFrame(IReadOnlyList<string> rowNames, IReadOnlyList<string> columnNames, IReadOnlyList<IReadOnlyList<object>> data) {
+        public DataFrame(IReadOnlyCollection<string> rowNames, IReadOnlyCollection<string> columnNames, IReadOnlyCollection<IReadOnlyCollection<object>> data) {
             Check.ArgumentNull(nameof(data), data);
             Check.ArgumentOutOfRange(nameof(data), () => data.Count == 0);
-            Check.ArgumentOutOfRange(nameof(rowNames), () => rowNames != null && rowNames.Count != data[0].Count);
+            Check.ArgumentOutOfRange(nameof(rowNames), () => rowNames != null && rowNames.Count != data.First().Count);
             Check.ArgumentOutOfRange(nameof(columnNames), () => columnNames != null && columnNames.Count != data.Count);
-            Check.ArgumentOutOfRange(nameof(data), () => data.Select(x => x.Count != rowNames.Count).Any());
+            Check.ArgumentOutOfRange(nameof(data), () => data.Where(c => c.Count != rowNames.Count).Any());
 
             RowNames = new List<string>(rowNames);
             ColumnNames = new List<string>(columnNames);
-            Data = data;
+
+            var list = new List<List<object>>();
+            foreach(var e in data) {
+                list.Add(new List<object>(e));
+            }
+            Data = list;
+        }
+
+        public IReadOnlyList<object> GetColumn(string name) {
+            var selection = ColumnNames.IndexWhere(x => x.EqualsOrdinal(name));
+            return selection.Any() ? Data[selection.First()] : null;
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Microsoft.R.Host.Client.API {
 
         public RFunctionArg(string value) : this(null, value) { }
 
-        public RFunctionArg(string name, string value) {
+        public RFunctionArg(string name, object value) {
             Name = name;
             Value = value;
         }

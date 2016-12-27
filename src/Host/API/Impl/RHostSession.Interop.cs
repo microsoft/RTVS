@@ -3,8 +3,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 using static Microsoft.R.DataInspection.REvaluationResultProperties;
 
@@ -23,13 +25,21 @@ namespace Microsoft.R.Host.Client.API {
         }
 
         public async Task<List<object>> GetListAsync(string expression, CancellationToken cancellationToken = default(CancellationToken)) {
-            var children = await DescribeChildrenAsync(Invariant($"as.list({expression})"), HasChildrenProperty, null, cancellationToken);
-            var list = new List<object>();
-            foreach (var c in children) {
-                REvaluationResult r = await EvaluateAsync(c.Expression, REvaluationKind.Normal);
-                list.Add(r.Result.ToObject<object>());
+            var array = await GetJArrayAsync(expression, cancellationToken);
+            return JArrayToObjectList(array);
+        }
+
+        public async Task<List<T>> GetListAsync<T>(string expression, CancellationToken cancellationToken = default(CancellationToken)) {
+            if(typeof(T) == typeof(object)) {
+                throw new ArgumentException(nameof(T), "Use GetListAsync(...) instead of GetListAsync<object>(...)");
             }
-            return list;
+            var array = await GetJArrayAsync(expression, cancellationToken);
+            return array.Values<T>().ToList();
+        }
+
+        private Task<JArray> GetJArrayAsync(string expression, CancellationToken cancellationToken = default(CancellationToken)) {
+            var exp = Invariant($"as.list({expression})");
+            return EvaluateAsync<JArray>(exp, cancellationToken);
         }
 
         private const string _dfTempVariableName = ".rtvs.gdf.temp";
@@ -43,16 +53,16 @@ namespace Microsoft.R.Host.Client.API {
             }
 
             await ExecuteAsync(Invariant($"{_dfTempVariableName}.rn <- rownames({_dfTempVariableName})"), cancellationToken);
-            var rowNames = (await GetListAsync(Invariant($"{_dfTempVariableName}.rn"), cancellationToken)).ToListOf<string>();
+            var rowNames = (await GetListAsync<string>(Invariant($"{_dfTempVariableName}.rn"), cancellationToken));
 
             await ExecuteAsync(Invariant($"{_dfTempVariableName}.cn <- colnames({_dfTempVariableName})"), cancellationToken);
-            var colNames = (await GetListAsync(Invariant($"{_dfTempVariableName}.cn"), cancellationToken)).ToListOf<string>();
+            var colNames = (await GetListAsync<string>(Invariant($"{_dfTempVariableName}.cn"), cancellationToken));
 
             await ExecuteAsync(Invariant($"{_dfTempVariableName}.df <- as.data.frame({_dfTempVariableName})"), cancellationToken);
             var data = new List<List<object>>();
 
-            for(int i = 1; i <= colNames.Count; i++) {
-                 var list = await GetListAsync(Invariant($"{_dfTempVariableName}.df[[{i}]]"), cancellationToken);
+            for (int i = 1; i <= colNames.Count; i++) {
+                var list = await GetListAsync(Invariant($"{_dfTempVariableName}.df[[{i}]]"), cancellationToken);
                 data.Add(list);
             }
 
@@ -64,10 +74,21 @@ namespace Microsoft.R.Host.Client.API {
             return new DataFrame(rowNames, colNames, data);
         }
 
-        public async Task<T[,]> GetMatrixAsync<T>(string expression, CancellationToken cancellationToken = default(CancellationToken)) {
-            var children = await DescribeChildrenAsync(expression, HasChildrenProperty, null, cancellationToken);
-            var m = new T[0, 0];
-            return m;
+        private List<object> JArrayToObjectList(JArray array) {
+            if (array.Count == 0) {
+                return new List<object>();
+            }
+
+            Type type;
+            switch (array[0].Type) {
+                case JTokenType.Integer: type = typeof(int); break;
+                case JTokenType.Float: type = typeof(double); break;
+                case JTokenType.Boolean: type = typeof(bool); break;
+                case JTokenType.String: type = typeof(string); break;
+                default:
+                    throw new ArgumentException(nameof(array), Invariant($"Unsupported JSON type {array[0].Type}"));
+            }
+            return new List<object>(array.Select(jt => jt.ToObject(type)));
         }
     }
 }

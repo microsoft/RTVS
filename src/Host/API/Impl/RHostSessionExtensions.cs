@@ -10,17 +10,17 @@ using static System.FormattableString;
 namespace Microsoft.R.Host.Client.API {
     public static class RHostSessionExtensions {
         public static Task CreateListAsync<T>(this IRHostSession session, string name, IEnumerable<T> e, CancellationToken cancellationToken = default(CancellationToken)) {
-            var rlist = e.ToRListConstructor<T>();
+            var rlist = e.ToRListConstructor();
             return session.ExecuteAsync(Invariant($"{name.ToRStringLiteral()} <- {rlist}"));
         }
 
-        public static async Task CreateDataFrameAsync<T>(this IRHostSession session, string name, DataFrame df, CancellationToken cancellationToken = default(CancellationToken)) {
+        public static async Task CreateDataFrameAsync(this IRHostSession session, string name, DataFrame df, CancellationToken cancellationToken = default(CancellationToken)) {
             await session.ExecuteAsync(Invariant($"{name.ToRStringLiteral()} <- {df.ToRDataFrameConstructor()}"));
             if (df.RowNames != null && df.RowNames.Count > 0) {
                 await session.ExecuteAsync(Invariant($"rownames({name}) <- {df.RowNames.ToRListConstructor()}"));
             }
             if (df.ColumnNames != null && df.ColumnNames.Count > 0) {
-                await session.ExecuteAsync(Invariant($"colnames({name}) <- {df.RowNames.ToRListConstructor()}"));
+                await session.ExecuteAsync(Invariant($"colnames({name}) <- {df.ColumnNames.ToRListConstructor()}"));
             }
         }
     }
