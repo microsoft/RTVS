@@ -1,20 +1,55 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Diagnostics;
+using Microsoft.R.Host.Client.Host;
 using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client.API {
     public static class RHostSessionExtensions {
-        public static Task CreateListAsync<T>(this IRHostSession session, string name, IEnumerable<T> e, CancellationToken cancellationToken = default(CancellationToken)) {
-            var rlist = e.ToRListConstructor();
+        /// <summary>
+        /// Creates list of objects in R from list of .NET objects
+        /// </summary>
+        /// <typeparam name="T">.NET object type</typeparam>
+        /// <param name="session">R session</param>
+        /// <param name="name">Name of the variable to assign the R list to</param>
+        /// <param name="list">List of .NET objects</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <exception cref="ArgumentNullException" />
+        /// <exception cref="ArgumentException" />
+        /// <exception cref="REvaluationException" />
+        /// <exception cref="OperationCanceledException" />
+        /// <exception cref="RHostDisconnectedException" />
+        public static Task CreateListAsync<T>(this IRHostSession session, string name, IEnumerable<T> list, CancellationToken cancellationToken = default(CancellationToken)) {
+            Check.ArgumentNull(nameof(session), session);
+            Check.ArgumentNull(nameof(name), name);
+            Check.ArgumentNull(nameof(list), list);
+
+            var rlist = list.ToRListConstructor();
             return session.ExecuteAsync(Invariant($"{name.ToRStringLiteral()} <- {rlist}"));
         }
 
+        /// <summary>
+        /// Creates R data frame from .NET <see cref="DataFrame"/>
+        /// </summary>
+        /// <param name="session">R session</param>
+        /// <param name="name">Name of the variable to assign the R list to</param>
+        /// <param name="df">.NET data frame</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <exception cref="ArgumentNullException" />
+        /// <exception cref="ArgumentException" />
+        /// <exception cref="REvaluationException" />
+        /// <exception cref="OperationCanceledException" />
+        /// <exception cref="RHostDisconnectedException" />
         public static async Task CreateDataFrameAsync(this IRHostSession session, string name, DataFrame df, CancellationToken cancellationToken = default(CancellationToken)) {
+            Check.ArgumentNull(nameof(session), session);
+            Check.ArgumentNull(nameof(name), name);
+            Check.ArgumentNull(nameof(df), df);
+
             await session.ExecuteAsync(Invariant($"{name.ToRStringLiteral()} <- {df.ToRDataFrameConstructor()}"));
             if (df.RowNames != null && df.RowNames.Count > 0) {
                 await session.ExecuteAsync(Invariant($"rownames({name}) <- {df.RowNames.ToRListConstructor()}"));

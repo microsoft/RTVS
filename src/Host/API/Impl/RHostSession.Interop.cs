@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Diagnostics;
 using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 using static Microsoft.R.DataInspection.REvaluationResultProperties;
@@ -13,10 +14,12 @@ using static Microsoft.R.DataInspection.REvaluationResultProperties;
 namespace Microsoft.R.Host.Client.API {
     public partial class RHostSession {
         public async Task InvokeAsync(string function, CancellationToken cancellationToken = default(CancellationToken), params object[] args) {
+            Check.ArgumentNull(nameof(function), function);
             var fc = function.ToRFunctionCall(args);
             await ExecuteAsync(fc, cancellationToken);
         }
         public async Task<string> InvokeAndReturnAsync(string function, CancellationToken cancellationToken = default(CancellationToken), params object[] args) {
+            Check.ArgumentNull(nameof(function), function);
             var fc = function.ToRFunctionCall(args);
             var result = Invariant($"rtvs.{function}.result");
             string statement = Invariant($"{result} <- {fc}");
@@ -25,12 +28,14 @@ namespace Microsoft.R.Host.Client.API {
         }
 
         public async Task<List<object>> GetListAsync(string expression, CancellationToken cancellationToken = default(CancellationToken)) {
+            Check.ArgumentNull(nameof(expression), expression);
             var array = await GetJArrayAsync(expression, cancellationToken);
             return JArrayToObjectList(array);
         }
 
         public async Task<List<T>> GetListAsync<T>(string expression, CancellationToken cancellationToken = default(CancellationToken)) {
-            if(typeof(T) == typeof(object)) {
+            Check.ArgumentNull(nameof(expression), expression);
+            if (typeof(T) == typeof(object)) {
                 throw new ArgumentException(nameof(T), "Use GetListAsync(...) instead of GetListAsync<object>(...)");
             }
             var array = await GetJArrayAsync(expression, cancellationToken);
@@ -38,12 +43,14 @@ namespace Microsoft.R.Host.Client.API {
         }
 
         private Task<JArray> GetJArrayAsync(string expression, CancellationToken cancellationToken = default(CancellationToken)) {
+            Check.ArgumentNull(nameof(expression), expression);
             var exp = Invariant($"as.list({expression})");
             return EvaluateAsync<JArray>(exp, cancellationToken);
         }
 
         private const string _dfTempVariableName = ".rtvs.gdf.temp";
         public async Task<DataFrame> GetDataFrameAsync(string expression, CancellationToken cancellationToken = default(CancellationToken)) {
+            Check.ArgumentNull(nameof(expression), expression);
             await ExecuteAsync(Invariant($"{_dfTempVariableName} <- {expression}"), cancellationToken);
 
             var properties = CanCoerceToDataFrameProperty;

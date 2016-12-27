@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.R.Host.Client.Host;
 
 namespace Microsoft.R.Host.Client.API {
     public interface IRHostSession : IDisposable {
@@ -45,6 +46,8 @@ namespace Microsoft.R.Host.Client.API {
         /// <param name="codePage">R code page to set</param>
         /// <param name="timeout">Timeout to wait for the host process to start</param>
         /// <param name="cancellationToken">Cancellation token</param>
+        /// <exception cref="OperationCanceledException" />
+        /// <exception cref="RHostDisconnectedException" />
         Task StartHostAsync(IRHostSessionCallback callback, string workingDirectory = null, int codePage = 0, int timeout = 3000, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
@@ -55,6 +58,8 @@ namespace Microsoft.R.Host.Client.API {
         /// If false, the process will receive termination request and the call will return immediately.
         /// </param>
         /// <param name="cancellationToken">Cancellation token</param>
+        /// <exception cref="OperationCanceledException" />
+        /// <exception cref="RHostDisconnectedException" />
         Task StopHostAsync(bool waitForShutdown = true, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
@@ -62,6 +67,8 @@ namespace Microsoft.R.Host.Client.API {
         /// This is similar to 'Interrupt R' command.
         /// </summary>
         /// <param name="cancellationToken">Cancellation token</param>
+        /// <exception cref="OperationCanceledException" />
+        /// <exception cref="RHostDisconnectedException" />
         Task CancelAllAsync(CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
@@ -69,6 +76,10 @@ namespace Microsoft.R.Host.Client.API {
         /// </summary>
         /// <param name="expression">Expression or block of R code to execute</param>
         /// <param name="cancellationToken">Cancellation token</param>
+        /// <exception cref="ArgumentNullException" />
+        /// <exception cref="REvaluationException" />
+        /// <exception cref="OperationCanceledException" />
+        /// <exception cref="RHostDisconnectedException" />
         Task ExecuteAsync(string expression, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
@@ -82,6 +93,10 @@ namespace Microsoft.R.Host.Client.API {
         /// <param name="expression">Expression or block of R code to execute</param>
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns>The variable or expression value</returns>
+        /// <exception cref="ArgumentException" />
+        /// <exception cref="REvaluationException" />
+        /// <exception cref="OperationCanceledException" />
+        /// <exception cref="RHostDisconnectedException" />
         Task<T> EvaluateAsync<T>(string expression, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
@@ -90,6 +105,10 @@ namespace Microsoft.R.Host.Client.API {
         /// <param name="function">Function name</param>
         /// <param name="cancellationToken">Cancellation token</param>
         /// <param name="args">Function arguments</param>
+        /// <exception cref="ArgumentException" />
+        /// <exception cref="REvaluationException" />
+        /// <exception cref="OperationCanceledException" />
+        /// <exception cref="RHostDisconnectedException" />
         Task InvokeAsync(string function, CancellationToken cancellationToken = default(CancellationToken), params object[] args);
 
         /// <summary>
@@ -99,6 +118,10 @@ namespace Microsoft.R.Host.Client.API {
         /// <param name="cancellationToken">Cancellation token</param>
         /// <param name="args">Function arguments</param>
         /// <returns>Name of the variable that holds data returned by the function</returns>
+        /// <exception cref="ArgumentException" />
+        /// <exception cref="REvaluationException" />
+        /// <exception cref="OperationCanceledException" />
+        /// <exception cref="RHostDisconnectedException" />
         Task<string> InvokeAndReturnAsync(string function, CancellationToken cancellationToken = default(CancellationToken), params object[] args);
 
         /// <summary>
@@ -107,6 +130,10 @@ namespace Microsoft.R.Host.Client.API {
         /// <param name="expression">Expression (variable name) to fetch as list</param>
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns>List of objects</returns>
+        /// <exception cref="ArgumentException" />
+        /// <exception cref="REvaluationException" />
+        /// <exception cref="OperationCanceledException" />
+        /// <exception cref="RHostDisconnectedException" />
         Task<List<object>> GetListAsync(string expression, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
@@ -115,6 +142,10 @@ namespace Microsoft.R.Host.Client.API {
         /// <param name="expression">Expression (variable name) to fetch as list</param>
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns>List of values of the provided type</returns>
+        /// <exception cref="ArgumentException" />
+        /// <exception cref="REvaluationException" />
+        /// <exception cref="OperationCanceledException" />
+        /// <exception cref="RHostDisconnectedException" />
         Task<List<T>> GetListAsync<T>(string expression, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
@@ -123,6 +154,10 @@ namespace Microsoft.R.Host.Client.API {
         /// <param name="expression">Expression (variable name) to fetch as data frame</param>
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns>Data frame</returns>
+        /// <exception cref="ArgumentException" />
+        /// <exception cref="REvaluationException" />
+        /// <exception cref="OperationCanceledException" />
+        /// <exception cref="RHostDisconnectedException" />
         Task<DataFrame> GetDataFrameAsync(string expression, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

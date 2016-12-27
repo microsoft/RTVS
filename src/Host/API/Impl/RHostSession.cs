@@ -2,10 +2,10 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
@@ -69,20 +69,18 @@ namespace Microsoft.R.Host.Client.API {
         public Task StopHostAsync(bool waitForShutdown = true, CancellationToken cancellationToken = default(CancellationToken))
             => _session.StopHostAsync(waitForShutdown, cancellationToken);
 
-        public Task ExecuteAsync(string expression, CancellationToken cancellationToken = default(CancellationToken))
-            => _session.ExecuteAsync(expression, cancellationToken);
+        public Task ExecuteAsync(string expression, CancellationToken cancellationToken = default(CancellationToken)) {
+            Check.ArgumentNull(nameof(expression), expression);
+            return _session.ExecuteAsync(expression, cancellationToken);
+        }
 
-        public Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind, CancellationToken cancellationToken = default(CancellationToken))
-            => _session.EvaluateAsync(expression, kind, cancellationToken);
-
-        public Task<T> EvaluateAsync<T>(string expression, CancellationToken cancellationToken = default(CancellationToken))
-            => _session.EvaluateAsync<T>(expression, REvaluationKind.Normal, cancellationToken);
-
-        public Task<IRValueInfo> EvaluateAndDescribeAsync(string expression, REvaluationResultProperties properties, CancellationToken cancellationToken = default(CancellationToken))
-            => _session.EvaluateAndDescribeAsync(expression, properties, RValueRepresentations.Str(), cancellationToken);
-
-        public Task<IReadOnlyList<IREvaluationResultInfo>> DescribeChildrenAsync(string expression, REvaluationResultProperties properties, int? maxCount = null, CancellationToken cancellationToken = default(CancellationToken))
-            => _session.DescribeChildrenAsync(REnvironments.GlobalEnv, expression, properties, null, maxCount, cancellationToken);
+        public Task<T> EvaluateAsync<T>(string expression, CancellationToken cancellationToken = default(CancellationToken)) {
+            Check.ArgumentNull(nameof(expression), expression);
+            return _session.EvaluateAsync<T>(expression, REvaluationKind.Normal, cancellationToken);
+        }
         #endregion
+
+        private Task<IRValueInfo> EvaluateAndDescribeAsync(string expression, REvaluationResultProperties properties, CancellationToken cancellationToken = default(CancellationToken))
+            => _session.EvaluateAndDescribeAsync(expression, properties, RValueRepresentations.Str(), cancellationToken);
     }
 }
