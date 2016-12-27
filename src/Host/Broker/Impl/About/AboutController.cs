@@ -11,6 +11,7 @@ using Microsoft.R.Host.Broker.Interpreters;
 using Microsoft.R.Host.Broker.Security;
 using Microsoft.R.Host.Broker.Sessions;
 using Microsoft.R.Host.Protocol;
+using static System.FormattableString;
 
 namespace Microsoft.R.Host.Broker.About {
     [Authorize(Policy = Policies.RUser)]
@@ -40,7 +41,7 @@ namespace Microsoft.R.Host.Broker.About {
             GetMemoryInformation(ref a);
             GetVideoControllerInformation(ref a);
 
-            a.Interpreters = _interpManager.Interpreters.Select(x => x.Name).ToArray();
+            a.Interpreters = _interpManager.Interpreters.Select(x => Invariant($"[{x.Id}] {x.Name}")).ToArray();
             return a;
         }
 

@@ -620,6 +620,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Installed R versions:.
+        /// </summary>
+        public static string InstalledInterpreters {
+            get {
+                return ResourceManager.GetString("InstalledInterpreters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Loading....
         /// </summary>
         public static string Loading {
@@ -1363,6 +1372,15 @@ namespace Microsoft.R.Components {
         public static string SecureConnection {
             get {
                 return ResourceManager.GetString("SecureConnection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If you want to select specific R version, specify its id number in the connection URL in the form &apos;https://remote:5444#2&apos;.
+        /// </summary>
+        public static string SelectInterpreterInstruction {
+            get {
+                return ResourceManager.GetString("SelectInterpreterInstruction", resourceCulture);
             }
         }
         
