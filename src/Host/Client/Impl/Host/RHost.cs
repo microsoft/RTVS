@@ -536,6 +536,7 @@ namespace Microsoft.R.Host.Client {
                             case "!PackagesRemoved":
                                 _callbacks.PackagesRemoved();
                                 break;
+
                             case "!FetchFile":
                                 var remoteFileName = message.GetString(0, "file_remote_name");
                                 var remoteBlobId = message.GetUInt64(1, "blob_id");

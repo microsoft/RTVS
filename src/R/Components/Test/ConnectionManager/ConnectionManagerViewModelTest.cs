@@ -261,10 +261,10 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
         }
 
         [CompositeTest(ThreadType.UI)]
-        [InlineData("http://machine", "machine", "http://machine:80")]
+        [InlineData("http://machine", "machine", "https://machine:80")]
         [InlineData("https://machine:5444", "machine", "https://machine:5444")]
-        [InlineData("https://machine#1234", "machine", "https://machine:443#1234")]
-        [InlineData("https://machine2", "machine2", "https://machine2:443")]
+        [InlineData("https://machine#1234", "machine", "https://machine:5444#1234")]
+        [InlineData("https://machine2", "machine2", "https://machine2:5444")]
         [InlineData("https://machine2:5444", "machine2", "https://machine2:5444")]
         public void AddRemote_Edit_ChangePath(string newPath, string expectedMachineName, string expectedPath) {
             _cmvm.EditNew();

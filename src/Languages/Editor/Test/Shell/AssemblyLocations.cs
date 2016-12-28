@@ -3,55 +3,24 @@
 
 using System;
 using System.IO;
-using Microsoft.Common.Core;
-using Microsoft.Win32;
+using Microsoft.UnitTests.Core;
 
 namespace Microsoft.Languages.Editor.Test.Shell {
     public static class AssemblyLocations {
-        private static string _idePath;
-
-        public static string IdePath {
-            get {
-                if(_idePath == null) {
-                    _idePath = GetHostExePath();
-                }
-                return _idePath;
-            }
-        }
-
         public static string EditorPath {
-            get { return Path.Combine(IdePath, @"CommonExtensions\Microsoft\Editor"); }
+            get { return Path.Combine(Paths.VsRoot, @"CommonExtensions\Microsoft\Editor"); }
         }
 
         public static string PrivatePath {
-            get { return Path.Combine(IdePath, @"PrivateAssemblies\"); }
+            get { return Path.Combine(Paths.VsRoot, @"PrivateAssemblies\"); }
         }
 
         public static string CpsPath {
-            get { return Path.Combine(IdePath, @"CommonExtensions\Microsoft\Project"); }
+            get { return Path.Combine(Paths.VsRoot, @"CommonExtensions\Microsoft\Project"); }
         }
 
         public static string SharedPath {
             get { return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), @"Common Files\Microsoft Shared\MsEnv\PublicAssemblies"); }
-        }
-
-        private static string GetHostExePath() {
-            string path = Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\" + GetHostVersion(), "InstallDir", string.Empty) as string;
-            return path;
-        }
-
-        private static string GetHostVersion() {
-            string version = Environment.GetEnvironmentVariable("ExtensionsVSVersion");
-            foreach (string checkVersion in new string[] { Toolset.Version }) {
-                if (string.IsNullOrEmpty(version)) {
-                    using (RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\VisualStudio\" + checkVersion)) {
-                        if (key != null) {
-                            version = checkVersion;
-                        }
-                    }
-                }
-            }
-            return version;
         }
     }
 }

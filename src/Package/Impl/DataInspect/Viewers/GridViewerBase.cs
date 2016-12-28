@@ -19,8 +19,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
         private const REvaluationResultProperties _properties =
            ClassesProperty | ExpressionProperty | TypeNameProperty | DimProperty | LengthProperty;
 
-        private static Window _lastCreatedGridPane;
-        private static Window _linkedWindowFrame;
         private readonly IObjectDetailsViewerAggregator _aggregator;
 
         public GridViewerBase(IObjectDetailsViewerAggregator aggregator, IDataObjectEvaluator evaluator) :

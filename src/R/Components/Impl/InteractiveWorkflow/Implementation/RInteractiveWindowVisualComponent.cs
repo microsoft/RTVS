@@ -61,6 +61,9 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 if(broker.IsRemote) {
                     var verified = broker.IsVerified ? Resources.SecureConnection : Resources.UntrustedConnection;
                     var machineUrl = broker.ConnectionInfo.Uri.ToString().TrimTrailingSlash();
+                    if(!string.IsNullOrEmpty(broker.ConnectionInfo.InterpreterId)) {
+                        machineUrl += Invariant($"#{broker.ConnectionInfo.InterpreterId}");
+                    }
                     text = Invariant($"{Resources.ReplWindowName} - {broker.Name} ({machineUrl}) : {verified}");
                 } else {
                     text = Invariant($"{Resources.ReplWindowName} - {broker.Name}");

@@ -600,7 +600,8 @@ Are you sure you want to terminate R session?</value>
     <value>Installed R versions:</value>
   </data>
   <data name="SelectInterpreterInstruction" xml:space="preserve">
-    <value>If you want to select specific R version, specify its id number in the connection URL in the form 'https://remote:5444#2'</value>
+    <value>If you want to select specific R version, specify its id 
+number in the connection URL in the form 'https://remote:5444#2'</value>
   </data>
   <data name="Error_InvalidURL" xml:space="preserve">
     <value>'{0}' is not a valid URL or path. Please specify full path to the local R or remote machine connection URL in the form '[https://]machine[:port]'</value>

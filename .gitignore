@@ -122,3 +122,4 @@ TestFiles/
 *.vstman
 *.db-wal
 *.db-shm
+*.ipch
