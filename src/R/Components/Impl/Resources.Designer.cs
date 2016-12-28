@@ -394,7 +394,9 @@ namespace Microsoft.R.Components {
         
         /// <summary>
         ///   Looks up a localized string similar to Are you sure you want to switch from &apos;{0}&apos; to &apos;{1}&apos;?
-        ///Switching will stop your current session, all unsaved data will be lost..
+        ///Switching will stop your current session, all unsaved data will be lost.
+        ///
+        ///This prompt can be suppressed in R Tools | Options..
         /// </summary>
         public static string ConnectionManager_SwitchConfirmation {
             get {
@@ -557,6 +559,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &apos;{0}&apos; is not a valid URL or path. Please specify full path to the local R or remote machine connection URL in the form &apos;[https://]machine[:port]&apos;.
+        /// </summary>
+        public static string Error_InvalidURL {
+            get {
+                return ResourceManager.GetString("Error_InvalidURL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Microsoft.R.Host.exe is missing. Click OK to open download link in the default browser..
         /// </summary>
         public static string Error_Microsoft_R_Host_Missing {
@@ -616,6 +627,15 @@ namespace Microsoft.R.Components {
         public static string Install {
             get {
                 return ResourceManager.GetString("Install", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Installed R versions:.
+        /// </summary>
+        public static string InstalledInterpreters {
+            get {
+                return ResourceManager.GetString("InstalledInterpreters", resourceCulture);
             }
         }
         
@@ -1363,6 +1383,15 @@ namespace Microsoft.R.Components {
         public static string SecureConnection {
             get {
                 return ResourceManager.GetString("SecureConnection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If you want to select specific R version, specify its id number in the connection URL in the form &apos;https://remote:5444#2&apos;.
+        /// </summary>
+        public static string SelectInterpreterInstruction {
+            get {
+                return ResourceManager.GetString("SelectInterpreterInstruction", resourceCulture);
             }
         }
         

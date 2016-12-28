@@ -104,6 +104,21 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
             _console.WriteLine("\t" + Resources.ConnectedUserCount.FormatInvariant(aboutHost.ConnectedUserCount));
             _console.WriteLine(string.Empty);
 
+            if(_interactiveWorkflow.RSession.IsRemote) {
+                _console.WriteLine(Resources.InstalledInterpreters);
+
+                int count = 0;
+                foreach(var interpreter in aboutHost.Interpreters) {
+                    _console.WriteLine("\t" + interpreter);
+                    count++;
+                }
+
+                _console.WriteLine(string.Empty);
+                if (count > 1) {
+                    _console.WriteLine(Resources.SelectInterpreterInstruction);
+                }
+            }
+
             if (reportTelemetry) {
                 var services = _interactiveWorkflow.Shell.Services;
                 foreach (var name in aboutHost.Interpreters) {

@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.ConnectionManager.Implementation.ViewModel;
 using Microsoft.UnitTests.Core.XUnit;
@@ -17,7 +18,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
     public sealed class ConnectionViewModelTest {
         [Test]
         public void Construction01() {
-            var cm = new ConnectionViewModel();
+            var cm = new ConnectionViewModel(Substitute.For<ICoreShell>());
             cm.IsUserCreated.Should().BeTrue();
             cm.IsValid.Should().BeFalse();
             cm.IsTestConnectionSucceeded.Should().BeFalse();
@@ -132,29 +133,30 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
         }
 
         [CompositeTest]
-        [InlineData("http://host", "http://host:80")]
-        [InlineData("http://HOST", "http://host:80")]
-        [InlineData("http://host#1234", "http://host:80#1234")]
-        [InlineData("http://HOST#1234", "http://host:80#1234")]
-        [InlineData("https://host", "https://host:443")]
-        [InlineData("https://host#1234", "https://host:443#1234")]
-        [InlineData("https://host/path", "https://host:443/path")]
-        [InlineData("https://host/path#1234", "https://host:443/path#1234")]
-        [InlineData("http://host:5000", "http://host:5000")]
-        [InlineData("http://host:5000#1234", "http://host:5000#1234")]
+        [InlineData("http://host", "https://host:5444")]
+        [InlineData("http://HOST", "https://host:5444")]
+        [InlineData("http://host#1234", "https://host:5444#1234")]
+        [InlineData("http://HOST#1234", "https://host:5444#1234")]
+        [InlineData("https://host", "https://host:5444")]
+        [InlineData("https://host#1234", "https://host:5444#1234")]
+        [InlineData("https://host/path", "https://host:5444/path")]
+        [InlineData("https://host/path#1234", "https://host:5444/path#1234")]
+        [InlineData("http://host:5000", "https://host:5000")]
+        [InlineData("http://host:5000#1234", "https://host:5000#1234")]
         [InlineData("https://host:5100", "https://host:5100")]
         [InlineData("https://HOST:5100", "https://host:5100")]
+        [InlineData("https://HOST:443", "https://host:443")]
         [InlineData("https://host:5100#1234", "https://host:5100#1234")]
         [InlineData("https://HOST:5100#1234", "https://host:5100#1234")]
         [InlineData("HOST", "https://host:5444")]
         [InlineData("host", "https://host:5444")]
-        [InlineData("host:4000", "host:4000")] // host == scheme in this case and 4000 is actually a host name
-        [InlineData("HOST:4000", "HOST:4000")] // host == scheme in this case and 4000 is actually a host name
-        [InlineData("host#1234", "host#1234")]
-        [InlineData("HOST#1234", "HOST#1234")]
+        [InlineData("host:4000", "https://host:4000")]
+        [InlineData("HOST:4000", "https://host:4000")]
+        [InlineData("host#1234", "https://host:5444#1234")]
+        [InlineData("HOST#1234", "https://host:5444#1234")]
         [InlineData("c:\\", "c:\\")]
         public void CompletePath(string original, string expected) {
-            ConnectionViewModel.GetCompletePath(original).Should().Be(expected);
+            ConnectionViewModel.GetCompletePath(original, Substitute.For<ICoreShell>()).Should().Be(expected);
         }
 
         [Test]

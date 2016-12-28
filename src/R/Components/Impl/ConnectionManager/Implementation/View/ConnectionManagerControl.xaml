@@ -105,7 +105,7 @@
                                     IsEnabled="{Binding Path=HasChanges, Mode=OneWay}" ToolTipService.ShowOnDisabled="True"
                                     Content="{x:Static components:Resources.ConnectionManager_Save}" 
                                     ToolTip="{Binding Path=SaveButtonTooltip}"/>
-
+<!--
                             <Button VerticalAlignment="Center" Click="ButtonTestConnection_Click"
                                     Style="{StaticResource HyperlinkButton}"
                                     Content="{x:Static components:Resources.ConnectionManager_TestConnection}"
@@ -121,7 +121,7 @@
                             <Separator Margin="4,4,4,3" BorderThickness="0"
                                        Style="{StaticResource VerticalSeparator}" 
                                        Background="{DynamicResource {x:Static rwpf:Brushes.ControlLinkTextKey}}"/>
-
+-->
                             <Button VerticalAlignment="Center" Click="ButtonCancel_Click"
                                     Style="{StaticResource HyperlinkButton}"
                                     Content="{x:Static components:Resources.ConnectionManager_Cancel}"/>

@@ -16,6 +16,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
         private static ConcurrentDictionary<int, WebServer> Servers { get; } = new ConcurrentDictionary<int, WebServer>();
 
         private readonly IRemoteUriWebService _remoteUriService;
+        private readonly string _baseAddress;
         private readonly ICoreServices _services;
         private readonly IConsole _console;
         private readonly string _name;
@@ -31,6 +32,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
 
         private WebServer(string remoteHostIp, int remotePort, string baseAddress, string name, ICoreServices services, IConsole console) {
             _name = name.ToUpperInvariant();
+            _baseAddress = baseAddress;
             _services = services;
             _console = console;
 
@@ -75,7 +77,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             try {
                 await Log.WriteLineAsync(LogVerbosity.Minimal, MessageCategory.General, Resources.Info_RemoteWebServerStarted.FormatInvariant(_name, LocalHost, LocalPort));
                 _console.WriteLine(Resources.Info_RemoteWebServerStarted.FormatInvariant(_name, LocalHost, LocalPort));
-                _console.WriteLine(Resources.Info_RemoteWebServerDetails.FormatInvariant(Environment.MachineName, LocalHost, LocalPort, _name, RemoteHost, RemotePort));
+                _console.WriteLine(Resources.Info_RemoteWebServerDetails.FormatInvariant(Environment.MachineName, LocalHost, LocalPort, _name, _baseAddress));
             } catch {
             }
         }

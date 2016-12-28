@@ -128,8 +128,13 @@ Reason: {0}</value>
     <value>Web request has timed out.</value>
   </data>
   <data name="Error_HostNotResponding" xml:space="preserve">
-    <value>Machine '{0}' did not respond to a ping.
-The machine may be offline or the network has been disconnected.
+    <value>Http request to '{0}' has failed.
+The machine may be offline or unreachable or  the network has been disconnected.
+Error: {1}</value>
+  </data>
+  <data name="Error_HostNotRespondingToPing" xml:space="preserve">
+    <value>Http request to '{0}' has failed and machine did not respond to a ping.
+The machine may be offline or unreachable or the network has been disconnected.
 Error: {1}</value>
   </data>
   <data name="Error_RHostIsStopped" xml:space="preserve">
@@ -206,8 +211,8 @@ Do you want to abort this operation and start current session immediately?</valu
     <value>HTTP server for remote {0} failed : {1}</value>
   </data>
   <data name="Info_RemoteWebServerDetails" xml:space="preserve">
-    <value>HTTP server for remote allows you to connect to a HTTP server created on a remote R machine.
-Server at {0} http://{1}:{2} connects to {3} http://{4}:{5}.</value>
+    <value>HTTP server for remote transfers data from remote R machine.
+Server at {0} http://{1}:{2} connects to {3} {4}.</value>
   </data>
   <data name="Info_RemoteWebServerStarted" xml:space="preserve">
     <value>HTTP server for remote {0} listening on http://{1}:{2}. </value>

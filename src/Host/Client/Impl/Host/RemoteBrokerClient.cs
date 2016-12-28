@@ -47,7 +47,7 @@ namespace Microsoft.R.Host.Client.Host {
             string status = await ConnectionInfo.Uri.GetMachineOnlineStatusAsync();
             return string.IsNullOrEmpty(status)
                 ? new RHostDisconnectedException(Resources.Error_BrokerNotRunning.FormatInvariant(Name), exception)
-                : await base.HandleHttpRequestExceptionAsync(exception);
+                : new RHostDisconnectedException(Resources.Error_HostNotRespondingToPing.FormatInvariant(Name, exception.Message), exception);
         }
 
         private bool ValidateCertificateHttpHandler(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) {

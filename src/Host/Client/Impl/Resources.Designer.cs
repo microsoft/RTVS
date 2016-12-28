@@ -111,13 +111,24 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Machine &apos;{0}&apos; did not respond to a ping.
-        ///The machine may be offline or the network has been disconnected.
+        ///   Looks up a localized string similar to Http request to &apos;{0}&apos; has failed.
+        ///The machine may be offline or unreachable or  the network has been disconnected.
         ///Error: {1}.
         /// </summary>
         internal static string Error_HostNotResponding {
             get {
                 return ResourceManager.GetString("Error_HostNotResponding", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Http request to &apos;{0}&apos; has failed and machine did not respond to a ping.
+        ///The machine may be offline or unreachable or the network has been disconnected.
+        ///Error: {1}.
+        /// </summary>
+        internal static string Error_HostNotRespondingToPing {
+            get {
+                return ResourceManager.GetString("Error_HostNotRespondingToPing", resourceCulture);
             }
         }
         
@@ -277,8 +288,8 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HTTP server for remote allows you to connect to a HTTP server created on a remote R machine.
-        ///Server at {0} http://{1}:{2} connects to {3} http://{4}:{5}..
+        ///   Looks up a localized string similar to HTTP server for remote transfers data from remote R machine.
+        ///Server at {0} http://{1}:{2} connects to {3} {4}..
         /// </summary>
         internal static string Info_RemoteWebServerDetails {
             get {
