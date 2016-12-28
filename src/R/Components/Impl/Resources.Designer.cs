@@ -557,6 +557,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &apos;{0}&apos; is not a valid URL or path. Please specify full path to the local R or remote machine connection URL in the form &apos;[https://]machine[:port]&apos;.
+        /// </summary>
+        public static string Error_InvalidURL {
+            get {
+                return ResourceManager.GetString("Error_InvalidURL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Microsoft.R.Host.exe is missing. Click OK to open download link in the default browser..
         /// </summary>
         public static string Error_Microsoft_R_Host_Missing {
