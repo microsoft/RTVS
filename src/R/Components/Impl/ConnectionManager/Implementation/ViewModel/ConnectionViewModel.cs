@@ -279,7 +279,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             }
 
             if (uri != null && !string.IsNullOrEmpty(uri.Host)) {
-                var hasPort = uri.Port >= 0 && (!uri.IsDefaultPort || uri.Port == 443);
+                var hasPort = uri.Port >= 0 && (!uri.IsDefaultPort || uri.Port != 443);
                 var port = hasPort ? uri.Port : DefaultPort;
                 var hasPathOrQuery = !string.IsNullOrEmpty(uri.PathAndQuery) && uri.PathAndQuery != "/";
                 var mainPart = Invariant($"{Uri.UriSchemeHttps}{Uri.SchemeDelimiter}{uri.Host.ToLower()}:{port}");
