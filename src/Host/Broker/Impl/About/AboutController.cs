@@ -42,6 +42,9 @@ namespace Microsoft.R.Host.Broker.About {
             GetVideoControllerInformation(ref a);
 
             a.Interpreters = _interpManager.Interpreters.Select(x => Invariant($"[{x.Id}] {x.Name}")).ToArray();
+            if(a.Interpreters.Length > 0) {
+                a.Interpreters[0] = Invariant($"{a.Interpreters[0]} ({Resources.Default})");
+            }
             return a;
         }
 
