@@ -393,7 +393,9 @@
   </data>
   <data name="ConnectionManager_SwitchConfirmation" xml:space="preserve">
     <value>Are you sure you want to switch from '{0}' to '{1}'?
-Switching will stop your current session, all unsaved data will be lost.</value>
+Switching will stop your current session, all unsaved data will be lost.
+
+This prompt can be suppressed in R Tools | Options.</value>
   </data>
   <data name="ConnectionManager_RenameActiveConnectionConfirmation" xml:space="preserve">
     <value>You are going to change connection '{0}' that you're currently using.
@@ -599,5 +601,8 @@ Are you sure you want to terminate R session?</value>
   </data>
   <data name="SelectInterpreterInstruction" xml:space="preserve">
     <value>If you want to select specific R version, specify its id number in the connection URL in the form 'https://remote:5444#2'</value>
+  </data>
+  <data name="Error_InvalidURL" xml:space="preserve">
+    <value>'{0}' is not a valid URL or path. Please specify full path to the local R or remote machine connection URL in the form '[https://]machine[:port]'</value>
   </data>
 </root>

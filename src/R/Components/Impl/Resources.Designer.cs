@@ -394,7 +394,9 @@ namespace Microsoft.R.Components {
         
         /// <summary>
         ///   Looks up a localized string similar to Are you sure you want to switch from &apos;{0}&apos; to &apos;{1}&apos;?
-        ///Switching will stop your current session, all unsaved data will be lost..
+        ///Switching will stop your current session, all unsaved data will be lost.
+        ///
+        ///This prompt can be suppressed in R Tools | Options..
         /// </summary>
         public static string ConnectionManager_SwitchConfirmation {
             get {
@@ -553,6 +555,15 @@ namespace Microsoft.R.Components {
         public static string Error_InstallTimeout_Format {
             get {
                 return ResourceManager.GetString("Error_InstallTimeout_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &apos;{0}&apos; is not a valid URL or path. Please specify full path to the local R or remote machine connection URL in the form &apos;[https://]machine[:port]&apos;.
+        /// </summary>
+        public static string Error_InvalidURL {
+            get {
+                return ResourceManager.GetString("Error_InvalidURL", resourceCulture);
             }
         }
         

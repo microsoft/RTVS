@@ -91,7 +91,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public void EditNew() {
             Shell.AssertIsOnMainThread();
-            IsEditingNew = TryStartEditing(new ConnectionViewModel());
+            IsEditingNew = TryStartEditing(new ConnectionViewModel(Shell));
         }
 
         public void CancelEdit() {
