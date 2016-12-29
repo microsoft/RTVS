@@ -300,21 +300,27 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         private void BrokerStateChanged(object sender, BrokerStateChangedEventArgs eventArgs) {
-            IsConnected = _sessionProvider.IsConnected;
-            IsRunning &= IsConnected;
+            lock (_syncObj) {
+                IsConnected = _sessionProvider.IsConnected;
+                IsRunning &= IsConnected;
+            }
             UpdateActiveConnection();
             ConnectionStateChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void SessionConnected(object sender, EventArgs args) {
-            IsConnected = _sessionProvider.IsConnected;
-            IsRunning = true;
+            lock (_syncObj) {
+                IsConnected = _sessionProvider.IsConnected;
+                IsRunning = true;
+            }
             ConnectionStateChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void SessionDisconnected(object sender, EventArgs args) {
-            IsConnected = _sessionProvider.IsConnected;
-            IsRunning = false;
+            lock (_syncObj) {
+                IsConnected = _sessionProvider.IsConnected;
+                IsRunning = false;
+            }
             ConnectionStateChanged?.Invoke(this, EventArgs.Empty);
         }
 
