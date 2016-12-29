@@ -6,6 +6,7 @@
              xmlns:designTime="clr-namespace:Microsoft.R.Components.ConnectionManager.Implementation.View.DesignTime"
              xmlns:wpf="clr-namespace:Microsoft.R.Wpf;assembly=Microsoft.R.Wpf"
              xmlns:view="clr-namespace:Microsoft.R.Components.PackageManager.Implementation.View"
+             xmlns:imaging="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.Imaging"
              xmlns:local="clr-namespace:Microsoft.R.Components"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance Type=designTime:DesignTimeConnectionStatusBarViewModel, IsDesignTimeCreatable=True}"
@@ -36,7 +37,7 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <StackPanel>
-        <Rectangle Margin="0,0,7,0" Width="18" Style="{StaticResource ConnectionStyle}"/>
+        <imaging:CrispImage Margin="0,0,7,0" Width="18" Style="{StaticResource ConnectionStyle}"/>
         <TextBlock Text="{Binding Path=SelectedConnection}" Margin="0,0,7,0" MaxWidth="300"
                    Foreground="{DynamicResource {x:Static wpf:Brushes.StatusBarDefaultTextBrushKey}}"
                    FontSize="{DynamicResource {x:Static wpf:FontKeys.EnvironmentFontSizeKey}}"
