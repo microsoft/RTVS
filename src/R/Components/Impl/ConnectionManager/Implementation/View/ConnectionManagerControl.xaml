@@ -151,7 +151,7 @@
 
             <DataTemplate x:Key="ConnectButtonDataTemplate" DataType="{x:Type viewModel:IConnectionViewModel}">
                 <!-- Connection icon -->
-                <imaging:CrispImage Margin="4,1,6,1" Width="18" Height="18" SnapsToDevicePixels="True" Style="{StaticResource ConnectionStyle}" />
+                <rwpf:IconWithOverlay Margin="4,1,6,1" Width="18" Height="18" Style="{StaticResource ConnectionStyle}" />
             </DataTemplate>
 
             <DataTemplate DataType="{x:Type viewModel:IConnectionViewModel}">

@@ -543,7 +543,7 @@
         </Setter>
     </Style>
 
-    <Style TargetType="{x:Type imaging:CrispImage}" x:Key="ConnectionStyle">
+    <Style TargetType="{x:Type wpf:IconWithOverlay}" x:Key="ConnectionStyle">
         <Style.Triggers>
             <MultiDataTrigger>
                 <MultiDataTrigger.Conditions>
@@ -553,7 +553,9 @@
                     <Condition Binding="{Binding Path=IsActive}" Value="True" />
                 </MultiDataTrigger.Conditions>
                 <MultiDataTrigger.Setters>
-                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.CloudOK}"/>
+                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.Cloud}"/>
+                    <Setter Property="OverlayMoniker" Value="{x:Static imagecatalog:KnownMonikers.StatusOK}"/>
+                    <Setter Property="OverlayVisibility" Value="Visible"/>
                 </MultiDataTrigger.Setters>
             </MultiDataTrigger>
             <MultiDataTrigger>
@@ -564,7 +566,9 @@
                     <Condition Binding="{Binding Path=IsActive}" Value="True" />
                 </MultiDataTrigger.Conditions>
                 <MultiDataTrigger.Setters>
-                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.StatusOKOutline}"/>
+                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.StatusNotStarted}"/>
+                    <Setter Property="OverlayMoniker" Value="{x:Static imagecatalog:KnownMonikers.StatusOK}"/>
+                    <Setter Property="OverlayVisibility" Value="Visible"/>
                 </MultiDataTrigger.Setters>
             </MultiDataTrigger>
             <MultiDataTrigger>
@@ -575,7 +579,9 @@
                     <Condition Binding="{Binding Path=IsActive}" Value="True" />
                 </MultiDataTrigger.Conditions>
                 <MultiDataTrigger.Setters>
-                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.CloudWarning}"/>
+                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.Cloud}"/>
+                    <Setter Property="OverlayMoniker" Value="{x:Static imagecatalog:KnownMonikers.StatusWarning}"/>
+                    <Setter Property="OverlayVisibility" Value="Visible"/>
                 </MultiDataTrigger.Setters>
             </MultiDataTrigger>
             <MultiDataTrigger>
@@ -586,7 +592,9 @@
                     <Condition Binding="{Binding Path=IsActive}" Value="True" />
                 </MultiDataTrigger.Conditions>
                 <MultiDataTrigger.Setters>
-                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.StatusWarningOutline}"/>
+                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.StatusNotStarted}"/>
+                    <Setter Property="OverlayMoniker" Value="{x:Static imagecatalog:KnownMonikers.StatusWarning}"/>
+                    <Setter Property="OverlayVisibility" Value="Visible"/>
                 </MultiDataTrigger.Setters>
             </MultiDataTrigger>
             <MultiDataTrigger>
@@ -597,7 +605,9 @@
                     <Condition Binding="{Binding Path=IsActive}" Value="True" />
                 </MultiDataTrigger.Conditions>
                 <MultiDataTrigger.Setters>
-                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.CloudError}"/>
+                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.Cloud}"/>
+                    <Setter Property="OverlayMoniker" Value="{x:Static imagecatalog:KnownMonikers.StatusError}"/>
+                    <Setter Property="OverlayVisibility" Value="Visible"/>
                 </MultiDataTrigger.Setters>
             </MultiDataTrigger>
             <MultiDataTrigger>
@@ -608,7 +618,9 @@
                     <Condition Binding="{Binding Path=IsActive}" Value="True" />
                 </MultiDataTrigger.Conditions>
                 <MultiDataTrigger.Setters>
-                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.StatusErrorOutline}"/>
+                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.StatusNotStarted}"/>
+                    <Setter Property="OverlayMoniker" Value="{x:Static imagecatalog:KnownMonikers.StatusError}"/>
+                    <Setter Property="OverlayVisibility" Value="Visible"/>
                 </MultiDataTrigger.Setters>
             </MultiDataTrigger>
             <MultiDataTrigger>
@@ -618,6 +630,7 @@
                 </MultiDataTrigger.Conditions>
                 <MultiDataTrigger.Setters>
                     <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.Cloud}"/>
+                    <Setter Property="OverlayVisibility" Value="Collapsed"/>
                 </MultiDataTrigger.Setters>
             </MultiDataTrigger>
             <MultiDataTrigger>
@@ -627,6 +640,7 @@
                 </MultiDataTrigger.Conditions>
                 <MultiDataTrigger.Setters>
                     <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.StatusNotStarted}"/>
+                    <Setter Property="OverlayVisibility" Value="Collapsed"/>
                 </MultiDataTrigger.Setters>
             </MultiDataTrigger>
         </Style.Triggers>

@@ -41,6 +41,9 @@
     </Compile>
     <Compile Include="BindableBase.cs" />
     <Compile Include="Brushes.cs" />
+    <Compile Include="Controls\IconWithOverlay.xaml.cs">
+      <DependentUpon>IconWithOverlay.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\Spinner.xaml.cs">
       <DependentUpon>Spinner.xaml</DependentUpon>
     </Compile>
@@ -77,6 +80,10 @@
     <Page Include="CommonResources.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\IconWithOverlay.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\Spinner.xaml">
       <Generator>MSBuild:Compile</Generator>

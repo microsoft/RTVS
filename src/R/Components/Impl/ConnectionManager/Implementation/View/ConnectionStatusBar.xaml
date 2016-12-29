@@ -37,7 +37,7 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <StackPanel>
-        <imaging:CrispImage Margin="0,0,7,0" Width="18" Style="{StaticResource ConnectionStyle}"/>
+        <wpf:IconWithOverlay Margin="0,0,7,0" Width="18" Style="{StaticResource ConnectionStyle}"/>
         <TextBlock Text="{Binding Path=SelectedConnection}" Margin="0,0,7,0" MaxWidth="300"
                    Foreground="{DynamicResource {x:Static wpf:Brushes.StatusBarDefaultTextBrushKey}}"
                    FontSize="{DynamicResource {x:Static wpf:FontKeys.EnvironmentFontSizeKey}}"
