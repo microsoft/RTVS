@@ -151,7 +151,7 @@
 
             <DataTemplate x:Key="ConnectButtonDataTemplate" DataType="{x:Type viewModel:IConnectionViewModel}">
                 <!-- Connection icon -->
-                <Rectangle Margin="4,1,6,1" Width="18" Height="18" SnapsToDevicePixels="True" Style="{StaticResource ConnectionStyle}" />
+                <rwpf:IconWithOverlay Margin="4,1,6,1" Width="18" Height="18" Style="{StaticResource ConnectionStyle}" />
             </DataTemplate>
 
             <DataTemplate DataType="{x:Type viewModel:IConnectionViewModel}">
@@ -165,8 +165,10 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
+                            <!--
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
+                            -->
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
@@ -181,15 +183,17 @@
                         <TextBlock Grid.Row="0" Grid.Column="2" Margin="0,1,6,2" 
                                    Text="{Binding Path=Name}"
                                    FontWeight="{Binding Path=IsConnected, Converter={x:Static rwpf:Converters.TrueIsBold}}"
-                                   ToolTip="{Binding Path=ConnectionTooltip}"/>
+                                   ToolTip="{Binding Path=ConnectionTooltip}"
+                                   TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                        <!--
                         <Separator Grid.Row="0" Grid.Column="3" Margin="0,1,6,2" Style="{StaticResource VerticalSeparator}"
                                    Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"/>
                         <TextBlock Grid.Row="0" Grid.Column="4" Margin="0,1,3,2" Text="{Binding Path=Path, Mode=OneWay}"
                                    TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"
                                    Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"/>
-
+                        -->
                         <!-- connect button -->
-                        <Button x:Name="ButtonConnect" Grid.Row="0"  Grid.Column="5" Style="{StaticResource ToolWindowButtonStyle}" Click="ButtonConnect_Click" 
+                        <Button x:Name="ButtonConnect" Grid.Row="0"  Grid.Column="3" Style="{StaticResource ToolWindowButtonStyle}" Click="ButtonConnect_Click" 
                                 Visibility="{Binding Path=IsConnected, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}"
                                 Margin="0,0,8,0" Background="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundKey}}">
                             <Button.ToolTip>
@@ -199,13 +203,13 @@
                         </Button>
 
                         <!-- edit/properties button -->
-                        <Button x:Name="ButtonEdit" Grid.Row="0" Grid.Column="6" Style="{StaticResource EditButtonStyle}" Click="ButtonEdit_Click"
+                        <Button x:Name="ButtonEdit" Grid.Row="0" Grid.Column="4" Style="{StaticResource EditButtonStyle}" Click="ButtonEdit_Click"
                                 Background="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundKey}}">
                             <imaging:CrispImage  Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.Settings}" />
                         </Button>
 
                         <!-- delete button -->
-                        <Button x:Name="ButtonDelete" Grid.Row="0" Grid.Column="7" Style="{StaticResource DeleteButtonStyle}" Click="ButtonDelete_Click"
+                        <Button x:Name="ButtonDelete" Grid.Row="0" Grid.Column="5" Style="{StaticResource DeleteButtonStyle}" Click="ButtonDelete_Click"
                                 Background="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundKey}}">
                             <imaging:CrispImage  Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.Cancel}" />
                         </Button>
