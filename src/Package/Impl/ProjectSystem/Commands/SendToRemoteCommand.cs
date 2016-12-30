@@ -2,18 +2,22 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.ComponentModel.Composition;
 using System.IO;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
-using System.Threading;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
@@ -52,10 +56,28 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
 
             var properties = _configuredProject.Services.ExportProvider.GetExportedValue<ProjectProperties>();
             string projectDir = Path.GetDirectoryName(_configuredProject.UnconfiguredProject.FullPath);
+
+            string fileFilterString = await properties.GetFileFilterAsync();
+            Matcher matcher = new Matcher(StringComparison.InvariantCultureIgnoreCase);
+            matcher.AddIncludePatterns(fileFilterString.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries));
+
+            List<string> filteredFiles = new List<string>();
+            filteredFiles.AddRange(matcher.GetMatchedFiles(nodes.GetAllFolderPaths(_configuredProject.UnconfiguredProject)));
+
+            foreach (IProjectTree node in nodes) {
+                if (node.IsFile()) {
+                    // Add any file that user specifically selected. 
+                    // This can contain a file ignored by the filter.
+                    filteredFiles.Add(node.FilePath);
+                } 
+            }
+
             string projectName = properties.GetProjectName();
             string remotePath = await properties.GetRemoteProjectPathAsync();
 
-            await SendToRemoteAsync(nodes.GetAllFilePaths(), projectDir, projectName, remotePath, CancellationToken.None);
+            if(filteredFiles.Count > 0) {
+                await SendToRemoteAsync(filteredFiles.Distinct(), projectDir, projectName, remotePath, CancellationToken.None);
+            }
 
             return true;
         }
