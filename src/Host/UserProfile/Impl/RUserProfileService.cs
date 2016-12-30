@@ -60,6 +60,7 @@ namespace Microsoft.R.Host.UserProfile {
             while (!ct.IsCancellationRequested) {
                 try {
                     await action?.Invoke(ServiceReadAfterConnectTimeoutMs, ClientResponseReadTimeoutMs, null, ct, logger);
+                } catch (TaskCanceledException) {
                 } catch (Exception ex) when (!ex.IsCriticalException()) {
                     logger?.LogError(Resources.Error_UserProfileServiceError, ex.Message);
                 }
