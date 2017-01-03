@@ -122,14 +122,14 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
 
             var clientVersion = Assembly.GetExecutingAssembly().GetName().Version;
             if (clientVersion.Major != 0 || clientVersion.Minor != 0) { // Filter out debug builds
+                string message = null;
                 if (aboutHost.Version.Major > clientVersion.Major || aboutHost.Version.Minor > clientVersion.Minor) {
-                    _console.WriteLine(string.Empty);
-                    _console.WriteLine(Resources.Warning_RemoteVersionHigher.FormatInvariant(aboutHost.Version, clientVersion));
-                    _console.WriteLine(string.Empty);
+                    message = Resources.Warning_RemoteVersionHigher.FormatInvariant(aboutHost.Version, clientVersion);
                 } else if (aboutHost.Version.Major < clientVersion.Major || aboutHost.Version.Minor < clientVersion.Minor) {
-                    _console.WriteLine(string.Empty);
-                    _console.WriteLine(Resources.Warning_RemoteVersionLower.FormatInvariant(aboutHost.Version, clientVersion));
-                    _console.WriteLine(string.Empty);
+                    message = Resources.Warning_RemoteVersionLower.FormatInvariant(aboutHost.Version, clientVersion);
+                }
+                if(!string.IsNullOrEmpty(message)) {
+                    _console.WriteLine(Environment.NewLine + message + Environment.NewLine);
                 }
             }
 
