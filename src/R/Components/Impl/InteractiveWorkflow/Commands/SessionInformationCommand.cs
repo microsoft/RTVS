@@ -105,11 +105,11 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
             _console.WriteLine("\t" + Resources.ConnectedUserCount.FormatInvariant(aboutHost.ConnectedUserCount));
             _console.WriteLine(string.Empty);
 
-            if(_interactiveWorkflow.RSession.IsRemote) {
+            if (_interactiveWorkflow.RSession.IsRemote) {
                 _console.WriteLine(Resources.InstalledInterpreters);
 
                 int count = 0;
-                foreach(var interpreter in aboutHost.Interpreters) {
+                foreach (var interpreter in aboutHost.Interpreters) {
                     _console.WriteLine("\t" + interpreter);
                     count++;
                 }
@@ -121,12 +121,16 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
             }
 
             var clientVersion = Assembly.GetExecutingAssembly().GetName().Version;
-            if (aboutHost.Version.MajorRevision > clientVersion.MajorRevision || aboutHost.Version.MinorRevision > clientVersion.MinorRevision) {
-                _console.WriteLine(Resources.Warning_RemoteVersionHigher.FormatInvariant(aboutHost.Version, clientVersion));
-                _console.WriteLine(string.Empty);
-            } else if (aboutHost.Version.MajorRevision < clientVersion.MajorRevision || aboutHost.Version.MinorRevision < clientVersion.MinorRevision) {
-                _console.WriteLine(Resources.Warning_RemoteVersionLower.FormatInvariant(aboutHost.Version, clientVersion));
-                _console.WriteLine(string.Empty);
+            if (clientVersion.Major != 0 || clientVersion.Minor != 0) { // Filter out debug builds
+                if (aboutHost.Version.Major > clientVersion.Major || aboutHost.Version.Minor > clientVersion.Minor) {
+                    _console.WriteLine(string.Empty);
+                    _console.WriteLine(Resources.Warning_RemoteVersionHigher.FormatInvariant(aboutHost.Version, clientVersion));
+                    _console.WriteLine(string.Empty);
+                } else if (aboutHost.Version.Major < clientVersion.Major || aboutHost.Version.Minor < clientVersion.Minor) {
+                    _console.WriteLine(string.Empty);
+                    _console.WriteLine(Resources.Warning_RemoteVersionLower.FormatInvariant(aboutHost.Version, clientVersion));
+                    _console.WriteLine(string.Empty);
+                }
             }
 
             if (reportTelemetry) {
