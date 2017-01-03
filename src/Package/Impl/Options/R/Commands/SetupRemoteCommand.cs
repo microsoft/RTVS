@@ -9,7 +9,7 @@ using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
     public sealed class SetupRemoteCommand : MenuCommand {
-        private const string _remoteSetupPage = "http://www.microsoft.com";
+        private const string _remoteSetupPage = "http://aka.ms/rtvs-remote";
 
         public SetupRemoteCommand() :
             base(OnCommand, new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSetupRemote)) {
