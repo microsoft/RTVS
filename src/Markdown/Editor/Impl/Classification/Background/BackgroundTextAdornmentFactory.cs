@@ -3,6 +3,7 @@
 
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
@@ -20,14 +21,20 @@ namespace Microsoft.Markdown.Editor.Classification.Background {
         [TextViewRole(PredefinedTextViewRoles.Document)]
         public AdornmentLayerDefinition editorAdornmentLayer = null;
 
-        [Import]
-        private IClassificationTypeRegistryService ClassificationTypeRegistry { get; set; }
+        private readonly IClassificationTypeRegistryService _classificationTypeRegistry;
+        private readonly IClassificationFormatMapService _classificationFormatMap;
+        private readonly ICoreShell _coreShell;
 
-        [Import]
-        private IClassificationFormatMapService ClassificationFormatMap { get; set; }
+        [ImportingConstructor]
+        public RCodeBackgroundTextAdornmentFactory(IClassificationTypeRegistryService ctrs, IClassificationFormatMapService cfm, ICoreShell coreShell) {
+            _classificationTypeRegistry = ctrs;
+            _classificationFormatMap = cfm;
+            _coreShell = coreShell;
+        }
 
         public void TextViewCreated(IWpfTextView textView) {
-            textView.Properties.GetOrCreateSingletonProperty(() => new CodeBackgroundTextAdornment(textView, ClassificationFormatMap, ClassificationTypeRegistry));
+            textView.Properties.GetOrCreateSingletonProperty(() => 
+                new CodeBackgroundTextAdornment(textView, _classificationFormatMap, _classificationTypeRegistry, _coreShell));
         }
     }
 }
