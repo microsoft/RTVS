@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
@@ -117,6 +118,15 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
                 if (count > 1) {
                     _console.WriteLine(Resources.SelectInterpreterInstruction);
                 }
+            }
+
+            var clientVersion = Assembly.GetExecutingAssembly().GetName().Version;
+            if (aboutHost.Version.MajorRevision > clientVersion.MajorRevision || aboutHost.Version.MinorRevision > clientVersion.MinorRevision) {
+                _console.WriteLine(Resources.Warning_RemoteVersionHigher.FormatInvariant(aboutHost.Version, clientVersion));
+                _console.WriteLine(string.Empty);
+            } else if (aboutHost.Version.MajorRevision < clientVersion.MajorRevision || aboutHost.Version.MinorRevision < clientVersion.MinorRevision) {
+                _console.WriteLine(Resources.Warning_RemoteVersionLower.FormatInvariant(aboutHost.Version, clientVersion));
+                _console.WriteLine(string.Empty);
             }
 
             if (reportTelemetry) {
