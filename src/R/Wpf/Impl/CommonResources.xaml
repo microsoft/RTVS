@@ -566,7 +566,7 @@
                     <Condition Binding="{Binding Path=IsActive}" Value="True" />
                 </MultiDataTrigger.Conditions>
                 <MultiDataTrigger.Setters>
-                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.StatusNotStarted}"/>
+                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.Computer}"/>
                     <Setter Property="OverlayMoniker" Value="{x:Static imagecatalog:KnownMonikers.StatusOK}"/>
                     <Setter Property="OverlayVisibility" Value="Visible"/>
                 </MultiDataTrigger.Setters>
@@ -592,7 +592,7 @@
                     <Condition Binding="{Binding Path=IsActive}" Value="True" />
                 </MultiDataTrigger.Conditions>
                 <MultiDataTrigger.Setters>
-                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.StatusNotStarted}"/>
+                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.Computer}"/>
                     <Setter Property="OverlayMoniker" Value="{x:Static imagecatalog:KnownMonikers.StatusWarning}"/>
                     <Setter Property="OverlayVisibility" Value="Visible"/>
                 </MultiDataTrigger.Setters>
@@ -618,7 +618,7 @@
                     <Condition Binding="{Binding Path=IsActive}" Value="True" />
                 </MultiDataTrigger.Conditions>
                 <MultiDataTrigger.Setters>
-                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.StatusNotStarted}"/>
+                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.Computer}"/>
                     <Setter Property="OverlayMoniker" Value="{x:Static imagecatalog:KnownMonikers.StatusError}"/>
                     <Setter Property="OverlayVisibility" Value="Visible"/>
                 </MultiDataTrigger.Setters>
@@ -639,7 +639,7 @@
                     <Condition Binding="{Binding Path=IsActive}" Value="False" />
                 </MultiDataTrigger.Conditions>
                 <MultiDataTrigger.Setters>
-                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.StatusNotStarted}"/>
+                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.Computer}"/>
                     <Setter Property="OverlayVisibility" Value="Collapsed"/>
                 </MultiDataTrigger.Setters>
             </MultiDataTrigger>

@@ -1487,6 +1487,28 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to WARNING: Version of R Services on the remote machine ({0})
+        ///is higher than the version of R Tools on the local computer ({1}). 
+        ///Please upgrade local R Tools installation to match..
+        /// </summary>
+        public static string Warning_RemoteVersionHigher {
+            get {
+                return ResourceManager.GetString("Warning_RemoteVersionHigher", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to WARNING: Version of R Services on the remote machine ({0})
+        ///is lower than the version of R Tools on the local computer ({1}). 
+        ///Please upgrade remote R Services installation to match..
+        /// </summary>
+        public static string Warning_RemoteVersionLower {
+            get {
+                return ResourceManager.GetString("Warning_RemoteVersionLower", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Terminating R will immediately abort calculations and all workspace objects will be discarded. This action cannot be undone.
         ///
         ///Are you sure you want to terminate R session?.
