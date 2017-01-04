@@ -85,5 +85,25 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring {
             }
             return string.Empty;
         }
+
+        public static IEnumerable<string> GetAllFolderPaths(this IEnumerable<IProjectTree> nodes, UnconfiguredProject unconfiguredProject) {
+            List<string> paths = new List<string>();
+            foreach (IProjectTree node in nodes) {
+                if (node.IsRoot()) {
+                    paths.Add(Path.GetDirectoryName(unconfiguredProject.FullPath));
+                    paths.AddRange(node.Children.GetAllFolderPaths(unconfiguredProject));
+                } else if (node.IsFolder || node.Children.Count > 0) {
+                    if (Directory.Exists(node.FilePath)) {
+                        paths.Add(node.FilePath);
+                        paths.AddRange(node.Children.GetAllFolderPaths(unconfiguredProject));
+                    }
+                }
+            }
+            return paths.Distinct();
+        }
+
+        public static bool IsFile(this IProjectTree node) {
+            return (node != null) && !node.IsFolder && (node.Root != node);
+        }
     }
 }
