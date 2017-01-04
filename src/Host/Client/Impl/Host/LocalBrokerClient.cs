@@ -54,18 +54,18 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         public override async Task<RHost> ConnectAsync(HostConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken)) {
-            await EnsureBrokerStartedAsync();
+            await EnsureBrokerStartedAsync(cancellationToken);
             return await base.ConnectAsync(connectionInfo, cancellationToken);
         }
 
-        private async Task EnsureBrokerStartedAsync() {
+        private async Task EnsureBrokerStartedAsync(CancellationToken cancellationToken) {
             DisposableBag.ThrowIfDisposed();
             await TaskUtilities.SwitchToBackgroundThread();
 
-            var lockToken = await _connectLock.WaitAsync();
+            var lockToken = await _connectLock.WaitAsync(cancellationToken);
             try {
                 if (!lockToken.IsSet) {
-                    await ConnectToBrokerWorker();
+                    await ConnectToBrokerWorker(cancellationToken);
                 }
                 lockToken.Set();
             } finally {
@@ -73,7 +73,7 @@ namespace Microsoft.R.Host.Client.Host {
             }
         }
 
-        private async Task ConnectToBrokerWorker() {
+        private async Task ConnectToBrokerWorker(CancellationToken cancellationToken) {
             Trace.Assert(_brokerProcess == null);
 
             string rhostBrokerExe = Path.Combine(_rhostDirectory, RHostBrokerExe);
@@ -84,8 +84,10 @@ namespace Microsoft.R.Host.Client.Host {
             Process process = null;
             try {
                 string pipeName = Guid.NewGuid().ToString();
+                var cts = new CancellationTokenSource(100000);
 
-                using (var serverUriPipe = new NamedPipeServerStream(pipeName, PipeDirection.In)) {
+                using (var processConnectCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, cts.Token))
+                using (var serverUriPipe = new NamedPipeServerStream(pipeName, PipeDirection.In, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous)) {
                     var psi = new ProcessStartInfo {
                         FileName = rhostBrokerExe,
                         UseShellExecute = false,
@@ -109,14 +111,13 @@ namespace Microsoft.R.Host.Client.Host {
                     process = StartBroker(psi);
                     process.EnableRaisingEvents = true;
 
-                    var cts = new CancellationTokenSource(100000);
                     process.Exited += delegate {
                         cts.Cancel();
                         _brokerProcess = null;
                         _connectLock.EnqueueReset();
                     };
 
-                    await serverUriPipe.WaitForConnectionAsync(cts.Token);
+                    await serverUriPipe.WaitForConnectionAsync(processConnectCts.Token);
 
                     var serverUriData = new MemoryStream();
                     try {

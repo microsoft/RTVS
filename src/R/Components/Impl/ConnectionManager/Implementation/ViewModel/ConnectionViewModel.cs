@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Linq;
 using System.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
@@ -223,7 +224,12 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                 // Check if the name was calculated from the previous path
                 var currentName = Name ?? string.Empty;
                 if (string.IsNullOrEmpty(currentName) || string.Compare(currentName, previousProposedName, StringComparison.CurrentCultureIgnoreCase) == 0) {
-                    Name = currentProposedName;
+                    // Broker derives log name from connection name and hence the connection
+                    // cannot contain all characters. Characters allowed in the path is a good bet.
+                    var invalidChars = System.IO.Path.GetInvalidPathChars().Union(System.IO.Path.GetInvalidFileNameChars()).ToArray();
+                    if (currentProposedName == null || currentProposedName.IndexOfAny(invalidChars) < 0) {
+                        Name = currentProposedName;
+                    }
                 }
             }
 
