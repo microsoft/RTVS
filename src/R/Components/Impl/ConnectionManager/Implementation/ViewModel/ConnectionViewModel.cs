@@ -301,8 +301,16 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         private static bool IsValidConnectionName(string name) {
             // Broker derives log name from connection name and hence the connection cannot contain all characters. 
-            return !string.IsNullOrWhiteSpace(name) &&
-                   !name.Where(ch => !Char.IsLetterOrDigit(ch) && !_allowedNameChars.Contains(ch)).Any();
+            if (string.IsNullOrWhiteSpace(name)) {
+                return false;
+            }
+            if (!char.IsLetterOrDigit(name[0])) {
+                return false;
+            }
+            if (name.IndexOfOrdinal("..") >= 0) {
+                return false;
+            }
+            return !name.Where(ch => !char.IsLetterOrDigit(ch) && !_allowedNameChars.Contains(ch)).Any();
         }
     }
 }
