@@ -12,6 +12,7 @@ using static System.FormattableString;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
     internal sealed class ConnectionViewModel : BindableBase, IConnectionViewModel {
+        private static readonly char[] _allowedNameChars = new char[] { '(', ')', '[', ']', '_', ' ', '@', '-', '.' };
         private const int DefaultPort = 5444;
         private readonly IConnection _connection;
         private readonly ICoreShell _coreShell;
@@ -193,7 +194,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
             Uri uri;
             var isPathValid = Uri.TryCreate(Path, UriKind.Absolute, out uri);
-            if (string.IsNullOrEmpty(Name)) {
+            if (!IsValidConnectionName(Name)) {
                 IsValid = false;
                 SaveButtonTooltip = Resources.ConnectionManager_ShouldHaveName;
             } else if (!isPathValid) {
@@ -224,10 +225,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                 // Check if the name was calculated from the previous path
                 var currentName = Name ?? string.Empty;
                 if (string.IsNullOrEmpty(currentName) || string.Compare(currentName, previousProposedName, StringComparison.CurrentCultureIgnoreCase) == 0) {
-                    // Broker derives log name from connection name and hence the connection
-                    // cannot contain all characters. Characters allowed in the path is a good bet.
-                    var invalidChars = System.IO.Path.GetInvalidPathChars().Union(System.IO.Path.GetInvalidFileNameChars()).ToArray();
-                    if (currentProposedName == null || currentProposedName.IndexOfAny(invalidChars) < 0) {
+                    if (currentProposedName == null || IsValidConnectionName(currentProposedName)) {
                         Name = currentProposedName;
                     }
                 }
@@ -271,7 +269,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                 Uri.TryCreate(path, UriKind.Absolute, out uri);
             } catch (InvalidOperationException) { } catch (ArgumentException) { } catch (UriFormatException) { }
 
-            if(uri != null && uri.IsFile) {
+            if (uri != null && uri.IsFile) {
                 return path;
             }
 
@@ -290,7 +288,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                 var hasPathOrQuery = !string.IsNullOrEmpty(uri.PathAndQuery) && uri.PathAndQuery != "/";
                 var mainPart = Invariant($"{Uri.UriSchemeHttps}{Uri.SchemeDelimiter}{uri.Host.ToLower()}:{port}");
 
-                path = hasPathOrQuery 
+                path = hasPathOrQuery
                         ? Invariant($"{mainPart}{uri.PathAndQuery}{uri.Fragment}")
                         : Invariant($"{mainPart}{uri.Fragment}");
             } else {
@@ -299,6 +297,12 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             }
 
             return path;
+        }
+
+        private static bool IsValidConnectionName(string name) {
+            // Broker derives log name from connection name and hence the connection cannot contain all characters. 
+            return !string.IsNullOrWhiteSpace(name) &&
+                   !name.Where(ch => !Char.IsLetterOrDigit(ch) && !_allowedNameChars.Contains(ch)).Any();
         }
     }
 }
