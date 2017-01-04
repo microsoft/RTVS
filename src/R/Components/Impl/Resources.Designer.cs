@@ -328,8 +328,7 @@ namespace Microsoft.R.Components {
         ///   Looks up a localized string similar to Are you sure you want to remove the &apos;{0}&apos; connection?
         ///Deleting it will disconnect you from RHost, all unsaved data will be lost.
         ///Deletion of the connection does not delete remote files.
-        ///If you want to delete them, you have to delete the profile first.
-        ///.
+        ///If you want to delete them, you have to delete the profile first..
         /// </summary>
         public static string ConnectionManager_RemoveActiveConnectionConfirmation {
             get {
@@ -343,6 +342,26 @@ namespace Microsoft.R.Components {
         public static string ConnectionManager_RemoveConnectionConfirmation {
             get {
                 return ResourceManager.GetString("ConnectionManager_RemoveConnectionConfirmation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You are going to change connection &apos;{0}&apos; that you&apos;re currently using.
+        ///Saving these changes will disconnect you from RHost, all unsaved data will be lost.
+        ///Do you wish to proceed?.
+        /// </summary>
+        public static string ConnectionManager_RenameActiveConnectionConfirmation {
+            get {
+                return ResourceManager.GetString("ConnectionManager_RenameActiveConnectionConfirmation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Renaming &quot;{0}&quot; to &quot;{1}&quot;.
+        /// </summary>
+        public static string ConnectionManager_RenameConnectionProgressBarMessage {
+            get {
+                return ResourceManager.GetString("ConnectionManager_RenameConnectionProgressBarMessage", resourceCulture);
             }
         }
         
@@ -370,6 +389,18 @@ namespace Microsoft.R.Components {
         public static string ConnectionManager_ShouldHavePath {
             get {
                 return ResourceManager.GetString("ConnectionManager_ShouldHavePath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to switch from &apos;{0}&apos; to &apos;{1}&apos;?
+        ///Switching will stop your current session, all unsaved data will be lost.
+        ///
+        ///This prompt can be suppressed in R Tools | Options..
+        /// </summary>
+        public static string ConnectionManager_SwitchConfirmation {
+            get {
+                return ResourceManager.GetString("ConnectionManager_SwitchConfirmation", resourceCulture);
             }
         }
         
@@ -528,6 +559,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &apos;{0}&apos; is not a valid URL or path. Please specify full path to the local R or remote machine connection URL in the form &apos;[https://]machine[:port]&apos;.
+        /// </summary>
+        public static string Error_InvalidURL {
+            get {
+                return ResourceManager.GetString("Error_InvalidURL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Microsoft.R.Host.exe is missing. Click OK to open download link in the default browser..
         /// </summary>
         public static string Error_Microsoft_R_Host_Missing {
@@ -587,6 +627,15 @@ namespace Microsoft.R.Components {
         public static string Install {
             get {
                 return ResourceManager.GetString("Install", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Installed R versions:.
+        /// </summary>
+        public static string InstalledInterpreters {
+            get {
+                return ResourceManager.GetString("InstalledInterpreters", resourceCulture);
             }
         }
         
@@ -1338,6 +1387,16 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to If you want to select specific R version, specify its id 
+        ///number in the connection URL in the form &apos;https://remote:5444#2&apos;.
+        /// </summary>
+        public static string SelectInterpreterInstruction {
+            get {
+                return ResourceManager.GetString("SelectInterpreterInstruction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to # File content was generated on {0}..
         /// </summary>
         public static string SettingsFileGeneratedStamp {
@@ -1424,6 +1483,28 @@ namespace Microsoft.R.Components {
         public static string VirtualMemory {
             get {
                 return ResourceManager.GetString("VirtualMemory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to WARNING: Version of R Services on the remote machine ({0})
+        ///is higher than the version of R Tools on the local computer ({1}). 
+        ///Please upgrade local R Tools installation to match..
+        /// </summary>
+        public static string Warning_RemoteVersionHigher {
+            get {
+                return ResourceManager.GetString("Warning_RemoteVersionHigher", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to WARNING: Version of R Services on the remote machine ({0})
+        ///is lower than the version of R Tools on the local computer ({1}). 
+        ///Please upgrade remote R Services installation to match..
+        /// </summary>
+        public static string Warning_RemoteVersionLower {
+            get {
+                return ResourceManager.GetString("Warning_RemoteVersionLower", resourceCulture);
             }
         }
         

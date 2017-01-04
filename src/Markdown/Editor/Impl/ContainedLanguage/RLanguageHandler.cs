@@ -4,7 +4,6 @@
 using System.Linq;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.Projection;
 using Microsoft.Languages.Editor.Tasks;

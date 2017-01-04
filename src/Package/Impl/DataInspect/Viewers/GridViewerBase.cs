@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using EnvDTE;
@@ -18,8 +19,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
         private const REvaluationResultProperties _properties =
            ClassesProperty | ExpressionProperty | TypeNameProperty | DimProperty | LengthProperty;
 
-        private static Window _lastCreatedGridPane;
-        private static Window _linkedWindowFrame;
         private readonly IObjectDetailsViewerAggregator _aggregator;
 
         public GridViewerBase(IObjectDetailsViewerAggregator aggregator, IDataObjectEvaluator evaluator) :
@@ -38,15 +37,17 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
                 await VsAppShell.Current.SwitchToMainThreadAsync(cancellationToken);
                 var id = Math.Abs(_toolWindowIdBase + expression.GetHashCode() % (Int32.MaxValue - _toolWindowIdBase));
 
-                var existingPane = ToolWindowUtilities.FindWindowPane<VariableGridWindowPane>(id);
-                var frame = existingPane?.Frame as IVsWindowFrame;
-                if (frame != null) {
-                    frame.Show();
+                var pane = ToolWindowUtilities.FindWindowPane<VariableGridWindowPane>(id);
+                if (pane == null) {
+                    pane = ToolWindowUtilities.ShowWindowPane<VariableGridWindowPane>(id, true);
                 } else {
-                    VariableGridWindowPane pane = ToolWindowUtilities.ShowWindowPane<VariableGridWindowPane>(id, true);
-                    title = !string.IsNullOrEmpty(title) ? title : evaluation.Expression;
-                    pane.SetEvaluation(new VariableViewModel(evaluation, _aggregator), title);
+                    var frame = pane.Frame as IVsWindowFrame;
+                    Debug.Assert(frame != null);
+                    frame?.Show();
                 }
+
+                title = !string.IsNullOrEmpty(title) ? title : evaluation.Expression;
+                pane.SetEvaluation(new VariableViewModel(evaluation, _aggregator), title);
             }
         }
         #endregion

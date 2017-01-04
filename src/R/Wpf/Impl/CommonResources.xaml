@@ -5,6 +5,8 @@
                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
                     xmlns:wpf="clr-namespace:Microsoft.R.Wpf"
                     xmlns:selectors="clr-namespace:Microsoft.Common.Wpf.Selectors;assembly=Microsoft.R.Common.Wpf"
+                    xmlns:imaging="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.Imaging"
+                    xmlns:imagecatalog="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.ImageCatalog"
                     mc:Ignorable="d">
     <!--Icons-->
     <PathGeometry FillRule="NonZero" x:Key="ArrowRigth10" Figures="M0,0 L5,5 L0,10 z" />
@@ -541,7 +543,7 @@
         </Setter>
     </Style>
 
-    <Style TargetType="{x:Type Rectangle}" x:Key="ConnectionStyle">
+    <Style TargetType="{x:Type wpf:IconWithOverlay}" x:Key="ConnectionStyle">
         <Style.Triggers>
             <MultiDataTrigger>
                 <MultiDataTrigger.Conditions>
@@ -551,7 +553,9 @@
                     <Condition Binding="{Binding Path=IsActive}" Value="True" />
                 </MultiDataTrigger.Conditions>
                 <MultiDataTrigger.Setters>
-                    <Setter Property="Fill" Value="{StaticResource IconRCloudRunning}"/>
+                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.Cloud}"/>
+                    <Setter Property="OverlayMoniker" Value="{x:Static imagecatalog:KnownMonikers.StatusOK}"/>
+                    <Setter Property="OverlayVisibility" Value="Visible"/>
                 </MultiDataTrigger.Setters>
             </MultiDataTrigger>
             <MultiDataTrigger>
@@ -562,7 +566,9 @@
                     <Condition Binding="{Binding Path=IsActive}" Value="True" />
                 </MultiDataTrigger.Conditions>
                 <MultiDataTrigger.Setters>
-                    <Setter Property="Fill" Value="{StaticResource IconRLocalRunning}"/>
+                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.Computer}"/>
+                    <Setter Property="OverlayMoniker" Value="{x:Static imagecatalog:KnownMonikers.StatusOK}"/>
+                    <Setter Property="OverlayVisibility" Value="Visible"/>
                 </MultiDataTrigger.Setters>
             </MultiDataTrigger>
             <MultiDataTrigger>
@@ -573,7 +579,9 @@
                     <Condition Binding="{Binding Path=IsActive}" Value="True" />
                 </MultiDataTrigger.Conditions>
                 <MultiDataTrigger.Setters>
-                    <Setter Property="Fill" Value="{StaticResource IconRCloudConnected}"/>
+                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.Cloud}"/>
+                    <Setter Property="OverlayMoniker" Value="{x:Static imagecatalog:KnownMonikers.StatusWarning}"/>
+                    <Setter Property="OverlayVisibility" Value="Visible"/>
                 </MultiDataTrigger.Setters>
             </MultiDataTrigger>
             <MultiDataTrigger>
@@ -584,7 +592,9 @@
                     <Condition Binding="{Binding Path=IsActive}" Value="True" />
                 </MultiDataTrigger.Conditions>
                 <MultiDataTrigger.Setters>
-                    <Setter Property="Fill" Value="{StaticResource IconRLocalConnected}"/>
+                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.Computer}"/>
+                    <Setter Property="OverlayMoniker" Value="{x:Static imagecatalog:KnownMonikers.StatusWarning}"/>
+                    <Setter Property="OverlayVisibility" Value="Visible"/>
                 </MultiDataTrigger.Setters>
             </MultiDataTrigger>
             <MultiDataTrigger>
@@ -595,7 +605,9 @@
                     <Condition Binding="{Binding Path=IsActive}" Value="True" />
                 </MultiDataTrigger.Conditions>
                 <MultiDataTrigger.Setters>
-                    <Setter Property="Fill" Value="{StaticResource IconRCloudDisconnected}"/>
+                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.Cloud}"/>
+                    <Setter Property="OverlayMoniker" Value="{x:Static imagecatalog:KnownMonikers.StatusError}"/>
+                    <Setter Property="OverlayVisibility" Value="Visible"/>
                 </MultiDataTrigger.Setters>
             </MultiDataTrigger>
             <MultiDataTrigger>
@@ -606,7 +618,9 @@
                     <Condition Binding="{Binding Path=IsActive}" Value="True" />
                 </MultiDataTrigger.Conditions>
                 <MultiDataTrigger.Setters>
-                    <Setter Property="Fill" Value="{StaticResource IconRLocalDisconnected}"/>
+                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.Computer}"/>
+                    <Setter Property="OverlayMoniker" Value="{x:Static imagecatalog:KnownMonikers.StatusError}"/>
+                    <Setter Property="OverlayVisibility" Value="Visible"/>
                 </MultiDataTrigger.Setters>
             </MultiDataTrigger>
             <MultiDataTrigger>
@@ -615,7 +629,8 @@
                     <Condition Binding="{Binding Path=IsActive}" Value="False" />
                 </MultiDataTrigger.Conditions>
                 <MultiDataTrigger.Setters>
-                    <Setter Property="Fill" Value="{StaticResource IconRCloudInactive}"/>
+                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.Cloud}"/>
+                    <Setter Property="OverlayVisibility" Value="Collapsed"/>
                 </MultiDataTrigger.Setters>
             </MultiDataTrigger>
             <MultiDataTrigger>
@@ -624,7 +639,8 @@
                     <Condition Binding="{Binding Path=IsActive}" Value="False" />
                 </MultiDataTrigger.Conditions>
                 <MultiDataTrigger.Setters>
-                    <Setter Property="Fill" Value="{StaticResource IconRLocalInactive}"/>
+                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.Computer}"/>
+                    <Setter Property="OverlayVisibility" Value="Collapsed"/>
                 </MultiDataTrigger.Setters>
             </MultiDataTrigger>
         </Style.Triggers>

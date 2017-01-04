@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.Projection;
 using Microsoft.Languages.Editor.Services;
@@ -25,19 +26,25 @@ namespace Microsoft.Markdown.Editor.Classification {
         private readonly IWpfTextView _view;
         private readonly IClassificationFormatMap _classificationFormatMap;
         private readonly IClassificationTypeRegistryService _classificationTypeRegistry;
-        private readonly IContainedLanguageHandler _contanedLanguageHandler;
+        private readonly ICoreShell _coreShell;
 
+        private IContainedLanguageHandler _contanedLanguageHandler;
         private double _lastWidth = 0;
         private int _reprocessFrom = -1;
         private Brush _backgroudColorBrush;
 
-        public CodeBackgroundTextAdornment(IWpfTextView view, IClassificationFormatMapService classificationFormatMapService, IClassificationTypeRegistryService classificationTypeRegistry) {
+        public CodeBackgroundTextAdornment(
+            IWpfTextView view, 
+            IClassificationFormatMapService classificationFormatMapService, 
+            IClassificationTypeRegistryService classificationTypeRegistry,
+            ICoreShell coreShell) {
 
             _view = view;
             _layer = view.GetAdornmentLayer("CodeBackgroundTextAdornment");
 
             _classificationTypeRegistry = classificationTypeRegistry;
             _classificationFormatMap = classificationFormatMapService.GetClassificationFormatMap(view);
+            _coreShell = coreShell;
 
             // Advise to events
             _classificationFormatMap.ClassificationFormatMappingChanged += OnClassificationFormatMappingChanged;
@@ -48,6 +55,9 @@ namespace Microsoft.Markdown.Editor.Classification {
             if (projectionBufferManager != null) {
                 projectionBufferManager.MappingsChanged += OnMappingsChanged;
                 _contanedLanguageHandler = ServiceManager.GetService<IContainedLanguageHandler>(projectionBufferManager.DiskBuffer);
+                if(_contanedLanguageHandler == null) {
+                    ServiceManager.AdviseServiceAdded<IContainedLanguageHandler>(projectionBufferManager.DiskBuffer, _coreShell, (s) => _contanedLanguageHandler = s);
+                }
             }
 
             FetchColors();
@@ -113,7 +123,10 @@ namespace Microsoft.Markdown.Editor.Classification {
             var bufferLineEnd = bufferSnapshot.GetLineFromPosition(line.End);
 
             if (bufferLineStart.LineNumber == bufferLineEnd.LineNumber) {
-                CreateVisuals(line as IWpfTextViewLine);
+                var wpfLine = line as IWpfTextViewLine;
+                if (wpfLine != null) {
+                    CreateVisuals(wpfLine);
+                }
             }
         }
 
@@ -132,8 +145,11 @@ namespace Microsoft.Markdown.Editor.Classification {
         }
 
         private bool ShouldHighlightEntireLine(IWpfTextViewLine line) {
-            return _contanedLanguageHandler.GetCodeBlockOfLocation(line.Start.Position) != null ||
-                   _contanedLanguageHandler.GetCodeBlockOfLocation(line.End.Position) != null;
+            if (_contanedLanguageHandler != null) {
+                return _contanedLanguageHandler.GetCodeBlockOfLocation(line.Start.Position) != null ||
+                       _contanedLanguageHandler.GetCodeBlockOfLocation(line.End.Position) != null;
+            }
+            return false;
         }
 
         private void CreateHighlight(IWpfTextViewLine line, Geometry g, SnapshotSpan span) {

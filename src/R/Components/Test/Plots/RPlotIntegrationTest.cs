@@ -790,7 +790,7 @@ namespace Microsoft.R.Components.Test.Plots {
             await locatorTask;
         }
 
-        [Test(ThreadType.UI)]
+        [Test(ThreadType.UI, Skip = "https://github.com/Microsoft/RTVS/issues/2939")]
         public async Task LocatorCommandNoClick() {
             await InitializeGraphicsDevice();
 

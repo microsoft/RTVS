@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
@@ -103,6 +104,34 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
 
             _console.WriteLine("\t" + Resources.ConnectedUserCount.FormatInvariant(aboutHost.ConnectedUserCount));
             _console.WriteLine(string.Empty);
+
+            if (_interactiveWorkflow.RSession.IsRemote) {
+                _console.WriteLine(Resources.InstalledInterpreters);
+
+                int count = 0;
+                foreach (var interpreter in aboutHost.Interpreters) {
+                    _console.WriteLine("\t" + interpreter);
+                    count++;
+                }
+
+                _console.WriteLine(string.Empty);
+                if (count > 1) {
+                    _console.WriteLine(Resources.SelectInterpreterInstruction);
+                }
+            }
+
+            var clientVersion = Assembly.GetExecutingAssembly().GetName().Version;
+            if (clientVersion.Major != 0 || clientVersion.Minor != 0) { // Filter out debug builds
+                string message = null;
+                if (aboutHost.Version.Major > clientVersion.Major || aboutHost.Version.Minor > clientVersion.Minor) {
+                    message = Resources.Warning_RemoteVersionHigher.FormatInvariant(aboutHost.Version, clientVersion);
+                } else if (aboutHost.Version.Major < clientVersion.Major || aboutHost.Version.Minor < clientVersion.Minor) {
+                    message = Resources.Warning_RemoteVersionLower.FormatInvariant(aboutHost.Version, clientVersion);
+                }
+                if(!string.IsNullOrEmpty(message)) {
+                    _console.WriteLine(Environment.NewLine + message + Environment.NewLine);
+                }
+            }
 
             if (reportTelemetry) {
                 var services = _interactiveWorkflow.Shell.Services;

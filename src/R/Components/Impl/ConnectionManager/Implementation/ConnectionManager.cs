@@ -136,21 +136,19 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
                 // Credentials are saved by URI. Delete the credentials if there are no other connections using it.
                 if (_connections.All(kvp => kvp.Value.Uri != connection.Uri)) {
-                    _securityService.DeleteUserCredentials(connection.Uri.ToCredentialAuthority());
+                    if (connection.Uri != null) {
+                        _securityService.DeleteUserCredentials(connection.Uri.ToCredentialAuthority());
+                    }
                 }
             }
 
             return isRemoved;
         }
 
-        public async Task RemoveAsync(string connectionName, CancellationToken cancellationToken = default(CancellationToken)) {
-            if (connectionName.Equals(ActiveConnection?.Name)) {
-                await _sessionProvider.RemoveBrokerAsync(cancellationToken);
-                ActiveConnection = null;
-                SaveActiveConnectionToSettings();
-            }
-
-            TryRemove(connectionName);
+        public async Task DisconnectAsync(CancellationToken cancellationToken = default(CancellationToken)) {
+            await _sessionProvider.RemoveBrokerAsync(cancellationToken);
+            ActiveConnection = null;
+            SaveActiveConnectionToSettings();
         }
 
         public Task TestConnectionAsync(IConnectionInfo connection, CancellationToken cancellationToken = default(CancellationToken)) {
@@ -200,7 +198,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             _isFirstConnectionAttempt = false;
             var brokerSwitched = await _sessionProvider.TrySwitchBrokerAsync(connection.Name, connection.BrokerConnectionInfo, cancellationToken);
             if (brokerSwitched) {
-                UpdateActiveConnection();
+                UpdateActiveConnection(connection);
             }
 
             return brokerSwitched;
@@ -304,35 +302,51 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         private void BrokerStateChanged(object sender, BrokerStateChangedEventArgs eventArgs) {
-            IsConnected = _sessionProvider.IsConnected;
+            lock (_syncObj) {
+                IsConnected = _sessionProvider.IsConnected;
+                IsRunning &= IsConnected;
+            }
             UpdateActiveConnection();
             ConnectionStateChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void SessionConnected(object sender, EventArgs args) {
-            IsRunning = true;
+            lock (_syncObj) {
+                IsConnected = _sessionProvider.IsConnected;
+                IsRunning = true;
+            }
             ConnectionStateChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void SessionDisconnected(object sender, EventArgs args) {
-            IsRunning = false;
+            lock (_syncObj) {
+                IsConnected = _sessionProvider.IsConnected;
+                IsRunning = false;
+            }
             ConnectionStateChanged?.Invoke(this, EventArgs.Empty);
         }
 
+        public static ConcurrentQueue<string> Events = new ConcurrentQueue<string>();
+
         private void ActiveWindowChanged(object sender, ActiveWindowChangedEventArgs eventArgs) {
             IsConnected = _sessionProvider.IsConnected && eventArgs.Window != null;
+            IsRunning &= IsConnected;
             UpdateActiveConnection();
             ConnectionStateChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        private void UpdateActiveConnection() {
+        private void UpdateActiveConnection(IConnection candidateConnection = null) {
             lock (_syncObj) {
-                var brokerConnectionInfo = _sessionProvider.HasBroker ? _sessionProvider.Broker.ConnectionInfo : default(BrokerConnectionInfo);
-                if (ActiveConnection != null && brokerConnectionInfo == ActiveConnection.BrokerConnectionInfo || brokerConnectionInfo == default(BrokerConnectionInfo)) {
+                var brokerConnectionInfo = _sessionProvider.Broker.ConnectionInfo;
+                if (candidateConnection != null) {
+                    if (candidateConnection == ActiveConnection && candidateConnection.BrokerConnectionInfo == brokerConnectionInfo) {
+                        return;
+                    }
+                } else if (brokerConnectionInfo == (ActiveConnection?.BrokerConnectionInfo ?? default(BrokerConnectionInfo))) {
                     return;
                 }
 
-                var connection = RecentConnections.FirstOrDefault(c => brokerConnectionInfo == c.BrokerConnectionInfo);
+                var connection = candidateConnection ?? RecentConnections.FirstOrDefault(c => brokerConnectionInfo == c.BrokerConnectionInfo);
                 if (connection != null) {
                     connection.LastUsed = DateTime.Now;
                 }

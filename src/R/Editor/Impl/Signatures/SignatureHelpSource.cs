@@ -47,11 +47,11 @@ namespace Microsoft.R.Editor.Signatures {
                         broker.TriggerSignatureHelp((ITextView)p);
                     }, session.TextView, this.GetType(), processNow: true);
                 }
-                AugmentSignatureHelpSession(session, signatures, document.EditorTree.AstRoot, TriggerSignatureHelp);
+                AugmentSignatureHelpSession(session, signatures, document.EditorTree.AstRoot, TriggerSignatureHelp, null);
             }
         }
 
-        public bool AugmentSignatureHelpSession(ISignatureHelpSession session, IList<ISignature> signatures, AstRoot ast, Action<object, string> triggerSession) {
+        public bool AugmentSignatureHelpSession(ISignatureHelpSession session, IList<ISignature> signatures, AstRoot ast, Action<object, string> triggerSession, string packageName) {
             ITextSnapshot snapshot = _textBuffer.CurrentSnapshot;
             int position = session.GetTriggerPoint(_textBuffer).GetPosition(snapshot);
 
@@ -70,7 +70,7 @@ namespace Microsoft.R.Editor.Signatures {
                 if (functionInfo == null) {
                     var functionIndex = _shell.ExportProvider.GetExportedValue<IFunctionIndex>();
                     // Then try package functions
-                    var packageName = _packageName;
+                    packageName = packageName ?? _packageName;
                     _packageName = null;
                     // Get collection of function signatures from documentation (parsed RD file)
                     functionInfo = functionIndex.GetFunctionInfo(parametersInfo.FunctionName, packageName, triggerSession, session);

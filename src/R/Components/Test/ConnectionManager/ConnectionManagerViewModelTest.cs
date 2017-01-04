@@ -2,10 +2,12 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.ConnectionManager.Implementation.ViewModel;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -69,6 +71,8 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
             _cmvm.Connect(connection, true);
             await _workflow.RSession.StopHostAsync().Should().BeCompletedAsync();
 
+            await UIThreadHelper.Instance.DoEventsAsync();
+
             var conn = _cmvm.LocalConnections.First(c => c.Name == connection.Name);
             conn.IsConnected.Should().BeTrue();
             conn.IsRunning.Should().BeFalse();
@@ -103,6 +107,72 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
         }
 
         [Test(ThreadType.UI)]
+        public void AddLocalWithSameName() {
+            var connection = _cmvm.LocalConnections.First();
+            _cmvm.Connect(connection, false);
+
+            connection = _cmvm.LocalConnections.First(c => c.IsConnected);
+            var name = connection.Name;
+
+            _cmvm.EditNew();
+            _cmvm.EditedConnection.Name = name;
+            _cmvm.EditedConnection.Path = connection.Path;
+            _cmvm.EditedConnection.UpdatePath();
+            _cmvm.Save(_cmvm.EditedConnection);
+
+            _cmvm.LocalConnections.Should().ContainSingle(c => c.Name.EqualsOrdinal(name))
+                .Which.IsConnected.Should().BeTrue();
+        }
+
+        [Test(ThreadType.UI)]
+        public void AddLocalWithSameName_ConnectToSecond() {
+            var connection = _cmvm.LocalConnections.First(c => c.IsUserCreated);
+            var copyName = $"{connection.Name} Copy";
+
+            _cmvm.EditNew();
+            _cmvm.EditedConnection.Name = copyName;
+            _cmvm.EditedConnection.Path = connection.Path;
+            _cmvm.EditedConnection.UpdatePath();
+            _cmvm.Save(_cmvm.EditedConnection);
+
+            var connectionCopy = _cmvm.LocalConnections.First(c => c.Name == copyName);
+            _cmvm.Connect(connectionCopy, true);
+
+            _cmvm.LocalConnections.Should().ContainSingle(c => c.IsConnected)
+                .Which.Name.Should().Be(copyName);
+        }
+
+        [Test(ThreadType.UI)]
+        public void AddLocal_Connect_Rename() {
+            var connection = _cmvm.LocalConnections.First(c => c.IsUserCreated);
+            var copyName = $"{connection.Name} Copy";
+
+            _cmvm.EditNew();
+            _cmvm.EditedConnection.Name = copyName;
+            _cmvm.EditedConnection.Path = connection.Path;
+            _cmvm.EditedConnection.UpdatePath();
+            _cmvm.Save(_cmvm.EditedConnection);
+
+            var connectionCopy = _cmvm.LocalConnections.First(c => c.Name == copyName);
+            _cmvm.Connect(connectionCopy, true);
+
+            connectionCopy = _cmvm.LocalConnections.First(c => c.IsConnected);
+
+            var copy2Name = $"{copyName} 2";
+            _cmvm.Edit(connectionCopy);
+            connectionCopy.Name = copy2Name;
+            _cmvm.Save(connectionCopy);
+
+            UIThreadHelper.Instance.DoEvents();
+
+            _workflow.RSessions.IsConnected.Should().BeFalse();
+            _cmvm.IsConnected.Should().BeFalse();
+            _cmvm.LocalConnections.Should().NotContain(c => c.IsConnected)
+                .And.Contain(c => c.Name == copy2Name)
+                .And.NotContain(c => c.Name == copyName);
+        }
+
+        [Test(ThreadType.UI)]
         public async Task AddLocalWithCommandLine() {
             var connection = _cmvm.LocalConnections.First();
             _cmvm.Connect(connection, false);
@@ -123,6 +193,36 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
             var result = await _workflow.RSession.EvaluateAsync<JValue>("commandArgs(trailingOnly = TRUE)", REvaluationKind.Normal);
 
             result.Value.Should().Be("5");
+        }
+
+        [Test(ThreadType.UI)]
+        public void RenameLocalToExistingName() {
+            var connection = _cmvm.LocalConnections.First();
+            _cmvm.Connect(connection, false);
+
+            connection = _cmvm.LocalConnections.First(c => c.IsConnected);
+            var connectedName = connection.Name;
+            var name = Guid.NewGuid().ToString();
+
+            _cmvm.EditNew();
+            _cmvm.EditedConnection.Name = name;
+            _cmvm.EditedConnection.Path = connection.Path;
+            _cmvm.EditedConnection.UpdatePath();
+            _cmvm.Save(_cmvm.EditedConnection);
+
+            var names = _cmvm.LocalConnections.Select(c => c.Name).ToList();
+
+            connection = _cmvm.LocalConnections.First(c => c.Name.EqualsOrdinal(name));
+            _cmvm.Edit(connection);
+            connection.Name = connectedName;
+            _cmvm.Save(connection);
+
+            // Failed Save shouldn't cancel any changes
+            connection.Name.Should().Be(connectedName);
+
+            connection.Reset();
+
+            _cmvm.LocalConnections.Should().Equal(names, (c, n) => c.Name.EqualsOrdinal(n));
         }
 
         [Test(ThreadType.UI)]
@@ -161,10 +261,10 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
         }
 
         [CompositeTest(ThreadType.UI)]
-        [InlineData("http://machine", "machine", "http://machine:80")]
+        [InlineData("http://machine", "machine", "https://machine:80")]
         [InlineData("https://machine:5444", "machine", "https://machine:5444")]
-        [InlineData("https://machine#1234", "machine", "https://machine:443#1234")]
-        [InlineData("https://machine2", "machine2", "https://machine2:443")]
+        [InlineData("https://machine#1234", "machine", "https://machine:5444#1234")]
+        [InlineData("https://machine2", "machine2", "https://machine2:5444")]
         [InlineData("https://machine2:5444", "machine2", "https://machine2:5444")]
         public void AddRemote_Edit_ChangePath(string newPath, string expectedMachineName, string expectedPath) {
             _cmvm.EditNew();

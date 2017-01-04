@@ -6,7 +6,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Components.Settings;
 using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Test.Utility;
 using Microsoft.UnitTests.Core.Mef;
@@ -70,19 +69,6 @@ namespace Microsoft.R.Support.Test.Functions {
             string signature = functionInfo.Signatures[0].GetSignatureString("eval", locusPoints);
             signature.Should().Be("eval(expr, envir = parent.frame(), enclos = if(is.list(envir) || is.pairlist(envir)) parent.frame() else baseenv(), n)");
             locusPoints.Should().Equal(5, 11, 35, 116, 117);
-        }
-
-        [Test]
-        public async Task AliasesTest() {
-            var functionInfo = await PackageIndexUtility.GetFunctionInfoAsync(_functionIndex, "select");
-
-            functionInfo.Should().NotBeNull();
-            functionInfo.Name.Should().Be("lm.ridge");
-            functionInfo.Description.Should().NotBeEmpty();
-            functionInfo.Signatures.Should().ContainSingle().Which.Arguments.Should().HaveCount(10);
-
-            string signature = functionInfo.Signatures[0].GetSignatureString("select");
-            signature.Should().Be("select(formula, data, subset, na.action, lambda = 0, model = FALSE, x = FALSE, y = FALSE, contrasts = NULL, ...)");
         }
     }
 }

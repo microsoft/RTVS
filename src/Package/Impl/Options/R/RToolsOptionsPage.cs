@@ -44,13 +44,23 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set { _holder.SetValue(value); }
         }
 
+        [LocCategory(nameof(Resources.Settings_WorkspaceCategory))]
+        [CustomLocDisplayName(nameof(Resources.Settings_ShowWorkspaceSwitchConfirmationDialog))]
+        [LocDescription(nameof(Resources.Settings_ShowWorkspaceSwitchConfirmationDialog_Description))]
+        [TypeConverter(typeof(YesNoTypeConverter))]
+        [DefaultValue(YesNoAsk.No)]
+        public YesNo ShowWorkspaceSwitchConfirmationDialog {
+            get { return _holder.GetValue(YesNo.No); }
+            set { _holder.SetValue(value); }
+        }
+
         [LocCategory("Settings_WorkspaceCategory")]
-        [CustomLocDisplayName("Settings_LoadRDataOnProjectLoad")]
-        [LocDescription("Settings_LoadRDataOnProjectLoad_Description")]
+        [CustomLocDisplayName(nameof(Resources.Settings_LoadRDataOnProjectLoad))]
+        [LocDescription(nameof(Resources.Settings_LoadRDataOnProjectLoad_Description))]
         [TypeConverter(typeof(YesNoAskTypeConverter))]
         [DefaultValue(YesNoAsk.No)]
         public YesNoAsk LoadRDataOnProjectLoad {
-            get { return _holder.GetValue<YesNoAsk>(YesNoAsk.No); }
+            get { return _holder.GetValue(YesNoAsk.No); }
             set { _holder.SetValue(value); }
         }
 
@@ -60,7 +70,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [TypeConverter(typeof(YesNoAskTypeConverter))]
         [DefaultValue(YesNoAsk.No)]
         public YesNoAsk SaveRDataOnProjectUnload {
-            get { return _holder.GetValue<YesNoAsk>(YesNoAsk.No); }
+            get { return _holder.GetValue(YesNoAsk.No); }
             set { _holder.SetValue(value); }
         }
 

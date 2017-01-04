@@ -3,9 +3,9 @@
     "MicroBuild.Core": "0.2.0",
     "Microsoft.VisualStudio.Editor": "15.0.25824-RC",
     "Microsoft.VisualStudio.Language.StandardClassification": "15.0.25824-RC",
-    "Microsoft.VisualStudio.Text.UI.Wpf": "15.0.25824-RC",
+    "Microsoft.VisualStudio.Text.UI.Wpf": "15.0.25901-RC",
     "Microsoft.VisualStudio.TextManager.Interop.8.0": "8.0.50727",
-    "Microsoft.VisualStudio.Validation": "15.0.11-pre",
+    "Microsoft.VisualStudio.Validation": "15.0.55-pre",
     "xunit": "2.2.0-beta1-build3239",
     "xunit.runner.visualstudio": "2.2.0-beta1-build1144"
   },

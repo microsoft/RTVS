@@ -19,6 +19,7 @@ namespace Microsoft.R.Host.Broker.Interpreters {
         private readonly ROptions _options;
         private readonly ILogger _logger;
         private IFileSystem _fs;
+        private int _intepretedId = 1;
 
         public IReadOnlyCollection<Interpreter> Interpreters { get; private set; }
 
@@ -34,7 +35,7 @@ namespace Microsoft.R.Host.Broker.Interpreters {
 
             var sb = new StringBuilder(Invariant($"{Interpreters.Count} interpreters configured:"));
             foreach (var interp in Interpreters) {
-                sb.Append(Environment.NewLine + Invariant($"'{interp.Id}': {interp.Version} at \"{interp.Path}\""));
+                sb.Append(Environment.NewLine + Invariant($"[{interp.Id}] : {interp.Name} at \"{interp.Path}\""));
             }
             _logger.LogInformation(sb.ToString());
         }
@@ -46,7 +47,7 @@ namespace Microsoft.R.Host.Broker.Interpreters {
                 var engines = new RInstallation().GetCompatibleEngines();
                 if (engines.Any()) {
                     foreach (var e in engines) {
-                        var detected = new Interpreter(this, Guid.NewGuid().ToString(), e.Name, e.InstallPath, e.BinPath, e.Version);
+                        var detected = new Interpreter(this, Invariant($"{_intepretedId++}"), e.Name, e.InstallPath, e.BinPath, e.Version);
                         _logger.LogTrace(Resources.Trace_DetectedR, detected.Version, detected.Path);
                         yield return detected;
                     }
@@ -67,7 +68,7 @@ namespace Microsoft.R.Host.Broker.Interpreters {
                     }
                 }
 
-                _logger.LogError(Resources.Error_FailedRInstallationData, id, options.BasePath);
+                _logger.LogError(Resources.Error_FailedRInstallationData, options.Name ?? id, options.BasePath);
             }
         }
     }

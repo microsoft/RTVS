@@ -18,7 +18,6 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             if (source == null) {
                 throw new ArgumentNullException(nameof(source));
             }
-
             if (name == null) {
                 throw new ArgumentNullException(nameof(name));
             }

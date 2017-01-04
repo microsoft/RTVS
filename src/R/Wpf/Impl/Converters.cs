@@ -12,6 +12,7 @@ using Microsoft.Common.Wpf;
 
 namespace Microsoft.R.Wpf {
     public static class Converters {
+        public static IValueConverter Scale055 { get; } = LambdaConverter.Create<double>(x => x * 0.55);
         public static IValueConverter Scale122 { get; } = LambdaConverter.Create<double>(x => x * 1.22);
         public static IValueConverter Scale155 { get; } = LambdaConverter.Create<double>(x => x * 1.55);
         public static IValueConverter Scale190 { get; } = LambdaConverter.Create<double>(x => x * 1.90);

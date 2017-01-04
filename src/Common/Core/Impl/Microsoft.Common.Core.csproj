@@ -50,6 +50,7 @@
     <Compile Include="Composition\INamedExport.cs" />
     <Compile Include="Composition\NamedExportLocator.cs" />
     <Compile Include="Disposables\DisposableBag.cs" />
+    <Compile Include="Enums\YesNo.cs" />
     <Compile Include="Extensions\ArraySegmentExtensions.cs" />
     <Compile Include="Extensions\ClipboardExtensions.cs" />
     <Compile Include="Exceptions\CriticalException.cs" />

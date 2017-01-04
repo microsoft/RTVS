@@ -15,9 +15,9 @@ namespace Microsoft.R.Editor.Test.Utility {
             var tcs = new TaskCompletionSource<object>();
 
             var ready = signatureHelpSource.AugmentSignatureHelpSession(session, signatures, ast, (o, p) => {
-                signatureHelpSource.AugmentSignatureHelpSession(session, signatures, ast, null);
+                signatureHelpSource.AugmentSignatureHelpSession(session, signatures, ast, null, p);
                 tcs.TrySetResult(null);
-            });
+            }, null);
 
             if (ready) {
                 tcs.TrySetResult(null);

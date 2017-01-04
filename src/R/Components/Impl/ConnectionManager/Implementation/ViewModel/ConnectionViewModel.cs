@@ -2,16 +2,20 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Linq;
 using System.Threading;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Wpf;
 using Microsoft.R.Components.ConnectionManager.ViewModel;
 using static System.FormattableString;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
     internal sealed class ConnectionViewModel : BindableBase, IConnectionViewModel {
+        private static readonly char[] _allowedNameChars = new char[] { '(', ')', '[', ']', '_', ' ', '@', '-', '.' };
         private const int DefaultPort = 5444;
         private readonly IConnection _connection;
+        private readonly ICoreShell _coreShell;
 
         private string _name;
         private string _path;
@@ -31,7 +35,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private bool _isRenamed;
         private string _previousPath;
 
-        public ConnectionViewModel() {
+        public ConnectionViewModel(ICoreShell coreShell) {
+            _coreShell = coreShell;
             IsUserCreated = true;
             UpdateCalculated();
         }
@@ -189,7 +194,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
             Uri uri;
             var isPathValid = Uri.TryCreate(Path, UriKind.Absolute, out uri);
-            if (string.IsNullOrEmpty(Name)) {
+            if (!IsValidConnectionName(Name)) {
                 IsValid = false;
                 SaveButtonTooltip = Resources.ConnectionManager_ShouldHaveName;
             } else if (!isPathValid) {
@@ -220,7 +225,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                 // Check if the name was calculated from the previous path
                 var currentName = Name ?? string.Empty;
                 if (string.IsNullOrEmpty(currentName) || string.Compare(currentName, previousProposedName, StringComparison.CurrentCultureIgnoreCase) == 0) {
-                    Name = currentProposedName;
+                    if (currentProposedName == null || IsValidConnectionName(currentProposedName)) {
+                        Name = currentProposedName;
+                    }
                 }
             }
 
@@ -230,7 +237,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public void UpdatePath() {
             // Automatically update the Path with a more complete version
-            Path = GetCompletePath(Path?.Trim() ?? string.Empty);
+            Path = GetCompletePath(Path?.Trim() ?? string.Empty, _coreShell);
         }
 
         internal static string GetProposedName(string path) {
@@ -248,43 +255,62 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             return path.ToLower();
         }
 
-        internal static string GetCompletePath(string path) {
+        internal static string GetCompletePath(string path, ICoreShell shell) {
+            // We ALWAYS use HTTPS so no reason to accept anything else.
+            // Default RTVS port is 5444.
             // https://foo:5444 -> https://foo:5444 (no change)
-            // https://foo -> https://foo:443
-            // http://foo -> http://foo:80
-            // http://FOO -> http://foo:80
-            // http://FOO:80 -> http://foo:80
+            // https://foo -> https://foo:5444
+            // http://foo -> https://foo:5444
+            // http://FOO -> https://foo:5444
+            // http://FOO:80 -> https://foo:80
             // foo->https://foo:5444
             Uri uri = null;
             try {
                 Uri.TryCreate(path, UriKind.Absolute, out uri);
             } catch (InvalidOperationException) { } catch (ArgumentException) { } catch (UriFormatException) { }
 
-            if (uri == null || !(uri.IsFile || string.IsNullOrEmpty(uri.Host))) {
-                var hasScheme = uri != null && !string.IsNullOrEmpty(uri.Scheme);
-                var hasPort = uri != null && uri.Port >= 0;
-                var hasPathOrQuery = uri != null && !string.IsNullOrEmpty(uri.PathAndQuery) && uri.PathAndQuery != "/";
-
-                if (hasScheme) {
-                    var components = UriComponents.Scheme | UriComponents.UserInfo | UriComponents.Host | UriComponents.Fragment;
-
-                    if (hasPathOrQuery) {
-                        components |= UriComponents.Path | UriComponents.Query;
-                    }
-
-                    if (hasPort) {
-                        components |= UriComponents.StrongPort;
-                    }
-
-                    return uri.GetComponents(components, UriFormat.UriEscaped);
-                }
-
-                if (Uri.CheckHostName(path) != UriHostNameType.Unknown) {
-                    var port = hasPort ? uri.Port : DefaultPort;
-                    return Invariant($"{Uri.UriSchemeHttps}{Uri.SchemeDelimiter}{path.ToLower()}:{port}");
-                }
+            if (uri != null && uri.IsFile) {
+                return path;
             }
+
+            var userProvidedPath = path;
+
+            if (path.IndexOfOrdinal("://") < 0) {
+                path = Invariant($"{Uri.UriSchemeHttps}{Uri.SchemeDelimiter}{path.ToLower()}");
+                try {
+                    Uri.TryCreate(path, UriKind.Absolute, out uri);
+                } catch (InvalidOperationException) { } catch (ArgumentException) { } catch (UriFormatException) { }
+            }
+
+            if (uri != null && !string.IsNullOrEmpty(uri.Host)) {
+                var hasPort = uri.Port >= 0 && (!uri.IsDefaultPort || uri.Port != 443);
+                var port = hasPort ? uri.Port : DefaultPort;
+                var hasPathOrQuery = !string.IsNullOrEmpty(uri.PathAndQuery) && uri.PathAndQuery != "/";
+                var mainPart = Invariant($"{Uri.UriSchemeHttps}{Uri.SchemeDelimiter}{uri.Host.ToLower()}:{port}");
+
+                path = hasPathOrQuery
+                        ? Invariant($"{mainPart}{uri.PathAndQuery}{uri.Fragment}")
+                        : Invariant($"{mainPart}{uri.Fragment}");
+            } else {
+                shell.ShowErrorMessage(Resources.Error_InvalidURL.FormatInvariant(userProvidedPath));
+                path = string.Empty;
+            }
+
             return path;
+        }
+
+        private static bool IsValidConnectionName(string name) {
+            // Broker derives log name from connection name and hence the connection cannot contain all characters. 
+            if (string.IsNullOrWhiteSpace(name)) {
+                return false;
+            }
+            if (!char.IsLetterOrDigit(name[0])) {
+                return false;
+            }
+            if (name.IndexOfOrdinal("..") >= 0) {
+                return false;
+            }
+            return !name.Where(ch => !char.IsLetterOrDigit(ch) && !_allowedNameChars.Contains(ch)).Any();
         }
     }
 }
