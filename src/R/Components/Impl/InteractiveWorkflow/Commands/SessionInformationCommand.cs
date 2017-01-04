@@ -3,6 +3,7 @@
 
 using System;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
@@ -22,7 +23,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
             _interactiveWorkflow = interactiveWorkflow;
             _console = console;
 
-            _interactiveWorkflow.RSession.Interactive += OnRSessionInteractive;
+            _interactiveWorkflow.RSession.Connected += OnRSessionConnected;
             _interactiveWorkflow.RSession.Disposed += OnRSessionDisposed;
         }
 
@@ -43,9 +44,15 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
             return CommandResult.Executed;
         }
 
-        private void OnRSessionInteractive(object sender, EventArgs e) {
+        private void OnRSessionConnected(object sender, EventArgs e) {
             if (_interactiveWorkflow.RSession.IsRemote) {
-                ReplInitComplete().ContinueWith(async (t) => await PrintBrokerInformationAsync(reportTelemetry: true)).DoNotWait();
+                // Host signals 'connected' after R loop was set up (and R banner is printed).
+                // We want to complete printing synchorously here so output does not come
+                // after user started typing in the REPL. But don't wait forever.
+                Task.Run(async () => {
+                    await ReplInitComplete();
+                    await PrintBrokerInformationAsync(reportTelemetry: true);
+                }).Wait(10000);
             }
         }
 
@@ -76,47 +83,49 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
                 return;
             }
 
-            _console.WriteLine(Environment.NewLine + Resources.RServices_Information);
+            var sb = new StringBuilder();
+
+            sb.AppendLine(Environment.NewLine + Resources.RServices_Information);
             var broker = _interactiveWorkflow.RSessions.Broker;
             if (broker.IsRemote) {
-                _console.WriteLine("\t" + Resources.RemoteConnection.FormatInvariant(broker.Name, broker.ConnectionInfo.Uri));
+                sb.AppendLine("\t" + Resources.RemoteConnection.FormatInvariant(broker.Name, broker.ConnectionInfo.Uri));
             } else {
-                _console.WriteLine("\t" + Resources.LocalR.FormatInvariant(broker.ConnectionInfo.Uri.LocalPath));
+                sb.AppendLine("\t" + Resources.LocalR.FormatInvariant(broker.ConnectionInfo.Uri.LocalPath));
             }
 
-            _console.WriteLine("\t" + Resources.Version.FormatInvariant(aboutHost.Version));
-            _console.WriteLine("\t" + Resources.OperatingSystem.FormatInvariant(aboutHost.OS.VersionString));
-            _console.WriteLine("\t" + Resources.ProcessorCount.FormatInvariant(aboutHost.ProcessorCount));
-            _console.WriteLine("\t" + Resources.PhysicalMemory.FormatInvariant(aboutHost.TotalPhysicalMemory, aboutHost.FreePhysicalMemory));
-            _console.WriteLine("\t" + Resources.VirtualMemory.FormatInvariant(aboutHost.TotalVirtualMemory, aboutHost.FreeVirtualMemory));
+            sb.AppendLine("\t" + Resources.Version.FormatInvariant(aboutHost.Version));
+            sb.AppendLine("\t" + Resources.OperatingSystem.FormatInvariant(aboutHost.OS.VersionString));
+            sb.AppendLine("\t" + Resources.ProcessorCount.FormatInvariant(aboutHost.ProcessorCount));
+            sb.AppendLine("\t" + Resources.PhysicalMemory.FormatInvariant(aboutHost.TotalPhysicalMemory, aboutHost.FreePhysicalMemory));
+            sb.AppendLine("\t" + Resources.VirtualMemory.FormatInvariant(aboutHost.TotalVirtualMemory, aboutHost.FreeVirtualMemory));
 
             if (!string.IsNullOrEmpty(aboutHost.VideoCardName)) {
-                _console.WriteLine("\t" + Resources.VideoCardName.FormatInvariant(aboutHost.VideoCardName));
+                sb.AppendLine("\t" + Resources.VideoCardName.FormatInvariant(aboutHost.VideoCardName));
             }
 
             if (!string.IsNullOrEmpty(aboutHost.VideoProcessor)) {
-                _console.WriteLine("\t" + Resources.VideoProcessor.FormatInvariant(aboutHost.VideoProcessor));
+                sb.AppendLine("\t" + Resources.VideoProcessor.FormatInvariant(aboutHost.VideoProcessor));
             }
 
             if (aboutHost.VideoRAM > 0) {
-                _console.WriteLine("\t" + Resources.VideoRAM.FormatInvariant(aboutHost.VideoRAM));
+                sb.AppendLine("\t" + Resources.VideoRAM.FormatInvariant(aboutHost.VideoRAM));
             }
 
-            _console.WriteLine("\t" + Resources.ConnectedUserCount.FormatInvariant(aboutHost.ConnectedUserCount));
-            _console.WriteLine(string.Empty);
+            sb.AppendLine("\t" + Resources.ConnectedUserCount.FormatInvariant(aboutHost.ConnectedUserCount));
+            sb.AppendLine(string.Empty);
 
             if (_interactiveWorkflow.RSession.IsRemote) {
-                _console.WriteLine(Resources.InstalledInterpreters);
+                sb.AppendLine(Resources.InstalledInterpreters);
 
                 int count = 0;
                 foreach (var interpreter in aboutHost.Interpreters) {
-                    _console.WriteLine("\t" + interpreter);
+                    sb.AppendLine("\t" + interpreter);
                     count++;
                 }
 
-                _console.WriteLine(string.Empty);
+                sb.AppendLine(string.Empty);
                 if (count > 1) {
-                    _console.WriteLine(Resources.SelectInterpreterInstruction);
+                    sb.AppendLine(Resources.SelectInterpreterInstruction);
                 }
             }
 
@@ -129,10 +138,11 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
                     message = Resources.Warning_RemoteVersionLower.FormatInvariant(aboutHost.Version, clientVersion);
                 }
                 if(!string.IsNullOrEmpty(message)) {
-                    _console.WriteLine(Environment.NewLine + message + Environment.NewLine);
+                    sb.AppendLine(Environment.NewLine + message + Environment.NewLine);
                 }
             }
 
+            _console.Write(sb.ToString());
             if (reportTelemetry) {
                 var services = _interactiveWorkflow.Shell.Services;
                 foreach (var name in aboutHost.Interpreters) {

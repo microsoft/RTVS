@@ -59,8 +59,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                     if (CurrentWindow != null) {
                         CurrentWindow.TextView.VisualElement.SizeChanged -= VisualElement_SizeChanged;
                     }
-                })
-                .Add(_crProcessor);
+                });
 
             _sessionProvider.BrokerStateChanged += OnBrokerStateChanged;
 
@@ -77,6 +76,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
         public void Dispose() {
             _disposableBag.TryDispose();
+            _crProcessor?.Dispose();
         }
 
         public Task<ExecutionResult> InitializeAsync() => InitializeAsync(false);

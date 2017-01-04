@@ -142,6 +142,15 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The URL format it invalid: {0}.
+        /// </summary>
+        internal static string Error_InvalidUrl {
+            get {
+                return ResourceManager.GetString("Error_InvalidUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Remote machine &apos;{0}&apos; does not have certificate installed for the TLS with the Remote R Service..
         /// </summary>
         internal static string Error_NoBrokerCertificate {
