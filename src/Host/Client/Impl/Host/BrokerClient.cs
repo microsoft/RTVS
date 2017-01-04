@@ -204,7 +204,7 @@ namespace Microsoft.R.Host.Client.Host {
                 case BrokerApiError.NoRInterpreters:
                     return Resources.Error_NoRInterpreters;
                 case BrokerApiError.InterpreterNotFound:
-                    return Resources.Error_InterpreterNotFound;
+                    return Resources.Error_InterpreterNotFound.FormatInvariant(_interpreterId);
                 case BrokerApiError.UnableToStartRHost:
                     if (!string.IsNullOrEmpty(ex.Message)) {
                         return Resources.Error_UnableToStartHostException.FormatInvariant(Name, ex.Message);

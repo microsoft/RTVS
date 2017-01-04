@@ -223,15 +223,6 @@ namespace Microsoft.R.Host.Broker {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Specified R interpreter does not exist.
-        /// </summary>
-        internal static string Error_SpecifiedRInterpreterNotFound {
-            get {
-                return ResourceManager.GetString("Error_SpecifiedRInterpreterNotFound", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to User name parsing failed for user {0} with WIN32 error code 0x{1}.
         /// </summary>
         internal static string Error_UserNameParse {
