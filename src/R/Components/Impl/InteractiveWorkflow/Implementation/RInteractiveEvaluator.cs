@@ -23,6 +23,7 @@ using Microsoft.VisualStudio.Text.Projection;
 
 namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
     public sealed class RInteractiveEvaluator : IInteractiveEvaluator {
+        private readonly DisposableBag _disposableBag = DisposableBag.Create<RInteractiveEvaluator>();
         private readonly IRSessionProvider _sessionProvider;
         private readonly IConnectionManager _connections;
         private readonly ICoreShell _coreShell;
@@ -32,6 +33,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         private CarriageReturnProcessor _crProcessor;
         private int _terminalWidth = 80;
         private IInteractiveWindow _currentWindow;
+        private bool _isConnected;
 
         public IRHistory History { get; }
         public IRSession Session { get; }
@@ -39,29 +41,42 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         public RInteractiveEvaluator(IRSessionProvider sessionProvider, IRSession session, IRHistory history, IConnectionManager connections, ICoreShell coreShell, IRSettings settings, IConsole console) {
             History = history;
             Session = session;
-            Session.Output += SessionOnOutput;
-            Session.Disconnected += SessionOnDisconnected;
-            Session.BeforeRequest += SessionOnBeforeRequest;
-            Session.AfterRequest += SessionOnAfterRequest;
+
             _sessionProvider = sessionProvider;
             _connections = connections;
             _coreShell = coreShell;
             _settings = settings;
             _console = console;
             _evaluatorRequest = new CountdownDisposable();
+
+            _disposableBag
+                .Add(() => Session.Output -= SessionOnOutput)
+                .Add(() => Session.Disconnected -= SessionOnDisconnected)
+                .Add(() => Session.BeforeRequest -= SessionOnBeforeRequest)
+                .Add(() => Session.AfterRequest -= SessionOnAfterRequest)
+                .Add(() => _sessionProvider.BrokerStateChanged -= OnBrokerStateChanged)
+                .Add(() => {
+                    if (CurrentWindow != null) {
+                        CurrentWindow.TextView.VisualElement.SizeChanged -= VisualElement_SizeChanged;
+                    }
+                })
+                .Add(_crProcessor);
+
+            _sessionProvider.BrokerStateChanged += OnBrokerStateChanged;
+
+            Session.Output += SessionOnOutput;
+            Session.Disconnected += SessionOnDisconnected;
+            Session.BeforeRequest += SessionOnBeforeRequest;
+            Session.AfterRequest += SessionOnAfterRequest;
+
+        }
+
+        private void OnBrokerStateChanged(object sender, BrokerStateChangedEventArgs e) {
+            _isConnected = e.IsConnected;
         }
 
         public void Dispose() {
-            if (CurrentWindow != null) {
-                CurrentWindow.TextView.VisualElement.SizeChanged -= VisualElement_SizeChanged;
-            }
-
-            Session.Output -= SessionOnOutput;
-            Session.Disconnected -= SessionOnDisconnected;
-            Session.BeforeRequest -= SessionOnBeforeRequest;
-            Session.AfterRequest -= SessionOnAfterRequest;
-
-            _crProcessor?.Dispose();
+            _disposableBag.TryDispose();
         }
 
         public Task<ExecutionResult> InitializeAsync() => InitializeAsync(false);
@@ -69,7 +84,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         private async Task<ExecutionResult> InitializeAsync(bool isResetting) {
             try {
                 if (!Session.IsHostRunning) {
-                    var startupInfo = new RHostStartupInfo (_settings.CranMirror, _settings.WorkingDirectory, _settings.RCodePage, _terminalWidth, !isResetting, true);
+                    var startupInfo = new RHostStartupInfo(_settings.CranMirror, _settings.WorkingDirectory, _settings.RCodePage, _terminalWidth, !isResetting, true);
                     await Session.EnsureHostStartedAsync(startupInfo, new RSessionCallback(CurrentWindow, Session, _settings, _coreShell, new FileSystem()));
                 }
                 return ExecutionResult.Success;
@@ -199,8 +214,12 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         }
 
         private void SessionOnDisconnected(object sender, EventArgs args) {
-            if (CurrentWindow == null || !CurrentWindow.IsResetting) {
-                WriteErrorLine(Environment.NewLine + Resources.MicrosoftRHostStopped);
+            if (_isConnected) {
+                if (CurrentWindow == null || !CurrentWindow.IsResetting) {
+                    WriteErrorLine(Environment.NewLine + Resources.MicrosoftRHostStopped);
+                }
+            } else {
+                WriteErrorLine(Environment.NewLine + Resources.BrokerDisconnected);
             }
         }
 
