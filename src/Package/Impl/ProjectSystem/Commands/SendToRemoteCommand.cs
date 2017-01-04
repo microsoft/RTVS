@@ -58,19 +58,14 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
             string projectDir = Path.GetDirectoryName(_configuredProject.UnconfiguredProject.FullPath);
 
             string fileFilterString = await properties.GetFileFilterAsync();
-            Matcher matcher = new Matcher(StringComparison.InvariantCultureIgnoreCase);
+            Matcher matcher = new Matcher(StringComparison.OrdinalIgnoreCase);
             matcher.AddIncludePatterns(fileFilterString.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries));
 
             List<string> filteredFiles = new List<string>();
             filteredFiles.AddRange(matcher.GetMatchedFiles(nodes.GetAllFolderPaths(_configuredProject.UnconfiguredProject)));
 
-            foreach (IProjectTree node in nodes) {
-                if (node.IsFile()) {
-                    // Add any file that user specifically selected. 
-                    // This can contain a file ignored by the filter.
-                    filteredFiles.Add(node.FilePath);
-                } 
-            }
+            // Add any file that user specifically selected. This can contain a file ignored by the filter.
+            filteredFiles.AddRange(nodes.Where(n => n.IsFile()).Select(n => n.FilePath));
 
             string projectName = properties.GetProjectName();
             string remotePath = await properties.GetRemoteProjectPathAsync();
