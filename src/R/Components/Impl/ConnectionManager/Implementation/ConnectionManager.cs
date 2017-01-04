@@ -136,7 +136,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
                 // Credentials are saved by URI. Delete the credentials if there are no other connections using it.
                 if (_connections.All(kvp => kvp.Value.Uri != connection.Uri)) {
-                    _securityService.DeleteUserCredentials(connection.Uri.ToCredentialAuthority());
+                    if (connection.Uri != null) {
+                        _securityService.DeleteUserCredentials(connection.Uri.ToCredentialAuthority());
+                    }
                 }
             }
 
