@@ -33,7 +33,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         private CarriageReturnProcessor _crProcessor;
         private int _terminalWidth = 80;
         private IInteractiveWindow _currentWindow;
-        private bool _isConnected;
+        private bool _brokerChanging;
 
         public IRHistory History { get; }
         public IRSession Session { get; }
@@ -51,23 +51,22 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
             _disposableBag
                 .Add(() => Session.Output -= SessionOnOutput)
+                .Add(() => Session.Connected -= SessionOnConnected)
                 .Add(() => Session.Disconnected -= SessionOnDisconnected)
                 .Add(() => Session.BeforeRequest -= SessionOnBeforeRequest)
                 .Add(() => Session.AfterRequest -= SessionOnAfterRequest)
-                .Add(() => _sessionProvider.BrokerStateChanged -= OnBrokerStateChanged);
+                .Add(() => _sessionProvider.BrokerChanged -= OnBrokerChanging);
 
-            _sessionProvider.BrokerStateChanged += OnBrokerStateChanged;
+            _sessionProvider.BrokerChanging += OnBrokerChanging;
 
             Session.Output += SessionOnOutput;
+            Session.Connected += SessionOnConnected;
             Session.Disconnected += SessionOnDisconnected;
             Session.BeforeRequest += SessionOnBeforeRequest;
             Session.AfterRequest += SessionOnAfterRequest;
-
         }
 
-        private void OnBrokerStateChanged(object sender, BrokerStateChangedEventArgs e) {
-            _isConnected = e.IsConnected;
-        }
+        private void OnBrokerChanging(object sender, EventArgs e) => _brokerChanging = true;
 
         public void Dispose() {
             _disposableBag.TryDispose();
@@ -205,19 +204,22 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
         private void SessionOnOutput(object sender, ROutputEventArgs args) {
             if (args.OutputType == OutputType.Output) {
-                Write(args.Message.ToUnicodeQuotes());
+                Write(args.Message.ToUnicodeQuotes()).DoNotWait();
             } else {
                 WriteErrorLine(args.Message);
             }
         }
 
+        private void SessionOnConnected(object sender, EventArgs args) => _brokerChanging = false;
+
         private void SessionOnDisconnected(object sender, EventArgs args) {
-            if (_isConnected) {
+            if (!_brokerChanging) {
                 if (CurrentWindow == null || !CurrentWindow.IsResetting) {
                     WriteErrorLine(Environment.NewLine + Resources.MicrosoftRHostStopped);
                 }
             } else {
                 WriteErrorLine(Environment.NewLine + Resources.BrokerDisconnected);
+                _brokerChanging = false;
             }
         }
 
@@ -259,9 +261,10 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         }
 
 
-        private void Write(string message) {
+        private async Task Write(string message) {
             if (CurrentWindow != null && !_crProcessor.ProcessMessage(message)) {
-                _coreShell.DispatchOnUIThread(() => CurrentWindow?.Write(message));
+                await _coreShell.SwitchToMainThreadAsync();
+                CurrentWindow?.Write(message);
             }
         }
 

@@ -18,12 +18,14 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
         private readonly IConsole _console;
+        private volatile bool _printHostInformation;
 
         public SessionInformationCommand(IRInteractiveWorkflow interactiveWorkflow, IConsole console) {
             _interactiveWorkflow = interactiveWorkflow;
             _console = console;
 
-            _interactiveWorkflow.RSession.Connected += OnRSessionConnected;
+            _interactiveWorkflow.RSessions.BrokerChanging += OnBrokerChanging;
+            _interactiveWorkflow.RSession.Interactive += OnRSessionInteractive;
             _interactiveWorkflow.RSession.Disposed += OnRSessionDisposed;
         }
 
@@ -44,10 +46,15 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
             return CommandResult.Executed;
         }
 
-        private void OnRSessionConnected(object sender, EventArgs e) {
-            if (_interactiveWorkflow.RSession.IsRemote) {
+        private void OnBrokerChanging(object sender, EventArgs e) {
+            _printHostInformation = true;
+        }
+
+        private void OnRSessionInteractive(object sender, EventArgs e) {
+            if (_interactiveWorkflow.RSession.IsRemote && _printHostInformation) {
                 ReplInitComplete().ContinueWith(async (t) => await PrintBrokerInformationAsync(reportTelemetry: true)).DoNotWait();
             }
+            _printHostInformation = false;
         }
 
         private void OnRSessionDisposed(object sender, EventArgs e) {
@@ -119,7 +126,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
 
                 sb.AppendLine(string.Empty);
                 if (count > 1) {
-                    sb.AppendLine(Resources.SelectInterpreterInstruction);
+                    sb.AppendLine(Resources.SelectInterpreterInstruction + Environment.NewLine);
                 }
             }
 
