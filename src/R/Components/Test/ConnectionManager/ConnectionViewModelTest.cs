@@ -35,11 +35,11 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
             conn.RCommandLineArguments.Returns("arg");
             conn.IsRemote.Returns(true);
 
-            var cm = new ConnectionViewModel(conn);
+            var cm = new ConnectionViewModel(conn, Substitute.For<ICoreShell>());
             cm.IsUserCreated.Should().BeFalse();
 
             conn.IsUserCreated.Returns(true);
-            cm = new ConnectionViewModel(conn);
+            cm = new ConnectionViewModel(conn, Substitute.For<ICoreShell>());
 
             conn.IsRemote.Should().BeTrue();
             cm.IsUserCreated.Should().BeTrue();
@@ -55,21 +55,21 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
             var uri = new Uri("http://microsoft.com");
             var conn = Substitute.For<IConnection>();
 
-            var cm = new ConnectionViewModel(conn);
+            var cm = new ConnectionViewModel(conn, Substitute.For<ICoreShell>());
             cm.SaveButtonTooltip.Should().Be(Resources.ConnectionManager_ShouldHaveName);
 
             conn.Name.Returns("name");
-            cm = new ConnectionViewModel(conn);
+            cm = new ConnectionViewModel(conn, Substitute.For<ICoreShell>());
             cm.SaveButtonTooltip.Should().Be(Resources.ConnectionManager_ShouldHavePath);
 
             conn.Path.Returns("c:\\path");
-            cm = new ConnectionViewModel(conn);
+            cm = new ConnectionViewModel(conn, Substitute.For<ICoreShell>());
             cm.SaveButtonTooltip.Should().Be(Resources.ConnectionManager_Save);
         }
 
         [Test]
         public void UpdatePathAndName() {
-            var cm = new ConnectionViewModel(Substitute.For<IConnection>());
+            var cm = new ConnectionViewModel(Substitute.For<IConnection>(), Substitute.For<ICoreShell>());
 
             // Name is updated to match the host name
             cm.Path = "server";
@@ -84,7 +84,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
 
         [Test]
         public void UpdatePathAndNameExtraSpace() {
-            var cm = new ConnectionViewModel(Substitute.For<IConnection>());
+            var cm = new ConnectionViewModel(Substitute.For<IConnection>(), Substitute.For<ICoreShell>());
 
             // Name doesn't have extra spaces
             cm.Path = "server ";
@@ -107,7 +107,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
             conn.Name.Returns(originalName);
             conn.Path.Returns(originalPath);
 
-            var cm = new ConnectionViewModel(conn);
+            var cm = new ConnectionViewModel(conn, Substitute.For<ICoreShell>());
 
             cm.Path = changedPath;
             cm.Name.Should().Be(expectedUpdatedName);
@@ -164,13 +164,13 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
             var conn = Substitute.For<IConnection>();
             conn.IsRemote.Returns(true);
             conn.Path.Returns("http://host");
-            var cm = new ConnectionViewModel(conn);
+            var cm = new ConnectionViewModel(conn, Substitute.For<ICoreShell>());
             cm.ConnectionTooltip.Should().Be(
                 Resources.ConnectionManager_InformationTooltipFormatRemote.FormatInvariant(cm.Path, Resources.ConnectionManager_None));
 
             conn = Substitute.For<IConnection>();
             conn.Path.Returns("C:\\");
-            cm = new ConnectionViewModel(conn);
+            cm = new ConnectionViewModel(conn, Substitute.For<ICoreShell>());
             cm.ConnectionTooltip.Should().Be(
                 Resources.ConnectionManager_InformationTooltipFormatLocal.FormatInvariant(cm.Path, Resources.ConnectionManager_None));
         }
