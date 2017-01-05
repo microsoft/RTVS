@@ -12,9 +12,9 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Components.InteractiveWorkflow.Implementation;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
-using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
@@ -42,7 +42,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
             await TaskUtilities.SwitchToBackgroundThread();
 
             var workflow = _interactiveWorkflowProvider.GetOrCreate();
-            var outputWindow = workflow.ActiveWindow.InteractiveWindow;
+            IConsole console = new InteractiveWindowConsole(workflow);
 
             try {
                 var session = workflow.RSession;
@@ -58,15 +58,13 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
                 List<string> paths = new List<string>();
                 // Compression phase : 1 of 3 phases.
                 string compressedFilePath = string.Empty;
-                await Task.Run(() => {
-                    compressedFilePath = _fs.CompressFiles(files, projectDir, new Progress<string>((p) => {
-                        Interlocked.Increment(ref count);
-                        int step = (count * 100 / total) / 3; // divide by 3, this is for compression phase.
-                        progress.Report(new ProgressDialogData(step, Resources.Info_CompressingFile.FormatInvariant(Path.GetFileName(p), _fs.FileSize(p))));
-                        string dest = p.MakeRelativePath(projectDir).ProjectRelativePathToRemoteProjectPath(remotePath, projectName);
-                        paths.Add($"{Resources.Info_LocalFilePath.FormatInvariant(p)}\n{Resources.Info_RemoteFilePath.FormatInvariant(dest)}");
-                    }), ct);
-                });
+                compressedFilePath = _fs.CompressFiles(files, projectDir, new Progress<string>((p) => {
+                    Interlocked.Increment(ref count);
+                    int step = (count * 100 / total) / 3; // divide by 3, this is for compression phase.
+                    progress.Report(new ProgressDialogData(step, Resources.Info_CompressingFile.FormatInvariant(Path.GetFileName(p), _fs.FileSize(p))));
+                    string dest = p.MakeRelativePath(projectDir).ProjectRelativePathToRemoteProjectPath(remotePath, projectName);
+                    paths.Add($"{Resources.Info_LocalFilePath.FormatInvariant(p)}{Environment.NewLine}{Resources.Info_RemoteFilePath.FormatInvariant(dest)}");
+                }), ct);
 
                 if (ct.IsCancellationRequested) {
                     return;
@@ -93,21 +91,15 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
 
                     progress.Report(new ProgressDialogData(100, Resources.Info_TransferringFilesDone));
 
-                    paths.ForEach((s) => _appShell.DispatchOnUIThread(() => {
-                        outputWindow.WriteLine(s);
-                    }));
+                    paths.ForEach((s) => console.WriteLine(s));
                 }
             } catch (TaskCanceledException) {
-                _appShell.DispatchOnUIThread(() => {
-                    outputWindow.WriteErrorLine(Resources.Info_FileTransferCanceled);
-                });
+                console.WriteErrorLine(Resources.Info_FileTransferCanceled);
             } catch (RHostDisconnectedException rhdex) {
-                _appShell.DispatchOnUIThread(() => {
-                    outputWindow.WriteErrorLine(Resources.Error_CannotTransferNoRSession.FormatInvariant(rhdex.Message));
-                });
+                console.WriteErrorLine(Resources.Error_CannotTransferNoRSession.FormatInvariant(rhdex.Message));
             } catch (Exception ex) when (ex is UnauthorizedAccessException || ex is IOException) {
                 _appShell.ShowErrorMessage(Resources.Error_CannotTransferFile.FormatInvariant(ex.Message));
-            } 
+            }
         }
     }
 }
