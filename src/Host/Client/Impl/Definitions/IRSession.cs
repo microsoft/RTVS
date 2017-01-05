@@ -11,9 +11,21 @@ namespace Microsoft.R.Host.Client {
         event EventHandler<RAfterRequestEventArgs> AfterRequest;
         event EventHandler<EventArgs> Mutated;
         event EventHandler<ROutputEventArgs> Output;
+        /// <summary>
+        /// Fires when R Host process is connected and is about to enter R loop
+        /// </summary>
         event EventHandler<RConnectedEventArgs> Connected;
+        
+        /// <summary>
+        /// RTVS related R initialization is completed and RTVS package is loaded.
+        /// </summary>
         event EventHandler<EventArgs> Interactive;
+
+        /// <summary>
+        /// Session has been disconnected (R host process terminated or network connection is lost).
+        /// </summary>
         event EventHandler<EventArgs> Disconnected;
+
         event EventHandler<EventArgs> Disposed;
         event EventHandler<EventArgs> DirectoryChanged;
         event EventHandler<EventArgs> PackagesInstalled;

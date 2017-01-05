@@ -61,6 +61,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Connection to the workspace has been terminated..
+        /// </summary>
+        public static string BrokerDisconnected {
+            get {
+                return ResourceManager.GetString("BrokerDisconnected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cancel.
         /// </summary>
         public static string Cancel {
@@ -325,10 +334,12 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Are you sure you want to remove the &apos;{0}&apos; connection?
-        ///Deleting it will disconnect you from RHost, all unsaved data will be lost.
-        ///Deletion of the connection does not delete remote files.
-        ///If you want to delete them, you have to delete the profile first..
+        ///   Looks up a localized string similar to Are you sure you want to remove the &apos;{0}&apos; connection? 
+        ///    
+        ///Deleting it will terminate the active session and all unsaved data will be lost.
+        ///
+        ///Removing the connection will not delete files you may have created on the remote machine.
+        ///If you want to delete all data on the remote machine you must delete your user profile first..
         /// </summary>
         public static string ConnectionManager_RemoveActiveConnectionConfirmation {
             get {
@@ -346,8 +357,8 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You are going to change connection &apos;{0}&apos; that you&apos;re currently using.
-        ///Saving these changes will disconnect you from RHost, all unsaved data will be lost.
+        ///   Looks up a localized string similar to Saving changes will terminate the active session and all unsaved data will be lost.
+        ///
         ///Do you wish to proceed?.
         /// </summary>
         public static string ConnectionManager_RenameActiveConnectionConfirmation {
@@ -541,7 +552,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The connection string appears to be in incorrect format. Would you like to re-created it?.
+        ///   Looks up a localized string similar to The connection string appears to be in incorrect format. Would you like to re-create it?.
         /// </summary>
         public static string Error_ConnectionStringFormat {
             get {

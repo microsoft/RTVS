@@ -41,7 +41,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             UpdateCalculated();
         }
 
-        public ConnectionViewModel(IConnection connection) {
+        public ConnectionViewModel(IConnection connection, ICoreShell coreShell) {
+            _coreShell = coreShell;
             _connection = connection;
             Reset();
         }

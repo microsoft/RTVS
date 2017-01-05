@@ -398,15 +398,17 @@ Switching will stop your current session, all unsaved data will be lost.
 This prompt can be suppressed in R Tools | Options.</value>
   </data>
   <data name="ConnectionManager_RenameActiveConnectionConfirmation" xml:space="preserve">
-    <value>You are going to change connection '{0}' that you're currently using.
-Saving these changes will disconnect you from RHost, all unsaved data will be lost.
+    <value>Saving changes will terminate the active session and all unsaved data will be lost.
+
 Do you wish to proceed?</value>
   </data>
   <data name="ConnectionManager_RemoveActiveConnectionConfirmation" xml:space="preserve">
-    <value>Are you sure you want to remove the '{0}' connection?
-Deleting it will disconnect you from RHost, all unsaved data will be lost.
-Deletion of the connection does not delete remote files.
-If you want to delete them, you have to delete the profile first.</value>
+    <value>Are you sure you want to remove the '{0}' connection? 
+    
+Deleting it will terminate the active session and all unsaved data will be lost.
+
+Removing the connection will not delete files you may have created on the remote machine.
+If you want to delete all data on the remote machine you must delete your user profile first.</value>
   </data>
   <data name="ConnectionManager_CantSaveWithTheSameName" xml:space="preserve">
     <value>Can't change connection name to '{0}' because connection with the same name already exists.</value>
@@ -481,7 +483,7 @@ If you want to delete them, you have to delete the profile first.</value>
     <value># Application settings file.</value>
   </data>
   <data name="Error_ConnectionStringFormat" xml:space="preserve">
-    <value>The connection string appears to be in incorrect format. Would you like to re-created it?</value>
+    <value>The connection string appears to be in incorrect format. Would you like to re-create it?</value>
   </data>
   <data name="NoLocalR" xml:space="preserve">
     <value>Visual Studio is unable to find local R installation. Would you like to install Microsoft R Client (recommended)?{0}Click Yes to install latest Microsoft R Client. {1}Click No if you are planning to set up connection to a remote machine.</value>
@@ -615,5 +617,8 @@ Please upgrade local R Tools installation to match.</value>
     <value>WARNING: Version of R Services on the remote machine ({0})
 is lower than the version of R Tools on the local computer ({1}). 
 Please upgrade remote R Services installation to match.</value>
+  </data>
+  <data name="BrokerDisconnected" xml:space="preserve">
+    <value>Connection to the workspace has been terminated.</value>
   </data>
 </root>

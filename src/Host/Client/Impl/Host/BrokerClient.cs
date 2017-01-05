@@ -10,8 +10,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Security;
 using System.Net.WebSockets;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebSockets.Client;
@@ -70,10 +68,16 @@ namespace Microsoft.R.Host.Client.Host {
                 Credentials = _credentials
             };
 
-            HttpClient = new HttpClient(HttpClientHandler) {
-                BaseAddress = baseAddress,
-                Timeout = TimeSpan.FromSeconds(30),
-            };
+            try {
+                HttpClient = new HttpClient(HttpClientHandler) {
+                    BaseAddress = baseAddress,
+                    Timeout = TimeSpan.FromSeconds(30),
+                };
+            } catch(ArgumentException) {
+                var message = Resources.Error_InvalidUrl.FormatInvariant(baseAddress);
+                _console.WriteLine(message); // Output now since progress dialog may eat the exception
+                throw new RHostDisconnectedException(message);
+            }
 
             HttpClient.DefaultRequestHeaders.Accept.Clear();
             HttpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -204,7 +208,7 @@ namespace Microsoft.R.Host.Client.Host {
                 case BrokerApiError.NoRInterpreters:
                     return Resources.Error_NoRInterpreters;
                 case BrokerApiError.InterpreterNotFound:
-                    return Resources.Error_InterpreterNotFound;
+                    return Resources.Error_InterpreterNotFound.FormatInvariant(_interpreterId);
                 case BrokerApiError.UnableToStartRHost:
                     if (!string.IsNullOrEmpty(ex.Message)) {
                         return Resources.Error_UnableToStartHostException.FormatInvariant(Name, ex.Message);

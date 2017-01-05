@@ -122,7 +122,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                         // Force 64-bit PF
                         latestLocalPath = Environment.GetEnvironmentVariable("ProgramW6432");
                     }
-                } catch (ArgumentException) {} catch (IOException) {}
+                } catch (ArgumentException) { } catch (IOException) { }
             }
 
             var path = Shell.FileDialog.ShowBrowseDirectoryDialog(latestLocalPath);
@@ -258,20 +258,21 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public void Connect(IConnectionViewModel connection, bool connectToEdited) {
             Shell.AssertIsOnMainThread();
-            if (connection == null) {
-                return;    
+            if (connection == null || !connection.IsValid) {
+                return;
             }
 
             if (connection != EditedConnection) {
                 CancelEdit();
             } else if (connectToEdited) {
+                connection.UpdatePath();
                 Save(connection);
             } else {
                 return;
             }
 
             CancelTestConnection();
-            
+
             if (connection.IsActive && !IsConnected) {
                 Shell.ProgressDialog.Show(ConnectionManager.ReconnectAsync, Resources.ConnectionManager_ReconnectionToProgressBarMessage.FormatInvariant(connection.Name));
             } else {
@@ -324,7 +325,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         private ConnectionViewModel CreateConnectionViewModel(IConnection connection) {
             var isActive = connection == ConnectionManager.ActiveConnection;
-            return new ConnectionViewModel(connection) {
+            return new ConnectionViewModel(connection, Shell) {
                 IsActive = isActive,
                 IsConnected = isActive && ConnectionManager.IsConnected,
                 IsRunning = isActive && ConnectionManager.IsRunning

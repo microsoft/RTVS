@@ -133,11 +133,20 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Specified R interpreter was not found.
+        ///   Looks up a localized string similar to Specified R interpreter [{0}] was not found.
         /// </summary>
         internal static string Error_InterpreterNotFound {
             get {
                 return ResourceManager.GetString("Error_InterpreterNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The URL format it invalid: {0}.
+        /// </summary>
+        internal static string Error_InvalidUrl {
+            get {
+                return ResourceManager.GetString("Error_InvalidUrl", resourceCulture);
             }
         }
         
