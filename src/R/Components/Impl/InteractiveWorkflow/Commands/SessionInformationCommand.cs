@@ -143,7 +143,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
                 }
             }
 
-            _console.Write(sb.ToString());
+            _console.WriteError(sb.ToString());
             if (reportTelemetry) {
                 var services = _interactiveWorkflow.Shell.Services;
                 foreach (var name in aboutHost.Interpreters) {

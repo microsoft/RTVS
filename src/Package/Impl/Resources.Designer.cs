@@ -719,7 +719,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Compressing: {0}.
+        ///   Looks up a localized string similar to Compressing: {0} {1} Bytes.
         /// </summary>
         public static string Info_CompressingFile {
             get {
@@ -742,6 +742,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Info_ExtractingFilesInRHost {
             get {
                 return ResourceManager.GetString("Info_ExtractingFilesInRHost", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File transfer was canceled..
+        /// </summary>
+        public static string Info_FileTransferCanceled {
+            get {
+                return ResourceManager.GetString("Info_FileTransferCanceled", resourceCulture);
             }
         }
         
@@ -850,6 +859,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Info_TransferringFilesDone {
             get {
                 return ResourceManager.GetString("Info_TransferringFilesDone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Transferring Compressed file: {0} Bytes / {1} Bytes.
+        /// </summary>
+        public static string Info_TransferringFilesWithSize {
+            get {
+                return ResourceManager.GetString("Info_TransferringFilesWithSize", resourceCulture);
             }
         }
         

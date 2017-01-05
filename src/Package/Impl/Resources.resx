@@ -973,7 +973,7 @@ Click OK to open MiKTeX download page in the default browser. You may need to re
     <value>Unable to transfer file. Exception: {0}.</value>
   </data>
   <data name="Info_CompressingFile" xml:space="preserve">
-    <value>Compressing: {0}</value>
+    <value>Compressing: {0} {1} Bytes</value>
   </data>
   <data name="Info_ExtractingFilesInRHost" xml:space="preserve">
     <value>Extracting file on remote machine.</value>
@@ -1038,5 +1038,11 @@ Click OK to open MiKTeX download page in the default browser. R Remote Services 
   </data>
   <data name="Setting_EnableOutlining_Description" xml:space="preserve">
     <value>Outline code regions (collapsible sections)</value>
+  </data>
+  <data name="Info_FileTransferCanceled" xml:space="preserve">
+    <value>File transfer was canceled.</value>
+  </data>
+  <data name="Info_TransferringFilesWithSize" xml:space="preserve">
+    <value>Transferring Compressed file: {0} Bytes / {1} Bytes</value>
   </data>
 </root>

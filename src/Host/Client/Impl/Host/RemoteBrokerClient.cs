@@ -62,7 +62,7 @@ namespace Microsoft.R.Host.Client.Host {
 
             if (sslPolicyErrors.HasFlag(SslPolicyErrors.RemoteCertificateNotAvailable)) {
                 Log.WriteAsync(LogVerbosity.Minimal, MessageCategory.Error, Resources.Error_NoBrokerCertificate).DoNotWait();
-                _console.Write(Resources.Error_NoBrokerCertificate.FormatInvariant(Name));
+                _console.WriteError(Resources.Error_NoBrokerCertificate.FormatInvariant(Name));
                 return false;
             }
 

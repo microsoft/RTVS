@@ -86,6 +86,10 @@ namespace Microsoft.Common.Core.IO {
             using (FileStream zipStream = new FileStream(zipFilePath, FileMode.Create))
             using (ZipArchive archive = new ZipArchive(zipStream, ZipArchiveMode.Create)) {
                 foreach(string path in paths) {
+                    if (ct.IsCancellationRequested) {
+                        break;
+                    }
+
                     string entryName = null;
                     if (!string.IsNullOrWhiteSpace(relativeTodir)) {
                         entryName = path.MakeRelativePath(relativeTodir).Replace('\\', '/');
