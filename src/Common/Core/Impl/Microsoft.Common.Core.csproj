@@ -54,6 +54,7 @@
     <Compile Include="Extensions\ArraySegmentExtensions.cs" />
     <Compile Include="Extensions\ClipboardExtensions.cs" />
     <Compile Include="Exceptions\CriticalException.cs" />
+    <Compile Include="Extensions\MatcherExtensions.cs" />
     <Compile Include="Extensions\MathExtensions.cs" />
     <Compile Include="Extensions\ReflectionExtensions.cs" />
     <Compile Include="Extensions\SettingsExtensions.cs" />
