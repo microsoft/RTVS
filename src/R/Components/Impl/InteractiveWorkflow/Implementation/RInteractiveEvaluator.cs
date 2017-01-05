@@ -270,7 +270,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
         private void WriteErrorLine(string message) {
             message = TrimExcessiveLineBreaks(message);
-            _console.WriteLine(message);
+            _console.WriteErrorLine(message);
         }
 
         private void WriteRHostDisconnectedError(RHostDisconnectedException exception) {
