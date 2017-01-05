@@ -54,12 +54,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 .Add(() => Session.Disconnected -= SessionOnDisconnected)
                 .Add(() => Session.BeforeRequest -= SessionOnBeforeRequest)
                 .Add(() => Session.AfterRequest -= SessionOnAfterRequest)
-                .Add(() => _sessionProvider.BrokerStateChanged -= OnBrokerStateChanged)
-                .Add(() => {
-                    if (CurrentWindow != null) {
-                        CurrentWindow.TextView.VisualElement.SizeChanged -= VisualElement_SizeChanged;
-                    }
-                });
+                .Add(() => _sessionProvider.BrokerStateChanged -= OnBrokerStateChanged);
 
             _sessionProvider.BrokerStateChanged += OnBrokerStateChanged;
 
@@ -77,6 +72,9 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         public void Dispose() {
             _disposableBag.TryDispose();
             _crProcessor?.Dispose();
+            if (CurrentWindow != null) {
+                CurrentWindow.TextView.VisualElement.SizeChanged -= VisualElement_SizeChanged;
+            }
         }
 
         public Task<ExecutionResult> InitializeAsync() => InitializeAsync(false);

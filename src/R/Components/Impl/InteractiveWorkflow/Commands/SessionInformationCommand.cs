@@ -46,13 +46,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
 
         private void OnRSessionConnected(object sender, EventArgs e) {
             if (_interactiveWorkflow.RSession.IsRemote) {
-                // Host signals 'connected' after R loop was set up (and R banner is printed).
-                // We want to complete printing synchorously here so output does not come
-                // after user started typing in the REPL. But don't wait forever.
-                Task.Run(async () => {
-                    await ReplInitComplete();
-                    await PrintBrokerInformationAsync(reportTelemetry: true);
-                }).Wait(10000);
+                ReplInitComplete().ContinueWith(async (t) => await PrintBrokerInformationAsync(reportTelemetry: true)).DoNotWait();
             }
         }
 
