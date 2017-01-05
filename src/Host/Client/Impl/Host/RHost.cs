@@ -28,7 +28,6 @@ namespace Microsoft.R.Host.Client {
 
         private readonly IMessageTransport _transport;
         private readonly CancellationTokenSource _cts;
-        private readonly IActionLog _log;
         private readonly ConcurrentDictionary<ulong, Request> _requests = new ConcurrentDictionary<ulong, Request>();
         private readonly BinaryAsyncLock _disconnectLock = new BinaryAsyncLock();
 
@@ -47,17 +46,19 @@ namespace Microsoft.R.Host.Client {
             Name = name;
             _callbacks = callbacks;
             _transport = transport;
-            _log = log;
+            Log = log;
             _cts = new CancellationTokenSource();
-            _cts.Token.Register(() => { _log.RHostProcessExited(); });
+            _cts.Token.Register(() => { Log.RHostProcessExited(); });
         }
+
+        public IActionLog Log { get; }
 
         public void Dispose() {
             DisconnectAsync().DoNotWait();
         }
 
         public void FlushLog() {
-            _log?.Flush();
+            Log?.Flush();
         }
 
         private static Exception ProtocolError(FormattableString fs, object message = null) {
@@ -79,7 +80,7 @@ namespace Microsoft.R.Host.Client {
             }
 
             if (message != null) {
-                _log.Response(message.ToString(), _rLoopDepth);
+                Log.Response(message.ToString(), _rLoopDepth);
             }
 
             return message;
@@ -98,7 +99,7 @@ namespace Microsoft.R.Host.Client {
         private async Task SendAsync(Message message, CancellationToken ct) {
             TaskUtilities.AssertIsOnBackgroundThread();
 
-            _log.Request(message.ToString(), _rLoopDepth);
+            Log.Request(message.ToString(), _rLoopDepth);
 
             try {
                 await _transport.SendAsync(message, ct);
@@ -397,7 +398,7 @@ namespace Microsoft.R.Host.Client {
             var cancelAllCtsLink = CancellationTokenSource.CreateLinkedTokenSource(loopCt, _cancelAllCts.Token);
             var ct = cancelAllCtsLink.Token;
             try {
-                _log.EnterRLoop(_rLoopDepth++);
+                Log.EnterRLoop(_rLoopDepth++);
                 while (!loopCt.IsCancellationRequested) {
                     var message = await ReceiveMessageAsync(loopCt);
                     if (message == null) {
@@ -564,7 +565,7 @@ namespace Microsoft.R.Host.Client {
                 // asyncronously-running handlers like ReadConsole and ShowDialog that were started in the loop should be canceled
                 cancelAllCtsLink.Cancel();
                 cancelAllCtsLink.Dispose();
-                _log.ExitRLoop(--_rLoopDepth);
+                Log.ExitRLoop(--_rLoopDepth);
             }
 
             return null;
@@ -630,7 +631,7 @@ namespace Microsoft.R.Host.Client {
                 throw new OperationCanceledException(new OperationCanceledException().Message, ex);
             } catch (Exception ex) {
                 var message = "Exception in RHost run loop:\n" + ex;
-                _log.WriteLineAsync(LogVerbosity.Minimal, MessageCategory.Error, message).DoNotWait();
+                Log.WriteLineAsync(LogVerbosity.Minimal, MessageCategory.Error, message).DoNotWait();
                 Debug.Fail(message);
                 throw;
             } finally {
