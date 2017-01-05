@@ -73,7 +73,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
                         string projectName = properties.GetProjectName();
                         string remotePath = await properties.GetRemoteProjectPathAsync();
 
-                        await SendToRemoteAsync(files, projectDir, projectName, remotePath, CancellationToken.None);
+                        await SendToRemoteAsync(files, projectDir, projectName, remotePath);
 
                         rFiles = files.Select(p => p.MakeRelativePath(projectDir).ProjectRelativePathToRemoteProjectPath(remotePath, projectName));
                     } else {

@@ -71,7 +71,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
             string remotePath = await properties.GetRemoteProjectPathAsync();
 
             if(filteredFiles.Count > 0) {
-                await SendToRemoteAsync(filteredFiles.Distinct(), projectDir, projectName, remotePath, CancellationToken.None);
+                await SendToRemoteAsync(filteredFiles.Distinct(), projectDir, projectName, remotePath);
             }
 
             return true;
