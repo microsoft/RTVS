@@ -57,6 +57,7 @@
     <Compile Include="Converter.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Microsoft.R.Host.Client.API.nuspec" />
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
@@ -67,6 +68,10 @@
     <ProjectReference Include="..\..\..\R\Interpreters\Impl\Microsoft.R.Interpreters.csproj">
       <Project>{8445A4FB-4443-432C-94E8-1408559B7F58}</Project>
       <Name>Microsoft.R.Interpreters</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Broker\Impl\Microsoft.R.Host.Broker.csproj">
+      <Project>{2cc10e50-392e-4b5d-98e4-d38f0061d363}</Project>
+      <Name>Microsoft.R.Host.Broker</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Client\Impl\Microsoft.R.Host.Client.csproj">
       <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>

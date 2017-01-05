@@ -1,0 +1,40 @@
+<?xml version="1.0" ?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Microsoft.R.Host.Client.API</id>
+    <version>0.6</version>
+    <title>C# to R interface</title>
+    <authors>Microsoft</authors>
+    <owners>R Tool for Visual Studio</owners>
+    <licenseUrl>https://github.com/Microsoft/RTVS/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/Microsoft/RTVS</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>C# to R API via VS R Tools Runtime</description>
+    <releaseNotes>Initial release</releaseNotes>
+    <copyright>Copyright (c) 2017 Microsoft Corp</copyright>
+    <tags>C# R RTVS R.NET</tags>
+    <dependencies>
+      <dependency id="Microsoft.AspNetCore.WebSockets.Protocol" version="0.1.0" />
+      <dependency id="Microsoft.AspNetCore.Authentication" version="1.0.0" />
+      <dependency id="Microsoft.AspNetCore.Mvc" version="1.0.0" />
+      <dependency id="Microsoft.AspNetCore.Server.Kestrel" version="1.0.0" />
+      <dependency id="Microsoft.AspNetCore.Server.Kestrel.Https" version="1.0.0" />
+      <dependency id="Microsoft.AspNetCore.Server.WebListener" version="1.0.0" />
+      <dependency id="Microsoft.AspNetCore.WebSockets.Server" version="1.0.0" />
+      <dependency id="Microsoft.Extensions.Configuration.CommandLine" version="1.0.0" />
+      <dependency id="Microsoft.Extensions.Configuration.Json" version="1.0.0" />
+      <dependency id="Microsoft.Extensions.FileSystemGlobbing" version="1.0.0" />
+      <dependency id="Microsoft.Extensions.Logging.Abstractions" version="1.0.0" />
+      <dependency id="Microsoft.Extensions.Logging.Console" version="1.0.0" />
+      <dependency id="Microsoft.Extensions.Logging.Debug" version="1.0.0" />
+      <dependency id="Microsoft.Extensions.Logging.TraceSource" version="1.0.0" />
+      <dependency id="Microsoft.Extensions.Options.ConfigurationExtensions" version="1.0.0" />
+      <dependency id="Microsoft.Tpl.Dataflow" version="4.5.24" />
+      <dependency id="Newtonsoft.Json" version="9.0.1" />
+      <dependency id="Libuv" version="1.9.1" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="..\..\..\..\bin\Debug\Microsoft.R.Host.exe" target="" />
+  </files>
+</package>
