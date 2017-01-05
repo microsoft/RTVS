@@ -118,13 +118,13 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="MicrosoftRHostStopped" xml:space="preserve">
-    <value>R Host process is stopped. Click "Reset" to start a new one.</value>
+    <value>R session is stopped. Click "Reset" to start a new one.</value>
   </data>
   <data name="MicrosoftRHostStopping" xml:space="preserve">
-    <value>Stopping R Session...</value>
+    <value>Stopping R session...</value>
   </data>
   <data name="MicrosoftRHostStarting" xml:space="preserve">
-    <value>Starting R Session...</value>
+    <value>Starting R session...</value>
   </data>
   <data name="RestartRHost" xml:space="preserve">
     <value>Click "Reset" to start a new session.</value>
@@ -172,19 +172,19 @@
     <value>Warning: Interactive Window is disconnected from R Session, so there is no information about loaded packages.</value>
   </data>
   <data name="PackageManager_CantLoadPackageNoRSession" xml:space="preserve">
-    <value>Error: Package {0} can't be loaded because Interactive Window is disconnected from R Session.</value>
+    <value>Error: Package {0} can't be loaded because Interactive Window is disconnected from R session.</value>
   </data>
   <data name="PackageManager_CantUnloadPackageNoRSession" xml:space="preserve">
-    <value>Error: Package {0} can't be unloaded because Interactive Window is disconnected from R Session.</value>
+    <value>Error: Package {0} can't be unloaded because Interactive Window is disconnected from R session.</value>
   </data>
   <data name="PackageManager_CantInstallPackageNoRSession" xml:space="preserve">
-    <value>Error: Package {0} can't be installed because Interactive Window is disconnected from R Session.</value>
+    <value>Error: Package {0} can't be installed because Interactive Window is disconnected from R session.</value>
   </data>
   <data name="PackageManager_CantUninstallPackageNoRSession" xml:space="preserve">
-    <value>Error: Package {0} can't be uninstalled because Interactive Window is disconnected from R Session.</value>
+    <value>Error: Package {0} can't be uninstalled because Interactive Window is disconnected from R session.</value>
   </data>
   <data name="PackageManager_CantUpdatePackageNoRSession" xml:space="preserve">
-    <value>Error: Package {0} can't be updated because Interactive Window is disconnected from R Session.</value>
+    <value>Error: Package {0} can't be updated because Interactive Window is disconnected from R session.</value>
   </data>
   <data name="PackageManager_SearchIncomplete" xml:space="preserve">
     <value>Retrieving results from one or more sources</value>

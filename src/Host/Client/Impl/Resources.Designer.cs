@@ -160,7 +160,7 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No R Interpreters installed.
+        ///   Looks up a localized string similar to No R interpreters installed.
         /// </summary>
         internal static string Error_NoRInterpreters {
             get {
@@ -205,7 +205,7 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to RHost is stopped.
+        ///   Looks up a localized string similar to R session is stopped.
         /// </summary>
         internal static string Error_RHostIsStopped {
             get {
@@ -261,7 +261,7 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R broker process did not start on the machine &apos;{0}&apos;. Exception:  {1}.
+        ///   Looks up a localized string similar to R Services broker process did not start on the machine &apos;{0}&apos;. Exception:  {1}.
         /// </summary>
         internal static string Error_UnableToStartBrokerException {
             get {
@@ -270,7 +270,7 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R host process did not start on the machine &apos;{0}&apos;. Exception:  {1}.
+        ///   Looks up a localized string similar to R session process did not start on the machine &apos;{0}&apos;. Exception:  {1}.
         /// </summary>
         internal static string Error_UnableToStartHostException {
             get {
@@ -334,7 +334,7 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Interactive Window is disconnected from R Session..
+        ///   Looks up a localized string similar to Interactive Window is disconnected from R session..
         /// </summary>
         internal static string RHostDisconnected {
             get {
