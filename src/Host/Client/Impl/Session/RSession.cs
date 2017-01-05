@@ -141,6 +141,7 @@ namespace Microsoft.R.Host.Client.Session {
         }
         
         public Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind = REvaluationKind.Normal, CancellationToken cancellationToken = default(CancellationToken)) {
+            _processingChangeDirectoryCommand = expression.StartsWithOrdinal("setwd");
             return EvaluateAsync(expression, kind, true, cancellationToken);
         }
 
