@@ -14,27 +14,130 @@
     <copyright>Copyright © Microsoft Corporation</copyright>
     <tags>C# R RTVS R.NET</tags>
     <dependencies>
-      <dependency id="Microsoft.AspNetCore.Authentication" version="1.0.0" />
-      <dependency id="Microsoft.AspNetCore.Mvc" version="1.0.0" />
-      <dependency id="Microsoft.AspNetCore.Server.Kestrel" version="1.0.0" />
-      <dependency id="Microsoft.AspNetCore.Server.Kestrel.Https" version="1.0.0" />
-      <dependency id="Microsoft.AspNetCore.Server.WebListener" version="1.0.0" />
-      <dependency id="Microsoft.AspNetCore.WebSockets.Protocol" version="0.1.0" />
-      <dependency id="Microsoft.AspNetCore.WebSockets.Server" version="0.1.0" />
-      <dependency id="Microsoft.Extensions.Configuration.CommandLine" version="1.0.0" />
-      <dependency id="Microsoft.Extensions.Configuration.Json" version="1.0.0" />
-      <dependency id="Microsoft.Extensions.FileSystemGlobbing" version="1.0.0" />
-      <dependency id="Microsoft.Extensions.Logging.Abstractions" version="1.0.0" />
-      <dependency id="Microsoft.Extensions.Logging.Console" version="1.0.0" />
-      <dependency id="Microsoft.Extensions.Logging.Debug" version="1.0.0" />
-      <dependency id="Microsoft.Extensions.Logging.TraceSource" version="1.0.0" />
-      <dependency id="Microsoft.Extensions.Options.ConfigurationExtensions" version="1.0.0" />
-      <dependency id="Microsoft.Tpl.Dataflow" version="4.5.24" />
       <dependency id="Newtonsoft.Json" version="9.0.1" />
-      <dependency id="Libuv" version="1.9.1" />
     </dependencies>
   </metadata>
   <files>
-    <file src="..\..\..\..\bin\Debug\Microsoft.R.Host.exe" target="" />
+    <file src="$(BinFolder)\Microsoft.Languages.Core.dll" />
+    <file src="$(BinFolder)\Microsoft.R.Common.Core.dll" />
+    <file src="$(BinFolder)\Microsoft.R.Core.dll" />
+    <file src="$(BinFolder)\Microsoft.R.Interpreters.dll" />
+    <file src="$(BinFolder)\Microsoft.R.Host.exe" />
+    <file src="$(BinFolder)\Microsoft.R.Host.Broker.exe" />
+    <file src="$(BinFolder)\Microsoft.R.Host.Client.dll" />
+    <file src="$(BinFolder)\Microsoft.R.Host.Protocol.dll" />
+    <file src="$(BinFolder)\Microsoft.Tpl.Dataflow.dll" />
+    <file src="$(BinFolder)\Microsoft.Extensions.Logging.dll" />
+    <file src="$(BinFolder)\Microsoft.AspNetCore.Antiforgery.dll" />
+    <file src="$(BinFolder)\Microsoft.AspNetCore.Authorization.dll" />
+    <file src="$(BinFolder)\Microsoft.AspNetCore.Authentication.dll" />
+    <file src="$(BinFolder)\Microsoft.AspNetCore.Cors.dll" />
+    <file src="$(BinFolder)\Microsoft.AspNetCore.Cryptography.Internal.dll" />
+    <file src="$(BinFolder)\Microsoft.AspNetCore.DataProtection.Abstractions.dll" />
+    <file src="$(BinFolder)\Microsoft.AspNetCore.DataProtection.dll" />
+    <file src="$(BinFolder)\Microsoft.AspNetCore.Diagnostics.Abstractions.dll" />
+    <file src="$(BinFolder)\Microsoft.AspNetCore.Hosting.Abstractions.dll" />
+    <file src="$(BinFolder)\Microsoft.AspNetCore.Hosting.dll" />
+    <file src="$(BinFolder)\Microsoft.AspNetCore.Hosting.Server.Abstractions.dll" />
+    <file src="$(BinFolder)\Microsoft.AspNetCore.Html.Abstractions.dll" />
+    <file src="$(BinFolder)\Microsoft.AspNetCore.Http.Abstractions.dll" />
+    <file src="$(BinFolder)\Microsoft.AspNetCore.Http.dll" />
+    <file src="$(BinFolder)\Microsoft.AspNetCore.Http.Extensions.dll" />
+    <file src="$(BinFolder)\Microsoft.AspNetCore.Http.Features.dll" />
+    <file src="$(BinFolder)\Microsoft.AspNetCore.JsonPatch.dll" />
+    <file src="$(BinFolder)\Microsoft.AspNetCore.Localization.dll" />
+    <file src="$(BinFolder)\Microsoft.AspNetCore.Mvc.Abstractions.dll" />
+    <file src="$(BinFolder)\Microsoft.AspNetCore.Mvc.ApiExplorer.dll" />
+    <file src="$(BinFolder)\Microsoft.AspNetCore.Mvc.Core.dll" />
+    <file src="$(BinFolder)\Microsoft.AspNetCore.Mvc.Cors.dll" />
+    <file src="$(BinFolder)\Microsoft.AspNetCore.Mvc.DataAnnotations.dll" />
+    <file src="$(BinFolder)\Microsoft.AspNetCore.Mvc.dll" />
+    <file src="$(BinFolder)\Microsoft.AspNetCore.Mvc.Formatters.Json.dll" />
+    <file src="$(BinFolder)\Microsoft.AspNetCore.Mvc.Localization.dll" />
+    <file src="$(BinFolder)\Microsoft.AspNetCore.Mvc.Razor.dll" />
+    <file src="$(BinFolder)\Microsoft.AspNetCore.Mvc.Razor.Host.dll" />
+    <file src="$(BinFolder)\Microsoft.AspNetCore.Mvc.TagHelpers.dll" />
+    <file src="$(BinFolder)\Microsoft.AspNetCore.Mvc.ViewFeatures.dll" />
+    <file src="$(BinFolder)\Microsoft.AspNetCore.Razor.dll" />
+    <file src="$(BinFolder)\Microsoft.AspNetCore.Razor.Runtime.dll" />
+    <file src="$(BinFolder)\Microsoft.AspNetCore.Routing.Abstractions.dll" />
+    <file src="$(BinFolder)\Microsoft.AspNetCore.Routing.dll" />
+    <file src="$(BinFolder)\Microsoft.AspNetCore.Server.WebListener.dll" />
+    <file src="$(BinFolder)\Microsoft.AspNetCore.Server.Kestrel.dll" />
+    <file src="$(BinFolder)\Microsoft.AspNetCore.Server.Kestrel.Https.dll" />
+    <file src="$(BinFolder)\Microsoft.AspNetCore.WebSockets.Protocol.dll" />
+    <file src="$(BinFolder)\Microsoft.AspNetCore.WebSockets.Server.dll" />
+    <file src="$(BinFolder)\Microsoft.AspNetCore.WebUtilities.dll" />
+    <file src="$(BinFolder)\Microsoft.CodeAnalysis.CSharp.dll" />
+    <file src="$(BinFolder)\Microsoft.CodeAnalysis.Desktop.dll" />
+    <file src="$(BinFolder)\Microsoft.CodeAnalysis.dll" />
+    <file src="$(BinFolder)\Microsoft.DotNet.InternalAbstractions.dll" />
+    <file src="$(BinFolder)\Microsoft.Extensions.Caching.Abstractions.dll" />
+    <file src="$(BinFolder)\Microsoft.Extensions.Caching.Memory.dll" />
+    <file src="$(BinFolder)\Microsoft.Extensions.Configuration.Abstractions.dll" />
+    <file src="$(BinFolder)\Microsoft.Extensions.Configuration.Binder.dll" />
+    <file src="$(BinFolder)\Microsoft.Extensions.Configuration.CommandLine.dll" />
+    <file src="$(BinFolder)\Microsoft.Extensions.Configuration.dll" />
+    <file src="$(BinFolder)\Microsoft.Extensions.Configuration.EnvironmentVariables.dll" />
+    <file src="$(BinFolder)\Microsoft.Extensions.Configuration.FileExtensions.dll" />
+    <file src="$(BinFolder)\Microsoft.Extensions.Configuration.Json.dll" />
+    <file src="$(BinFolder)\Microsoft.Extensions.DependencyInjection.Abstractions.dll" />
+    <file src="$(BinFolder)\Microsoft.Extensions.DependencyInjection.dll" />
+    <file src="$(BinFolder)\Microsoft.Extensions.DependencyModel.dll" />
+    <file src="$(BinFolder)\Microsoft.Extensions.FileProviders.Abstractions.dll" />
+    <file src="$(BinFolder)\Microsoft.Extensions.FileProviders.Composite.dll" />
+    <file src="$(BinFolder)\Microsoft.Extensions.FileProviders.Physical.dll" />
+    <file src="$(BinFolder)\Microsoft.Extensions.FileSystemGlobbing.dll" />
+    <file src="$(BinFolder)\Microsoft.Extensions.Globalization.CultureInfoCache.dll" />
+    <file src="$(BinFolder)\Microsoft.Extensions.Localization.Abstractions.dll" />
+    <file src="$(BinFolder)\Microsoft.Extensions.Localization.dll" />
+    <file src="$(BinFolder)\Microsoft.Extensions.Logging.Abstractions.dll" />
+    <file src="$(BinFolder)\Microsoft.Extensions.Logging.Console.dll" />
+    <file src="$(BinFolder)\Microsoft.Extensions.Logging.Debug.dll" />
+    <file src="$(BinFolder)\Microsoft.Extensions.Logging.dll" />
+    <file src="$(BinFolder)\Microsoft.Extensions.ObjectPool.dll" />
+    <file src="$(BinFolder)\Microsoft.Extensions.Options.ConfigurationExtensions.dll" />
+    <file src="$(BinFolder)\Microsoft.Extensions.Options.dll" />
+    <file src="$(BinFolder)\Microsoft.Extensions.PlatformAbstractions.dll" />
+    <file src="$(BinFolder)\Microsoft.Extensions.Primitives.dll" />
+    <file src="$(BinFolder)\Microsoft.Extensions.WebEncoders.dll" />
+    <file src="$(BinFolder)\Microsoft.Net.Http.Server.dll" />
+    <file src="$(BinFolder)\Microsoft.Net.Http.Headers.dll" />
+    <file src="$(BinFolder)\System.AppContext.dll" />
+    <file src="$(BinFolder)\System.Buffers.dll" />
+    <file src="$(BinFolder)\System.Collections.Immutable.dll" />
+    <file src="$(BinFolder)\System.ComponentModel.Primitives.dll" />
+    <file src="$(BinFolder)\System.ComponentModel.TypeConverter.dll" />
+    <file src="$(BinFolder)\System.Composition.AttributedModel.dll" />
+    <file src="$(BinFolder)\System.Composition.Convention.dll" />
+    <file src="$(BinFolder)\System.Composition.Hosting.dll" />
+    <file src="$(BinFolder)\System.Composition.Runtime.dll" />
+    <file src="$(BinFolder)\System.Composition.TypedParts.dll" />
+    <file src="$(BinFolder)\System.Console.dll" />
+    <file src="$(BinFolder)\System.Diagnostics.DiagnosticSource.dll" />
+    <file src="$(BinFolder)\System.Diagnostics.FileVersionInfo.dll" />
+    <file src="$(BinFolder)\System.Diagnostics.StackTrace.dll" />
+    <file src="$(BinFolder)\System.IO.Compression.ZipFile.dll" />
+    <file src="$(BinFolder)\System.IO.FileSystem.dll" />
+    <file src="$(BinFolder)\System.IO.FileSystem.Primitives.dll" />
+    <file src="$(BinFolder)\System.Numerics.Vectors.dll" />
+    <file src="$(BinFolder)\System.Reflection.Metadata.dll" />
+    <file src="$(BinFolder)\System.Runtime.InteropServices.RuntimeInformation.dll" />
+    <file src="$(BinFolder)\System.Runtime.Serialization.Primitives.dll" />
+    <file src="$(BinFolder)\System.Security.Cryptography.Algorithms.dll" />
+    <file src="$(BinFolder)\System.Security.Cryptography.Encoding.dll" />
+    <file src="$(BinFolder)\System.Security.Cryptography.Primitives.dll" />
+    <file src="$(BinFolder)\System.Security.Cryptography.X509Certificates.dll" />
+    <file src="$(BinFolder)\System.Text.Encoding.CodePages.dll" />
+    <file src="$(BinFolder)\System.Text.Encodings.Web.dll" />
+    <file src="$(BinFolder)\System.Threading.Tasks.Dataflow.dll" />
+    <file src="$(BinFolder)\System.Threading.Tasks.Extensions.dll" />
+    <file src="$(BinFolder)\System.Threading.Thread.dll" />
+    <file src="$(BinFolder)\System.Xml.XmlDocument.dll" />
+    <file src="$(BinFolder)\System.Xml.XPath.dll" />
+    <file src="$(BinFolder)\System.Xml.XPath.XDocument.dll" />
+    <file src="$(BinFolder)\libuv.dll" />
+    <file src="$(BinFolder)\zip.dll" />
+    <file src="$(BinFolder)\zlib.dll" />
   </files>
 </package>
