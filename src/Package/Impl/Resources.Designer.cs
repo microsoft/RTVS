@@ -737,7 +737,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Extracting file on remote RHost..
+        ///   Looks up a localized string similar to Extracting file on remote machine..
         /// </summary>
         public static string Info_ExtractingFilesInRHost {
             get {
@@ -845,7 +845,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Transferring file(s) to remote RHost..
+        ///   Looks up a localized string similar to Transferring files to remote machine..
         /// </summary>
         public static string Info_TransferringFiles {
             get {
@@ -854,7 +854,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Transferring files to remote RHost completed..
+        ///   Looks up a localized string similar to Transferring files to remote machine... completed..
         /// </summary>
         public static string Info_TransferringFilesDone {
             get {
@@ -1911,7 +1911,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Additional arguments to pass to the R Host process.
+        ///   Looks up a localized string similar to Additional arguments to pass to the R session.
         /// </summary>
         public static string Settings_RCommandLineArguments_Description {
             get {

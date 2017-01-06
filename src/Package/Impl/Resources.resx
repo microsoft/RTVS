@@ -490,7 +490,7 @@
     <value>R command line arguments</value>
   </data>
   <data name="Settings_RCommandLineArguments_Description" xml:space="preserve">
-    <value>Additional arguments to pass to the R Host process</value>
+    <value>Additional arguments to pass to the R session</value>
   </data>
   <data name="Settings_HistoryCategory" xml:space="preserve">
     <value>History</value>
@@ -961,10 +961,10 @@ Click OK to open MiKTeX download page in the default browser. You may need to re
     <value>Sourcing: {0}</value>
   </data>
   <data name="Info_TransferringFiles" xml:space="preserve">
-    <value>Transferring file(s) to remote RHost.</value>
+    <value>Transferring files to remote machine.</value>
   </data>
   <data name="Info_TransferringFilesDone" xml:space="preserve">
-    <value>Transferring files to remote RHost completed.</value>
+    <value>Transferring files to remote machine... completed.</value>
   </data>
   <data name="Error_CannotAccess" xml:space="preserve">
     <value />
@@ -976,7 +976,7 @@ Click OK to open MiKTeX download page in the default browser. You may need to re
     <value>Compressing: {0} {1} Bytes</value>
   </data>
   <data name="Info_ExtractingFilesInRHost" xml:space="preserve">
-    <value>Extracting file on remote RHost.</value>
+    <value>Extracting file on remote machine.</value>
   </data>
   <data name="Settings_LogCategory" xml:space="preserve">
     <value>Logging</value>

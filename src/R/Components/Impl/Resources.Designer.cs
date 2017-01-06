@@ -678,7 +678,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Starting R Session....
+        ///   Looks up a localized string similar to Starting R session....
         /// </summary>
         public static string MicrosoftRHostStarting {
             get {
@@ -687,7 +687,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R Host process is stopped. Click &quot;Reset&quot; to start a new one..
+        ///   Looks up a localized string similar to R session is stopped. Click &quot;Reset&quot; to start a new one..
         /// </summary>
         public static string MicrosoftRHostStopped {
             get {
@@ -696,7 +696,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Stopping R Session....
+        ///   Looks up a localized string similar to Stopping R session....
         /// </summary>
         public static string MicrosoftRHostStopping {
             get {
@@ -858,7 +858,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error: Package {0} can&apos;t be installed because Interactive Window is disconnected from R Session..
+        ///   Looks up a localized string similar to Error: Package {0} can&apos;t be installed because Interactive Window is disconnected from R session..
         /// </summary>
         public static string PackageManager_CantInstallPackageNoRSession {
             get {
@@ -867,7 +867,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error: Package {0} can&apos;t be loaded because Interactive Window is disconnected from R Session..
+        ///   Looks up a localized string similar to Error: Package {0} can&apos;t be loaded because Interactive Window is disconnected from R session..
         /// </summary>
         public static string PackageManager_CantLoadPackageNoRSession {
             get {
@@ -876,7 +876,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error: Package {0} can&apos;t be uninstalled because Interactive Window is disconnected from R Session..
+        ///   Looks up a localized string similar to Error: Package {0} can&apos;t be uninstalled because Interactive Window is disconnected from R session..
         /// </summary>
         public static string PackageManager_CantUninstallPackageNoRSession {
             get {
@@ -885,7 +885,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error: Package {0} can&apos;t be unloaded because Interactive Window is disconnected from R Session..
+        ///   Looks up a localized string similar to Error: Package {0} can&apos;t be unloaded because Interactive Window is disconnected from R session..
         /// </summary>
         public static string PackageManager_CantUnloadPackageNoRSession {
             get {
@@ -894,7 +894,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error: Package {0} can&apos;t be updated because Interactive Window is disconnected from R Session..
+        ///   Looks up a localized string similar to Error: Package {0} can&apos;t be updated because Interactive Window is disconnected from R session..
         /// </summary>
         public static string PackageManager_CantUpdatePackageNoRSession {
             get {
