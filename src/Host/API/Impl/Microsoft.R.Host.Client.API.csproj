@@ -1,6 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup Condition="'$(NuGetPackageRoot)' == ''">
+    <NuGetPackageRoot>$(UserProfile)\.nuget\packages\</NuGetPackageRoot>
+  </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -90,4 +93,11 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\..\R.Build.Version.targets" />
+  <PropertyGroup>
+    <NugetExe>$(NuGetPackageRoot)\NuGet.CommandLine\3.5.0\tools\nuget.exe</NugetExe>
+    <BuildVersion Condition="$(BuildVersion) == ''">0.6.0</BuildVersion>
+    <BinPath>$([System.IO.Path]::GetFullPath($(OutputPath)))</BinPath>
+    <ConfigLetter Condition="$(Configuration) == 'Debug'">d</ConfigLetter>
+    <PostBuildEvent>$(NugetExe) pack "$(MSBuildThisFileDirectory)$(AssemblyName).nuspec" -OutputDirectory "$(BinPath) " -Version $(BuildVersion) -BasePath "$(BinPath) " -NonInteractive -Properties ConfigLetter="$(ConfigLetter)"</PostBuildEvent>
+  </PropertyGroup>
 </Project>

@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.R.Host.Client.Host;
 
 namespace Microsoft.R.Host.Client {
     public interface IRHostSession : IDisposable {

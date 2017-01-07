@@ -56,8 +56,10 @@ namespace Microsoft.R.Host.Client {
             _session?.Dispose();
         }
 
-        private void OnSessionConnected(object sender, RConnectedEventArgs e) => Connected?.Invoke(this, EventArgs.Empty);
-        private void OnSessionDisconnected(object sender, EventArgs e) => Connected?.Invoke(this, EventArgs.Empty);
+        private void OnSessionConnected(object sender, RConnectedEventArgs e) 
+            => Connected?.Invoke(this, EventArgs.Empty);
+        private void OnSessionDisconnected(object sender, EventArgs e) 
+            => Disconnected?.Invoke(this, EventArgs.Empty);
 
         #region IRHostSession
         public Task CancelAllAsync(CancellationToken cancellationToken = default(CancellationToken))
