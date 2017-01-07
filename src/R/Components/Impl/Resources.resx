@@ -380,7 +380,7 @@
 {0}</value>
   </data>
   <data name="ConnectionManager_TestConnectionTooltip" xml:space="preserve">
-    <value>Test connection to the R interperter. Authentication credentials may be required.</value>
+    <value>Test connection to the R interpreter. Authentication credentials may be required.</value>
   </data>
   <data name="ConnectionManager_ShouldHaveName" xml:space="preserve">
     <value>Can't save changes. Connection should have name specified.</value>
@@ -578,7 +578,17 @@ Are you sure you want to terminate R session?</value>
     <value>Video memory: {0} MB</value>
   </data>
   <data name="DeleteProfile_DeletionWarning" xml:space="preserve">
-    <value>User profile and all files under the user directory will be permanently deleted from the remote machine {0}. Your connection will also be disconnected. Reconnecting to the same remote machine will create a new profile. Are you sure you want to delete the user profile from the machine {0}?</value>
+    <value>WARNING
+
+You are about to delete all of your files on the remote server!
+
+Your user profile and ALL FILES under your user directory will be PERMANENTLY DELETED from {0}. Your connection will also be terminated.
+
+Your local files are not affected.
+
+Reconnecting to the same remote server will create a brand new profile.  
+
+Are you sure you want to delete your user profile and all the associated remote files?</value>
   </data>
   <data name="DeleteProfile_Error" xml:space="preserve">
     <value>Failed to delete user profile. Please see logs for the RUserProfileService on the remote machine {0}. Requires admin access to examine the logs.</value>

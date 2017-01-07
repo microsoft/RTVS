@@ -480,7 +480,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Test connection to the R interperter. Authentication credentials may be required..
+        ///   Looks up a localized string similar to Test connection to the R interpreter. Authentication credentials may be required..
         /// </summary>
         public static string ConnectionManager_TestConnectionTooltip {
             get {
@@ -498,7 +498,17 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to User profile and all files under the user directory will be permanently deleted from the remote machine {0}. Your connection will also be disconnected. Reconnecting to the same remote machine will create a new profile. Are you sure you want to delete the user profile from the machine {0}?.
+        ///   Looks up a localized string similar to WARNING
+        ///
+        ///You are about to delete all of your files on the remote server!
+        ///
+        ///Your user profile and ALL FILES under your user directory will be PERMANENTLY DELETED from {0}. Your connection will also be terminated.
+        ///
+        ///Your local files are not affected.
+        ///
+        ///Reconnecting to the same remote server will create a brand new profile.  
+        ///
+        ///Are you sure you want to delete your user profile and all the associated remote files?.
         /// </summary>
         public static string DeleteProfile_DeletionWarning {
             get {
