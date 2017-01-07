@@ -11,7 +11,7 @@ using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 using static Microsoft.R.DataInspection.REvaluationResultProperties;
 
-namespace Microsoft.R.Host.Client.API {
+namespace Microsoft.R.Host.Client {
     public partial class RHostSession {
         public async Task InvokeAsync(string function, CancellationToken cancellationToken = default(CancellationToken), params object[] args) {
             Check.ArgumentNull(nameof(function), function);

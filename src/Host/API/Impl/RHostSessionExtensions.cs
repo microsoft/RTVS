@@ -9,7 +9,7 @@ using Microsoft.Common.Core.Diagnostics;
 using Microsoft.R.Host.Client.Host;
 using static System.FormattableString;
 
-namespace Microsoft.R.Host.Client.API {
+namespace Microsoft.R.Host.Client {
     public static class RHostSessionExtensions {
         /// <summary>
         /// Creates list of objects in R from list of .NET objects

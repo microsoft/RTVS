@@ -9,7 +9,7 @@ using System.Text;
 using Microsoft.Common.Core;
 using static System.FormattableString;
 
-namespace Microsoft.R.Host.Client.API {
+namespace Microsoft.R.Host.Client {
     public static class Converter {
         public static List<T> ToListOf<T>(this IEnumerable<object> e) {
             return new List<T>(e.Select(x => (T)Convert.ChangeType(x, typeof(T))));

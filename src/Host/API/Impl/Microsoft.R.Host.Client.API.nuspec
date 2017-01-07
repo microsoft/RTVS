@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Microsoft.R.Host.Client.API</id>
-    <version>0.6.0</version>
+    <version>$Version</version>
     <title>C# to R interface</title>
     <authors>Microsoft</authors>
     <owners>R Tools for Visual Studio</owners>

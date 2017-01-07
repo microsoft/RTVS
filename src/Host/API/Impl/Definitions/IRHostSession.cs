@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.R.Host.Client.Host;
 
-namespace Microsoft.R.Host.Client.API {
+namespace Microsoft.R.Host.Client {
     public interface IRHostSession : IDisposable {
         /// <summary>
         /// Fires when R Host process has started. It is not fully initialized yet. 

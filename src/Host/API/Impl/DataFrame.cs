@@ -6,7 +6,7 @@ using System.Linq;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Diagnostics;
 
-namespace Microsoft.R.Host.Client.API {
+namespace Microsoft.R.Host.Client {
     public sealed class DataFrame {
         public IReadOnlyList<string> ColumnNames { get; }
         public IReadOnlyList<string> RowNames { get; }

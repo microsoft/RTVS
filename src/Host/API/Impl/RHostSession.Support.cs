@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Threading;
 
-namespace Microsoft.R.Host.Client.API {
+namespace Microsoft.R.Host.Client {
     public partial class RHostSession {
         private class NullLog : IActionLog {
             public LogVerbosity LogVerbosity => LogVerbosity.None;

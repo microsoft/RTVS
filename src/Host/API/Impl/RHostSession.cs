@@ -14,7 +14,7 @@ using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Interpreters;
 
-namespace Microsoft.R.Host.Client.API {
+namespace Microsoft.R.Host.Client {
     public sealed partial class RHostSession : IRHostSession {
         private readonly IRSession _session;
         private readonly DisposableBag _disposableBag;
