@@ -7,6 +7,10 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.R.Host.Client {
+    /// <summary>
+    /// Represents running session or connection to the process
+    /// that hosts R environment (engine).
+    /// </summary>
     public interface IRHostSession : IDisposable {
         /// <summary>
         /// Fires when R Host process has started. It is not fully initialized yet. 
@@ -158,5 +162,17 @@ namespace Microsoft.R.Host.Client {
         /// <exception cref="OperationCanceledException" />
         /// <exception cref="RHostDisconnectedException" />
         Task<DataFrame> GetDataFrameAsync(string expression, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Retrieves information about R object or expression
+        /// </summary>
+        /// <param name="expression">Expression (variable name) to describe</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>Object information</returns>
+        /// <exception cref="ArgumentException" />
+        /// <exception cref="REvaluationException" />
+        /// <exception cref="OperationCanceledException" />
+        /// <exception cref="RHostDisconnectedException" />
+        Task<IRObjectInformation> GetInformationAsync(string expression, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

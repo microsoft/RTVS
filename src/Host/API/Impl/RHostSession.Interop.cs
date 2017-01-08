@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Diagnostics;
+using Microsoft.R.DataInspection;
 using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 using static Microsoft.R.DataInspection.REvaluationResultProperties;
@@ -81,6 +82,16 @@ namespace Microsoft.R.Host.Client {
             return new DataFrame(rowNames, colNames, data);
         }
 
+        public async Task<IRObjectInformation> GetInformationAsync(string expression, CancellationToken cancellationToken = default(CancellationToken)) {
+            var properties = TypeNameProperty | DimProperty | LengthProperty;
+            var info = await _session.EvaluateAndDescribeAsync(expression, properties, null, cancellationToken);
+            return new RObjectInfo() {
+                TypeName = info.TypeName,
+                Length = info.Length ?? 0,
+                Dim = info.Dim
+            };
+        }
+
         private List<object> JArrayToObjectList(JArray array) {
             if (array.Count == 0) {
                 return new List<object>();
@@ -96,6 +107,12 @@ namespace Microsoft.R.Host.Client {
                     throw new ArgumentException(nameof(array), Invariant($"Unsupported JSON type {array[0].Type}"));
             }
             return new List<object>(array.Select(jt => jt.ToObject(type)));
+        }
+
+        private class RObjectInfo: IRObjectInformation {
+            public string TypeName { get; set; }
+            public int Length { get; set; }
+            public IReadOnlyList<int> Dim { get; set; }
         }
     }
 }

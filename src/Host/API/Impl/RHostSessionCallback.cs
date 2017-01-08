@@ -6,11 +6,14 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
 
 namespace Microsoft.R.Host.Client {
-    public class RHostSessionCallback {
+    public class RHostSessionCallback: IRHostSessionCallback {
         public virtual Task ShowErrorMessage(string message, CancellationToken cancellationToken = default(CancellationToken))
             => Task.CompletedTask;
 
         public virtual Task<MessageButtons> ShowMessageAsync(string message, MessageButtons buttons, CancellationToken cancellationToken = default(CancellationToken))
             => Task.FromResult(MessageButtons.OK);
+
+        public Task PlotAsync(byte[] image)
+            => Task.CompletedTask;
     }
 }

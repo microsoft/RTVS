@@ -58,5 +58,15 @@ namespace Microsoft.R.Host.Client {
                 await session.ExecuteAsync(Invariant($"colnames({name}) <- {df.ColumnNames.ToRListConstructor()}"));
             }
         }
+
+        public static async Task<int> GetLengthAsync(this IRHostSession session, string expression, CancellationToken cancellationToken = default(CancellationToken)) {
+            var info = await session.GetInformationAsync(expression, cancellationToken);
+            return info.Length;
+        }
+
+        public static async Task<string> GetTypeNameAsync(this IRHostSession session, string expression, CancellationToken cancellationToken = default(CancellationToken)) {
+            var info = await session.GetInformationAsync(expression, cancellationToken);
+            return info.TypeName;
+        }
     }
 }

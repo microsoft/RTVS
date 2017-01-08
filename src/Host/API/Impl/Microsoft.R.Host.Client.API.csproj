@@ -41,6 +41,7 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore" />
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
@@ -48,8 +49,9 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="DataFrame.cs" />
+    <Compile Include="Definitions\IRObjectInformation.cs" />
     <Compile Include="RHostSessionCallback.cs" />
-    <Compile Include="RFunctionArg.cs" />
+    <Compile Include="Definitions\RFunctionArg.cs" />
     <Compile Include="RHostSessionExtensions.cs" />
     <Compile Include="RHostSession.Support.cs" />
     <Compile Include="RHostSession.Interop.cs" />
@@ -71,6 +73,10 @@
     <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
       <Project>{8d408909-459f-4853-a36c-745118f99869}</Project>
       <Name>Microsoft.Common.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Package\Impl\Microsoft.VisualStudio.R.Package.csproj">
+      <Project>{26035fe3-25ab-45ec-bb45-7fd0b6c1d545}</Project>
+      <Name>Microsoft.VisualStudio.R.Package</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\R\Interpreters\Impl\Microsoft.R.Interpreters.csproj">
       <Project>{8445A4FB-4443-432C-94E8-1408559B7F58}</Project>
