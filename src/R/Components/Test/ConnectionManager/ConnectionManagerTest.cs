@@ -132,7 +132,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
 
             using (var workflow = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate()) {
                 var security = workflow.Shell.Services.Security;
-                security.GetUserCredentialsAsync(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+                security.GetUserCredentialsAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
                     .ThrowsForAnyArgs(new RHostDisconnectedException());
 
                 var connectionManager = workflow.Connections;

@@ -32,7 +32,7 @@ namespace Microsoft.Common.Core {
         public const uint FORMAT_MESSAGE_FROM_STRING = 0x00000400;
 
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
-        public static extern uint FormatMessage(uint dwFlags, IntPtr lpSource, int dwMessageId, 
+        public static extern uint FormatMessage(uint dwFlags, IntPtr lpSource, int dwMessageId,
              uint dwLanguageId, ref IntPtr lpBuffer, uint nSize, IntPtr pArguments);
 
         [DllImport("ntdll.dll")]
@@ -63,18 +63,12 @@ namespace Microsoft.Common.Core {
         public const int CREDUI_FLAGS_USERNAME_TARGET_CREDENTIALS = 0x80000;
         public const int CREDUI_FLAGS_KEEP_USERNAME = 0x100000;
 
-        [DllImport("credui", CharSet = CharSet.Auto)]
-        public static extern int CredUIPromptForCredentials(
-            ref CREDUI_INFO pUiInfo,
-            string pszTargetName,
-            IntPtr Reserved,
-            int dwAuthError,
-            StringBuilder pszUserName,
-            int ulUserNameMaxChars,
-            IntPtr pszPassword,
-            int ulPasswordMaxChars,
-            ref bool pfSave,
-            int dwFlags);
+        public const int ERROR_NOT_FOUND = 1168;
+
+        public const int CRED_PACK_PROTECTED_CREDENTIALS = 0x1;
+        public const int CRED_PACK_WOW_BUFFER = 0x2;
+        public const int CRED_PACK_GENERIC_CREDENTIALS = 0x4;
+        public const int CRED_PACK_ID_PROVIDER_CREDENTIALS = 0x8;
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
         public struct CREDUI_INFO {
@@ -92,6 +86,41 @@ namespace Microsoft.Common.Core {
             DOMAIN_VISIBLE_PASSWORD = 4,
             MAXIMUM = 5
         }
+
+        public enum CRED_PERSIST : uint {
+            CRED_PERSIST_SESSION = 1,
+            CRED_PERSIST_LOCAL_MACHINE = 2,
+            CRED_PERSIST_ENTERPRISE = 3
+        }
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        internal struct CredentialData {
+            public uint Flags;
+            public CRED_TYPE Type;
+            public string TargetName;
+            public string Comment;
+            public System.Runtime.InteropServices.ComTypes.FILETIME LastWritten;
+            public uint CredentialBlobSize;
+            public IntPtr CredentialBlob;
+            public CRED_PERSIST Persist;
+            public uint AttributeCount;
+            public IntPtr Attributes;
+            public string TargetAlias;
+            public string UserName;
+        }
+
+        [DllImport("Advapi32.dll", SetLastError = true, EntryPoint = "CredWriteW", CharSet = CharSet.Unicode)]
+        internal static extern bool CredWrite(ref CredentialData userCredential, uint flags);
+
+        [DllImport("Advapi32.dll", EntryPoint = "CredReadW", CharSet = CharSet.Unicode, SetLastError = true)]
+        internal static extern bool CredRead(
+            string target,
+            CRED_TYPE type,
+            int reservedFlag,
+            out IntPtr userCredential);
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        public static extern bool CredFree([In] IntPtr buffer);
 
         [DllImport("advapi32.dll", EntryPoint = "CredDeleteW", CharSet = CharSet.Unicode)]
         public static extern bool CredDelete(string target, CRED_TYPE type, int flags);
@@ -185,5 +214,72 @@ namespace Microsoft.Common.Core {
         [DllImport("shlwapi.dll", CharSet = CharSet.Unicode)]
         [return: MarshalAsAttribute(UnmanagedType.Bool)]
         public static extern bool PathIsUNC([MarshalAs(UnmanagedType.LPWStr), In] string pszPath);
+
+        [Flags]
+        public enum CredUIWinFlags {
+            /// <summary>
+            /// The caller is requesting that the credential provider return the user name and password in plain text.
+            /// This value cannot be combined with SECURE_PROMPT.
+            /// </summary>
+            CREDUIWIN_GENERIC = 0x1,
+            /// <summary>
+            /// The Save check box is displayed in the dialog box.
+            /// </summary>
+            CREDUIWIN_CHECKBOX = 0x2,
+            /// <summary>
+            /// Only credential providers that support the authentication package specified by the authPackage parameter should be enumerated.
+            /// This value cannot be combined with CREDUIWIN_IN_CRED_ONLY.
+            /// </summary>
+            CREDUIWIN_AUTHPACKAGE_ONLY = 0x10,
+            /// <summary>
+            /// Only the credentials specified by the InAuthBuffer parameter for the authentication package specified by the authPackage parameter should be enumerated.
+            /// If this flag is set, and the InAuthBuffer parameter is NULL, the function fails.
+            /// This value cannot be combined with CREDUIWIN_AUTHPACKAGE_ONLY.
+            /// </summary>
+            CREDUIWIN_IN_CRED_ONLY = 0x20,
+            /// <summary>
+            /// Credential providers should enumerate only administrators. This value is intended for User Account Control (UAC) purposes only. We recommend that external callers not set this flag.
+            /// </summary>
+            CREDUIWIN_ENUMERATE_ADMINS = 0x100,
+            /// <summary>
+            /// Only the incoming credentials for the authentication package specified by the authPackage parameter should be enumerated.
+            /// </summary>
+            CREDUIWIN_ENUMERATE_CURRENT_USER = 0x200,
+            /// <summary>
+            /// The credential dialog box should be displayed on the secure desktop. This value cannot be combined with CREDUIWIN_GENERIC.
+            /// Windows Vista: This value is not supported until Windows Vista with SP1.
+            /// </summary>
+            CREDUIWIN_SECURE_PROMPT = 0x1000,
+            /// <summary>
+            /// The credential provider should align the credential BLOB pointed to by the refOutAuthBuffer parameter to a 32-bit boundary, even if the provider is running on a 64-bit system.
+            /// </summary>
+            CREDUIWIN_PACK_32_WOW = 0x10000000,
+        }
+
+        [DllImport("credui.dll", CharSet = CharSet.Auto)]
+        public static extern uint CredUIPromptForWindowsCredentials(
+            ref CREDUI_INFO credInfo,
+            int authError,
+            ref uint authPackage,
+            IntPtr InAuthBuffer,
+            uint InAuthBufferSize,
+            out IntPtr refOutAuthBuffer,
+            out uint refOutAuthBufferSize,
+            ref bool fSave,
+            CredUIWinFlags flags);
+
+        [DllImport("credui.dll", CharSet = CharSet.Auto)]
+        public static extern bool CredUnPackAuthenticationBuffer(
+            int dwFlags,
+            IntPtr pAuthBuffer,
+            uint cbAuthBuffer,
+            StringBuilder pszUserName,
+            ref int pcchMaxUserName,
+            StringBuilder pszDomainName,
+            ref int pcchMaxDomainame,
+            IntPtr ptrPassword,
+            ref int pcchMaxPassword);
+
+        
     }
 }
