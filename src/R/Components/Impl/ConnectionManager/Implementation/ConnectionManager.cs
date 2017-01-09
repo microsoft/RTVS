@@ -14,6 +14,7 @@ using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Security;
 using Microsoft.Common.Core.Shell;
+using Microsoft.R.Components;
 using Microsoft.R.Components.ConnectionManager.Implementation.View;
 using Microsoft.R.Components.ConnectionManager.Implementation.ViewModel;
 using Microsoft.R.Components.Information;
@@ -133,13 +134,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             var isRemoved = _connections.TryRemove(name, out connection);
             if (isRemoved) {
                 UpdateRecentConnections();
-
-                // Credentials are saved by URI. Delete the credentials if there are no other connections using it.
-                if (_connections.All(kvp => kvp.Value.Uri != connection.Uri)) {
-                    if (connection.Uri != null) {
-                        _securityService.DeleteUserCredentials(connection.Uri.ToCredentialAuthority());
-                    }
-                }
+                _securityService.DeleteUserCredentials(connection.ToCredentialAuthority());
             }
 
             return isRemoved;
@@ -152,7 +147,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         public Task TestConnectionAsync(IConnectionInfo connection, CancellationToken cancellationToken = default(CancellationToken)) {
-            var brokerConnectionInfo = (connection as IConnection)?.BrokerConnectionInfo ?? BrokerConnectionInfo.Create(connection.Path, connection.RCommandLineArguments);
+            var brokerConnectionInfo = (connection as IConnection)?.BrokerConnectionInfo ?? BrokerConnectionInfo.Create(connection.Name, connection.Path, connection.RCommandLineArguments);
             return _sessionProvider.TestBrokerConnectionAsync(connection.Name, brokerConnectionInfo, cancellationToken);
         }
 

@@ -8,12 +8,12 @@ namespace Microsoft.R.Components.ConnectionManager {
     internal class Connection : ConnectionInfo, IConnection {
         public Connection(IConnectionInfo connectionInfo) 
             : base(connectionInfo) {
-            BrokerConnectionInfo = BrokerConnectionInfo.Create(Path, RCommandLineArguments);
+            BrokerConnectionInfo = BrokerConnectionInfo.Create(connectionInfo.Name, Path, RCommandLineArguments);
         }
 
         public Connection(string name, string path, string rCommandLineArguments, bool isUserCreated) 
             : base(name, path, rCommandLineArguments, isUserCreated) {
-            BrokerConnectionInfo = BrokerConnectionInfo.Create(path, rCommandLineArguments);
+            BrokerConnectionInfo = BrokerConnectionInfo.Create(name, path, rCommandLineArguments);
         }
 
         public BrokerConnectionInfo BrokerConnectionInfo { get; }
