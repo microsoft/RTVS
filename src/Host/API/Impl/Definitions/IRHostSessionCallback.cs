@@ -39,5 +39,11 @@ namespace Microsoft.R.Host.Client {
         /// </param>
         /// <returns>Awaitable task</returns>
         Task PlotAsync(byte[] imageBytes);
+
+        /// <summary>
+        /// Provides R with device properties such as width, height and resolution.
+        /// </summary>
+        /// <returns>Plot device properties</returns>
+        PlotDeviceProperties PlotDeviceProperties { get; }
     }
 }

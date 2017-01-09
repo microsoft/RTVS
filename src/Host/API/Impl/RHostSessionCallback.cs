@@ -15,5 +15,8 @@ namespace Microsoft.R.Host.Client {
 
         public Task PlotAsync(byte[] image)
             => Task.CompletedTask;
+
+        public virtual PlotDeviceProperties PlotDeviceProperties
+            => new PlotDeviceProperties(1024, 1024, 96);
     }
 }

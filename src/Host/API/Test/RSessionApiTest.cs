@@ -17,19 +17,20 @@ namespace Microsoft.R.Host.Client.Test.Session {
     [Category.R.Session.Api]
     public sealed class RSessionApiTest : IAsyncLifetime {
         private readonly IRHostSession _session;
+        private readonly IRHostSessionCallback _callback;
 
         public RSessionApiTest() {
+            _callback = Substitute.For<IRHostSessionCallback>();
             _session = RHostSession.Create(nameof(RSessionApiTest));
         }
 
         public async Task InitializeAsync() {
-            var cb = Substitute.For<IRHostSessionCallback>();
-            await _session.StartHostAsync(cb);
+            await _session.StartHostAsync(_callback);
         }
 
         public async Task DisposeAsync() {
             await _session.StopHostAsync();
-            _session?.Dispose();
+            _session.Dispose();
         }
 
         [Test]
@@ -123,6 +124,16 @@ namespace Microsoft.R.Host.Client.Test.Session {
             rdf.ColumnNames.Should().HaveCount(colNames.Length).And.ContainInOrder(colNames);
             rdf.Data.Should().HaveCount(colNames.Length);
             rdf.Data.First().Should().HaveCount(rowNames.Length).And.ContainInOrder(data[0] as object[]);
+        }
+
+        [Test]
+        public async Task Plot() {
+            _callback.PlotDeviceProperties.Returns(new PlotDeviceProperties(480, 480, 72));
+            _callback.When((x) => x.PlotAsync(Arg.Any<byte[]>())).Do(x => {
+                var data = (byte[])x.Args()[0];
+                data.Length.Should().BeGreaterThan(0);
+            });
+            await _session.ExecuteAsync("plot(c(1:10))");
         }
     }
 }

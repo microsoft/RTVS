@@ -22,9 +22,9 @@ namespace Microsoft.R.Host.Client {
             return _cb.PlotAsync(plot.Data);
         }
 
-        public Task<PlotDeviceProperties> PlotDeviceCreate(Guid deviceId, CancellationToken ct) => Task.FromResult(new PlotDeviceProperties());
-
+        public Task<PlotDeviceProperties> PlotDeviceCreate(Guid deviceId, CancellationToken ct) => Task.FromResult(_cb.PlotDeviceProperties);
         public Task PlotDeviceDestroy(Guid deviceId, CancellationToken ct) => Task.CompletedTask;
+
         public Task<string> ReadUserInput(string prompt, int maximumLength, CancellationToken ct) => Task.FromResult(string.Empty);
 
         public Task ShowErrorMessage(string message, CancellationToken cancellationToken = default(CancellationToken)) 

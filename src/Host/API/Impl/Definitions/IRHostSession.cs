@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.R.Host.Client.Host; // RHostDisconnectedException
 
 namespace Microsoft.R.Host.Client {
     /// <summary>
@@ -45,7 +46,7 @@ namespace Microsoft.R.Host.Client {
         /// A set of callbacks that are called when R engine requests certain operation
         /// that are usually provided by the application
         /// </param>
-        /// <param name="workingDirectory">R working directly</param>
+        /// <param name="workingDirectory">R working directory</param>
         /// <param name="codePage">R code page to set</param>
         /// <param name="timeout">Timeout to wait for the host process to start</param>
         /// <param name="cancellationToken">Cancellation token</param>
@@ -120,7 +121,7 @@ namespace Microsoft.R.Host.Client {
         /// <param name="function">Function name</param>
         /// <param name="cancellationToken">Cancellation token</param>
         /// <param name="args">Function arguments</param>
-        /// <returns>Name of the variable that holds data returned by the function</returns>
+        /// <returns>Name of the variable that holds the data returned by the function</returns>
         /// <exception cref="ArgumentException" />
         /// <exception cref="REvaluationException" />
         /// <exception cref="OperationCanceledException" />
