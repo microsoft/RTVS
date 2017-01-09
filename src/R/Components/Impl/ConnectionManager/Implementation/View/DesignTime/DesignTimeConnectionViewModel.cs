@@ -23,8 +23,13 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View.DesignTim
         public bool IsRemote { get; set; }
 
         public string OriginalName => Name;
+        public string NameTextBoxTooltip => string.Empty;
+        public string PathTextBoxTooltip => string.Empty;
         public string SaveButtonTooltip => string.Empty;
         public bool IsValid => false;
+        public bool IsNameValid => false;
+        public bool IsPathValid => false;
+
         public bool HasChanges => false;
         public bool IsRenamed => false;
 
