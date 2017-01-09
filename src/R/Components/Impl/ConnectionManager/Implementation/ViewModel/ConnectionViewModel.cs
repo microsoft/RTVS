@@ -15,7 +15,6 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private static readonly char[] _allowedNameChars = new char[] { '(', ')', '[', ']', '_', ' ', '@', '-', '.' };
         private const int DefaultPort = 5444;
         private readonly IConnection _connection;
-        private readonly ICoreShell _coreShell;
 
         private string _name;
         private string _path;
@@ -35,14 +34,12 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private bool _isRenamed;
         private string _previousPath;
 
-        public ConnectionViewModel(ICoreShell coreShell) {
-            _coreShell = coreShell;
+        public ConnectionViewModel() {
             IsUserCreated = true;
             UpdateCalculated();
         }
 
-        public ConnectionViewModel(IConnection connection, ICoreShell coreShell) {
-            _coreShell = coreShell;
+        public ConnectionViewModel(IConnection connection) {
             _connection = connection;
             Reset();
         }
@@ -194,13 +191,15 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                 || !RCommandLineArguments.EqualsIgnoreCase(_connection?.RCommandLineArguments);
 
             Uri uri;
-            var isPathValid = Uri.TryCreate(Path, UriKind.Absolute, out uri);
+            var isPathValid = Uri.TryCreate(Path, UriKind.Absolute, out uri) && !string.IsNullOrEmpty(uri?.Host);
             if (!IsValidConnectionName(Name)) {
                 IsValid = false;
                 SaveButtonTooltip = Resources.ConnectionManager_ShouldHaveName;
             } else if (!isPathValid) {
                 IsValid = false;
-                SaveButtonTooltip = Resources.ConnectionManager_ShouldHavePath;
+                SaveButtonTooltip = uri == null 
+                    ? Resources.ConnectionManager_ShouldHavePath 
+                    : Resources.ConnectionManager_InvalidPath;
             } else {
                 IsValid = true;
                 SaveButtonTooltip = Resources.ConnectionManager_Save;
@@ -238,7 +237,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public void UpdatePath() {
             // Automatically update the Path with a more complete version
-            Path = GetCompletePath(Path?.Trim() ?? string.Empty, _coreShell);
+            Path = GetCompletePath(Path?.Trim() ?? string.Empty);
         }
 
         internal static string GetProposedName(string path) {
@@ -256,7 +255,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             return path.ToLower();
         }
 
-        internal static string GetCompletePath(string path, ICoreShell shell) {
+        internal static string GetCompletePath(string path) {
             // We ALWAYS use HTTPS so no reason to accept anything else.
             // Default RTVS port is 5444.
             // https://foo:5444 -> https://foo:5444 (no change)
@@ -265,25 +264,17 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             // http://FOO -> https://foo:5444
             // http://FOO:80 -> https://foo:80
             // foo->https://foo:5444
-            Uri uri = null;
-            try {
-                Uri.TryCreate(path, UriKind.Absolute, out uri);
-            } catch (InvalidOperationException) { } catch (ArgumentException) { } catch (UriFormatException) { }
-
-            if (uri != null && uri.IsFile) {
+            Uri uri;
+            if (Uri.TryCreate(path, UriKind.Absolute, out uri) && uri.IsFile) {
                 return path;
             }
 
-            var userProvidedPath = path;
-
-            if (path.IndexOfOrdinal("://") < 0) {
+            if (!path.Contains("://")) {
                 path = Invariant($"{Uri.UriSchemeHttps}{Uri.SchemeDelimiter}{path.ToLower()}");
-                try {
-                    Uri.TryCreate(path, UriKind.Absolute, out uri);
-                } catch (InvalidOperationException) { } catch (ArgumentException) { } catch (UriFormatException) { }
+                Uri.TryCreate(path, UriKind.Absolute, out uri);
             }
 
-            if (uri != null && !string.IsNullOrEmpty(uri.Host)) {
+            if (!string.IsNullOrEmpty(uri?.Host)) {
                 var hasPort = uri.Port >= 0 && (!uri.IsDefaultPort || uri.Port != 443);
                 var port = hasPort ? uri.Port : DefaultPort;
                 var hasPathOrQuery = !string.IsNullOrEmpty(uri.PathAndQuery) && uri.PathAndQuery != "/";
@@ -292,9 +283,6 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                 path = hasPathOrQuery
                         ? Invariant($"{mainPart}{uri.PathAndQuery}{uri.Fragment}")
                         : Invariant($"{mainPart}{uri.Fragment}");
-            } else {
-                shell.ShowErrorMessage(Resources.Error_InvalidURL.FormatInvariant(userProvidedPath));
-                path = string.Empty;
             }
 
             return path;
@@ -311,7 +299,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             if (name.IndexOfOrdinal("..") >= 0) {
                 return false;
             }
-            return !name.Where(ch => !char.IsLetterOrDigit(ch) && !_allowedNameChars.Contains(ch)).Any();
+            return !name.Any(ch => !char.IsLetterOrDigit(ch) && !_allowedNameChars.Contains(ch));
         }
     }
 }
