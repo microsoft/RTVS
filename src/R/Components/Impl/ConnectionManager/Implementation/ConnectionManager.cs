@@ -134,7 +134,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             var isRemoved = _connections.TryRemove(name, out connection);
             if (isRemoved) {
                 UpdateRecentConnections();
-                _securityService.DeleteUserCredentials(connection.ToCredentialAuthority());
+                _securityService.DeleteUserCredentials(connection.BrokerConnectionInfo.CredentialAuthority);
             }
 
             return isRemoved;
