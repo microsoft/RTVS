@@ -1010,7 +1010,7 @@ You can modify Visual Studio installation in Control Panel -&gt; Uninstall Progr
   <data name="Error_PandocMissingRemote" xml:space="preserve">
     <value>Publishing markdown requires Pandoc. Please contact the remote machine administrator and ask them to install Pandoc for Windows from http://pandoc.org/installing.html.
     
-Click OK to open the Pandoc download page in default browser. R Remote Services process may need to be restarted when the Pandoc setuo completes.</value>
+Click OK to open the Pandoc download page in default browser. R Remote Services process may need to be restarted when the Pandoc setup completes.</value>
   </data>
   <data name="Error_PdfLatexMissingRemote" xml:space="preserve">
     <value>Publishing markdown to PDF requires TeX installation. Please contact the remote machine administrator and ask them to install MiKTeX (Complete) from http://miktex.org/2.9/setup. Be sure to download the Complete installation.

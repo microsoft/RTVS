@@ -407,7 +407,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Publishing markdown requires Pandoc. Please contact the remote machine administrator and ask them to install Pandoc for Windows from http://pandoc.org/installing.html.
         ///    
-        ///Click OK to open the Pandoc download page in default browser. R Remote Services process may need to be restarted when the Pandoc setuo completes..
+        ///Click OK to open the Pandoc download page in default browser. R Remote Services process may need to be restarted when the Pandoc setup completes..
         /// </summary>
         public static string Error_PandocMissingRemote {
             get {
