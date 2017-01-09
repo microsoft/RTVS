@@ -21,10 +21,10 @@ namespace Microsoft.R.Host.Client.Host {
         private readonly AsyncReaderWriterLock _lock;
         private bool _credentialsAreValid;
 
-        public RemoteCredentialsDecorator(Uri brokerUri, ISecurityService securityService, IMainThread mainThread) {
+        public RemoteCredentialsDecorator(string credentialAuthority, ISecurityService securityService, IMainThread mainThread) {
             _securityService = securityService;
             _mainThread = mainThread;
-            _authority = brokerUri.ToCredentialAuthority();
+            _authority = credentialAuthority;
             _lock = new AsyncReaderWriterLock();
             _credentialsAreValid = true;
         }

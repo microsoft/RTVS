@@ -71,6 +71,16 @@ namespace Microsoft.Common.Core.Security {
             }
         }
 
+        public static string GetUserName(string authority) {
+            using (CredentialHandle ch = CredentialHandle.ReadFromCredentialManager(authority)) {
+                if (ch != null) {
+                    CredentialData credData = ch.GetCredentialData();
+                    return credData.UserName;
+                }
+                return string.Empty;
+            }
+        }
+
         public static void WriteCredentials(string authority, Credentials credentials) {
             if(!credentials.IsSaved()) {
                 CredentialData creds = default(CredentialData);
