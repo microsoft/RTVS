@@ -5,7 +5,6 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.ConnectionManager.Implementation.ViewModel;
 using Microsoft.UnitTests.Core.XUnit;
@@ -18,7 +17,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
     public sealed class ConnectionViewModelTest {
         [Test]
         public void Construction01() {
-            var cm = new ConnectionViewModel(Substitute.For<ICoreShell>());
+            var cm = new ConnectionViewModel();
             cm.IsUserCreated.Should().BeTrue();
             cm.IsValid.Should().BeFalse();
             cm.IsTestConnectionSucceeded.Should().BeFalse();
@@ -35,11 +34,11 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
             conn.RCommandLineArguments.Returns("arg");
             conn.IsRemote.Returns(true);
 
-            var cm = new ConnectionViewModel(conn, Substitute.For<ICoreShell>());
+            var cm = new ConnectionViewModel(conn);
             cm.IsUserCreated.Should().BeFalse();
 
             conn.IsUserCreated.Returns(true);
-            cm = new ConnectionViewModel(conn, Substitute.For<ICoreShell>());
+            cm = new ConnectionViewModel(conn);
 
             conn.IsRemote.Should().BeTrue();
             cm.IsUserCreated.Should().BeTrue();
@@ -84,7 +83,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
             var conn = Substitute.For<IConnection>();
             conn.Name.Returns(name);
             conn.Path.Returns(path);
-            var cm = new ConnectionViewModel(conn, Substitute.For<ICoreShell>());
+            var cm = new ConnectionViewModel(conn);
 
             cm.NameTextBoxTooltip.Should().Be(nameTooltip);
             cm.PathTextBoxTooltip.Should().Be(pathTooltip);
@@ -97,7 +96,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
 
         [Test]
         public void UpdatePathAndName() {
-            var cm = new ConnectionViewModel(Substitute.For<IConnection>(), Substitute.For<ICoreShell>());
+            var cm = new ConnectionViewModel(Substitute.For<IConnection>());
 
             // Name is updated to match the host name
             cm.Path = "server";
@@ -112,7 +111,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
 
         [Test]
         public void UpdatePathAndNameExtraSpace() {
-            var cm = new ConnectionViewModel(Substitute.For<IConnection>(), Substitute.For<ICoreShell>());
+            var cm = new ConnectionViewModel(Substitute.For<IConnection>());
 
             // Name doesn't have extra spaces
             cm.Path = "server ";
@@ -135,7 +134,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
             conn.Name.Returns(originalName);
             conn.Path.Returns(originalPath);
 
-            var cm = new ConnectionViewModel(conn, Substitute.For<ICoreShell>());
+            var cm = new ConnectionViewModel(conn);
 
             cm.Path = changedPath;
             cm.Name.Should().Be(expectedUpdatedName);
@@ -169,6 +168,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
         [InlineData("https://host#1234", "https://host:5444#1234")]
         [InlineData("https://host/path", "https://host:5444/path")]
         [InlineData("https://host/path#1234", "https://host:5444/path#1234")]
+        [InlineData("http://host:80", "https://host:80")]
         [InlineData("http://host:5000", "https://host:5000")]
         [InlineData("http://host:5000#1234", "https://host:5000#1234")]
         [InlineData("https://host:5100", "https://host:5100")]
@@ -184,7 +184,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
         [InlineData("HOST#1234", "https://host:5444#1234")]
         [InlineData("c:\\", "c:\\")]
         public void CompletePath(string original, string expected) {
-            ConnectionViewModel.GetCompletePath(original, Substitute.For<ICoreShell>()).Should().Be(expected);
+            ConnectionViewModel.GetCompletePath(original).Should().Be(expected);
         }
 
         [Test]
@@ -192,13 +192,13 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
             var conn = Substitute.For<IConnection>();
             conn.IsRemote.Returns(true);
             conn.Path.Returns("http://host");
-            var cm = new ConnectionViewModel(conn, Substitute.For<ICoreShell>());
+            var cm = new ConnectionViewModel(conn);
             cm.ConnectionTooltip.Should().Be(
                 Resources.ConnectionManager_InformationTooltipFormatRemote.FormatInvariant(cm.Path, Resources.ConnectionManager_None));
 
             conn = Substitute.For<IConnection>();
             conn.Path.Returns("C:\\");
-            cm = new ConnectionViewModel(conn, Substitute.For<ICoreShell>());
+            cm = new ConnectionViewModel(conn);
             cm.ConnectionTooltip.Should().Be(
                 Resources.ConnectionManager_InformationTooltipFormatLocal.FormatInvariant(cm.Path, Resources.ConnectionManager_None));
         }

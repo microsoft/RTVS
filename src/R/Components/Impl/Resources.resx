@@ -388,6 +388,12 @@
   <data name="ConnectionManager_ShouldHavePath" xml:space="preserve">
     <value>Connection should have path specified.</value>
   </data>
+  <data name="ConnectionManager_InvalidName" xml:space="preserve">
+    <value>The provided name is invalid. Allowed characters are letters, digits, underscore, period, dash, braces and square brackets.</value>
+  </data>
+  <data name="ConnectionManager_InvalidPath" xml:space="preserve">
+    <value>URL or path is not a valid. Please specify full path to the local R or remote machine connection URL in the form '[https://]machine[:port]'</value>
+  </data>
   <data name="ConnectionManager_EditedConnectionHasChanges" xml:space="preserve">
     <value>Edited connection has unsaved changes. Do you want to save them?</value>
   </data>
@@ -615,9 +621,6 @@ Are you sure you want to delete your user profile and all the associated remote 
     <value>If you want to select specific R version, specify its id 
 number in the connection URL in the form 'https://remote:5444#2'</value>
   </data>
-  <data name="Error_InvalidURL" xml:space="preserve">
-    <value>'{0}' is not a valid URL or path. Please specify full path to the local R or remote machine connection URL in the form '[https://]machine[:port]'</value>
-  </data>
   <data name="Warning_RemoteVersionHigher" xml:space="preserve">
     <value>WARNING: Version of R Services on the remote machine ({0})
 is higher than the version of R Tools on the local computer ({1}). 
@@ -630,11 +633,5 @@ Please upgrade remote R Services installation to match.</value>
   </data>
   <data name="BrokerDisconnected" xml:space="preserve">
     <value>Connection to the workspace has been terminated.</value>
-  </data>
-  <data name="ConnectionManager_InvalidName" xml:space="preserve">
-    <value>The provided name is invalid. Allowed characters are letters, digits, underscore, period, dash, braces and square brackets.</value>
-  </data>
-  <data name="ConnectionManager_InvalidPath" xml:space="preserve">
-    <value>The provided path or URL is invalid.</value>
   </data>
 </root>

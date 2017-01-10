@@ -91,7 +91,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public void EditNew() {
             Shell.AssertIsOnMainThread();
-            IsEditingNew = TryStartEditing(new ConnectionViewModel(Shell));
+            IsEditingNew = TryStartEditing(new ConnectionViewModel());
         }
 
         public void CancelEdit() {
@@ -325,7 +325,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         private ConnectionViewModel CreateConnectionViewModel(IConnection connection) {
             var isActive = connection == ConnectionManager.ActiveConnection;
-            return new ConnectionViewModel(connection, Shell) {
+            return new ConnectionViewModel(connection) {
                 IsActive = isActive,
                 IsConnected = isActive && ConnectionManager.IsConnected,
                 IsRunning = isActive && ConnectionManager.IsRunning
