@@ -20,7 +20,7 @@ namespace Microsoft.Common.Core.Security {
             _coreShell = coreShell;
         }
 
-        public Task<Credentials> GetUserCredentialsAsync(string authority, CancellationToken cancellationToken = default(CancellationToken)) {
+        public Task<Credentials> GetUserCredentialsAsync(string authority, string workspaceName, CancellationToken cancellationToken = default(CancellationToken)) {
             _coreShell.AssertIsOnMainThread();
 
             var credentials = SecurityUtilities.ReadCredentials(authority);
@@ -30,7 +30,8 @@ namespace Microsoft.Common.Core.Security {
 
             var credui = new CREDUI_INFO {
                 cbSize = Marshal.SizeOf(typeof(CREDUI_INFO)),
-                hwndParent = _coreShell.AppConstants.ApplicationWindowHandle
+                hwndParent = _coreShell.AppConstants.ApplicationWindowHandle,
+                pszCaptionText = Resources.Info_ConnectingTo.FormatInvariant(workspaceName)
             };
             uint authPkg = 0;
             IntPtr credStorage = IntPtr.Zero;
