@@ -1152,6 +1152,16 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap pdf {
+            get {
+                object obj = ResourceManager.GetObject("pdf", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Microsoft R Client setup is about to start. Please close Visual Studio now and reopen it when setup is complete..
         /// </summary>
         public static string PleaseRestartVisualStudioAfterRClientSetup {
@@ -1206,6 +1216,16 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap ProcedureFileNode {
+            get {
+                object obj = ResourceManager.GetObject("ProcedureFileNode", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Run.
         /// </summary>
         public static string ProjectProperties_RunPageTitle {
@@ -1253,9 +1273,19 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap RDataNode {
+        public static System.Drawing.Bitmap RDataFileNode {
             get {
-                object obj = ResourceManager.GetObject("RDataNode", resourceCulture);
+                object obj = ResourceManager.GetObject("RDataFileNode", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap RdFileNode {
+            get {
+                object obj = ResourceManager.GetObject("RdFileNode", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1295,6 +1325,16 @@ namespace Microsoft.VisualStudio.R.Package {
         public static System.Drawing.Bitmap RFileNode {
             get {
                 object obj = ResourceManager.GetObject("RFileNode", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap RMdFileNode {
+            get {
+                object obj = ResourceManager.GetObject("RMdFileNode", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -2267,6 +2307,16 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string ShowDetailCommandTooltip {
             get {
                 return ResourceManager.GetString("ShowDetailCommandTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap SQLFileNode {
+            get {
+                object obj = ResourceManager.GetObject("SQLFileNode", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         

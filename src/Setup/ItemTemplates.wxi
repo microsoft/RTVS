@@ -4,15 +4,6 @@
     <Component Id="ItemTemplates_DatasetRD" Guid="{A34A0987-D8B9-4407-ABB6-E71A21985242}">
       <File Id="ItemTemplates_datasetrd_dataset_rd" Source="$(var.TemplatesDir)\ItemTemplates\DatasetRD\dataset.rd" />
       <File Id="ItemTemplates_datasetrd_datasetrd_vstemplat" Source="$(var.TemplatesDir)\ItemTemplates\DatasetRD\datasetrd.vstemplate" />
-      <File Id="ItemTemplates_datasetrd_rdfile_png" Source="$(var.TemplatesDir)\ItemTemplates\DatasetRD\RdFile.png" />
-    </Component>
-  </DirectoryRef>
-
-  <DirectoryRef Id="ItemTemplatesInstallFolder_EmptyMD">
-    <Component Id="ItemTemplates_EmptyMD" Guid="{31473DC9-92F0-4CB0-904E-1CA054EACC26}">
-      <File Id="ItemTemplates_emptymd_emptymd_vstemplat" Source="$(var.TemplatesDir)\ItemTemplates\EmptyMD\emptymd.vstemplate" />
-      <File Id="ItemTemplates_emptymd_markdown_md" Source="$(var.TemplatesDir)\ItemTemplates\EmptyMD\markdown.md" />
-      <File Id="ItemTemplates_emptymd_mdfile_png" Source="$(var.TemplatesDir)\ItemTemplates\EmptyMD\mdfile.png" />
     </Component>
   </DirectoryRef>
 
@@ -20,7 +11,6 @@
     <Component Id="ItemTemplates_EmptyRD" Guid="{D424BC90-9A41-47AB-9BB8-CF92293708D3}">
       <File Id="ItemTemplates_emptyrd_document_rd" Source="$(var.TemplatesDir)\ItemTemplates\EmptyRD\document.rd" />
       <File Id="ItemTemplates_emptyrd_emptyrd_vstemplat" Source="$(var.TemplatesDir)\ItemTemplates\EmptyRD\emptyrd.vstemplate" />
-      <File Id="ItemTemplates_emptyrd_rdfile_png" Source="$(var.TemplatesDir)\ItemTemplates\EmptyRD\RdFile.png" />
     </Component>
   </DirectoryRef>
 
@@ -28,7 +18,6 @@
     <Component Id="ItemTemplates_EmptyRMD" Guid="{F6973360-F7D3-4DE5-823A-E251AEECB0B4}">
       <File Id="ItemTemplates_emptyrmd_emptyrmd_vstemplat" Source="$(var.TemplatesDir)\ItemTemplates\EmptyRMD\emptyrmd.vstemplate" />
       <File Id="ItemTemplates_emptyrmd_markdown_rmd" Source="$(var.TemplatesDir)\ItemTemplates\EmptyRMD\markdown.rmd" />
-      <File Id="ItemTemplates_emptyrmd_rmdfile_ico" Source="$(var.TemplatesDir)\ItemTemplates\EmptyRMD\rmdfile.ico" />
     </Component>
   </DirectoryRef>
 
@@ -36,7 +25,6 @@
     <Component Id="ItemTemplates_FunctionRD" Guid="{1650FF50-F63F-44DE-956F-713A2588521B}">
       <File Id="ItemTemplates_functionrd_functionrd" Source="$(var.TemplatesDir)\ItemTemplates\FunctionRD\function.rd" />
       <File Id="ItemTemplates_functionrd_functionrd_vstemplat" Source="$(var.TemplatesDir)\ItemTemplates\FunctionRD\functionrd.vstemplate" />
-      <File Id="ItemTemplates_functionrd_rdfile_png" Source="$(var.TemplatesDir)\ItemTemplates\FunctionRD\RdFile.png" />
     </Component>
   </DirectoryRef>
 

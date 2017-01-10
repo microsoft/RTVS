@@ -54,6 +54,7 @@
     <Content Include="Assemblies.wxi" />
     <Content Include="Associations.wxi" />
     <Content Include="CommonAssemblies.wxi" />
+    <Content Include="RFile.ico" />
     <Content Include="RtvsPackageFiles3.wxi" />
     <Content Include="RtvsPackageFiles2.wxi" />
     <Content Include="RtvsPackageFiles1.wxi" />
@@ -72,7 +73,6 @@
     <Content Include="ProjectTemplates.wxi" />
     <Content Include="Feature.wxi" />
     <Content Include="Definitions.wxi" />
-    <Content Include="RFile.ico" />
     <Content Include="VsToolsAssemblies.wxi" />
   </ItemGroup>
   <ItemGroup>

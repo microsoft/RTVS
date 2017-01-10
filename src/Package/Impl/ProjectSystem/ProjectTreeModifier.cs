@@ -25,11 +25,13 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                     } else if (ext == ".rdata" || ext == ".rhistory") {
                         tree = tree.SetIcon(ProjectIconProvider.RDataFileNodeImage.ToProjectSystemType());
                     } else if (ext == ".md" || ext == ".rmd") {
-                        tree = tree.SetIcon(KnownMonikers.MarkdownFile.ToProjectSystemType());
+                        tree = tree.SetIcon(ProjectIconProvider.RMarkdownFileNodeImage.ToProjectSystemType());
+                    } else if (ext == ".rd") {
+                        tree = tree.SetIcon(ProjectIconProvider.RdFileNodeImage.ToProjectSystemType());
                     } else if (tree.FilePath.EndsWithIgnoreCase(SProcFileExtensions.QueryFileExtension)) {
-                        tree = tree.SetIcon(KnownMonikers.DatabaseColumn.ToProjectSystemType());
+                        tree = tree.SetIcon(ProjectIconProvider.SqlFileNodeImage.ToProjectSystemType());
                     } else if (tree.FilePath.EndsWithIgnoreCase(SProcFileExtensions.SProcFileExtension)) {
-                        tree = tree.SetIcon(KnownMonikers.DatabaseStoredProcedures.ToProjectSystemType());
+                        tree = tree.SetIcon(ProjectIconProvider.SqlProcFileNodeImage.ToProjectSystemType());
                     }
                 }
             }
