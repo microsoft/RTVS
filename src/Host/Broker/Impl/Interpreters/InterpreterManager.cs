@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -14,12 +15,9 @@ using static System.FormattableString;
 
 namespace Microsoft.R.Host.Broker.Interpreters {
     public class InterpreterManager {
-        private const string _localId = "local";
-
         private readonly ROptions _options;
         private readonly ILogger _logger;
-        private IFileSystem _fs;
-        private int _intepretedId = 1;
+        private readonly IFileSystem _fs;
 
         public IReadOnlyCollection<Interpreter> Interpreters { get; private set; }
 
@@ -44,10 +42,11 @@ namespace Microsoft.R.Host.Broker.Interpreters {
             if (_options.AutoDetect) {
                 _logger.LogTrace(Resources.Trace_AutoDetectingR);
 
-                var engines = new RInstallation().GetCompatibleEngines();
+                var engines = new RInstallation().GetCompatibleEngines().AsList();
                 if (engines.Any()) {
+                    var interpreterId = 0;
                     foreach (var e in engines) {
-                        var detected = new Interpreter(this, Invariant($"{_intepretedId++}"), e.Name, e.InstallPath, e.BinPath, e.Version);
+                        var detected = new Interpreter(this, Invariant($"{interpreterId++}"), e.Name, e.InstallPath, e.BinPath, e.Version);
                         _logger.LogTrace(Resources.Trace_DetectedR, detected.Version, detected.Path);
                         yield return detected;
                     }

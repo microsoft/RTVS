@@ -262,7 +262,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The provided path or URL is invalid..
+        ///   Looks up a localized string similar to URL or path is not a valid. Please specify full path to the local R or remote machine connection URL in the form &apos;[https://]machine[:port]&apos;.
         /// </summary>
         public static string ConnectionManager_InvalidPath {
             get {
@@ -594,15 +594,6 @@ namespace Microsoft.R.Components {
         public static string Error_InstallTimeout_Format {
             get {
                 return ResourceManager.GetString("Error_InstallTimeout_Format", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &apos;{0}&apos; is not a valid URL or path. Please specify full path to the local R or remote machine connection URL in the form &apos;[https://]machine[:port]&apos;.
-        /// </summary>
-        public static string Error_InvalidURL {
-            get {
-                return ResourceManager.GetString("Error_InvalidURL", resourceCulture);
             }
         }
         
