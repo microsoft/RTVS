@@ -64,29 +64,8 @@
                     <Setter Property="HorizontalAlignment" Value="Left" />
                     <Setter Property="VerticalAlignment" Value="Top" />
                     <Setter Property="Margin" Value="0,0,4,0" />
+                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.StatusOKOutline}"/>
                 </Style.Setters>
-            </Style>
-
-            <Style x:Key="NameValidityIndicatorStyle" TargetType="{x:Type imaging:CrispImage}" BasedOn="{StaticResource ValidityIndicatorStyle}">
-                <Style.Triggers>
-                    <DataTrigger Binding="{Binding IsNameValid}" Value="True">
-                        <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.StatusOKOutline}"/>
-                    </DataTrigger>
-                    <DataTrigger Binding="{Binding IsNameValid}" Value="False">
-                        <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.StatusRequiredOutline}"/>
-                    </DataTrigger>
-                </Style.Triggers>
-            </Style>
-
-            <Style x:Key="PathValidityIndicatorStyle" TargetType="{x:Type imaging:CrispImage}" BasedOn="{StaticResource ValidityIndicatorStyle}">
-                <Style.Triggers>
-                    <DataTrigger Binding="{Binding IsPathValid}" Value="True">
-                        <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.StatusOKOutline}"/>
-                    </DataTrigger>
-                    <DataTrigger Binding="{Binding IsPathValid}" Value="False">
-                        <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.StatusRequiredOutline}"/>
-                    </DataTrigger>
-                </Style.Triggers>
             </Style>
 
             <DataTemplate x:Key="EditConnectionDataTemplate" DataType="{x:Type viewModel:IConnectionViewModel}">
@@ -107,8 +86,8 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
-                        <imaging:CrispImage Grid.Row="0" Style="{StaticResource NameValidityIndicatorStyle}" />
-                        <imaging:CrispImage Grid.Row="1" Style="{StaticResource PathValidityIndicatorStyle}" />
+                        <imaging:CrispImage Grid.Row="0" x:Name="NameValidityIndicator" Style="{StaticResource ValidityIndicatorStyle}" />
+                        <imaging:CrispImage Grid.Row="1" x:Name="PathValidityIndicator" Style="{StaticResource ValidityIndicatorStyle}" />
 
                         <TextBox Grid.Row="0" Grid.Column="1" Style="{StaticResource InputTextBoxStyle}"
                                  Text="{Binding Path=Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -192,6 +171,15 @@
                         </WrapPanel>
                     </Grid>
                 </AdornerDecorator>
+                
+                <DataTemplate.Triggers>
+                    <DataTrigger Binding="{Binding IsNameValid}" Value="False">
+                        <Setter TargetName="NameValidityIndicator" Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.StatusRequiredOutline}"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding IsPathValid}" Value="False">
+                        <Setter TargetName="PathValidityIndicator" Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.StatusRequiredOutline}"/>
+                    </DataTrigger>
+                </DataTemplate.Triggers>
             </DataTemplate>
 
             <DataTemplate x:Key="ConnectButtonDataTemplate" DataType="{x:Type viewModel:IConnectionViewModel}">
