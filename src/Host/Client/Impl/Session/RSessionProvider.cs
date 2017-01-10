@@ -215,7 +215,7 @@ namespace Microsoft.R.Host.Client.Session {
                     }
                     brokerClient.Dispose();
                     BrokerChangeFailed?.Invoke(this, EventArgs.Empty);
-                    if (ex is OperationCanceledException || ex is RHostBrokerBinaryMissingException) {
+                    if (ex is OperationCanceledException || ex is ComponentBinaryMissingException) {
                         // RHostDisconnectedException is derived from OperationCanceledException
                         return false;
                     }
