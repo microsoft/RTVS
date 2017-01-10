@@ -67,7 +67,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
         [InlineData("a", "https://", FieldState.Valid, FieldState.Invalid)]
         [InlineData("R 3.3.1", "A", FieldState.Valid, FieldState.Valid)]
         [InlineData("R 3.3.1", "https://abc.com", FieldState.Valid, FieldState.Valid)]
-        public void Tooltips(string name, string path, FieldState expectedNameState, FieldState expectedPathState) {
+        public void InputFieldTooltips(string name, string path, FieldState expectedNameState, FieldState expectedPathState) {
             string nameTooltip = null;
             string pathTooltip = null;
 
