@@ -18,14 +18,12 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
         private readonly IConsole _console;
-        private volatile bool _printHostInformation;
 
         public SessionInformationCommand(IRInteractiveWorkflow interactiveWorkflow, IConsole console) {
             _interactiveWorkflow = interactiveWorkflow;
             _console = console;
 
             _interactiveWorkflow.RSessions.BrokerChanging += OnBrokerChanging;
-            _interactiveWorkflow.RSession.Interactive += OnRSessionInteractive;
             _interactiveWorkflow.RSession.Disposed += OnRSessionDisposed;
         }
 
@@ -47,18 +45,20 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
         }
 
         private void OnBrokerChanging(object sender, EventArgs e) {
-            _printHostInformation = true;
-        }
-
-        private void OnRSessionInteractive(object sender, EventArgs e) {
-            if (_interactiveWorkflow.RSession.IsRemote && _printHostInformation) {
-                ReplInitComplete().ContinueWith(async (t) => await PrintBrokerInformationAsync(reportTelemetry: true)).DoNotWait();
-            }
-            _printHostInformation = false;
+            PrintWhenSessionInteractive();
         }
 
         private void OnRSessionDisposed(object sender, EventArgs e) {
             _cts.Cancel();
+        }
+
+        private void PrintWhenSessionInteractive() {
+            _interactiveWorkflow.RSession.HostStarted.ContinueWith(async (t) => {
+                if (_interactiveWorkflow.RSession.IsRemote) {
+                    await ReplInitComplete();
+                    PrintBrokerInformationAsync(reportTelemetry: true).DoNotWait();
+                }
+            });
         }
 
         private Task ReplInitComplete() {
@@ -138,7 +138,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
                 } else if (aboutHost.Version.Major < clientVersion.Major || aboutHost.Version.Minor < clientVersion.Minor) {
                     message = Resources.Warning_RemoteVersionLower.FormatInvariant(aboutHost.Version, clientVersion);
                 }
-                if(!string.IsNullOrEmpty(message)) {
+                if (!string.IsNullOrEmpty(message)) {
                     sb.AppendLine(Environment.NewLine + message + Environment.NewLine);
                 }
             }
