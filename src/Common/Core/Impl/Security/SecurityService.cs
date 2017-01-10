@@ -20,7 +20,7 @@ namespace Microsoft.Common.Core.Security {
             _coreShell = coreShell;
         }
 
-        public Task<Credentials> GetUserCredentialsAsync(string authority, CancellationToken cancellationToken = default(CancellationToken)) {
+        public Task<Credentials> GetUserCredentialsAsync(string authority, string workspaceName, CancellationToken cancellationToken = default(CancellationToken)) {
             _coreShell.AssertIsOnMainThread();
 
             var credentials = SecurityUtilities.ReadCredentials(authority);
@@ -30,13 +30,14 @@ namespace Microsoft.Common.Core.Security {
 
             var credui = new CREDUI_INFO {
                 cbSize = Marshal.SizeOf(typeof(CREDUI_INFO)),
-                hwndParent = _coreShell.AppConstants.ApplicationWindowHandle
+                hwndParent = _coreShell.AppConstants.ApplicationWindowHandle,
+                pszCaptionText = Resources.Info_ConnectingTo.FormatInvariant(workspaceName)
             };
             uint authPkg = 0;
             IntPtr credStorage = IntPtr.Zero;
             uint credSize;
             bool save = true;
-            CredUIWinFlags flags = CredUIWinFlags.CREDUIWIN_CHECKBOX | CredUIWinFlags.CREDUIWIN_GENERIC;
+            CredUIWinFlags flags = CredUIWinFlags.CREDUIWIN_CHECKBOX;
             // For password, use native memory so it can be securely freed.
             IntPtr passwordStorage = SecurityUtilities.CreatePasswordBuffer();
             try {
@@ -50,7 +51,7 @@ namespace Microsoft.Common.Core.Security {
                 StringBuilder domainBuilder = new StringBuilder(CRED_MAX_USERNAME_LENGTH);
                 int domainLen = CRED_MAX_USERNAME_LENGTH;
                 int passLen = CREDUI_MAX_PASSWORD_LENGTH;
-                if(!CredUnPackAuthenticationBuffer(0, credStorage, credSize, userNameBuilder, ref userNameLen, domainBuilder, ref domainLen, passwordStorage, ref passLen)) {
+                if(!CredUnPackAuthenticationBuffer(CRED_PACK_PROTECTED_CREDENTIALS, credStorage, credSize, userNameBuilder, ref userNameLen, domainBuilder, ref domainLen, passwordStorage, ref passLen)) {
                     throw new Win32Exception(Marshal.GetLastWin32Error());
                 }
 

@@ -86,5 +86,14 @@ namespace Microsoft.Common.Core {
                 return ResourceManager.GetString("Error_CredWriteFailed", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connecting to {0}.
+        /// </summary>
+        internal static string Info_ConnectingTo {
+            get {
+                return ResourceManager.GetString("Info_ConnectingTo", resourceCulture);
+            }
+        }
     }
 }

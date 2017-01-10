@@ -20,13 +20,15 @@ namespace Microsoft.R.Host.Client.Host {
         private readonly string _authority;
         private readonly AsyncReaderWriterLock _lock;
         private bool _credentialsAreValid;
+        private readonly string _workspaceName;
 
-        public RemoteCredentialsDecorator(string credentialAuthority, ISecurityService securityService, IMainThread mainThread) {
+        public RemoteCredentialsDecorator(string credentialAuthority, string workspaceName, ISecurityService securityService, IMainThread mainThread) {
             _securityService = securityService;
             _mainThread = mainThread;
             _authority = credentialAuthority;
             _lock = new AsyncReaderWriterLock();
             _credentialsAreValid = true;
+            _workspaceName = workspaceName;
         }
 
         public NetworkCredential GetCredential(Uri uri, string authType) => new NetworkCredential(_credentials?.UserName, _credentials?.Password);
@@ -40,7 +42,7 @@ namespace Microsoft.R.Host.Client.Host {
             await _mainThread.SwitchToAsync(cancellationToken);
 
             try {
-                _credentials = await _securityService.GetUserCredentialsAsync(_authority, cancellationToken);
+                _credentials = await _securityService.GetUserCredentialsAsync(_authority, _workspaceName, cancellationToken);
             } catch (Exception) {
                 token.Dispose();
                 throw;
