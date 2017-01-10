@@ -49,20 +49,49 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
             cm.RCommandLineArguments.Should().Be(conn.RCommandLineArguments);
         }
 
-        [Test]
-        public void SaveTooltips() {
+        public enum FieldState {
+            Valid = 0,
+            Missing,
+            Invalid
+        }
+
+        [CompositeTest]
+        [InlineData(null, null, FieldState.Missing, FieldState.Missing)]
+        [InlineData("$", null, FieldState.Invalid, FieldState.Missing)]
+        [InlineData("..", null, FieldState.Invalid, FieldState.Missing)]
+        [InlineData("R 3.3.1", null, FieldState.Valid, FieldState.Missing)]
+        [InlineData("MRO (3.3.2)", null, FieldState.Valid, FieldState.Missing)]
+        [InlineData("MRO [3.3.2]", null, FieldState.Valid, FieldState.Missing)]
+        [InlineData("M1_M2-3", null, FieldState.Valid, FieldState.Missing)]
+        [InlineData("a", "https://", FieldState.Valid, FieldState.Invalid)]
+        [InlineData("R 3.3.1", "A", FieldState.Valid, FieldState.Valid)]
+        [InlineData("R 3.3.1", "https://abc.com", FieldState.Valid, FieldState.Valid)]
+        public void InputFieldTooltips(string name, string path, FieldState expectedNameState, FieldState expectedPathState) {
+            string nameTooltip = null;
+            string pathTooltip = null;
+
+            switch (expectedNameState) {
+                case FieldState.Missing: nameTooltip = Resources.ConnectionManager_ShouldHaveName; break;
+                case FieldState.Invalid: nameTooltip = Resources.ConnectionManager_InvalidName; break;
+            }
+            switch (expectedPathState) {
+                case FieldState.Missing: pathTooltip = Resources.ConnectionManager_ShouldHavePath; break;
+                case FieldState.Invalid: pathTooltip = Resources.ConnectionManager_InvalidPath; break;
+            }
+            var saveTooltip = nameTooltip ?? (pathTooltip ?? Resources.ConnectionManager_Save);
+
             var conn = Substitute.For<IConnection>();
-
+            conn.Name.Returns(name);
+            conn.Path.Returns(path);
             var cm = new ConnectionViewModel(conn);
-            cm.SaveButtonTooltip.Should().Be(Resources.ConnectionManager_ShouldHaveName);
 
-            conn.Name.Returns("name");
-            cm = new ConnectionViewModel(conn);
-            cm.SaveButtonTooltip.Should().Be(Resources.ConnectionManager_ShouldHavePath);
+            cm.NameTextBoxTooltip.Should().Be(nameTooltip);
+            cm.PathTextBoxTooltip.Should().Be(pathTooltip);
+            cm.SaveButtonTooltip.Should().Be(saveTooltip);
 
-            conn.Path.Returns("c:\\path");
-            cm = new ConnectionViewModel(conn);
-            cm.SaveButtonTooltip.Should().Be(Resources.ConnectionManager_Save);
+            cm.IsNameValid.Should().Be(expectedNameState == 0);
+            cm.IsPathValid.Should().Be(expectedPathState == 0);
+            cm.IsValid.Should().Be(cm.IsNameValid && cm.IsPathValid);
         }
 
         [Test]
@@ -139,6 +168,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
         [InlineData("https://host#1234", "https://host:5444#1234")]
         [InlineData("https://host/path", "https://host:5444/path")]
         [InlineData("https://host/path#1234", "https://host:5444/path#1234")]
+        [InlineData("http://host:80", "https://host:80")]
         [InlineData("http://host:5000", "https://host:5000")]
         [InlineData("http://host:5000#1234", "https://host:5000#1234")]
         [InlineData("https://host:5100", "https://host:5100")]

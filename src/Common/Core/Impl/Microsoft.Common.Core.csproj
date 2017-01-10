@@ -60,7 +60,6 @@
     <Compile Include="Extensions\SettingsExtensions.cs" />
     <Compile Include="Extensions\StreamExtensions.cs" />
     <Compile Include="Extensions\TaskCompletionSourceExtensions.cs" />
-    <Compile Include="Extensions\UriExtensions.cs" />
     <Compile Include="IO\KnownFolderGuids.cs" />
     <Compile Include="Json\Json.cs" />
     <Compile Include="Logging\ILoggerProvider.cs" />

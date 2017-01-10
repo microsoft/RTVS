@@ -20,6 +20,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private string _path;
         private string _rCommandLineArguments;
         private bool _isUserCreated;
+        private string _nameTextBoxTooltip;
+        private string _pathTextBoxTooltip;
         private string _saveButtonTooltip;
         private string _testConnectionResult;
         private bool _isActive;
@@ -31,6 +33,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private bool _isRemote;
         private bool _hasChanges;
         private bool _isValid;
+        private bool _isNameValid;
+        private bool _isPathValid;
         private bool _isRenamed;
         private string _previousPath;
 
@@ -90,6 +94,14 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             private set { SetProperty(ref _saveButtonTooltip, value); }
         }
 
+        public string NameTextBoxTooltip {
+            get { return _nameTextBoxTooltip; }
+            private set { SetProperty(ref _nameTextBoxTooltip, value); }
+        }
+        public string PathTextBoxTooltip {
+            get { return _pathTextBoxTooltip; }
+            private set { SetProperty(ref _pathTextBoxTooltip, value); }
+        }
         public bool IsActive {
             get { return _isActive; }
             set { SetProperty(ref _isActive, value); }
@@ -111,6 +123,19 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         public bool IsValid {
             get { return _isValid; }
             private set { SetProperty(ref _isValid, value); }
+        }
+
+        public bool IsNameValid {
+            get { return _isNameValid; }
+            private set {
+                SetProperty(ref _isNameValid, value);
+            }
+        }
+        public bool IsPathValid {
+            get { return _isPathValid; }
+            private set {
+                SetProperty(ref _isPathValid, value);
+            }
         }
 
         public bool IsRenamed {
@@ -190,22 +215,37 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                 || !Path.EqualsIgnoreCase(_connection?.Path)
                 || !RCommandLineArguments.EqualsIgnoreCase(_connection?.RCommandLineArguments);
 
-            Uri uri;
-            var isPathValid = Uri.TryCreate(Path, UriKind.Absolute, out uri) && !string.IsNullOrEmpty(uri?.Host);
-            if (!IsValidConnectionName(Name)) {
-                IsValid = false;
-                SaveButtonTooltip = Resources.ConnectionManager_ShouldHaveName;
-            } else if (!isPathValid) {
-                IsValid = false;
-                SaveButtonTooltip = uri == null 
-                    ? Resources.ConnectionManager_ShouldHavePath 
-                    : Resources.ConnectionManager_InvalidPath;
+            IsNameValid = IsValidConnectionName(Name);
+            if (!IsNameValid) {
+                NameTextBoxTooltip = string.IsNullOrEmpty(Name)
+                    ? Resources.ConnectionManager_ShouldHaveName
+                    : Resources.ConnectionManager_InvalidName;
             } else {
-                IsValid = true;
-                SaveButtonTooltip = Resources.ConnectionManager_Save;
+                NameTextBoxTooltip = null;
             }
 
-            IsRemote = !(uri?.IsFile ?? true);
+            Uri uri;
+            IsPathValid = IsValidConnectionUrl(Path, out uri);
+            if (!IsPathValid) {
+                PathTextBoxTooltip = string.IsNullOrEmpty(Path)
+                    ? Resources.ConnectionManager_ShouldHavePath
+                    : Resources.ConnectionManager_InvalidPath;
+            } else {
+                PathTextBoxTooltip = null;
+            }
+
+            IsValid = IsNameValid && IsPathValid;
+            if (IsValid) {
+                SaveButtonTooltip = Resources.ConnectionManager_Save;
+            } else {
+                SaveButtonTooltip = !IsNameValid ? NameTextBoxTooltip : PathTextBoxTooltip;
+            }
+
+            if (IsValid && uri != null) {
+                IsRemote = !(uri.IsAbsoluteUri && uri.IsFile);
+            } else {
+                IsRemote = true;
+            }
         }
 
         /// <summary>
@@ -269,20 +309,32 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                 return path;
             }
 
-            if (!path.Contains("://")) {
+            if (!path.Contains(Uri.SchemeDelimiter)) {
                 path = Invariant($"{Uri.UriSchemeHttps}{Uri.SchemeDelimiter}{path.ToLower()}");
                 Uri.TryCreate(path, UriKind.Absolute, out uri);
             }
 
             if (!string.IsNullOrEmpty(uri?.Host)) {
-                var hasPort = uri.Port >= 0 && (!uri.IsDefaultPort || uri.Port != 443);
-                var port = hasPort ? uri.Port : DefaultPort;
-                var hasPathOrQuery = !string.IsNullOrEmpty(uri.PathAndQuery) && uri.PathAndQuery != "/";
-                var mainPart = Invariant($"{Uri.UriSchemeHttps}{Uri.SchemeDelimiter}{uri.Host.ToLower()}:{port}");
+                var builder = new UriBuilder(uri) {
+                    Scheme = Uri.UriSchemeHttps
+                };
 
-                path = hasPathOrQuery
-                        ? Invariant($"{mainPart}{uri.PathAndQuery}{uri.Fragment}")
-                        : Invariant($"{mainPart}{uri.Fragment}");
+                const UriComponents leftPartComponents = UriComponents.Scheme | UriComponents.UserInfo | UriComponents.Host | UriComponents.StrongPort;
+
+                if (uri.IsDefaultPort) {
+                    // We need to preserve port only if it was specified
+                    var leftPart = uri.GetComponents(leftPartComponents, UriFormat.UriEscaped);
+                    if (!path.StartsWithIgnoreCase(leftPart)) {
+                        builder.Port = 5444;
+                    }
+                }
+
+                var hasPath = !string.IsNullOrEmpty(builder.Path) && builder.Path != "/";
+                if (hasPath) {
+                    return builder.ToString();
+                } else {
+                    return builder.Uri.GetComponents(leftPartComponents | UriComponents.Query | UriComponents.Fragment, UriFormat.UriEscaped);
+                }
             }
 
             return path;
@@ -293,13 +345,22 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             if (string.IsNullOrWhiteSpace(name)) {
                 return false;
             }
-            if (!char.IsLetterOrDigit(name[0])) {
-                return false;
-            }
             if (name.IndexOfOrdinal("..") >= 0) {
                 return false;
             }
+            if (!char.IsLetterOrDigit(name[0]) && name[0] != '.') {
+                return false;
+            }
             return !name.Any(ch => !char.IsLetterOrDigit(ch) && !_allowedNameChars.Contains(ch));
+        }
+
+        private static bool IsValidConnectionUrl(string url, out Uri uri) {
+            uri = null;
+            if (string.IsNullOrWhiteSpace(url)) {
+                return false;
+            }
+
+            return Uri.TryCreate(GetCompletePath(url), UriKind.Absolute, out uri);
         }
     }
 }

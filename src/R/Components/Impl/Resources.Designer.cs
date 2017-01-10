@@ -253,6 +253,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The provided name is invalid. Allowed characters are letters, digits, underscore, period, dash, braces and square brackets..
+        /// </summary>
+        public static string ConnectionManager_InvalidName {
+            get {
+                return ResourceManager.GetString("ConnectionManager_InvalidName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to URL or path is not a valid. Please specify full path to the local R or remote machine connection URL in the form &apos;[https://]machine[:port]&apos;.
         /// </summary>
         public static string ConnectionManager_InvalidPath {
@@ -395,7 +404,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Can&apos;t save changes. Connection should have name specified..
+        ///   Looks up a localized string similar to Connection should have name specified..
         /// </summary>
         public static string ConnectionManager_ShouldHaveName {
             get {
@@ -404,7 +413,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Can&apos;t save changes. Connection should have path specified..
+        ///   Looks up a localized string similar to Connection should have path specified..
         /// </summary>
         public static string ConnectionManager_ShouldHavePath {
             get {
