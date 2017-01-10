@@ -36,7 +36,7 @@ namespace Microsoft.Common.Core.Security {
             IntPtr credStorage = IntPtr.Zero;
             uint credSize;
             bool save = true;
-            CredUIWinFlags flags = CredUIWinFlags.CREDUIWIN_CHECKBOX | CredUIWinFlags.CREDUIWIN_GENERIC;
+            CredUIWinFlags flags = CredUIWinFlags.CREDUIWIN_CHECKBOX;
             // For password, use native memory so it can be securely freed.
             IntPtr passwordStorage = SecurityUtilities.CreatePasswordBuffer();
             try {
@@ -50,7 +50,7 @@ namespace Microsoft.Common.Core.Security {
                 StringBuilder domainBuilder = new StringBuilder(CRED_MAX_USERNAME_LENGTH);
                 int domainLen = CRED_MAX_USERNAME_LENGTH;
                 int passLen = CREDUI_MAX_PASSWORD_LENGTH;
-                if(!CredUnPackAuthenticationBuffer(0, credStorage, credSize, userNameBuilder, ref userNameLen, domainBuilder, ref domainLen, passwordStorage, ref passLen)) {
+                if(!CredUnPackAuthenticationBuffer(CRED_PACK_PROTECTED_CREDENTIALS, credStorage, credSize, userNameBuilder, ref userNameLen, domainBuilder, ref domainLen, passwordStorage, ref passLen)) {
                     throw new Win32Exception(Marshal.GetLastWin32Error());
                 }
 
