@@ -4,10 +4,14 @@
 using System;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.ContainedLanguage;
+using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
+using Microsoft.R.Core.AST.Scopes;
 using Microsoft.R.Core.AST.Statements;
+using Microsoft.R.Core.Tokens;
+using Microsoft.R.Editor.Classification;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Settings;
 using Microsoft.VisualStudio.Text;
@@ -64,7 +68,7 @@ namespace Microsoft.R.Editor.Formatting {
                     // Do not format large scope blocks for performance reasons
                     if (scopeStatement != null && scopeStatement.Length < 200) {
                         FormatOperations.FormatNode(textView, subjectBuffer, editorShell, scopeStatement);
-                    } else {
+                    } else if(CanFormatLine(textView, subjectBuffer, -1)){
                         FormatOperations.FormatViewLine(textView, subjectBuffer, -1, editorShell);
                     }
                 }
@@ -80,6 +84,24 @@ namespace Microsoft.R.Editor.Formatting {
             } else if (typedChar == '}') {
                 FormatOperations.FormatCurrentStatement(textView, subjectBuffer, editorShell, limitAtCaret: true, caretOffset: -1);
             }
+        }
+
+        private static bool CanFormatLine(ITextView textView, ITextBuffer textBuffer, int lineOffset) {
+            // Do not format inside strings. At this point AST may be empty due to the nature 
+            // of [destructive] changes made to the document. We have to resort to tokenizer. 
+            // In order to keep performance good during typing we'll use token stream from the classifier.
+            SnapshotPoint? caretPoint = REditorDocument.MapCaretPositionFromView(textView);
+            if (caretPoint.HasValue) {
+                var snapshot = textBuffer.CurrentSnapshot;
+                int lineNumber = snapshot.GetLineNumberFromPosition(caretPoint.Value.Position);
+                var line = snapshot.GetLineFromLineNumber(lineNumber + lineOffset);
+
+                var classifier = ServiceManager.GetService<RClassifier>(textBuffer);
+                var tokenIndex = classifier.Tokens.GetItemContaining(line.Start);
+
+                return tokenIndex < 0 || classifier.Tokens[tokenIndex].TokenType != RTokenType.String;
+            }
+            return false;
         }
 
         private static bool IsBetweenCurlyAndElse(ITextBuffer textBuffer, int position) {

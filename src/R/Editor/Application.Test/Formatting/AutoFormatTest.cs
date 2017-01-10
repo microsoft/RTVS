@@ -417,5 +417,44 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 actual.Should().Be(expected);
             }
         }
+
+        [Test]
+        [Category.Interactive]
+        public async Task R_AutoFormatLineBreak() {
+            using (var script = await _editorHost.StartScript(_exportProvider, "x <- 1", RContentTypeDefinition.ContentType)) {
+                script.MoveRight(2);
+                script.Enter();
+
+                string actual = script.EditorText;
+                string expected =
+@"x
+<- 1";
+                actual.Should().Be(expected);
+                script.View.Caret.Position.BufferPosition.Position.Should().Be(3);
+            }
+        }
+
+        [Test]
+        [Category.Interactive]
+        public async Task R_NoAutoFormatInsideString() {
+            string content = 
+@"s <- '
+    string
+   'x <- 1";
+            using (var script = await _editorHost.StartScript(_exportProvider, content, RContentTypeDefinition.ContentType)) {
+                script.MoveDown(2);
+                script.MoveRight(4);
+                script.Enter();
+
+                string actual = script.EditorText;
+                string expected = 
+@"s <- '
+    string
+   '
+x <- 1";
+                actual.Should().Be(expected);
+                script.View.Caret.Position.BufferPosition.Position.Should().Be(26);
+            }
+        }
     }
 }
