@@ -275,7 +275,7 @@
     <value>Customizes the environment to improve the visibility of commands and options that are most relevant to doing data science and machine learning work using R. Includes RStudio-compatible keyboard shortcuts.</value>
   </data>
   <data name="9001" xml:space="preserve">
-    <value>Stored Procedure with R</value>
+    <value>SQL Stored Procedure with R</value>
   </data>
   <data name="9002" xml:space="preserve">
     <value>SQL script for Stored Procedure with R</value>

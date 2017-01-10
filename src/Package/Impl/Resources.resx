@@ -428,21 +428,8 @@
   <data name="SurveyNewsPolicyCheckOnceMonth" xml:space="preserve">
     <value>Once a month</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="ReplWindowIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\RInteractiveWindow_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="RProjectNode" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>images\rprojectnode.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="Settings_WorkspaceCategory" xml:space="preserve">
     <value>Workspace</value>
-  </data>
-  <data name="RDataNode" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>images\rdatanode.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="RFileNode" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>images\rfilenode.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="AttachmentTooLarge1" xml:space="preserve">
     <value>Archive with log files exceeds {0} MB. Sending large file as an attachment may not be possible.</value>
@@ -1044,5 +1031,33 @@ Click OK to open MiKTeX download page in the default browser. R Remote Services 
   </data>
   <data name="Info_TransferringFilesWithSize" xml:space="preserve">
     <value>Transferring Compressed file: {0} Bytes / {1} Bytes</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="pdf" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>resources\pdf.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ProcedureFileNode" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>resources\procedurefilenode.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="RDataFileNode" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>resources\rdatafile.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="RdFileNode" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>resources\rdfilenode.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ReplWindowIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>resources\replwindowicon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="RFileNode" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>resources\rfilenode.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="RMdFileNode" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>resources\rmdfilenode.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="RProjectNode" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>resources\rprojectnode.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="SQLFileNode" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>resources\sqlfilenode.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

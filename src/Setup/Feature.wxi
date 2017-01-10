@@ -3,7 +3,6 @@
   <Feature Id="ProductFeature" Title="$(var.ProductName)">
 
     <ComponentRef Id="ItemTemplates_DatasetRD" />
-    <ComponentRef Id="ItemTemplates_EmptyMD" />
     <ComponentRef Id="ItemTemplates_EmptyRD" />
     <ComponentRef Id="ItemTemplates_EmptyRMD" />
     <ComponentRef Id="ItemTemplates_FunctionRD" />
