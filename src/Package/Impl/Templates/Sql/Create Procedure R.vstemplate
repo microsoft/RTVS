@@ -1,9 +1,9 @@
 <VSTemplate Type="Item" Version="3.0.0"
     xmlns="http://schemas.microsoft.com/developer/vstemplate/2005">
   <TemplateData>
-    <Name>Stored Procedure</Name>
-    <Description>SQL script for Stored Procedure with R</Description>
-    <Icon></Icon>
+    <Name Package="{6D7C5336-C0CA-4857-A7E7-2E964EA836BF}" ID="9001" />
+    <Description Package="{6D7C5336-C0CA-4857-A7E7-2E964EA836BF}" ID="9002" />
+    <Icon Package="{6D7C5336-C0CA-4857-A7E7-2E964EA836BF}" ID="504" />
     <ProjectType>Database Projects</ProjectType>
     <SortOrder>10</SortOrder>
     <DefaultName>$(Procedure)Procedure</DefaultName>

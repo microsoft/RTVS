@@ -556,13 +556,17 @@
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="Resources\DatabaseProject.ico" />
-    <None Include="Resources\DatabaseProject1.ico" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
     <None Include="source.extension.15.0.vsixmanifest" />
     <None Include="source.extension.14.0.vsixmanifest" />
+    <EmbeddedResource Include="Resources\RDocumentationFile.ico" />
+    <EmbeddedResource Include="Resources\Procedure.ico" />
+    <EmbeddedResource Include="Resources\RApplication.ico" />
+    <EmbeddedResource Include="Resources\RFile.ico" />
+    <EmbeddedResource Include="Resources\RMarkdownFile.ico" />
+    <EmbeddedResource Include="Resources\SQL.ico" />
     <Content Include="Templates\ItemTemplates\EmptyMD\emptymd.vstemplate">
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -570,6 +574,10 @@
     <Content Include="Templates\ItemTemplates\EmptyMD\MdFile.png">
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\ItemTemplates\EmptyRD\document.rd" />
+    <Content Include="Templates\ItemTemplates\EmptyRD\emptyrd.vstemplate">
+      <SubType>Designer</SubType>
     </Content>
     <Content Include="Templates\ItemTemplates\SqlSProc\SqlSProc.vstemplate">
       <SubType>Designer</SubType>
@@ -629,8 +637,6 @@
     <None Include="Rules\rtvs.rules.props">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Resources\503.ico" />
-    <None Include="Resources\RdFile.ico" />
     <Content Include="Snippets\flow\else.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -1202,30 +1208,10 @@
     </Content>
     <Content Include="SurveyNews\NoSurveyNewsFeed.html" />
     <Content Include="SurveyNews\ReadmeStyle.css" />
-    <Content Include="Templates\ItemTemplates\EmptyRMD\RmdFile.ico">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="Templates\ProjectTemplates\EmptyProject\REmptyProject.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
     <EmbeddedResource Include="Resources\RInteractiveWindow_16x.png" />
     <Content Include="Images\RDataNode.png" />
     <Content Include="Images\RProjectNode.png" />
     <Content Include="Images\RFileNode.png" />
-    <Content Include="Templates\ItemTemplates\DatasetRD\RdFile.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="Templates\ItemTemplates\EmptyRD\RdFile.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="Templates\ItemTemplates\FunctionRD\RdFile.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
     <Content Include="Templates\ProjectTemplates\EmptyProject\script.R">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -1290,7 +1276,7 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Content Include="Images\pdf.bmp" />
-    <Content Include="Resources\Package.ico" />
+    <EmbeddedResource Include="Resources\Package.ico" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Templates\ProjectTemplates\EmptyProject\.Rhistory">
@@ -1334,17 +1320,6 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Templates\ItemTemplates\DatasetRD\datasetrd.vstemplate">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Templates\ItemTemplates\EmptyRD\document.rd">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="Templates\ItemTemplates\EmptyRD\emptyrd.vstemplate">
-      <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
