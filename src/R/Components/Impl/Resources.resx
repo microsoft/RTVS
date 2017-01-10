@@ -533,7 +533,7 @@ Arguments: {1}
     <value>none specified</value>
   </data>
   <data name="ConnectionManager_ConnectionsAreIdentical" xml:space="preserve">
-    <value>Connection "{0}" won't be switched to "{1}" because are identical.</value>
+    <value>Connection "{0}" has the same parameters as "{1}" and is already connected.</value>
   </data>
   <data name="Warning_TerminateR" xml:space="preserve">
     <value>Terminating R will immediately abort calculations and all workspace objects will be discarded. This action cannot be undone.

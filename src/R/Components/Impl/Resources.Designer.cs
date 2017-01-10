@@ -142,7 +142,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Connection &quot;{0}&quot; won&apos;t be switched to &quot;{1}&quot; because are identical..
+        ///   Looks up a localized string similar to Connection &quot;{0}&quot; has the same parameters as &quot;{1}&quot; and is already connected..
         /// </summary>
         public static string ConnectionManager_ConnectionsAreIdentical {
             get {
