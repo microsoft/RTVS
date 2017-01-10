@@ -84,6 +84,26 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0}  is missing from the installation directory.
+        ///Please reinstall R Tools for Visual Studio 2015.
+        /// </summary>
+        internal static string Error_BinaryMissing14 {
+            get {
+                return ResourceManager.GetString("Error_BinaryMissing14", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} is missing from the installation directory.
+        ///Please reinstall Data Science workload or repair the Visual Studio installation..
+        /// </summary>
+        internal static string Error_BinaryMissing15 {
+            get {
+                return ResourceManager.GetString("Error_BinaryMissing15", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Machine &apos;{0}&apos; appears to be online, but the Remote R Service is not running..
         /// </summary>
         internal static string Error_BrokerNotRunning {

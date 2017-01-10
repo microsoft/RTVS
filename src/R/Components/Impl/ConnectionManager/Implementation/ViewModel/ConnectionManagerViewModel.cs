@@ -176,7 +176,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                 if (connection.TestingConnectionCts != null) {
                     connection.TestConnectionFailedText = Resources.ConnectionManager_TestConnectionFailed_Format.FormatInvariant(exception.Message);
                 }
-            } catch (RHostBrokerBinaryMissingException) {
+            } catch (ComponentBinaryMissingException) {
                 if (connection.TestingConnectionCts != null) {
                     connection.TestConnectionFailedText = Resources.ConnectionManager_TestConnectionFailed_RHostIsMissing;
                 }

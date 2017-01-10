@@ -85,8 +85,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                     await Session.EnsureHostStartedAsync(startupInfo, new RSessionCallback(CurrentWindow, Session, _settings, _coreShell, new FileSystem()));
                 }
                 return ExecutionResult.Success;
-            } catch (RHostBrokerBinaryMissingException) {
-                await _coreShell.ShowErrorMessageAsync(Resources.Error_Microsoft_R_Host_Missing);
+            } catch (ComponentBinaryMissingException cbmex) {
+                await _coreShell.ShowErrorMessageAsync(cbmex.Message);
                 return ExecutionResult.Failure;
             } catch (RHostDisconnectedException ex) {
                 WriteRHostDisconnectedError(ex);

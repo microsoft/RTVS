@@ -20,6 +20,7 @@ using Newtonsoft.Json;
 namespace Microsoft.R.Host.Client.Host {
     internal sealed class LocalBrokerClient : BrokerClient {
         private const string RHostBrokerExe = "Microsoft.R.Host.Broker.exe";
+        private const string RHostExe = "Microsoft.R.Host.exe";
         private const string InterpreterId = "local";
 
         private static readonly bool ShowConsole;
@@ -75,6 +76,11 @@ namespace Microsoft.R.Host.Client.Host {
 
         private async Task ConnectToBrokerWorker(CancellationToken cancellationToken) {
             Trace.Assert(_brokerProcess == null);
+
+            string rhostExe = Path.Combine(_rhostDirectory, RHostExe);
+            if (!_services.FileSystem.FileExists(rhostExe)) {
+                throw new RHostBinaryMissingException();
+            }
 
             string rhostBrokerExe = Path.Combine(_rhostDirectory, RHostBrokerExe);
             if (!_services.FileSystem.FileExists(rhostBrokerExe)) {

@@ -226,4 +226,12 @@ Server at {0} http://{1}:{2} connects to {3} {4}.</value>
   <data name="Error_InvalidUrl" xml:space="preserve">
     <value>The URL format it invalid: {0}</value>
   </data>
+  <data name="Error_BinaryMissing14" xml:space="preserve">
+    <value>{0}  is missing from the installation directory.
+Please reinstall R Tools for Visual Studio 2015</value>
+  </data>
+  <data name="Error_BinaryMissing15" xml:space="preserve">
+    <value>{0} is missing from the installation directory.
+Please reinstall Data Science workload or repair the Visual Studio installation.</value>
+  </data>
 </root>
