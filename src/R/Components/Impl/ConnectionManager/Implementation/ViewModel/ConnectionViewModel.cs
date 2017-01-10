@@ -12,8 +12,9 @@ using static System.FormattableString;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
     internal sealed class ConnectionViewModel : BindableBase, IConnectionViewModel {
-        private static readonly char[] _allowedNameChars = new char[] { '(', ')', '[', ']', '_', ' ', '@', '-', '.' };
+        private static readonly char[] _allowedNameChars = { '(', ')', '[', ']', '_', ' ', '@', '-', '.' };
         private const int DefaultPort = 5444;
+
         private readonly IConnection _connection;
 
         private string _name;
@@ -325,16 +326,14 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                     // We need to preserve port only if it was specified
                     var leftPart = uri.GetComponents(leftPartComponents, UriFormat.UriEscaped);
                     if (!path.StartsWithIgnoreCase(leftPart)) {
-                        builder.Port = 5444;
+                        builder.Port = DefaultPort;
                     }
                 }
 
-                var hasPath = !string.IsNullOrEmpty(builder.Path) && builder.Path != "/";
-                if (hasPath) {
-                    return builder.ToString();
-                } else {
-                    return builder.Uri.GetComponents(leftPartComponents | UriComponents.Query | UriComponents.Fragment, UriFormat.UriEscaped);
-                }
+                var hasPath = !string.IsNullOrEmpty(builder.Path) && !builder.Path.EqualsOrdinal("/");
+                return hasPath 
+                    ? builder.ToString() 
+                    : builder.Uri.GetComponents(leftPartComponents | UriComponents.Query | UriComponents.Fragment, UriFormat.UriEscaped);
             }
 
             return path;
