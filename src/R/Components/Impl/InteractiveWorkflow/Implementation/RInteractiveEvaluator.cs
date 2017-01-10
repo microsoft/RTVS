@@ -283,11 +283,9 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             // From R docs:  Valid values are 10...10000 with default normally 80.
             _terminalWidth = Math.Max(10, Math.Min(10000, width));
 
-            if (Session.IsHostRunning) {
-                Session.OptionsSetWidthAsync(_terminalWidth)
-                    .SilenceException<RException>()
-                    .DoNotWait();
-            }
+            Session.OptionsSetWidthAsync(_terminalWidth)
+                .SilenceException<RException>()
+                .DoNotWait();
         }
 
         /// <summary>

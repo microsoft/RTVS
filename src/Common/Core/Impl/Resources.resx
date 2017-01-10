@@ -126,4 +126,7 @@
   <data name="Error_CredWriteFailed" xml:space="preserve">
     <value>Writing credentails failed with Win32 error.</value>
   </data>
+  <data name="Info_ConnectingTo" xml:space="preserve">
+    <value>Connecting to {0}</value>
+  </data>
 </root>
