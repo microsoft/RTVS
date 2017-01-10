@@ -26,9 +26,8 @@ namespace Microsoft.R.Editor.Selection {
         /// Offset from token to the caret position
         /// </summary>
         private int _offset;
-
         private ITextRange _changingRange;
-        private int _lengthBeforeChange;
+        private readonly int _lengthBeforeChange;
 
         /// <summary>
         /// SelectionTracker constructor
@@ -80,6 +79,13 @@ namespace Microsoft.R.Editor.Selection {
             // that caret position is going to remain relative to the same token index
             itemIndex = -1;
             offset = 0;
+
+            // Expand range to include the next line. This is needed when user introduces line break.
+            var lineNumber = snapshot.GetLineNumberFromPosition(_changingRange.End);
+            if (lineNumber < snapshot.LineCount - 1) {
+                var end = snapshot.GetLineFromLineNumber(lineNumber + 1).End;
+                _changingRange = TextRange.FromBounds(_changingRange.Start, end);
+            }
 
             var tokenizer = new RTokenizer();
             IReadOnlyTextRangeCollection<RToken> tokens =

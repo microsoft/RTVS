@@ -7,6 +7,7 @@ using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
+using Microsoft.R.Core.AST.Scopes;
 using Microsoft.R.Core.AST.Statements;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Settings;
@@ -64,7 +65,7 @@ namespace Microsoft.R.Editor.Formatting {
                     // Do not format large scope blocks for performance reasons
                     if (scopeStatement != null && scopeStatement.Length < 200) {
                         FormatOperations.FormatNode(textView, subjectBuffer, editorShell, scopeStatement);
-                    } else {
+                    } else if(CanFormatLine(textView, subjectBuffer.CurrentSnapshot, ast, -1)){
                         FormatOperations.FormatViewLine(textView, subjectBuffer, -1, editorShell);
                     }
                 }
@@ -80,6 +81,24 @@ namespace Microsoft.R.Editor.Formatting {
             } else if (typedChar == '}') {
                 FormatOperations.FormatCurrentStatement(textView, subjectBuffer, editorShell, limitAtCaret: true, caretOffset: -1);
             }
+        }
+
+        private static bool CanFormatLine(ITextView textView, ITextSnapshot snapshot, AstRoot ast, int offset) {
+            // Do not format inside strings or when change was destructive
+            if(ast.Children == null) {
+                return false;
+            }
+            var gs = ast.Children[0] as GlobalScope;
+            if (gs != null && gs.Children.Count == 0) {
+                return false;
+            }
+            SnapshotPoint? caretPoint = REditorDocument.MapCaretPositionFromView(textView);
+            if (caretPoint.HasValue) {
+                int lineNumber = snapshot.GetLineNumberFromPosition(caretPoint.Value.Position);
+                var line = snapshot.GetLineFromLineNumber(lineNumber + offset);
+                return !ast.IsPositionInsideString(line.Start);
+            }
+            return false;
         }
 
         private static bool IsBetweenCurlyAndElse(ITextBuffer textBuffer, int position) {
