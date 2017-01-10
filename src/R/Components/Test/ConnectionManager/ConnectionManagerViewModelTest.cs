@@ -255,13 +255,13 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
             _cmvm.Save(_cmvm.EditedConnection);
 
             _cmvm.RemoteConnections.Should().ContainSingle(c => c.Name == "machine")
-                .Which.Path.Should().Be("https://machine:443#123");
+                .Which.Path.Should().Be("https://machine:5444#123");
             _cmvm.RemoteConnections.Should().ContainSingle(c => c.Name == "machine2")
-                .Which.Path.Should().Be("https://machine:443#456");
+                .Which.Path.Should().Be("https://machine:5444#456");
         }
 
         [CompositeTest(ThreadType.UI)]
-        [InlineData("http://machine", "machine", "https://machine:80")]
+        [InlineData("http://machine", "machine", "https://machine:5444")]
         [InlineData("https://machine:5444", "machine", "https://machine:5444")]
         [InlineData("https://machine#1234", "machine", "https://machine:5444#1234")]
         [InlineData("https://machine2", "machine2", "https://machine2:5444")]
@@ -318,7 +318,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
 
             _cmvm.RemoteConnections.Should().NotContain(c => c.Name == "machine")
                 .And.ContainSingle(c => c.Name == "Custom Name")
-                .Which.Path.Should().Be("https://machine:443");
+                .Which.Path.Should().Be("https://machine:5444");
         }
     }
 }

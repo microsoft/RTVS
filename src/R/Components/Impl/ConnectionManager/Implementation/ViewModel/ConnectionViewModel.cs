@@ -12,10 +12,10 @@ using static System.FormattableString;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
     internal sealed class ConnectionViewModel : BindableBase, IConnectionViewModel {
-        private static readonly char[] _allowedNameChars = new char[] { '(', ')', '[', ']', '_', ' ', '@', '-', '.' };
+        private static readonly char[] _allowedNameChars = { '(', ')', '[', ']', '_', ' ', '@', '-', '.' };
         private const int DefaultPort = 5444;
+
         private readonly IConnection _connection;
-        private readonly ICoreShell _coreShell;
 
         private string _name;
         private string _path;
@@ -39,14 +39,12 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private bool _isRenamed;
         private string _previousPath;
 
-        public ConnectionViewModel(ICoreShell coreShell) {
-            _coreShell = coreShell;
+        public ConnectionViewModel() {
             IsUserCreated = true;
             UpdateCalculated();
         }
 
-        public ConnectionViewModel(IConnection connection, ICoreShell coreShell) {
-            _coreShell = coreShell;
+        public ConnectionViewModel(IConnection connection) {
             _connection = connection;
             Reset();
         }
@@ -280,7 +278,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public void UpdatePath() {
             // Automatically update the Path with a more complete version
-            Path = GetCompletePath(Path?.Trim() ?? string.Empty, _coreShell);
+            Path = GetCompletePath(Path?.Trim() ?? string.Empty);
         }
 
         internal static string GetProposedName(string path) {
@@ -298,7 +296,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             return path.ToLower();
         }
 
-        internal static string GetCompletePath(string path, ICoreShell shell, bool showErrors = true) {
+        internal static string GetCompletePath(string path) {
             // We ALWAYS use HTTPS so no reason to accept anything else.
             // Default RTVS port is 5444.
             // https://foo:5444 -> https://foo:5444 (no change)
@@ -307,38 +305,35 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             // http://FOO -> https://foo:5444
             // http://FOO:80 -> https://foo:80
             // foo->https://foo:5444
-            Uri uri = null;
-            try {
-                Uri.TryCreate(path, UriKind.Absolute, out uri);
-            } catch (InvalidOperationException) { } catch (ArgumentException) { } catch (UriFormatException) { }
-
-            if (uri != null && uri.IsFile) {
+            Uri uri;
+            if (Uri.TryCreate(path, UriKind.Absolute, out uri) && uri.IsFile) {
                 return path;
             }
 
-            var userProvidedPath = path;
-
-            if (path.IndexOfOrdinal("://") < 0) {
+            if (!path.Contains(Uri.SchemeDelimiter)) {
                 path = Invariant($"{Uri.UriSchemeHttps}{Uri.SchemeDelimiter}{path.ToLower()}");
-                try {
-                    Uri.TryCreate(path, UriKind.Absolute, out uri);
-                } catch (InvalidOperationException) { } catch (ArgumentException) { } catch (UriFormatException) { }
+                Uri.TryCreate(path, UriKind.Absolute, out uri);
             }
 
-            if (uri != null && !string.IsNullOrEmpty(uri.Host)) {
-                var hasPort = uri.Port >= 0 && (!uri.IsDefaultPort || uri.Port != 443);
-                var port = hasPort ? uri.Port : DefaultPort;
-                var hasPathOrQuery = !string.IsNullOrEmpty(uri.PathAndQuery) && uri.PathAndQuery != "/";
-                var mainPart = Invariant($"{Uri.UriSchemeHttps}{Uri.SchemeDelimiter}{uri.Host.ToLower()}:{port}");
+            if (!string.IsNullOrEmpty(uri?.Host)) {
+                var builder = new UriBuilder(uri) {
+                    Scheme = Uri.UriSchemeHttps
+                };
 
-                path = hasPathOrQuery
-                        ? Invariant($"{mainPart}{uri.PathAndQuery}{uri.Fragment}")
-                        : Invariant($"{mainPart}{uri.Fragment}");
-            } else {
-                if (showErrors) {
-                    shell.ShowErrorMessage(Resources.Error_InvalidURL.FormatInvariant(userProvidedPath));
+                const UriComponents leftPartComponents = UriComponents.Scheme | UriComponents.UserInfo | UriComponents.Host | UriComponents.StrongPort;
+
+                if (uri.IsDefaultPort) {
+                    // We need to preserve port only if it was specified
+                    var leftPart = uri.GetComponents(leftPartComponents, UriFormat.UriEscaped);
+                    if (!path.StartsWithIgnoreCase(leftPart)) {
+                        builder.Port = DefaultPort;
+                    }
                 }
-                path = string.Empty;
+
+                var hasPath = !string.IsNullOrEmpty(builder.Path) && !builder.Path.EqualsOrdinal("/");
+                return hasPath 
+                    ? builder.ToString() 
+                    : builder.Uri.GetComponents(leftPartComponents | UriComponents.Query | UriComponents.Fragment, UriFormat.UriEscaped);
             }
 
             return path;
@@ -349,13 +344,13 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             if (string.IsNullOrWhiteSpace(name)) {
                 return false;
             }
-            if (!char.IsLetterOrDigit(name[0])) {
-                return false;
-            }
             if (name.IndexOfOrdinal("..") >= 0) {
                 return false;
             }
-            return !name.Where(ch => !char.IsLetterOrDigit(ch) && !_allowedNameChars.Contains(ch)).Any();
+            if (!char.IsLetterOrDigit(name[0]) && name[0] != '.') {
+                return false;
+            }
+            return !name.Any(ch => !char.IsLetterOrDigit(ch) && !_allowedNameChars.Contains(ch));
         }
 
         private static bool IsValidConnectionUrl(string url, out Uri uri) {
@@ -363,14 +358,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             if (string.IsNullOrWhiteSpace(url)) {
                 return false;
             }
-            try {
-                Uri.TryCreate(url, UriKind.Absolute, out uri);
-                if (uri == null) {
-                    Uri.TryCreate(GetCompletePath(url, null, false), UriKind.Absolute, out uri);
-                }
-            } catch (UriFormatException) { }
 
-            return uri != null;
+            return Uri.TryCreate(GetCompletePath(url), UriKind.Absolute, out uri);
         }
     }
 }
