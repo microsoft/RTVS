@@ -205,7 +205,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
             var brokerClient = new LocalBrokerClient(nameof(RSessionTest), BrokerConnectionInfo.Create("C", @"C:\"), TestCoreServices.CreateReal(), new NullConsole(), Environment.SystemDirectory);
             var session = new RSession(0, _testMethod.Name, brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo (), null, 10000);
-            var startTask = Task.Run(start).SilenceException<ComponentBinaryMissingException>();
+            var startTask = Task.Run(start).SilenceException<RHostBinaryMissingException>();
 
             await session.StopHostAsync();
             session.IsHostRunning.Should().BeFalse();
