@@ -398,8 +398,7 @@
     <value>Edited connection has unsaved changes. Do you want to save them?</value>
   </data>
   <data name="ConnectionManager_SwitchConfirmation" xml:space="preserve">
-    <value>Are you sure you want to switch from '{0}' to '{1}'?
-Switching will stop your current session, all unsaved data will be lost.
+    <value>Are you sure you want to switch from '{0}' to '{1}'? Switching will stop your current session, all unsaved data will be lost.
 
 This prompt can be suppressed in R Tools | Options.</value>
   </data>

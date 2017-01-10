@@ -422,8 +422,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Are you sure you want to switch from &apos;{0}&apos; to &apos;{1}&apos;?
-        ///Switching will stop your current session, all unsaved data will be lost.
+        ///   Looks up a localized string similar to Are you sure you want to switch from &apos;{0}&apos; to &apos;{1}&apos;? Switching will stop your current session, all unsaved data will be lost.
         ///
         ///This prompt can be suppressed in R Tools | Options..
         /// </summary>
