@@ -280,6 +280,12 @@ namespace Microsoft.Common.Core {
             IntPtr ptrPassword,
             ref int pcchMaxPassword);
 
-        
+        [DllImport("credui.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        public static extern bool CredPackAuthenticationBuffer(
+          int dwFlags,
+          string pszUserName,
+          string pszPassword,
+          IntPtr pPackedCredentials,
+          ref int pcbPackedCredentials);
     }
 }
