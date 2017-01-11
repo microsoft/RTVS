@@ -103,8 +103,20 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
                 case "RFileNode":
                     bmp = Resources.RFileNode;
                     break;
-                case "RDataNode":
-                    bmp = Resources.RDataNode;
+                case "RDataFile":
+                    bmp = Resources.RDataFileNode;
+                    break;
+                case "RdFileNode":
+                    bmp = Resources.RdFileNode;
+                    break;
+                case "RMdFileNode":
+                    bmp = Resources.RMdFileNode;
+                    break;
+                case "SQLFileNode":
+                    bmp = Resources.SQLFileNode;
+                    break;
+                case "ProcedureFileNode":
+                    bmp = Resources.ProcedureFileNode;
                     break;
             }
 
@@ -126,6 +138,7 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
             dict[".rproj"] = "RProjectNode";
             dict[".rdata"] = "RDataNode";
             dict[".md"] = "MarkdownFile";
+            dict[".rmd"] = "RMdFileNode";
             dict[".html"] = "HTMLFile";
             dict[".css"] = "StyleSheet";
             dict[".xml"] = "XMLFile";
@@ -139,6 +152,8 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
             dict[".c"] = "CFile";
             dict[".h"] = "CPPHeaderFile";
             dict[".hpp"] = "CPPHeaderFile";
+            dict[".sql"] = "SQLFileNode";
+            dict[".rd"] = "RdFileNode";
 
             return dict;
         }

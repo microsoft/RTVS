@@ -1998,9 +1998,9 @@
     <!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
     <Bitmaps>
       <Bitmaps>
-        <Bitmap guid="pdfIconGuid" href="Images\pdf.bmp" usedList="pdfIcon" />
-        <Bitmap guid="replWindowIconGuid" href="Images\ReplWindowIcon.png" usedList="replWindowIcon" />
-        <Bitmap guid="rIconGuid" href="Images\RFileNode.png" usedList="rFileIcon" />
+        <Bitmap guid="pdfIconGuid" href="Resources\pdf.bmp" usedList="pdfIcon" />
+        <Bitmap guid="replWindowIconGuid" href="Resources\ReplWindowIcon.png" usedList="replWindowIcon" />
+        <Bitmap guid="rIconGuid" href="Resources\RFileNode.png" usedList="rFileIcon" />
       </Bitmaps>
     </Bitmaps>
   </Commands>

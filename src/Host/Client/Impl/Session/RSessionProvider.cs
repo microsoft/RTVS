@@ -215,7 +215,7 @@ namespace Microsoft.R.Host.Client.Session {
                     }
                     brokerClient.Dispose();
                     BrokerChangeFailed?.Invoke(this, EventArgs.Empty);
-                    if (ex is OperationCanceledException || ex is RHostBrokerBinaryMissingException) {
+                    if (ex is OperationCanceledException || ex is ComponentBinaryMissingException) {
                         // RHostDisconnectedException is derived from OperationCanceledException
                         return false;
                     }
@@ -254,7 +254,7 @@ namespace Microsoft.R.Host.Client.Session {
             } catch (OperationCanceledException ex) when (!(ex is RHostDisconnectedException)) {
                 throw;
             } catch (Exception ex) {
-                _console.Write(Resources.RSessionProvider_ConnectionFailed.FormatInvariant(ex.Message) + Environment.NewLine);
+                _console.WriteErrorLine(Resources.RSessionProvider_ConnectionFailed.FormatInvariant(ex.Message));
                 throw;
             }
         }
@@ -288,7 +288,7 @@ namespace Microsoft.R.Host.Client.Session {
             } catch (OperationCanceledException ex) when (!(ex is RHostDisconnectedException)) {
                 throw;
             } catch (Exception ex) {
-                _console.Write(Resources.RSessionProvider_ConnectionFailed.FormatInvariant(ex.Message) + Environment.NewLine);
+                _console.WriteError(Resources.RSessionProvider_ConnectionFailed.FormatInvariant(ex.Message) + Environment.NewLine);
                 throw;
             }
         }
@@ -301,7 +301,7 @@ namespace Microsoft.R.Host.Client.Session {
                 await WhenAllCancelOnFailure(transactions, CompleteSwitchingBrokerAsync, cancellationToken);
             } catch (OperationCanceledException ex) when (!(ex is RHostDisconnectedException)) {
             } catch (Exception ex) {
-                _console.Write(Resources.RSessionProvider_ConnectionFailed.FormatInvariant(ex.Message) + Environment.NewLine);
+                _console.WriteError(Resources.RSessionProvider_ConnectionFailed.FormatInvariant(ex.Message) + Environment.NewLine);
                 throw;
             }
         }
@@ -335,7 +335,7 @@ namespace Microsoft.R.Host.Client.Session {
 
         private IBrokerClient CreateBrokerClient(string name, BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken) {
             if (!connectionInfo.IsValid) {
-                connectionInfo = BrokerConnectionInfo.Create(new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath);
+                connectionInfo = BrokerConnectionInfo.Create(connectionInfo.Name, new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath);
             }
 
             if (!connectionInfo.IsValid) {

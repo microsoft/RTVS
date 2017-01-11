@@ -91,7 +91,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public void EditNew() {
             Shell.AssertIsOnMainThread();
-            IsEditingNew = TryStartEditing(new ConnectionViewModel(Shell));
+            IsEditingNew = TryStartEditing(new ConnectionViewModel());
         }
 
         public void CancelEdit() {
@@ -176,7 +176,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                 if (connection.TestingConnectionCts != null) {
                     connection.TestConnectionFailedText = Resources.ConnectionManager_TestConnectionFailed_Format.FormatInvariant(exception.Message);
                 }
-            } catch (RHostBrokerBinaryMissingException) {
+            } catch (ComponentBinaryMissingException) {
                 if (connection.TestingConnectionCts != null) {
                     connection.TestConnectionFailedText = Resources.ConnectionManager_TestConnectionFailed_RHostIsMissing;
                 }
@@ -325,7 +325,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         private ConnectionViewModel CreateConnectionViewModel(IConnection connection) {
             var isActive = connection == ConnectionManager.ActiveConnection;
-            return new ConnectionViewModel(connection, Shell) {
+            return new ConnectionViewModel(connection) {
                 IsActive = isActive,
                 IsConnected = isActive && ConnectionManager.IsConnected,
                 IsRunning = isActive && ConnectionManager.IsRunning

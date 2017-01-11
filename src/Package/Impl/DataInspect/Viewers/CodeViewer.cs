@@ -74,7 +74,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             string functionCode = null;
             try {
                 functionCode = await session.GetFunctionCodeAsync(functionName, cancellationToken);
-            } catch (RException) { } catch (RHostBrokerBinaryMissingException) { }
+            } catch (RException) { } catch (ComponentBinaryMissingException) { }
 
             if (!string.IsNullOrEmpty(functionCode)) {
                 var formatter = new RFormatter(REditorSettings.FormatOptions);

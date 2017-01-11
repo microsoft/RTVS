@@ -428,21 +428,8 @@
   <data name="SurveyNewsPolicyCheckOnceMonth" xml:space="preserve">
     <value>Once a month</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="ReplWindowIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\RInteractiveWindow_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="RProjectNode" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>images\rprojectnode.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="Settings_WorkspaceCategory" xml:space="preserve">
     <value>Workspace</value>
-  </data>
-  <data name="RDataNode" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>images\rdatanode.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="RFileNode" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>images\rfilenode.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="AttachmentTooLarge1" xml:space="preserve">
     <value>Archive with log files exceeds {0} MB. Sending large file as an attachment may not be possible.</value>
@@ -490,7 +477,7 @@
     <value>R command line arguments</value>
   </data>
   <data name="Settings_RCommandLineArguments_Description" xml:space="preserve">
-    <value>Additional arguments to pass to the R Host process</value>
+    <value>Additional arguments to pass to the R session</value>
   </data>
   <data name="Settings_HistoryCategory" xml:space="preserve">
     <value>History</value>
@@ -961,10 +948,10 @@ Click OK to open MiKTeX download page in the default browser. You may need to re
     <value>Sourcing: {0}</value>
   </data>
   <data name="Info_TransferringFiles" xml:space="preserve">
-    <value>Transferring files to remote RHost.</value>
+    <value>Transferring files to remote machine.</value>
   </data>
   <data name="Info_TransferringFilesDone" xml:space="preserve">
-    <value>Transferring files to remote RHost... completed.</value>
+    <value>Transferring files to remote machine... completed.</value>
   </data>
   <data name="Error_CannotAccess" xml:space="preserve">
     <value />
@@ -973,10 +960,10 @@ Click OK to open MiKTeX download page in the default browser. You may need to re
     <value>Unable to transfer file. Exception: {0}.</value>
   </data>
   <data name="Info_CompressingFile" xml:space="preserve">
-    <value>Compressing: {0}</value>
+    <value>Compressing: {0} {1} Bytes</value>
   </data>
   <data name="Info_ExtractingFilesInRHost" xml:space="preserve">
-    <value>Extracting file on remote RHost.</value>
+    <value>Extracting file on remote machine.</value>
   </data>
   <data name="Settings_LogCategory" xml:space="preserve">
     <value>Logging</value>
@@ -1010,7 +997,7 @@ You can modify Visual Studio installation in Control Panel -&gt; Uninstall Progr
   <data name="Error_PandocMissingRemote" xml:space="preserve">
     <value>Publishing markdown requires Pandoc. Please contact the remote machine administrator and ask them to install Pandoc for Windows from http://pandoc.org/installing.html.
     
-Click OK to open the Pandoc download page in default browser. R Remote Services process may need to be restarted when the Pandoc setuo completes.</value>
+Click OK to open the Pandoc download page in default browser. R Remote Services process may need to be restarted when the Pandoc setup completes.</value>
   </data>
   <data name="Error_PdfLatexMissingRemote" xml:space="preserve">
     <value>Publishing markdown to PDF requires TeX installation. Please contact the remote machine administrator and ask them to install MiKTeX (Complete) from http://miktex.org/2.9/setup. Be sure to download the Complete installation.
@@ -1038,5 +1025,39 @@ Click OK to open MiKTeX download page in the default browser. R Remote Services 
   </data>
   <data name="Setting_EnableOutlining_Description" xml:space="preserve">
     <value>Outline code regions (collapsible sections)</value>
+  </data>
+  <data name="Info_FileTransferCanceled" xml:space="preserve">
+    <value>File transfer was canceled.</value>
+  </data>
+  <data name="Info_TransferringFilesWithSize" xml:space="preserve">
+    <value>Transferring Compressed file: {0} Bytes / {1} Bytes</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="pdf" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>resources\pdf.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ProcedureFileNode" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>resources\procedurefilenode.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="RDataFileNode" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>resources\rdatafile.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="RdFileNode" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>resources\rdfilenode.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ReplWindowIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>resources\replwindowicon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="RFileNode" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>resources\rfilenode.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="RMdFileNode" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>resources\rmdfilenode.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="RProjectNode" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>resources\rprojectnode.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="SQLFileNode" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>resources\sqlfilenode.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

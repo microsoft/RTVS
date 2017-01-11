@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Threading;
@@ -12,10 +11,10 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Tasks;
 using Microsoft.Common.Core.Threading;
-using Microsoft.R.Host.Client.BrokerServices;
 using Microsoft.R.Host.Client.Host;
 using static System.FormattableString;
 
@@ -142,6 +141,7 @@ namespace Microsoft.R.Host.Client.Session {
         }
         
         public Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind = REvaluationKind.Normal, CancellationToken cancellationToken = default(CancellationToken)) {
+            _processingChangeDirectoryCommand = expression.StartsWithOrdinal("setwd");
             return EvaluateAsync(expression, kind, true, cancellationToken);
         }
 
@@ -453,7 +453,10 @@ namespace Microsoft.R.Host.Client.Session {
 
                 _initializedTcs.SetResult(null);
             } catch (Exception ex) when (!ex.IsCriticalException()) {
+#if DEBUG
+                // Detailed exception information in REPL is not particularly useful to the end user.
                 await WriteErrorAsync(Resources.Error_SessionInitialization, ex);
+#endif
                 if (!(ex is RHostDisconnectedException)) {
                     StopHostAsync().DoNotWait();
                 }
@@ -588,11 +591,15 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
             }
         }
 
-        private Task WriteErrorAsync(string text) =>
-            ((IRCallbacks)this).WriteConsoleEx(text + "\n", OutputType.Error, CancellationToken.None);
+        private async Task WriteErrorAsync(string text) {
+            if (_host != null) {
+                await _host.Log.WriteFormatAsync(LogVerbosity.Minimal, MessageCategory.Error, text);
+            }
+            await ((IRCallbacks)this).WriteConsoleEx(text + "\n", OutputType.Error, CancellationToken.None);
+        }
 
         private Task WriteErrorAsync(string format, params object[] args) =>
-            WriteErrorAsync(string.Format(CultureInfo.CurrentCulture, format, args));
+            WriteErrorAsync(format.FormatCurrent(args));
 
         Task IRCallbacks.WriteConsoleEx(string buf, OutputType otype, CancellationToken ct) {
             Output?.Invoke(this, new ROutputEventArgs(otype, buf));

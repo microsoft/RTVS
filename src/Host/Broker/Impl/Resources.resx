@@ -157,7 +157,7 @@
     <value>Profile creation failed for user {0}.</value>
   </data>
   <data name="Error_RHostFailedToStart" xml:space="preserve">
-    <value>R Host process failed to start. Error: {0}</value>
+    <value>R session process failed to start. Error: {0}</value>
   </data>
   <data name="Error_UserNameParse" xml:space="preserve">
     <value>User name parsing failed for user {0} with WIN32 error code 0x{1}</value>
@@ -187,10 +187,10 @@
     <value>Profile created for user: {0}</value>
   </data>
   <data name="Info_StartedRHost" xml:space="preserve">
-    <value>RHost started for session {0} of user {1}</value>
+    <value>R session started for connection {0} of user {1}</value>
   </data>
   <data name="Info_StartingRHost" xml:space="preserve">
-    <value>Starting RHost for session {0} of user {1} with command line: {2} {3}</value>
+    <value>Starting R session for connection {0} of user {1} with command line: {2} {3}</value>
   </data>
   <data name="Info_UserProfileServiceName" xml:space="preserve">
     <value>Microsoft.R.Host.UserProfile</value>

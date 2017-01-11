@@ -20,9 +20,13 @@ namespace Microsoft.R.Components.ConnectionManager.ViewModel {
         string TestConnectionFailedText { get; set; }
 
         string OriginalName { get; }
+        string NameTextBoxTooltip { get; }
+        string PathTextBoxTooltip { get; }
         string SaveButtonTooltip { get; }
         bool HasChanges { get; }
         bool IsValid { get; }
+        bool IsNameValid { get; }
+        bool IsPathValid { get; }
         bool IsRenamed { get; }
         bool IsRemote { get; }
         

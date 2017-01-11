@@ -84,6 +84,26 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0}  is missing from the installation directory.
+        ///Please reinstall R Tools for Visual Studio 2015.
+        /// </summary>
+        internal static string Error_BinaryMissing14 {
+            get {
+                return ResourceManager.GetString("Error_BinaryMissing14", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} is missing from the installation directory.
+        ///Please reinstall Data Science workload or repair the Visual Studio installation..
+        /// </summary>
+        internal static string Error_BinaryMissing15 {
+            get {
+                return ResourceManager.GetString("Error_BinaryMissing15", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Machine &apos;{0}&apos; appears to be online, but the Remote R Service is not running..
         /// </summary>
         internal static string Error_BrokerNotRunning {
@@ -160,7 +180,7 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No R Interpreters installed.
+        ///   Looks up a localized string similar to No R interpreters installed.
         /// </summary>
         internal static string Error_NoRInterpreters {
             get {
@@ -205,7 +225,7 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to RHost is stopped.
+        ///   Looks up a localized string similar to R session is stopped.
         /// </summary>
         internal static string Error_RHostIsStopped {
             get {
@@ -261,7 +281,7 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R broker process did not start on the machine &apos;{0}&apos;. Exception:  {1}.
+        ///   Looks up a localized string similar to R Services broker process did not start on the machine &apos;{0}&apos;. Exception:  {1}.
         /// </summary>
         internal static string Error_UnableToStartBrokerException {
             get {
@@ -270,7 +290,7 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R host process did not start on the machine &apos;{0}&apos;. Exception:  {1}.
+        ///   Looks up a localized string similar to R session process did not start on the machine &apos;{0}&apos;. Exception:  {1}.
         /// </summary>
         internal static string Error_UnableToStartHostException {
             get {
@@ -334,7 +354,7 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Interactive Window is disconnected from R Session..
+        ///   Looks up a localized string similar to Interactive Window is disconnected from R session..
         /// </summary>
         internal static string RHostDisconnected {
             get {

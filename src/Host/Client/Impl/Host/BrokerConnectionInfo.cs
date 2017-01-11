@@ -4,18 +4,21 @@
 using System;
 using System.Diagnostics;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Security;
 
 namespace Microsoft.R.Host.Client.Host {
     [DebuggerDisplay("{Uri}, IsRemote={IsRemote}, InterpreterId={InterpreterId}")]
     public struct BrokerConnectionInfo {
+        public string Name { get; }
         public Uri Uri { get; }
         public bool IsValid { get; }
         public bool IsRemote { get; }
         public string ParametersId { get; }
         public string RCommandLineArguments { get; }
         public string InterpreterId { get; }
+        public string CredentialAuthority => GetCredentialAuthority(Name);
 
-        public static BrokerConnectionInfo Create(string path, string rCommandLineArguments = null) {
+        public static BrokerConnectionInfo Create(string name, string path, string rCommandLineArguments = null) {
             rCommandLineArguments = rCommandLineArguments ?? string.Empty;
 
             Uri uri;
@@ -24,24 +27,30 @@ namespace Microsoft.R.Host.Client.Host {
             }
 
             if (uri.IsFile) {
-                return new BrokerConnectionInfo(uri, rCommandLineArguments, string.Empty, false);
+                return new BrokerConnectionInfo(name, uri, rCommandLineArguments, string.Empty, false, string.Empty);
             }
 
             var fragment = uri.Fragment;
             var interpreterId = string.IsNullOrEmpty(fragment) ? string.Empty : fragment.Substring(1);
             uri = new Uri(uri.GetLeftPart(UriPartial.Query));
-            return new BrokerConnectionInfo(uri, rCommandLineArguments, interpreterId, true);
+            string username = SecurityUtilities.GetUserName(GetCredentialAuthority(name));
+            return new BrokerConnectionInfo(name, uri, rCommandLineArguments, interpreterId, true, username);
         }
 
-        private BrokerConnectionInfo(Uri uri, string rCommandLineArguments, string interpreterId, bool isRemote) {
+        private BrokerConnectionInfo(string name, Uri uri, string rCommandLineArguments, string interpreterId, bool isRemote, string username) {
+            Name = name;
             IsValid = true;
             Uri = uri;
             RCommandLineArguments = rCommandLineArguments?.Trim() ?? string.Empty;
             InterpreterId = interpreterId;
-            ParametersId = string.IsNullOrEmpty(rCommandLineArguments) && string.IsNullOrEmpty(interpreterId) 
+            ParametersId = string.IsNullOrEmpty(rCommandLineArguments) && string.IsNullOrEmpty(interpreterId) && string.IsNullOrEmpty(username)
                 ? string.Empty 
-                : $"{rCommandLineArguments}/{interpreterId}".GetSHA256FileSystemSafeHash();
+                : $"{rCommandLineArguments}/{interpreterId}/{username}".GetSHA256FileSystemSafeHash();
             IsRemote = isRemote;
+        }
+
+        private static string GetCredentialAuthority(string name) {
+            return $"RTVS:{name}";
         }
 
         public override bool Equals(object obj) => obj is BrokerConnectionInfo && Equals((BrokerConnectionInfo)obj);

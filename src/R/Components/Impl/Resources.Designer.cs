@@ -253,6 +253,24 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The provided name is invalid. Allowed characters are letters, digits, underscore, period, dash, braces and square brackets..
+        /// </summary>
+        public static string ConnectionManager_InvalidName {
+            get {
+                return ResourceManager.GetString("ConnectionManager_InvalidName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to URL or path is not a valid. Please specify full path to the local R or remote machine connection URL in the form &apos;[https://]machine[:port]&apos;.
+        /// </summary>
+        public static string ConnectionManager_InvalidPath {
+            get {
+                return ResourceManager.GetString("ConnectionManager_InvalidPath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Local.
         /// </summary>
         public static string ConnectionManager_LocalConnections {
@@ -386,7 +404,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Can&apos;t save changes. Connection should have name specified..
+        ///   Looks up a localized string similar to Connection should have name specified..
         /// </summary>
         public static string ConnectionManager_ShouldHaveName {
             get {
@@ -395,7 +413,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Can&apos;t save changes. Connection should have path specified..
+        ///   Looks up a localized string similar to Connection should have path specified..
         /// </summary>
         public static string ConnectionManager_ShouldHavePath {
             get {
@@ -480,7 +498,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Test connection to the R interperter. Authentication credentials may be required..
+        ///   Looks up a localized string similar to Test connection to the R interpreter. Authentication credentials may be required..
         /// </summary>
         public static string ConnectionManager_TestConnectionTooltip {
             get {
@@ -498,7 +516,17 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to User profile and all files under the user directory will be permanently deleted from the remote machine {0}. Your connection will also be disconnected. Reconnecting to the same remote machine will create a new profile. Are you sure you want to delete the user profile from the machine {0}?.
+        ///   Looks up a localized string similar to WARNING
+        ///
+        ///You are about to delete all of your files on the remote server!
+        ///
+        ///Your user profile and ALL FILES under your user directory will be PERMANENTLY DELETED from {0}. Your connection will also be terminated.
+        ///
+        ///Your local files are not affected.
+        ///
+        ///Reconnecting to the same remote server will create a brand new profile.  
+        ///
+        ///Are you sure you want to delete your user profile and all the associated remote files?.
         /// </summary>
         public static string DeleteProfile_DeletionWarning {
             get {
@@ -566,15 +594,6 @@ namespace Microsoft.R.Components {
         public static string Error_InstallTimeout_Format {
             get {
                 return ResourceManager.GetString("Error_InstallTimeout_Format", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &apos;{0}&apos; is not a valid URL or path. Please specify full path to the local R or remote machine connection URL in the form &apos;[https://]machine[:port]&apos;.
-        /// </summary>
-        public static string Error_InvalidURL {
-            get {
-                return ResourceManager.GetString("Error_InvalidURL", resourceCulture);
             }
         }
         
@@ -678,7 +697,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Starting R Session....
+        ///   Looks up a localized string similar to Starting R session....
         /// </summary>
         public static string MicrosoftRHostStarting {
             get {
@@ -687,7 +706,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R Host process is stopped. Click &quot;Reset&quot; to start a new one..
+        ///   Looks up a localized string similar to R session is stopped. Click &quot;Reset&quot; to start a new one..
         /// </summary>
         public static string MicrosoftRHostStopped {
             get {
@@ -696,7 +715,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Stopping R Session....
+        ///   Looks up a localized string similar to Stopping R session....
         /// </summary>
         public static string MicrosoftRHostStopping {
             get {
@@ -858,7 +877,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error: Package {0} can&apos;t be installed because Interactive Window is disconnected from R Session..
+        ///   Looks up a localized string similar to Error: Package {0} can&apos;t be installed because Interactive Window is disconnected from R session..
         /// </summary>
         public static string PackageManager_CantInstallPackageNoRSession {
             get {
@@ -867,7 +886,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error: Package {0} can&apos;t be loaded because Interactive Window is disconnected from R Session..
+        ///   Looks up a localized string similar to Error: Package {0} can&apos;t be loaded because Interactive Window is disconnected from R session..
         /// </summary>
         public static string PackageManager_CantLoadPackageNoRSession {
             get {
@@ -876,7 +895,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error: Package {0} can&apos;t be uninstalled because Interactive Window is disconnected from R Session..
+        ///   Looks up a localized string similar to Error: Package {0} can&apos;t be uninstalled because Interactive Window is disconnected from R session..
         /// </summary>
         public static string PackageManager_CantUninstallPackageNoRSession {
             get {
@@ -885,7 +904,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error: Package {0} can&apos;t be unloaded because Interactive Window is disconnected from R Session..
+        ///   Looks up a localized string similar to Error: Package {0} can&apos;t be unloaded because Interactive Window is disconnected from R session..
         /// </summary>
         public static string PackageManager_CantUnloadPackageNoRSession {
             get {
@@ -894,7 +913,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error: Package {0} can&apos;t be updated because Interactive Window is disconnected from R Session..
+        ///   Looks up a localized string similar to Error: Package {0} can&apos;t be updated because Interactive Window is disconnected from R session..
         /// </summary>
         public static string PackageManager_CantUpdatePackageNoRSession {
             get {

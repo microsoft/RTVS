@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <VSTemplate Version="3.0.0" Type="Item" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">
   <TemplateData>
-    <Name>SQL R Stored Procedure</Name>
+    <Name Package="{6D7C5336-C0CA-4857-A7E7-2E964EA836BF}" ID="9001" />
     <Description Package="{6D7C5336-C0CA-4857-A7E7-2E964EA836BF}" ID="3017" />
     <Icon Package="{6D7C5336-C0CA-4857-A7E7-2E964EA836BF}" ID="505" />
     <TemplateID>Microsoft.RTools.SqlSProc</TemplateID>

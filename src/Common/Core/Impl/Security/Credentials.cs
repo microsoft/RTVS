@@ -12,6 +12,42 @@ namespace Microsoft.Common.Core.Security {
         public string UserName { get; set; }
         public SecureString Password { get; set; }
 
+        private CredentialSource Source { get; set; }
+
+        private enum CredentialSource {
+            Saved, // Obtained from Credential manager
+            NewSave, // Obtained from user with save flag set
+            NewNoSave // Obtained from user with out save flag set
+        }
+
+        public bool CanSave() {
+            return Source != CredentialSource.NewNoSave;
+        }
+
+        public bool IsSaved() {
+            return Source == CredentialSource.Saved;
+        }
+
+        /// <summary>
+        /// Used for credentials obtained from the user via prompt, with 'save'.
+        /// </summary>
+        public static Credentials CreateCredentails(string userName, SecureString password, bool save = false) {
+            return Create(userName, password, save ? CredentialSource.NewSave : CredentialSource.NewNoSave);
+        }
+
+        /// <summary>
+        /// Used for credentials obtained from the Credential Manager
+        /// </summary>
+        public static Credentials CreateSavedCredentails(string userName, SecureString password) {
+            return Create(userName, password, CredentialSource.Saved);
+        }
+
+        private static Credentials Create(string userName, SecureString password, CredentialSource source) {
+            var creds = new Credentials() { UserName = userName, Password = password, Source = source };
+            creds.Password.MakeReadOnly();
+            return creds;
+        }
+
         public NetworkCredential GetCredential(Uri uri, string authType) {
             return new NetworkCredential(UserName, Password);
         }

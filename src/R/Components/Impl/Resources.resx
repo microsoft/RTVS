@@ -118,13 +118,13 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="MicrosoftRHostStopped" xml:space="preserve">
-    <value>R Host process is stopped. Click "Reset" to start a new one.</value>
+    <value>R session is stopped. Click "Reset" to start a new one.</value>
   </data>
   <data name="MicrosoftRHostStopping" xml:space="preserve">
-    <value>Stopping R Session...</value>
+    <value>Stopping R session...</value>
   </data>
   <data name="MicrosoftRHostStarting" xml:space="preserve">
-    <value>Starting R Session...</value>
+    <value>Starting R session...</value>
   </data>
   <data name="RestartRHost" xml:space="preserve">
     <value>Click "Reset" to start a new session.</value>
@@ -172,19 +172,19 @@
     <value>Warning: Interactive Window is disconnected from R Session, so there is no information about loaded packages.</value>
   </data>
   <data name="PackageManager_CantLoadPackageNoRSession" xml:space="preserve">
-    <value>Error: Package {0} can't be loaded because Interactive Window is disconnected from R Session.</value>
+    <value>Error: Package {0} can't be loaded because Interactive Window is disconnected from R session.</value>
   </data>
   <data name="PackageManager_CantUnloadPackageNoRSession" xml:space="preserve">
-    <value>Error: Package {0} can't be unloaded because Interactive Window is disconnected from R Session.</value>
+    <value>Error: Package {0} can't be unloaded because Interactive Window is disconnected from R session.</value>
   </data>
   <data name="PackageManager_CantInstallPackageNoRSession" xml:space="preserve">
-    <value>Error: Package {0} can't be installed because Interactive Window is disconnected from R Session.</value>
+    <value>Error: Package {0} can't be installed because Interactive Window is disconnected from R session.</value>
   </data>
   <data name="PackageManager_CantUninstallPackageNoRSession" xml:space="preserve">
-    <value>Error: Package {0} can't be uninstalled because Interactive Window is disconnected from R Session.</value>
+    <value>Error: Package {0} can't be uninstalled because Interactive Window is disconnected from R session.</value>
   </data>
   <data name="PackageManager_CantUpdatePackageNoRSession" xml:space="preserve">
-    <value>Error: Package {0} can't be updated because Interactive Window is disconnected from R Session.</value>
+    <value>Error: Package {0} can't be updated because Interactive Window is disconnected from R session.</value>
   </data>
   <data name="PackageManager_SearchIncomplete" xml:space="preserve">
     <value>Retrieving results from one or more sources</value>
@@ -380,13 +380,19 @@
 {0}</value>
   </data>
   <data name="ConnectionManager_TestConnectionTooltip" xml:space="preserve">
-    <value>Test connection to the R interperter. Authentication credentials may be required.</value>
+    <value>Test connection to the R interpreter. Authentication credentials may be required.</value>
   </data>
   <data name="ConnectionManager_ShouldHaveName" xml:space="preserve">
-    <value>Can't save changes. Connection should have name specified.</value>
+    <value>Connection should have name specified.</value>
   </data>
   <data name="ConnectionManager_ShouldHavePath" xml:space="preserve">
-    <value>Can't save changes. Connection should have path specified.</value>
+    <value>Connection should have path specified.</value>
+  </data>
+  <data name="ConnectionManager_InvalidName" xml:space="preserve">
+    <value>The provided name is invalid. Allowed characters are letters, digits, underscore, period, dash, braces and square brackets.</value>
+  </data>
+  <data name="ConnectionManager_InvalidPath" xml:space="preserve">
+    <value>URL or path is not a valid. Please specify full path to the local R or remote machine connection URL in the form '[https://]machine[:port]'</value>
   </data>
   <data name="ConnectionManager_EditedConnectionHasChanges" xml:space="preserve">
     <value>Edited connection has unsaved changes. Do you want to save them?</value>
@@ -578,7 +584,17 @@ Are you sure you want to terminate R session?</value>
     <value>Video memory: {0} MB</value>
   </data>
   <data name="DeleteProfile_DeletionWarning" xml:space="preserve">
-    <value>User profile and all files under the user directory will be permanently deleted from the remote machine {0}. Your connection will also be disconnected. Reconnecting to the same remote machine will create a new profile. Are you sure you want to delete the user profile from the machine {0}?</value>
+    <value>WARNING
+
+You are about to delete all of your files on the remote server!
+
+Your user profile and ALL FILES under your user directory will be PERMANENTLY DELETED from {0}. Your connection will also be terminated.
+
+Your local files are not affected.
+
+Reconnecting to the same remote server will create a brand new profile.  
+
+Are you sure you want to delete your user profile and all the associated remote files?</value>
   </data>
   <data name="DeleteProfile_Error" xml:space="preserve">
     <value>Failed to delete user profile. Please see logs for the RUserProfileService on the remote machine {0}. Requires admin access to examine the logs.</value>
@@ -604,9 +620,6 @@ Are you sure you want to terminate R session?</value>
   <data name="SelectInterpreterInstruction" xml:space="preserve">
     <value>If you want to select specific R version, specify its id 
 number in the connection URL in the form 'https://remote:5444#2'</value>
-  </data>
-  <data name="Error_InvalidURL" xml:space="preserve">
-    <value>'{0}' is not a valid URL or path. Please specify full path to the local R or remote machine connection URL in the form '[https://]machine[:port]'</value>
   </data>
   <data name="Warning_RemoteVersionHigher" xml:space="preserve">
     <value>WARNING: Version of R Services on the remote machine ({0})

@@ -5,9 +5,8 @@ using System;
 
 namespace Microsoft.R.Host.Client {
     [Serializable]
-    public sealed class RHostBrokerBinaryMissingException : Exception {
-        public RHostBrokerBinaryMissingException(string message = "Microsoft.R.Host.Broker.exe is missing")
-            : base(message) {
-        }
+    public sealed class RHostBinaryMissingException : ComponentBinaryMissingException {
+        public RHostBinaryMissingException()
+            : base("Microsoft.R.Host.exe") { }
     }
 }

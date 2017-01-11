@@ -214,7 +214,7 @@ namespace Microsoft.R.Host.Broker {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R Host process failed to start. Error: {0}.
+        ///   Looks up a localized string similar to R session process failed to start. Error: {0}.
         /// </summary>
         internal static string Error_RHostFailedToStart {
             get {
@@ -304,7 +304,7 @@ namespace Microsoft.R.Host.Broker {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to RHost started for session {0} of user {1}.
+        ///   Looks up a localized string similar to R session started for connection {0} of user {1}.
         /// </summary>
         internal static string Info_StartedRHost {
             get {
@@ -313,7 +313,7 @@ namespace Microsoft.R.Host.Broker {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Starting RHost for session {0} of user {1} with command line: {2} {3}.
+        ///   Looks up a localized string similar to Starting R session for connection {0} of user {1} with command line: {2} {3}.
         /// </summary>
         internal static string Info_StartingRHost {
             get {

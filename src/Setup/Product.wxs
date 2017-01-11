@@ -161,7 +161,6 @@
                 <Directory Id="ItemTemplatesFolder" Name="ItemTemplates">
                   <Directory Id="ItemTemplatesInstallFolder" Name="R">
                     <Directory Id="ItemTemplatesInstallFolder_DatasetRD" Name="DatasetRD" />
-                    <Directory Id="ItemTemplatesInstallFolder_EmptyMD" Name="EmptyMD" />
                     <Directory Id="ItemTemplatesInstallFolder_EmptyRD" Name="EmptyRD" />
                     <Directory Id="ItemTemplatesInstallFolder_EmptyRMD" Name="EmptyRMD" />
                     <Directory Id="ItemTemplatesInstallFolder_FunctionRD" Name="FunctionRD" />
