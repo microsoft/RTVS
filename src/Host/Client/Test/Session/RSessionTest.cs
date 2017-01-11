@@ -246,7 +246,6 @@ namespace Microsoft.R.Host.Client.Test.Session {
                 BrokerConnectionInfo.Create("Test", new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath),
                 TestCoreServices.CreateReal(), 
                 new NullConsole());
-        }
 
         private static Task<int> GetRSessionProcessId(IRSession session) 
             => session.EvaluateAsync<int>("Sys.getpid()", REvaluationKind.Normal);

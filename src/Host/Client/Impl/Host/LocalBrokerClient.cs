@@ -30,8 +30,7 @@ namespace Microsoft.R.Host.Client.Host {
         private readonly string _rhostDirectory;
         private readonly string _rHome;
         private readonly BinaryAsyncLock _connectLock = new BinaryAsyncLock();
-        private readonly IFileSystem _fs;
-        private readonly IProcessServices _ps;
+        private readonly ICoreServices _services;
 
         private Process _brokerProcess;
 
@@ -46,13 +45,12 @@ namespace Microsoft.R.Host.Client.Host {
             }
         }
 
-        public LocalBrokerClient(string name, BrokerConnectionInfo connectionInfo, IFileSystem fs, IProcessServices ps, IActionLog log, IConsole console, string rhostDirectory = null)
-            : base(name, connectionInfo, _credentials, log, console) {
+        public LocalBrokerClient(string name, BrokerConnectionInfo connectionInfo, ICoreServices services, IConsole console, string rhostDirectory = null)
+            : base(name, connectionInfo, _credentials, services.Log, console) {
 
             _rhostDirectory = rhostDirectory ?? Path.GetDirectoryName(typeof(RHost).Assembly.GetAssemblyPath());
             _rHome = connectionInfo.Uri.LocalPath;
-            _fs = fs;
-            _ps = ps;
+            _services = services;
 
             IsVerified = true;
         }
@@ -86,7 +84,7 @@ namespace Microsoft.R.Host.Client.Host {
             }
 
             string rhostBrokerExe = Path.Combine(_rhostDirectory, RHostBrokerExe);
-            if (!_fs.FileExists(rhostBrokerExe)) {
+            if (!_services.FileSystem.FileExists(rhostBrokerExe)) {
                 throw new RHostBrokerBinaryMissingException();
             }
 
@@ -173,7 +171,7 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         private Process StartBroker(ProcessStartInfo psi) {
-            var process = _ps.Start(psi);
+            var process = _services.ProcessServices.Start(psi);
             process.WaitForExit(250);
             if (process.HasExited && process.ExitCode < 0) {
                 var message = ErrorCodeConverter.MessageFromErrorCode(process.ExitCode);

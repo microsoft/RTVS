@@ -346,7 +346,7 @@ namespace Microsoft.R.Host.Client.Session {
                 return new RemoteBrokerClient(name, connectionInfo, _services, _console, cancellationToken);
             } 
 
-            return new LocalBrokerClient(name, connectionInfo, _services.FileSystem, _services.ProcessServices, _services.Log, _console);
+            return new LocalBrokerClient(name, connectionInfo, _services, _console);
         }
 
         private async Task UpdateHostLoadLoopAsync() {
