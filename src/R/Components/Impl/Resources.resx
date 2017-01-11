@@ -132,9 +132,6 @@
   <data name="ReconnectToBroker" xml:space="preserve">
     <value>Open Workspaces window and either select local R interpreter or try connecting to a remote machine.</value>
   </data>
-  <data name="Error_Microsoft_R_Host_Missing" xml:space="preserve">
-    <value>Microsoft.R.Host.exe is missing. Click OK to open download link in the default browser.</value>
-  </data>
   <data name="InputIsTooLong" xml:space="preserve">
     <value>Input is too long - no more than {0} characters expected.</value>
   </data>
@@ -398,8 +395,7 @@
     <value>Edited connection has unsaved changes. Do you want to save them?</value>
   </data>
   <data name="ConnectionManager_SwitchConfirmation" xml:space="preserve">
-    <value>Are you sure you want to switch from '{0}' to '{1}'?
-Switching will stop your current session, all unsaved data will be lost.
+    <value>Are you sure you want to switch from '{0}' to '{1}'? Switching will stop your current session, all unsaved data will be lost.
 
 This prompt can be suppressed in R Tools | Options.</value>
   </data>
@@ -534,7 +530,7 @@ Arguments: {1}
     <value>none specified</value>
   </data>
   <data name="ConnectionManager_ConnectionsAreIdentical" xml:space="preserve">
-    <value>Connection "{0}" won't be switched to "{1}" because are identical.</value>
+    <value>Connection "{0}" has the same parameters as "{1}" and is already connected.</value>
   </data>
   <data name="Warning_TerminateR" xml:space="preserve">
     <value>Terminating R will immediately abort calculations and all workspace objects will be discarded. This action cannot be undone.

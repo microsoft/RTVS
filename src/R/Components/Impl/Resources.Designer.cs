@@ -142,7 +142,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Connection &quot;{0}&quot; won&apos;t be switched to &quot;{1}&quot; because are identical..
+        ///   Looks up a localized string similar to Connection &quot;{0}&quot; has the same parameters as &quot;{1}&quot; and is already connected..
         /// </summary>
         public static string ConnectionManager_ConnectionsAreIdentical {
             get {
@@ -422,8 +422,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Are you sure you want to switch from &apos;{0}&apos; to &apos;{1}&apos;?
-        ///Switching will stop your current session, all unsaved data will be lost.
+        ///   Looks up a localized string similar to Are you sure you want to switch from &apos;{0}&apos; to &apos;{1}&apos;? Switching will stop your current session, all unsaved data will be lost.
         ///
         ///This prompt can be suppressed in R Tools | Options..
         /// </summary>
@@ -594,15 +593,6 @@ namespace Microsoft.R.Components {
         public static string Error_InstallTimeout_Format {
             get {
                 return ResourceManager.GetString("Error_InstallTimeout_Format", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Microsoft.R.Host.exe is missing. Click OK to open download link in the default browser..
-        /// </summary>
-        public static string Error_Microsoft_R_Host_Missing {
-            get {
-                return ResourceManager.GetString("Error_Microsoft_R_Host_Missing", resourceCulture);
             }
         }
         
