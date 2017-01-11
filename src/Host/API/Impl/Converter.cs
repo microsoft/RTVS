@@ -12,7 +12,7 @@ using static System.FormattableString;
 namespace Microsoft.R.Host.Client {
     public static class Converter {
         public static List<T> ToListOf<T>(this IEnumerable<object> e) {
-            return new List<T>(e.Select(x => (T)Convert.ChangeType(x, typeof(T))));
+            return e.Select(x => (T)Convert.ChangeType(x, typeof(T))).ToList();
         }
 
         public static string ToRLiteral(this object value) {
