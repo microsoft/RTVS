@@ -8,7 +8,13 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
+using Microsoft.Common.Core.Security;
+using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Tasks;
+using Microsoft.Common.Core.Telemetry;
+using Microsoft.Common.Core.Threading;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
@@ -35,8 +41,8 @@ namespace Microsoft.R.Host.Client {
                 url = engine.InstallPath;
             }
 
-            var ci = BrokerConnectionInfo.Create(url);
-            var bc = new LocalBrokerClient(name, ci, new FileSystem(), new ProcessServices(), new NullLog(), new NullConsole());
+            var ci = BrokerConnectionInfo.Create(name, url);
+            var bc = new LocalBrokerClient(name, ci, new CoreServices(), new NullConsole());
             return new RHostSession(new RSession(0, name, bc, new NullLock(), () => { }));
         }
 
@@ -84,5 +90,17 @@ namespace Microsoft.R.Host.Client {
 
         private Task<IRValueInfo> EvaluateAndDescribeAsync(string expression, REvaluationResultProperties properties, CancellationToken cancellationToken = default(CancellationToken))
             => _session.EvaluateAndDescribeAsync(expression, properties, RValueRepresentations.Str(), cancellationToken);
+
+        private class CoreServices : ICoreServices {
+            public IFileSystem FileSystem => new FileSystem();
+            public IActionLog Log => new NullLog();
+            public ILoggingServices LoggingServices => null;
+            public IMainThread MainThread => null;
+            public IProcessServices ProcessServices => new ProcessServices();
+            public IRegistry Registry => new RegistryImpl();
+            public ISecurityService Security => null;
+            public ITaskService Tasks => null;
+            public ITelemetryService Telemetry => null;
+        }
     }
 }
