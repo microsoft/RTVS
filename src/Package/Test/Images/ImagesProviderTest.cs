@@ -21,10 +21,17 @@ namespace Microsoft.VisualStudio.R.Package.Test.Images {
             p.GetFileIcon("foo.R").Should().NotBeNull();
             p.GetFileIcon("foo.rproj").Should().NotBeNull();
             p.GetFileIcon("foo.rdata").Should().NotBeNull();
+            p.GetFileIcon("foo.rd").Should().NotBeNull();
+            p.GetFileIcon("foo.rmd").Should().NotBeNull();
+            p.GetFileIcon("foo.sql").Should().NotBeNull();
 
             p.GetImage("RProjectNode").Should().NotBeNull();
             p.GetImage("RFileNode").Should().NotBeNull();
-            p.GetImage("RDataNode").Should().NotBeNull();
+            p.GetImage("RDataFileNode").Should().NotBeNull();
+            p.GetImage("RdFileNode").Should().NotBeNull();
+            p.GetImage("RMdFileNode").Should().NotBeNull();
+            p.GetImage("SQLFileNode").Should().NotBeNull();
+            p.GetImage("ProcedureFileNode").Should().NotBeNull();
         }
     }
 }

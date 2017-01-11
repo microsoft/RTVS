@@ -9,7 +9,6 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using Microsoft.Common.Core;
 using Microsoft.Common.Wpf.Imaging;
 using Microsoft.R.Editor.Imaging;
@@ -103,7 +102,7 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
                 case "RFileNode":
                     bmp = Resources.RFileNode;
                     break;
-                case "RDataFile":
+                case "RDataFileNode":
                     bmp = Resources.RDataFileNode;
                     break;
                 case "RdFileNode":
@@ -136,7 +135,7 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
 
             dict[".r"] = "RFileNode";
             dict[".rproj"] = "RProjectNode";
-            dict[".rdata"] = "RDataNode";
+            dict[".rdata"] = "RDataFileNode";
             dict[".md"] = "MarkdownFile";
             dict[".rmd"] = "RMdFileNode";
             dict[".html"] = "HTMLFile";
