@@ -71,7 +71,7 @@ namespace Microsoft.Common.Core.Security {
             Debug.Assert(certificate2 != null);
             if (certificate2 == null || !certificate2.Verify()) {
                 await _coreShell.SwitchToMainThreadAsync(cancellationToken);
-                if (_coreShell.ShowMessage(message, MessageButtons.OKCancel, MessageType.Warning) == MessageButtons.OK) {
+                if (_coreShell.ShowMessage(message, MessageButtons.YesNo, MessageType.Warning) == MessageButtons.Yes) {
                     certificate2.Reset();
                     return true;
                 }
