@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
+using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -40,8 +41,16 @@ namespace Microsoft.Common.Core.Security {
             CredUIWinFlags flags = CredUIWinFlags.CREDUIWIN_CHECKBOX;
             // For password, use native memory so it can be securely freed.
             IntPtr passwordStorage = SecurityUtilities.CreatePasswordBuffer();
+            int inCredSize = 1024;
+            IntPtr inCredBuffer = Marshal.AllocCoTaskMem(inCredSize);
+
             try {
-                var err = CredUIPromptForWindowsCredentials(ref credui, 0, ref authPkg, IntPtr.Zero, 0, out credStorage, out credSize, ref save, flags);
+                if (!CredPackAuthenticationBuffer(0, WindowsIdentity.GetCurrent().Name, "", inCredBuffer, ref inCredSize)) {
+                    int error = Marshal.GetLastWin32Error();
+                    throw new Win32Exception(error);
+                }
+
+                var err = CredUIPromptForWindowsCredentials(ref credui, 0, ref authPkg, inCredBuffer, (uint)inCredSize, out credStorage, out credSize, ref save, flags);
                 if (err != 0) {
                     throw new OperationCanceledException();
                 }
@@ -57,9 +66,14 @@ namespace Microsoft.Common.Core.Security {
 
                 return Task.FromResult(Credentials.CreateCredentails(userNameBuilder.ToString(), SecurityUtilities.SecureStringFromNativeBuffer(passwordStorage), save));
             } finally {
+                if(inCredBuffer != IntPtr.Zero) {
+                    Marshal.FreeCoTaskMem(inCredBuffer);
+                }
+
                 if (credStorage != IntPtr.Zero) {
                     Marshal.ZeroFreeCoTaskMemUnicode(credStorage);
                 }
+
                 if (passwordStorage != IntPtr.Zero) {
                     Marshal.ZeroFreeCoTaskMemUnicode(passwordStorage);
                 }
