@@ -23,7 +23,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
             _interactiveWorkflow = interactiveWorkflow;
             _console = console;
 
-            _interactiveWorkflow.RSessions.BrokerChanging += OnBrokerChanging;
+            _interactiveWorkflow.RSessions.BrokerChanged += OnBrokerChanged;
             _interactiveWorkflow.RSession.Disposed += OnRSessionDisposed;
         }
 
@@ -44,21 +44,14 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
             return CommandResult.Executed;
         }
 
-        private void OnBrokerChanging(object sender, EventArgs e) {
-            PrintWhenSessionInteractive();
+        private void OnBrokerChanged(object sender, EventArgs e) {
+            if (_interactiveWorkflow.RSession.IsRemote) {
+                ReplInitComplete().ContinueWith(async (t) => await PrintBrokerInformationAsync(reportTelemetry: true)).DoNotWait();
+            }
         }
 
         private void OnRSessionDisposed(object sender, EventArgs e) {
             _cts.Cancel();
-        }
-
-        private void PrintWhenSessionInteractive() {
-            _interactiveWorkflow.RSession.HostStarted.ContinueWith(async (t) => {
-                if (_interactiveWorkflow.RSession.IsRemote) {
-                    await ReplInitComplete();
-                    PrintBrokerInformationAsync(reportTelemetry: true).DoNotWait();
-                }
-            });
         }
 
         private Task ReplInitComplete() {
