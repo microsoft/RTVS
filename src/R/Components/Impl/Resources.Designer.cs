@@ -597,15 +597,6 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Microsoft.R.Host.exe is missing. Click OK to open download link in the default browser..
-        /// </summary>
-        public static string Error_Microsoft_R_Host_Missing {
-            get {
-                return ResourceManager.GetString("Error_Microsoft_R_Host_Missing", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Command line text cannot be converted to default OS code page. Please set locale for non-Unicode programs in Control Panel -&gt; Region -&gt; Administrative to the locale you wish to use..
         /// </summary>
         public static string Error_ReplUnicodeCoversion {

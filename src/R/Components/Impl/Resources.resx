@@ -132,9 +132,6 @@
   <data name="ReconnectToBroker" xml:space="preserve">
     <value>Open Workspaces window and either select local R interpreter or try connecting to a remote machine.</value>
   </data>
-  <data name="Error_Microsoft_R_Host_Missing" xml:space="preserve">
-    <value>Microsoft.R.Host.exe is missing. Click OK to open download link in the default browser.</value>
-  </data>
   <data name="InputIsTooLong" xml:space="preserve">
     <value>Input is too long - no more than {0} characters expected.</value>
   </data>
