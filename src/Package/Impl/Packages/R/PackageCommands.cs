@@ -139,7 +139,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
                 // Connection manager commands
                 CreateRCmdSetCommand(RPackageCommandId.icmdReconnect, new ReconnectCommand(interactiveWorkflow)),
-                CreateRCmdSetCommand(RPackageCommandId.icmdMruConnectionsDynamicStart, new SwitchToConnectionCommand(interactiveWorkflow))
+                CreateRCmdSetCommand(RPackageCommandId.icmdMruConnectionsDynamicStart, new SwitchToConnectionCommand(interactiveWorkflow, settings))
             };
         }
     }
