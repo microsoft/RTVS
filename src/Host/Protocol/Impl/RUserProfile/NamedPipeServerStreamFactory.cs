@@ -10,7 +10,7 @@ namespace Microsoft.R.Host.Protocol {
         public static string DeletorName = "Microsoft.R.Host.UserProfile.Deletor{9c2aa072-7549-4992-8c17-0ccb9b8f196e}";
         public static NamedPipeServerStream Create(string name, int maxInstances = NamedPipeServerStream.MaxAllowedServerInstances) {
             PipeSecurity ps = new PipeSecurity();
-            SecurityIdentifier sid = new SecurityIdentifier(WellKnownSidType.AuthenticatedUserSid, null);
+            SecurityIdentifier sid = new SecurityIdentifier(WellKnownSidType.NetworkServiceSid, null);
             PipeAccessRule par = new PipeAccessRule(sid, PipeAccessRights.ReadWrite, System.Security.AccessControl.AccessControlType.Allow);
             ps.AddAccessRule(par);
             return new NamedPipeServerStream(name, PipeDirection.InOut, maxInstances, PipeTransmissionMode.Byte, PipeOptions.Asynchronous, 1024, 1024, ps);

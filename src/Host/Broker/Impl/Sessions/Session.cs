@@ -220,7 +220,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
                 while (true) {
                     byte[] message;
                     try {
-                        message = await pipe.ReadAsync(Program.CancellationToken);
+                        message = await pipe.ReadAsync(CommonStartup.CancellationToken);
                     } catch (PipeDisconnectedException) {
                         break;
                     }
