@@ -26,6 +26,9 @@ namespace Microsoft.R.Editor.Test.Formatting {
         [InlineData("`a bc`@`d ef `", 8, "`d ef `")]
         [InlineData("#item", 2, "item")]
         [InlineData("x <- 1 # item", 10, "item")]
+        [InlineData("#", 1, "")]
+        [InlineData("> #", 3, "")]
+        [InlineData("> #", 2, "")]
         public void GetIdentifierUnderCaret(string content, int caretPosition, string expected) {
             var textView = MakeTextView(content, caretPosition);
             Span span;
@@ -50,6 +53,9 @@ namespace Microsoft.R.Editor.Test.Formatting {
         [InlineData("x$+y$", 5, "y$")]
         [InlineData("x$+`y y`$", 9, "`y y`$")]
         [InlineData("a::b$`z`", 8, "a::b$`z`")]
+        [InlineData("#", 1, "")]
+        [InlineData("> #", 3, "")]
+        [InlineData("> #", 2, "")]
         public void GetVariableBeforeCaret(string content, int caretPosition, string expected) {
             var textView = MakeTextView(content, caretPosition);
             string actual = textView.GetVariableNameBeforeCaret();
