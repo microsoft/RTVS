@@ -102,8 +102,6 @@ Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "SetupRemote", "SetupRemote\
 EndProject
 Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "SetupRHostRemote", "SetupRHostRemote\SetupRHostRemote.wixproj", "{4AA5CE64-5BE2-414C-8AD9-E3110E490DC4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Host.Monitor", "Host\Monitor\Impl\Microsoft.R.Host.Monitor.csproj", "{CEB0F178-0012-4485-A505-86769A66D58B}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Host.UserProfile", "Host\UserProfile\Impl\Microsoft.R.Host.UserProfile.csproj", "{28C3629E-3FD8-4040-9CCE-6D62B9B1A5E3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.VisualStudio.R.Sql", "R\Sql\Impl\Microsoft.VisualStudio.R.Sql.csproj", "{B0C3A5C2-F713-40C9-BF08-20A1014D74DE}"
@@ -654,18 +652,6 @@ Global
 		{4AA5CE64-5BE2-414C-8AD9-E3110E490DC4}.Release|x64.ActiveCfg = Release|x86
 		{4AA5CE64-5BE2-414C-8AD9-E3110E490DC4}.Release|x86.ActiveCfg = Release|x86
 		{4AA5CE64-5BE2-414C-8AD9-E3110E490DC4}.Release|x86.Build.0 = Release|x86
-		{CEB0F178-0012-4485-A505-86769A66D58B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CEB0F178-0012-4485-A505-86769A66D58B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CEB0F178-0012-4485-A505-86769A66D58B}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{CEB0F178-0012-4485-A505-86769A66D58B}.Debug|x64.Build.0 = Debug|Any CPU
-		{CEB0F178-0012-4485-A505-86769A66D58B}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{CEB0F178-0012-4485-A505-86769A66D58B}.Debug|x86.Build.0 = Debug|Any CPU
-		{CEB0F178-0012-4485-A505-86769A66D58B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CEB0F178-0012-4485-A505-86769A66D58B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CEB0F178-0012-4485-A505-86769A66D58B}.Release|x64.ActiveCfg = Release|Any CPU
-		{CEB0F178-0012-4485-A505-86769A66D58B}.Release|x64.Build.0 = Release|Any CPU
-		{CEB0F178-0012-4485-A505-86769A66D58B}.Release|x86.ActiveCfg = Release|Any CPU
-		{CEB0F178-0012-4485-A505-86769A66D58B}.Release|x86.Build.0 = Release|Any CPU
 		{28C3629E-3FD8-4040-9CCE-6D62B9B1A5E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{28C3629E-3FD8-4040-9CCE-6D62B9B1A5E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{28C3629E-3FD8-4040-9CCE-6D62B9B1A5E3}.Debug|x64.ActiveCfg = Debug|Any CPU

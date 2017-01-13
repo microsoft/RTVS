@@ -29,7 +29,6 @@
     <DirectoryRef Id="INSTALLFOLDER">
       <Component Id="ProductAssemblies" Guid="{9C717F8F-4A97-4FA5-8031-5A180467754D}" Win64="yes">
         <?include "$(var.SourceDir)\Setup\CommonAssemblies.wxi" ?>
-        <File Source="$(var.BinDir)\Microsoft.R.Host.Monitor.exe" />
         <File Source="$(var.BinDir)\Microsoft.R.Host.Broker.Config.json" />
       </Component>
       <Component Id="RemoteRUserProfile" Guid="{7C54EB44-130F-4D8A-A9C5-2EBB96F9F359}" Win64="yes">
@@ -44,14 +43,6 @@
               ServiceQueryStatus="yes" ServiceUserDefinedControl="yes" />
         </ServiceInstall>
         <ServiceControl Id="UserProfileServiceUninstall" Name="RUserProfileService" Remove="uninstall" Stop="uninstall"/>
-      </Component>
-
-      <Component Id="MonitorAutoStart" Guid="{3502EC99-A511-4EC0-9E57-9868362D478D}" Win64="yes">
-        <RegistryValue Id="MonitorAutoStartReg" Root="HKCU" Action="write"
-                     Key="Software\Microsoft\Windows\CurrentVersion\Run"
-                     Name="R Host Broker Monitor"
-                     Value="[INSTALLFOLDER]Microsoft.R.Host.Monitor.exe"
-                     Type="string" />
       </Component>
     </DirectoryRef>
     <?include RtvsPackage.wxi ?>
