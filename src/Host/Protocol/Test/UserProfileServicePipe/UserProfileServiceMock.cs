@@ -17,7 +17,7 @@ namespace Microsoft.R.Host.Protocol.Test.UserProfileServicePipe {
 
         public string ExpectedUsername { get; private set; }
         public string ExpectedDomain { get; private set; }
-        public string ExpectedPassword { get; private set; }
+        public string ExpectedSid { get; private set; }
         
 
         public IUserProfileServiceResult CreateUserProfile(IUserCredentials credMock, ILogger logger) {
@@ -30,7 +30,7 @@ namespace Microsoft.R.Host.Protocol.Test.UserProfileServicePipe {
 
             ValidateUsername(credMock?.Username);
             ValidateDomain(credMock?.Domain);
-            ValidatePassword(credMock?.Password.ToUnsecureString());
+            ValidateSid(credMock?.Sid);
 
             return UserProfileResultMock.Create(TestingValidAccount, TestingExistingAccount);
         }
@@ -45,7 +45,7 @@ namespace Microsoft.R.Host.Protocol.Test.UserProfileServicePipe {
 
             ValidateUsername(credMock?.Username);
             ValidateDomain(credMock?.Domain);
-            ValidatePassword(credMock?.Password.ToUnsecureString());
+            ValidateSid(credMock?.Sid);
 
             return UserProfileResultMock.Create(TestingValidAccount, TestingExistingAccount);
         }
@@ -62,15 +62,15 @@ namespace Microsoft.R.Host.Protocol.Test.UserProfileServicePipe {
             ValidateString(domain, ExpectedDomain);
         }
 
-        private void ValidatePassword(string password) {
-            ValidateString(password, ExpectedPassword);
+        private void ValidateSid(string sid) {
+            ValidateString(sid, ExpectedSid);
         }
 
-        public static UserProfileServiceMock Create(string username, string domain, string password, bool validParse, bool validAccount, bool existingAccount) {
+        public static UserProfileServiceMock Create(string username, string domain, string sid, bool validParse, bool validAccount, bool existingAccount) {
             var creator = new UserProfileServiceMock();
             creator.ExpectedUsername= username;
             creator.ExpectedDomain= domain;
-            creator.ExpectedPassword= password;
+            creator.ExpectedSid = sid;
             creator.TestingValidParse = validParse;
             creator.TestingValidAccount = validAccount;
             creator.TestingExistingAccount = existingAccount;

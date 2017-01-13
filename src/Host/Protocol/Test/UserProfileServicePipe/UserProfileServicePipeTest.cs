@@ -87,41 +87,41 @@ namespace Microsoft.R.Host.Protocol.Test.UserProfileServicePipe {
 
         [CompositeTest]
         // valid test data
-        [InlineData("{\"Username\":\"testname\", \"Domain\":\"testdomain\", \"Password\":\"testPassword\"}", "testname", "testdomain", "testPassword", true, true, false)]
+        [InlineData("{\"Username\":\"testname\", \"Domain\":\"testdomain\", \"Sid\":\"testSid\"}", "testname", "testdomain", "testSid", true, true, false)]
         // Missing quote
-        [InlineData("{Username\":\"testname\", \"Domain\":\"testdomain\", \"Password\":\"testPassword\"}", null, null, null, false, false, false)]
+        [InlineData("{Username\":\"testname\", \"Domain\":\"testdomain\", \"Sid\":\"testSid\"}", null, null, null, false, false, false)]
         // Missing closing parenthesis
         [InlineData("{", null, null, null, false, false, false)]
         // empty json object
         [InlineData("{}", null, null, null, false, false, false)]
-        // No username, domain and password
-        [InlineData("{\"Username\":, \"Domain\":, \"Password\":}", null, null, null, false, false, false)]
-        // empty username domain password
-        [InlineData("{\"Username\": \"\", \"Domain\": \"\", \"Password\": \"\"}", "", "", "", true, false, false)]
+        // No username, domain and sid
+        [InlineData("{\"Username\":, \"Domain\":, \"Sid\":}", null, null, null, false, false, false)]
+        // empty username domain sid
+        [InlineData("{\"Username\": \"\", \"Domain\": \"\", \"Sid\": \"\"}", "", "", "", true, false, false)]
         // whitespace input string
         [InlineData("                     ", null, null, null, true, false, false)]
         // empty string
         [InlineData("", null, null, null, false, false, false)]
-        public async Task CreateProfileTest(string input, string username, string domain, string password, bool isValidParse, bool isValidAccount, bool isExistingAccount) {
-            var creator = UserProfileServiceMock.Create(username, domain, password, isValidParse, isValidAccount, isExistingAccount);
+        public async Task CreateProfileTest(string input, string username, string domain, string sid, bool isValidParse, bool isValidAccount, bool isExistingAccount) {
+            var creator = UserProfileServiceMock.Create(username, domain, sid, isValidParse, isValidAccount, isExistingAccount);
             await CreateProfileTestRunnerAsync(creator, input, isValidParse, isValidAccount, isExistingAccount, 500, 500);
         }
 
         [Test]
         [Category.FuzzTest]
         public async Task CreateProfileFuzzTest() {
-            string inner = "\"Username\": {0}, \"Domain\": {1}, \"Password\":{2}";
+            string inner = "\"Username\": {0}, \"Domain\": {1}, \"Sid\":{2}";
             for (int i = 0; i < 100000; ++i) {
 
                 byte[] usernameBytes = GenerateBytes();
                 byte[] domainBytes = GenerateBytes();
-                byte[] passwordBytes = GenerateBytes();
+                byte[] sidBytes = GenerateBytes();
 
                 string username = Encoding.Unicode.GetString(usernameBytes);
                 string domain = Encoding.Unicode.GetString(domainBytes);
-                string password = Encoding.Unicode.GetString(passwordBytes);
+                string sid = Encoding.Unicode.GetString(sidBytes);
 
-                string json = "{" + string.Format(inner, username, domain, password) + "}";
+                string json = "{" + string.Format(inner, username, domain, sid) + "}";
                 
                 string testResult = string.Empty;
                 UserProfileServiceFuzzTestMock creator = new UserProfileServiceFuzzTestMock();

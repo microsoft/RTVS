@@ -88,7 +88,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
             string rhostExePath = Path.Combine(brokerPath, RHostExe);
             string arguments = Invariant($"{suppressUI}--rhost-name \"{Id}\" --rhost-log-verbosity {(int)verbosity} {CommandLineArguments}");
             var username = new StringBuilder(NativeMethods.CREDUI_MAX_USERNAME_LENGTH + 1);
-            var domain = new StringBuilder(NativeMethods.CREDUI_MAX_PASSWORD_LENGTH + 1);
+            var domain = new StringBuilder(NativeMethods.CREDUI_MAX_DOMAIN_LENGTH + 1);
 
             ProcessStartInfo psi = new ProcessStartInfo(rhostExePath) {
                 UseShellExecute = false,

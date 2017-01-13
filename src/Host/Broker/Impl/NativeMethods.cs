@@ -29,6 +29,7 @@ namespace Microsoft.R.Host.Broker {
         public const int CRED_MAX_USERNAME_LENGTH = 513;
         public const int CRED_MAX_CREDENTIAL_BLOB_SIZE = 512;
         public const int CREDUI_MAX_USERNAME_LENGTH = CRED_MAX_USERNAME_LENGTH;
+        public const int CREDUI_MAX_DOMAIN_LENGTH = 256;
         public const int CREDUI_MAX_PASSWORD_LENGTH = (CRED_MAX_CREDENTIAL_BLOB_SIZE / 2);
 
         // OS type

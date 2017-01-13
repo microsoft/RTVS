@@ -10,16 +10,14 @@ namespace Microsoft.R.Host.Protocol {
         [JsonConstructor]
         private RUserProfileServiceRequest() { }
 
-        public RUserProfileServiceRequest(string username, string domain, SecureString password) {
+        public RUserProfileServiceRequest(string username, string domain, string sid) {
             Username = username;
             Domain = domain;
-            Password = password;
+            Sid = sid;
         }
 
         public string Username { get; set; }
         public string Domain { get; set; }
-
-        [JsonConverter(typeof(SecureStringJsonConverter))]
-        public SecureString Password { get; set; }
+        public string Sid { get; set; }
     }
 }

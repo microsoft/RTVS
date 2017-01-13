@@ -6,7 +6,7 @@ using System.Security;
 namespace Microsoft.Common.Core.OS {
     public interface IUserCredentials {
         string Username { get; set; }
-        SecureString Password { get; set; }
+        string Sid { get; set; }
         string Domain { get; set; }
     }
 }
