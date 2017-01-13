@@ -3,6 +3,7 @@
   <DirectoryRef Id="INSTALLFOLDER">
     <Component Id="ProductAssemblies" Guid="{B7455E6E-E704-453B-98AE-555B68977819}">
       <?include CommonAssemblies.wxi ?>
+      <File Source="$(var.BinDir)\Microsoft.R.Host.Broker.exe" />
       <?include VsToolsAssemblies.wxi ?>
     </Component>
   </DirectoryRef>
