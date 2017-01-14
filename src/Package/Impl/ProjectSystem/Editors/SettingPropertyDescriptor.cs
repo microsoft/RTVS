@@ -5,12 +5,11 @@ using System;
 using System.Collections;
 using System.ComponentModel;
 using System.Drawing.Design;
-using System.Linq;
-using Microsoft.Common.Core;
 using Microsoft.Common.Core.Composition;
 using Microsoft.Common.Core.Shell;
+using Microsoft.R.Components.Application.Configuration;
 
-namespace Microsoft.R.Components.Application.Configuration {
+namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     /// <summary>
     /// Represents a single entry in the property grid in the Project | Properties | Settings page
     /// </summary>
@@ -39,7 +38,7 @@ namespace Microsoft.R.Components.Application.Configuration {
         public override bool ShouldSerializeValue(object component) => false;
 
         protected override void FillAttributes(IList attributeList) {
-            if(!string.IsNullOrEmpty(Setting.Category)) {
+            if (!string.IsNullOrEmpty(Setting.Category)) {
                 attributeList.Add(new CategoryAttribute(Setting.Category));
             }
             if (!string.IsNullOrEmpty(Setting.Description)) {

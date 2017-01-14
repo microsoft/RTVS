@@ -12,7 +12,7 @@ using static System.FormattableString;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
     internal sealed class ConnectionViewModel : BindableBase, IConnectionViewModel {
-        private static readonly char[] _allowedNameChars = { '(', ')', '[', ']', '_', ' ', '@', '-', '.' };
+        private static readonly char[] _allowedNameChars = { '(', ')', '[', ']', '_', ' ', '@', '-', '.', '\'' };
         private const int DefaultPort = 5444;
 
         private readonly IConnection _connection;

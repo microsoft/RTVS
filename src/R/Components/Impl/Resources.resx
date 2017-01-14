@@ -386,7 +386,7 @@
     <value>Connection should have path specified.</value>
   </data>
   <data name="ConnectionManager_InvalidName" xml:space="preserve">
-    <value>The provided name is invalid. Allowed characters are letters, digits, underscore, period, dash, braces and square brackets.</value>
+    <value>The provided name is invalid. Allowed characters are letters, digits, underscore, period, dash, single quote, braces and square brackets.</value>
   </data>
   <data name="ConnectionManager_InvalidPath" xml:space="preserve">
     <value>URL or path is not a valid. Please specify full path to the local R or remote machine connection URL in the form '[https://]machine[:port]'</value>

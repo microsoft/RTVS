@@ -131,11 +131,12 @@ namespace Microsoft.R.Editor {
                     // Tokenize inside comment since we do want F1 to work inside 
                     // commented out code, code samples or Roxygen blocks.
                     positionInTokens -= token.Start;
-                    offset = token.Start + 1;
-                    tokens = tokenizer.Tokenize(lineText.Substring(offset, token.Length - 1));
+                    var positionAfterHash = token.Start + 1;
+                    tokens = tokenizer.Tokenize(lineText.Substring(positionAfterHash, token.Length - 1));
                     tokenIndex = tokens.GetItemContaining(positionInTokens);
                     if (tokenIndex >= 0) {
                         token = tokens[tokenIndex];
+                        offset = positionAfterHash;
                     }
                 }
                 if (tokenTypeCheck(token.TokenType)) {
