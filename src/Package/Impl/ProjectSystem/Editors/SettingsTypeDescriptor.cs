@@ -5,8 +5,9 @@ using System;
 using System.ComponentModel;
 using System.Linq;
 using Microsoft.Common.Core.Shell;
+using Microsoft.R.Components.Application.Configuration;
 
-namespace Microsoft.R.Components.Application.Configuration {
+namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     /// <summary>
     /// Represents view model for the property grid in the Project | Properties | Settings
     /// </summary>
