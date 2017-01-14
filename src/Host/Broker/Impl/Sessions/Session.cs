@@ -76,7 +76,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
             _pipe = new MessagePipe(messageLogger);
         }
 
-        public void StartHost(SecureString password, string profilePath, ILogger outputLogger, LogVerbosity verbosity) {
+        public void StartHost(string profilePath, ILogger outputLogger, LogVerbosity verbosity) {
             if (_hostEnd != null) {
                 throw new InvalidOperationException("Host process is already running");
             }
@@ -87,96 +87,113 @@ namespace Microsoft.R.Host.Broker.Sessions {
             string brokerPath = Path.GetDirectoryName(typeof(Program).Assembly.GetAssemblyPath());
             string rhostExePath = Path.Combine(brokerPath, RHostExe);
             string arguments = Invariant($"{suppressUI}--rhost-name \"{Id}\" --rhost-log-verbosity {(int)verbosity} {CommandLineArguments}");
-            var username = new StringBuilder(NativeMethods.CREDUI_MAX_USERNAME_LENGTH + 1);
-            var domain = new StringBuilder(NativeMethods.CREDUI_MAX_DOMAIN_LENGTH + 1);
+            var usernameBldr = new StringBuilder(NativeMethods.CREDUI_MAX_USERNAME_LENGTH + 1);
+            var domainBldr = new StringBuilder(NativeMethods.CREDUI_MAX_DOMAIN_LENGTH + 1);
 
-            ProcessStartInfo psi = new ProcessStartInfo(rhostExePath) {
-                UseShellExecute = false,
-                CreateNoWindow = false,
-                Arguments = arguments,
-                RedirectStandardInput = true,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                LoadUserProfile = true
-            };
-            
-            if (useridentity != null && WindowsIdentity.GetCurrent().User != useridentity.User && password != null) {
-                uint error = NativeMethods.CredUIParseUserName(User.Name, username, username.Capacity, domain, domain.Capacity);
+            var shortHome = new StringBuilder(NativeMethods.MAX_PATH);
+            NativeMethods.GetShortPathName(Interpreter.Info.Path, shortHome, shortHome.Capacity);
+
+            Stream stdout, stdin;
+            if (useridentity != null && WindowsIdentity.GetCurrent().User != useridentity.User) {
+                uint error = NativeMethods.CredUIParseUserName(User.Name, usernameBldr, usernameBldr.Capacity, domainBldr, domainBldr.Capacity);
                 if (error != 0) {
                     _sessionLogger.LogError(Resources.Error_UserNameParse, User.Name, error);
                     throw new ArgumentException(Resources.Error_UserNameParse.FormatInvariant(User.Name, error));
                 }
 
-                psi.Domain = domain.ToString();
-                psi.UserName = username.ToString();
-                psi.Password = password;
+                string username = usernameBldr.ToString();
+                string domain = domainBldr.ToString();
 
-                _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariableCreationBegin, User.Name, profilePath);
-                // if broker and rhost are run as different users recreate user environment variables.
-                psi.EnvironmentVariables["USERNAME"] = username.ToString();
-                _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "USERNAME", psi.EnvironmentVariables["USERNAME"]);
+                Win32EnvironmentBlock eb = CreateEnvironmentBlockForUser(useridentity, username, profilePath);
+                eb["R_HOME"] = shortHome.ToString();
+                _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "R_HOME", eb["R_HOME"]);
+                eb["PATH"] = Interpreter.Info.BinPath + ";" + Environment.GetEnvironmentVariable("PATH");
+                _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "PATH", eb["PATH"]);
 
-                psi.EnvironmentVariables["HOMEDRIVE"] = profilePath.Substring(0, 2);
-                _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "HOMEDRIVE", psi.EnvironmentVariables["HOMEDRIVE"]);
+                _sessionLogger.LogInformation(Resources.Info_StartingRHost, Id, User.Name, rhostExePath, arguments);
+                Stream stderror;
 
-                psi.EnvironmentVariables["HOMEPATH"] = profilePath.Substring(2);
-                _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "HOMEPATH", psi.EnvironmentVariables["HOMEPATH"]);
+                using (Win32NativeEnvironmentBlock nativeEnv = eb.GetNativeEnvironmentBlock()) {
+                    int pid = Win32Process.StartProcessAsUser(useridentity, rhostExePath, arguments, Path.GetDirectoryName(rhostExePath), nativeEnv, out stdin, out stdout, out stderror);
+                    _process = Process.GetProcessById(pid);
+                    _process.EnableRaisingEvents = true;
 
-                psi.EnvironmentVariables["USERPROFILE"] = Invariant($"{psi.EnvironmentVariables["HOMEDRIVE"]}{psi.EnvironmentVariables["HOMEPATH"]}");
-                _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "USERPROFILE", psi.EnvironmentVariables["USERPROFILE"]);
+                    _process.Exited += delegate {
+                        _hostEnd?.Dispose();
+                        _hostEnd = null;
+                        State = SessionState.Terminated;
+                    };
 
-                psi.EnvironmentVariables["APPDATA"] = Invariant($"{psi.EnvironmentVariables["USERPROFILE"]}\\AppData\\Roaming");
-                _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "APPDATA", psi.EnvironmentVariables["APPDATA"]);
+                    _process.WaitForExit(250);
+                    if (_process.HasExited && _process.ExitCode < 0) {
+                        var message = ErrorCodeConverter.MessageFromErrorCode(_process.ExitCode);
+                        if (!string.IsNullOrEmpty(message)) {
+                            throw new Win32Exception(message);
+                        }
+                        throw new Win32Exception(_process.ExitCode);
+                    }
+                }
 
-                psi.EnvironmentVariables["LOCALAPPDATA"] = Invariant($"{psi.EnvironmentVariables["USERPROFILE"]}\\AppData\\Local");
-                _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "LOCALAPPDATA", psi.EnvironmentVariables["LOCALAPPDATA"]);
+                _sessionLogger.LogInformation(Resources.Info_StartedRHost, Id, User.Name);
 
-                psi.EnvironmentVariables["TEMP"] = Invariant($"{psi.EnvironmentVariables["LOCALAPPDATA"]}\\Temp");
-                _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "TEMP", psi.EnvironmentVariables["TEMP"]);
+                HostToClientErrorWorker(stderror, _process.Id, (int processid, string errdata) => {
+                    outputLogger?.LogTrace(Resources.Trace_ErrorDataReceived, processid, errdata);
+                }).DoNotWait();
 
-                psi.EnvironmentVariables["TMP"] = Invariant($"{psi.EnvironmentVariables["LOCALAPPDATA"]}\\Temp");
-                _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "TMP", psi.EnvironmentVariables["TMP"]);
+            } else {
+                ProcessStartInfo psi = new ProcessStartInfo(rhostExePath) {
+                    UseShellExecute = false,
+                    CreateNoWindow = false,
+                    Arguments = arguments,
+                    RedirectStandardInput = true,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    LoadUserProfile = true
+                };
+
+
+                psi.EnvironmentVariables["R_HOME"] = shortHome.ToString();
+                psi.EnvironmentVariables["PATH"] = Interpreter.Info.BinPath + ";" + Environment.GetEnvironmentVariable("PATH");
+
+                psi.WorkingDirectory = Path.GetDirectoryName(rhostExePath);
+
+                _process = new Process {
+                    StartInfo = psi,
+                    EnableRaisingEvents = true,
+                };
+
+                _process.ErrorDataReceived += (sender, e) => {
+                    var process = (Process)sender;
+                    outputLogger?.LogTrace(Resources.Trace_ErrorDataReceived, process.Id, e.Data);
+                };
+
+                _process.Exited += delegate {
+                    _hostEnd?.Dispose();
+                    _hostEnd = null;
+                    State = SessionState.Terminated;
+                };
+
+                _sessionLogger.LogInformation(Resources.Info_StartingRHost, Id, User.Name, rhostExePath, arguments);
+                try {
+                    StartSession();
+                } catch (Exception ex) {
+                    _sessionLogger.LogError(Resources.Error_RHostFailedToStart, ex.Message);
+                    throw;
+                }
+
+                _sessionLogger.LogInformation(Resources.Info_StartedRHost, Id, User.Name);
+
+                _process.BeginErrorReadLine();
+
+                stdin = _process.StandardInput.BaseStream;
+                stdout = _process.StandardOutput.BaseStream;
             }
-
-            var shortHome = new StringBuilder(NativeMethods.MAX_PATH);
-            NativeMethods.GetShortPathName(Interpreter.Info.Path, shortHome, shortHome.Capacity);
-            psi.EnvironmentVariables["R_HOME"] = shortHome.ToString();
-            psi.EnvironmentVariables["PATH"] = Interpreter.Info.BinPath + ";" + Environment.GetEnvironmentVariable("PATH");
-
-            psi.WorkingDirectory = Path.GetDirectoryName(rhostExePath);
-            
-            _process = new Process {
-                StartInfo = psi,
-                EnableRaisingEvents = true,
-            };
-
-            _process.ErrorDataReceived += (sender, e) => {
-                var process = (Process)sender;
-                outputLogger?.LogTrace(Resources.Trace_ErrorDataReceived, process.Id, e.Data);
-            };
-
-            _process.Exited += delegate {
-                _hostEnd?.Dispose();
-                _hostEnd = null;
-                State = SessionState.Terminated;
-            };
-
-            _sessionLogger.LogInformation(Resources.Info_StartingRHost, Id, User.Name, rhostExePath, arguments);
-            try {
-                StartSession();
-            } catch(Exception ex) {
-                _sessionLogger.LogError(Resources.Error_RHostFailedToStart, ex.Message);
-                throw;
-            }
-            _sessionLogger.LogInformation(Resources.Info_StartedRHost, Id, User.Name);
-
-            _process.BeginErrorReadLine();
 
             var hostEnd = _pipe.ConnectHost(_process.Id);
             _hostEnd = hostEnd;
 
-            ClientToHostWorker(_process.StandardInput.BaseStream, hostEnd).DoNotWait();
-            HostToClientWorker(_process.StandardOutput.BaseStream, hostEnd).DoNotWait();
+            ClientToHostWorker(stdin, hostEnd).DoNotWait();
+            HostToClientWorker(stdout, hostEnd).DoNotWait();
         }
 
         private void StartSession() {
@@ -189,6 +206,38 @@ namespace Microsoft.R.Host.Broker.Sessions {
                 }
                 throw new Win32Exception(_process.ExitCode);
             }
+        }
+
+        private Win32EnvironmentBlock CreateEnvironmentBlockForUser(WindowsIdentity useridentity, string username, string profilePath) {
+            Win32EnvironmentBlock eb = Win32EnvironmentBlock.Create(useridentity.Token);
+
+            _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariableCreationBegin, User.Name, profilePath);
+            // if broker and rhost are run as different users recreate user environment variables.
+            eb["USERNAME"] = username;
+            _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "USERNAME", eb["USERNAME"]);
+
+            eb["HOMEDRIVE"] = profilePath.Substring(0, 2);
+            _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "HOMEDRIVE", eb["HOMEDRIVE"]);
+
+            eb["HOMEPATH"] = profilePath.Substring(2);
+            _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "HOMEPATH", eb["HOMEPATH"]);
+
+            eb["USERPROFILE"] = $"{eb["HOMEDRIVE"]}{eb["HOMEPATH"]}";
+            _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "USERPROFILE", eb["USERPROFILE"]);
+
+            eb["APPDATA"] = $"{eb["USERPROFILE"]}\\AppData\\Roaming";
+            _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "APPDATA", eb["APPDATA"]);
+
+            eb["LOCALAPPDATA"] = $"{eb["USERPROFILE"]}\\AppData\\Local";
+            _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "LOCALAPPDATA", eb["LOCALAPPDATA"]);
+
+            eb["TEMP"] = $"{eb["LOCALAPPDATA"]}\\Temp";
+            _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "TEMP", eb["TEMP"]);
+
+            eb["TMP"] = $"{eb["LOCALAPPDATA"]}\\Temp";
+            _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "TMP", eb["TMP"]);
+
+            return eb;
         }
 
         public void KillHost() {
@@ -213,6 +262,21 @@ namespace Microsoft.R.Host.Broker.Sessions {
             }
 
             return _pipe.ConnectClient();
+        }
+
+        private async Task HostToClientErrorWorker(Stream stream, int processid, Action<int, string> opp) {
+            using (StreamReader reader = new StreamReader(stream)) {
+                while (true) {
+                    try {
+                        string data = await reader.ReadLineAsync();
+                        if (data.Length > 0) {
+                            opp?.Invoke(processid, data);
+                        }
+                    } catch (IOException) {
+                        break;
+                    }
+                }
+            }
         }
 
         private async Task ClientToHostWorker(Stream stream, IMessagePipeEnd pipe) {

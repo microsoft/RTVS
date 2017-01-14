@@ -111,7 +111,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
             }
         }
 
-        public Session CreateSession(IIdentity user, string id, Interpreter interpreter, SecureString password, string profilePath, string commandLineArguments) {
+        public Session CreateSession(IIdentity user, string id, Interpreter interpreter, string profilePath, string commandLineArguments) {
             Session session;
 
             lock (_sessions) {
@@ -136,7 +136,6 @@ namespace Microsoft.R.Host.Broker.Sessions {
             }
 
             session.StartHost(
-                password,
                 profilePath,
                 _loggingOptions.LogHostOutput ? _hostOutputLogger : null,
                 _loggingOptions.LogPackets || _loggingOptions.LogHostOutput ? LogVerbosity.Traffic : LogVerbosity.Minimal);
