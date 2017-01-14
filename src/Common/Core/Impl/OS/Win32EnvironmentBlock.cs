@@ -71,19 +71,32 @@ namespace Microsoft.Common.Core.OS {
 
         public new string this[string key] {
             get {
-                if (ContainsKey(key)) {
-                    return base[key];
+                string mapped = GetMappedKey(key);
+                if (string.IsNullOrWhiteSpace(mapped)) {
+                    return null; 
                 } else {
-                    return null;
+                    return base[mapped];
                 }
             }
             set {
-                if (ContainsKey(key)) {
-                    base[key] = value;
+                string mapped = GetMappedKey(key);
+                if (!string.IsNullOrWhiteSpace(mapped)) {
+                    base[mapped] = value;
                 } else {
                     Add(key, value);
                 }
             }
+        }
+
+        private string GetMappedKey(string key) {
+            string low = key.ToLowerInvariant();
+            foreach (string k in Keys) {
+                string l = k.ToLowerInvariant();
+                if (l == low) {
+                    return k;
+                }
+            }
+            return null;
         }
     }
 }

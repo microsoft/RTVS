@@ -107,7 +107,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
                 Win32EnvironmentBlock eb = CreateEnvironmentBlockForUser(useridentity, username, profilePath);
                 eb["R_HOME"] = shortHome.ToString();
                 _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "R_HOME", eb["R_HOME"]);
-                eb["PATH"] = Interpreter.Info.BinPath + ";" + Environment.GetEnvironmentVariable("PATH");
+                eb["PATH"] = Interpreter.Info.BinPath + ";" + eb["PATH"];
                 _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "PATH", eb["PATH"]);
 
                 _sessionLogger.LogInformation(Resources.Info_StartingRHost, Id, User.Name, rhostExePath, arguments);

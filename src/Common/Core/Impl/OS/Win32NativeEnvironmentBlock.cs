@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Runtime.InteropServices;
 using static Microsoft.Common.Core.NativeMethods;
 
 namespace Microsoft.Common.Core.OS {
@@ -20,7 +21,7 @@ namespace Microsoft.Common.Core.OS {
                 if (disposing) {
                     // dispose managed state (managed objects).
                 }
-                DestroyEnvironmentBlock(NativeEnvironmentBlock);
+                Marshal.FreeHGlobal(NativeEnvironmentBlock);
                 disposedValue = true;
             }
         }
