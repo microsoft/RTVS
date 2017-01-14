@@ -41,7 +41,6 @@ namespace Microsoft.Languages.Editor.Test.Shell {
         /// that also includes objects exported from package-level assemblies.
         /// </summary>
         private CompositionContainer _container;
-        private TestAssemblyResolver _assemblyResolver;
 
         private static bool _traceExportImports = false;
 
@@ -135,79 +134,29 @@ namespace Microsoft.Languages.Editor.Test.Shell {
 
         private CompositionContainer CreateContainer() {
             lock (_containerLock) {
-                CompositionContainer container = null;
-                _assemblyResolver = new TestAssemblyResolver();
+                CompositionContainer container;
 
                 string thisAssembly = Assembly.GetExecutingAssembly().GetAssemblyPath();
                 string assemblyLoc = Path.GetDirectoryName(thisAssembly);
 
-                AggregateCatalog aggregateCatalog = new AggregateCatalog();
-
-                AddAssembliesToCatalog(_coreEditorAssemblies, AssemblyLocations.EditorPath, aggregateCatalog);
+                var assemblies = new List<string>();
+                assemblies.AddRange(_coreEditorAssemblies);
 #if VS14
-                AddAssembliesToCatalog(_cpsAssemblies, AssemblyLocations.CpsPath, aggregateCatalog);
-                AddAssembliesToCatalog(_projectAssemblies, AssemblyLocations.PrivatePath, aggregateCatalog);
+                assemblies.AddRange(_cpsAssemblies);
+                assemblies.AddRange(_projectAssemblies);
 #else
-                AddAssembliesToCatalog(_projectAssemblies, AssemblyLocations.CpsPath, aggregateCatalog);
+                assemblies.AddRange(_projectAssemblies);
 #endif
-                AddAssembliesToCatalog(_privateEditorAssemblies, AssemblyLocations.PrivatePath, aggregateCatalog);
+                assemblies.AddRange(_privateEditorAssemblies);
+                assemblies.AddRange(_rtvsEditorAssemblies);
+                assemblies.AddRange(_additionalAssemblies);
 
-                foreach (string assemblyName in _rtvsEditorAssemblies) {
-                    AddAssemblyToCatalog(assemblyLoc, assemblyName, aggregateCatalog);
-                }
-
-                foreach (string assemblyName in _additionalAssemblies) {
-                    AddAssemblyToCatalog(assemblyLoc, assemblyName, aggregateCatalog);
-                }
-
+                var aggregateCatalog = CatalogFactory.CreateVsAssembliesCatalog(assemblies);
                 AssemblyCatalog thisAssemblyCatalog = new AssemblyCatalog(Assembly.GetExecutingAssembly());
                 aggregateCatalog.Catalogs.Add(thisAssemblyCatalog);
 
                 container = BuildCatalog(aggregateCatalog);
                 return container;
-            }
-        }
-
-        private static void AddAssembliesToCatalog(IEnumerable<string> assemblyNames, string basePath, AggregateCatalog aggregateCatalog) {
-            foreach (string asmName in assemblyNames) {
-                var assembly = GetLoadedAssembly(asmName) ?? Assembly.LoadFrom(Path.Combine(basePath, asmName));
-                var catalog = new AssemblyCatalog(assembly);
-                aggregateCatalog.Catalogs.Add(catalog);
-            }
-        }
-
-        private static Assembly GetLoadedAssembly(string assemblyName) {
-            if (Path.GetExtension(assemblyName).EqualsIgnoreCase(".dll")) {
-                assemblyName = Path.GetFileNameWithoutExtension(assemblyName);
-            }
-
-            return AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.GetName().Name.EqualsIgnoreCase(assemblyName));
-        }
-
-        private static void AddAssemblyToCatalog(string assemblyLoc, string assemblyName, AggregateCatalog aggregateCatalog) {
-            string[] paths = new string[]
-            {
-                Path.Combine(assemblyLoc, assemblyName),
-            };
-
-            try {
-                Assembly assembly = null;
-
-                foreach (string path in paths) {
-                    if (File.Exists(path)) {
-                        assembly = Assembly.LoadFrom(path);
-                        break;
-                    }
-                }
-
-                if (assembly == null) {
-                    throw new FileNotFoundException(assemblyName);
-                }
-
-                var catalog = new AssemblyCatalog(assembly).Filter(cpd => !cpd.ContainsPartMetadataWithKey(PartMetadataAttributeNames.SkipInEditorTestCompositionCatalog));
-                aggregateCatalog.Catalogs.Add(catalog);
-            } catch (Exception) {
-                Debug.Assert(false, "Can't find editor assembly: " + assemblyName);
             }
         }
 

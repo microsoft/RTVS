@@ -10,7 +10,7 @@ namespace Microsoft.Markdown.Editor.Test {
     // Fixture doesn't import itself. Use AssemblyFixtureImportAttribute
     [ExcludeFromCodeCoverage]
     public class MarkdownEditorMefCatalogFixture : LanguagesEditorMefCatalogFixture {
-        protected override IEnumerable<string> GetBinDirectoryAssemblies() => base.GetBinDirectoryAssemblies().Concat(new[] {
+        protected override IEnumerable<string> GetAssemblies() => base.GetAssemblies().Concat(new[] {
             "Microsoft.Markdown.Editor",
             "Microsoft.Markdown.Editor.Test"
         });

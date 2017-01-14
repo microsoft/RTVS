@@ -7,10 +7,4 @@ using Microsoft.UnitTests.References;
 
 [assembly: TestFrameworkOverride]
 [assembly: AssemblyFixtureImport(typeof(RSupportMefCatalogFixture))]
-#if VS14
-[assembly: Dev14AssemblyLoader]
-#endif
-#if VS15
-[assembly: Dev15AssemblyLoader]
-#endif
 

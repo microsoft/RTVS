@@ -19,7 +19,7 @@ namespace Microsoft.R.Support.Test {
     // Fixture doesn't import itself. Use AssemblyFixtureImportAttribute
     [ExcludeFromCodeCoverage]
     public class RSupportMefCatalogFixture : LanguagesEditorMefCatalogFixture {
-        protected override IEnumerable<string> GetBinDirectoryAssemblies() => base.GetBinDirectoryAssemblies().Concat(new[] {
+        protected override IEnumerable<string> GetAssemblies() => base.GetAssemblies().Concat(new[] {
             "Microsoft.VisualStudio.InteractiveWindow.dll",
             "Microsoft.R.Support",
             "Microsoft.R.Support.Test"

@@ -3,13 +3,6 @@
 
 using Microsoft.R.Editor.Test;
 using Microsoft.UnitTests.Core.XUnit;
-using Microsoft.UnitTests.References;
 
 [assembly: TestFrameworkOverride]
 [assembly: AssemblyFixtureImport(typeof(REditorMefCatalogFixture))]
-#if VS14
-[assembly: Dev14AssemblyLoader]
-#endif
-#if VS15
-[assembly: Dev15AssemblyLoader]
-#endif
