@@ -24,6 +24,7 @@ namespace Microsoft.R.Host.Client {
     public sealed partial class RHostSession : IRHostSession {
         private readonly IRSession _session;
         private readonly DisposableBag _disposableBag;
+        private IRHostSessionCallback _callback;
 
         public Task HostStarted => _session.HostStarted;
         public bool IsHostRunning => _session.IsHostRunning;
@@ -33,9 +34,9 @@ namespace Microsoft.R.Host.Client {
         public event EventHandler<EventArgs> Disconnected;
 
         public static IRHostSession Create(string name, string url = null) {
-            if(string.IsNullOrEmpty(url)) {
+            if (string.IsNullOrEmpty(url)) {
                 var engine = new RInstallation().GetCompatibleEngines().FirstOrDefault();
-                if(engine == null) {
+                if (engine == null) {
                     throw new InvalidOperationException("No R engines installed");
                 }
                 url = engine.InstallPath;
@@ -51,8 +52,10 @@ namespace Microsoft.R.Host.Client {
 
             _session.Connected += OnSessionConnected;
             _session.Disconnected += OnSessionDisconnected;
+            _session.Output += OnSessionOutput;
 
             _disposableBag = DisposableBag.Create<RHostSession>()
+                .Add(() => _session.Output -= OnSessionOutput)
                 .Add(() => _session.Connected -= OnSessionConnected)
                 .Add(() => _session.Disconnected -= OnSessionDisconnected);
         }
@@ -62,17 +65,23 @@ namespace Microsoft.R.Host.Client {
             _session?.Dispose();
         }
 
-        private void OnSessionConnected(object sender, RConnectedEventArgs e) 
+        private void OnSessionOutput(object sender, ROutputEventArgs e) 
+            => _callback.Output(e.Message, e.OutputType == OutputType.Error);
+
+        private void OnSessionConnected(object sender, RConnectedEventArgs e)
             => Connected?.Invoke(this, EventArgs.Empty);
-        private void OnSessionDisconnected(object sender, EventArgs e) 
+        private void OnSessionDisconnected(object sender, EventArgs e)
             => Disconnected?.Invoke(this, EventArgs.Empty);
 
         #region IRHostSession
         public Task CancelAllAsync(CancellationToken cancellationToken = default(CancellationToken))
             => _session.CancelAllAsync(cancellationToken);
 
-        public Task StartHostAsync(IRHostSessionCallback callback, string workingDirectory = null, int codePage = 0, int timeout = 3000, CancellationToken cancellationToken = default(CancellationToken))
-            => _session.StartHostAsync(new RHostStartupInfo(null, workingDirectory, codePage), new RSessionSimpleCallback(callback), timeout, cancellationToken);
+        public Task StartHostAsync(IRHostSessionCallback callback, string workingDirectory = null, int codePage = 0, int timeout = 3000, CancellationToken cancellationToken = default(CancellationToken)) {
+            _callback = callback;
+            var startupInfo = new RHostStartupInfo(null, workingDirectory, codePage);
+            return _session.StartHostAsync(startupInfo, new RSessionSimpleCallback(_callback), timeout, cancellationToken);
+        }
 
         public Task StopHostAsync(bool waitForShutdown = true, CancellationToken cancellationToken = default(CancellationToken))
             => _session.StopHostAsync(waitForShutdown, cancellationToken);

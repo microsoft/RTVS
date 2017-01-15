@@ -45,5 +45,10 @@ namespace Microsoft.R.Host.Client {
         /// </summary>
         /// <returns>Plot device properties</returns>
         PlotDeviceProperties PlotDeviceProperties { get; }
+
+        /// <summary>
+        /// Called when session produces output (as in the REPL output).
+        /// </summary>
+        void Output(string message, bool error);
     }
 }

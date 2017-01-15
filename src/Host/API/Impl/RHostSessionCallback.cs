@@ -18,5 +18,7 @@ namespace Microsoft.R.Host.Client {
 
         public virtual PlotDeviceProperties PlotDeviceProperties
             => new PlotDeviceProperties(1024, 1024, 96);
+
+        public virtual void Output(string message, bool error) { }
     }
 }
