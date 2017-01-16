@@ -38,7 +38,8 @@ namespace Microsoft.R.Support.Help.Packages {
             { "base", "stats", "utils", "graphics", "datasets", "methods" };
 
         [ImportingConstructor]
-        public PackageIndex(IRInteractiveWorkflowProvider interactiveWorkflowProvider, ICoreShell shell, IIntellisenseRSession host, IFunctionIndex functionIndex) {
+        public PackageIndex(
+            IRInteractiveWorkflowProvider interactiveWorkflowProvider, ICoreShell shell, IIntellisenseRSession host, IFunctionIndex functionIndex) {
             _shell = shell;
             _host = host;
             _functionIndex = functionIndex;
@@ -233,6 +234,14 @@ namespace Microsoft.R.Support.Help.Packages {
                 return result.Select(p => p.ToObject<RPackage>());
             } catch (TaskCanceledException) { }
             return Enumerable.Empty<RPackage>();
+        }
+
+        private async Task<IEnumerable<string>> GetLoadedPackagesAsync() {
+            try {
+                await _host.CreateSessionAsync();
+                return _host.LoadedPackageNames;
+            } catch (OperationCanceledException) { }
+            return Enumerable.Empty<string>();
         }
 
         internal static string CacheFolderPath =>
