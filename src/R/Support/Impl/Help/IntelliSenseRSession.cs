@@ -32,6 +32,7 @@ namespace Microsoft.R.Support.Help {
             _sessionProvider = _workflow.RSessions;
 
             _workflow.RSession.Mutated += OnInteractiveSessionMutated;
+            UpdateListOfLoadedPackagesAsync().DoNotWait();
         }
 
         /// <summary>
