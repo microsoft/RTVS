@@ -90,11 +90,16 @@ namespace Microsoft.R.Host.Broker.Sessions {
             var usernameBldr = new StringBuilder(NativeMethods.CREDUI_MAX_USERNAME_LENGTH + 1);
             var domainBldr = new StringBuilder(NativeMethods.CREDUI_MAX_DOMAIN_LENGTH + 1);
 
+            // Get R_HOME value
             var shortHome = new StringBuilder(NativeMethods.MAX_PATH);
             NativeMethods.GetShortPathName(Interpreter.Info.Path, shortHome, shortHome.Capacity);
 
-            Stream stdout, stdin;
-            if (useridentity != null && WindowsIdentity.GetCurrent().User != useridentity.User) {
+            Stream stdout, stdin, stderror;
+            bool loggedOnUser = useridentity != null && WindowsIdentity.GetCurrent().User != useridentity.User;
+
+            // build user environment block
+            Win32EnvironmentBlock eb;
+            if (loggedOnUser) {
                 uint error = NativeMethods.CredUIParseUserName(User.Name, usernameBldr, usernameBldr.Capacity, domainBldr, domainBldr.Capacity);
                 if (error != 0) {
                     _sessionLogger.LogError(Resources.Error_UserNameParse, User.Name, error);
@@ -104,108 +109,57 @@ namespace Microsoft.R.Host.Broker.Sessions {
                 string username = usernameBldr.ToString();
                 string domain = domainBldr.ToString();
 
-                Win32EnvironmentBlock eb = CreateEnvironmentBlockForUser(useridentity, username, profilePath);
-                eb["R_HOME"] = shortHome.ToString();
-                _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "R_HOME", eb["R_HOME"]);
-                eb["PATH"] = Interpreter.Info.BinPath + ";" + eb["PATH"];
-                _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "PATH", eb["PATH"]);
-
-                _sessionLogger.LogInformation(Resources.Info_StartingRHost, Id, User.Name, rhostExePath, arguments);
-                Stream stderror;
-
-                using (Win32NativeEnvironmentBlock nativeEnv = eb.GetNativeEnvironmentBlock()) {
-                    int pid = Win32Process.StartProcessAsUser(useridentity, rhostExePath, arguments, Path.GetDirectoryName(rhostExePath), nativeEnv, out stdin, out stdout, out stderror);
-                    _process = Process.GetProcessById(pid);
-                    _process.EnableRaisingEvents = true;
-
-                    _process.Exited += delegate {
-                        _hostEnd?.Dispose();
-                        _hostEnd = null;
-                        State = SessionState.Terminated;
-                    };
-
-                    _process.WaitForExit(250);
-                    if (_process.HasExited && _process.ExitCode < 0) {
-                        var message = ErrorCodeConverter.MessageFromErrorCode(_process.ExitCode);
-                        if (!string.IsNullOrEmpty(message)) {
-                            throw new Win32Exception(message);
-                        }
-                        throw new Win32Exception(_process.ExitCode);
-                    }
-                }
-
-                _sessionLogger.LogInformation(Resources.Info_StartedRHost, Id, User.Name);
-
-                HostToClientErrorWorker(stderror, _process.Id, (int processid, string errdata) => {
-                    outputLogger?.LogTrace(Resources.Trace_ErrorDataReceived, processid, errdata);
-                }).DoNotWait();
-
+                eb = CreateEnvironmentBlockForUser(useridentity, username, profilePath);
             } else {
-                ProcessStartInfo psi = new ProcessStartInfo(rhostExePath) {
-                    UseShellExecute = false,
-                    CreateNoWindow = false,
-                    Arguments = arguments,
-                    RedirectStandardInput = true,
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    LoadUserProfile = true
-                };
-
-
-                psi.EnvironmentVariables["R_HOME"] = shortHome.ToString();
-                psi.EnvironmentVariables["PATH"] = Interpreter.Info.BinPath + ";" + Environment.GetEnvironmentVariable("PATH");
-
-                psi.WorkingDirectory = Path.GetDirectoryName(rhostExePath);
-
-                _process = new Process {
-                    StartInfo = psi,
-                    EnableRaisingEvents = true,
-                };
-
-                _process.ErrorDataReceived += (sender, e) => {
-                    var process = (Process)sender;
-                    outputLogger?.LogTrace(Resources.Trace_ErrorDataReceived, process.Id, e.Data);
-                };
-
-                _process.Exited += delegate {
-                    _hostEnd?.Dispose();
-                    _hostEnd = null;
-                    State = SessionState.Terminated;
-                };
-
-                _sessionLogger.LogInformation(Resources.Info_StartingRHost, Id, User.Name, rhostExePath, arguments);
-                try {
-                    StartSession();
-                } catch (Exception ex) {
-                    _sessionLogger.LogError(Resources.Error_RHostFailedToStart, ex.Message);
-                    throw;
-                }
-
-                _sessionLogger.LogInformation(Resources.Info_StartedRHost, Id, User.Name);
-
-                _process.BeginErrorReadLine();
-
-                stdin = _process.StandardInput.BaseStream;
-                stdout = _process.StandardOutput.BaseStream;
+                eb = Win32EnvironmentBlock.Create(WindowsIdentity.GetCurrent().Token);
             }
+
+            // add additional variables to the environment block
+            eb["R_HOME"] = shortHome.ToString();
+            _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "R_HOME", eb["R_HOME"]);
+            eb["PATH"] = Invariant($"{Interpreter.Info.BinPath};{eb["PATH"]}");
+            _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "PATH", eb["PATH"]);
+
+
+            _sessionLogger.LogInformation(Resources.Info_StartingRHost, Id, User.Name, rhostExePath, arguments);
+            using (Win32NativeEnvironmentBlock nativeEnv = eb.GetNativeEnvironmentBlock()) {
+                int pid = 0;
+                if (loggedOnUser) {
+                    pid = Win32Process.StartProcessAsUser(useridentity, rhostExePath, arguments, Path.GetDirectoryName(rhostExePath), nativeEnv, out stdin, out stdout, out stderror);
+                }else {
+                    pid = Win32Process.StartProcessAsUser(null, rhostExePath, arguments, Path.GetDirectoryName(rhostExePath), nativeEnv, out stdin, out stdout, out stderror);
+                }
+                _process = Process.GetProcessById(pid);
+            }
+
+            _process.EnableRaisingEvents = true;
+
+            _process.Exited += delegate {
+                _hostEnd?.Dispose();
+                _hostEnd = null;
+                State = SessionState.Terminated;
+            };
+
+            _process.WaitForExit(250);
+            if (_process.HasExited && _process.ExitCode < 0) {
+                var message = ErrorCodeConverter.MessageFromErrorCode(_process.ExitCode);
+                if (!string.IsNullOrEmpty(message)) {
+                    throw new Win32Exception(message);
+                }
+                throw new Win32Exception(_process.ExitCode);
+            }
+
+            _sessionLogger.LogInformation(Resources.Info_StartedRHost, Id, User.Name);
 
             var hostEnd = _pipe.ConnectHost(_process.Id);
             _hostEnd = hostEnd;
 
             ClientToHostWorker(stdin, hostEnd).DoNotWait();
             HostToClientWorker(stdout, hostEnd).DoNotWait();
-        }
 
-        private void StartSession() {
-            _process.Start();
-            _process.WaitForExit(250);
-            if (_process.HasExited && _process.ExitCode < 0) {
-                var message = ErrorCodeConverter.MessageFromErrorCode(_process.ExitCode);
-                if (!string.IsNullOrEmpty(message)) { 
-                    throw new Win32Exception(message);
-                }
-                throw new Win32Exception(_process.ExitCode);
-            }
+            HostToClientErrorWorker(stderror, _process.Id, (int processid, string errdata) => {
+                outputLogger?.LogTrace(Resources.Trace_ErrorDataReceived, processid, errdata);
+            }).DoNotWait();
         }
 
         private Win32EnvironmentBlock CreateEnvironmentBlockForUser(WindowsIdentity useridentity, string username, string profilePath) {

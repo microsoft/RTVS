@@ -63,32 +63,51 @@ namespace Microsoft.Common.Core.OS {
             si.hStdOutput = stdoutWrite;
             si.hStdError = stderrorWrite;
 
-            SECURITY_ATTRIBUTES processAttr = CreateSecurityAttributes();
-            SECURITY_ATTRIBUTES threadAttr = CreateSecurityAttributes();
+            SECURITY_ATTRIBUTES processAttr = CreateSecurityAttributes(winIdentity == null ? WellKnownSidType.AuthenticatedUserSid : WellKnownSidType.NetworkServiceSid);
+            SECURITY_ATTRIBUTES threadAttr = CreateSecurityAttributes(winIdentity == null ? WellKnownSidType.AuthenticatedUserSid : WellKnownSidType.NetworkServiceSid);
 
             PROCESS_INFORMATION pi;
-            if (!CreateProcessAsUser(
-                winIdentity.Token, applicationName, commandLine, ref processAttr, ref threadAttr, true,
-                (uint)(CREATE_PROCESS_FLAGS.CREATE_UNICODE_ENVIRONMENT | CREATE_PROCESS_FLAGS.CREATE_NO_WINDOW),
-                environment.NativeEnvironmentBlock,
-                workingDirectory,
-                ref si,
-                out pi)) {
-                throw new Win32Exception(Marshal.GetLastWin32Error());
+            try {
+                if(winIdentity == null) {
+                    if(!CreateProcess(applicationName, commandLine, ref processAttr, ref threadAttr, true,
+                        (uint)(CREATE_PROCESS_FLAGS.CREATE_UNICODE_ENVIRONMENT | CREATE_PROCESS_FLAGS.CREATE_NO_WINDOW),
+                        environment.NativeEnvironmentBlock,
+                        workingDirectory,
+                        ref si,
+                        out pi)) {
+                        throw new Win32Exception(Marshal.GetLastWin32Error());
+                    }
+                } else {
+                    if (!CreateProcessAsUser(
+                        winIdentity.Token, applicationName, commandLine, ref processAttr, ref threadAttr, true,
+                        (uint)(CREATE_PROCESS_FLAGS.CREATE_UNICODE_ENVIRONMENT | CREATE_PROCESS_FLAGS.CREATE_NO_WINDOW),
+                        environment.NativeEnvironmentBlock,
+                        workingDirectory,
+                        ref si,
+                        out pi)) {
+                        throw new Win32Exception(Marshal.GetLastWin32Error());
+                    }
+                }
+
+                stdin = new FileStream(new SafeFileHandle(stdinWrite, true), FileAccess.Write, 0x1000, false);
+                stdout = new FileStream(new SafeFileHandle(stdoutRead, true), FileAccess.Read, 0x1000, false);
+                stderror = new FileStream(new SafeFileHandle(stderrorRead, true), FileAccess.Read, 0x1000, false);
+            } finally {
+                if(processAttr.lpSecurityDescriptor != IntPtr.Zero) {
+                    Marshal.FreeHGlobal(processAttr.lpSecurityDescriptor);
+                }
+
+                if (threadAttr.lpSecurityDescriptor != IntPtr.Zero) {
+                    Marshal.FreeHGlobal(threadAttr.lpSecurityDescriptor);
+                }
             }
 
-            stdin = new FileStream(new SafeFileHandle(stdinWrite, true), FileAccess.Write, 0x1000, false);
-            stdout = new FileStream(new SafeFileHandle(stdoutRead, true), FileAccess.Read, 0x1000, false);
-            stderror = new FileStream(new SafeFileHandle(stderrorRead, true), FileAccess.Read, 0x1000, false);
-
-            // TODO: handle cleanup for process and thread
-            // TODO: cleanup security attributes
             return pi.dwProcessId;
         }
 
-        private static SECURITY_ATTRIBUTES CreateSecurityAttributes() {
+        private static SECURITY_ATTRIBUTES CreateSecurityAttributes(WellKnownSidType sidType) {
             // Grant access to Network Service.
-            SecurityIdentifier networkService = new SecurityIdentifier(WellKnownSidType.NetworkServiceSid, null);
+            SecurityIdentifier networkService = new SecurityIdentifier(sidType, null);
             DiscretionaryAcl dacl = new DiscretionaryAcl(false, false, 1);
             dacl.AddAccess(AccessControlType.Allow, networkService, -1, InheritanceFlags.None, PropagationFlags.None);
             CommonSecurityDescriptor csd = new CommonSecurityDescriptor(false, false, ControlFlags.DiscretionaryAclPresent | ControlFlags.OwnerDefaulted | ControlFlags.GroupDefaulted, null, null, null, dacl);

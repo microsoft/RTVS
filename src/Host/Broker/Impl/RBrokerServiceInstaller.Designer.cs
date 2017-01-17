@@ -1,9 +1,15 @@
-﻿namespace Microsoft.R.Host.Broker {
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System.ComponentModel;
+using System.ServiceProcess;
+
+namespace Microsoft.R.Host.Broker {
     partial class RBrokerServiceInstaller {
         /// <summary>
         /// Required designer variable.
         /// </summary>
-        private System.ComponentModel.IContainer components = null;
+        private IContainer components = null;
 
         /// <summary> 
         /// Clean up any resources being used.
@@ -23,12 +29,12 @@
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
-            this.brokerServiceProcessInstaller = new System.ServiceProcess.ServiceProcessInstaller();
-            this.brokerServiceInstaller = new System.ServiceProcess.ServiceInstaller();
+            this.brokerServiceProcessInstaller = new ServiceProcessInstaller();
+            this.brokerServiceInstaller = new ServiceInstaller();
             // 
             // brokerServiceProcessInstaller
             // 
-            this.brokerServiceProcessInstaller.Account = System.ServiceProcess.ServiceAccount.NetworkService;
+            this.brokerServiceProcessInstaller.Account = ServiceAccount.NetworkService;
             this.brokerServiceProcessInstaller.Password = null;
             this.brokerServiceProcessInstaller.Username = null;
             // 
@@ -48,7 +54,7 @@
 
         #endregion
 
-        private System.ServiceProcess.ServiceProcessInstaller brokerServiceProcessInstaller;
-        private System.ServiceProcess.ServiceInstaller brokerServiceInstaller;
+        private ServiceProcessInstaller brokerServiceProcessInstaller;
+        private ServiceInstaller brokerServiceInstaller;
     }
 }

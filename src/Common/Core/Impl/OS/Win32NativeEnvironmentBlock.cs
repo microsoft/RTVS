@@ -3,36 +3,27 @@
 
 using System;
 using System.Runtime.InteropServices;
-using static Microsoft.Common.Core.NativeMethods;
 
 namespace Microsoft.Common.Core.OS {
-    public class Win32NativeEnvironmentBlock : IDisposable {
-        public IntPtr NativeEnvironmentBlock { get; }
+    public sealed class Win32NativeEnvironmentBlock : SafeBuffer {
+        public int Length { get; }
 
-        public Win32NativeEnvironmentBlock(IntPtr env) {
-            NativeEnvironmentBlock = env;
+        public IntPtr NativeEnvironmentBlock => handle;
+
+        private Win32NativeEnvironmentBlock(IntPtr env, int length) : base(true) {
+            SetHandle(env);
+            Length = length;
         }
 
-        #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
-
-        protected virtual void Dispose(bool disposing) {
-            if (!disposedValue) {
-                if (disposing) {
-                    // dispose managed state (managed objects).
-                }
-                Marshal.FreeHGlobal(NativeEnvironmentBlock);
-                disposedValue = true;
-            }
+        public static Win32NativeEnvironmentBlock Create(byte[] environmentData) {
+            IntPtr ptr = Marshal.AllocHGlobal(environmentData.Length);
+            Marshal.Copy(environmentData, 0, ptr, environmentData.Length);
+            return new Win32NativeEnvironmentBlock(ptr, environmentData.Length);
         }
 
-        ~Win32NativeEnvironmentBlock() {
-            Dispose(false);
+        protected override bool ReleaseHandle() {
+            Marshal.FreeHGlobal(handle);
+            return true;
         }
-        public void Dispose() {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-        #endregion
     }
 }
