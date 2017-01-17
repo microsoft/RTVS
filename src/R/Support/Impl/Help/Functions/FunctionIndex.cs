@@ -123,12 +123,16 @@ namespace Microsoft.R.Support.Help.Functions {
                     return null;
                 }
 
-                // If there is only one package, try it.
-                var loaded = _host.LoadedPackageNames.Union(packages).ToArray();
-                if (loaded.Length == 1) {
-                    packageName = loaded[0];
+                if (packages.Count == 1 && packages[0].EqualsOrdinal("rtvs")) {
+                    packageName = packages[0];
+                } else {
+                    // If there is only one package, try it.
+                    var loaded = _host.LoadedPackageNames.Union(packages).ToArray();
+                    if (loaded.Length == 1) {
+                        packageName = loaded[0];
+                    }
                 }
-            } else if (!_host.LoadedPackageNames.Contains(packageName)) {
+            } else if (!packageName.EqualsOrdinal("rtvs") && !_host.LoadedPackageNames.Contains(packageName)) {
                 // Verify that the package is currently loaded. We do not show functions from all
                 // installed packages and do not show from unloaded packages.
                 return null;
