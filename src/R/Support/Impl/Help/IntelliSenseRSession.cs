@@ -23,16 +23,13 @@ namespace Microsoft.R.Support.Help {
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRInteractiveWorkflow _workflow;
         private readonly BinaryAsyncLock _lock = new BinaryAsyncLock();
-        private IEnumerable<string> _loadedPackages = Enumerable.Empty<string>();
+        private IEnumerable<string> _loadedPackages = null;
 
         [ImportingConstructor]
         public IntelliSenseRSession(ICoreShell coreShell, IRInteractiveWorkflowProvider workflowProvider) {
             _coreShell = coreShell;
             _workflow = workflowProvider.GetOrCreate();
             _sessionProvider = _workflow.RSessions;
-
-            _workflow.RSession.Mutated += OnInteractiveSessionMutated;
-            UpdateListOfLoadedPackagesAsync().DoNotWait();
         }
 
         /// <summary>
@@ -52,14 +49,8 @@ namespace Microsoft.R.Support.Help {
         }
 
         public async Task<string> GetFunctionPackageNameAsync(string functionName) {
-            IRSession session = null;
+            IRSession session = InteractiveSession;
             string packageName = null;
-
-            if (_workflow.RSession.IsHostRunning) {
-                session = _workflow.RSession;
-            } else if (_coreShell.IsUnitTestEnvironment) {
-                session = Session;
-            }
 
             if (session != null && session.IsHostRunning) {
                 try {
@@ -96,7 +87,16 @@ namespace Microsoft.R.Support.Help {
             }
         }
 
-        public IEnumerable<string> LoadedPackageNames => _loadedPackages;
+        public IEnumerable<string> LoadedPackageNames {
+            get {
+                if (_loadedPackages == null && _workflow.RSession != null) {
+                    _workflow.RSession.Mutated += OnInteractiveSessionMutated;
+                    UpdateListOfLoadedPackagesAsync().Wait(2000);
+                    _loadedPackages = _loadedPackages ?? Enumerable.Empty<string>();
+                }
+                return _loadedPackages;
+            }
+        }
 
         private void OnInteractiveSessionMutated(object sender, EventArgs e)
              => UpdateListOfLoadedPackagesAsync().DoNotWait();
@@ -104,7 +104,7 @@ namespace Microsoft.R.Support.Help {
         private async Task UpdateListOfLoadedPackagesAsync() {
             string result;
             try {
-                result = await _workflow.RSession.EvaluateAsync<string>("paste0(.packages(), collapse = ' ')", REvaluationKind.Normal);
+                result = await InteractiveSession.EvaluateAsync<string>("paste0(.packages(), collapse = ' ')", REvaluationKind.Normal);
             } catch (RHostDisconnectedException) {
                 return;
             } catch (RException) {
@@ -116,6 +116,18 @@ namespace Microsoft.R.Support.Help {
         private void ParseSearchResponse(string response) {
             var loadedPackages = response.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             Interlocked.Exchange(ref _loadedPackages, loadedPackages);
+        }
+
+        private IRSession InteractiveSession {
+            get {
+                IRSession session = null;
+                if (_workflow.RSession.IsHostRunning) {
+                    session = _workflow.RSession;
+                } else if (_coreShell.IsUnitTestEnvironment) {
+                    session = Session;
+                }
+                return session;
+            }
         }
     }
 }

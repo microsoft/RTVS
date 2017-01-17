@@ -118,16 +118,15 @@ namespace Microsoft.R.Support.Help.Functions {
             if (string.IsNullOrEmpty(packageName)) {
                 // Find packages that the function may belong to. There may be more than one.
                 List<string> packages;
-                if (!_functionToPackageMap.TryGetValue(functionName, out packages)) {
+                if (!_functionToPackageMap.TryGetValue(functionName, out packages) || packages.Count == 0) {
                     // Not in the cache
                     return null;
                 }
 
                 // If there is only one package, try it.
-                if (packages.Count == 1) {
-                    if (_host.LoadedPackageNames.Contains(packages[0])) {
-                        packageName = packages[0];
-                    }
+                var loaded = _host.LoadedPackageNames.Union(packages).ToArray();
+                if (loaded.Length == 1) {
+                    packageName = loaded[0];
                 }
             } else if (!_host.LoadedPackageNames.Contains(packageName)) {
                 // Verify that the package is currently loaded. We do not show functions from all

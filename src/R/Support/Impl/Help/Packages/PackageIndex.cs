@@ -249,7 +249,9 @@ namespace Microsoft.R.Support.Help.Packages {
 
         public static void ClearCache() {
             try {
-                Directory.Delete(CacheFolderPath, recursive: true);
+                if (Directory.Exists(CacheFolderPath)) {
+                    Directory.Delete(CacheFolderPath, recursive: true);
+                }
             } catch (IOException) { } catch (UnauthorizedAccessException) { }
         }
 
