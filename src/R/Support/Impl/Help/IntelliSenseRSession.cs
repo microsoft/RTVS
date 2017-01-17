@@ -17,6 +17,11 @@ using Microsoft.R.Support.Settings;
 using static System.FormattableString;
 
 namespace Microsoft.R.Support.Help {
+    /// <summary>
+    /// Represents R session(s) for intellisense and signatures. The interactive session is used
+    /// to determine list of loaded packages and separate session is used to fetch RD data 
+    /// for function descriptions and signatures.
+    /// </summary>
     [Export(typeof(IIntellisenseRSession))]
     public sealed class IntelliSenseRSession : IIntellisenseRSession {
         private readonly ICoreShell _coreShell;
@@ -48,8 +53,16 @@ namespace Microsoft.R.Support.Help {
             Session = null;
         }
 
+        /// <summary>
+        /// Given function name returns package the function belongs to.
+        /// The package is determined from the interactive R session since
+        /// there may be functions with the same name but from different packages.
+        /// Most recently loaded package typically wins.
+        /// </summary>
+        /// <param name="functionName">R function name</param>
+        /// <returns>Function package or null if undefined</returns>
         public async Task<string> GetFunctionPackageNameAsync(string functionName) {
-            IRSession session = InteractiveSession;
+            IRSession session = GetLoadedPackagesInspectionSession();
             string packageName = null;
 
             if (session != null && session.IsHostRunning) {
@@ -67,7 +80,10 @@ namespace Microsoft.R.Support.Help {
             return packageName;
         }
 
-        public async Task CreateSessionAsync() {
+        /// <summary>
+        /// Starts intellisense session.
+        /// </summary>
+        public async Task StartSessionAsync() {
             var token = await _lock.ResetAsync();
             try {
                 if (!_sessionProvider.HasBroker) {
@@ -87,14 +103,18 @@ namespace Microsoft.R.Support.Help {
             }
         }
 
+        /// <summary>
+        /// Retrieves names of packages loaded into the interactive session.
+        /// </summary>
         public IEnumerable<string> LoadedPackageNames {
             get {
-                if (_loadedPackages == null && _workflow.RSession != null) {
-                    _workflow.RSession.Mutated += OnInteractiveSessionMutated;
-                    UpdateListOfLoadedPackagesAsync().Wait(2000);
-                    _loadedPackages = _loadedPackages ?? Enumerable.Empty<string>();
+                if (_loadedPackages == null) {
+                    if (_workflow.RSession != null) {
+                        _workflow.RSession.Mutated += OnInteractiveSessionMutated;
+                        UpdateListOfLoadedPackagesAsync().Wait(2000);
+                    }
                 }
-                return _loadedPackages;
+                return _loadedPackages ?? Enumerable.Empty<string>();
             }
         }
 
@@ -102,32 +122,28 @@ namespace Microsoft.R.Support.Help {
              => UpdateListOfLoadedPackagesAsync().DoNotWait();
 
         private async Task UpdateListOfLoadedPackagesAsync() {
-            string result;
             try {
-                result = await InteractiveSession.EvaluateAsync<string>("paste0(.packages(), collapse = ' ')", REvaluationKind.Normal);
-            } catch (RHostDisconnectedException) {
-                return;
-            } catch (RException) {
-                return;
-            }
-            ParseSearchResponse(result);
-        }
-
-        private void ParseSearchResponse(string response) {
-            var loadedPackages = response.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            Interlocked.Exchange(ref _loadedPackages, loadedPackages);
-        }
-
-        private IRSession InteractiveSession {
-            get {
-                IRSession session = null;
-                if (_workflow.RSession.IsHostRunning) {
-                    session = _workflow.RSession;
-                } else if (_coreShell.IsUnitTestEnvironment) {
-                    session = Session;
+                await StartSessionAsync();
+                var session = GetLoadedPackagesInspectionSession();
+                if (session != null) {
+                    var response = await session.EvaluateAsync<string>("paste0(.packages(), collapse = ' ')", REvaluationKind.Normal);
+                    var loadedPackages = response.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    Interlocked.Exchange(ref _loadedPackages, loadedPackages);
                 }
-                return session;
+            } catch (RHostDisconnectedException) { } catch (RException) { }
+        }
+
+        private IRSession GetLoadedPackagesInspectionSession() {
+            IRSession session = null;
+            // Normal case is to use the interacive session.
+            if (_workflow.RSession.IsHostRunning) {
+                session = _workflow.RSession;
+            } else if (_coreShell.IsUnitTestEnvironment) {
+                // For tests that only employ standard packages we can reuse the same session.
+                // This improves test performance and makes test code simpler.
+                session = Session;
             }
+            return session;
         }
     }
 }

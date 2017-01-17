@@ -90,7 +90,7 @@ namespace Microsoft.R.Support.Help.Packages {
                     var startTotalTime = DateTime.Now;
 
                     await TaskUtilities.SwitchToBackgroundThread();
-                    await _host.CreateSessionAsync();
+                    await _host.StartSessionAsync();
                     Debug.WriteLine("R function host start: {0} ms", (DateTime.Now - startTotalTime).TotalMilliseconds);
 
                     var startTime = DateTime.Now;
@@ -229,7 +229,7 @@ namespace Microsoft.R.Support.Help.Packages {
 
         private async Task<IEnumerable<RPackage>> GetInstalledPackagesAsync() {
             try {
-                await _host.CreateSessionAsync();
+                await _host.StartSessionAsync();
                 var result = await _host.Session.InstalledPackagesAsync();
                 return result.Select(p => p.ToObject<RPackage>());
             } catch (TaskCanceledException) { }
@@ -238,7 +238,7 @@ namespace Microsoft.R.Support.Help.Packages {
 
         private async Task<IEnumerable<string>> GetLoadedPackagesAsync() {
             try {
-                await _host.CreateSessionAsync();
+                await _host.StartSessionAsync();
                 return _host.LoadedPackageNames;
             } catch (OperationCanceledException) { }
             return Enumerable.Empty<string>();

@@ -79,7 +79,7 @@ namespace Microsoft.R.Support.Test.Packages {
 
             IPackageIndex packageIndex;
             using (var host = new IntelliSenseRSession(_shell, _workflowProvider)) {
-                await host.CreateSessionAsync();
+                await host.StartSessionAsync();
                 var functionIndex = new FunctionIndex(_shell, null, host);
                 packageIndex = new PackageIndex(_workflowProvider, _shell, host, functionIndex);
                 await packageIndex.BuildIndexAsync();
@@ -98,7 +98,7 @@ namespace Microsoft.R.Support.Test.Packages {
             RToolsSettings.Current = new TestRToolsSettings();
             PackageIndex packageIndex;
             using (var host = new IntelliSenseRSession(_shell, _workflowProvider)) {
-                await host.CreateSessionAsync();
+                await host.StartSessionAsync();
                 var functionIndex = new FunctionIndex(_shell, null, host);
                 packageIndex = new PackageIndex(_workflowProvider, _shell, host, functionIndex);
                 await packageIndex.BuildIndexAsync();

@@ -123,11 +123,12 @@ namespace Microsoft.R.Support.Help.Functions {
                     return null;
                 }
 
+                // Special case RTVS package
                 if (packages.Count == 1 && packages[0].EqualsOrdinal("rtvs")) {
                     packageName = packages[0];
                 } else {
-                    // If there is only one package, try it.
-                    var loaded = _host.LoadedPackageNames.Union(packages).ToArray();
+                    // If there is only one package, try it. 
+                    var loaded = _host.LoadedPackageNames.Intersect(packages).ToArray();
                     if (loaded.Length == 1) {
                         packageName = loaded[0];
                     }

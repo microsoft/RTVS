@@ -80,12 +80,14 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
                 session.QuickInfoContent.Should().BeEmpty();
 
                 await Workflow.RSession.ExecuteAsync("library(MASS)");
+                EventsPump.DoEvents(500);
                 session = await TriggerSessionAsync(content, 12);
 
                 session.ApplicableSpan.Should().NotBeNull();
                 session.QuickInfoContent.Should().ContainSingle().Which.ToString().Should().StartWith("select(formula");
 
                 await Workflow.RSession.ExecuteAsync("library(dplyr)");
+                EventsPump.DoEvents(500);
                 session = await TriggerSessionAsync(content, 12);
 
                 session.ApplicableSpan.Should().NotBeNull();
