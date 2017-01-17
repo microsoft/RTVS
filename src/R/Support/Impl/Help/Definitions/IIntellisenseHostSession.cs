@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.R.Host.Client;
 
@@ -10,5 +11,6 @@ namespace Microsoft.R.Support.Help {
         IRSession Session { get; }
         Task CreateSessionAsync();
         Task<string> GetFunctionPackageNameAsync(string functionName);
+        IEnumerable<string> LoadedPackageNames { get; }
     }
 }

@@ -38,7 +38,8 @@ namespace Microsoft.R.Support.Help.Packages {
             { "base", "stats", "utils", "graphics", "datasets", "methods" };
 
         [ImportingConstructor]
-        public PackageIndex(IRInteractiveWorkflowProvider interactiveWorkflowProvider, ICoreShell shell, IIntellisenseRSession host, IFunctionIndex functionIndex) {
+        public PackageIndex(
+            IRInteractiveWorkflowProvider interactiveWorkflowProvider, ICoreShell shell, IIntellisenseRSession host, IFunctionIndex functionIndex) {
             _shell = shell;
             _host = host;
             _functionIndex = functionIndex;
@@ -235,12 +236,22 @@ namespace Microsoft.R.Support.Help.Packages {
             return Enumerable.Empty<RPackage>();
         }
 
+        private async Task<IEnumerable<string>> GetLoadedPackagesAsync() {
+            try {
+                await _host.CreateSessionAsync();
+                return _host.LoadedPackageNames;
+            } catch (OperationCanceledException) { }
+            return Enumerable.Empty<string>();
+        }
+
         internal static string CacheFolderPath =>
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"Microsoft\VisualStudio\RTVS\IntelliSense\");
 
         public static void ClearCache() {
             try {
-                Directory.Delete(CacheFolderPath, recursive: true);
+                if (Directory.Exists(CacheFolderPath)) {
+                    Directory.Delete(CacheFolderPath, recursive: true);
+                }
             } catch (IOException) { } catch (UnauthorizedAccessException) { }
         }
 

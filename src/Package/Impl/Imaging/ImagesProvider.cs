@@ -103,7 +103,7 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
                 case "RFileNode":
                     bmp = Resources.RFileNode;
                     break;
-                case "RDataFile":
+                case "RDataFileNode":
                     bmp = Resources.RDataFileNode;
                     break;
                 case "RdFileNode":
@@ -136,7 +136,7 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
 
             dict[".r"] = "RFileNode";
             dict[".rproj"] = "RProjectNode";
-            dict[".rdata"] = "RDataNode";
+            dict[".rdata"] = "RDataFileNode";
             dict[".md"] = "MarkdownFile";
             dict[".rmd"] = "RMdFileNode";
             dict[".html"] = "HTMLFile";

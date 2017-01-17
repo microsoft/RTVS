@@ -66,11 +66,9 @@
     <Compile Include="Completion\RCompletion.cs" />
     <Compile Include="Completion\RFunctionCompletion.cs" />
     <Compile Include="ContentType\TextViewExtensions.cs" />
-    <Compile Include="Data\LoadedPackagesProvider.cs" />
     <Compile Include="Data\RSessionChangeWatcher.cs" />
     <Compile Include="Data\RSessionDataObject.cs" />
     <Compile Include="Data\IRSessionDataObject.cs" />
-    <Compile Include="Completion\Definitions\ILoadedPackagesProvider.cs" />
     <Compile Include="Completion\Definitions\IVariablesProvider.cs" />
     <Compile Include="Completion\Definitions\RCompletionProviderAttribute.cs" />
     <Compile Include="Completion\Definitions\IRQuickInfoProvider.cs" />
