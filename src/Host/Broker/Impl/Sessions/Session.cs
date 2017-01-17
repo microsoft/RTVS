@@ -24,7 +24,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
         private const string RHostExe = "Microsoft.R.Host.exe";
 
         private readonly ILogger _sessionLogger;
-        private Process _process;
+        private Win32Process _process;
         private MessagePipe _pipe;
         private volatile IMessagePipeEnd _hostEnd;
 
@@ -56,7 +56,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
 
         public event EventHandler<SessionStateChangedEventArgs> StateChanged;
 
-        public Process Process => _process;
+        public Win32Process Process => _process;
 
         public SessionInfo Info => new SessionInfo {
             Id = Id,
@@ -123,16 +123,12 @@ namespace Microsoft.R.Host.Broker.Sessions {
 
             _sessionLogger.LogInformation(Resources.Info_StartingRHost, Id, User.Name, rhostExePath, arguments);
             using (Win32NativeEnvironmentBlock nativeEnv = eb.GetNativeEnvironmentBlock()) {
-                int pid = 0;
                 if (loggedOnUser) {
-                    pid = Win32Process.StartProcessAsUser(useridentity, rhostExePath, arguments, Path.GetDirectoryName(rhostExePath), nativeEnv, out stdin, out stdout, out stderror);
-                }else {
-                    pid = Win32Process.StartProcessAsUser(null, rhostExePath, arguments, Path.GetDirectoryName(rhostExePath), nativeEnv, out stdin, out stdout, out stderror);
+                    _process = Win32Process.StartProcessAsUser(useridentity, rhostExePath, arguments, Path.GetDirectoryName(rhostExePath), nativeEnv, out stdin, out stdout, out stderror);
+                } else {
+                    _process = Win32Process.StartProcessAsUser(null, rhostExePath, arguments, Path.GetDirectoryName(rhostExePath), nativeEnv, out stdin, out stdout, out stderror);
                 }
-                _process = Process.GetProcessById(pid);
             }
-
-            _process.EnableRaisingEvents = true;
 
             _process.Exited += delegate {
                 _hostEnd?.Dispose();
@@ -151,13 +147,13 @@ namespace Microsoft.R.Host.Broker.Sessions {
 
             _sessionLogger.LogInformation(Resources.Info_StartedRHost, Id, User.Name);
 
-            var hostEnd = _pipe.ConnectHost(_process.Id);
+            var hostEnd = _pipe.ConnectHost(_process.ProcessId);
             _hostEnd = hostEnd;
 
             ClientToHostWorker(stdin, hostEnd).DoNotWait();
             HostToClientWorker(stdout, hostEnd).DoNotWait();
 
-            HostToClientErrorWorker(stderror, _process.Id, (int processid, string errdata) => {
+            HostToClientErrorWorker(stderror, _process.ProcessId, (int processid, string errdata) => {
                 outputLogger?.LogTrace(Resources.Trace_ErrorDataReceived, processid, errdata);
             }).DoNotWait();
         }

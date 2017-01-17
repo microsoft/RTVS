@@ -8,11 +8,62 @@ using System.Runtime.InteropServices;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using Microsoft.Win32.SafeHandles;
+using System.Threading;
 using static Microsoft.Common.Core.NativeMethods;
 
 namespace Microsoft.Common.Core.OS {
     public class Win32Process {
-        public static int StartProcessAsUser(WindowsIdentity winIdentity, string applicationName, string commandLine, string workingDirectory, Win32NativeEnvironmentBlock environment, out Stream stdin, out Stream stdout, out Stream stderror) {
+        private Win32Process(PROCESS_INFORMATION pi) {
+            _hasExited = false;
+            ProcessId = pi.dwProcessId;
+            MainThreadId = pi.dwThreadId;
+            _processHandle = new SafeProcessHandle(pi.hProcess, true);
+            _threadHandle = new SafeThreadHandle(pi.hThread);
+            _wait = new ProcessWaitHandle(_processHandle);
+            _registeredWait = ThreadPool.RegisterWaitForSingleObject(_wait, (o, t) => {
+                _registeredWait.Unregister(_wait);
+                _hasExited = true;
+                if (!GetExitCodeProcess(_processHandle, out _exitCode)) {
+                    throw new Win32Exception(Marshal.GetLastWin32Error());
+                }
+                Exited?.Invoke(this, null);
+                _processHandle.Close();
+                _threadHandle.Close();
+                _wait.Close();
+            }, null, -1, true);
+        }
+
+        private SafeProcessHandle _processHandle;
+        private SafeThreadHandle _threadHandle;
+        private ProcessWaitHandle _wait;
+        private RegisteredWaitHandle _registeredWait;
+        private bool _hasExited;
+        private uint _exitCode;
+
+        public readonly int ProcessId;
+        public readonly int MainThreadId;
+
+        public bool HasExited => _hasExited;
+
+        public event EventHandler Exited;
+
+        public int ExitCode =>  (int)_exitCode;
+
+        public void WaitForExit(int milliseconds) {
+            ProcessWaitHandle processWaitHandle = new ProcessWaitHandle(_processHandle);
+            processWaitHandle.WaitOne(milliseconds);
+            processWaitHandle.Close();
+        }
+
+        public void Kill() {
+            if (!_processHandle.IsClosed) {
+                if(!TerminateProcess(_processHandle, IntPtr.Zero)) {
+                    throw new Win32Exception(Marshal.GetLastWin32Error());
+                }
+            }
+        }
+
+        public static Win32Process StartProcessAsUser(WindowsIdentity winIdentity, string applicationName, string commandLine, string workingDirectory, Win32NativeEnvironmentBlock environment, out Stream stdin, out Stream stdout, out Stream stderror) {
 
             STARTUPINFO si = new STARTUPINFO();
             si.cb = Marshal.SizeOf(typeof(STARTUPINFO));
@@ -102,7 +153,7 @@ namespace Microsoft.Common.Core.OS {
                 }
             }
 
-            return pi.dwProcessId;
+            return new Win32Process(pi);
         }
 
         private static SECURITY_ATTRIBUTES CreateSecurityAttributes(WellKnownSidType sidType) {
@@ -124,7 +175,5 @@ namespace Microsoft.Common.Core.OS {
 
             return sa;
         }
-
-        const int MAX_PATH = 260;
     }
 }

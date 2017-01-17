@@ -62,18 +62,16 @@ namespace Microsoft.Common.Core.OS {
         }
 
         private byte[] ToByteArray() {
-            lock (_environment) {
-                using (MemoryStream ms = new MemoryStream()) {
-                    byte[] nulls = { 0, 0 };
-                    foreach (var p in _environment) {
-                        string envData = Invariant($"{p.Key}={p.Value}");
-                        byte[] data = Encoding.Unicode.GetBytes(envData);
-                        ms.Write(data, 0, data.Length);
-                        ms.Write(nulls, 0, nulls.Length);
-                    }
+            using (MemoryStream ms = new MemoryStream()) {
+                byte[] nulls = { 0, 0 };
+                foreach (var p in _environment.ToArray()) {
+                    string envData = Invariant($"{p.Key}={p.Value}");
+                    byte[] data = Encoding.Unicode.GetBytes(envData);
+                    ms.Write(data, 0, data.Length);
                     ms.Write(nulls, 0, nulls.Length);
-                    return ms.ToArray();
                 }
+                ms.Write(nulls, 0, nulls.Length);
+                return ms.ToArray();
             }
         }
 

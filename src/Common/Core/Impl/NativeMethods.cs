@@ -4,6 +4,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
+using Microsoft.Win32.SafeHandles;
 
 namespace Microsoft.Common.Core {
     public static unsafe class NativeMethods {
@@ -350,9 +351,9 @@ namespace Microsoft.Common.Core {
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool DuplicateHandle(
             IntPtr hSourceProcessHandle,
-            IntPtr hSourceHandle,
+            SafeHandle hSourceHandle,
             IntPtr hTargetProcessHandle,
-            out IntPtr lpTargetHandle,
+            out SafeWaitHandle lpTargetHandle,
             uint dwDesiredAccess,
             [MarshalAs(UnmanagedType.Bool)] bool bInheritHandle,
             uint dwOptions);
@@ -423,6 +424,12 @@ namespace Microsoft.Common.Core {
             string lpCurrentDirectory,
             [In] ref STARTUPINFO lpStartupInfo,
             out PROCESS_INFORMATION lpProcessInformation);
+
+        [DllImport("Kernel32.dll", SetLastError = true)]
+        public static extern bool GetExitCodeProcess(SafeHandle processHandle, out uint Wait);
+
+        [DllImport("Kernel32.dll", SetLastError = true)]
+        public static extern bool TerminateProcess(SafeHandle processHandle, IntPtr exitCode);
 
     }
 }
