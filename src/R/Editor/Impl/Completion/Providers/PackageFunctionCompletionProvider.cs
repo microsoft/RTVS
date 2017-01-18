@@ -25,7 +25,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
     [Export(typeof(IRHelpSearchTermProvider))]
     public class PackageFunctionCompletionProvider : IRCompletionListProvider, IRHelpSearchTermProvider {
         private const int _asyncWaitTimeout = 1000;
-        private readonly ILoadedPackagesProvider _loadedPackagesProvider;
+        private readonly IIntellisenseRSession _session;
         private readonly ISnippetInformationSourceProvider _snippetInformationSource;
         private readonly IPackageIndex _packageIndex;
         private readonly IFunctionIndex _functionIndex;
@@ -35,12 +35,12 @@ namespace Microsoft.R.Editor.Completion.Providers {
 
         [ImportingConstructor]
         public PackageFunctionCompletionProvider(
-            ILoadedPackagesProvider loadedPackagesProvider,
+            IIntellisenseRSession session,
             [Import(AllowDefault = true)] ISnippetInformationSourceProvider snippetInformationSource,
             IPackageIndex packageIndex,
             IFunctionIndex functionIndex,
             IGlyphService glyphService) {
-            _loadedPackagesProvider = loadedPackagesProvider;
+            _session = session;
             _snippetInformationSource = snippetInformationSource;
             _packageIndex = packageIndex;
             _functionIndex = functionIndex;
@@ -157,9 +157,8 @@ namespace Microsoft.R.Editor.Completion.Providers {
         /// <param name="context"></param>
         /// <returns></returns>
         private Task<IEnumerable<IPackageInfo>> GetAllFilePackagesAsync(RCompletionContext context) {
-            _loadedPackagesProvider?.Initialize();
 
-            IEnumerable<string> loadedPackages = _loadedPackagesProvider?.GetPackageNames() ?? Enumerable.Empty<string>();
+            IEnumerable<string> loadedPackages = _session?.LoadedPackageNames ?? Enumerable.Empty<string>();
             IEnumerable<string> filePackageNames = context.AstRoot.GetFilePackageNames();
             IEnumerable<string> allPackageNames = PackageIndex.PreloadedPackages.Union(filePackageNames).Union(loadedPackages);
 

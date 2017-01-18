@@ -62,41 +62,35 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
                 clientApp.Uri.PathAndQuery.Should().Be("/library/stats/html/lm.html");
 
                 await ExecCommandAsync(clientApp, RPackageCommandId.icmdHelpHome);
-                await WaitForReadyAndRenderedAsync(clientApp);
                 clientApp.Uri.PathAndQuery.Should().Be("/doc/html/index.html");
             }
         }
 
         private async Task ShowHelpAsync(string command, VsRHostScript hostScript, RHostClientHelpTestApp clientApp) {
-            clientApp.Ready.Reset();
+            clientApp.Reset();
             await hostScript.Session.ExecuteAsync($"rtvs:::show_help({command.ToRStringLiteral()})").SilenceException<RException>();
-            await WaitForReadyAndRenderedAsync(clientApp);
+            await clientApp.WaitForReadyAndRenderedAsync((ms) => DoIdle(ms), nameof(HelpTest));
         }
 
         private async Task ExecCommandAsync(RHostClientHelpTestApp clientApp, int commandId) {
+            clientApp.Reset();
             await UIThreadHelper.Instance.InvokeAsync(() => {
                 object o = new object();
                 clientApp.Component.Controller.Invoke(RGuidList.RCmdSetGuid, commandId, null, ref o);
             });
-            clientApp.Ready.Wait(5000);
+            await clientApp.WaitForReadyAndRenderedAsync((ms) => DoIdle(ms), nameof(HelpTest));
         }
 
         private async Task<string> GetBackgroundColorAsync(IHelpVisualComponent component, RHostClientHelpTestApp clientApp) {
             string color = "red";
 
-            await WaitForReadyAndRenderedAsync(clientApp);
+            await clientApp.WaitForReadyAndRenderedAsync((ms) => DoIdle(ms), nameof(HelpTest));
             await UIThreadHelper.Instance.InvokeAsync(() => {
                 IHTMLElement2 body = component.Browser.Document.Body.DomElement as IHTMLElement2;
                 color = body.currentStyle.backgroundColor as string;
             });
 
             return color;
-        }
-
-        private async Task WaitForReadyAndRenderedAsync(RHostClientHelpTestApp clientApp) {
-            await UIThreadHelper.Instance.InvokeAsync(() => DoIdle(500));
-            clientApp.Ready.Wait(5000);
-            await UIThreadHelper.Instance.InvokeAsync(() => DoIdle(500));
         }
     }
 }

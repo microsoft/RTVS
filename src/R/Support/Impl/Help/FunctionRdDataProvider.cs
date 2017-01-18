@@ -43,7 +43,7 @@ namespace Microsoft.R.Host.Client.Signatures {
             }
 
             await TaskUtilities.SwitchToBackgroundThread();
-            await _host.CreateSessionAsync();
+            await _host.StartSessionAsync();
 
             string command = GetCommandText(functionName, packageName);
             try {

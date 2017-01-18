@@ -30,9 +30,27 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
             Ready = new ManualResetEventSlim();
         }
 
-        public override Task ShowHelpAsync(string url, CancellationToken cancellationToken) {
+        public void Reset() {
             Ready.Reset();
+            Uri = null;
+        }
+
+        public override Task ShowHelpAsync(string url, CancellationToken cancellationToken) {
+            Reset();
             return UIThreadHelper.Instance.InvokeAsync(() => Component.Navigate(url), cancellationToken);
+        }
+
+        public async Task WaitForReadyAndRenderedAsync(Action<int> idleAction, string testName) {
+            var start = DateTime.Now;
+            while (Uri == null) {
+                await UIThreadHelper.Instance.InvokeAsync(() => idleAction(200));
+                Ready.Wait(500);
+                await UIThreadHelper.Instance.InvokeAsync(() => idleAction(200));
+
+                if ((DateTime.Now - start).TotalMilliseconds > 10000) {
+                    throw new TimeoutException(nameof(testName));
+                }
+            }
         }
 
         private void Browser_Navigated(object sender, WebBrowserNavigatedEventArgs e) {

@@ -78,7 +78,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
             return -1;
         }
 
-        [Test]
+        [Test(ThreadType = ThreadType.UI)]
         public async Task ParameterTest_ComputeCurrentParameter02() {
             await PackageIndexUtility.GetFunctionInfoAsync(FunctionIndex, "legend");
 
@@ -112,7 +112,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
             }
         }
 
-        [Test]
+        [Test(ThreadType = ThreadType.UI)]
         public async Task ParameterTest_ComputeCurrentParameter03() {
             await PackageIndexUtility.GetFunctionInfoAsync(FunctionIndex, "legend");
 
@@ -142,7 +142,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
             }
         }
 
-        [Test]
+        [Test(ThreadType = ThreadType.UI)]
         public async Task ParameterTest_ComputeCurrentParameter04() {
             await PackageIndexUtility.GetFunctionInfoAsync(FunctionIndex, "legend");
 

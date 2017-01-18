@@ -38,7 +38,8 @@ namespace Microsoft.R.Support.Help.Packages {
             { "base", "stats", "utils", "graphics", "datasets", "methods" };
 
         [ImportingConstructor]
-        public PackageIndex(IRInteractiveWorkflowProvider interactiveWorkflowProvider, ICoreShell shell, IIntellisenseRSession host, IFunctionIndex functionIndex) {
+        public PackageIndex(
+            IRInteractiveWorkflowProvider interactiveWorkflowProvider, ICoreShell shell, IIntellisenseRSession host, IFunctionIndex functionIndex) {
             _shell = shell;
             _host = host;
             _functionIndex = functionIndex;
@@ -89,7 +90,7 @@ namespace Microsoft.R.Support.Help.Packages {
                     var startTotalTime = DateTime.Now;
 
                     await TaskUtilities.SwitchToBackgroundThread();
-                    await _host.CreateSessionAsync();
+                    await _host.StartSessionAsync();
                     Debug.WriteLine("R function host start: {0} ms", (DateTime.Now - startTotalTime).TotalMilliseconds);
 
                     var startTime = DateTime.Now;
@@ -228,11 +229,19 @@ namespace Microsoft.R.Support.Help.Packages {
 
         private async Task<IEnumerable<RPackage>> GetInstalledPackagesAsync() {
             try {
-                await _host.CreateSessionAsync();
+                await _host.StartSessionAsync();
                 var result = await _host.Session.InstalledPackagesAsync();
                 return result.Select(p => p.ToObject<RPackage>());
             } catch (TaskCanceledException) { }
             return Enumerable.Empty<RPackage>();
+        }
+
+        private async Task<IEnumerable<string>> GetLoadedPackagesAsync() {
+            try {
+                await _host.StartSessionAsync();
+                return _host.LoadedPackageNames;
+            } catch (OperationCanceledException) { }
+            return Enumerable.Empty<string>();
         }
 
         internal static string CacheFolderPath =>
@@ -240,7 +249,9 @@ namespace Microsoft.R.Support.Help.Packages {
 
         public static void ClearCache() {
             try {
-                Directory.Delete(CacheFolderPath, recursive: true);
+                if (Directory.Exists(CacheFolderPath)) {
+                    Directory.Delete(CacheFolderPath, recursive: true);
+                }
             } catch (IOException) { } catch (UnauthorizedAccessException) { }
         }
 

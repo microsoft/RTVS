@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Test.Script;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
@@ -79,16 +80,45 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
                 session.QuickInfoContent.Should().BeEmpty();
 
                 await Workflow.RSession.ExecuteAsync("library(MASS)");
+                EventsPump.DoEvents(500);
                 session = await TriggerSessionAsync(content, 12);
 
                 session.ApplicableSpan.Should().NotBeNull();
                 session.QuickInfoContent.Should().ContainSingle().Which.ToString().Should().StartWith("select(formula");
 
                 await Workflow.RSession.ExecuteAsync("library(dplyr)");
+                EventsPump.DoEvents(500);
                 session = await TriggerSessionAsync(content, 12);
 
                 session.ApplicableSpan.Should().NotBeNull();
                 session.QuickInfoContent.Should().ContainSingle().Which.ToString().Should().StartWith("select(.data");
+            }
+        }
+
+        [Test]
+        public async Task LoadUnloadPackageTest() {
+            string content = @"do()";
+
+            using (var hostScript = new RHostScript(Workflow.RSessions)) {
+                //await Workflow.RSession.ExecuteAsync("install.packages('dplyr')");
+
+                var session = await TriggerSessionAsync(content, 3);
+                var parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(session.Ast, session.TextBuffer.CurrentSnapshot, 10);
+
+                session.ApplicableSpan.Should().NotBeNull();
+                session.QuickInfoContent.Should().BeEmpty();
+
+                await Workflow.RSession.ExecuteAsync("library(dplyr)");
+                session = await TriggerSessionAsync(content, 3);
+
+                session.ApplicableSpan.Should().NotBeNull();
+                session.QuickInfoContent.Should().ContainSingle().Which.ToString().Should().StartWith("do(.data");
+
+                await Workflow.RSession.ExecuteAsync("detach(\"package:dplyr\", unload = TRUE)");
+                EventsPump.DoEvents(1000);
+
+                session = await TriggerSessionAsync(content, 3);
+                session.QuickInfoContent.Should().BeEmpty();
             }
         }
 

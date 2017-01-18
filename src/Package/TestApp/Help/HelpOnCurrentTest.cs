@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -57,17 +58,11 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
                     cmd.Invoke();
                 });
 
-                await WaitForReadyAndRenderedAsync(clientApp);
+                await clientApp.WaitForReadyAndRenderedAsync((ms) => DoIdle(ms), nameof(HelpTest));
 
                 clientApp.Uri.IsLoopback.Should().Be(true);
                 clientApp.Uri.PathAndQuery.Should().Be("/library/graphics/html/plot.html");
             }
-        }
-
-        private async Task WaitForReadyAndRenderedAsync(RHostClientHelpTestApp clientApp) {
-            await UIThreadHelper.Instance.InvokeAsync(() => DoIdle(500));
-            clientApp.Ready.Wait(5000);
-            await UIThreadHelper.Instance.InvokeAsync(() => DoIdle(500));
         }
     }
 }
