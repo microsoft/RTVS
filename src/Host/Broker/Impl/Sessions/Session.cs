@@ -111,13 +111,13 @@ namespace Microsoft.R.Host.Broker.Sessions {
 
                 eb = CreateEnvironmentBlockForUser(useridentity, username, profilePath);
             } else {
-                eb = Win32EnvironmentBlock.Create(WindowsIdentity.GetCurrent().Token);
+                eb = Win32EnvironmentBlock.Create((useridentity ?? WindowsIdentity.GetCurrent()).Token);
             }
 
             // add additional variables to the environment block
             eb["R_HOME"] = shortHome.ToString();
             _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "R_HOME", eb["R_HOME"]);
-            eb["PATH"] = Invariant($"{Interpreter.Info.BinPath};{eb["PATH"]}");
+            eb["PATH"] = Invariant($"{Interpreter.Info.BinPath};{Environment.GetEnvironmentVariable("PATH")}");
             _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "PATH", eb["PATH"]);
 
 
