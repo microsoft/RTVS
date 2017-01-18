@@ -46,9 +46,7 @@ namespace Microsoft.R.Support.Help {
         public IRSession Session { get; private set; }
 
         public void Dispose() {
-            if (_workflow?.RSession != null) {
-                _workflow.RSession.Mutated -= OnInteractiveSessionMutated;
-            }
+            _workflow.RSession.Mutated -= OnInteractiveSessionMutated;
             Session?.Dispose();
             Session = null;
         }
@@ -126,8 +124,7 @@ namespace Microsoft.R.Support.Help {
                 await StartSessionAsync();
                 var session = GetLoadedPackagesInspectionSession();
                 if (session != null) {
-                    var response = await session.EvaluateAsync<string>("paste0(.packages(), collapse = ' ')", REvaluationKind.Normal);
-                    var loadedPackages = response.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    var loadedPackages = await session.EvaluateAsync<string[]>("as.list(.packages())", REvaluationKind.Normal);
                     Interlocked.Exchange(ref _loadedPackages, loadedPackages);
                 }
             } catch (RHostDisconnectedException) { } catch (RException) { }
