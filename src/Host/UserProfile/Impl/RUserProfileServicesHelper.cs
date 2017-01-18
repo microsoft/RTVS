@@ -1,34 +1,35 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System.IO;
+using System;
 using System.IO.Pipes;
-using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Json;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System;
 using Microsoft.R.Host.Protocol;
+using Newtonsoft.Json;
 
 namespace Microsoft.R.Host.UserProfile {
     public class RUserProfileServicesHelper {
-        public static async Task CreateProfileAsync(int serverTimeOutms = 0, int clientTimeOutms = 0, IUserProfileServices userProfileService = null, CancellationToken ct = default(CancellationToken), ILogger logger = null) {
+        public static async Task CreateProfileAsync(int serverTimeOutms = 0, int clientTimeOutms = 0, IUserProfileServices userProfileService = null, IUserProfileNamedPipeFactory pipeFactory = null, CancellationToken ct = default(CancellationToken), ILogger logger = null) {
             userProfileService = userProfileService ?? new RUserProfileServices();
-            await ProfileServiceOperationAsync(userProfileService.CreateUserProfile, NamedPipeServerStreamFactory.CreatorName, serverTimeOutms, clientTimeOutms, ct, logger);
+            pipeFactory = pipeFactory ?? new NamedPipeServerStreamFactory();
+            await ProfileServiceOperationAsync(userProfileService.CreateUserProfile, NamedPipeServerStreamFactory.CreatorName, pipeFactory, serverTimeOutms, clientTimeOutms, ct, logger);
         }
 
-        public static async Task DeleteProfileAsync(int serverTimeOutms = 0, int clientTimeOutms = 0, IUserProfileServices userProfileService = null, CancellationToken ct = default(CancellationToken), ILogger logger = null) {
+        public static async Task DeleteProfileAsync(int serverTimeOutms = 0, int clientTimeOutms = 0, IUserProfileServices userProfileService = null, IUserProfileNamedPipeFactory pipeFactory = null, CancellationToken ct = default(CancellationToken), ILogger logger = null) {
             userProfileService = userProfileService ?? new RUserProfileServices();
-            await ProfileServiceOperationAsync(userProfileService.DeleteUserProfile, NamedPipeServerStreamFactory.DeletorName, serverTimeOutms, clientTimeOutms, ct, logger);
+            pipeFactory = pipeFactory ?? new NamedPipeServerStreamFactory();
+            await ProfileServiceOperationAsync(userProfileService.DeleteUserProfile, NamedPipeServerStreamFactory.DeletorName, pipeFactory, serverTimeOutms, clientTimeOutms, ct, logger);
         }
 
-        private static async Task ProfileServiceOperationAsync(Func<IUserCredentials, ILogger, IUserProfileServiceResult> operation, string name, int serverTimeOutms = 0, int clientTimeOutms = 0, CancellationToken ct = default(CancellationToken), ILogger logger = null) {
-            using (NamedPipeServerStream server = NamedPipeServerStreamFactory.Create(name)) {
+        private static async Task ProfileServiceOperationAsync(Func<IUserCredentials, ILogger, IUserProfileServiceResult> operation, string name, IUserProfileNamedPipeFactory pipeFactory, int serverTimeOutms = 0, int clientTimeOutms = 0, CancellationToken ct = default(CancellationToken), ILogger logger = null) {
+            using (NamedPipeServerStream server = pipeFactory.CreatePipe(name)) {
                 await server.WaitForConnectionAsync(ct);
 
                 ManualResetEventSlim forceDisconnect = new ManualResetEventSlim(false);

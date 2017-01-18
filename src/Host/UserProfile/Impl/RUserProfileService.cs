@@ -6,9 +6,9 @@ using System.ServiceProcess;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
-using Microsoft.Extensions.Logging;
-using Microsoft.R.Host.Protocol;
+using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.R.Host.UserProfile {
     partial class RUserProfileService : ServiceBase {
@@ -56,10 +56,10 @@ namespace Microsoft.R.Host.UserProfile {
             await ProfileWorkerAsync(RUserProfileServicesHelper.DeleteProfileAsync, ServiceReadAfterConnectTimeoutMs, ClientResponseReadTimeoutMs, _deleteWorkerDone, ct, _logger);
         }
 
-        private static async Task ProfileWorkerAsync( Func<int,int, IUserProfileServices,CancellationToken, ILogger, Task> action, int serverTimeOutms, int clientTimeOutms,  ManualResetEvent workerDone, CancellationToken ct, ILogger logger) {
+        private static async Task ProfileWorkerAsync( Func<int,int, IUserProfileServices, IUserProfileNamedPipeFactory, CancellationToken, ILogger, Task> action, int serverTimeOutms, int clientTimeOutms,  ManualResetEvent workerDone, CancellationToken ct, ILogger logger) {
             while (!ct.IsCancellationRequested) {
                 try {
-                    await action?.Invoke(ServiceReadAfterConnectTimeoutMs, ClientResponseReadTimeoutMs, null, ct, logger);
+                    await action?.Invoke(ServiceReadAfterConnectTimeoutMs, ClientResponseReadTimeoutMs, null, null, ct, logger);
                 } catch (TaskCanceledException) {
                 } catch (Exception ex) when (!ex.IsCriticalException()) {
                     logger?.LogError(Resources.Error_UserProfileServiceError, ex.Message);
