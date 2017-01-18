@@ -81,6 +81,7 @@
     <Compile Include="UserProfileServicePipe\UserProfileServiceFuzzTestMock.cs" />
     <Compile Include="UserProfileServicePipe\UserProfileResultMock.cs" />
     <Compile Include="UserProfileServicePipe\UserProfileServicePipeTest.cs" />
+    <Compile Include="UserProfileServicePipe\UserProfileTestNamedPipeTestStreamFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="project.json" />
