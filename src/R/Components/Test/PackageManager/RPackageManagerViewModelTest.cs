@@ -28,8 +28,8 @@ namespace Microsoft.R.Components.Test.PackageManager {
         private IRPackageManagerVisualComponent _packageManagerComponent;
         private IRPackageManagerViewModel _packageManagerViewModel;
 
-        public RPackageManagerViewModelTest(RComponentsMefCatalogFixture catalog, TestMethodFixture testMethod, TestFilesFixture testFiles) {
-            _exportProvider = catalog.CreateExportProvider();
+        public RPackageManagerViewModelTest(IExportProvider exportProvider, TestMethodFixture testMethod, TestFilesFixture testFiles) {
+            _exportProvider = exportProvider;
             var workflowProvider = _exportProvider.GetExportedValue<TestRInteractiveWorkflowProvider>();
             _workflow = UIThreadHelper.Instance.Invoke(() => workflowProvider.GetOrCreate());
             _testMethod = testMethod.MethodInfo;
@@ -52,7 +52,6 @@ namespace Microsoft.R.Components.Test.PackageManager {
 
         public Task DisposeAsync() {
             _packageManagerComponent.Dispose();
-            _exportProvider.Dispose();
             return Task.CompletedTask;
         }
 

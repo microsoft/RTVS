@@ -23,17 +23,13 @@ using Xunit;
 namespace Microsoft.R.Editor.Test.Formatting {
     [ExcludeFromCodeCoverage]
     [Category.R.Formatting]
-    public class FormatCommandTest : IDisposable {
+    public class FormatCommandTest {
         private readonly IExportProvider _exportProvider;
         private readonly IEditorShell _editorShell;
 
-        public FormatCommandTest(REditorMefCatalogFixture catalog) {
-            _exportProvider = catalog.CreateExportProvider();
+        public FormatCommandTest(IExportProvider exportProvider) {
+            _exportProvider = exportProvider;
             _editorShell = _exportProvider.GetExportedValue<IEditorShell>();
-        }
-
-        public void Dispose() {
-            _exportProvider.Dispose();
         }
 
         [CompositeTest]

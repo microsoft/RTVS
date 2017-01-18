@@ -53,6 +53,7 @@ namespace Microsoft.R.Host.Client.Session {
         private bool _processingChangeDirectoryCommand;
         private readonly Action _onDispose;
         private readonly IExclusiveReaderLock _initializationLock;
+        private readonly IActionLog _log;
         private readonly BinaryAsyncLock _stopHostLock;
         private readonly CountdownDisposable _disableMutatingOnReadConsole;
         private readonly DisposeToken _disposeToken;
@@ -83,7 +84,7 @@ namespace Microsoft.R.Host.Client.Session {
             CanceledBeginInteractionTask = TaskUtilities.CreateCanceled<IRSessionInteraction>(new RHostDisconnectedException());
         }
 
-        public RSession(int id, string name, IBrokerClient brokerClient, IExclusiveReaderLock initializationLock, Action onDispose) {
+        public RSession(int id, string name, IBrokerClient brokerClient, IExclusiveReaderLock initializationLock, IActionLog log, Action onDispose) {
             Id = id;
             Name = name;
             BrokerClient = brokerClient;
@@ -99,6 +100,7 @@ namespace Microsoft.R.Host.Client.Session {
             });
 
             _initializationLock = initializationLock;
+            _log = log;
             _stopHostLock = new BinaryAsyncLock(true);
             _hostStartedTcs = new TaskCompletionSourceEx<object>();
             _startupInfo = new RHostStartupInfo();
@@ -486,6 +488,7 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
         }
 
         public void FlushLog() {
+            _log.Flush();
             _host?.FlushLog();
         }
 

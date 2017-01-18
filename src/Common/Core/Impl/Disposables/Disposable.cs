@@ -25,6 +25,20 @@ namespace Microsoft.Common.Core.Disposables {
         }
 
         /// <summary>
+        /// Creates a disposable wrapper for a disposable that will be invoked at most once.
+        /// </summary>
+        /// <param name="disposable">Disposable that will be wrapped. Disposable is guaranteed to be run at most once.</param>
+        /// <returns>The disposable object that disposes wrapped object.</returns>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="disposable" /> is null.</exception>
+        public static IDisposable Create(IDisposable disposable) {
+            if (disposable == null) {
+                throw new ArgumentNullException(nameof(disposable));
+            }
+
+            return new DisposableWrapper(disposable);
+        }
+
+        /// <summary>
         /// Gets the disposable that does nothing when disposed.
         /// </summary>
         public static IDisposable Empty => DefaultDisposable.Instance;
@@ -51,6 +65,25 @@ namespace Microsoft.Common.Core.Disposables {
             public void Dispose() {
                 Action action = Interlocked.Exchange(ref _dispose, null);
                 action?.Invoke();
+            }
+        }
+
+        /// <summary>
+        /// Represents a disposable wrapper.
+        /// </summary>
+        private sealed class DisposableWrapper : IDisposable {
+            private IDisposable _disposable;
+
+            public DisposableWrapper(IDisposable disposable) {
+                _disposable = disposable;
+            }
+
+            /// <summary>
+            /// Disposes wrapped object if and only if the current instance hasn't been disposed yet.
+            /// </summary>
+            public void Dispose() {
+                var disposable = Interlocked.Exchange(ref _disposable, null);
+                disposable?.Dispose();
             }
         }
     }

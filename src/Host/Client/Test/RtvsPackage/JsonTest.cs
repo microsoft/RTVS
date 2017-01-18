@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Test.Fakes.Shell;
+using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Script;
@@ -23,9 +24,9 @@ namespace Microsoft.R.RtvsPackage.Test {
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _session;
 
-        public JsonTest(TestMethodFixture testMethod) {
-            _sessionProvider = new RSessionProvider(TestCoreServices.CreateReal());
-            _session = _sessionProvider.GetOrCreate(testMethod.MethodInfo.Name);
+        public JsonTest(CoreServicesFixture coreServices, TestMethodFixture testMethod) {
+            _sessionProvider = new RSessionProvider(coreServices);
+            _session = _sessionProvider.GetOrCreate(testMethod.FileSystemSafeName);
         }
 
         public async Task InitializeAsync() {

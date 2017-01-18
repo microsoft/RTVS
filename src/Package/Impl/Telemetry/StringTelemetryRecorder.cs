@@ -35,7 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
                 if (parameters is string) {
                     WriteProperty("Value", parameters.ToString());
                 } else {
-                    WriteDictionary(DictionaryExtension.FromAnonymousObject(parameters));
+                    WriteDictionary(DictionaryExtensions.FromAnonymousObject(parameters));
                 }
             }
         }

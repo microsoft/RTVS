@@ -74,7 +74,12 @@ namespace Microsoft.UnitTests.Core.XUnit {
                 await asyncLifetime.InitializeAsync();
             }
 
-            fixtures[fixtureType] = fixture;
+            var methodFixtureFactory = fixtureType.GetInterfaces().FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IMethodFixtureFactory<>));
+            if (methodFixtureFactory != null) {
+                fixtures[methodFixtureFactory.GetGenericArguments()[0]] = fixture;
+            } else {
+                fixtures[fixtureType] = fixture;
+            }
         }
     }
 }

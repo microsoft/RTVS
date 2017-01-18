@@ -16,17 +16,13 @@ namespace Microsoft.Languages.Editor.Test.Services {
     /// Summary description for UnitTest1
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public class IdleTaskQueueTest : IDisposable {
+    public class IdleTaskQueueTest {
         private readonly IExportProvider _exportProvider;
         private readonly IEditorShell _editorShell;
 
-        public IdleTaskQueueTest(LanguagesEditorMefCatalogFixture catalogFixture) {
-            _exportProvider = catalogFixture.CreateExportProvider();
+        public IdleTaskQueueTest(IExportProvider exportProvider) {
+            _exportProvider = exportProvider;
             _editorShell = _exportProvider.GetExportedValue<IEditorShell>();
-        }
-
-        public void Dispose() {
-            _exportProvider.Dispose();
         }
 
         [Test]

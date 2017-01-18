@@ -19,17 +19,15 @@ namespace Microsoft.R.Components.Test.History {
     [ExcludeFromCodeCoverage]
     public class RHistoryViewModelTest : IAsyncLifetime {
         private readonly ContainerHostMethodFixture _containerHost;
-        private readonly IExportProvider _exportProvider;
         private readonly IRHistory _history;
         private readonly IRHistoryWindowVisualComponent _historyVisualComponent;
         private IDisposable _containerDisposable;
 
-        public RHistoryViewModelTest(RComponentsMefCatalogFixture catalog, ContainerHostMethodFixture containerHost) {
+        public RHistoryViewModelTest(IExportProvider exportProvider, ContainerHostMethodFixture containerHost) {
             _containerHost = containerHost;
-            _exportProvider = catalog.CreateExportProvider();
-            _history = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate().History;
+            _history = exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate().History;
 
-            var containerFactory = _exportProvider.GetExportedValue<IRHistoryVisualComponentContainerFactory>();
+            var containerFactory = exportProvider.GetExportedValue<IRHistoryVisualComponentContainerFactory>();
             _historyVisualComponent = UIThreadHelper.Instance.Invoke(() => _history.GetOrCreateVisualComponent(containerFactory));
         }
         
@@ -44,7 +42,6 @@ namespace Microsoft.R.Components.Test.History {
             });
 
             _containerDisposable?.Dispose();
-            _exportProvider.Dispose();
             return Task.CompletedTask;
         }
 

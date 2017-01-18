@@ -63,7 +63,7 @@ namespace Microsoft.Common.Core.Telemetry {
             } else if (parameters is string) {
                 this.TelemetryRecorder.RecordEvent(completeEventName, parameters as string);
             } else {
-                IDictionary<string, object> dict = DictionaryExtension.FromAnonymousObject(parameters);
+                IDictionary<string, object> dict = DictionaryExtensions.FromAnonymousObject(parameters);
                 IDictionary<string, object> dictWithPrefix = new Dictionary<string, object>();
 
                 foreach (KeyValuePair<string, object> kvp in dict) {

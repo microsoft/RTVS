@@ -11,11 +11,13 @@ namespace Microsoft.UnitTests.Core.XUnit.MethodFixtures {
     public class TestMethodFixture : MethodFixtureBase {
         public MethodInfo MethodInfo { get; private set; }
         public string DisplayName { get; private set; }
+        public string FileSystemSafeName { get; private set; }
 
-        public override Task<Task<RunSummary>> InitializeAsync(IXunitTestCase testCase, MethodInfo methodInfo, IMessageBus messageBus) {
-            DisplayName = testCase.DisplayName;
-            MethodInfo = methodInfo;
-            return base.InitializeAsync(testCase, methodInfo, messageBus);
+        public override Task<Task<RunSummary>> InitializeAsync(ITestInput testInput, IMessageBus messageBus) {
+            DisplayName = testInput.DisplayName;
+            MethodInfo = testInput.TestMethod;
+            FileSystemSafeName = testInput.FileSytemSafeName;
+            return base.InitializeAsync(testInput, messageBus);
         }
     }
 }

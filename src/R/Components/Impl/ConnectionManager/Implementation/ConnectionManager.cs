@@ -281,7 +281,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 var info = new RInterpreterInfo(name, path);
                 return info.VerifyInstallation();
             } catch (Exception ex) when (!ex.IsCriticalException()) {
-                _shell.Services.Log.WriteAsync(LogVerbosity.Normal, MessageCategory.Error, ex.Message).DoNotWait();
+                _shell.Services.Log.Write(LogVerbosity.Normal, MessageCategory.Error, ex.Message);
             }
             return false;
         }
@@ -291,7 +291,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 Uri uri;
                 return Uri.TryCreate(path, UriKind.Absolute, out uri) && !uri.IsFile;
             } catch (Exception ex) when (!ex.IsCriticalException()) {
-                _shell.Services.Log.WriteAsync(LogVerbosity.Normal, MessageCategory.Error, ex.Message).DoNotWait();
+                _shell.Services.Log.Write(LogVerbosity.Normal, MessageCategory.Error, ex.Message);
             }
             return false;
         }

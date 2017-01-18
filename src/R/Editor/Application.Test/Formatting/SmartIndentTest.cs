@@ -22,18 +22,15 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
         private readonly IRSessionProvider _sessionProvider;
         private readonly EditorHostMethodFixture _editorHost;
 
-        public SmartIndentTest(REditorApplicationMefCatalogFixture catalogFixture, EditorHostMethodFixture editorHost) {
-            _exportProvider = catalogFixture.CreateExportProvider();
+        public SmartIndentTest(IExportProvider exportProvider, EditorHostMethodFixture editorHost) {
+            _exportProvider = exportProvider;
             _sessionProvider = UIThreadHelper.Instance.Invoke(() => _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate()).RSessions;
             _editorHost = editorHost;
         }
 
         public Task InitializeAsync() => _sessionProvider.TrySwitchBrokerAsync(nameof(SmartIndentTest));
 
-        public Task DisposeAsync() {
-            _exportProvider.Dispose();
-            return Task.CompletedTask;
-        }
+        public Task DisposeAsync() => Task.CompletedTask;
 
         [Test]
         [Category.Interactive]

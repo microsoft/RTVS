@@ -7,7 +7,7 @@ using System.Linq;
 using System.Reflection;
 
 namespace Microsoft.Common.Core {
-    public static class DictionaryExtension {
+    public static class DictionaryExtensions {
         public static IDictionary<string, object> FromAnonymousObject(object data) {
             IDictionary<string, object> dict;
             if (data != null) {

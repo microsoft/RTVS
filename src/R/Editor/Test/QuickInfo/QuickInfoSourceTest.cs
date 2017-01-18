@@ -15,6 +15,7 @@ using Microsoft.R.Editor.Test.Utility;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.R.Support.Help.Packages;
+using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Text;
@@ -32,7 +33,7 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
             public ITextBuffer TextBuffer;
         }
 
-        public FunctionIndexTest(REditorMefCatalogFixture catalog) : base(catalog) { }
+        public FunctionIndexTest(IExportProvider exportProvider) : base(exportProvider) { }
 
         [CompositeTest]
         [InlineData(true)]

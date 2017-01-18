@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.IO;
 using System.Threading;
 using Microsoft.Common.Core.Shell;
 
@@ -18,7 +19,7 @@ namespace Microsoft.Common.Core.Logging.Implementation {
 
         public IActionLog GetOrCreateLog(string appName) {
             if (_instance == null) {
-                var instance = new Logger(_appConstants.ApplicationName, Permissions, writer: null);
+                var instance = new Logger(_appConstants.ApplicationName, Path.GetTempPath(), Permissions);
                 Interlocked.CompareExchange(ref _instance, instance, null);
             }
             return _instance;

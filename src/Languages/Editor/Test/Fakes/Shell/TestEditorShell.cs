@@ -22,10 +22,11 @@ namespace Microsoft.Languages.Editor.Test.Fakes.Shell {
     public class TestEditorShell : IEditorShell, IMainThread {
         private readonly CompositionContainer _container;
 
-        public TestEditorShell(CompositionContainer container) {
+        public TestEditorShell(CompositionContainer container, ICoreServices coreServices) {
             FileDialog = new TestFileDialog();
             ProgressDialog = new TestProgressDialog();
             _container = container;
+            Services = coreServices;
         }
 
         public ExportProvider ExportProvider => _container;
@@ -67,7 +68,7 @@ namespace Microsoft.Languages.Editor.Test.Fakes.Shell {
         public IApplicationConstants AppConstants => new TestAppConstants();
         public IProgressDialog ProgressDialog { get; }
         public IFileDialog FileDialog { get; }
-        public ICoreServices Services => TestCoreServices.CreateReal();
+        public ICoreServices Services { get; }
 
         #region IMainThread
         public int ThreadId => MainThread.ManagedThreadId;

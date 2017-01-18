@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Disposables;
@@ -18,10 +17,10 @@ namespace Microsoft.UnitTests.Core.XUnit.MethodFixtures {
         private IXunitTestCase _testCase;
         private IMessageBus _messageBus;
 
-        public Task<Task<RunSummary>> InitializeAsync(IXunitTestCase testCase, MethodInfo methodInfo, IMessageBus messageBus) {
+        public Task<Task<RunSummary>> InitializeAsync(ITestInput testInput, IMessageBus messageBus) {
             _runSummaryTcs = new TaskCompletionSource<RunSummary>();
             _stopwatch = Stopwatch.StartNew();
-            _testCase = testCase;
+            _testCase = testInput.TestCase;
             _messageBus = messageBus;
             _observedTasks = new ConcurrentDictionary<Task, Lazy<IDisposable>>();
 
@@ -61,7 +60,7 @@ namespace Microsoft.UnitTests.Core.XUnit.MethodFixtures {
             _observedTasks.TryRemove(task, out _);
         }
         
-        public Task DisposeAsync(IMessageBus messageBus) {
+        public Task DisposeAsync(RunSummary result, IMessageBus messageBus) {
             _stopwatch.Stop();
             _observedTasks.Clear();
             return Task.CompletedTask;

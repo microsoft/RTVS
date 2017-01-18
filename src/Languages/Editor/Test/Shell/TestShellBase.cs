@@ -6,6 +6,7 @@ using System.ComponentModel.Design;
 using System.Threading;
 using System.Windows.Threading;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Fakes.Shell;
@@ -87,9 +88,14 @@ namespace Microsoft.Languages.Editor.Test.Shell {
         #region ICoreShell
         public bool IsUnitTestEnvironment { get; set; } = true;
         public IApplicationConstants AppConstants => new TestAppConstants();
-        public virtual ICoreServices Services => TestCoreServices.CreateReal();
+        public virtual ICoreServices Services => TestCoreServices.CreateReal(new NullLogWriter());
         public IProgressDialog ProgressDialog { get; }
         public IFileDialog FileDialog { get; }
         #endregion
+
+        private sealed class NullLogWriter : IActionLogWriter {
+            public void Write(MessageCategory category, string message) {}
+            public void Flush() { }
+        }
     }
 }

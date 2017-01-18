@@ -15,6 +15,7 @@ namespace Microsoft.Common.Core.Extensions {
             }
             return dict;
         }
+
         public static void SetProperties(this object o, IDictionary<string, object> dict) {
             var properties = o.GetType().GetProperties();
             foreach (var p in properties) {

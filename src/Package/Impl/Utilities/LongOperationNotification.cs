@@ -64,7 +64,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             try {
                 task.Wait();
             } catch (Exception ex) {
-                log?.WriteAsync(LogVerbosity.Minimal, MessageCategory.Error, "Long operation exception: " + ex.Message).DoNotWait();
+                log?.Write(LogVerbosity.Minimal, MessageCategory.Error, "Long operation exception: " + ex.Message);
             }
             return true;
         }

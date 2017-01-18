@@ -31,18 +31,26 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
                 ps ?? Substitute.For<IProcessServices>());
         }
 
-        public static ICoreServices CreateReal() {
+        public static ICoreServices CreateReal(IActionLogWriter logWriter) {
+            var appConstants = new TestAppConstants();
+            var telemetryService = new TelemetryTestService();
+            var registry = new RegistryImpl();
+            var loggingPermissions = new LoggingPermissions(appConstants, telemetryService, registry);
+            var log = new Logger(logWriter, loggingPermissions);
+            var fileSystem = new FileSystem();
+            var processServices = new ProcessServices();
+
             return new CoreServices(
-                new TestAppConstants(),
-                new TelemetryTestService(),
-                null,
+                appConstants,
+                telemetryService,
+                loggingPermissions,
                 Substitute.For<ISecurityService>(),
                 new TestTaskService(),
                 UIThreadHelper.Instance,
-                Substitute.For<IActionLog>(),
-                new FileSystem(),
-                new RegistryImpl(),
-                new ProcessServices());
+                log,
+                fileSystem,
+                registry,
+                processServices);
         }
     }
 }

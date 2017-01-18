@@ -86,7 +86,7 @@ namespace Microsoft.VisualStudio.R.Package.SurveyNews {
                     url = _options.IndexUrl;
                 }
             } catch (Exception ex) when (!ex.IsCriticalException()) {
-                _coreShell.Services.Log.WriteAsync(LogVerbosity.Normal, MessageCategory.Error, "SurveyNews exception: " + ex.Message).DoNotWait();
+                _coreShell.Services.Log.Write(LogVerbosity.Normal, MessageCategory.Error, "SurveyNews exception: " + ex.Message);
                 if (forceCheck) {
                     url = _options.CannotConnectUrl;
                 }
@@ -97,7 +97,7 @@ namespace Microsoft.VisualStudio.R.Package.SurveyNews {
                     _browserServices.OpenBrowser(WebBrowserRole.News, url, onIdle: !forceCheck);
                 }
             } catch (Exception ex) when (!ex.IsCriticalException()) {
-                _coreShell.Services.Log.WriteAsync(LogVerbosity.Normal, MessageCategory.Error, "SurveyNews exception: " + ex.Message).DoNotWait();
+                _coreShell.Services.Log.Write(LogVerbosity.Normal, MessageCategory.Error, "SurveyNews exception: " + ex.Message);
             }
         }
     }

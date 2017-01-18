@@ -30,7 +30,6 @@ namespace Microsoft.R.Components.Test.Plots {
     [ExcludeFromCodeCoverage]
     [Category.Plots]
     public class RPlotIntegrationTest : IAsyncLifetime {
-        private readonly IExportProvider _exportProvider;
         private readonly TestRInteractiveWorkflowProvider _workflowProvider;
         private readonly IRInteractiveWorkflow _workflow;
         private readonly TestRPlotDeviceVisualComponentContainerFactory _plotDeviceVisualComponentContainerFactory;
@@ -39,12 +38,11 @@ namespace Microsoft.R.Components.Test.Plots {
         private readonly TestFilesFixture _testFiles;
         private IInteractiveWindowVisualComponent _replVisualComponent;
 
-        public RPlotIntegrationTest(RComponentsMefCatalogFixture catalog, TestMethodFixture testMethod, TestFilesFixture testFiles) {
-            _exportProvider = catalog.CreateExportProvider();
-            _workflowProvider = _exportProvider.GetExportedValue<TestRInteractiveWorkflowProvider>();
+        public RPlotIntegrationTest(IExportProvider exportProvider, TestMethodFixture testMethod, TestFilesFixture testFiles) {
+            _workflowProvider = exportProvider.GetExportedValue<TestRInteractiveWorkflowProvider>();
             _workflow = _workflowProvider.GetOrCreate();
-            _plotDeviceVisualComponentContainerFactory = _exportProvider.GetExportedValue<TestRPlotDeviceVisualComponentContainerFactory>();
-            _plotHistoryVisualComponentContainerFactory = _exportProvider.GetExportedValue<IRPlotHistoryVisualComponentContainerFactory>();
+            _plotDeviceVisualComponentContainerFactory = exportProvider.GetExportedValue<TestRPlotDeviceVisualComponentContainerFactory>();
+            _plotHistoryVisualComponentContainerFactory = exportProvider.GetExportedValue<IRPlotHistoryVisualComponentContainerFactory>();
             _testMethod = testMethod.MethodInfo;
             _testFiles = testFiles;
         }
@@ -58,7 +56,6 @@ namespace Microsoft.R.Components.Test.Plots {
 
         public Task DisposeAsync() {
             _replVisualComponent.Dispose();
-            _exportProvider.Dispose();
             return Task.CompletedTask;
         }
 

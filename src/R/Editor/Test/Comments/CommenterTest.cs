@@ -18,17 +18,13 @@ using Microsoft.VisualStudio.Text.Editor;
 namespace Microsoft.R.Editor.Test.Comments {
     [ExcludeFromCodeCoverage]
     [Category.R.Commenting]
-    public class CommenterTest : IDisposable {
+    public class CommenterTest {
         private readonly IExportProvider _exportProvider;
         private readonly IEditorShell _editorShell;
 
-        public CommenterTest(REditorMefCatalogFixture catalogFixture) {
-            _exportProvider = catalogFixture.CreateExportProvider();
+        public CommenterTest(IExportProvider exportProvider) {
+            _exportProvider = exportProvider;
             _editorShell = _exportProvider.GetExportedValue<IEditorShell>();
-        }
-
-        public void Dispose() {
-            _exportProvider.Dispose();
         }
 
         [Test]

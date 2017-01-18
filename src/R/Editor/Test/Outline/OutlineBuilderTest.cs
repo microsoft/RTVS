@@ -22,19 +22,15 @@ using Xunit;
 namespace Microsoft.R.Editor.Test.Outline {
     [ExcludeFromCodeCoverage]
     [Category.R.Outlining]
-    public class ROutlineBuilderTest : IDisposable {
+    public class ROutlineBuilderTest {
         private readonly EditorTestFilesFixture _testFiles;
         private readonly IExportProvider _exportProvider;
         private readonly IEditorShell _editorShell;
 
-        public ROutlineBuilderTest(REditorMefCatalogFixture catalogFixture, EditorTestFilesFixture testFiles) {
-            _exportProvider = catalogFixture.CreateExportProvider();
+        public ROutlineBuilderTest(IExportProvider exportProvider, EditorTestFilesFixture testFiles) {
+            _exportProvider = exportProvider;
             _editorShell = _exportProvider.GetExportedValue<IEditorShell>();
             _testFiles = testFiles;
-        }
-
-        public void Dispose() {
-            _exportProvider.Dispose();
         }
 
         [Test]
