@@ -13,7 +13,7 @@ namespace Microsoft.R.Host.Client {
         public virtual Task<MessageButtons> ShowMessageAsync(string message, MessageButtons buttons, CancellationToken cancellationToken = default(CancellationToken))
             => Task.FromResult(MessageButtons.OK);
 
-        public Task PlotAsync(byte[] image)
+        public virtual Task PlotAsync(byte[] image)
             => Task.CompletedTask;
 
         public virtual PlotDeviceProperties PlotDeviceProperties

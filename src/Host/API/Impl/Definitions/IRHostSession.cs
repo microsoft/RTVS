@@ -87,7 +87,7 @@ namespace Microsoft.R.Host.Client {
         Task ExecuteAsync(string expression, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
-        /// Executes R code and returns output
+        /// Executes R code and returns output as it would happen in the interactive window.
         /// </summary>
         /// <param name="expression">Expression or block of R code to execute</param>
         /// <param name="cancellationToken">Cancellation token</param>
@@ -95,7 +95,7 @@ namespace Microsoft.R.Host.Client {
         /// <exception cref="REvaluationException" />
         /// <exception cref="OperationCanceledException" />
         /// <exception cref="RHostDisconnectedException" />
-        Task ExecuteAndOutputAsync(string expression, CancellationToken cancellationToken = default(CancellationToken));
+        Task<RSessionOutput> ExecuteAndOutputAsync(string expression, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Evaluates the provided expression and returns the result.
@@ -115,7 +115,7 @@ namespace Microsoft.R.Host.Client {
         Task<T> EvaluateAsync<T>(string expression, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
-        /// Invokes R function. 
+        /// Invokes R function with a set of arguments. Does not return any value.
         /// </summary>
         /// <param name="function">Function name</param>
         /// <param name="cancellationToken">Cancellation token</param>
@@ -127,7 +127,8 @@ namespace Microsoft.R.Host.Client {
         Task InvokeAsync(string function, CancellationToken cancellationToken = default(CancellationToken), params object[] args);
 
         /// <summary>
-        /// Invokes R function. 
+        /// Invokes R function with a set of arguments. Returns name of a 
+        /// temporary variable that received the result.
         /// </summary>
         /// <param name="function">Function name</param>
         /// <param name="cancellationToken">Cancellation token</param>
@@ -186,5 +187,18 @@ namespace Microsoft.R.Host.Client {
         /// <exception cref="OperationCanceledException" />
         /// <exception cref="RHostDisconnectedException" />
         Task<IRObjectInformation> GetInformationAsync(string expression, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Passes expression the the R plot function and returns plot image data.
+        /// </summary>
+        /// <param name="deviceProperties">Plot dimensions and resolution</param>
+        /// <param name="expression">Expression or variable name to plot</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>Image data</returns>
+        /// <exception cref="ArgumentException" />
+        /// <exception cref="REvaluationException" />
+        /// <exception cref="OperationCanceledException" />
+        /// <exception cref="RHostDisconnectedException" />
+        Task<byte[]> PlotAsync(PlotDeviceProperties deviceProperties, string expression, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

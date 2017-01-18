@@ -3,8 +3,10 @@
 
 using System;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.IO;
@@ -19,12 +21,16 @@ using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Interpreters;
+using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client {
     public sealed partial class RHostSession : IRHostSession {
         private readonly IRSession _session;
         private readonly DisposableBag _disposableBag;
-        private IRHostSessionCallback _callback;
+        private IRHostSessionCallback _userSessionCallback;
+        private RSessionCallback _rSessionCallback;
+        private StringBuilder _output;
+        private StringBuilder _errors;
 
         public Task HostStarted => _session.HostStarted;
         public bool IsHostRunning => _session.IsHostRunning;
@@ -65,8 +71,15 @@ namespace Microsoft.R.Host.Client {
             _session?.Dispose();
         }
 
-        private void OnSessionOutput(object sender, ROutputEventArgs e)
-            => _callback.Output(e.Message, e.OutputType == OutputType.Error);
+        private void OnSessionOutput(object sender, ROutputEventArgs e) {
+            if (_output != null && _errors != null) {
+                if (e.OutputType == OutputType.Error) {
+                    _errors.Append(e.Message);
+                } else {
+                    _output.Append(e.Message);
+                }
+            }
+        }
 
         private void OnSessionConnected(object sender, RConnectedEventArgs e)
             => Connected?.Invoke(this, EventArgs.Empty);
@@ -78,9 +91,10 @@ namespace Microsoft.R.Host.Client {
             => _session.CancelAllAsync(cancellationToken);
 
         public Task StartHostAsync(IRHostSessionCallback callback, string workingDirectory = null, int codePage = 0, int timeout = 3000, CancellationToken cancellationToken = default(CancellationToken)) {
-            _callback = callback;
+            _userSessionCallback = callback;
+            _rSessionCallback = new RSessionCallback(_userSessionCallback);
             var startupInfo = new RHostStartupInfo(null, workingDirectory, codePage);
-            return _session.StartHostAsync(startupInfo, new RSessionSimpleCallback(_callback), timeout, cancellationToken);
+            return _session.StartHostAsync(startupInfo, _rSessionCallback, timeout, cancellationToken);
         }
 
         public Task StopHostAsync(bool waitForShutdown = true, CancellationToken cancellationToken = default(CancellationToken))
@@ -91,17 +105,35 @@ namespace Microsoft.R.Host.Client {
             return _session.ExecuteAsync(expression, cancellationToken);
         }
 
-        public async Task ExecuteAndOutputAsync(string expression, CancellationToken cancellationToken = default(CancellationToken)) {
+        public async Task<RSessionOutput> ExecuteAndOutputAsync(string expression, CancellationToken cancellationToken = default(CancellationToken)) {
             Check.ArgumentNull(nameof(expression), expression);
-            using (var inter = await _session.BeginInteractionAsync(isVisible: true, cancellationToken: cancellationToken)) {
-                await inter.RespondAsync(expression);
+            try {
+                _output = new StringBuilder();
+                _errors = new StringBuilder();
+
+                using (var inter = await _session.BeginInteractionAsync(isVisible: true, cancellationToken: cancellationToken)) {
+                    await inter.RespondAsync(expression);
+                }
+
+                var o = _output.ToString();
+                var e = _errors.ToString();
+
+                return new RSessionOutput(o, e);
+            } finally {
+                _output = _errors = null;
             }
         }
-
 
         public Task<T> EvaluateAsync<T>(string expression, CancellationToken cancellationToken = default(CancellationToken)) {
             Check.ArgumentNull(nameof(expression), expression);
             return _session.EvaluateAsync<T>(expression, REvaluationKind.Normal, cancellationToken);
+        }
+
+        public async Task<byte[]> PlotAsync(PlotDeviceProperties deviceProperties, string expression, CancellationToken cancellationToken = default(CancellationToken)) {
+            Check.ArgumentNull(nameof(expression), expression);
+            _rSessionCallback.PlotDeviceProperties = deviceProperties;
+            await ExecuteAndOutputAsync(Invariant($"plot({expression})"), cancellationToken);
+            return _rSessionCallback.PlotResult;
         }
         #endregion
 

@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core;
 using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.XUnit;
 using NSubstitute;
@@ -129,69 +130,22 @@ namespace Microsoft.R.Host.Client.Test.Session {
             rdf.Data.First().Should().HaveCount(rowNames.Length).And.ContainInOrder(data[0] as object[]);
         }
 
+
         [Test]
-        public async Task Plot() {
-            using (var ce = new CodeExecutor()) {
-                _callback.PlotDeviceProperties.Returns(new PlotDeviceProperties(480, 480, 72));
-                _callback.When((x) => x.PlotAsync(Arg.Any<byte[]>())).Do(x => {
-                    var data = (byte[])x.Args()[0];
-                    data.Length.Should().BeGreaterThan(0);
-                    ce.Ready.Set();
-                });
-                await _session.ExecuteAndOutputAsync("plot(c(1:10))");
-                ce.ThrowIfTimeout();
-            }
+        public async Task PlotAsync() {
+            var data = await _session.PlotAsync(new PlotDeviceProperties(480, 480, 72), "c(1:10)");
+            data.Length.Should().BeGreaterThan(0);
         }
 
         [CompositeTest]
         [InlineData("1+1", false, "[1] 2\n")]
         [InlineData("x123", true, "Error: object 'x123' not found\n")]
-        public async Task Output(string expression, bool isError, string expected) {
-            using (var ce = new CodeExecutor()) {
-                var sb = new StringBuilder();
-                _callback.When((x) => x.Output(Arg.Any<string>(), Arg.Any<bool>())).Do(x => {
-                    var message = (string)x.Args()[0];
-                    sb.Append(message);
-                    var error = (bool)x.Args()[1];
-                    error.Should().Be(isError);
-                    ce.Ready.Set();
-                });
-                try {
-                    await _session.ExecuteAndOutputAsync(expression);
-                } catch (REvaluationException) { }
-                ce.ThrowIfTimeout();
-                sb.ToString().Should().Be(expected);
-            }
-        }
-
-        private void ThrowIfTimeout(ManualResetEventSlim evt, int timeout = 5000, [CallerMemberName] string testName = null) {
-            evt.Wait(timeout);
-            if (!evt.IsSet) {
-                throw new TimeoutException(testName ?? "Timeout");
-            }
-        }
-
-        private sealed class CodeExecutor: IDisposable {
-            private readonly int _timeout;
-            private readonly string _testName;
-
-            public CodeExecutor(int timeout = 5000, [CallerMemberName] string testName = null) {
-                Ready = new ManualResetEventSlim();
-                _timeout = timeout;
-                _testName = testName ?? "Timeout";
-            }
-
-            public ManualResetEventSlim Ready { get; }
-
-            public void ThrowIfTimeout() {
-                Ready.Wait(_timeout);
-                if (!Ready.IsSet) {
-                    throw new TimeoutException(_testName);
-                }
-            }
-
-            public void Dispose() {
-                Ready.Dispose();
+        public async Task OutputAsync(string expression, bool isError, string expected) {
+            var output = await _session.ExecuteAndOutputAsync(expression);
+            if (isError) {
+                output.Errors.Should().Be(expected);
+            } else {
+                output.Output.Should().Be(expected);
             }
         }
     }
