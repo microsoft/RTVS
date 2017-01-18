@@ -14,8 +14,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
     public interface IMethodFixture {
         /// <summary>
         /// Initializes method fixture.
-        /// Method has access to other fixtures, so it isn't guaranteed that fixture is initialized at the moment of initialization
-        /// This method should NEVER fail
+        /// This method should never fail with exception.
         /// </summary>
         /// <param name="testInput">Test method input data (constructor and method arguments, fixtures, etc.)</param>
         /// <param name="messageBus"></param>

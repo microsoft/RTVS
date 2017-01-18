@@ -51,7 +51,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
         }
         
         private static IMethodFixtureFactory<IMethodFixture> GetFactory(IList<IMethodFixtureFactory<IMethodFixture>> factories, Type type) 
-            => factories.FirstOrDefault(f => f.Dummy.GetType() == type);
+            => factories.FirstOrDefault(f => type.IsInstanceOfType(f.Dummy));
 
 
         private static FixtureType CreateForInstance(Type type) {

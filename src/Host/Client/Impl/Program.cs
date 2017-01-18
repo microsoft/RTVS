@@ -26,7 +26,7 @@ namespace Microsoft.R.Host.Client {
             var programName = "Microsoft.R.Host.Client.Program";
             using (var logger = new Logger(programName, Path.GetTempPath(), new MaxLoggingPermissions())) {
                 var services = new CoreServices(new AppConstants(), null, new MaxLoggingPermissions(), null, null, null, logger, null, null, null);
-                var localConnector = new LocalBrokerClient(programName, BrokerConnectionInfo.Create(args[0]), services, new NullConsole());
+                var localConnector = new LocalBrokerClient(programName, BrokerConnectionInfo.Create("local", args[0]), services, new NullConsole());
                 var host = localConnector.ConnectAsync(new HostConnectionInfo(programName, new Program())).GetAwaiter().GetResult();
                 _evaluator = host;
                 host.Run().GetAwaiter().GetResult();

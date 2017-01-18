@@ -61,7 +61,7 @@ namespace Microsoft.R.Host.Client.Host {
             }
 
             if (sslPolicyErrors.HasFlag(SslPolicyErrors.RemoteCertificateNotAvailable)) {
-                Log.WriteLine(LogVerbosity.Minimal, MessageCategory.Error, Resources.Error_NoBrokerCertificate).DoNotWait();
+                Log.WriteLine(LogVerbosity.Minimal, MessageCategory.Error, Resources.Error_NoBrokerCertificate);
                 _console.WriteError(Resources.Error_NoBrokerCertificate.FormatInvariant(Name));
                 return false;
             }
@@ -70,7 +70,7 @@ namespace Microsoft.R.Host.Client.Host {
                 // Prevent potential deadlock if handler enters on background thread, then re-enters on main thread
                 // before ValidateX509CertificateAsync is able to transition to the UI thread.
                 // At worst the connection fails
-                return _certificateValidationResult.HasValue ? _certificateValidationResult.Value : false;
+                return _certificateValidationResult ?? false;
             }
 
             lock (_verificationLock) {
