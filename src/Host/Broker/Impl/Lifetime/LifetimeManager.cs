@@ -29,14 +29,14 @@ namespace Microsoft.R.Host.Broker.Lifetime {
                     process.EnableRaisingEvents = true;
                 } catch (ArgumentException) {
                     _logger.LogCritical(Resources.Critical_ParentProcessNotFound, pid);
-                    Program.Exit();
+                    CommonStartup.Exit();
                     return;
                 }
 
                 _logger.LogInformation(Resources.Info_MonitoringParentProcess, pid);
                 process.Exited += delegate {
                     _logger.LogInformation(Resources.Info_ParentProcessExited, pid);
-                    Program.Exit();
+                    CommonStartup.Exit();
                 };
             }
 
@@ -58,7 +58,7 @@ namespace Microsoft.R.Host.Broker.Lifetime {
             var cts = (CancellationTokenSource) state;
             if (_cts == cts) {
                 _logger.LogCritical(Resources.Critical_PingTimeOut);
-                Program.Exit();
+                CommonStartup.Exit();
             }
         }
     }

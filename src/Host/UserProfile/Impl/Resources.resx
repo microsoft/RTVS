@@ -150,4 +150,10 @@
   <data name="Info_UserProfileDirectoryFound" xml:space="preserve">
     <value>User profile directory was found for user {0}\{1}, path: {2}</value>
   </data>
+  <data name="Text_ServiceDescription" xml:space="preserve">
+    <value>Creates Windows User profile for users connecting via R Host Broker</value>
+  </data>
+  <data name="Text_ServiceDisplayName" xml:space="preserve">
+    <value>R User Profile Service</value>
+  </data>
 </root>

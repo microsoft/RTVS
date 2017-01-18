@@ -158,5 +158,23 @@ namespace Microsoft.R.Host.UserProfile {
                 return ResourceManager.GetString("Info_UserProfileDirectoryFound", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Creates Windows User profile for users connecting via R Host Broker.
+        /// </summary>
+        internal static string Text_ServiceDescription {
+            get {
+                return ResourceManager.GetString("Text_ServiceDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R User Profile Service.
+        /// </summary>
+        internal static string Text_ServiceDisplayName {
+            get {
+                return ResourceManager.GetString("Text_ServiceDisplayName", resourceCulture);
+            }
+        }
     }
 }

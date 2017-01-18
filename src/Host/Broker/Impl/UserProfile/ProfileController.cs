@@ -3,6 +3,7 @@
 
 using System;
 using System.Security;
+using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,7 +33,7 @@ namespace Microsoft.R.Host.Broker.UserProfile {
 
             using (IDisposable blocker = _sessionManager.BlockSessionsCreationForUser(User.Identity, true)) {
                 var username = new StringBuilder(NativeMethods.CREDUI_MAX_USERNAME_LENGTH + 1);
-                var domain = new StringBuilder(NativeMethods.CREDUI_MAX_PASSWORD_LENGTH + 1);
+                var domain = new StringBuilder(NativeMethods.CREDUI_MAX_DOMAIN_LENGTH + 1);
                 uint error = NativeMethods.CredUIParseUserName(User.Identity.Name, username, username.Capacity, domain, domain.Capacity);
                 if (error != 0) {
                     return new ApiErrorResult(BrokerApiError.Win32Error, ErrorCodeConverter.MessageFromErrorCode((int)error));
@@ -44,8 +45,8 @@ namespace Microsoft.R.Host.Broker.UserProfile {
                 CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
 #endif
 
-                SecureString password = User.FindFirst(Claims.Password)?.Value.ToSecureString();
-                result = await _userProfileManager.DeleteProfileAsync(new RUserProfileServiceRequest(username.ToString(), domain.ToString(), password), cts.Token);
+                string sid = ((WindowsIdentity)User.Identity).User.Value;
+                result = await _userProfileManager.DeleteProfileAsync(new RUserProfileServiceRequest(username.ToString(), domain.ToString(), sid), cts.Token);
             }
 
             if(result.Error == 0) {
