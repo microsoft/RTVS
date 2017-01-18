@@ -40,7 +40,7 @@ namespace Microsoft.R.Host.Client {
             => Task.FromResult(string.Empty);
 
         public Task ShowErrorMessage(string message, CancellationToken cancellationToken = default(CancellationToken))
-            => _cb.ShowErrorMessage(message, cancellationToken);
+            => _cb.ShowErrorMessageAsync(message, cancellationToken);
 
         public Task ShowHelpAsync(string url, CancellationToken cancellationToken = default(CancellationToken))
             => Task.CompletedTask;

@@ -15,7 +15,7 @@ namespace Microsoft.R.Host.Client {
         /// <summary>
         /// Displays error message in the application-specific UI
         /// </summary>
-        Task ShowErrorMessage(string message, CancellationToken cancellationToken = default(CancellationToken));
+        Task ShowErrorMessageAsync(string message, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Displays user prompt with specified buttons in the application-specific UI

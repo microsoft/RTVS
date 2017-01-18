@@ -7,7 +7,7 @@ using Microsoft.Common.Core.Shell;
 
 namespace Microsoft.R.Host.Client {
     public class RHostSessionCallback: IRHostSessionCallback {
-        public virtual Task ShowErrorMessage(string message, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task ShowErrorMessageAsync(string message, CancellationToken cancellationToken = default(CancellationToken))
             => Task.CompletedTask;
 
         public virtual Task<MessageButtons> ShowMessageAsync(string message, MessageButtons buttons, CancellationToken cancellationToken = default(CancellationToken))
