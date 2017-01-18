@@ -1,9 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -128,12 +131,68 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
         [Test]
         public async Task Plot() {
-            _callback.PlotDeviceProperties.Returns(new PlotDeviceProperties(480, 480, 72));
-            _callback.When((x) => x.PlotAsync(Arg.Any<byte[]>())).Do(x => {
-                var data = (byte[])x.Args()[0];
-                data.Length.Should().BeGreaterThan(0);
-            });
-            await _session.ExecuteAsync("plot(c(1:10))");
+            using (var ce = new CodeExecutor()) {
+                _callback.PlotDeviceProperties.Returns(new PlotDeviceProperties(480, 480, 72));
+                _callback.When((x) => x.PlotAsync(Arg.Any<byte[]>())).Do(x => {
+                    var data = (byte[])x.Args()[0];
+                    data.Length.Should().BeGreaterThan(0);
+                    ce.Ready.Set();
+                });
+                await _session.ExecuteAndOutputAsync("plot(c(1:10))");
+                ce.ThrowIfTimeout();
+            }
+        }
+
+        [CompositeTest]
+        [InlineData("1+1", false, "[1] 2\n")]
+        [InlineData("x123", true, "Error: object 'x123' not found\n")]
+        public async Task Output(string expression, bool isError, string expected) {
+            using (var ce = new CodeExecutor()) {
+                var sb = new StringBuilder();
+                _callback.When((x) => x.Output(Arg.Any<string>(), Arg.Any<bool>())).Do(x => {
+                    var message = (string)x.Args()[0];
+                    sb.Append(message);
+                    var error = (bool)x.Args()[1];
+                    error.Should().Be(isError);
+                    ce.Ready.Set();
+                });
+                try {
+                    await _session.ExecuteAndOutputAsync(expression);
+                } catch (REvaluationException) { }
+                ce.ThrowIfTimeout();
+                sb.ToString().Should().Be(expected);
+            }
+        }
+
+        private void ThrowIfTimeout(ManualResetEventSlim evt, int timeout = 5000, [CallerMemberName] string testName = null) {
+            evt.Wait(timeout);
+            if (!evt.IsSet) {
+                throw new TimeoutException(testName ?? "Timeout");
+            }
+        }
+
+        private sealed class CodeExecutor: IDisposable {
+            private readonly int _timeout;
+            private readonly string _testName;
+
+            public CodeExecutor(int timeout = 5000, [CallerMemberName] string testName = null) {
+                Ready = new ManualResetEventSlim();
+                _timeout = timeout;
+                _testName = testName ?? "Timeout";
+            }
+
+            public ManualResetEventSlim Ready { get; }
+
+            public void ThrowIfTimeout() {
+                Ready.Wait(_timeout);
+                if (!Ready.IsSet) {
+                    throw new TimeoutException(_testName);
+                }
+            }
+
+            public void Dispose() {
+                Ready.Dispose();
+            }
         }
     }
 }

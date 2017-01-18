@@ -65,7 +65,7 @@ namespace Microsoft.R.Host.Client {
             _session?.Dispose();
         }
 
-        private void OnSessionOutput(object sender, ROutputEventArgs e) 
+        private void OnSessionOutput(object sender, ROutputEventArgs e)
             => _callback.Output(e.Message, e.OutputType == OutputType.Error);
 
         private void OnSessionConnected(object sender, RConnectedEventArgs e)
@@ -90,6 +90,14 @@ namespace Microsoft.R.Host.Client {
             Check.ArgumentNull(nameof(expression), expression);
             return _session.ExecuteAsync(expression, cancellationToken);
         }
+
+        public async Task ExecuteAndOutputAsync(string expression, CancellationToken cancellationToken = default(CancellationToken)) {
+            Check.ArgumentNull(nameof(expression), expression);
+            using (var inter = await _session.BeginInteractionAsync(isVisible: true, cancellationToken: cancellationToken)) {
+                await inter.RespondAsync(expression);
+            }
+        }
+
 
         public Task<T> EvaluateAsync<T>(string expression, CancellationToken cancellationToken = default(CancellationToken)) {
             Check.ArgumentNull(nameof(expression), expression);

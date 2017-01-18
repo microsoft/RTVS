@@ -87,6 +87,17 @@ namespace Microsoft.R.Host.Client {
         Task ExecuteAsync(string expression, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
+        /// Executes R code and returns output
+        /// </summary>
+        /// <param name="expression">Expression or block of R code to execute</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <exception cref="ArgumentNullException" />
+        /// <exception cref="REvaluationException" />
+        /// <exception cref="OperationCanceledException" />
+        /// <exception cref="RHostDisconnectedException" />
+        Task ExecuteAndOutputAsync(string expression, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
         /// Evaluates the provided expression and returns the result.
         /// This method is typically used to fetch variable value and return it to .NET code.
         /// </summary>
