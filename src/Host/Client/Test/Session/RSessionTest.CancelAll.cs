@@ -29,7 +29,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
                 _testMethod = testMethod;
                 _callback = new RSessionCallbackStub();
                 _brokerClient = CreateLocalBrokerClient(coreServices, nameof(RSessionTest) + nameof(CancelAll));
-                _session = new RSession(0, testMethod.FileSystemSafeName, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), coreServices.Log, () => {});
+                _session = new RSession(0, testMethod.FileSystemSafeName, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => {});
             }
 
             public async Task InitializeAsync() {

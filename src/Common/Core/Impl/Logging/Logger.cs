@@ -12,8 +12,9 @@ namespace Microsoft.Common.Core.Logging {
         private readonly Lazy<IActionLogWriter[]> _logs;
         private readonly ILoggingPermissions _permissions;
         private readonly string _name;
-        private readonly string _folder;
         private readonly IActionLogWriter _writer;
+
+        public string Folder { get; }
 
         public void Dispose() {
             if (_logs != null) {
@@ -31,9 +32,9 @@ namespace Microsoft.Common.Core.Logging {
 
         internal Logger(string name, string folder, ILoggingPermissions permissions) {
             _name = name;
-            _folder = folder;
             _permissions = permissions;
             _logs = Lazy.Create(CreateLogs);
+            Folder = folder;
         }
 
         private IActionLogWriter[] CreateLogs() {
@@ -42,7 +43,7 @@ namespace Microsoft.Common.Core.Logging {
 
             IActionLogWriter mainWriter = NullLogWriter.Instance;
             if (_permissions.CurrentVerbosity >= LogVerbosity.Minimal) {
-                mainWriter = _writer ?? FileLogWriter.InFolder(_folder, _name);
+                mainWriter = _writer ?? FileLogWriter.InFolder(Folder, _name);
             }
 
             // Unfortunately, creation of event sources in OS logs requires local admin rights.
@@ -53,7 +54,7 @@ namespace Microsoft.Common.Core.Logging {
             logs[(int)LogVerbosity.Normal] = _permissions.CurrentVerbosity >= LogVerbosity.Normal ? mainWriter : NullLogWriter.Instance;
 
             if (_permissions.CurrentVerbosity == LogVerbosity.Traffic) {
-                logs[(int)LogVerbosity.Traffic] = _writer ?? FileLogWriter.InFolder(_folder, _name + ".traffic");
+                logs[(int)LogVerbosity.Traffic] = _writer ?? FileLogWriter.InFolder(Folder, _name + ".traffic");
             } else {
                 logs[(int)LogVerbosity.Traffic] = NullLogWriter.Instance;
             }

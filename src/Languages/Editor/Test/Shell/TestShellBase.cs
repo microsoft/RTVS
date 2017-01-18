@@ -88,14 +88,9 @@ namespace Microsoft.Languages.Editor.Test.Shell {
         #region ICoreShell
         public bool IsUnitTestEnvironment { get; set; } = true;
         public IApplicationConstants AppConstants => new TestAppConstants();
-        public virtual ICoreServices Services => TestCoreServices.CreateReal(new NullLogWriter());
+        public virtual ICoreServices Services => TestCoreServices.CreateReal();
         public IProgressDialog ProgressDialog { get; }
         public IFileDialog FileDialog { get; }
         #endregion
-
-        private sealed class NullLogWriter : IActionLogWriter {
-            public void Write(MessageCategory category, string message) {}
-            public void Flush() { }
-        }
     }
 }

@@ -62,9 +62,7 @@
     <Compile Include="Extensions\TaskCompletionSourceExtensions.cs" />
     <Compile Include="IO\KnownFolderGuids.cs" />
     <Compile Include="Json\Json.cs" />
-    <Compile Include="Logging\ILoggerProvider.cs" />
     <Compile Include="Logging\ILoggingPermissions.cs" />
-    <Compile Include="Logging\Implementation\LoggingServices.cs" />
     <Compile Include="Logging\Implementation\NullLogWriter.cs" />
     <Compile Include="Logging\LogExtensions.cs" />
     <Compile Include="Logging\Logger.cs" />

@@ -107,9 +107,8 @@ namespace Microsoft.Common.Core.Logging {
 
         public static FileLogWriter InFolder(string folder, string fileName, int maxMessagesCount = 20, int autoFlushTimeout = 5000) {
             return _writers.GetOrAdd(fileName, _ => {
-                var folderPath = Path.Combine(folder, "rtvs.logs");
-                Directory.CreateDirectory(folderPath);
-                var path = Path.Combine(folderPath, Invariant($@"{fileName}_{DateTime.Now:yyyyMdd_HHmmss}_pid{Process.GetCurrentProcess().Id}.log"));
+                Directory.CreateDirectory(folder);
+                var path = Path.Combine(folder, Invariant($@"{fileName}_{DateTime.Now:yyyyMdd_HHmmss}_pid{Process.GetCurrentProcess().Id}.log"));
                 return new FileLogWriter(path, maxMessagesCount, autoFlushTimeout);
             });
         }

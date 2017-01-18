@@ -9,7 +9,6 @@ using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Services;
 using Microsoft.Office.Interop.Outlook;
 using Microsoft.VisualStudio.R.Package.Commands;
-using Microsoft.VisualStudio.R.Package.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Feedback {
     internal class SendMailCommand : PackageCommand {
@@ -21,7 +20,7 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
         }
 
         protected override void SetStatus() {
-            Enabled = Visible = Services.LoggingServices.Permissions.IsFeedbackPermitted;
+            Enabled = Visible = Services.LoggingPermissions.IsFeedbackPermitted;
         }
 
         protected void SendMail(string body, string subject, string attachmentFile) {

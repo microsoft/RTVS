@@ -4,6 +4,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Diagnostics;
 
 namespace Microsoft.Common.Core.Disposables {
     /// <summary>
@@ -17,9 +18,7 @@ namespace Microsoft.Common.Core.Disposables {
         /// <returns>The disposable object that runs the given action upon disposal.</returns>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="dispose" /> is null.</exception>
         public static IDisposable Create(Action dispose) {
-            if (dispose == null) {
-                throw new ArgumentNullException(nameof(dispose));
-            }
+            Check.ArgumentNull(nameof(dispose), dispose);
 
             return new AnonymousDisposable(dispose);
         }
@@ -31,9 +30,7 @@ namespace Microsoft.Common.Core.Disposables {
         /// <returns>The disposable object that disposes wrapped object.</returns>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="disposable" /> is null.</exception>
         public static IDisposable Create(IDisposable disposable) {
-            if (disposable == null) {
-                throw new ArgumentNullException(nameof(disposable));
-            }
+            Check.ArgumentNull(nameof(disposable), disposable);
 
             return new DisposableWrapper(disposable);
         }

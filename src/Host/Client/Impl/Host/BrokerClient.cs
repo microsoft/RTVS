@@ -20,6 +20,7 @@ using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Net;
 using Microsoft.R.Host.Client.BrokerServices;
 using Microsoft.R.Host.Protocol;
+using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client.Host {
     internal abstract class BrokerClient : IBrokerClient {
@@ -155,7 +156,7 @@ namespace Microsoft.R.Host.Client.Host {
         private async Task CreateBrokerSessionAsync(string name, bool useRCommandLineArguments, CancellationToken cancellationToken) {
             var rCommandLineArguments = useRCommandLineArguments && _rCommandLineArguments != null ? _rCommandLineArguments : null;
             var sessions = new SessionsWebService(HttpClient, _credentials, Log);
-            using (Log.Measure(LogVerbosity.Normal, $"Create broker session \"{name}\"")) {
+            using (Log.Measure(LogVerbosity.Normal, Invariant($"Create broker session \"{name}\""))) {
                 try {
                     await sessions.PutAsync(name, new SessionCreateRequest {
                         InterpreterId = _interpreterId,
@@ -168,13 +169,12 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         private async Task<WebSocket> ConnectToBrokerAsync(string name, CancellationToken cancellationToken) {
-            using (Log.Measure(LogVerbosity.Normal, $"Connect to broker session \"{name}\"")) {
+            using (Log.Measure(LogVerbosity.Normal, Invariant($"Connect to broker session \"{name}\""))) {
                 var wsClient = new WebSocketClient {
                     KeepAliveInterval = HeartbeatTimeout,
                     SubProtocols = { "Microsoft.R.Host" },
                     InspectResponse = response => {
-                        if (response.StatusCode == HttpStatusCode.Forbidden)
-                        {
+                        if (response.StatusCode == HttpStatusCode.Forbidden) {
                             throw new UnauthorizedAccessException();
                         }
                     }

@@ -20,7 +20,7 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
 
         public ReportIssueCommand(ICoreServices services)
             : base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdReportIssue) {
-            _permissions = services.LoggingServices.Permissions;
+            _permissions = services.LoggingPermissions;
             _pss = services.ProcessServices;
         }
 

@@ -34,7 +34,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
                 _taskObserver = taskObserver;
                 _testMethod = testMethod;
                 _brokerClient = CreateLocalBrokerClient(coreServices, nameof(RSessionTest) + nameof(InteractionEvaluation));
-                _session = new RSession(0, _testMethod.FileSystemSafeName, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), coreServices.Log, () => { });
+                _session = new RSession(0, _testMethod.FileSystemSafeName, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
             }
 
             public async Task InitializeAsync() {
@@ -127,7 +127,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
  
             [Test]
             public async Task EvaluateAsync_DisconnectedFromTheStart() {
-                using (var session = new RSession(0, _testMethod.FileSystemSafeName, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), _coreServices.Log, () => { })) {
+                using (var session = new RSession(0, _testMethod.FileSystemSafeName, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { })) {
                     // ReSharper disable once AccessToDisposedClosure
                     Func<Task> f = () => session.EvaluateAsync("x <- 1");
                     await f.ShouldThrowAsync<RHostDisconnectedException>();
@@ -164,7 +164,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
             [Test]
             public async Task BeginInteractionAsync_DisconnectedFromTheStart() {
-                using (var session = new RSession(0, _testMethod.FileSystemSafeName, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), _coreServices.Log, () => { })) {
+                using (var session = new RSession(0, _testMethod.FileSystemSafeName, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { })) {
                     // ReSharper disable once AccessToDisposedClosure
                     Func<Task> f = () => session.BeginInteractionAsync();
                     await f.ShouldThrowAsync<RHostDisconnectedException>();

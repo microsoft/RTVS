@@ -52,7 +52,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             var pcsp = exportProvider.GetExportedValue<IProjectConfigurationSettingsProvider>();
             var dbcs = exportProvider.GetExportedValue<IDbConnectionService>();
             var settings = exportProvider.GetExportedValue<IRToolsSettings>();
-            var logPerms = appShell.Services.LoggingServices.Permissions;
+            var logPerms = appShell.Services.LoggingPermissions;
             var console = new InteractiveWindowConsole(interactiveWorkflow);
 
             return new List<MenuCommand> {

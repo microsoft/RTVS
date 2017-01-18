@@ -29,14 +29,10 @@ namespace Microsoft.Common.Core.Test.Logging {
             log.Write(LogVerbosity.Traffic, MessageCategory.Error, "message3");
 
             int i = 0;
-            foreach (var v in Enum.GetValues(typeof(LogVerbosity)))
-            {
-                if ((int)v > (int)LogVerbosity.None && (int)v <= (int)verbosity)
-                {
+            foreach (var v in Enum.GetValues(typeof(LogVerbosity))) {
+                if ((int)v > (int)LogVerbosity.None && (int)v <= (int)verbosity) {
                     writer.Received().Write(MessageCategory.Error, "message" + i);
-                }
-                else
-                {
+                } else {
                     writer.DidNotReceive().Write(MessageCategory.Error, "message" + i);
                 }
                 i++;
@@ -44,8 +40,7 @@ namespace Microsoft.Common.Core.Test.Logging {
 
             writer.DidNotReceive().Flush();
 
-            if (verbosity > LogVerbosity.None)
-            {
+            if (verbosity > LogVerbosity.None) {
                 log.Flush();
                 writer.Received().Flush();
             }

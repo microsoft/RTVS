@@ -3,6 +3,7 @@
 
 namespace Microsoft.R.Host.Broker.Logging {
     public class LoggingOptions {
+        public string LogFolder { get; set; }
         public bool LogHostOutput { get; set; }
         public bool LogPackets { get; set; }
     }

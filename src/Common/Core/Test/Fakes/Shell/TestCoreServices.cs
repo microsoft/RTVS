@@ -19,7 +19,6 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
     public static class TestCoreServices {
         public static ICoreServices CreateSubstitute(ILoggingPermissions loggingPermissions = null, IFileSystem fs = null, IRegistry registry = null, IProcessServices ps = null) {
             return new CoreServices(
-                Substitute.For<IApplicationConstants>(),
                 Substitute.For<ITelemetryService>(),
                 loggingPermissions,
                 Substitute.For<ISecurityService>(),
@@ -31,17 +30,16 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
                 ps ?? Substitute.For<IProcessServices>());
         }
 
-        public static ICoreServices CreateReal(IActionLogWriter logWriter) {
+        public static ICoreServices CreateReal() {
             var appConstants = new TestAppConstants();
             var telemetryService = new TelemetryTestService();
             var registry = new RegistryImpl();
             var loggingPermissions = new LoggingPermissions(appConstants, telemetryService, registry);
-            var log = new Logger(logWriter, loggingPermissions);
+            var log = new Logger(new NullLogWriter(), loggingPermissions);
             var fileSystem = new FileSystem();
             var processServices = new ProcessServices();
 
             return new CoreServices(
-                appConstants,
                 telemetryService,
                 loggingPermissions,
                 Substitute.For<ISecurityService>(),
@@ -51,6 +49,11 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
                 fileSystem,
                 registry,
                 processServices);
+        }
+
+        private sealed class NullLogWriter : IActionLogWriter {
+            public void Write(MessageCategory category, string message) { }
+            public void Flush() { }
         }
     }
 }

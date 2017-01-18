@@ -10,7 +10,6 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
 using static System.FormattableString;
@@ -24,8 +23,8 @@ namespace Microsoft.R.Host.Client {
             Console.CancelKeyPress += Console_CancelKeyPress;
 
             var programName = "Microsoft.R.Host.Client.Program";
-            using (var logger = new Logger(programName, Path.GetTempPath(), new MaxLoggingPermissions())) {
-                var services = new CoreServices(new AppConstants(), null, new MaxLoggingPermissions(), null, null, null, logger, null, null, null);
+            using (var logger = new Logger(programName, Path.Combine(Path.GetTempPath(), "rtvs.logs"), new MaxLoggingPermissions())) {
+                var services = new CoreServices(null, new MaxLoggingPermissions(), null, null, null, logger, null, null, null);
                 var localConnector = new LocalBrokerClient(programName, BrokerConnectionInfo.Create("local", args[0]), services, new NullConsole());
                 var host = localConnector.ConnectAsync(new HostConnectionInfo(programName, new Program())).GetAwaiter().GetResult();
                 _evaluator = host;

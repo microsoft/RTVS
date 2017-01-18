@@ -59,7 +59,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [ImportingConstructor]
         public RToolsSettingsImplementation(ISettingsStorage settings, ICoreShell coreShell) {
             _settings = settings;
-            _loggingPermissions = coreShell.Services.LoggingServices.Permissions;
+            _loggingPermissions = coreShell.Services.LoggingPermissions;
             _workingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         }
 

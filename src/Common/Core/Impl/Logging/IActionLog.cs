@@ -11,6 +11,8 @@ namespace Microsoft.Common.Core.Logging {
         void WriteFormat(LogVerbosity verbosity, MessageCategory category, string format, params object[] arguments);
         void WriteLine(LogVerbosity verbosity, MessageCategory category, string message);
         void Flush();
+
         LogVerbosity LogVerbosity { get; }
+        string Folder { get; }
     }
 }

@@ -14,7 +14,7 @@ namespace Microsoft.Common.Core.Services {
     public interface ICoreServices {
         IActionLog Log { get; }
         IFileSystem FileSystem { get; }
-        ILoggingServices LoggingServices { get; }
+        ILoggingPermissions LoggingPermissions { get; }
         IProcessServices ProcessServices { get; }
         IRegistry Registry { get; }
         ISecurityService Security { get; }

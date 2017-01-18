@@ -14,6 +14,7 @@ using Microsoft.Common.Core.Json;
 using Microsoft.Common.Core.Logging;
 using Microsoft.R.Host.Protocol;
 using Newtonsoft.Json;
+using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client.BrokerServices {
     public class WebService {
@@ -95,7 +96,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
         public async Task<TResponse> HttpPutAsync<TRequest, TResponse>(Uri uri, TRequest request, CancellationToken cancellationToken = default(CancellationToken)) {
             var requestBody = JsonConvert.SerializeObject(request);
 
-            using (var response = await RepeatUntilAuthenticatedAsync(ct => GetHttpPutResponseAsync(uri, requestBody, ct), cancellationToken))  {
+            using (var response = await RepeatUntilAuthenticatedAsync(ct => GetHttpPutResponseAsync(uri, requestBody, ct), cancellationToken)) {
                 var responseBody = await response.Content.ReadAsStringAsync();
                 try {
                     return Json.DeserializeObject<TResponse>(responseBody);
@@ -130,27 +131,27 @@ namespace Microsoft.R.Host.Client.BrokerServices {
         private Uri MakeUri(UriTemplate uriTemplate, params object[] args) =>
             uriTemplate.BindByPosition(HttpClient.BaseAddress, args.Select(x => x.ToString()).ToArray());
 
-        
+
         private async Task<HttpResponseMessage> GetAsync(Uri uri, CancellationToken ct) {
-            using (_log.Measure(LogVerbosity.Traffic, $"GetAsync({uri.AbsoluteUri})")) {
+            using (_log.Measure(LogVerbosity.Traffic, Invariant($"GetAsync({uri.AbsoluteUri})"))) {
                 return await HttpClient.GetAsync(uri, ct);
             }
         }
 
         private async Task<HttpResponseMessage> PutAsync(Uri uri, CancellationToken cancellationToken, StringContent content) {
-            using (_log.Measure(LogVerbosity.Traffic, $"PutAsync({uri.AbsoluteUri})")) {
+            using (_log.Measure(LogVerbosity.Traffic, Invariant($"PutAsync({uri.AbsoluteUri})"))) {
                 return await HttpClient.PutAsync(uri, content, cancellationToken);
             }
         }
 
         private async Task<HttpResponseMessage> PostAsync(Uri uri, StreamContent content, CancellationToken ct) {
-            using (_log.Measure(LogVerbosity.Traffic, $"PostAsync({uri.AbsoluteUri})")) {
+            using (_log.Measure(LogVerbosity.Traffic, Invariant($"PostAsync({uri.AbsoluteUri})"))) {
                 return await HttpClient.PostAsync(uri, content, ct);
             }
         }
 
         private async Task<HttpResponseMessage> DeleteAsync(Uri uri, CancellationToken ct) {
-            using (_log.Measure(LogVerbosity.Traffic, $"DeleteAsync({uri.AbsoluteUri})")) {
+            using (_log.Measure(LogVerbosity.Traffic, Invariant($"DeleteAsync({uri.AbsoluteUri})"))) {
                 return await HttpClient.DeleteAsync(uri, ct);
             }
         }

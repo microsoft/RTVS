@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics;
 using Microsoft.Common.Core.Disposables;
+using static System.FormattableString;
 
 namespace Microsoft.Common.Core.Logging {
     public static class LogExtensions {
@@ -12,12 +13,12 @@ namespace Microsoft.Common.Core.Logging {
                 return Disposable.Empty;
             }
 
-            log.Write(verbosity, MessageCategory.General, $"{message} started");
+            log.Write(verbosity, MessageCategory.General, Invariant($"{message} started"));
             var stopwatch = new Stopwatch();
             stopwatch.Start();
             return Disposable.Create(() => {
                 stopwatch.Stop();
-                log.Write(verbosity, MessageCategory.General, $"{message} completed in {stopwatch.ElapsedMilliseconds} ms.");
+                log.Write(verbosity, MessageCategory.General, Invariant($"{message} completed in {stopwatch.ElapsedMilliseconds} ms."));
             });
         }
     }

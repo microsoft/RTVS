@@ -26,6 +26,7 @@ namespace Microsoft.R.Host.Broker.Startup {
         private static ILogger _logger;
         private static readonly StartupOptions _startupOptions = new StartupOptions();
         private static readonly SecurityOptions _securityOptions = new SecurityOptions();
+        private static readonly LoggingOptions _loggingOptions = new LoggingOptions();
         private static readonly CancellationTokenSource _cts = new CancellationTokenSource();
 
         internal static IConfigurationRoot Configuration { get; set; }
@@ -34,13 +35,14 @@ namespace Microsoft.R.Host.Broker.Startup {
 
         internal static void CommonStartupInit(IConfigurationRoot configuration) {
             Configuration = configuration;
-            ConfigurationBinder.Bind(Configuration.GetSection("startup"), _startupOptions);
-            ConfigurationBinder.Bind(Configuration.GetSection("security"), _securityOptions);
+            Configuration.GetSection("startup").Bind(_startupOptions);
+            Configuration.GetSection("security").Bind(_securityOptions);
+            Configuration.GetSection("logging").Bind(_loggingOptions);
 
             _loggerFactory
-                            .AddDebug()
-                            .AddConsole(LogLevel.Trace)
-                            .AddProvider(new FileLoggerProvider(_startupOptions.Name));
+                .AddDebug()
+                .AddConsole(LogLevel.Trace)
+                .AddProvider(new FileLoggerProvider(_startupOptions.Name, _loggingOptions.LogFolder));
             _logger = _loggerFactory.CreateLogger<Program>();
 
             if (_startupOptions.Name != null) {

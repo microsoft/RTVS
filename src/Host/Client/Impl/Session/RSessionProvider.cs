@@ -86,7 +86,7 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         private RSession CreateRSession(string sessionId) {
-            var session = new RSession(Interlocked.Increment(ref _sessionCounter), sessionId, Broker, _connectArwl.CreateExclusiveReaderLock(), _services.Log, () => DisposeSession(sessionId));
+            var session = new RSession(Interlocked.Increment(ref _sessionCounter), sessionId, Broker, _connectArwl.CreateExclusiveReaderLock(), () => DisposeSession(sessionId));
             session.Connected += RSessionOnConnected;
             return session;
         }
