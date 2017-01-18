@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
@@ -214,7 +216,7 @@ namespace Microsoft.R.Host.Client.Session {
                     await _host.CancelAllAsync(cancellationToken);
                 } finally {
                     // Even if cancellationToken.IsCancellationRequested == true, we can't find out if request was fully completed or not, so we consider it canceled
-                    currentRequest?.TryCancel(exception);
+                    currentRequest?.TryCancel(new CancelAllException(exception.Message, exception));
                 }
             }
         }
@@ -553,11 +555,16 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
                 ct.ThrowIfCancellationRequested();
                 try {
                     consoleInput = await ReadNextRequest(Prompt, len, ct);
-                } catch (OperationCanceledException) {
+                } catch (OperationCanceledException ex) when (!(ex is CancelAllException)) {
                     // If request was canceled through means other than our token, it indicates the refusal of
                     // that requestor to respond to that particular prompt, so move on to the next requestor.
                     // If it was canceled through the token, then host itself is shutting down, and cancellation
                     // will be propagated on the entry to next iteration of this loop.
+                    //
+                    // If request was canceled due to CancelAllAsync, then we should not continue to process this
+                    // ReadConsole call at all. Under normal conditions, ct will also be marked as canceled; but
+                    // there is a potential for a race condition where we get a cancellation exception here, but
+                    // ct is not marked as canceled yet. Explicitly checking for CancelAllException handles this.
                 }
             } while (consoleInput == null);
 
@@ -786,6 +793,25 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
             public void Dispose() {
                 _hostToSwitch?.Dispose();
             }
+        }
+
+        // A custom exception type for the sole purpose of distinguishing cancellation of ReadConsole
+        // due to CancelAllAsync from all other cases, and special handling of the former.
+        [Serializable]
+        private class CancelAllException : OperationCanceledException {
+            public CancelAllException() { }
+
+            public CancelAllException(string message) : base(message) { }
+
+            public CancelAllException(string message, Exception innerException) : base(message, innerException) { }
+
+            public CancelAllException(CancellationToken token) : base(token) { }
+
+            public CancelAllException(string message, CancellationToken token) : base(message, token) { }
+
+            public CancelAllException(string message, Exception innerException, CancellationToken token) : base(message, innerException, token) { }
+
+            protected CancelAllException(SerializationInfo info, StreamingContext context) : base(info, context) { }
         }
     }
 }

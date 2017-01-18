@@ -225,6 +225,8 @@
     <Compile Include="ProjectSystem\Commands\IncludeInProjectCommand.cs" />
     <Compile Include="ProjectSystem\Commands\SendFileCommandBase.cs" />
     <Compile Include="ProjectSystem\Commands\SendToRemoteCommand.cs" />
+    <Compile Include="ProjectSystem\Editors\SettingPropertyDescriptor.cs" />
+    <Compile Include="ProjectSystem\Editors\SettingsTypeDescriptor.cs" />
     <Compile Include="Repl\Commands\History\NextHistoryReplCommand.cs" />
     <Compile Include="Repl\Commands\History\PrevHistoryReplCommand.cs" />
     <Compile Include="Repl\Commands\ReplCommandBase.cs" />

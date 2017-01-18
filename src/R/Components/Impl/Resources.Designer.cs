@@ -253,7 +253,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The provided name is invalid. Allowed characters are letters, digits, underscore, period, dash, braces and square brackets..
+        ///   Looks up a localized string similar to The provided name is invalid. Allowed characters are letters, digits, underscore, period, dash, single quote, braces and square brackets..
         /// </summary>
         public static string ConnectionManager_InvalidName {
             get {
