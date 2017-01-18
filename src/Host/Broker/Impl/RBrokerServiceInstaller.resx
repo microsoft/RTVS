@@ -117,37 +117,13 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Btn_StartBroker" xml:space="preserve">
-    <value>Start R Remote Services</value>
-  </data>
-  <data name="Btn_StopBroker" xml:space="preserve">
-    <value>Stop R Remote Services</value>
-  </data>
-  <data name="Text_StartBroker" xml:space="preserve">
-    <value>Starts and monitors R Remote Services process.</value>
-  </data>
-  <data name="Text_StopBroker" xml:space="preserve">
-    <value>Stops the monitored R Remote Services process.</value>
-  </data>
-  <data name="Error_AutoRestartFailed" xml:space="preserve">
-    <value>Auto restart failed , exception: {0}</value>
-  </data>
-  <data name="Error_StartUpFailed" xml:space="preserve">
-    <value>R Remote Services startup failed with exception: {0}</value>
-  </data>
-  <data name="Error_StopBrokerFailed" xml:space="preserve">
-    <value>R Remote Services could not be stopped. Exception: {0}</value>
-  </data>
-  <data name="Info_BrokerAlreadyRunning" xml:space="preserve">
-    <value>R Remote Services is already running, process id {0}.</value>
-  </data>
-  <data name="Info_NewBrokerInstanceStarted" xml:space="preserve">
-    <value>New R Remote Services instance started, process id {0}.</value>
-  </data>
-  <data name="Status_BrokerStarted" xml:space="preserve">
-    <value>R Remote Services process started, process Id: {0}</value>
-  </data>
-  <data name="Status_BrokerStopped" xml:space="preserve">
-    <value>R Remote Services process stopped.</value>
-  </data>
+  <metadata name="serviceProcessInstaller1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
+  </metadata>
+  <metadata name="serviceInstaller1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>196, 17</value>
+  </metadata>
+  <metadata name="$this.TrayLargeIcon" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>False</value>
+  </metadata>
 </root>

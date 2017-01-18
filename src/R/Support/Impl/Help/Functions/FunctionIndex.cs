@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
@@ -94,7 +95,6 @@ namespace Microsoft.R.Support.Help.Functions {
             if (functionInfo != null) {
                 return functionInfo;
             }
-
             GetFunctionInfoFromEngineAsync(functionName, packageName, infoReadyCallback, parameter).DoNotWait();
             return null;
         }
@@ -104,9 +104,8 @@ namespace Microsoft.R.Support.Help.Functions {
             if (functionInfo != null) {
                 return functionInfo;
             }
-
             packageName = await GetFunctionInfoFromEngineAsync(functionName, packageName);
-            return TryGetCachedFunctionInfo(functionName, ref packageName);
+            return await TryGetCachedFunctionInfoAsync(functionName, packageName);
         }
 
         /// <summary>
@@ -115,20 +114,47 @@ namespace Microsoft.R.Support.Help.Functions {
         /// or the package name is known.
         /// </summary>
         private IFunctionInfo TryGetCachedFunctionInfo(string functionName, ref string packageName) {
-            List<string> packages;
-            if (!_functionToPackageMap.TryGetValue(functionName, out packages)) {
+            IFunctionInfo functionInfo = null;
+            if (string.IsNullOrEmpty(packageName)) {
+                // Find packages that the function may belong to. There may be more than one.
+                List<string> packages;
+                if (!_functionToPackageMap.TryGetValue(functionName, out packages) || packages.Count == 0) {
+                    // Not in the cache
+                    return null;
+                }
+
+                // Special case RTVS package
+                if (packages.Count == 1 && packages[0].EqualsOrdinal("rtvs")) {
+                    packageName = packages[0];
+                } else {
+                    // If there is only one package, try it. 
+                    var loaded = _host.LoadedPackageNames.Intersect(packages).ToArray();
+                    if (loaded.Length == 1) {
+                        packageName = loaded[0];
+                    }
+                }
+            } else if (!packageName.EqualsOrdinal("rtvs") && !_host.LoadedPackageNames.Contains(packageName)) {
+                // Verify that the package is currently loaded. We do not show functions from all
+                // installed packages and do not show from unloaded packages.
                 return null;
             }
 
-            IFunctionInfo functionInfo = null;
-            if (packages.Count == 1 && (string.IsNullOrEmpty(packageName) || packageName.EqualsOrdinal(packages[0]))) {
-                packageName = packages[0];
-                _functionToInfoMap?.TryGetValue(GetQualifiedName(functionName, packages[0]), out functionInfo);
-            } else if (!string.IsNullOrEmpty(packageName)) {
+            if (!string.IsNullOrEmpty(packageName)) {
                 _functionToInfoMap?.TryGetValue(GetQualifiedName(functionName, packageName), out functionInfo);
             }
-
             return functionInfo;
+        }
+
+        /// <summary>
+        /// Attempts to retrieve function information from cache is a simple manner.
+        /// Specifically, when function name is unique (then package name is irrelevant)
+        /// or the package name is known.
+        /// </summary>
+        private async Task<IFunctionInfo> TryGetCachedFunctionInfoAsync(string functionName, string packageName) {
+            if (packageName == null) {
+                packageName = await GetFunctionLoadedPackage(functionName);
+            }
+            return TryGetCachedFunctionInfo(functionName, ref packageName);
         }
 
         private string GetQualifiedName(string functionName, string packageName) {
@@ -176,6 +202,13 @@ namespace Microsoft.R.Support.Help.Functions {
             return packageName;
         }
 
+        private async Task<string> GetFunctionLoadedPackage(string functionName) {
+            var packageName = await _host.GetFunctionPackageNameAsync(functionName);
+            if (!string.IsNullOrEmpty(packageName) && _host.LoadedPackageNames.Contains(packageName)) {
+                return packageName;
+            }
+            return null;
+        }
 
         private void UpdateIndex(string functionName, string packageName, string rdData) {
             IReadOnlyList<IFunctionInfo> functionInfos = GetFunctionInfosFromRd(rdData);

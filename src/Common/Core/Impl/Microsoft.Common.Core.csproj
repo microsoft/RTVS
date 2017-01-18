@@ -60,6 +60,7 @@
     <Compile Include="Extensions\SettingsExtensions.cs" />
     <Compile Include="Extensions\StreamExtensions.cs" />
     <Compile Include="Extensions\TaskCompletionSourceExtensions.cs" />
+    <Compile Include="IO\IUserProfileNamedPipeFactory.cs" />
     <Compile Include="IO\KnownFolderGuids.cs" />
     <Compile Include="Json\Json.cs" />
     <Compile Include="Logging\ILoggerProvider.cs" />
@@ -82,6 +83,11 @@
     <Compile Include="OS\IUserCredentials.cs" />
     <Compile Include="OS\IUserProfileCreatorResult.cs" />
     <Compile Include="OS\IUserProfileServices.cs" />
+    <Compile Include="OS\ProcessWaitHandle.cs" />
+    <Compile Include="OS\SafeThreadHandle.cs" />
+    <Compile Include="OS\Win32EnvironmentBlock.cs" />
+    <Compile Include="OS\Win32NativeEnvironmentBlock.cs" />
+    <Compile Include="OS\Win32Process.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

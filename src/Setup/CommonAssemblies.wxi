@@ -4,7 +4,6 @@
   <File Source="$(var.BinDir)\Microsoft.R.Common.Core.dll" />
   <File Source="$(var.BinDir)\Microsoft.R.Core.dll" />
   <File Source="$(var.BinDir)\Microsoft.R.Host.Protocol.dll" />
-  <File Source="$(var.BinDir)\Microsoft.R.Host.Broker.exe" />
   <File Source="$(var.BinDir)\Microsoft.R.Interpreters.dll" />
   <File Source="$(var.BinDir)\Newtonsoft.Json.dll" />
   <File Source="$(var.BinDir)\Microsoft.AspNetCore.Antiforgery.dll" />

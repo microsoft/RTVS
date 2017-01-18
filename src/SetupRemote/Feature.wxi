@@ -12,7 +12,7 @@
     <ComponentRef Id="ProductAssemblies" />
     <ComponentGroupRef Id="RtvsPackage" />
     <ComponentRef Id="RemoteRUserProfile" />
-    <ComponentRef Id="MonitorAutoStart" />
+    <ComponentRef Id="RemoteRBrokerService" />
     <!--<ComponentRef Id="RegistryEntries" />-->
   </Feature>
 </Include>
