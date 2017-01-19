@@ -133,7 +133,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
         [Test]
         public async Task PlotAsync() {
-            var data = await _session.PlotAsync(new PlotDeviceProperties(480, 480, 72), "c(1:10)");
+            var data = await _session.PlotAsync("c(1:10)", 480, 480, 72);
             data.Length.Should().BeGreaterThan(0);
         }
 

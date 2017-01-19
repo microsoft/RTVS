@@ -129,9 +129,9 @@ namespace Microsoft.R.Host.Client {
             return _session.EvaluateAsync<T>(expression, REvaluationKind.Normal, cancellationToken);
         }
 
-        public async Task<byte[]> PlotAsync(PlotDeviceProperties deviceProperties, string expression, CancellationToken cancellationToken = default(CancellationToken)) {
+        public async Task<byte[]> PlotAsync(string expression, int width, int height, int dpi, CancellationToken cancellationToken = default(CancellationToken)) {
             Check.ArgumentNull(nameof(expression), expression);
-            _rSessionCallback.PlotDeviceProperties = deviceProperties;
+            _rSessionCallback.PlotDeviceProperties = new PlotDeviceProperties(width, height, dpi);
             await ExecuteAndOutputAsync(Invariant($"plot({expression})"), cancellationToken);
             return _rSessionCallback.PlotResult;
         }

@@ -191,14 +191,16 @@ namespace Microsoft.R.Host.Client {
         /// <summary>
         /// Passes expression the the R plot function and returns plot image data.
         /// </summary>
-        /// <param name="deviceProperties">Plot dimensions and resolution</param>
         /// <param name="expression">Expression or variable name to plot</param>
+        /// <param name="width">Image width</param>
+        /// <param name="height">Image height</param>
+        /// <param name="dpi">Image resolution</param>
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns>Image data</returns>
         /// <exception cref="ArgumentException" />
         /// <exception cref="REvaluationException" />
         /// <exception cref="OperationCanceledException" />
         /// <exception cref="RHostDisconnectedException" />
-        Task<byte[]> PlotAsync(PlotDeviceProperties deviceProperties, string expression, CancellationToken cancellationToken = default(CancellationToken));
+        Task<byte[]> PlotAsync(string expression, int width, int height, int dpi, CancellationToken cancellationToken = default(CancellationToken));
     }
 }
