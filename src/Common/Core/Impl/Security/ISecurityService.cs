@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Microsoft.Common.Core.Security {
     public interface ISecurityService {
         Task<Credentials> GetUserCredentialsAsync(string authority, string workspaceName, CancellationToken cancellationToken = default(CancellationToken));
-        bool ValidateX509Certificate(X509Certificate certificate, string message);
+        Task<bool> ValidateX509CertificateAsync(X509Certificate certificate, string message, CancellationToken cancellationToken = default(CancellationToken));
         bool DeleteUserCredentials(string authority);
     }
 }
