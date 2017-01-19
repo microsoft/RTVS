@@ -23,21 +23,18 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
     [ExcludeFromCodeCoverage]
     [Category.Connections]
     public sealed class ConnectionManagerViewModelTest : IDisposable {
-        private readonly IExportProvider _exportProvider;
         private readonly IRInteractiveWorkflow _workflow;
         private readonly IConnectionManagerVisualComponent _cmvc;
         private readonly ConnectionManagerViewModel _cmvm;
 
-        public ConnectionManagerViewModelTest(RComponentsMefCatalogFixture mefCatalogFixture) {
-            _exportProvider = mefCatalogFixture.CreateExportProvider();
-            _workflow = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
+        public ConnectionManagerViewModelTest(IExportProvider exportProvider) {
+            _workflow = exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
             _cmvc = UIThreadHelper.Instance.Invoke(() => _workflow.Connections.GetOrCreateVisualComponent());
             _cmvm = UIThreadHelper.Instance.Invoke(() => (ConnectionManagerViewModel)_cmvc.Control.DataContext);
         }
         
         public void Dispose() {
             _cmvc.Dispose();
-            _exportProvider.Dispose();
         }
 
         [CompositeTest(ThreadType.UI)]

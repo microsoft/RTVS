@@ -246,4 +246,10 @@
   <data name="Default" xml:space="preserve">
     <value>Default</value>
   </data>
+  <data name="Text_ServiceDescription" xml:space="preserve">
+    <value>Creates and manages R Host (Microsoft.R.Host.exe) sessions.</value>
+  </data>
+  <data name="Text_ServiceDisplayName" xml:space="preserve">
+    <value>R Host Broker Service</value>
+  </data>
 </root>

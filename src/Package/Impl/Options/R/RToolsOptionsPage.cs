@@ -234,8 +234,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
 
             public T GetValue<T>(T defaultValue, [CallerMemberName] string name = null) {
                 object value;
-                _dict.TryGetValue(name, out value);
-                return value != null ? (T)value : defaultValue;
+                return _dict.TryGetValue(name, out value) ? (T)value : default (T);
             }
 
             public T GetValue<T>([CallerMemberName] string name = null) => GetValue<T>(default(T), name);

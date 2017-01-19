@@ -62,7 +62,7 @@ namespace Microsoft.R.Host.Broker.Security {
 
         private async Task<ClaimsPrincipal> SignInUsingLogonAsync(BasicSignInContext context) {
             var user = new StringBuilder(NativeMethods.CREDUI_MAX_USERNAME_LENGTH + 1);
-            var domain = new StringBuilder(NativeMethods.CREDUI_MAX_PASSWORD_LENGTH + 1);
+            var domain = new StringBuilder(NativeMethods.CREDUI_MAX_DOMAIN_LENGTH + 1);
 
             uint error = NativeMethods.CredUIParseUserName(context.Username, user, user.Capacity, domain, domain.Capacity);
             if (error != 0) {
@@ -92,7 +92,7 @@ namespace Microsoft.R.Host.Broker.Security {
 #endif
                     _logger.LogTrace(Resources.Trace_UserProfileCreation, context.Username);
 
-                    var result = await _userProfileManager.CreateProfileAsync(new RUserProfileServiceRequest(user.ToString(), domain.ToString(), context.Password.ToSecureString()), cts.Token);
+                    var result = await _userProfileManager.CreateProfileAsync(new RUserProfileServiceRequest(user.ToString(), domain.ToString(), winIdentity.User.Value), cts.Token);
                     if (result.IsInvalidResponse()) {
                         _logger.LogError(Resources.Error_ProfileCreationFailedInvalidResponse, context.Username, Resources.Info_UserProfileServiceName);
                         return null;
@@ -113,7 +113,12 @@ namespace Microsoft.R.Host.Broker.Security {
                         profilePath = result.ProfilePath;
                         _logger.LogTrace(Resources.Trace_UserProfileDirectory, context.Username, profilePath);
                     } else {
-                        _logger.LogError(Resources.Error_GetUserProfileDirectory, context.Username, Marshal.GetLastWin32Error().ToString("X"));
+                        if (NativeMethods.GetUserProfileDirectory(token, profileDir, ref size)) {
+                            profilePath = profileDir.ToString();
+                            _logger.LogTrace(Resources.Trace_UserProfileDirectory, context.Username, profilePath);
+                        } else {
+                            _logger.LogError(Resources.Error_GetUserProfileDirectory, context.Username, Marshal.GetLastWin32Error().ToString("X"));
+                        }
                     }
                 }
             } else {
@@ -126,8 +131,6 @@ namespace Microsoft.R.Host.Broker.Security {
                 var claims = new[] {
                     //new Claim(ClaimTypes.Name, context.Username),
                     new Claim(Claims.RUser, ""),
-                    // TODO: figure out how to avoid keeping raw credentials around. 
-                    new Claim(Claims.Password, context.Password),
                     new Claim(Claims.RUserProfileDir, profilePath)
                 };
 

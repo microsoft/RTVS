@@ -4,7 +4,6 @@
 namespace Microsoft.R.Host.Broker.Security {
     public static class Claims {
         public const string RUser = "87743606-A56D-405F-94B0-93DD482CF41C";
-        public const string Password = "4059142A-D01D-49E7-BAAC-AE441DEE0749";
         public const string RUserProfileDir = "D0EE3FD6-D076-425E-9255-44025124D46F";
     }
 }

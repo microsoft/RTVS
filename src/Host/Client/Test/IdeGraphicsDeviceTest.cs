@@ -13,7 +13,9 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Test.Fakes.Shell;
+using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Fixtures;
 using Microsoft.R.Host.Client.Test.Script;
@@ -23,8 +25,9 @@ using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 namespace Microsoft.R.Host.Client.Test {
     [ExcludeFromCodeCoverage]
     public class IdeGraphicsDeviceTest {
+        private readonly ICoreServices _coreServices;
         private readonly GraphicsDeviceTestFilesFixture _files;
-        private readonly MethodInfo _testMethod;
+        private readonly TestMethodFixture _testMethod;
 
         private const int DefaultWidth = 360;
         private const int DefaultHeight = 360;
@@ -38,9 +41,10 @@ namespace Microsoft.R.Host.Client.Test {
 
         private PlotDeviceProperties DefaultDeviceProperties = new PlotDeviceProperties(DefaultWidth, DefaultHeight, 96);
 
-        public IdeGraphicsDeviceTest(GraphicsDeviceTestFilesFixture files, TestMethodFixture testMethod) {
+        public IdeGraphicsDeviceTest(CoreServicesFixture coreServices, GraphicsDeviceTestFilesFixture files, TestMethodFixture testMethod) {
+            _coreServices = coreServices;
             _files = files;
-            _testMethod = testMethod.MethodInfo;
+            _testMethod = testMethod;
         }
 
         private int X(double percentX) {
@@ -535,14 +539,14 @@ write.csv(res, {0})
         }
 
         internal string SavePlotFile(string plotFilePath, int i) {
-            var newFileName = $"{_testMethod.DeclaringType?.FullName}-{_testMethod.Name}-{i}{Path.GetExtension(plotFilePath)}";
+            var newFileName = $"{_testMethod.MethodInfo.DeclaringType?.FullName}-{_testMethod.MethodInfo.Name}-{i}{Path.GetExtension(plotFilePath)}";
             var testOutputFilePath = Path.Combine(_files.ActualFolderPath, newFileName);
             File.Copy(plotFilePath, testOutputFilePath);
             return testOutputFilePath;
         }
 
         private async Task<string> WriteExpectedImageAsync(string imageType, int width, int height, int res, string name, string code) {
-            string filePath = _files.GetDestinationPath(_testMethod.Name + name + "." + imageType);
+            string filePath = _files.GetDestinationPath(_testMethod.MethodInfo.Name + name + "." + imageType);
             var inputs = Batch(string.Format(@"
 {0}({1}, width={2}, height={3}, res={4})
 {5}
@@ -567,9 +571,9 @@ dev.off()
         }
 
         private async Task ExecuteInSession(string[] inputs, IRSessionCallback app) {
-            using (var sessionProvider = new RSessionProvider(TestCoreServices.CreateReal())) {
+            using (var sessionProvider = new RSessionProvider(_coreServices)) {
                 await sessionProvider.TrySwitchBrokerAsync(nameof(IdeGraphicsDeviceTest));
-                var session = sessionProvider.GetOrCreate(_testMethod.Name);
+                var session = sessionProvider.GetOrCreate(_testMethod.FileSystemSafeName);
                 await session.StartHostAsync(new RHostStartupInfo(), app, 50000);
 
                 foreach (var input in inputs) {
@@ -596,9 +600,9 @@ rtvs:::export_to_image(device_id, rtvs:::graphics.ide.getactiveplotid(device_id)
 
         private async Task<IEnumerable<string>> ExportToImageAsync(string[] inputs, string[] format, string[] paths, int widthInPixels, int heightInPixels, int resolution) {
             var app = new RHostClientTestApp { PlotHandler = OnPlot, PlotDeviceCreateHandler = OnDeviceCreate, PlotDeviceDestroyHandler = OnDeviceDestroy };
-            using (var sessionProvider = new RSessionProvider(TestCoreServices.CreateReal())) {
+            using (var sessionProvider = new RSessionProvider(_coreServices)) {
                 await sessionProvider.TrySwitchBrokerAsync(nameof(IdeGraphicsDeviceTest));
-                var session = sessionProvider.GetOrCreate(_testMethod.Name);
+                var session = sessionProvider.GetOrCreate(_testMethod.FileSystemSafeName);
                 await session.StartHostAsync(new RHostStartupInfo(), app, 50000);
 
                 foreach (var input in inputs) {
@@ -623,9 +627,9 @@ rtvs:::export_to_image(device_id, rtvs:::graphics.ide.getactiveplotid(device_id)
 
         private async Task<IEnumerable<string>> ExportToPdfAsync(string[] inputs, string filePath, int width, int height) {
             var app = new RHostClientTestApp { PlotHandler = OnPlot, PlotDeviceCreateHandler = OnDeviceCreate, PlotDeviceDestroyHandler = OnDeviceDestroy };
-            using (var sessionProvider = new RSessionProvider(TestCoreServices.CreateReal())) {
+            using (var sessionProvider = new RSessionProvider(_coreServices)) {
                 await sessionProvider.TrySwitchBrokerAsync(nameof(IdeGraphicsDeviceTest));
-                var session = sessionProvider.GetOrCreate(_testMethod.Name);
+                var session = sessionProvider.GetOrCreate(_testMethod.FileSystemSafeName);
                 await session.StartHostAsync(new RHostStartupInfo(), app, 50000);
 
                 foreach (var input in inputs) {

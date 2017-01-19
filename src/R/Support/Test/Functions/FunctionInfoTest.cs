@@ -22,8 +22,8 @@ namespace Microsoft.R.Support.Test.Functions {
         private readonly IFunctionIndex _functionIndex;
         private readonly IRInteractiveWorkflow _workflow;
 
-        public FunctionInfoTest(RSupportMefCatalogFixture catalog) {
-            _exportProvider = catalog.CreateExportProvider();
+        public FunctionInfoTest(IExportProvider exportProvider) {
+            _exportProvider = exportProvider;
             _workflow = UIThreadHelper.Instance.Invoke(() => _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate());
             _packageIndex = _exportProvider.GetExportedValue<IPackageIndex>();
             _functionIndex = _exportProvider.GetExportedValue<IFunctionIndex>();
@@ -34,10 +34,7 @@ namespace Microsoft.R.Support.Test.Functions {
             await _packageIndex.BuildIndexAsync();
         }
 
-        public async Task DisposeAsync() {
-            await _packageIndex.DisposeAsync(_exportProvider);
-            _exportProvider.Dispose();
-        }
+        public Task DisposeAsync() => _packageIndex.DisposeAsync(_exportProvider);
 
         [CompositeTest]
         [InlineData("abs")]

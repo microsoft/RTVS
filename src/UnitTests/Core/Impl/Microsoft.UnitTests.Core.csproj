@@ -100,10 +100,12 @@
     <Compile Include="XUnit\AssemblyFixtureAttribute.cs" />
     <Compile Include="Mef\IExportProvider.cs" />
     <Compile Include="XUnit\IMethodFixture.cs" />
+    <Compile Include="XUnit\IMethodFixtureFactory.cs" />
     <Compile Include="XUnit\InlineArrayAttribute.cs" />
     <Compile Include="XUnit\InlineArrayDiscoverer.cs" />
     <Compile Include="XUnit\IntRangeAttribute.cs" />
     <Compile Include="XUnit\IntRangeDiscoverer.cs" />
+    <Compile Include="XUnit\ITestInput.cs" />
     <Compile Include="XUnit\MefCatalogFixture.cs" />
     <Compile Include="XUnit\MessageBusInjections\ExecuteBeforeAfterAttributesMessageBusInjection.cs" />
     <Compile Include="XUnit\MessageBusInjections\ITestAfterStartingBeforeFinishedInjection.cs" />
@@ -114,10 +116,10 @@
     <Compile Include="XUnit\MethodFixtures\ContainerHostMethodFixture.cs" />
     <Compile Include="XUnit\MethodFixtures\MethodFixtureBase.cs" />
     <Compile Include="XUnit\MethodFixtures\TaskObserverMethodFixture.cs" />
+    <Compile Include="XUnit\MethodFixtureTypes.cs" />
     <Compile Include="XUnit\TestAttribute.cs" />
     <Compile Include="XUnit\TestCase.cs" />
     <Compile Include="XUnit\TestCaseRunner.cs" />
-    <Compile Include="XUnit\TestCaseRunnerWithMethodFixtures.cs" />
     <Compile Include="XUnit\TestDiscoverer.cs" />
     <Compile Include="XUnit\TestForTypesAttribute.cs" />
     <Compile Include="XUnit\TestForTypesDiscoverer.cs" />
@@ -129,6 +131,7 @@
     <Compile Include="XUnit\TestFrameworkTypeDiscoverer.cs" />
     <Compile Include="XUnit\TestInvoker.cs" />
     <Compile Include="XUnit\MethodFixtures\TestMethodFixture.cs" />
+    <Compile Include="XUnit\TestMethodRunner.cs" />
     <Compile Include="XUnit\TestParameters.cs" />
     <Compile Include="XUnit\TestRunner.cs" />
     <Compile Include="XUnit\TestTraceListener.cs" />

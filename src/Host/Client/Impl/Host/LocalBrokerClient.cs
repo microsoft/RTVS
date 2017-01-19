@@ -98,6 +98,7 @@ namespace Microsoft.R.Host.Client.Host {
                         FileName = rhostBrokerExe,
                         UseShellExecute = false,
                         Arguments =
+                            $" --logging:logFolder \"{Log.Folder}\"" +
                             $" --logging:logHostOutput {Log.LogVerbosity >= LogVerbosity.Normal}" +
                             $" --logging:logPackets {Log.LogVerbosity == LogVerbosity.Traffic}" +
                             $" --server.urls http://127.0.0.1:0" + // :0 means first available ephemeral port

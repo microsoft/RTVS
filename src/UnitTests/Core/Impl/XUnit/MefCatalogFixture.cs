@@ -6,16 +6,19 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Composition.Primitives;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Runtime.CompilerServices;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.UnitTests.Core.Mef;
+using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
+using Xunit.Sdk;
 
 namespace Microsoft.UnitTests.Core.XUnit {
     [ExcludeFromCodeCoverage]
-    public abstract class MefCatalogFixture : IDisposable {
+    public abstract class MefCatalogFixture : IMethodFixtureFactory<IExportProvider>, IDisposable {
         private readonly Lazy<ComposablePartCatalog> _catalogLazy;
         private readonly ConcurrentQueue<IDisposable> _exportProviders = new ConcurrentQueue<IDisposable>();
 
@@ -25,24 +28,9 @@ namespace Microsoft.UnitTests.Core.XUnit {
 
         protected abstract ComposablePartCatalog CreateCatalog();
 
-        protected virtual void AddValues(CompositionContainer container, string testName) {}
+        protected CompositionContainer CreateContainer() => new CompositionContainer(_catalogLazy.Value, CompositionOptions.DisableSilentRejection);
 
-        public IExportProvider CreateExportProvider([CallerMemberName] string testName = null) {
-            var container = new CompositionContainer(_catalogLazy.Value, CompositionOptions.DisableSilentRejection);
-            AddValues(container, testName);
-            var exportProvider = new TestExportProvider(container);
-            _exportProviders.Enqueue(exportProvider);
-            return exportProvider;
-        }
-
-        public IExportProvider CreateExportProvider(CompositionBatch additionalValues, [CallerMemberName] string testName = null) {
-            var container = new CompositionContainer(_catalogLazy.Value, CompositionOptions.DisableSilentRejection);
-            AddValues(container, testName);
-            container.Compose(additionalValues);
-            var exportProvider = new TestExportProvider(container);
-            _exportProviders.Enqueue(exportProvider);
-            return exportProvider;
-        }
+        public IExportProvider Dummy { get; } = new NullExportProvider();
 
         void IDisposable.Dispose() {
             IDisposable exportProvider;
@@ -51,25 +39,41 @@ namespace Microsoft.UnitTests.Core.XUnit {
             }
         }
 
-        private class TestExportProvider : IExportProvider {
-            private readonly DisposableBag _disposableBag;
-            private readonly CompositionContainer _compositionContainer;
+        private class NullExportProvider : IExportProvider {
+            public Task<Task<RunSummary>> InitializeAsync(ITestInput testInput, IMessageBus messageBus)
+                => MethodFixtureBase.DefaultInitializeTask;
+
+            public Task DisposeAsync(RunSummary result, IMessageBus messageBus) => Task.CompletedTask;
+            public T GetExportedValue<T>() => default(T);
+            public T GetExportedValue<T>(string metadataKey, params object[] metadataValues) => default(T);
+            public IEnumerable<Lazy<T>> GetExports<T>() => null;
+            public IEnumerable<Lazy<T, TMetadataView>> GetExports<T, TMetadataView>() => null;
+        }
+
+        protected class TestExportProvider : IExportProvider {
+            private readonly IDisposable _disposable;
+            protected CompositionContainer CompositionContainer { get; }
 
             public TestExportProvider(CompositionContainer compositionContainer) {
-                _compositionContainer = compositionContainer;
-                _disposableBag = DisposableBag.Create<TestExportProvider>()
-                    .Add(_compositionContainer);
+                CompositionContainer = compositionContainer;
+                _disposable = Disposable.Create(CompositionContainer);
             }
 
-            public void Dispose() => _disposableBag.TryDispose();
+            public virtual Task<Task<RunSummary>> InitializeAsync(ITestInput testInput, IMessageBus messageBus) {
+                return MethodFixtureBase.DefaultInitializeTask;
+            }
+
+            public Task DisposeAsync(RunSummary result, IMessageBus messageBus) {
+                _disposable.Dispose();
+                return Task.CompletedTask;
+            }
+
             public T GetExportedValue<T>() {
-                _disposableBag.ThrowIfDisposed();
-                return _compositionContainer.GetExportedValue<T>();
+                return CompositionContainer.GetExportedValue<T>();
             }
 
             public T GetExportedValue<T>(string metadataKey, params object[] metadataValues) {
-                _disposableBag.ThrowIfDisposed();
-                var exports = _compositionContainer.GetExports<T, IDictionary<string, object>>();
+                var exports = CompositionContainer.GetExports<T, IDictionary<string, object>>();
 
                 return exports.Single(e => {
                     object value;
@@ -87,13 +91,11 @@ namespace Microsoft.UnitTests.Core.XUnit {
             }
 
             public IEnumerable<Lazy<T>> GetExports<T>() {
-                _disposableBag.ThrowIfDisposed();
-                return _compositionContainer.GetExports<T>();
+                return CompositionContainer.GetExports<T>();
             }
 
             public IEnumerable<Lazy<T, TMetadataView>> GetExports<T, TMetadataView>() {
-                _disposableBag.ThrowIfDisposed();
-                return _compositionContainer.GetExports<T, TMetadataView>();
+                return CompositionContainer.GetExports<T, TMetadataView>();
             }
         }
     }

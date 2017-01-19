@@ -18,17 +18,13 @@ using Xunit;
 namespace Microsoft.R.Editor.Test.Tree {
     [ExcludeFromCodeCoverage]
     [Category.R.EditorTree]
-    public class TreeChangeTypeTest : IDisposable {
+    public class TreeChangeTypeTest {
         private readonly IExportProvider _exportProvider;
         private readonly ICoreShell _coreShell;
 
-        public TreeChangeTypeTest(REditorMefCatalogFixture catalogFixture, EditorTestFilesFixture testFiles) {
-            _exportProvider = catalogFixture.CreateExportProvider();
+        public TreeChangeTypeTest(IExportProvider exportProvider, EditorTestFilesFixture testFiles) {
+            _exportProvider = exportProvider;
             _coreShell = _exportProvider.GetExportedValue<ICoreShell>();
-        }
-
-        public void Dispose() {
-            _exportProvider.Dispose();
         }
 
         [CompositeTest]

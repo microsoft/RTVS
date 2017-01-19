@@ -29,29 +29,39 @@
     <DirectoryRef Id="INSTALLFOLDER">
       <Component Id="ProductAssemblies" Guid="{9C717F8F-4A97-4FA5-8031-5A180467754D}" Win64="yes">
         <?include "$(var.SourceDir)\Setup\CommonAssemblies.wxi" ?>
-        <File Source="$(var.BinDir)\Microsoft.R.Host.Monitor.exe" />
-        <File Source="$(var.BinDir)\Microsoft.R.Host.Broker.Config.json" />
       </Component>
+      
+        <!-- Remote R User Profile service installer -->
       <Component Id="RemoteRUserProfile" Guid="{7C54EB44-130F-4D8A-A9C5-2EBB96F9F359}" Win64="yes">
         <File Source="$(var.BinDir)\Microsoft.R.Host.UserProfile.exe" />
         <File Source="$(var.BinDir)\Microsoft.R.Host.UserProfile.exe.config" />
-        <!-- Remote R User Profile service installer -->
         <ServiceInstall Id="UserProfileServiceInstaller" Type="ownProcess" Vital="yes" Name="RUserProfileService" DisplayName="R User Profile Service"
                         Description="Creates Windows User profile for users connecting via R Host Broker" Start="auto" Account="LocalSystem"
                         ErrorControl="critical" Interactive="no" >
           <util:PermissionEx User="Authenticated Users" ServiceStart="yes" ServiceStop="yes" ServicePauseContinue="yes"
               ServiceInterrogate="yes" ServiceChangeConfig="yes" ServiceEnumerateDependents="yes" ServiceQueryConfig="yes"
               ServiceQueryStatus="yes" ServiceUserDefinedControl="yes" />
+          <util:ServiceConfig FirstFailureActionType="restart" SecondFailureActionType="restart" ThirdFailureActionType="reboot"/>
         </ServiceInstall>
         <ServiceControl Id="UserProfileServiceUninstall" Name="RUserProfileService" Remove="uninstall" Stop="uninstall"/>
       </Component>
+      
+      <!-- Remote R Host Broker service installer -->
+      <Component Id="RemoteRBrokerService" Guid="{8379F8FB-B246-4D99-910A-84580B959BB7}" Win64="yes">
+        <File Source="$(var.BinDir)\Microsoft.R.Host.Broker.exe" />
+        <File Source="$(var.BinDir)\Microsoft.R.Host.Broker.Config.json" />
+        <ServiceInstall Id="RemoteRBrokerServiceInstaller" Type="ownProcess" Vital="yes" Name="RHostBrokerService" DisplayName="R Host Broker Service"
+                        Description="Creates and manages R Host sessions" Start="auto" Account="NT AUTHORITY\NETWORKSERVICE"
+                        ErrorControl="normal" Interactive="no"
+                        Arguments="--start.as service --config &quot;[INSTALLFOLDER]Microsoft.R.Host.Broker.Config.json&quot;">
 
-      <Component Id="MonitorAutoStart" Guid="{3502EC99-A511-4EC0-9E57-9868362D478D}" Win64="yes">
-        <RegistryValue Id="MonitorAutoStartReg" Root="HKCU" Action="write"
-                     Key="Software\Microsoft\Windows\CurrentVersion\Run"
-                     Name="R Host Broker Monitor"
-                     Value="[INSTALLFOLDER]Microsoft.R.Host.Monitor.exe"
-                     Type="string" />
+          <util:PermissionEx User="Authenticated Users" ServiceStart="yes" ServiceStop="yes" ServicePauseContinue="yes"
+              ServiceInterrogate="yes" ServiceChangeConfig="yes" ServiceEnumerateDependents="yes" ServiceQueryConfig="yes"
+              ServiceQueryStatus="yes" ServiceUserDefinedControl="yes" />
+          <util:ServiceConfig FirstFailureActionType="restart" SecondFailureActionType="restart" ThirdFailureActionType="reboot"/>
+          <ServiceDependency Id="RUserProfileService" Group="no"/>
+        </ServiceInstall>
+        <ServiceControl Id="RemoteRBrokerServiceUninstall" Name="RHostBrokerService" Remove="uninstall" Stop="uninstall"/>
       </Component>
     </DirectoryRef>
     <?include RtvsPackage.wxi ?>

@@ -37,9 +37,9 @@ namespace Microsoft.R.Components.Test.Plots {
         private IInteractiveWindowVisualComponent _interactiveWindow;
         private const int PlotWindowInstanceId = 1;
 
-        public RPlotIntegrationUITest(RComponentsMefCatalogFixture catalog, ContainerHostMethodFixture containerHost) {
+        public RPlotIntegrationUITest(IExportProvider exportProvider, ContainerHostMethodFixture containerHost) {
             _containerHost = containerHost;
-            _exportProvider = catalog.CreateExportProvider();
+            _exportProvider = exportProvider;
             _exportProvider.GetExportedValue<TestRInteractiveWorkflowProvider>();
             _plotDeviceVisualComponentContainerFactory = _exportProvider.GetExportedValue<TestRPlotDeviceVisualComponentContainerFactory>();
 
@@ -67,7 +67,6 @@ namespace Microsoft.R.Components.Test.Plots {
             });
 
             _containerDisposable?.Dispose();
-            _exportProvider.Dispose();
             return Task.CompletedTask;
         }
 

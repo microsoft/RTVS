@@ -23,15 +23,11 @@ using Xunit;
 namespace Microsoft.R.Editor.Test.Formatting {
     [ExcludeFromCodeCoverage]
     [Category.R.Formatting]
-    public class AutoFormatTest : IDisposable {
+    public class AutoFormatTest {
         private readonly IExportProvider _exportProvider;
 
-        public AutoFormatTest(REditorMefCatalogFixture catalog) {
-            _exportProvider = catalog.CreateExportProvider();
-        }
-
-        public void Dispose() {
-            _exportProvider.Dispose();
+        public AutoFormatTest(IExportProvider exportProvider) {
+            _exportProvider = exportProvider;
         }
 
         [CompositeTest]

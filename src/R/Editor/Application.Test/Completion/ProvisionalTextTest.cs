@@ -19,15 +19,14 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         private readonly EditorHostMethodFixture _editorHost;
         private readonly bool _autoFormat;
 
-        public RProvisionalTextTest(REditorApplicationMefCatalogFixture catalogFixture, EditorHostMethodFixture editorHost) {
-            _exportProvider = catalogFixture.CreateExportProvider();
+        public RProvisionalTextTest(IExportProvider exportProvider, EditorHostMethodFixture editorHost) {
+            _exportProvider = exportProvider;
             _editorHost = editorHost;
             _autoFormat = REditorSettings.AutoFormat;
         }
 
         public void Dispose() {
             REditorSettings.AutoFormat = _autoFormat;
-            _exportProvider.Dispose();
         }
 
         [Test]

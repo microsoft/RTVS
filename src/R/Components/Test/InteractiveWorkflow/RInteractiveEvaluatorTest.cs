@@ -17,17 +17,14 @@ using Xunit;
 namespace Microsoft.R.Components.Test.InteractiveWorkflow {
     [ExcludeFromCodeCoverage]
     public class RInteractiveEvaluatorTest : IAsyncLifetime {
-        private readonly IExportProvider _exportProvider;
         private readonly IRInteractiveWorkflowProvider _workflowProvider;
         private readonly IRInteractiveWorkflow _workflow;
 
-        public RInteractiveEvaluatorTest(RComponentsMefCatalogFixture catalog) {
-            _exportProvider = catalog.CreateExportProvider();
-
-            var settings = _exportProvider.GetExportedValue<IRSettings>();
+        public RInteractiveEvaluatorTest(IExportProvider exportProvider) {
+            var settings = exportProvider.GetExportedValue<IRSettings>();
             settings.RCodePage = 1252;
 
-            _workflowProvider = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
+            _workflowProvider = exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
             _workflow = UIThreadHelper.Instance.Invoke(() => _workflowProvider.GetOrCreate());
         }
 
@@ -35,10 +32,7 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
             await _workflow.RSessions.TrySwitchBrokerAsync(nameof(RInteractiveEvaluatorTest));
         }
 
-        public async Task DisposeAsync() {
-            await _workflow.RSession.StopHostAsync().Should().BeCompletedAsync();
-            _exportProvider?.Dispose();
-        }
+        public Task DisposeAsync() => _workflow.RSession.StopHostAsync().Should().BeCompletedAsync();
 
         [Test]
         [Category.Interactive]

@@ -15,21 +15,17 @@ using Xunit;
 namespace Microsoft.R.Editor.Application.Test.Markdown {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
-    public class RmdClassificationTest : IDisposable {
+    public class RmdClassificationTest {
         private static bool _regenerateBaselineFiles = false;
 
         private readonly IExportProvider _exportProvider;
         private readonly EditorHostMethodFixture _editorHost;
         private readonly EditorAppTestFilesFixture _files;
 
-        public RmdClassificationTest(REditorApplicationMefCatalogFixture catalogFixture, EditorHostMethodFixture editorHost, EditorAppTestFilesFixture files) {
-            _exportProvider = catalogFixture.CreateExportProvider();
+        public RmdClassificationTest(IExportProvider exportProvider, EditorHostMethodFixture editorHost, EditorAppTestFilesFixture files) {
+            _exportProvider = exportProvider;
             _editorHost = editorHost;
             _files = files;
-        }
-
-        public void Dispose() {
-            _exportProvider.Dispose();
         }
 
         [CompositeTest]

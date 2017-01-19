@@ -21,18 +21,15 @@ namespace Microsoft.R.Editor.Application.Test.Markdown {
         private readonly IRSessionProvider _sessionProvider;
         private readonly EditorHostMethodFixture _editorHost;
 
-        public MarkdownRCompletionTest(REditorApplicationMefCatalogFixture catalogFixture, EditorHostMethodFixture editorHost) {
-            _exportProvider = catalogFixture.CreateExportProvider();
+        public MarkdownRCompletionTest(IExportProvider exportProvider, EditorHostMethodFixture editorHost) {
+            _exportProvider = exportProvider;
             _sessionProvider = UIThreadHelper.Instance.Invoke(() => _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate()).RSessions;
             _editorHost = editorHost;
         }
 
         public Task InitializeAsync() => _sessionProvider.TrySwitchBrokerAsync(nameof(MarkdownRCompletionTest));
 
-        public Task DisposeAsync() {
-            _exportProvider.Dispose();
-            return Task.CompletedTask;
-        }
+        public Task DisposeAsync() => Task.CompletedTask;
 
         [Test]
         [Category.Interactive]

@@ -18,7 +18,6 @@ using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
-using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -27,21 +26,15 @@ using Xunit;
 
 namespace Microsoft.R.Components.Test.InteractiveWorkflow {
     [ExcludeFromCodeCoverage]
-    public class RInteractiveWorkflowCommandTest : IDisposable {
-        private readonly MethodInfo _testMethod;
+    public class RInteractiveWorkflowCommandTest {
         private readonly IExportProvider _exportProvider;
         private readonly IRInteractiveWorkflow _workflow;
-        private IRSettings _settings;
+        private readonly IRSettings _settings;
 
-        public RInteractiveWorkflowCommandTest(RComponentsMefCatalogFixture catalog, TestMethodFixture testMethod) {
-            _testMethod = testMethod.MethodInfo;
-            _exportProvider = catalog.CreateExportProvider();
+        public RInteractiveWorkflowCommandTest(IExportProvider exportProvider) {
+            _exportProvider = exportProvider;
             _workflow = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
             _settings = _exportProvider.GetExportedValue<IRSettings>();
-        }
-
-        public void Dispose() {
-            _exportProvider.Dispose();
         }
 
         [CompositeTest(ThreadType.UI)]

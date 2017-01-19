@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.IO;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
-using Microsoft.Common.Core.Logging.Implementation;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Security;
 using Microsoft.Common.Core.Shell;
@@ -18,21 +18,21 @@ namespace Microsoft.Common.Core.Services {
             , ITaskService tasks
             , IMainThread mainThread
             , ISecurityService security) {
-            Telemetry = telemetry;
+
             Registry = new RegistryImpl();
+            LoggingPermissions = new LoggingPermissions(appConstants, telemetry, Registry);
+            Telemetry = telemetry;
             Security = security;
-            LoggingServices = new LoggingServices(new LoggingPermissions(appConstants, telemetry, Registry), appConstants);
             Tasks = tasks;
 
             ProcessServices = new ProcessServices();
             FileSystem = new FileSystem();
             MainThread = mainThread;
 
-            Log = LoggingServices.GetOrCreateLog(appConstants.ApplicationName);
+            Log = new Logger(appConstants.ApplicationName, Path.Combine(Path.GetTempPath(), "rtvs.logs"), LoggingPermissions);
         }
 
-        public CoreServices(IApplicationConstants appConstants
-            , ITelemetryService telemetry
+        public CoreServices(ITelemetryService telemetry
             , ILoggingPermissions permissions
             , ISecurityService security
             , ITaskService tasks
@@ -42,7 +42,7 @@ namespace Microsoft.Common.Core.Services {
             , IRegistry registry
             , IProcessServices ps) {
 
-            LoggingServices = new LoggingServices(permissions, appConstants);
+            LoggingPermissions = permissions;
             Log = log;
 
             Telemetry = telemetry;
@@ -57,12 +57,12 @@ namespace Microsoft.Common.Core.Services {
 
         public IActionLog Log { get; }
         public IFileSystem FileSystem { get; } 
+        public ILoggingPermissions LoggingPermissions { get; }
         public IProcessServices ProcessServices { get; }
         public IRegistry Registry { get; } 
         public ISecurityService Security { get; }
         public ITelemetryService Telemetry { get; }
         public ITaskService Tasks { get; }
-        public ILoggingServices LoggingServices { get; }
         public IMainThread MainThread { get; }
     }
 }

@@ -9,31 +9,62 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Threading.Tasks.Dataflow;
 using static System.FormattableString;
 
 namespace Microsoft.Common.Core.Logging {
     internal sealed class FileLogWriter : IActionLogWriter {
         private const int _maxTimeout = 5000;
-        private const int _maxBufferSize = 1024;
         private static readonly ConcurrentDictionary<string, FileLogWriter> _writers = new ConcurrentDictionary<string, FileLogWriter>();
+
         private readonly char[] _lineBreaks = { '\n' };
         private readonly string _filePath;
-        private readonly ActionBlock<string> _messages;
-        private readonly StringBuilder _sb = new StringBuilder();
+        private readonly int _maxMessagesCount;
+        private readonly ConcurrentQueue<string> _messages = new ConcurrentQueue<string>();
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
-        private FileLogWriter(string filePath) {
+        private FileLogWriter(string filePath, int maxMessagesCount = 20, int timerTimeout = _maxTimeout) {
             _filePath = filePath;
-            _messages = new ActionBlock<string>(new Func<string, Task>(WriteToFile));
+            _maxMessagesCount = maxMessagesCount;
+            if (timerTimeout > 0) {
+                var timer = new Timer(OnTimer, null, timerTimeout, timerTimeout);
+            }
 
             AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
         }
 
-        private async Task WriteToFile(string message) {
+        private void OnTimer(object state) {
+            StartWritingToFile();
+        }
+
+        private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e) {
+            WriteToFileAsync().Wait(_maxTimeout);
+        }
+
+        private void OnProcessExit(object sender, EventArgs e) {
+            WriteToFileAsync().Wait(_maxTimeout);
+        }
+
+        private void StartWritingToFile() {
+            if (!_messages.IsEmpty) {
+                WriteToFileAsync().DoNotWait();
+            }
+        }
+
+        private async Task WriteToFileAsync() {
+            await _semaphore.WaitAsync();
             try {
-                await WriteBuffer(message, flush: false);
+                var sb = new StringBuilder();
+                string message;
+                while (_messages.TryDequeue(out message)) {
+                    sb.AppendLine(message);
+                }
+
+                if (sb.Length > 0) {
+                    using (var stream = File.AppendText(_filePath)) {
+                        await stream.WriteAsync(sb.ToString());
+                    }
+                }
             } catch (UnauthorizedAccessException ex) {
                 Trace.Fail(ex.ToString());
             } catch (PathTooLongException ex) {
@@ -44,40 +75,22 @@ namespace Microsoft.Common.Core.Logging {
                 Trace.Fail(ex.ToString());
             } catch (IOException ex) {
                 Trace.Fail(ex.ToString());
-            }
-        }
-
-        private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e) {
-            WriteBuffer(string.Empty, flush: true).Wait(_maxTimeout);
-        }
-
-        private void OnProcessExit(object sender, EventArgs e) {
-            WriteBuffer(string.Empty, flush: true).Wait(_maxTimeout);
-        }
-
-        private async Task WriteBuffer(string message, bool flush) {
-            await _semaphore.WaitAsync();
-            try {
-                _sb.Append(message);
-                if (_sb.Length > _maxBufferSize || flush) {
-                    using (var stream = File.AppendText(_filePath)) {
-                        await stream.WriteAsync(_sb.ToString());
-                    }
-                    _sb.Clear();
-                }
             } finally {
                 _semaphore.Release();
             }
         }
 
-        public Task WriteAsync(MessageCategory category, string message) {
-            return _messages.SendAsync(GetStringToWrite(category, message));
+        public void Write(MessageCategory category, string message) {
+            var messageString = GetStringToWrite(category, message);
+            _messages.Enqueue(messageString);
+            if (_messages.Count > _maxMessagesCount) {
+                WriteToFileAsync().DoNotWait();
+            }
         }
 
         public void Flush() {
-            WriteBuffer(string.Empty, flush: true).Wait(_maxTimeout);
+            WriteToFileAsync().Wait(_maxTimeout);
         }
-
 
         private string GetStringToWrite(MessageCategory category, string message) {
             var categoryString = GetCategoryString(category);
@@ -92,10 +105,11 @@ namespace Microsoft.Common.Core.Logging {
             return string.Concat(lines);
         }
 
-        public static FileLogWriter InTempFolder(string fileName) {
+        public static FileLogWriter InFolder(string folder, string fileName, int maxMessagesCount = 20, int autoFlushTimeout = 5000) {
             return _writers.GetOrAdd(fileName, _ => {
-                var path = Path.Combine(Path.GetTempPath(), Invariant($@"{fileName}_{DateTime.Now:yyyyMdd_HHmmss}_pid{Process.GetCurrentProcess().Id}.log"));
-                return new FileLogWriter(path);
+                Directory.CreateDirectory(folder);
+                var path = Path.Combine(folder, Invariant($@"{fileName}_{DateTime.Now:yyyyMdd_HHmmss}_pid{Process.GetCurrentProcess().Id}.log"));
+                return new FileLogWriter(path, maxMessagesCount, autoFlushTimeout);
             });
         }
 

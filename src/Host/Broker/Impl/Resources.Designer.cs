@@ -331,6 +331,24 @@ namespace Microsoft.R.Host.Broker {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Creates and manages R Host (Microsoft.R.Host.exe) sessions..
+        /// </summary>
+        internal static string Text_ServiceDescription {
+            get {
+                return ResourceManager.GetString("Text_ServiceDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R Host Broker Service.
+        /// </summary>
+        internal static string Text_ServiceDisplayName {
+            get {
+                return ResourceManager.GetString("Text_ServiceDisplayName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Auto-detecting R ....
         /// </summary>
         internal static string Trace_AutoDetectingR {

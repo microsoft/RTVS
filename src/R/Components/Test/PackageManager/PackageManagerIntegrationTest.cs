@@ -34,8 +34,8 @@ namespace Microsoft.R.Components.Test.PackageManager {
         private readonly string _lib2Path;
         private IRInteractiveWorkflow _workflow;
 
-        public PackageManagerIntegrationTest(RComponentsMefCatalogFixture catalog, TestMethodFixture testMethod, TestFilesFixture testFiles) {
-            _exportProvider = catalog.CreateExportProvider();
+        public PackageManagerIntegrationTest(IExportProvider exportProvider, TestMethodFixture testMethod, TestFilesFixture testFiles) {
+            _exportProvider = exportProvider;
             _workflowProvider = _exportProvider.GetExportedValue<TestRInteractiveWorkflowProvider>();
             _testMethod = testMethod.MethodInfo;
             _repoPath = TestRepositories.GetRepoPath(testFiles);
@@ -305,7 +305,6 @@ namespace Microsoft.R.Components.Test.PackageManager {
         }
 
         public Task DisposeAsync() {
-            _exportProvider.Dispose();
             return Task.CompletedTask;
         }
     }

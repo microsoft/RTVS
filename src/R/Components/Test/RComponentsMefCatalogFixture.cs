@@ -4,12 +4,16 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using Microsoft.Common.Core.Extensions;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Fakes.Shell;
+using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Test.StubFactories;
+using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
+using Xunit.Sdk;
 
 namespace Microsoft.R.Components.Test {
     [AssemblyFixture]
@@ -44,14 +48,23 @@ namespace Microsoft.R.Components.Test {
             };
         }
 
-        protected override void AddValues(CompositionContainer container, string testName) {
-            base.AddValues(container, testName);
-            var coreShell = new TestCoreShell(container);
-            var batch = new CompositionBatch()
-                .AddValue<IRSettings>(RSettingsStubFactory.CreateForExistingRPath(testName))
-                .AddValue<ICoreShell>(coreShell)
-                .AddValue(coreShell);
-            container.Compose(batch);
+        public IExportProvider Create(CoreServicesFixture coreServices) => new RComponentsTestExportProvider(CreateContainer(), coreServices);
+
+        private class RComponentsTestExportProvider : TestExportProvider {
+            private readonly CoreServicesFixture _coreServices;
+            public RComponentsTestExportProvider(CompositionContainer compositionContainer, CoreServicesFixture coreServices) : base(compositionContainer) {
+                _coreServices = coreServices;
+            }
+
+            public override Task<Task<RunSummary>> InitializeAsync(ITestInput testInput, IMessageBus messageBus) {
+                var coreShell = new TestCoreShell(CompositionContainer, _coreServices);
+                var batch = new CompositionBatch()
+                    .AddValue<IRSettings>(RSettingsStubFactory.CreateForExistingRPath(testInput.FileSytemSafeName))
+                    .AddValue<ICoreShell>(coreShell)
+                    .AddValue(coreShell);
+                CompositionContainer.Compose(batch);
+                return base.InitializeAsync(testInput, messageBus);
+            }
         }
     }
 }

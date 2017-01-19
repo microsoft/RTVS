@@ -23,10 +23,10 @@ namespace Microsoft.R.Host.Broker.Startup {
 
         public void ConfigureServices(IServiceCollection services) {
             services.AddOptions()
-                .Configure<LoggingOptions>(Program.Configuration.GetSection("logging"))
-                .Configure<LifetimeOptions>(Program.Configuration.GetSection("lifetime"))
-                .Configure<SecurityOptions>(Program.Configuration.GetSection("security"))
-                .Configure<ROptions>(Program.Configuration.GetSection("R"));
+                .Configure<LoggingOptions>(CommonStartup.Configuration.GetSection("logging"))
+                .Configure<LifetimeOptions>(CommonStartup.Configuration.GetSection("lifetime"))
+                .Configure<SecurityOptions>(CommonStartup.Configuration.GetSection("security"))
+                .Configure<ROptions>(CommonStartup.Configuration.GetSection("R"));
 
             services.AddSingleton<IFileSystem>(new FileSystem())
                     .AddSingleton<LifetimeManager>()

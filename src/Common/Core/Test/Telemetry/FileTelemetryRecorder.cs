@@ -36,7 +36,7 @@ namespace Microsoft.Common.Core.Test.Telemetry {
         public void RecordEvent(string eventName, object parameters = null) {
             using (StreamWriter sw = File.AppendText(FileTelemetryRecorder.TestLog)) {
                 SimpleTelemetryEvent telemetryEvent = new SimpleTelemetryEvent(eventName);
-                telemetryEvent.Properties = DictionaryExtension.FromAnonymousObject(parameters);
+                telemetryEvent.Properties = DictionaryExtensions.FromAnonymousObject(parameters);
 
                 string json = JsonConvert.SerializeObject(telemetryEvent);
                 sw.WriteLine(json);

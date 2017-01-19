@@ -20,6 +20,7 @@ using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Net;
 using Microsoft.R.Host.Client.BrokerServices;
 using Microsoft.R.Host.Protocol;
+using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client.Host {
     internal abstract class BrokerClient : IBrokerClient {
@@ -107,7 +108,7 @@ namespace Microsoft.R.Host.Client.Host {
         public async Task DeleteProfileAsync(CancellationToken cancellationToken) {
             await TaskUtilities.SwitchToBackgroundThread();
             try {
-                var sessionsService = new ProfileWebService(HttpClient, _credentials);
+                var sessionsService = new ProfileWebService(HttpClient, _credentials, Log);
                 await sessionsService.DeleteAsync(cancellationToken);
             } catch (HttpRequestException ex) {
                 throw new RHostDisconnectedException(Resources.Error_HostNotResponding.FormatInvariant(ex.Message), ex);
@@ -139,7 +140,7 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         public Task TerminateSessionAsync(string name, CancellationToken cancellationToken = default(CancellationToken)) {
-            var sessionsService = new SessionsWebService(HttpClient, _credentials);
+            var sessionsService = new SessionsWebService(HttpClient, _credentials, Log);
             return sessionsService.DeleteAsync(name, cancellationToken);
         }
 
@@ -147,52 +148,56 @@ namespace Microsoft.R.Host.Client.Host {
             => Task.FromResult<Exception>(new RHostDisconnectedException(Resources.Error_HostNotResponding.FormatInvariant(Name, exception.Message), exception));
 
         private async Task<bool> IsSessionRunningAsync(string name, CancellationToken cancellationToken) {
-            var sessionsService = new SessionsWebService(HttpClient, _credentials);
+            var sessionsService = new SessionsWebService(HttpClient, _credentials, Log);
             var sessions = await sessionsService.GetAsync(cancellationToken);
             return sessions.Any(s => s.Id == name);
         }
 
         private async Task CreateBrokerSessionAsync(string name, bool useRCommandLineArguments, CancellationToken cancellationToken) {
             var rCommandLineArguments = useRCommandLineArguments && _rCommandLineArguments != null ? _rCommandLineArguments : null;
-            var sessions = new SessionsWebService(HttpClient, _credentials);
-            try {
-                await sessions.PutAsync(name, new SessionCreateRequest {
-                    InterpreterId = _interpreterId,
-                    CommandLineArguments = rCommandLineArguments,
-                }, cancellationToken);
-            } catch (BrokerApiErrorException apiex) {
-                throw new RHostDisconnectedException(MessageFromBrokerApiException(apiex), apiex);
+            var sessions = new SessionsWebService(HttpClient, _credentials, Log);
+            using (Log.Measure(LogVerbosity.Normal, Invariant($"Create broker session \"{name}\""))) {
+                try {
+                    await sessions.PutAsync(name, new SessionCreateRequest {
+                        InterpreterId = _interpreterId,
+                        CommandLineArguments = rCommandLineArguments,
+                    }, cancellationToken);
+                } catch (BrokerApiErrorException apiex) {
+                    throw new RHostDisconnectedException(MessageFromBrokerApiException(apiex), apiex);
+                }
             }
         }
 
         private async Task<WebSocket> ConnectToBrokerAsync(string name, CancellationToken cancellationToken) {
-            var wsClient = new WebSocketClient {
-                KeepAliveInterval = HeartbeatTimeout,
-                SubProtocols = { "Microsoft.R.Host" },
-                InspectResponse = response => {
-                    if (response.StatusCode == HttpStatusCode.Forbidden) {
-                        throw new UnauthorizedAccessException();
+            using (Log.Measure(LogVerbosity.Normal, Invariant($"Connect to broker session \"{name}\""))) {
+                var wsClient = new WebSocketClient {
+                    KeepAliveInterval = HeartbeatTimeout,
+                    SubProtocols = { "Microsoft.R.Host" },
+                    InspectResponse = response => {
+                        if (response.StatusCode == HttpStatusCode.Forbidden) {
+                            throw new UnauthorizedAccessException();
+                        }
                     }
-                }
-            };
+                };
 
-            var pipeUri = new UriBuilder(HttpClient.BaseAddress) {
-                Scheme = HttpClient.BaseAddress.IsHttps() ? "wss" : "ws",
-                Path = $"sessions/{name}/pipe"
-            }.Uri;
+                var pipeUri = new UriBuilder(HttpClient.BaseAddress) {
+                    Scheme = HttpClient.BaseAddress.IsHttps() ? "wss" : "ws",
+                    Path = $"sessions/{name}/pipe"
+                }.Uri;
 
-            while (true) {
-                var request = wsClient.CreateRequest(pipeUri);
+                while (true) {
+                    var request = wsClient.CreateRequest(pipeUri);
 
-                using (await _credentials.LockCredentialsAsync(cancellationToken)) {
-                    try {
-                        request.AuthenticationLevel = AuthenticationLevel.MutualAuthRequested;
-                        request.Credentials = HttpClientHandler.Credentials;
-                        return await wsClient.ConnectAsync(request, cancellationToken);
-                    } catch (UnauthorizedAccessException) {
-                        _credentials.InvalidateCredentials();
-                    } catch (Exception ex) when (ex is InvalidOperationException) {
-                        throw new RHostDisconnectedException(Resources.HttpErrorCreatingSession.FormatInvariant(Name, ex.Message), ex);
+                    using (await _credentials.LockCredentialsAsync(cancellationToken)) {
+                        try {
+                            request.AuthenticationLevel = AuthenticationLevel.MutualAuthRequested;
+                            request.Credentials = HttpClientHandler.Credentials;
+                            return await wsClient.ConnectAsync(request, cancellationToken);
+                        } catch (UnauthorizedAccessException) {
+                            _credentials.InvalidateCredentials();
+                        } catch (Exception ex) when (ex is InvalidOperationException) {
+                            throw new RHostDisconnectedException(Resources.HttpErrorCreatingSession.FormatInvariant(Name, ex.Message), ex);
+                        }
                     }
                 }
             }
@@ -202,7 +207,7 @@ namespace Microsoft.R.Host.Client.Host {
             var transport = new WebSocketMessageTransport(socket);
             return new RHost(name, callbacks, transport, Log);
         }
-        
+
         private string MessageFromBrokerApiException(BrokerApiErrorException ex) {
             switch (ex.ApiError) {
                 case BrokerApiError.NoRInterpreters:

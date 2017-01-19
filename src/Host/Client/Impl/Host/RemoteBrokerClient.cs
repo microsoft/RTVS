@@ -61,7 +61,7 @@ namespace Microsoft.R.Host.Client.Host {
             }
 
             if (sslPolicyErrors.HasFlag(SslPolicyErrors.RemoteCertificateNotAvailable)) {
-                Log.WriteAsync(LogVerbosity.Minimal, MessageCategory.Error, Resources.Error_NoBrokerCertificate).DoNotWait();
+                Log.WriteLine(LogVerbosity.Minimal, MessageCategory.Error, Resources.Error_NoBrokerCertificate);
                 _console.WriteError(Resources.Error_NoBrokerCertificate.FormatInvariant(Name));
                 return false;
             }
@@ -73,7 +73,7 @@ namespace Microsoft.R.Host.Client.Host {
 
                 var hashString = certificate.GetCertHashString();
                 if (_certificateHash == null || !_certificateHash.EqualsOrdinal(hashString)) {
-                    Log.WriteAsync(LogVerbosity.Minimal, MessageCategory.Warning, Resources.Trace_UntrustedCertificate.FormatInvariant(certificate.Subject)).DoNotWait();
+                    Log.Write(LogVerbosity.Minimal, MessageCategory.Warning, Resources.Trace_UntrustedCertificate.FormatInvariant(certificate.Subject));
 
                     var message = Resources.CertificateSecurityWarning.FormatInvariant(ConnectionInfo.Uri.Host);
                     _certificateValidationResult = _services.Security.ValidateX509Certificate(certificate, message);

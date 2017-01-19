@@ -10,7 +10,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Test.Fakes.Shell;
+using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.XUnit;
@@ -28,9 +30,11 @@ namespace Microsoft.R.Host.Client.Test {
         private const int DefaultWidth = 360;
         private const int DefaultHeight = 360;
 
+        private readonly ICoreServices _coreServices;
         private readonly MethodInfo _testMethod;
 
-        public XamlGraphicsDeviceTest(TestMethodFixture testMethod) {
+        public XamlGraphicsDeviceTest(CoreServicesFixture coreServices, TestMethodFixture testMethod) {
+            _coreServices = coreServices;
             _testMethod = testMethod.MethodInfo;
         }
 
@@ -235,7 +239,7 @@ namespace Microsoft.R.Host.Client.Test {
         }
 
         private async Task<XDocument> RunGraphicsTest(string code, string outputFilePath) {
-            using (var sessionProvider = new RSessionProvider(TestCoreServices.CreateReal())) {
+            using (var sessionProvider = new RSessionProvider(_coreServices)) {
                 await sessionProvider.TrySwitchBrokerAsync(nameof(XamlGraphicsDeviceTest));
                 var session = sessionProvider.GetOrCreate(_testMethod.Name);
                 await session.StartHostAsync(new RHostStartupInfo (), new RHostClientTestApp(), 50000);
