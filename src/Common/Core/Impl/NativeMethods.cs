@@ -287,5 +287,19 @@ namespace Microsoft.Common.Core {
           string pszPassword,
           IntPtr pPackedCredentials,
           ref int pcbPackedCredentials);
+        /// <summary>
+        /// Represents possible values returned by the MessageBox function.
+        /// </summary>
+
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        public static extern uint MessageBox(IntPtr hWnd, string text, string caption, uint options);
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct RECT {
+            public int Left;
+            public int Top;
+            public int Right;
+            public int Bottom;
+        }
     }
 }

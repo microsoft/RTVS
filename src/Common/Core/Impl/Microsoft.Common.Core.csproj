@@ -38,6 +38,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Security" />
@@ -82,6 +83,7 @@
     <Compile Include="OS\IUserCredentials.cs" />
     <Compile Include="OS\IUserProfileCreatorResult.cs" />
     <Compile Include="OS\IUserProfileServices.cs" />
+    <Compile Include="OS\Win32MessageBox.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
