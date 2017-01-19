@@ -293,13 +293,5 @@ namespace Microsoft.Common.Core {
 
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         public static extern uint MessageBox(IntPtr hWnd, string text, string caption, uint options);
-
-        [StructLayout(LayoutKind.Sequential)]
-        public struct RECT {
-            public int Left;
-            public int Top;
-            public int Right;
-            public int Bottom;
-        }
     }
 }
