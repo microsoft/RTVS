@@ -66,12 +66,12 @@ namespace Microsoft.R.Host.Client.Host {
                 return false;
             }
 
-            if (_services.MainThread.ThreadId == Thread.CurrentThread.ManagedThreadId) {
-                // Prevent potential deadlock if handler enters on background thread, then re-enters on main thread
-                // before ValidateX509CertificateAsync is able to transition to the UI thread.
-                // At worst the connection fails
-                return _certificateValidationResult.HasValue ? _certificateValidationResult.Value : false;
-            }
+            //if (_services.MainThread.ThreadId == Thread.CurrentThread.ManagedThreadId) {
+            //    // Prevent potential deadlock if handler enters on background thread, then re-enters on main thread
+            //    // before ValidateX509CertificateAsync is able to transition to the UI thread.
+            //    // At worst the connection fails
+            //    return _certificateValidationResult.HasValue ? _certificateValidationResult.Value : false;
+            //}
 
             lock (_verificationLock) {
                 if (_certificateValidationResult.HasValue) {
@@ -83,10 +83,7 @@ namespace Microsoft.R.Host.Client.Host {
                     Log.WriteAsync(LogVerbosity.Minimal, MessageCategory.Warning, Resources.Trace_UntrustedCertificate.FormatInvariant(certificate.Subject)).DoNotWait();
 
                     var message = Resources.CertificateSecurityWarning.FormatInvariant(ConnectionInfo.Uri.Host);
-                    var task = _services.Security.ValidateX509CertificateAsync(certificate, message, _cancellationToken);
-                    _services.Tasks.Wait(task, _cancellationToken);
-
-                    _certificateValidationResult = task.Result;
+                    _certificateValidationResult = _services.Security.ValidateX509Certificate(certificate, message);
                     if (_certificateValidationResult.Value) {
                         _certificateHash = hashString;
                     }

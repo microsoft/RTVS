@@ -60,13 +60,13 @@ namespace Microsoft.Common.Core.Security {
                 StringBuilder domainBuilder = new StringBuilder(CRED_MAX_USERNAME_LENGTH);
                 int domainLen = CRED_MAX_USERNAME_LENGTH;
                 int passLen = CREDUI_MAX_PASSWORD_LENGTH;
-                if(!CredUnPackAuthenticationBuffer(CRED_PACK_PROTECTED_CREDENTIALS, credStorage, credSize, userNameBuilder, ref userNameLen, domainBuilder, ref domainLen, passwordStorage, ref passLen)) {
+                if (!CredUnPackAuthenticationBuffer(CRED_PACK_PROTECTED_CREDENTIALS, credStorage, credSize, userNameBuilder, ref userNameLen, domainBuilder, ref domainLen, passwordStorage, ref passLen)) {
                     throw new Win32Exception(Marshal.GetLastWin32Error());
                 }
 
                 return Task.FromResult(Credentials.CreateCredentails(userNameBuilder.ToString(), SecurityUtilities.SecureStringFromNativeBuffer(passwordStorage), save));
             } finally {
-                if(inCredBuffer != IntPtr.Zero) {
+                if (inCredBuffer != IntPtr.Zero) {
                     Marshal.FreeCoTaskMem(inCredBuffer);
                 }
 
@@ -78,14 +78,19 @@ namespace Microsoft.Common.Core.Security {
                     Marshal.ZeroFreeCoTaskMemUnicode(passwordStorage);
                 }
             }
-       }
+        }
 
-        public async Task<bool> ValidateX509CertificateAsync(X509Certificate certificate, string message, CancellationToken cancellationToken = default(CancellationToken)) {
+        public bool ValidateX509Certificate(X509Certificate certificate, string message) {
             var certificate2 = certificate as X509Certificate2;
             Debug.Assert(certificate2 != null);
             if (certificate2 == null || !certificate2.Verify()) {
-                await _coreShell.SwitchToMainThreadAsync(cancellationToken);
-                if (_coreShell.ShowMessage(message, MessageButtons.YesNo, MessageType.Warning) == MessageButtons.Yes) {
+                // Use native message box here since Win32 can show it from any thread.
+                // Parent window must be NULL since otherwise the call hangs since VS 
+                // is in modal state due to the progress dialog. Note that native message
+                // box appearance is a bit different from VS dialogs and matches OS theme
+                // rather than VS fonts and colors.
+                var flags = (uint)(MessageBoxOptions.YesNo | MessageBoxOptions.ApplicationModal | MessageBoxOptions.IconWarning | MessageBoxOptions.Topmost);
+                if (MessageBox(IntPtr.Zero, message, "Microsoft Visual Studio", flags) == (uint)MessageBoxResult.Yes) {
                     certificate2.Reset();
                     return true;
                 }
