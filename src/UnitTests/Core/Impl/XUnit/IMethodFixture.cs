@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 using Xunit.Sdk;
 
@@ -14,17 +13,17 @@ namespace Microsoft.UnitTests.Core.XUnit {
     /// </summary>
     public interface IMethodFixture {
         /// <summary>
-        /// 
+        /// Initializes method fixture.
+        /// This method should never fail with exception.
         /// </summary>
-        /// <param name="testCase"></param>
-        /// <param name="methodInfo">Test method metadata</param>
+        /// <param name="testInput">Test method input data (constructor and method arguments, fixtures, etc.)</param>
         /// <param name="messageBus"></param>
         /// <returns>
-        /// A task that represents the asynchronous initialization. The value of the task contains a task will be observed by test runner. 
-        /// If this task returns before test case is compeleted, it's <see cref="T:Xunit.Sdk.RunSummary"/> will be used instead. This method should NEVER fail
+        /// A task that represents the asynchronous initialization. The value of the task contains a task that will be observed by test runner. 
+        /// If this task returns before test case is compeleted, it's <see cref="T:Xunit.Sdk.RunSummary"/> will be used instead.
         /// </returns>
-        Task<Task<RunSummary>> InitializeAsync(IXunitTestCase testCase, MethodInfo methodInfo, IMessageBus messageBus);
+        Task<Task<RunSummary>> InitializeAsync(ITestInput testInput, IMessageBus messageBus);
 
-        Task DisposeAsync(IMessageBus messageBus);
+        Task DisposeAsync(RunSummary result, IMessageBus messageBus);
     }
 }

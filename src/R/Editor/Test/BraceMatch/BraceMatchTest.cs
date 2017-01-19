@@ -13,15 +13,11 @@ using Microsoft.VisualStudio.Text.Editor;
 namespace Microsoft.R.Editor.Test.BraceMatch {
     [ExcludeFromCodeCoverage]
     [Category.R.BraceMatch]
-    public class RBraceMatchTest : IDisposable {
+    public class RBraceMatchTest {
         private readonly IExportProvider _exportProvider;
 
-        public RBraceMatchTest(REditorMefCatalogFixture catalogFixture, EditorTestFilesFixture testFiles) {
-            _exportProvider = catalogFixture.CreateExportProvider();
-        }
-
-        public void Dispose() {
-            _exportProvider.Dispose();
+        public RBraceMatchTest(IExportProvider exportProvider, EditorTestFilesFixture testFiles) {
+            _exportProvider = exportProvider;
         }
 
         [Test]

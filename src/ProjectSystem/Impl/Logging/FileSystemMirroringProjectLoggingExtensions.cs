@@ -8,15 +8,15 @@ using Microsoft.Common.Core.Logging;
 namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Logging {
     internal static class FileSystemMirroringProjectLoggingExtensions {
         public static void ApplyProjectChangesStarted(this IActionLog log) {
-            log.WriteLineAsync(LogVerbosity.Normal, MessageCategory.General, "Starting applying changes to file-mirroring project");
+            log.WriteLine(LogVerbosity.Normal, MessageCategory.General, "Starting applying changes to file-mirroring project");
         }
 
         public static void ApplyProjectChangesFinished(this IActionLog log) {
-            log.WriteLineAsync(LogVerbosity.Normal, MessageCategory.General, "Finished applying changes to file-mirroring project");
+            log.WriteLine(LogVerbosity.Normal, MessageCategory.General, "Finished applying changes to file-mirroring project");
         }
 
         public static void MsBuildAfterChangesApplied(this IActionLog log, ProjectRootElement rootElement) {
-            log.WriteLineAsync(LogVerbosity.Normal, MessageCategory.General, "File mirroring project after changes applied:" + Environment.NewLine + rootElement.RawXml);
+            log.WriteLine(LogVerbosity.Normal, MessageCategory.General, "File mirroring project after changes applied:" + Environment.NewLine + rootElement.RawXml);
         }
     }
 }

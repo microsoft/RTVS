@@ -21,8 +21,8 @@ namespace Microsoft.R.Editor.Test.Completions {
         private readonly IExportProvider _exportProvider;
         private readonly IEditorShell _editorShell;
 
-        public RCompletionSourceTest(REditorMefCatalogFixture catalog) {
-            _exportProvider = catalog.CreateExportProvider();
+        public RCompletionSourceTest(IExportProvider exportProvider) {
+            _exportProvider = exportProvider;
             _editorShell = _exportProvider.GetExportedValue<IEditorShell>();
         }
 

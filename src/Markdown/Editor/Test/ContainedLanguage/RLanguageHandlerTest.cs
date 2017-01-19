@@ -18,17 +18,13 @@ using Xunit;
 
 namespace Microsoft.Markdown.Editor.Test.ContainedLanguage {
     [ExcludeFromCodeCoverage]
-    public class RLanguageHandlerTest : IDisposable {
+    public class RLanguageHandlerTest {
         private readonly IExportProvider _exportProvider;
 
-        public RLanguageHandlerTest(MarkdownEditorMefCatalogFixture catalogFixture) {
-            _exportProvider = catalogFixture.CreateExportProvider();
+        public RLanguageHandlerTest(IExportProvider exportProvider) {
+            _exportProvider = exportProvider;
             _exportProvider.GetExportedValue<IProjectionBufferFactoryService>();
             _exportProvider.GetExportedValue<IContentTypeRegistryService>();
-        }
-
-        public void Dispose() {
-            _exportProvider.Dispose();
         }
 
         [CompositeTest]

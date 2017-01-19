@@ -137,6 +137,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
 
             session.StartHost(
                 profilePath,
+                _loggingOptions.LogFolder,
                 _loggingOptions.LogHostOutput ? _hostOutputLogger : null,
                 _loggingOptions.LogPackets || _loggingOptions.LogHostOutput ? LogVerbosity.Traffic : LogVerbosity.Minimal);
 

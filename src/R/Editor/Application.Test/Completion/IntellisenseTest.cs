@@ -16,6 +16,7 @@ using Microsoft.R.Editor.Snippets;
 using Microsoft.R.Editor.Test.Utility;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Settings;
+using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -29,7 +30,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
     public class IntellisenseTest : FunctionIndexBasedTest {
         private readonly EditorHostMethodFixture _editorHost;
 
-        public IntellisenseTest(REditorApplicationMefCatalogFixture catalog, EditorHostMethodFixture editorHost) : base(catalog) {
+        public IntellisenseTest(IExportProvider exportProvider, EditorHostMethodFixture editorHost) : base(exportProvider) {
             _editorHost = editorHost;
         }
 

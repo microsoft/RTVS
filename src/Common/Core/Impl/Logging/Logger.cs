@@ -3,83 +3,81 @@
 
 using System;
 using System.Globalization;
-using System.Threading.Tasks;
-using Microsoft.Common.Core.Threading;
 
 namespace Microsoft.Common.Core.Logging {
     /// <summary>
     /// Application event logger
     /// </summary>
     internal sealed class Logger : IActionLog, IDisposable {
-        private IActionLogWriter[] _logs;
+        private readonly Lazy<IActionLogWriter[]> _logs;
         private readonly ILoggingPermissions _permissions;
-        private readonly string _appName;
+        private readonly string _name;
         private readonly IActionLogWriter _writer;
-        private readonly BinaryAsyncLock _initializationLock = new BinaryAsyncLock();
+
+        public string Folder { get; }
 
         public void Dispose() {
             if (_logs != null) {
-                foreach (var log in _logs) {
+                foreach (var log in _logs.Value) {
                     (log as IDisposable)?.Dispose();
                 }
             }
         }
 
-        internal Logger(string appName, ILoggingPermissions permissions, IActionLogWriter writer) {
-            _appName = appName;
+        internal Logger(IActionLogWriter defaultWriter, ILoggingPermissions permissions) {
+            _writer = defaultWriter;
             _permissions = permissions;
-            _writer = writer;
+            _logs = Lazy.Create(CreateLogs);
         }
 
-        private async Task EnsureCreatedAsync() {
-            var token = await _initializationLock.WaitAsync();
-            try {
-                if (!token.IsSet) {
-                    // Delay-create log since permission is established when settings are loaded
-                    // which may happen after ctor is called.
-                    _logs = new IActionLogWriter[Enum.GetValues(typeof(LogVerbosity)).Length];
-                    _logs[(int)LogVerbosity.None] = NullLogWriter.Instance;
+        internal Logger(string name, string folder, ILoggingPermissions permissions) {
+            _name = name;
+            _permissions = permissions;
+            _logs = Lazy.Create(CreateLogs);
+            Folder = folder;
+        }
 
-                    IActionLogWriter mainWriter = NullLogWriter.Instance;
-                    if (_permissions.CurrentVerbosity >= LogVerbosity.Minimal) {
-                        mainWriter = _writer ?? FileLogWriter.InTempFolder(_appName);
-                    }
+        private IActionLogWriter[] CreateLogs() {
+            var logs = new IActionLogWriter[Enum.GetValues(typeof(LogVerbosity)).Length];
+            logs[(int)LogVerbosity.None] = NullLogWriter.Instance;
 
-                    // Unfortunately, creation of event sources in OS logs requires local admin rights.
-                    // http://www.christiano.ch/wordpress/2009/12/02/iis7-web-application-writing-to-event-log-generates-security-exception/
-                    // So we can't use OS event logs as in Dev15 there is no MSI which could elevate..
-                    // _maxLogLevel >= LogLevel.Minimal ? (_writer ?? new ApplicationLogWriter(_appName)) : NullLogWriter.Instance;
-                    _logs[(int)LogVerbosity.Minimal] = mainWriter;
-                    _logs[(int)LogVerbosity.Normal] = _permissions.CurrentVerbosity >= LogVerbosity.Normal ? mainWriter : NullLogWriter.Instance;
-
-                    if (_permissions.CurrentVerbosity == LogVerbosity.Traffic) {
-                        _logs[(int)LogVerbosity.Traffic] = _writer ?? FileLogWriter.InTempFolder(_appName + ".traffic");
-                    } else {
-                        _logs[(int)LogVerbosity.Traffic] = NullLogWriter.Instance;
-                    }
-                }
-            } finally {
-                token.Set();
+            IActionLogWriter mainWriter = NullLogWriter.Instance;
+            if (_permissions.CurrentVerbosity >= LogVerbosity.Minimal) {
+                mainWriter = _writer ?? FileLogWriter.InFolder(Folder, _name);
             }
+
+            // Unfortunately, creation of event sources in OS logs requires local admin rights.
+            // http://www.christiano.ch/wordpress/2009/12/02/iis7-web-application-writing-to-event-log-generates-security-exception/
+            // So we can't use OS event logs as in Dev15 there is no MSI which could elevate..
+            // _maxLogLevel >= LogLevel.Minimal ? (_writer ?? new ApplicationLogWriter(_name)) : NullLogWriter.Instance;
+            logs[(int)LogVerbosity.Minimal] = mainWriter;
+            logs[(int)LogVerbosity.Normal] = _permissions.CurrentVerbosity >= LogVerbosity.Normal ? mainWriter : NullLogWriter.Instance;
+
+            if (_permissions.CurrentVerbosity == LogVerbosity.Traffic) {
+                logs[(int)LogVerbosity.Traffic] = _writer ?? FileLogWriter.InFolder(Folder, _name + ".traffic");
+            } else {
+                logs[(int)LogVerbosity.Traffic] = NullLogWriter.Instance;
+            }
+
+            return logs;
         }
 
         #region IActionLog
-        public async Task WriteAsync(LogVerbosity verbosity, MessageCategory category, string message) {
-            await EnsureCreatedAsync();
-            await _logs[(int)verbosity].WriteAsync(category, message);
+        public void Write(LogVerbosity verbosity, MessageCategory category, string message) {
+            _logs.Value[(int)verbosity].Write(category, message);
         }
-        public async Task WriteFormatAsync(LogVerbosity verbosity, MessageCategory category, string format, params object[] arguments) {
-            await EnsureCreatedAsync();
+
+        public void WriteFormat(LogVerbosity verbosity, MessageCategory category, string format, params object[] arguments) {
             string message = string.Format(CultureInfo.InvariantCulture, format, arguments);
-            await _logs[(int)verbosity].WriteAsync(category, message);
+            _logs.Value[(int)verbosity].Write(category, message);
         }
-        public async Task WriteLineAsync(LogVerbosity verbosity, MessageCategory category, string message) {
-            await EnsureCreatedAsync();
-            await _logs[(int)verbosity].WriteAsync(category, message + Environment.NewLine);
+
+        public void WriteLine(LogVerbosity verbosity, MessageCategory category, string message) {
+            _logs.Value[(int)verbosity].Write(category, message + Environment.NewLine);
         }
 
         public void Flush() {
-            foreach (var l in _logs) {
+            foreach (var l in _logs.Value) {
                 l?.Flush();
             }
         }

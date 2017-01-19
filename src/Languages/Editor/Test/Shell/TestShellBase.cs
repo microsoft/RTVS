@@ -6,6 +6,7 @@ using System.ComponentModel.Design;
 using System.Threading;
 using System.Windows.Threading;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Fakes.Shell;

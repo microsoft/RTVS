@@ -27,15 +27,11 @@ using NSubstitute;
 namespace Microsoft.R.Editor.Test.Navigation {
     [ExcludeFromCodeCoverage]
     [Category.R.Navigation]
-    public class RPeekableItemSourceTest : IDisposable {
+    public class RPeekableItemSourceTest {
         private readonly IExportProvider _exportProvider;
 
-        public RPeekableItemSourceTest(REditorMefCatalogFixture catalog) {
-            _exportProvider = catalog.CreateExportProvider();
-        }
-
-        public void Dispose() {
-            _exportProvider.Dispose();
+        public RPeekableItemSourceTest(IExportProvider exportProvider) {
+            _exportProvider = exportProvider;
         }
 
         [Test]

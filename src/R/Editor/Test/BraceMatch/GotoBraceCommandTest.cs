@@ -16,17 +16,13 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Test.BraceMatch {
     [ExcludeFromCodeCoverage]
-    public class GotoBraceCommandTest : IDisposable {
+    public class GotoBraceCommandTest {
         private readonly IExportProvider _exportProvider;
         private readonly IEditorShell _editorShell;
 
-        public GotoBraceCommandTest(REditorMefCatalogFixture catalog) {
-            _exportProvider = catalog.CreateExportProvider();
+        public GotoBraceCommandTest(IExportProvider exportProvider) {
+            _exportProvider = exportProvider;
             _editorShell = _exportProvider.GetExportedValue<IEditorShell>();
-        }
-
-        public void Dispose() {
-            _exportProvider.Dispose();
         }
 
         [Test]

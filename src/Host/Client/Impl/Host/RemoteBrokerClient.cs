@@ -61,7 +61,7 @@ namespace Microsoft.R.Host.Client.Host {
             }
 
             if (sslPolicyErrors.HasFlag(SslPolicyErrors.RemoteCertificateNotAvailable)) {
-                Log.WriteAsync(LogVerbosity.Minimal, MessageCategory.Error, Resources.Error_NoBrokerCertificate).DoNotWait();
+                Log.WriteLine(LogVerbosity.Minimal, MessageCategory.Error, Resources.Error_NoBrokerCertificate);
                 _console.WriteError(Resources.Error_NoBrokerCertificate.FormatInvariant(Name));
                 return false;
             }
@@ -70,7 +70,7 @@ namespace Microsoft.R.Host.Client.Host {
                 // Prevent potential deadlock if handler enters on background thread, then re-enters on main thread
                 // before ValidateX509CertificateAsync is able to transition to the UI thread.
                 // At worst the connection fails
-                return _certificateValidationResult.HasValue ? _certificateValidationResult.Value : false;
+                return _certificateValidationResult ?? false;
             }
 
             lock (_verificationLock) {
@@ -80,7 +80,7 @@ namespace Microsoft.R.Host.Client.Host {
 
                 var hashString = certificate.GetCertHashString();
                 if (_certificateHash == null || !_certificateHash.EqualsOrdinal(hashString)) {
-                    Log.WriteAsync(LogVerbosity.Minimal, MessageCategory.Warning, Resources.Trace_UntrustedCertificate.FormatInvariant(certificate.Subject)).DoNotWait();
+                    Log.Write(LogVerbosity.Minimal, MessageCategory.Warning, Resources.Trace_UntrustedCertificate.FormatInvariant(certificate.Subject));
 
                     var message = Resources.CertificateSecurityWarning.FormatInvariant(ConnectionInfo.Uri.Host);
                     var task = _services.Security.ValidateX509CertificateAsync(certificate, message, _cancellationToken);

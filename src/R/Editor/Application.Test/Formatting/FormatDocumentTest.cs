@@ -14,19 +14,14 @@ using Xunit;
 namespace Microsoft.R.Editor.Application.Test.Formatting {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
-    public class FormatTest : IDisposable {
+    public class FormatTest {
         private readonly IExportProvider _exportProvider;
         private readonly EditorHostMethodFixture _editorHost;
 
-        public FormatTest(REditorApplicationMefCatalogFixture catalogFixture, EditorHostMethodFixture editorHost) {
-            _exportProvider = catalogFixture.CreateExportProvider();
+        public FormatTest(IExportProvider exportProvider, EditorHostMethodFixture editorHost) {
+            _exportProvider = exportProvider;
             _editorHost = editorHost;
         }
-
-        public void Dispose() {
-            _exportProvider.Dispose();
-        }
-        
 
         [CompositeTest]
         [Category.Interactive]

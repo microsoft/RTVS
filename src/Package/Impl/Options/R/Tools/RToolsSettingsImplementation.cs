@@ -54,12 +54,12 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         private BrowserType _webHelpSearchBrowserType = BrowserType.Internal;
         private BrowserType _htmlBrowserType = BrowserType.Internal;
         private BrowserType _markdownBrowserType = BrowserType.External;
-        private LogVerbosity _logLevel = LogVerbosity.Normal;
+        private LogVerbosity _logVerbosity = LogVerbosity.Normal;
 
         [ImportingConstructor]
         public RToolsSettingsImplementation(ISettingsStorage settings, ICoreShell coreShell) {
             _settings = settings;
-            _loggingPermissions = coreShell.Services.LoggingServices.Permissions;
+            _loggingPermissions = coreShell.Services.LoggingPermissions;
             _workingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         }
 
@@ -203,8 +203,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         }
 
         public LogVerbosity LogVerbosity {
-            get { return _logLevel; }
-            set { SetProperty(ref _logLevel, value); }
+            get { return _logVerbosity; }
+            set { SetProperty(ref _logVerbosity, value); }
         }
 
         public bool ShowRToolbar { get; set; } = true;

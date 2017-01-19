@@ -63,10 +63,9 @@
     <Compile Include="IO\IUserProfileNamedPipeFactory.cs" />
     <Compile Include="IO\KnownFolderGuids.cs" />
     <Compile Include="Json\Json.cs" />
-    <Compile Include="Logging\ILoggerProvider.cs" />
     <Compile Include="Logging\ILoggingPermissions.cs" />
-    <Compile Include="Logging\Implementation\LoggingServices.cs" />
     <Compile Include="Logging\Implementation\NullLogWriter.cs" />
+    <Compile Include="Logging\LogExtensions.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Logging\Implementation\FileLogWriter.cs" />
     <Compile Include="Logging\IActionLog.cs" />
@@ -129,7 +128,7 @@
     <Compile Include="OS\ProcessServices.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Extensions\AssemblyExtensions.cs" />
-    <Compile Include="Collections\DictionaryExtension.cs" />
+    <Compile Include="Collections\DictionaryExtensions.cs" />
     <Compile Include="Diagnostics\Check.cs" />
     <Compile Include="Disposables\CountdownDisposable.cs" />
     <Compile Include="Disposables\DefaultDisposable.cs" />

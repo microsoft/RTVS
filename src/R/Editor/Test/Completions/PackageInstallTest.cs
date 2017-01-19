@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Shell;
 using Microsoft.R.Editor.Test.Utility;
 using Microsoft.R.Host.Client;
+using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Xunit;
@@ -17,7 +17,7 @@ namespace Microsoft.R.Editor.Test.Completions {
     [Category.R.Completion]
     [Collection(CollectionNames.NonParallel)]
     public class PackageInstallTest : FunctionIndexBasedTest {
-        public PackageInstallTest(REditorMefCatalogFixture catalog) : base(catalog) { }
+        public PackageInstallTest(IExportProvider exportProvider) : base(exportProvider) { }
 
         [Test]
         public async Task InstallPackageTest() {

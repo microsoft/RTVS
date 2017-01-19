@@ -12,6 +12,7 @@ using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.R.Editor.Test.Utility;
 using Microsoft.R.Editor.Tree;
 using Microsoft.R.Support.Test.Utility;
+using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -23,7 +24,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
     [Category.R.Signatures]
     [Collection(CollectionNames.NonParallel)]
     public class ComputeCurrentParameterTest : FunctionIndexBasedTest {
-        public ComputeCurrentParameterTest(REditorMefCatalogFixture catalog) : base(catalog) { }
+        public ComputeCurrentParameterTest(IExportProvider exportProvider) : base(exportProvider) { }
 
         [Test(ThreadType = ThreadType.UI)]
         public async Task ParameterTest_ComputeCurrentParameter01() {

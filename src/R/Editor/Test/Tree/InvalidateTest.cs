@@ -16,17 +16,13 @@ using Xunit;
 namespace Microsoft.R.Editor.Test.Tree {
     [ExcludeFromCodeCoverage]
     [Category.R.EditorTree]
-    public class EditorTreeInvalidateTest : IDisposable {
+    public class EditorTreeInvalidateTest {
         private readonly IExportProvider _exportProvider;
         private readonly ICoreShell _coreShell;
 
-        public EditorTreeInvalidateTest(REditorMefCatalogFixture catalogFixture, EditorTestFilesFixture testFiles) {
-            _exportProvider = catalogFixture.CreateExportProvider();
+        public EditorTreeInvalidateTest(IExportProvider exportProvider, EditorTestFilesFixture testFiles) {
+            _exportProvider = exportProvider;
             _coreShell = _exportProvider.GetExportedValue<ICoreShell>();
-        }
-
-        public void Dispose() {
-            _exportProvider.Dispose();
         }
 
         [Test]

@@ -18,19 +18,15 @@ using Xunit;
 namespace Microsoft.R.Editor.Application.Test.SuggestedActions {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
-    public class SmartTagsTest : IDisposable {
+    public class SmartTagsTest {
         private readonly IExportProvider _exportProvider;
         private readonly EditorHostMethodFixture _editorHost;
 
-        public SmartTagsTest(REditorApplicationMefCatalogFixture catalogFixture, EditorHostMethodFixture editorHost) {
-            _exportProvider = catalogFixture.CreateExportProvider();
+        public SmartTagsTest(IExportProvider exportProvider, EditorHostMethodFixture editorHost) {
+            _exportProvider = exportProvider;
             _editorHost = editorHost;
         }
 
-        public void Dispose() {
-            _exportProvider.Dispose();
-        }
-        
         [Test]
         [Category.Interactive]
         public async Task R_LibrarySuggestedActions() {

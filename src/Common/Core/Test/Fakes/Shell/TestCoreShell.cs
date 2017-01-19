@@ -18,8 +18,9 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
     public class TestCoreShell : ICoreShell, IMainThread {
         private readonly CompositionContainer _container;
 
-        public TestCoreShell(CompositionContainer container) {
+        public TestCoreShell(CompositionContainer container, ICoreServices services) {
             _container = container;
+            Services = services;
         }
 
         public ExportProvider ExportProvider => _container;
@@ -62,7 +63,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
         public IFileDialog FileDialog { get; } = new TestFileDialog();
         public IProgressDialog ProgressDialog { get; } = new TestProgressDialog();
         public IApplicationConstants AppConstants { get; } = new TestAppConstants();
-        public ICoreServices Services { get; } = TestCoreServices.CreateReal();
+        public ICoreServices Services { get; }
 
         #region IMainThread
 
