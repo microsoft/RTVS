@@ -95,5 +95,14 @@ namespace Microsoft.Common.Core {
                 return ResourceManager.GetString("Info_ConnectingTo", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R Tools for Visual Studio.
+        /// </summary>
+        internal static string MessageBoxTitle {
+            get {
+                return ResourceManager.GetString("MessageBoxTitle", resourceCulture);
+            }
+        }
     }
 }

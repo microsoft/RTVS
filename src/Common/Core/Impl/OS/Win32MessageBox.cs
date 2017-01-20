@@ -3,6 +3,7 @@
 
 using System;
 using System.Drawing;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Microsoft.Common.Core.OS {
@@ -59,7 +60,7 @@ namespace Microsoft.Common.Core.OS {
             Timeout = 32000
         }
 
-        public static Result Show(string message, Flags flags) {
+        public static Result Show(IntPtr appWindowHandle, string message, Flags flags) {
             // Create a host form that is a TopMost window which will be the 
             // parent of the MessageBox.
             using (var form = new Form() { TopMost = true, Size = new Size(1, 1), StartPosition = FormStartPosition.Manual }) {
@@ -72,8 +73,48 @@ namespace Microsoft.Common.Core.OS {
                 form.BringToFront();
                 // Finally show the MessageBox with the form just created as its owner
                 flags |= Flags.ApplicationModal | Flags.Topmost | Flags.SetForeground;
-                return (Result)NativeMethods.MessageBox(form.Handle, message, "Microsoft Visual Studio", (uint)flags);
+
+                // Find VS window rectangle
+                var vsWindowRect = new NativeMethods.RECT();
+                NativeMethods.GetWindowRect(appWindowHandle, out vsWindowRect);
+
+                // Position message box in a way so it appears over VS but above the progress window
+                var centerX = vsWindowRect.Left + vsWindowRect.Width / 2;
+                var centerY = vsWindowRect.Top + vsWindowRect.Height / 2;
+
+                MoveMessageBoxAsync(Resources.MessageBoxTitle, centerX, centerY).DoNotWait();
+                return (Result)NativeMethods.MessageBox(form.Handle, message, Resources.MessageBoxTitle, (uint)flags);
             }
+        }
+
+        private static Task MoveMessageBoxAsync(string title, int centerX, int centerY) {
+            return Task.Run(() => {
+                IntPtr msgBoxHandle = IntPtr.Zero;
+                var startTime = DateTime.Now;
+
+                while (msgBoxHandle == IntPtr.Zero && (DateTime.Now - startTime).TotalMilliseconds < 2000) {
+                    msgBoxHandle = NativeMethods.FindWindow(null, title);
+                }
+                if (msgBoxHandle != IntPtr.Zero) {
+                    int bottom = 0;
+
+                    var progressBoxHandle = NativeMethods.FindWindow("#32770", "Microsoft Visual Studio");
+                    if (progressBoxHandle != IntPtr.Zero) {
+                        var rcProgress = new NativeMethods.RECT();
+                        NativeMethods.GetWindowRect(progressBoxHandle, out rcProgress);
+                        bottom = rcProgress.Top - 20;
+                    }
+
+                    var rc = new NativeMethods.RECT();
+                    NativeMethods.GetWindowRect(msgBoxHandle, out rc);
+                    int x = centerX - rc.Width / 2;
+                    int y = centerY - rc.Height / 2;
+                    if (bottom > 0) {
+                        y = bottom - rc.Height;
+                    }
+                    NativeMethods.MoveWindow(msgBoxHandle, x, y, rc.Width, rc.Height, true);
+                }
+            });
         }
     }
 }
