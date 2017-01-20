@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Threading.Tasks;
-using Microsoft.R.Components.Controller;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 
 namespace Microsoft.R.Components.Plots.Implementation.Commands {
@@ -21,9 +21,9 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
             }
         }
 
-        public Task<CommandResult> InvokeAsync() {
+        public Task InvokeAsync() {
             VisualComponent.EndLocatorMode();
-            return Task.FromResult(CommandResult.Executed);
+            return Task.CompletedTask;
         }
     }
 }

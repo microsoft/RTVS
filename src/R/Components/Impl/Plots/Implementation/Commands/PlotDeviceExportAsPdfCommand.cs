@@ -3,7 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
-using Microsoft.R.Components.Controller;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 
 namespace Microsoft.R.Components.Plots.Implementation.Commands {
@@ -22,8 +22,8 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
             }
         }
 
-        public async Task<CommandResult> InvokeAsync() {
-            string filePath = InteractiveWorkflow.Shell.FileDialog.ShowSaveFileDialog(Resources.Plots_ExportAsPdfFilter, null, Resources.Plots_ExportAsPdfDialogTitle);
+        public async Task InvokeAsync() {
+            var filePath = InteractiveWorkflow.Shell.FileDialog.ShowSaveFileDialog(Resources.Plots_ExportAsPdfFilter, null, Resources.Plots_ExportAsPdfDialogTitle);
             if (!string.IsNullOrEmpty(filePath)) {
                 try {
                     await InteractiveWorkflow.Plots.ExportToPdfAsync(
@@ -36,8 +36,6 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
                 } catch (OperationCanceledException) {
                 }
             }
-
-            return CommandResult.Executed;
         }
 
         private static double PixelsToInches(int pixels) {

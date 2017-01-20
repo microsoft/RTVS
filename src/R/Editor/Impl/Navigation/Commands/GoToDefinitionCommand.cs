@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.R.Components.Controller;

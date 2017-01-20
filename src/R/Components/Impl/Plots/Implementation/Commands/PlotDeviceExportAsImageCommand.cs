@@ -4,7 +4,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.R.Components.Controller;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 
 namespace Microsoft.R.Components.Plots.Implementation.Commands {
@@ -23,7 +23,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
             }
         }
 
-        public async Task<CommandResult> InvokeAsync() {
+        public async Task InvokeAsync() {
             string filePath = InteractiveWorkflow.Shell.FileDialog.ShowSaveFileDialog(Resources.Plots_ExportAsImageFilter, null, Resources.Plots_ExportAsImageDialogTitle);
             if (!string.IsNullOrEmpty(filePath)) {
                 string device = DeviceFromFileExtension(filePath);
@@ -44,8 +44,6 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
                     InteractiveWorkflow.Shell.ShowErrorMessage(string.Format(Resources.Plots_ExportUnsupportedImageFormat, Path.GetExtension(filePath)));
                 }
             }
-
-            return CommandResult.Executed;
         }
 
         private string DeviceFromFileExtension(string filePath) {

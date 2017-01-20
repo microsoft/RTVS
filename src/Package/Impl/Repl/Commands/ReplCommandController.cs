@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Components.Controller;
@@ -25,7 +26,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     /// Main interactive window command controller
     /// </summary>
     public class ReplCommandController : ViewController {
-        private ExpansionsController _snippetController;
+        private readonly ExpansionsController _snippetController;
 
         public ReplCommandController(ITextView textView, ITextBuffer textBuffer)
             : base(textView, textBuffer, VsAppShell.Current) {

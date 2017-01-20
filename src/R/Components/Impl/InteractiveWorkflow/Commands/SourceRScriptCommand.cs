@@ -1,12 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.Text.Editor;
@@ -37,16 +36,16 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
             }
         }
 
-        public async Task<CommandResult> InvokeAsync() {
+        public async Task InvokeAsync() {
             string filePath = GetFilePath();
             if (filePath == null) {
-                return CommandResult.NotSupported;
+                return;
             }
 
             var textView = GetActiveTextView();
             var activeWindow = _interactiveWorkflow.ActiveWindow;
             if (textView == null || activeWindow == null) {
-                return CommandResult.NotSupported;
+                return;
             }
 
             _interactiveWorkflow.Shell.SaveFileIfDirty(filePath);
@@ -62,7 +61,6 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
             } else {
                 await _interactiveWorkflow.Operations.SourceFileAsync(filePath, _echo, textView.TextBuffer.GetEncoding());
             }
-            return CommandResult.Executed;
         }
 
         private ITextView GetActiveTextView() {

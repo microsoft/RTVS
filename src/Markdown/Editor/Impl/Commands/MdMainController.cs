@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Services;

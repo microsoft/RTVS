@@ -4,7 +4,7 @@
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
-using Microsoft.R.Components.Controller;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 
 namespace Microsoft.R.Components.ConnectionManager.Commands {
@@ -21,12 +21,12 @@ namespace Microsoft.R.Components.ConnectionManager.Commands {
             ? CommandStatus.Supported
             : CommandStatus.SupportedAndEnabled;
 
-        public Task<CommandResult> InvokeAsync() {
+        public Task InvokeAsync() {
             var connection = _connectionManager.ActiveConnection;
             if (connection != null && !_connectionManager.IsConnected) {
                 _shell.ProgressDialog.Show(_connectionManager.ReconnectAsync, Resources.ConnectionManager_ReconnectionToProgressBarMessage.FormatInvariant(connection.Name));
             }
-            return Task.FromResult(CommandResult.Executed);
+            return Task.CompletedTask;
         }
     }
 }

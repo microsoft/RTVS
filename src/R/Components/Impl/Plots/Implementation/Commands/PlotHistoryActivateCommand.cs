@@ -3,7 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
-using Microsoft.R.Components.Controller;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 
 namespace Microsoft.R.Components.Plots.Implementation.Commands {
@@ -23,7 +23,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
             }
         }
 
-        public async Task<CommandResult> InvokeAsync() {
+        public async Task InvokeAsync() {
             var selection = VisualComponent.SelectedPlot;
             if (selection != null) {
                 try {
@@ -33,8 +33,6 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
                 } catch (OperationCanceledException) {
                 }
             }
-
-            return CommandResult.Executed;
         }
     }
 }

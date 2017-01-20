@@ -2,12 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.ComponentModel.Composition;
 using System.Linq;
-using Microsoft.Languages.Editor.Controller;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Controller.Constants;
-using Microsoft.Languages.Editor.Shell;
-using Microsoft.R.Components;
 using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;

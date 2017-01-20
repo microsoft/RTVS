@@ -3,7 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
-using Microsoft.R.Components.Controller;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 
 namespace Microsoft.R.Components.Plots.Implementation.Commands {
@@ -21,7 +21,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
             }
         }
 
-        public async Task<CommandResult> InvokeAsync() {
+        public async Task InvokeAsync() {
             try {
                 if (VisualComponent.Device == null) {
                     await InteractiveWorkflow.Plots.NewDeviceAsync(VisualComponent.InstanceId);
@@ -32,8 +32,6 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
                 InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);
             } catch (OperationCanceledException) {
             }
-
-            return CommandResult.Executed;
         }
     }
 }

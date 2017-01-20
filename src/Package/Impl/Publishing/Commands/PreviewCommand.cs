@@ -11,6 +11,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.Languages.Editor.Extensions;
 using Microsoft.Markdown.Editor.Commands;

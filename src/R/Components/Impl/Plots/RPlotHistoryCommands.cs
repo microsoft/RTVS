@@ -2,15 +2,12 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using Microsoft.R.Components.Controller;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Plots.Implementation.Commands;
 
 namespace Microsoft.R.Components.Plots {
     public class RPlotHistoryCommands {
-        private readonly IRInteractiveWorkflow _interactiveWorkflow;
-        private readonly IRPlotHistoryVisualComponent _visualComponent;
-
         public RPlotHistoryCommands(IRInteractiveWorkflow interactiveWorkflow, IRPlotHistoryVisualComponent visualComponent) {
             if (interactiveWorkflow == null) {
                 throw new ArgumentNullException(nameof(interactiveWorkflow));
@@ -20,16 +17,13 @@ namespace Microsoft.R.Components.Plots {
                 throw new ArgumentNullException(nameof(visualComponent));
             }
 
-            _interactiveWorkflow = interactiveWorkflow;
-            _visualComponent = visualComponent;
-
-            ZoomIn = new PlotHistoryZoomInCommand(_interactiveWorkflow, _visualComponent);
-            ZoomOut = new PlotHistoryZoomOutCommand(_interactiveWorkflow, _visualComponent);
-            AutoHide = new PlotHistoryAutoHideCommand(_interactiveWorkflow, _visualComponent);
-            Cut = new PlotHistoryCutCopyCommand(_interactiveWorkflow, _visualComponent, cut: true);
-            Copy = new PlotHistoryCutCopyCommand(_interactiveWorkflow, _visualComponent, cut: false);
-            Remove = new PlotHistoryRemoveCommand(_interactiveWorkflow, _visualComponent);
-            ActivatePlot = new PlotHistoryActivateCommand(_interactiveWorkflow, _visualComponent);
+            ZoomIn = new PlotHistoryZoomInCommand(interactiveWorkflow, visualComponent);
+            ZoomOut = new PlotHistoryZoomOutCommand(interactiveWorkflow, visualComponent);
+            AutoHide = new PlotHistoryAutoHideCommand(interactiveWorkflow, visualComponent);
+            Cut = new PlotHistoryCutCopyCommand(interactiveWorkflow, visualComponent, cut: true);
+            Copy = new PlotHistoryCutCopyCommand(interactiveWorkflow, visualComponent, cut: false);
+            Remove = new PlotHistoryRemoveCommand(interactiveWorkflow, visualComponent);
+            ActivatePlot = new PlotHistoryActivateCommand(interactiveWorkflow, visualComponent);
         }
 
         public IAsyncCommand ZoomIn { get; }
