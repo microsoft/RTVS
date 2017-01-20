@@ -23,7 +23,7 @@ namespace Microsoft.R.Host.Client {
             Console.CancelKeyPress += Console_CancelKeyPress;
 
             var programName = "Microsoft.R.Host.Client.Program";
-            using (var logger = new Logger(programName, Path.Combine(Path.GetTempPath(), "rtvs.logs"), new MaxLoggingPermissions())) {
+            using (var logger = new Logger(programName, Path.GetTempPath(), new MaxLoggingPermissions())) {
                 var services = new CoreServices(null, new MaxLoggingPermissions(), null, null, null, logger, null, null, null);
                 var localConnector = new LocalBrokerClient(programName, BrokerConnectionInfo.Create("local", args[0]), services, new NullConsole());
                 var host = localConnector.ConnectAsync(new HostConnectionInfo(programName, new Program())).GetAwaiter().GetResult();
