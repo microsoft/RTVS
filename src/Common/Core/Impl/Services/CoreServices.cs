@@ -29,7 +29,7 @@ namespace Microsoft.Common.Core.Services {
             FileSystem = new FileSystem();
             MainThread = mainThread;
 
-            Log = new Logger(appConstants.ApplicationName, Path.Combine(Path.GetTempPath(), "rtvs.logs"), LoggingPermissions);
+            Log = new Logger(appConstants.ApplicationName, Path.GetTempPath(), LoggingPermissions);
         }
 
         public CoreServices(ITelemetryService telemetry
