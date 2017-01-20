@@ -172,7 +172,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                     var showConnectionsWindow = Connections.RecentConnections.Any();
                     if (!showConnectionsWindow){
                         var message = Resources.NoLocalR.FormatInvariant(Environment.NewLine + Environment.NewLine, Environment.NewLine);
-                        showConnectionsWindow = Shell.ShowMessage(message, MessageButtons.YesNo) == MessageButtons.Yes;
+                        showConnectionsWindow = Shell.ShowMessage(message, MessageButtons.YesNo) == MessageButtons.No;
                     }
 
                     if (!showConnectionsWindow) {
