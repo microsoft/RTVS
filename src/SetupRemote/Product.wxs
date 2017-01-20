@@ -3,7 +3,8 @@
 <?include Definitions.wxi ?>
 
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
-     xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+     xmlns:util="http://schemas.microsoft.com/wix/UtilExtension"
+     xmlns:fire="http://schemas.microsoft.com/wix/FirewallExtension">
 
   <Product Id="*"
            Name="$(var.ProductName)"
@@ -19,8 +20,18 @@
 
     <MediaTemplate EmbedCab="yes" />
     <?include Feature.wxi ?>
+    
+    <!-- Set seclogon service to autostart -->
+    <CustomAction Id='SecLogonServiceAutoStart'
+              Directory='INSTALLFOLDER'
+              Execute="deferred"
+              Impersonate="no"
+              ExeCommand="sc config seclogon start=auto"
+              Return='ignore' />
+    
     <InstallExecuteSequence>
       <ScheduleReboot After="InstallFinalize"/>
+      <Custom Action="SecLogonServiceAutoStart" Before="InstallFinalize"/>
     </InstallExecuteSequence>
   </Product>
 
@@ -62,6 +73,7 @@
           <ServiceDependency Id="RUserProfileService" Group="no"/>
         </ServiceInstall>
         <ServiceControl Id="RemoteRBrokerServiceUninstall" Name="RHostBrokerService" Remove="uninstall" Stop="uninstall"/>
+        <fire:FirewallException Id="RBrokerSvcFirewallException" Name="Microsoft.R.Host.Broker" Program="[INSTALLFOLDER]Microsoft.R.Host.Broker.exe" Scope="any" Profile="all"/>
       </Component>
     </DirectoryRef>
     <?include RtvsPackage.wxi ?>
