@@ -431,5 +431,11 @@ namespace Microsoft.Common.Core {
         [DllImport("Kernel32.dll", SetLastError = true)]
         public static extern bool TerminateProcess(SafeHandle processHandle, IntPtr exitCode);
 
+        /// <summary>
+        /// Represents possible values returned by the MessageBox function.
+        /// </summary>
+
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        public static extern uint MessageBox(IntPtr hWnd, string text, string caption, uint options);
     }
 }
