@@ -109,9 +109,6 @@
     <Compile Include="ConnectionManager\ViewModel\IConnectionViewModel.cs" />
     <Compile Include="ContentTypes\RContentTypeDefinition.cs" />
     <Compile Include="Controller\CommandResult.cs" />
-    <Compile Include="Controller\CommandStatus.cs" />
-    <Compile Include="Controller\IAsyncCommand.cs" />
-    <Compile Include="Controller\IAsyncCommandRange.cs" />
     <Compile Include="Controller\ICommandTarget.cs" />
     <Compile Include="Documentation\Commands\OpenDocumentationCommand.cs" />
     <Compile Include="Documentation\LocalDocumentationPaths.cs" />

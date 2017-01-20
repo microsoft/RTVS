@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.UI.Commands;
 
 namespace Microsoft.R.Components.Controller {
     public class AsyncCommandController : ICommandTarget {

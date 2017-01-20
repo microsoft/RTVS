@@ -6,7 +6,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.Common.Core;
-using Microsoft.R.Components.Controller;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 
 namespace Microsoft.R.Components.Plots.Implementation.Commands {
@@ -25,7 +25,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
             }
         }
 
-        public async Task<CommandResult> InvokeAsync() {
+        public async Task InvokeAsync() {
             string filePath = Path.GetTempFileName();
             try {
                 await InteractiveWorkflow.Plots.ExportToMetafileAsync(
@@ -52,8 +52,6 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
                 InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);
             } catch (OperationCanceledException) {
             }
-
-            return CommandResult.Executed;
         }
 
         private static double PixelsToInches(int pixels) {

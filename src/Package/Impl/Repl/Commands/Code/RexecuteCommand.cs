@@ -4,8 +4,8 @@
 using System;
 using System.Text;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Controller.Command;
-using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor;
 using Microsoft.VisualStudio.Text.Editor;

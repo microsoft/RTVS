@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.History;
@@ -29,10 +30,10 @@ namespace Microsoft.VisualStudio.R.Package.History.Commands {
             _history = historyProvider.GetAssociatedRHistory(textView);
         }
 
-        public override Microsoft.R.Components.Controller.CommandStatus Status(Guid guid, int id) {
+        public override CommandStatus Status(Guid guid, int id) {
             return _interactiveWorkflow.ActiveWindow != null ?
-                Microsoft.R.Components.Controller.CommandStatus.SupportedAndEnabled :
-                Microsoft.R.Components.Controller.CommandStatus.Supported;
+                CommandStatus.SupportedAndEnabled :
+                CommandStatus.Supported;
         }
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {

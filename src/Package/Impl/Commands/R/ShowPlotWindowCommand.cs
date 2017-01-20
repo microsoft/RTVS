@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.R.Components.Controller;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Plots;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -42,12 +42,12 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
             return _windows[index].Text;
         }
 
-        public Task<CommandResult> InvokeAsync(int index) {
+        public Task InvokeAsync(int index) {
             if (index < _windows.Length) {
                 ToolWindowUtilities.ShowWindowPane<PlotDeviceWindowPane>(_windows[index].InstanceId, true);
             }
 
-            return Task.FromResult(CommandResult.Executed);
+            return Task.CompletedTask;
         }
 
         public int MaxCount { get; } = 20;

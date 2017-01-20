@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Enums;
 using Microsoft.Common.Core.Shell;
-using Microsoft.R.Components.Controller;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
 
@@ -42,7 +42,7 @@ namespace Microsoft.R.Components.ConnectionManager.Commands {
             return _recentConnections[index].Name;
         }
 
-        public Task<CommandResult> InvokeAsync(int index) {
+        public Task InvokeAsync(int index) {
             if (_recentConnections == null) {
                 _recentConnections = _connectionManager.RecentConnections;
             }
@@ -57,7 +57,7 @@ namespace Microsoft.R.Components.ConnectionManager.Commands {
                     if (activeConnection != null && _settings.ShowWorkspaceSwitchConfirmationDialog == YesNo.Yes) {
                         var message = Resources.ConnectionManager_SwitchConfirmation.FormatCurrent(activeConnection.Name, connection.Name);
                         if (_shell.ShowMessage(message, MessageButtons.YesNo) == MessageButtons.No) {
-                            return Task.FromResult(CommandResult.Executed);
+                            return Task.CompletedTask;
                         }
                     }
 
@@ -68,7 +68,7 @@ namespace Microsoft.R.Components.ConnectionManager.Commands {
                 }
             }
 
-            return Task.FromResult(CommandResult.Executed);
+            return Task.CompletedTask;
         }
 
         public int MaxCount { get; } = 5;

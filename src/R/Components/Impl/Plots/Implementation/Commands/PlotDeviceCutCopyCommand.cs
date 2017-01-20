@@ -4,12 +4,12 @@
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
-using Microsoft.R.Components.Controller;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 
 namespace Microsoft.R.Components.Plots.Implementation.Commands {
     internal sealed class PlotDeviceCutCopyCommand : PlotDeviceCommand, IAsyncCommand {
-        private bool _cut;
+        private readonly bool _cut;
 
         public PlotDeviceCutCopyCommand(IRInteractiveWorkflow interactiveWorkflow, IRPlotDeviceVisualComponent visualComponent, bool cut)
             : base(interactiveWorkflow, visualComponent) {
@@ -26,7 +26,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
             }
         }
 
-        public Task<CommandResult> InvokeAsync() {
+        public Task InvokeAsync() {
             try {
                 var data = PlotClipboardData.Serialize(new PlotClipboardData(VisualComponent.Device.DeviceId, VisualComponent.Device.ActivePlot.PlotId, _cut));
                 Clipboard.Clear();
@@ -35,7 +35,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
                 InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);
             }
 
-            return Task.FromResult(CommandResult.Executed);
+            return Task.CompletedTask;
         }
     }
 }

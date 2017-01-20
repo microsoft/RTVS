@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.R.Components.Controller {
+namespace Microsoft.Common.Core.UI.Commands {
     [Flags]
     public enum CommandStatus {
         NotSupported = 0,

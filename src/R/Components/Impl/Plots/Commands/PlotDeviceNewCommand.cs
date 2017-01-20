@@ -3,7 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
-using Microsoft.R.Components.Controller;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 
 namespace Microsoft.R.Components.Plots.Commands {
@@ -18,21 +18,15 @@ namespace Microsoft.R.Components.Plots.Commands {
             _workflow = workflow;
         }
 
-        public CommandStatus Status {
-            get {
-                return CommandStatus.SupportedAndEnabled;
-            }
-        }
+        public CommandStatus Status => CommandStatus.SupportedAndEnabled;
 
-        public async Task<CommandResult> InvokeAsync() {
+        public async Task InvokeAsync() {
             try {
                 await _workflow.Plots.NewDeviceAsync(-1);
             } catch (RPlotManagerException ex) {
                 _workflow.Shell.ShowErrorMessage(ex.Message);
             } catch (OperationCanceledException) {
             }
-
-            return CommandResult.Executed;
         }
     }
 }
