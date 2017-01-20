@@ -716,12 +716,6 @@ Click OK to open MiKTeX download page in the default browser. You may need to re
   <data name="Warning_RStudioKeyboardShortcuts" xml:space="preserve">
     <value>Do you want to reset keyboard shortcuts to be compatible with the RStudio where possible?</value>
   </data>
-  <data name="Message_RClientIsAlreadySet" xml:space="preserve">
-    <value>Current R engine is already set to the Microsoft R Client.</value>
-  </data>
-  <data name="Prompt_RClientNotInstalled" xml:space="preserve">
-    <value>Microsoft R Client is not installed. Click Yes if you would you like to start installation of the Microsoft R Client now. Please close Visual Studio when the setup application starts and reopen it when Microsoft R Client installation is complete.</value>
-  </data>
   <data name="Message_RClientIsAlreadyInstalled" xml:space="preserve">
     <value>Microsoft R Client is already installed.</value>
   </data>

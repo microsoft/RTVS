@@ -24,7 +24,6 @@ using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project;
 using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.R.Package.SurveyNews;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.Common.Core.Logging;
@@ -60,7 +59,6 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         private IRInteractiveWorkflow _workflow;
         private IRSession _session;
         private IRHistory _history;
-        private ISurveyNewsService _surveyNews;
 
         /// <summary>
         /// Backing field for the similarly named property.
@@ -73,7 +71,6 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             , IInteractiveWindowComponentContainerFactory componentContainerFactory
             , IRToolsSettings toolsSettings
             , IThreadHandling threadHandling
-            , ISurveyNewsService surveyNews
             , [Import(AllowDefault = true)] IProjectItemDependencyProvider dependencyProvider
             , ICoreShell coreShell) {
 
@@ -84,7 +81,6 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
             _toolsSettings = toolsSettings;
             _threadHandling = threadHandling;
-            _surveyNews = surveyNews;
             _dependencyProvider = dependencyProvider;
             _coreShell = coreShell;
 
@@ -146,20 +142,6 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             }
 
             _history.TryLoadFromFile(Path.Combine(_projectDirectory, DefaultRHistoryName));
-
-            CheckSurveyNews();
-        }
-
-        private async void CheckSurveyNews() {
-            // Don't return a task, the caller doesn't want to await on this
-            // and hold up loading of the project.
-            // We do it this way instead of calling DoNotWait extension in order
-            // to handle any non critical exceptions.
-            try {
-                await _surveyNews.CheckSurveyNewsAsync(false);
-            } catch (Exception ex) when (!ex.IsCriticalException()) {
-                _coreShell.Services.Log.Write(LogVerbosity.Normal, MessageCategory.Error, "SurveyNews exception: " + ex.Message);
-            }
         }
 
         private void FileWatcherError(object sender, EventArgs args) {

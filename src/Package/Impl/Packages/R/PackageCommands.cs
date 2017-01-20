@@ -60,8 +60,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new GoToEditorOptionsCommand(),
                 new ImportRSettingsCommand(),
                 new InstallRClientCommand(appShell),
-                new SwitchToRClientCommand(interactiveWorkflow.Connections, appShell),
-                new SurveyNewsCommand(appShell),
                 new SetupRemoteCommand(),
 
                 new ReportIssueCommand(appShell.Services),
@@ -74,7 +72,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 CreateRCmdSetCommand(RPackageCommandId.icmdRDocsTaskViews, new OpenDocumentationCommand(interactiveWorkflow, OnlineDocumentationUrls.CranViews)),
                 CreateRCmdSetCommand(RPackageCommandId.icmdRtvsDocumentation, new OpenDocumentationCommand(interactiveWorkflow, OnlineDocumentationUrls.RtvsDocumentation)),
                 CreateRCmdSetCommand(RPackageCommandId.icmdRtvsSamples, new OpenDocumentationCommand(interactiveWorkflow, OnlineDocumentationUrls.RtvsSamples)),
-                CreateRCmdSetCommand(RPackageCommandId.icmdCheckForUpdates, new OpenDocumentationCommand(interactiveWorkflow, OnlineDocumentationUrls.CheckForRtvsUpdates)),
                 CreateRCmdSetCommand(RPackageCommandId.icmdMicrosoftRProducts, new OpenDocumentationCommand(interactiveWorkflow, OnlineDocumentationUrls.MicrosoftRProducts)),
 
                 new LoadWorkspaceCommand(appShell, interactiveWorkflow, projectServiceAccessor),

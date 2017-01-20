@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using Microsoft.Common.Core.Net;
-using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
 
 namespace Microsoft.R.Interpreters {
