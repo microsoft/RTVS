@@ -167,7 +167,7 @@ namespace Microsoft.R.Editor.Document {
             try {
                 SnapshotPoint caretPosition = textView.Caret.Position.BufferPosition;
                 return MapPointFromView(textView, caretPosition);
-            } catch(ArgumentException) { }
+            } catch (ArgumentException) { }
             return null;
         }
 
@@ -175,26 +175,11 @@ namespace Microsoft.R.Editor.Document {
         /// Maps given point from view buffer to R editor buffer
         /// </summary>
         public static SnapshotPoint? MapPointFromView(ITextView textView, SnapshotPoint point) {
-            ITextBuffer rBuffer;
-            SnapshotPoint? documentPoint = null;
-
-            IREditorDocument document = REditorDocument.FindInProjectedBuffers(textView.TextBuffer);
-            if (document != null) {
-                rBuffer = document.TextBuffer;
-            } else {
-                // Last resort, typically in unit tests when document is not available
-                rBuffer = REditorDocument.FindRBuffer(textView.TextBuffer);
+            var pb = textView.TextBuffer as IProjectionBuffer;
+            if (pb != null) {
+                return pb.MapDown(point, RContentTypeDefinition.ContentType);
             }
-
-            if (rBuffer != null) {
-                if (textView.BufferGraph != null) {
-                    documentPoint = textView.MapDownToBuffer(point, rBuffer);
-                } else {
-                    documentPoint = point;
-                }
-            }
-
-            return documentPoint;
+            return null;
         }
 
         #region IDisposable
