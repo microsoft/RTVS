@@ -210,15 +210,15 @@ namespace Microsoft.Languages.Editor.Extensions {
             } else {
                 var pb = viewBuffer as IProjectionBuffer;
                 var bg = viewBuffer.GetBufferGraph();
-                if (bg != null) {
+                if (pb != null && bg != null) {
                     // There may be multiple buffers with the same content type. 
                     // This is normal in the interactive window. Therefore we must look 
                     // for a buffer that CAN map the given point and not just take
                     // the first one from the list.
-                    point = pb?.SourceBuffers
+                    point = pb.SourceBuffers
                             .Where(x => x.ContentType.TypeName.EqualsOrdinal(contentTypeName))
                             .Select((buffer) => bg.MapDownToBuffer(viewPoint, PointTrackingMode.Positive, buffer, PositionAffinity.Successor))
-                            .First(p => p.HasValue);
+                            .FirstOrDefault(p => p.HasValue);
                 }
             }
             return point;
