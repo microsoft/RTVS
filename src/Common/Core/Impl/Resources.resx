@@ -129,4 +129,7 @@
   <data name="Info_ConnectingTo" xml:space="preserve">
     <value>Connecting to {0}</value>
   </data>
+  <data name="MessageBoxTitle" xml:space="preserve">
+    <value>R Tools for Visual Studio</value>
+  </data>
 </root>

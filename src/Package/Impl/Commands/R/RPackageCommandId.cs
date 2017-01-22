@@ -18,7 +18,6 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public const int icmdSendFrown = 404;
         public const int icmdImportRSettings = 405;
         public const int icmdReportIssue = 406;
-        public const int icmdSurveyNews = 407;
         public const int icmdSetupRemote = 408;
 
         // REPL
@@ -138,9 +137,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public const int icmdRDocsDataImportExport = 1404;
         public const int icmdRDocsWritingRExtensions = 1405;
         public const int icmdMicrosoftRProducts = 1406;
-        public const int icmdCheckForUpdates = 1407;
         public const int icmdInstallRClient = 1408;
-        public const int icmdSwitchToRClient = 1409;
 
         public const int icmdSetDirectoryHere = 1500;
         public const int icmdSourceSelectedFiles = 1501;

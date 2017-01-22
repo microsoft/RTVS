@@ -178,16 +178,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set { _holder.SetValue(value); }
         }
 
-        [LocCategory("Settings_GeneralCategory")]
-        [CustomLocDisplayName("Settings_SurveyNewsCheck")]
-        [LocDescription("Settings_SurveyNewsCheck_Description")]
-        [TypeConverter(typeof(SurveyNewsPolicyTypeConverter))]
-        [DefaultValue(SurveyNewsPolicy.CheckOnceWeek)]
-        public SurveyNewsPolicy SurveyNewsCheck {
-            get { return _holder.GetValue<SurveyNewsPolicy>(SurveyNewsPolicy.CheckOnceWeek); }
-            set { _holder.SetValue(value); }
-        }
-
         [LocCategory("Settings_LogCategory")]
         [CustomLocDisplayName("Settings_LogLevel")]
         [LocDescription("Settings_LogLevel_Description")]
