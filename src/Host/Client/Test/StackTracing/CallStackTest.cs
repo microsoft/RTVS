@@ -7,14 +7,13 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Test.Fakes.Shell;
+using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.R.DataInspection;
 using Microsoft.R.ExecutionTracing;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test;
 using Microsoft.R.Host.Client.Test.Script;
-using Microsoft.R.StackTracing;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 using NSubstitute;
@@ -26,9 +25,9 @@ namespace Microsoft.R.StackTracing.Test {
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _session;
 
-        public CallStackTest(TestMethodFixture testMethod) {
-            _sessionProvider = new RSessionProvider(TestCoreServices.CreateReal());
-            _session = _sessionProvider.GetOrCreate(testMethod.MethodInfo.Name);
+        public CallStackTest(CoreServicesFixture coreServices, TestMethodFixture testMethod) {
+            _sessionProvider = new RSessionProvider(coreServices);
+            _session = _sessionProvider.GetOrCreate(testMethod.FileSystemSafeName);
         }
 
         public async Task InitializeAsync() {

@@ -13,17 +13,13 @@ using Microsoft.UnitTests.Core.XUnit;
 namespace Microsoft.R.Editor.Test.Tree {
     [ExcludeFromCodeCoverage]
     [Category.R.EditorTree]
-    public class ProcessChangesTest : IDisposable {
+    public class ProcessChangesTest {
         private readonly IExportProvider _exportProvider;
         private readonly ICoreShell _coreShell;
 
-        public ProcessChangesTest(REditorMefCatalogFixture catalogFixture, EditorTestFilesFixture testFiles) {
-            _exportProvider = catalogFixture.CreateExportProvider();
+        public ProcessChangesTest(IExportProvider exportProvider, EditorTestFilesFixture testFiles) {
+            _exportProvider = exportProvider;
             _coreShell = _exportProvider.GetExportedValue<ICoreShell>();
-        }
-
-        public void Dispose() {
-            _exportProvider.Dispose();
         }
 
         [Test]

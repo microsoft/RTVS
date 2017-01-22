@@ -178,16 +178,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set { _holder.SetValue(value); }
         }
 
-        [LocCategory("Settings_GeneralCategory")]
-        [CustomLocDisplayName("Settings_SurveyNewsCheck")]
-        [LocDescription("Settings_SurveyNewsCheck_Description")]
-        [TypeConverter(typeof(SurveyNewsPolicyTypeConverter))]
-        [DefaultValue(SurveyNewsPolicy.CheckOnceWeek)]
-        public SurveyNewsPolicy SurveyNewsCheck {
-            get { return _holder.GetValue<SurveyNewsPolicy>(SurveyNewsPolicy.CheckOnceWeek); }
-            set { _holder.SetValue(value); }
-        }
-
         [LocCategory("Settings_LogCategory")]
         [CustomLocDisplayName("Settings_LogLevel")]
         [LocDescription("Settings_LogLevel_Description")]
@@ -234,8 +224,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
 
             public T GetValue<T>(T defaultValue, [CallerMemberName] string name = null) {
                 object value;
-                _dict.TryGetValue(name, out value);
-                return value != null ? (T)value : defaultValue;
+                return _dict.TryGetValue(name, out value) ? (T)value : default (T);
             }
 
             public T GetValue<T>([CallerMemberName] string name = null) => GetValue<T>(default(T), name);

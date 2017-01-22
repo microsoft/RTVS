@@ -25,15 +25,11 @@ using Xunit;
 namespace Microsoft.R.Components.Test.ConnectionManager {
     [ExcludeFromCodeCoverage]
     [Category.Connections]
-    public sealed class ConnectionManagerTest : IDisposable {
+    public sealed class ConnectionManagerTest {
         private readonly IExportProvider _exportProvider;
 
-        public ConnectionManagerTest(RComponentsMefCatalogFixture mefCatalogFixture) {
-            _exportProvider = mefCatalogFixture.CreateExportProvider();
-        }
-
-        public void Dispose() {
-            _exportProvider.Dispose();
+        public ConnectionManagerTest(IExportProvider exportProvider) {
+            _exportProvider = exportProvider;
         }
 
         [Test]

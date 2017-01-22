@@ -9,7 +9,6 @@ using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Services;
 using Microsoft.Office.Interop.Outlook;
 using Microsoft.VisualStudio.R.Package.Commands;
-using Microsoft.VisualStudio.R.Package.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Feedback {
     internal class SendMailCommand : PackageCommand {
@@ -21,7 +20,7 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
         }
 
         protected override void SetStatus() {
-            Enabled = Visible = Services.LoggingServices.Permissions.IsFeedbackPermitted;
+            Enabled = Visible = Services.LoggingPermissions.IsFeedbackPermitted;
         }
 
         protected void SendMail(string body, string subject, string attachmentFile) {
@@ -43,7 +42,7 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
             try {
                 outlookApp = new Application();
             } catch (System.Exception ex) {
-                Services.Log.WriteAsync(LogVerbosity.Normal, MessageCategory.Error, "Unable to start Outlook: " + ex.Message).DoNotWait();
+                Services.Log.Write(LogVerbosity.Normal, MessageCategory.Error, "Unable to start Outlook: " + ex.Message);
             }
 
             if (outlookApp == null) {
@@ -69,7 +68,7 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
                     mail.To = "rtvsuserfeedback@microsoft.com";
                     mail.Display(Modal: false);
                 } catch (System.Exception ex) {
-                    Services.Log.WriteAsync(LogVerbosity.Normal, MessageCategory.Error, "Error composing Outlook e-mail: " + ex.Message).DoNotWait();
+                    Services.Log.Write(LogVerbosity.Normal, MessageCategory.Error, "Error composing Outlook e-mail: " + ex.Message);
                 }
             }
         }

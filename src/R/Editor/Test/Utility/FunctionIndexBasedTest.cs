@@ -3,14 +3,12 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Test.Utility;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
-using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
 
 namespace Microsoft.R.Editor.Test.Utility {
@@ -22,8 +20,8 @@ namespace Microsoft.R.Editor.Test.Utility {
         protected IFunctionIndex FunctionIndex { get; }
         protected IRInteractiveWorkflow Workflow { get; }
 
-        protected FunctionIndexBasedTest(AssemblyMefCatalogFixture catalog) {
-            ExportProvider = catalog.CreateExportProvider();
+        protected FunctionIndexBasedTest(IExportProvider exportProvider) {
+            ExportProvider = exportProvider;
             Workflow = UIThreadHelper.Instance.Invoke(() => ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate());
             EditorShell = ExportProvider.GetExportedValue<IEditorShell>();
             FunctionIndex = ExportProvider.GetExportedValue<IFunctionIndex>();
@@ -38,7 +36,6 @@ namespace Microsoft.R.Editor.Test.Utility {
 
         public async Task DisposeAsync() {
             await PackageIndex.DisposeAsync(ExportProvider);
-            ExportProvider.Dispose();
         }
      }
 }

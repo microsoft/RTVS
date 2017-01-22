@@ -11,7 +11,7 @@ using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
     internal sealed class LogLevelTypeConverter : TypeConverter {
-        private static readonly string[] _permittedSettings = new string[] {
+        private static readonly string[] _permittedSettings = {
             Resources.LoggingLevel_None,
             Resources.LoggingLevel_Minimal,
             Resources.LoggingLevel_Normal,
@@ -20,7 +20,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
         private readonly int _maxLogLevel;
 
         public LogLevelTypeConverter() {
-            var permissions = VsAppShell.Current.Services.LoggingServices.Permissions;
+            var permissions = VsAppShell.Current.Services.LoggingPermissions;
             _maxLogLevel = (int)permissions.MaxVerbosity;
         }
 

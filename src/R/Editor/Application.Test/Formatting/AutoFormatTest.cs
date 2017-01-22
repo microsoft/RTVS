@@ -19,8 +19,8 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
         private readonly EditorHostMethodFixture _editorHost;
         private readonly bool _autoFormat;
 
-        public AutoFormatTest(REditorApplicationMefCatalogFixture catalogFixture, EditorHostMethodFixture editorHost) {
-            _exportProvider = catalogFixture.CreateExportProvider();
+        public AutoFormatTest(IExportProvider exportProvider, EditorHostMethodFixture editorHost) {
+            _exportProvider = exportProvider;
             _editorHost = editorHost;
             _autoFormat = REditorSettings.AutoFormat;
             REditorSettings.AutoFormat = true;
@@ -28,7 +28,6 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
 
         public void Dispose() {
             REditorSettings.AutoFormat = _autoFormat;
-            _exportProvider.Dispose();
         }
 
         [Test]

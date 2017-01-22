@@ -11,7 +11,6 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
         public bool Wait(Task task, CancellationToken cancellationToken = default(CancellationToken), int ms = Timeout.Infinite) 
             => TaskUtilities.IsOnBackgroundThread() ? task.Wait(ms, cancellationToken) : WaitOnMainThread(task, cancellationToken, ms);
         
-
         private static bool WaitOnMainThread(Task task, CancellationToken cancellationToken, int ms) {
             var frame = new DispatcherFrame();
             var resultTask = Task.Run(() => {
@@ -23,6 +22,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
                     frame.Continue = false;
                 }
             });
+
             Dispatcher.PushFrame(frame);
 
             if (!resultTask.GetAwaiter().GetResult()) {

@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Test.Fakes.Shell;
+using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.XUnit;
@@ -23,9 +24,9 @@ namespace Microsoft.R.Host.Client.Test.RtvsPackage {
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _session;
 
-        public BlobsTest(TestMethodFixture testMethod) {
-            _sessionProvider = new RSessionProvider(TestCoreServices.CreateReal());
-            _session = _sessionProvider.GetOrCreate(testMethod.MethodInfo.Name);
+        public BlobsTest(CoreServicesFixture coreServices, TestMethodFixture testMethod) {
+            _sessionProvider = new RSessionProvider(coreServices);
+            _session = _sessionProvider.GetOrCreate(testMethod.FileSystemSafeName);
         }
 
         public async Task InitializeAsync() {

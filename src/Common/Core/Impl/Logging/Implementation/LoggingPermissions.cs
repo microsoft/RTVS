@@ -42,6 +42,10 @@ namespace Microsoft.Common.Core.Logging {
 
             _registryVerbosity = GetLogLevelFromRegistry();
             _registryFeedbackSetting = GetFeedbackFromRegistry();
+
+            // Default value for CurrentVerbosity should match default value in IRSettings. 
+            // https://github.com/Microsoft/RTVS/issues/2705
+            CurrentVerbosity = LogVerbosity.Normal;
         }
 
         public LogVerbosity CurrentVerbosity {
@@ -56,12 +60,12 @@ namespace Microsoft.Common.Core.Logging {
         private LogVerbosity GetEffectiveVerbosity() {
             LogVerbosity adminSetValue;
             if (_telemetryService.IsEnabled) {
-                adminSetValue = _registryVerbosity.HasValue ? _registryVerbosity.Value : LogVerbosity.Traffic;
+                adminSetValue = _registryVerbosity ?? LogVerbosity.Traffic;
                 return MathExtensions.Min(adminSetValue, LogVerbosity.Traffic);
             }
             // If telemetry is disabled, registry setting allows increase in the logging level.
-            adminSetValue = _registryVerbosity.HasValue ? _registryVerbosity.Value : LogVerbosity.None;
-            return MathExtensions.Max(_registryVerbosity.HasValue ? _registryVerbosity.Value : LogVerbosity.None, LogVerbosity.Minimal);
+            adminSetValue = _registryVerbosity ?? LogVerbosity.None;
+            return MathExtensions.Max(adminSetValue, LogVerbosity.Minimal);
         }
 
         private bool GetEffectiveFeedbackSetting() {

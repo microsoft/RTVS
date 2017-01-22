@@ -1035,15 +1035,6 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Current R engine is already set to the Microsoft R Client..
-        /// </summary>
-        public static string Message_RClientIsAlreadySet {
-            get {
-                return ResourceManager.GetString("Message_RClientIsAlreadySet", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to R Tools News.
         /// </summary>
         public static string NewsWindowTitle {
@@ -1249,15 +1240,6 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Prompt_MsRClientJustInstalled {
             get {
                 return ResourceManager.GetString("Prompt_MsRClientJustInstalled", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Microsoft R Client is not installed. Click Yes if you would you like to start installation of the Microsoft R Client now. Please close Visual Studio when the setup application starts and reopen it when Microsoft R Client installation is complete..
-        /// </summary>
-        public static string Prompt_RClientNotInstalled {
-            get {
-                return ResourceManager.GetString("Prompt_RClientNotInstalled", resourceCulture);
             }
         }
         

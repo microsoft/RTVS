@@ -59,6 +59,7 @@
     <Compile Include="Fakes\Shell\TestFileDialog.cs" />
     <Compile Include="Fakes\Shell\TestProgressDialog.cs" />
     <Compile Include="Fakes\Shell\TestTaskService.cs" />
+    <Compile Include="Fixtures\CoreServicesFixture.cs" />
     <Compile Include="Logging\PermissionsTest.cs" />
     <Compile Include="Logging\LoggerTest.cs" />
     <Compile Include="Match\MatchElements.cs" />

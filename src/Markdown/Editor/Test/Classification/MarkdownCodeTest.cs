@@ -21,23 +21,19 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.Markdown.Editor.Test.Classification {
     [ExcludeFromCodeCoverage]
-    public class MarkdownCodeTest : IDisposable {
+    public class MarkdownCodeTest {
         private readonly IExportProvider _exportProvider;
         private readonly ITextBufferFactoryService _tbfs;
         private readonly IClassificationTypeRegistryService _crs;
         private readonly IContentTypeRegistryService _ctrs;
         private readonly IEnumerable<Lazy<IClassificationNameProvider, IComponentContentTypes>> _cnp;
 
-        public MarkdownCodeTest(MarkdownEditorMefCatalogFixture catalogFixture) {
-            _exportProvider = catalogFixture.CreateExportProvider();
+        public MarkdownCodeTest(IExportProvider exportProvider) {
+            _exportProvider = exportProvider;
             _crs = _exportProvider.GetExportedValue<IClassificationTypeRegistryService>();
             _ctrs = _exportProvider.GetExportedValue<IContentTypeRegistryService>();
             _cnp = _exportProvider.GetExports<IClassificationNameProvider, IComponentContentTypes>();
             _tbfs = _exportProvider.GetExportedValue<ITextBufferFactoryService>();
-        }
-
-        public void Dispose() {
-            _exportProvider.Dispose();
         }
 
         [Test]

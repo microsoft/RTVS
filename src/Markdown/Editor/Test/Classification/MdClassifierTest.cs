@@ -23,19 +23,15 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.Markdown.Editor.Test.Classification {
     [ExcludeFromCodeCoverage]
-    public class MarkdownClassifierTest : IDisposable {
+    public class MarkdownClassifierTest {
         private readonly IExportProvider _exportProvider;
         private readonly MarkdownTestFilesFixture _files;
         // change to true in debugger if you want all baseline tree files regenerated
         private static bool _regenerateBaselineFiles = false;
 
-        public MarkdownClassifierTest(MarkdownEditorMefCatalogFixture catalogFixture, MarkdownTestFilesFixture files) {
-            _exportProvider = catalogFixture.CreateExportProvider();
+        public MarkdownClassifierTest(IExportProvider exportProvider, MarkdownTestFilesFixture files) {
+            _exportProvider = exportProvider;
             _files = files;
-        }
-
-        public void Dispose() {
-            _exportProvider.Dispose();
         }
 
         [Test]

@@ -60,6 +60,5 @@ namespace Microsoft.R.Host.Client.Host {
             Volatile.Write(ref _credentialsAreValid, false);
             SecurityUtilities.DeleteCredentials(_authority);
         }
-
     }
 }

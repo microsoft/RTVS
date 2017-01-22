@@ -3,7 +3,7 @@
                  xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" 
                  xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="Microsoft.RTVS" Version="0.6" Language="en-US" Publisher="Microsoft" />
+    <Identity Id="Microsoft.RTVS" Version="1.0" Language="en-US" Publisher="Microsoft" />
     <DisplayName>R Tools for Visual Studio</DisplayName>
     <Description xml:space="preserve">R Tools for Visual Studio</Description>
   </Metadata>

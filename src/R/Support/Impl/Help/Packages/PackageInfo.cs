@@ -57,7 +57,7 @@ namespace Microsoft.R.Support.Help.Packages {
                     }
                     _saved = true;
                 } catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException) {
-                    EditorShell.Current.Services.Log.WriteAsync(LogVerbosity.Normal, MessageCategory.Error, ex.Message).DoNotWait();
+                    EditorShell.Current.Services.Log.Write(LogVerbosity.Normal, MessageCategory.Error, ex.Message);
                 }
             }
         }

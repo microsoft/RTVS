@@ -404,7 +404,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         public void Dispose() {
             DisconnectFromShellEvents();
             _settings?.Dispose();
-            _coreServices?.LoggingServices?.Dispose();
+            (_coreServices?.Log as IDisposable)?.Dispose();
         }
 
         void OnIdle(object sender, EventArgs args) {

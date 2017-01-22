@@ -4,12 +4,18 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using Microsoft.Common.Core.Extensions;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Test.Fakes.Shell;
+using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.Common.Core.Test.StubBuilders;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Test.Fakes.Shell;
+using Microsoft.R.Components.Settings;
+using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
+using Xunit.Sdk;
 
 namespace Microsoft.Languages.Editor.Test {
     // Fixture doesn't import itself. Use AssemblyFixtureImportAttribute
@@ -45,15 +51,24 @@ namespace Microsoft.Languages.Editor.Test {
             };
         }
 
-        protected override void AddValues(CompositionContainer container, string testName) {
-            base.AddValues(container, testName);
-            var editorShell = new TestEditorShell(container);
-            var batch = new CompositionBatch()
-                .AddValue(FileSystemStubFactory.CreateDefault())
-                .AddValue<ICoreShell>(editorShell)
-                .AddValue<IEditorShell>(editorShell)
-                .AddValue(editorShell);
-            container.Compose(batch);
+        public virtual IExportProvider Create(CoreServicesFixture coreServices) => new LanguagesEditorTestExportProvider(CreateContainer(), coreServices);
+
+        protected class LanguagesEditorTestExportProvider : TestExportProvider {
+            private readonly CoreServicesFixture _coreServices;
+            public LanguagesEditorTestExportProvider(CompositionContainer compositionContainer, CoreServicesFixture coreServices) : base(compositionContainer) {
+                _coreServices = coreServices;
+            }
+
+            public override Task<Task<RunSummary>> InitializeAsync(ITestInput testInput, IMessageBus messageBus) {
+                var editorShell = new TestEditorShell(CompositionContainer, _coreServices);
+                var batch = new CompositionBatch()
+                    .AddValue(FileSystemStubFactory.CreateDefault())
+                    .AddValue<ICoreShell>(editorShell)
+                    .AddValue<IEditorShell>(editorShell)
+                    .AddValue(editorShell);
+                CompositionContainer.Compose(batch);
+                return base.InitializeAsync(testInput, messageBus);
+            }
         }
     }
 }

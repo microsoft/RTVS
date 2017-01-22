@@ -13,19 +13,15 @@ using Xunit;
 namespace Microsoft.R.Editor.Application.Test.Selection {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
-    public class DocumentationTest : IDisposable {
+    public class DocumentationTest {
         private readonly IExportProvider _exportProvider;
         private readonly EditorHostMethodFixture _editorHost;
 
-        public DocumentationTest(REditorApplicationMefCatalogFixture catalogFixture, EditorHostMethodFixture editorHost) {
-            _exportProvider = catalogFixture.CreateExportProvider();
+        public DocumentationTest(IExportProvider exportProvider, EditorHostMethodFixture editorHost) {
+            _exportProvider = exportProvider;
             _editorHost = editorHost;
         }
 
-        public void Dispose() {
-            _exportProvider.Dispose();
-        }
-        
         [Test]
         [Category.Interactive]
         public async Task InsertRoxygenBlock() {

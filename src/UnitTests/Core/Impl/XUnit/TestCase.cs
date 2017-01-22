@@ -49,9 +49,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
                 .AddAfterStartingBeforeFinished(new ExecuteBeforeAfterAttributesMessageBusInjection(Method, TestMethod.TestClass.Class));
 
             var testMethodArguments = GetTestMethodArguments();
-            var runner = constructorArguments.Any(a => a is IMethodFixture)
-                ? new TestCaseRunnerWithMethodFixtures(this, DisplayName, SkipReason, constructorArguments, testMethodArguments, messageBus, aggregator, cancellationTokenSource)
-                : new TestCaseRunner(this, DisplayName, SkipReason, constructorArguments, testMethodArguments, messageBus, aggregator, cancellationTokenSource);
+            var runner = new TestCaseRunner(this, DisplayName, SkipReason, constructorArguments, testMethodArguments, messageBus, aggregator, cancellationTokenSource);
 
             if (ThreadType == ThreadType.UI) {
                 return UIThreadHelper.Instance.Invoke(runner.RunAsync);

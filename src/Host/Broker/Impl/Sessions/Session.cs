@@ -76,7 +76,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
             _pipe = new MessagePipe(messageLogger);
         }
 
-        public void StartHost(string profilePath, ILogger outputLogger, LogVerbosity verbosity) {
+        public void StartHost(string profilePath, string logFolder, ILogger outputLogger, LogVerbosity verbosity) {
             if (_hostEnd != null) {
                 throw new InvalidOperationException("Host process is already running");
             }
@@ -86,7 +86,8 @@ namespace Microsoft.R.Host.Broker.Sessions {
             string suppressUI = (useridentity == null) ? string.Empty : " --suppress-ui ";
             string brokerPath = Path.GetDirectoryName(typeof(Program).Assembly.GetAssemblyPath());
             string rhostExePath = Path.Combine(brokerPath, RHostExe);
-            string arguments = Invariant($"{suppressUI}--rhost-name \"{Id}\" --rhost-log-verbosity {(int)verbosity} {CommandLineArguments}");
+            string logFolderParam = string.IsNullOrEmpty(logFolder) ? string.Empty : Invariant($"--rhost-log-dir \"{logFolder}\"");
+            string arguments = Invariant($"{suppressUI}--rhost-name \"{Id}\" {logFolderParam} --rhost-log-verbosity {(int)verbosity} {CommandLineArguments}");
             var usernameBldr = new StringBuilder(NativeMethods.CREDUI_MAX_USERNAME_LENGTH + 1);
             var domainBldr = new StringBuilder(NativeMethods.CREDUI_MAX_DOMAIN_LENGTH + 1);
 
@@ -111,13 +112,13 @@ namespace Microsoft.R.Host.Broker.Sessions {
 
                 eb = CreateEnvironmentBlockForUser(useridentity, username, profilePath);
             } else {
-                eb = Win32EnvironmentBlock.Create(WindowsIdentity.GetCurrent().Token);
+                eb = Win32EnvironmentBlock.Create((useridentity ?? WindowsIdentity.GetCurrent()).Token);
             }
 
             // add additional variables to the environment block
             eb["R_HOME"] = shortHome.ToString();
             _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "R_HOME", eb["R_HOME"]);
-            eb["PATH"] = Invariant($"{Interpreter.Info.BinPath};{eb["PATH"]}");
+            eb["PATH"] = Invariant($"{Interpreter.Info.BinPath};{Environment.GetEnvironmentVariable("PATH")}");
             _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "PATH", eb["PATH"]);
 
 

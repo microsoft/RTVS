@@ -18,7 +18,6 @@ using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.R.Package.SurveyNews;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R {
@@ -45,21 +44,17 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         private bool _showPackageManagerDisclaimer = true;
         private HelpBrowserType _helpBrowserType = HelpBrowserType.Automatic;
         private bool _showDotPrefixedVariables;
-        private SurveyNewsPolicy _surveyNewsCheck = SurveyNewsPolicy.CheckOnceWeek;
-        private DateTime _surveyNewsLastCheck;
-        private string _surveyNewsFeedUrl = SurveyNewsUrls.Feed;
-        private string _surveyNewsIndexUrl = SurveyNewsUrls.Index;
         private bool _evaluateActiveBindings = true;
         private string _webHelpSearchString = "R site:stackoverflow.com";
         private BrowserType _webHelpSearchBrowserType = BrowserType.Internal;
         private BrowserType _htmlBrowserType = BrowserType.Internal;
         private BrowserType _markdownBrowserType = BrowserType.External;
-        private LogVerbosity _logLevel = LogVerbosity.Normal;
+        private LogVerbosity _logVerbosity = LogVerbosity.Normal;
 
         [ImportingConstructor]
         public RToolsSettingsImplementation(ISettingsStorage settings, ICoreShell coreShell) {
             _settings = settings;
-            _loggingPermissions = coreShell.Services.LoggingServices.Permissions;
+            _loggingPermissions = coreShell.Services.LoggingPermissions;
             _workingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         }
 
@@ -157,26 +152,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set { SetProperty(ref _showDotPrefixedVariables, value); }
         }
 
-        public SurveyNewsPolicy SurveyNewsCheck {
-            get { return _surveyNewsCheck; }
-            set { SetProperty(ref _surveyNewsCheck, value); }
-        }
-
-        public DateTime SurveyNewsLastCheck {
-            get { return _surveyNewsLastCheck; }
-            set { SetProperty(ref _surveyNewsLastCheck, value); }
-        }
-
-        public string SurveyNewsFeedUrl {
-            get { return _surveyNewsFeedUrl; }
-            set { SetProperty(ref _surveyNewsFeedUrl, value); }
-        }
-
-        public string SurveyNewsIndexUrl {
-            get { return _surveyNewsIndexUrl; }
-            set { SetProperty(ref _surveyNewsIndexUrl, value); }
-        }
-
         public bool EvaluateActiveBindings {
             get { return _evaluateActiveBindings; }
             set { SetProperty(ref _evaluateActiveBindings, value); }
@@ -203,8 +178,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         }
 
         public LogVerbosity LogVerbosity {
-            get { return _logLevel; }
-            set { SetProperty(ref _logLevel, value); }
+            get { return _logVerbosity; }
+            set { SetProperty(ref _logVerbosity, value); }
         }
 
         public bool ShowRToolbar { get; set; } = true;

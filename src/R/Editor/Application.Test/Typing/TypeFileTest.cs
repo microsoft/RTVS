@@ -15,19 +15,15 @@ using Xunit;
 namespace Microsoft.R.Editor.Application.Test.Typing {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
-    public class TypeFileTest : IDisposable {
+    public class TypeFileTest {
         private readonly IExportProvider _exportProvider;
         private readonly EditorHostMethodFixture _editorHost;
         private readonly EditorAppTestFilesFixture _files;
 
-        public TypeFileTest(REditorApplicationMefCatalogFixture catalogFixture, EditorHostMethodFixture editorHost, EditorAppTestFilesFixture files) {
-            _exportProvider = catalogFixture.CreateExportProvider();
+        public TypeFileTest(IExportProvider exportProvider, EditorHostMethodFixture editorHost, EditorAppTestFilesFixture files) {
+            _exportProvider = exportProvider;
             _editorHost = editorHost;
             _files = files;
-        }
-
-        public void Dispose() {
-            _exportProvider.Dispose();
         }
 
         //[Test]

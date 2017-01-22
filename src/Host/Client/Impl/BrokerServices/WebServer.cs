@@ -67,7 +67,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
                     continue;
                 } catch (ObjectDisposedException) {
                     // Socket got closed
-                    await Log.WriteLineAsync(LogVerbosity.Minimal, MessageCategory.Error, Resources.Error_RemoteWebServerCreationFailed.FormatInvariant(_name));
+                    Log.WriteLine(LogVerbosity.Minimal, MessageCategory.Error, Resources.Error_RemoteWebServerCreationFailed.FormatInvariant(_name));
                     _console.WriteErrorLine(Resources.Error_RemoteWebServerCreationFailed.FormatInvariant(_name));
                     throw new OperationCanceledException();
                 }
@@ -75,36 +75,36 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             }
 
             try {
-                await Log.WriteLineAsync(LogVerbosity.Minimal, MessageCategory.General, Resources.Info_RemoteWebServerStarted.FormatInvariant(_name, LocalHost, LocalPort));
+                Log.WriteLine(LogVerbosity.Minimal, MessageCategory.General, Resources.Info_RemoteWebServerStarted.FormatInvariant(_name, LocalHost, LocalPort));
                 _console.WriteErrorLine(Resources.Info_RemoteWebServerStarted.FormatInvariant(_name, LocalHost, LocalPort));
                 _console.WriteErrorLine(Resources.Info_RemoteWebServerDetails.FormatInvariant(Environment.MachineName, LocalHost, LocalPort, _name, _baseAddress));
             } catch {
             }
         }
 
-        private async Task StopAsync() {
+        private void Stop() {
             try {
                 if (_listener.IsListening) {
                     _listener.Stop();
                 }
                 _listener.Close();
-                await Log.WriteLineAsync(LogVerbosity.Minimal, MessageCategory.General, Resources.Info_RemoteWebServerStopped.FormatInvariant(_name));
+                Log.WriteLine(LogVerbosity.Minimal, MessageCategory.General, Resources.Info_RemoteWebServerStopped.FormatInvariant(_name));
                 _console.WriteErrorLine(Resources.Info_RemoteWebServerStopped.FormatInvariant(_name));
             } catch (Exception ex) when (!ex.IsCriticalException()) {
             }
         }
 
-        public static async Task StopAsync(int port) {
+        public static void Stop(int port) {
             WebServer server;
-            if(Servers.TryRemove(port, out server)) {
-                await server.StopAsync();
+            if (Servers.TryRemove(port, out server)) {
+                server.Stop();
             }
         }
 
-        public static async Task StopAllAsync() {
+        public static void StopAll() {
             var ports = Servers.Keys.AsArray();
-            foreach(var port in ports) {
-                await StopAsync(port);
+            foreach (var port in ports) {
+                Stop(port);
             }
         }
 
@@ -126,11 +126,11 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             } catch(Exception ex) {
                 if (Servers.ContainsKey(RemotePort)) {
                     // Log only if we expect this web server to be running and it fails.
-                    await Log.WriteLineAsync(LogVerbosity.Minimal, MessageCategory.Error, Resources.Error_RemoteWebServerFailed.FormatInvariant(_name, ex.Message));
+                    Log.WriteLine(LogVerbosity.Minimal, MessageCategory.Error, Resources.Error_RemoteWebServerFailed.FormatInvariant(_name, ex.Message));
                     _console.WriteErrorLine(Resources.Error_RemoteWebServerFailed.FormatInvariant(_name, ex.Message));
                 }
             } finally {
-                await StopAsync(RemotePort);
+                Stop(RemotePort);
             }
         }
 

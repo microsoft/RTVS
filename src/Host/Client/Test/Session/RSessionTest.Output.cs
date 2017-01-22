@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
@@ -18,9 +19,9 @@ namespace Microsoft.R.Host.Client.Test.Session {
             private readonly IBrokerClient _brokerClient;
             private readonly RSession _session;
 
-            public Output(TestMethodFixture testMethod) {
-                _brokerClient = CreateLocalBrokerClient(nameof(RSessionTest) + nameof(Output));
-                _session = new RSession(0, testMethod.MethodInfo.Name, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
+            public Output(CoreServicesFixture coreServices, TestMethodFixture testMethod) {
+                _brokerClient = CreateLocalBrokerClient(coreServices, nameof(RSessionTest) + nameof(Output));
+                _session = new RSession(0, testMethod.FileSystemSafeName, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
             }
 
             public async Task InitializeAsync() {

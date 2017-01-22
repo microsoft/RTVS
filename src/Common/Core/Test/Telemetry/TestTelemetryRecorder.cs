@@ -27,7 +27,7 @@ namespace Microsoft.Common.Core.Test.Telemetry {
                 if (parameters is string) {
                     WriteProperty("Value", parameters as string);
                 } else {
-                    WriteDictionary(DictionaryExtension.FromAnonymousObject(parameters));
+                    WriteDictionary(DictionaryExtensions.FromAnonymousObject(parameters));
                 }
             }
         }

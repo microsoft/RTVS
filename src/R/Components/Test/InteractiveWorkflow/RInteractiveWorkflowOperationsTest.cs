@@ -15,8 +15,8 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
         private readonly IRInteractiveWorkflow _workflow;
         private IInteractiveWindowVisualComponent _workflowComponent;
 
-        public RInteractiveWorkflowOperationsTest(RComponentsMefCatalogFixture catalog) {
-            _exportProvider = catalog.CreateExportProvider();
+        public RInteractiveWorkflowOperationsTest(IExportProvider exportProvider) {
+            _exportProvider = exportProvider;
             _workflow = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
         }
 

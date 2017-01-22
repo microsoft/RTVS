@@ -18,17 +18,13 @@ using Xunit;
 namespace Microsoft.R.Editor.Test.Formatting {
     [ExcludeFromCodeCoverage]
     [Category.R.Formatting]
-    public class RangeFormatterTest : IDisposable {
+    public class RangeFormatterTest {
         private readonly IExportProvider _exportProvider;
         private readonly IEditorShell _editorShell;
 
-        public RangeFormatterTest(REditorMefCatalogFixture catalog) {
-            _exportProvider = catalog.CreateExportProvider();
+        public RangeFormatterTest(IExportProvider exportProvider) {
+            _exportProvider = exportProvider;
             _editorShell = _exportProvider.GetExportedValue<IEditorShell>();
-        }
-
-        public void Dispose() {
-            _exportProvider.Dispose();
         }
 
         [Test]

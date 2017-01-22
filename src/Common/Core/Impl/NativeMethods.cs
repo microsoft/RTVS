@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.Win32.SafeHandles;
@@ -434,21 +435,28 @@ namespace Microsoft.Common.Core {
         /// <summary>
         /// Represents possible values returned by the MessageBox function.
         /// </summary>
-        public enum MessageBoxResult : uint
-        {
-            Ok = 1,
-            Cancel = 2,
-            Abort = 3,
-            Retry = 4,
-            Ignore = 5,
-            Yes = 6,
-            No = 7,
-            Close = 8,
-            Help = 9,
-            TryAgain = 10,
-            Continue = 11,
-            Timeout = 32000
-        }
 
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        public static extern uint MessageBox(IntPtr hWnd, string text, string caption, uint options);
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr FindWindow(string classname, string title);
+
+        [DllImport("user32.dll")]
+        public static extern void MoveWindow(IntPtr hwnd, int X, int Y, int nWidth, int nHeight, bool rePaint);
+
+        [DllImport("user32.dll")]
+        public  static extern bool GetWindowRect(IntPtr hwnd, out RECT rect);
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct RECT {
+            public int Left;
+            public int Top;
+            public int Right;
+            public int Bottom;
+
+            public int Width => Right - Left;
+            public int Height => Bottom - Top;
+        }
     }
 }

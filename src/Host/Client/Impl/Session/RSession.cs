@@ -599,9 +599,7 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
         }
 
         private async Task WriteErrorAsync(string text) {
-            if (_host != null) {
-                await _host.Log.WriteFormatAsync(LogVerbosity.Minimal, MessageCategory.Error, text);
-            }
+            _host?.Log.WriteFormat(LogVerbosity.Minimal, MessageCategory.Error, text);
             await ((IRCallbacks)this).WriteConsoleEx(text + "\n", OutputType.Error, CancellationToken.None);
         }
 

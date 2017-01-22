@@ -40,7 +40,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
                     if (stringParameter != null) {
                         telemetryEvent.Properties["Value"] = stringParameter;
                     } else {
-                        IDictionary<string, object> dict = DictionaryExtension.FromAnonymousObject(parameters);
+                        IDictionary<string, object> dict = DictionaryExtensions.FromAnonymousObject(parameters);
                         foreach (KeyValuePair<string, object> kvp in dict) {
                             telemetryEvent.Properties[kvp.Key] = kvp.Value;
                         }

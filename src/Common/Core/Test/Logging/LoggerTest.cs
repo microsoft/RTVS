@@ -3,7 +3,6 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
 using Microsoft.Common.Core.Logging;
 using Microsoft.UnitTests.Core.XUnit;
 using NSubstitute;
@@ -18,23 +17,23 @@ namespace Microsoft.Common.Core.Test.Logging {
         [InlineData(LogVerbosity.Minimal)]
         [InlineData(LogVerbosity.Normal)]
         [InlineData(LogVerbosity.Traffic)]
-        public async Task Verbosity(LogVerbosity verbosity) {
+        public void Verbosity(LogVerbosity verbosity) {
             var writer = Substitute.For<IActionLogWriter>();
             var perm = Substitute.For<ILoggingPermissions>();
             perm.CurrentVerbosity.Returns(verbosity);
 
-            var log = new Logger(string.Empty, perm, writer);
-            await log.WriteAsync(LogVerbosity.None, MessageCategory.Error, "message0");
-            await log.WriteAsync(LogVerbosity.Minimal, MessageCategory.Error, "message1");
-            await log.WriteAsync(LogVerbosity.Normal, MessageCategory.Error, "message2");
-            await log.WriteAsync(LogVerbosity.Traffic, MessageCategory.Error, "message3");
+            var log = new Logger(writer, perm);
+            log.Write(LogVerbosity.None, MessageCategory.Error, "message0");
+            log.Write(LogVerbosity.Minimal, MessageCategory.Error, "message1");
+            log.Write(LogVerbosity.Normal, MessageCategory.Error, "message2");
+            log.Write(LogVerbosity.Traffic, MessageCategory.Error, "message3");
 
             int i = 0;
-            foreach(var v in Enum.GetValues(typeof(LogVerbosity))) {
+            foreach (var v in Enum.GetValues(typeof(LogVerbosity))) {
                 if ((int)v > (int)LogVerbosity.None && (int)v <= (int)verbosity) {
-                    await writer.Received().WriteAsync(MessageCategory.Error, "message" + i.ToString());
+                    writer.Received().Write(MessageCategory.Error, "message" + i);
                 } else {
-                    await writer.DidNotReceive().WriteAsync(MessageCategory.Error, "message" + i.ToString());
+                    writer.DidNotReceive().Write(MessageCategory.Error, "message" + i);
                 }
                 i++;
             }

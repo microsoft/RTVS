@@ -4,6 +4,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Diagnostics;
 
 namespace Microsoft.Common.Core.Disposables {
     /// <summary>
@@ -17,11 +18,21 @@ namespace Microsoft.Common.Core.Disposables {
         /// <returns>The disposable object that runs the given action upon disposal.</returns>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="dispose" /> is null.</exception>
         public static IDisposable Create(Action dispose) {
-            if (dispose == null) {
-                throw new ArgumentNullException(nameof(dispose));
-            }
+            Check.ArgumentNull(nameof(dispose), dispose);
 
             return new AnonymousDisposable(dispose);
+        }
+
+        /// <summary>
+        /// Creates a disposable wrapper for a disposable that will be invoked at most once.
+        /// </summary>
+        /// <param name="disposable">Disposable that will be wrapped. Disposable is guaranteed to be run at most once.</param>
+        /// <returns>The disposable object that disposes wrapped object.</returns>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="disposable" /> is null.</exception>
+        public static IDisposable Create(IDisposable disposable) {
+            Check.ArgumentNull(nameof(disposable), disposable);
+
+            return new DisposableWrapper(disposable);
         }
 
         /// <summary>
@@ -51,6 +62,25 @@ namespace Microsoft.Common.Core.Disposables {
             public void Dispose() {
                 Action action = Interlocked.Exchange(ref _dispose, null);
                 action?.Invoke();
+            }
+        }
+
+        /// <summary>
+        /// Represents a disposable wrapper.
+        /// </summary>
+        private sealed class DisposableWrapper : IDisposable {
+            private IDisposable _disposable;
+
+            public DisposableWrapper(IDisposable disposable) {
+                _disposable = disposable;
+            }
+
+            /// <summary>
+            /// Disposes wrapped object if and only if the current instance hasn't been disposed yet.
+            /// </summary>
+            public void Dispose() {
+                var disposable = Interlocked.Exchange(ref _disposable, null);
+                disposable?.Dispose();
             }
         }
     }

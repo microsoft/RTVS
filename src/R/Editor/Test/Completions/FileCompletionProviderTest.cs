@@ -22,16 +22,14 @@ namespace Microsoft.R.Editor.Test.Completions {
     public class FileCompletionProviderTest: IDisposable {
         private const string _testFolderName = "_Rtvs_FileCompletionTest_";
 
-        private readonly REditorMefCatalogFixture _catalog;
         private readonly IExportProvider _exportProvider;
 
         private readonly IImagesProvider _imagesProvider;
         private readonly IGlyphService _glyphService;
         private readonly string _testFolder;
 
-        public FileCompletionProviderTest(REditorMefCatalogFixture catalog) {
-            _catalog = catalog;
-            _exportProvider = _catalog.CreateExportProvider();
+        public FileCompletionProviderTest(IExportProvider exportProvider) {
+            _exportProvider = exportProvider;
 
             _imagesProvider = Substitute.For<IImagesProvider>();
             _glyphService = Substitute.For<IGlyphService>();

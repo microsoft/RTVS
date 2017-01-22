@@ -17,15 +17,11 @@ using Xunit;
 namespace Microsoft.R.Editor.Test.Formatting {
     [ExcludeFromCodeCoverage]
     [Category.R.SmartIndent]
-    public class SmartIndentTest : IDisposable {
+    public class SmartIndentTest {
         private readonly IExportProvider _exportProvider;
 
-        public SmartIndentTest(REditorMefCatalogFixture catalogFixture) {
-            _exportProvider = catalogFixture.CreateExportProvider();
-        }
-
-        public void Dispose() {
-            _exportProvider.Dispose();
+        public SmartIndentTest(IExportProvider exportProvider) {
+            _exportProvider = exportProvider;
         }
 
         [CompositeTest]

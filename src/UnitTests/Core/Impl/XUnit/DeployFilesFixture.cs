@@ -33,11 +33,11 @@ namespace Microsoft.UnitTests.Core.XUnit {
         private static readonly Lazy<string> SolutionRootLazy = new Lazy<string>(() => Path.Combine(RepoRootLazy.Value, "src"));
         private static readonly object CopyFilesLock = new object();
 
+        public static string SolutionRoot => SolutionRootLazy.Value;
+        public static string TestFilesRoot => TestFilesRootLazy.Value;
+
         public string SourcePath { get; }
         public string DestinationPath { get; }
-
-        public string SolutionRoot => SolutionRootLazy.Value;
-        public string TestFilesRoot => TestFilesRootLazy.Value;
 
         public string GetSourcePath(string fileName) => Path.Combine(SourcePath, fileName);
         public string GetDestinationPath(string fileName) => Path.Combine(DestinationPath, fileName);

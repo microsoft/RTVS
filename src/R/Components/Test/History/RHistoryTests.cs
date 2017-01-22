@@ -15,14 +15,12 @@ using Xunit;
 namespace Microsoft.R.Components.Test.History {
     [ExcludeFromCodeCoverage]
     public class RHistoryTests {
-        private readonly IExportProvider _exportProvider;
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
         private readonly ITextBuffer _textBuffer;
 
-        public RHistoryTests(RComponentsMefCatalogFixture mefCatalog) {
-            _exportProvider = mefCatalog.CreateExportProvider();
+        public RHistoryTests(IExportProvider exportProvider) {
             _interactiveWorkflow = InteractiveWorkflowStubFactory.CreateDefault();
-            _textBuffer = _exportProvider.GetExportedValue<ITextBufferFactoryService>().CreateTextBuffer();
+            _textBuffer = exportProvider.GetExportedValue<ITextBufferFactoryService>().CreateTextBuffer();
         }
 
         [CompositeTest]

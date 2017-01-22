@@ -22,18 +22,15 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
         private readonly EditorHostMethodFixture _editorHost;
         private readonly IRSessionProvider _sessionProvider;
 
-        public SignatureTest(REditorApplicationMefCatalogFixture catalogFixture, EditorHostMethodFixture editorHost) {
-            _exportProvider = catalogFixture.CreateExportProvider();
+        public SignatureTest(IExportProvider exportProvider, EditorHostMethodFixture editorHost) {
+            _exportProvider = exportProvider;
             _sessionProvider = UIThreadHelper.Instance.Invoke(() => _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate()).RSessions;
             _editorHost = editorHost;
         }
 
         public Task InitializeAsync() => _sessionProvider.TrySwitchBrokerAsync(nameof(SignatureTest));
 
-        public Task DisposeAsync() {
-            _exportProvider.Dispose();
-            return Task.CompletedTask;
-        }
+        public Task DisposeAsync() => Task.CompletedTask;
 
         [Test]
         [Category.Interactive]
