@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Test.Script;
 using Microsoft.R.Editor.Test.Utility;
 using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.Mef;
@@ -27,7 +28,7 @@ namespace Microsoft.R.Editor.Test.Completions {
             for (int i = 0; i < 2; i++) {
                 try {
                     await Workflow.Packages.UninstallPackageAsync("abc", null);
-                    //await Workflow.RSession.ExecuteAsync("remove.packages('abc')", REvaluationKind.Mutating);
+                    EventsPump.DoEvents(1000);
                 } catch (RException) { }
 
                 await PackageIndex.BuildIndexAsync();
@@ -45,6 +46,7 @@ namespace Microsoft.R.Editor.Test.Completions {
 
             try {
                 await Workflow.RSession.ExecuteAsync("install.packages('abc')", REvaluationKind.Mutating);
+                EventsPump.DoEvents(1000);
             } catch (RException) { }
 
             await PackageIndex.BuildIndexAsync();
