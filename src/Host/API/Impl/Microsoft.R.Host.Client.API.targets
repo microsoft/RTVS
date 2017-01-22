@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" ?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <RtvsLibraries Include="$(MSBuildThisFileDirectory)**\*.dll" />
+    <RtvsExecutables Include="$(MSBuildThisFileDirectory)**\*.exe" />
+    <RtvsPackage1 Include="$(MSBuildThisFileDirectory)**\*.r" />
+    <RtvsPackage2 Include="$(MSBuildThisFileDirectory)**\*.rd" />
+    <RtvsPackage3 Include="$(MSBuildThisFileDirectory)**\rtvs" />
+    <RtvsPackage4 Include="$(MSBuildThisFileDirectory)**\DESCRIPTION" />
+    <RtvsPackage5 Include="$(MSBuildThisFileDirectory)**\NAMESPACE" />
+    <None Include="@(RtvsLibraries)">
+      <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="@(RtvsExecutables)">
+      <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="@(RtvsPackage1)">
+      <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="@(RtvsPackage2)">
+      <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="@(RtvsPackage3)">
+      <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="@(RtvsPackage4)">
+      <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="@(RtvsPackage5)">
+      <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>

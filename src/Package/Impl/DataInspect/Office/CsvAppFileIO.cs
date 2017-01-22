@@ -59,7 +59,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
 
             try {
                 statusBar.SetText(Resources.Status_WritingCSV);
-                appShell.ProgressDialog.Show(async (p, ct) => await CreateCsvAndStartProcess(result, session, file, fileSystem, p, ct), Resources.Status_WritingCSV, 100, 500);
+                appShell.ProgressDialog.Show(async (p, ct) => await CreateCsvAndStartProcess(result, session, appShell, file, fileSystem, p, ct), Resources.Status_WritingCSV, 100, 500);
                 if (fileSystem.FileExists(file)) {
                     processServices.Start(file);
                 }
@@ -73,10 +73,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
         }
 
         private static async Task CreateCsvAndStartProcess(
-            IREvaluationResultInfo result, 
-            IRSession session, 
-            string fileName, 
-            IFileSystem fileSystem, 
+            IREvaluationResultInfo result,
+            IRSession session,
+            ICoreShell coreShell,
+            string fileName,
+            IFileSystem fileSystem,
             IProgress<ProgressDialogData> progress,
             CancellationToken cancellationToken) {
             await TaskUtilities.SwitchToBackgroundThread();
@@ -84,9 +85,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
             var sep = CultureInfo.CurrentCulture.TextInfo.ListSeparator;
             var dec = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
 
-            var csvDataBlobId = await session.EvaluateAsync<ulong>($"rtvs:::export_to_csv({result.Expression}, sep={sep.ToRStringLiteral()}, dec={dec.ToRStringLiteral()})", REvaluationKind.Normal, cancellationToken);
-            using (DataTransferSession dts = new DataTransferSession(session, fileSystem)) {
-                await dts.FetchAndDecompressFileAsync(csvDataBlobId, fileName, progress, Resources.Status_WritingCSV, cancellationToken);
+            try {
+                var csvDataBlobId = await session.EvaluateAsync<ulong>($"rtvs:::export_to_csv({result.Expression}, sep={sep.ToRStringLiteral()}, dec={dec.ToRStringLiteral()})", REvaluationKind.Normal, cancellationToken);
+                using (DataTransferSession dts = new DataTransferSession(session, fileSystem)) {
+                    await dts.FetchAndDecompressFileAsync(csvDataBlobId, fileName, progress, Resources.Status_WritingCSV, cancellationToken);
+                }
+            } catch (RException) {
+                await coreShell.ShowErrorMessageAsync(Resources.Error_CannotExportToCsv, cancellationToken);
             }
         }
 

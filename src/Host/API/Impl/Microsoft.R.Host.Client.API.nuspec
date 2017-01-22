@@ -1,0 +1,151 @@
+<?xml version="1.0" ?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Microsoft.R.Host.Client.API</id>
+    <version>1.0.0</version>
+    <title>C# to R interface</title>
+    <authors>Microsoft</authors>
+    <owners>R Tools for Visual Studio</owners>
+    <licenseUrl>https://github.com/Microsoft/RTVS/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/Microsoft/RTVS</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Interface between C# and R using Visual Studio R Tools Runtime</description>
+    <releaseNotes>Initial release</releaseNotes>
+    <copyright>Copyright © Microsoft Corporation</copyright>
+    <tags>C# R RTVS R.NET</tags>
+    <dependencies>
+      <dependency id="Newtonsoft.Json" version="9.0.1" />
+      <dependency id="Microsoft.Tpl.Dataflow" version="4.5.24" />
+    </dependencies>
+  </metadata>
+  <files>
+    <!-- Actual reference -->
+    <file src="Microsoft.R.Host.Client.API.dll" target="lib\net46" />
+    <file src="Microsoft.R.Common.Core.dll" target="lib\net46" />
+    <!-- Targets to copy other binaries to the output -->
+    <file src="Microsoft.R.Host.Client.API.targets" target="build" />
+    <!-- RTVS runtime binaries that are not to be references by the user code -->
+    <file src="Microsoft.Languages.Core.dll" target="build" />
+    <file src="Microsoft.R.Core.dll" target="build" />
+    <file src="Microsoft.R.Interpreters.dll" target="build" />
+    <file src="Microsoft.R.Host.exe" target="build" />
+    <file src="Microsoft.R.Host.Broker.exe" target="build" />
+    <file src="Microsoft.R.Host.Client.dll" target="build" />
+    <file src="Microsoft.R.Host.Protocol.dll" target="build" />
+    <!--<file src="Microsoft.Tpl.Dataflow.dll" target="build" />-->
+    <file src="Microsoft.Extensions.Logging.dll" target="build" />
+    <file src="Microsoft.AspNetCore.Antiforgery.dll" target="build" />
+    <file src="Microsoft.AspNetCore.Authorization.dll" target="build" />
+    <file src="Microsoft.AspNetCore.Authentication.dll" target="build" />
+    <file src="Microsoft.AspNetCore.Cors.dll" target="build" />
+    <file src="Microsoft.AspNetCore.Cryptography.Internal.dll" target="build" />
+    <file src="Microsoft.AspNetCore.DataProtection.Abstractions.dll" target="build" />
+    <file src="Microsoft.AspNetCore.DataProtection.dll" target="build" />
+    <file src="Microsoft.AspNetCore.Diagnostics.Abstractions.dll" target="build" />
+    <file src="Microsoft.AspNetCore.Hosting.Abstractions.dll" target="build" />
+    <file src="Microsoft.AspNetCore.Hosting.dll" target="build" />
+    <file src="Microsoft.AspNetCore.Hosting.Server.Abstractions.dll" target="build" />
+    <file src="Microsoft.AspNetCore.Html.Abstractions.dll" target="build" />
+    <file src="Microsoft.AspNetCore.Http.Abstractions.dll" target="build" />
+    <file src="Microsoft.AspNetCore.Http.dll" target="build" />
+    <file src="Microsoft.AspNetCore.Http.Extensions.dll" target="build" />
+    <file src="Microsoft.AspNetCore.Http.Features.dll" target="build" />
+    <file src="Microsoft.AspNetCore.JsonPatch.dll" target="build" />
+    <file src="Microsoft.AspNetCore.Localization.dll" target="build" />
+    <file src="Microsoft.AspNetCore.Mvc.Abstractions.dll" target="build" />
+    <file src="Microsoft.AspNetCore.Mvc.ApiExplorer.dll" target="build" />
+    <file src="Microsoft.AspNetCore.Mvc.Core.dll" target="build" />
+    <file src="Microsoft.AspNetCore.Mvc.Cors.dll" target="build" />
+    <file src="Microsoft.AspNetCore.Mvc.DataAnnotations.dll" target="build" />
+    <file src="Microsoft.AspNetCore.Mvc.dll" target="build" />
+    <file src="Microsoft.AspNetCore.Mvc.Formatters.Json.dll" target="build" />
+    <file src="Microsoft.AspNetCore.Mvc.Localization.dll" target="build" />
+    <file src="Microsoft.AspNetCore.Mvc.Razor.dll" target="build" />
+    <file src="Microsoft.AspNetCore.Mvc.Razor.Host.dll" target="build" />
+    <file src="Microsoft.AspNetCore.Mvc.TagHelpers.dll" target="build" />
+    <file src="Microsoft.AspNetCore.Mvc.ViewFeatures.dll" target="build" />
+    <file src="Microsoft.AspNetCore.Razor.dll" target="build" />
+    <file src="Microsoft.AspNetCore.Razor.Runtime.dll" target="build" />
+    <file src="Microsoft.AspNetCore.Routing.Abstractions.dll" target="build" />
+    <file src="Microsoft.AspNetCore.Routing.dll" target="build" />
+    <file src="Microsoft.AspNetCore.Server.WebListener.dll" target="build" />
+    <file src="Microsoft.AspNetCore.Server.Kestrel.dll" target="build" />
+    <file src="Microsoft.AspNetCore.Server.Kestrel.Https.dll" target="build" />
+    <file src="Microsoft.AspNetCore.WebSockets.Protocol.dll" target="build" />
+    <file src="Microsoft.AspNetCore.WebSockets.Server.dll" target="build" />
+    <file src="Microsoft.AspNetCore.WebUtilities.dll" target="build" />
+    <file src="Microsoft.CodeAnalysis.dll" target="build" />
+    <file src="Microsoft.CodeAnalysis.CSharp.dll" target="build" />
+    <!--<file src="Microsoft.CodeAnalysis.Desktop.dll" target="build" />-->
+    <file src="Microsoft.DotNet.InternalAbstractions.dll" target="build" />
+    <file src="Microsoft.Extensions.Caching.Abstractions.dll" target="build" />
+    <file src="Microsoft.Extensions.Caching.Memory.dll" target="build" />
+    <file src="Microsoft.Extensions.Configuration.Abstractions.dll" target="build" />
+    <file src="Microsoft.Extensions.Configuration.Binder.dll" target="build" />
+    <file src="Microsoft.Extensions.Configuration.CommandLine.dll" target="build" />
+    <file src="Microsoft.Extensions.Configuration.dll" target="build" />
+    <file src="Microsoft.Extensions.Configuration.EnvironmentVariables.dll" target="build" />
+    <file src="Microsoft.Extensions.Configuration.FileExtensions.dll" target="build" />
+    <file src="Microsoft.Extensions.Configuration.Json.dll" target="build" />
+    <file src="Microsoft.Extensions.DependencyInjection.Abstractions.dll" target="build" />
+    <file src="Microsoft.Extensions.DependencyInjection.dll" target="build" />
+    <file src="Microsoft.Extensions.DependencyModel.dll" target="build" />
+    <file src="Microsoft.Extensions.FileProviders.Abstractions.dll" target="build" />
+    <file src="Microsoft.Extensions.FileProviders.Composite.dll" target="build" />
+    <file src="Microsoft.Extensions.FileProviders.Physical.dll" target="build" />
+    <file src="Microsoft.Extensions.FileSystemGlobbing.dll" target="build" />
+    <file src="Microsoft.Extensions.Globalization.CultureInfoCache.dll" target="build" />
+    <file src="Microsoft.Extensions.Localization.Abstractions.dll" target="build" />
+    <file src="Microsoft.Extensions.Localization.dll" target="build" />
+    <file src="Microsoft.Extensions.Logging.Abstractions.dll" target="build" />
+    <file src="Microsoft.Extensions.Logging.Console.dll" target="build" />
+    <file src="Microsoft.Extensions.Logging.Debug.dll" target="build" />
+    <file src="Microsoft.Extensions.Logging.dll" target="build" />
+    <file src="Microsoft.Extensions.ObjectPool.dll" target="build" />
+    <file src="Microsoft.Extensions.Options.ConfigurationExtensions.dll" target="build" />
+    <file src="Microsoft.Extensions.Options.dll" target="build" />
+    <file src="Microsoft.Extensions.PlatformAbstractions.dll" target="build" />
+    <file src="Microsoft.Extensions.Primitives.dll" target="build" />
+    <file src="Microsoft.Extensions.WebEncoders.dll" target="build" />
+    <file src="Microsoft.Net.Http.Server.dll" target="build" />
+    <file src="Microsoft.Net.Http.Headers.dll" target="build" />
+    <file src="System.AppContext.dll" target="build" />
+    <file src="System.Buffers.dll" target="build" />
+    <file src="System.Collections.Immutable.dll" target="build" />
+    <file src="System.ComponentModel.Primitives.dll" target="build" />
+    <file src="System.ComponentModel.TypeConverter.dll" target="build" />
+    <file src="System.Composition.AttributedModel.dll" target="build" />
+    <file src="System.Composition.Convention.dll" target="build" />
+    <file src="System.Composition.Hosting.dll" target="build" />
+    <file src="System.Composition.Runtime.dll" target="build" />
+    <file src="System.Composition.TypedParts.dll" target="build" />
+    <file src="System.Console.dll" target="build" />
+    <file src="System.Diagnostics.DiagnosticSource.dll" target="build" />
+    <file src="System.Diagnostics.FileVersionInfo.dll" target="build" />
+    <file src="System.Diagnostics.StackTrace.dll" target="build" />
+    <file src="System.IO.Compression.ZipFile.dll" target="build" />
+    <file src="System.IO.FileSystem.dll" target="build" />
+    <file src="System.IO.FileSystem.Primitives.dll" target="build" />
+    <file src="System.Numerics.Vectors.dll" target="build" />
+    <file src="System.Reflection.Metadata.dll" target="build" />
+    <file src="System.Runtime.InteropServices.RuntimeInformation.dll" target="build" />
+    <file src="System.Runtime.Serialization.Primitives.dll" target="build" />
+    <file src="System.Security.Cryptography.Algorithms.dll" target="build" />
+    <file src="System.Security.Cryptography.Encoding.dll" target="build" />
+    <file src="System.Security.Cryptography.Primitives.dll" target="build" />
+    <file src="System.Security.Cryptography.X509Certificates.dll" target="build" />
+    <file src="System.Text.Encoding.CodePages.dll" target="build" />
+    <file src="System.Text.Encodings.Web.dll" target="build" />
+    <file src="System.Threading.Tasks.Dataflow.dll" target="build" />
+    <file src="System.Threading.Tasks.Extensions.dll" target="build" />
+    <file src="System.Threading.Thread.dll" target="build" />
+    <file src="System.Xml.XmlDocument.dll" target="build" />
+    <file src="System.Xml.XPath.dll" target="build" />
+    <file src="System.Xml.XPath.XDocument.dll" target="build" />
+    <file src="libuv.dll" target="build" />
+    <file src="zip.dll" target="build" />
+    <file src="zlib$ConfigLetter$.dll" target="build" />
+    <file src="NewtonSoft.Json.dll" target="build" />
+    <file src="rtvs\**\*" target="build\rtvs" />
+  </files>
+</package>
