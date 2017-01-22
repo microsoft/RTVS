@@ -143,7 +143,7 @@ namespace Microsoft.R.Host.Client {
         private class CoreServices : ICoreServices {
             public IFileSystem FileSystem => new FileSystem();
             public IActionLog Log => new NullLog();
-            public ILoggingServices LoggingServices => null;
+            public ILoggingPermissions LoggingPermissions => null;
             public IMainThread MainThread => null;
             public IProcessServices ProcessServices => new ProcessServices();
             public IRegistry Registry => new RegistryImpl();
