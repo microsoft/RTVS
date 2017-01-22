@@ -313,6 +313,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This object cannot be exported to CSV for viewing in Excel.
+        /// </summary>
+        public static string Error_CannotExportToCsv {
+            get {
+                return ResourceManager.GetString("Error_CannotExportToCsv", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to open CSV file. Exception: {0}..
         /// </summary>
         public static string Error_CannotOpenCsv {
