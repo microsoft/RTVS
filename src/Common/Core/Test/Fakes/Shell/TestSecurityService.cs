@@ -9,7 +9,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
             throw new System.NotImplementedException();
         }
 
-        public Task<bool> ValidateX509CertificateAsync(X509Certificate certificate, string message, CancellationToken cancellationToken = new CancellationToken()) {
+        public bool ValidateX509Certificate(X509Certificate certificate, string message) {
             throw new System.NotImplementedException();
         }
 
