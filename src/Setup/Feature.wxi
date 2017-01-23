@@ -28,7 +28,6 @@
     <ComponentRef Id="SqlRItems" />
 
     <ComponentRef Id="Profiles" />
-    <ComponentRef Id="SurveyNews" />
     <ComponentRef Id="HiddenProfiles" />
     <ComponentRef Id="HelpThemes" />
     <ComponentRef Id="RegistryEntries" />

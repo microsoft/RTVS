@@ -2,12 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Threading;
-using Microsoft.Common.Core;
-using Microsoft.R.Host.Client.BrokerServices;
-using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Client.Host {
     [Serializable]

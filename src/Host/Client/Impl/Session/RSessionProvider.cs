@@ -16,7 +16,7 @@ using Microsoft.R.Host.Protocol;
 using Microsoft.R.Interpreters;
 
 namespace Microsoft.R.Host.Client.Session {
-    public class RSessionProvider : IRSessionProvider {
+    public sealed class RSessionProvider : IRSessionProvider {
         private readonly ConcurrentDictionary<string, RSession> _sessions = new ConcurrentDictionary<string, RSession>();
         private readonly DisposeToken _disposeToken = DisposeToken.Create<RSessionProvider>();
         private readonly AsyncReaderWriterLock _connectArwl = new AsyncReaderWriterLock();

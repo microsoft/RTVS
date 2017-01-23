@@ -82,11 +82,6 @@ namespace Microsoft.UnitTests.Core.XUnit {
         }
 
         [ExcludeFromCodeCoverage]
-        public class SurveyNewsAttribute : CategoryAttribute {
-            public SurveyNewsAttribute() : base("SurveyNews") { }
-        }
-
-        [ExcludeFromCodeCoverage]
         public class HelpAttribute : CategoryAttribute {
             public HelpAttribute() : base("Help") { }
         }
@@ -208,6 +203,14 @@ namespace Microsoft.UnitTests.Core.XUnit {
             [ExcludeFromCodeCoverage]
             public class SessionAttribute : CategoryAttribute {
                 public SessionAttribute() : base("R.Session") { }
+            }
+
+            [ExcludeFromCodeCoverage]
+            public static class Session { 
+                [ExcludeFromCodeCoverage]
+                public class ApiAttribute : CategoryAttribute {
+                    public ApiAttribute() : base("R.Session.API") { }
+                }
             }
 
             [ExcludeFromCodeCoverage]

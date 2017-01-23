@@ -25,7 +25,7 @@ namespace Microsoft.R.DataInspection {
     /// longer there), the results are undefined. 
     /// </remarks>
     public interface IREvaluationResultInfo {
-        IRSession Session { get; }
+        IRExpressionEvaluator Evaluator { get; }
 
         /// <summary>
         /// R expression designating the environment in which the evaluation that produced this result took place.
@@ -70,7 +70,7 @@ namespace Microsoft.R.DataInspection {
             int? maxCount = null,
             CancellationToken cancellationToken = default(CancellationToken)
         ) =>
-            info.Session.DescribeChildrenAsync(info.EnvironmentExpression, info.Expression, properties, repr, maxCount, cancellationToken);
+            info.Evaluator.DescribeChildrenAsync(info.EnvironmentExpression, info.Expression, properties, repr, maxCount, cancellationToken);
 
         /// <summary>
         /// If this evaluation result corresponds to an expression that is a valid assignment target (i.e. valid on the
@@ -84,7 +84,7 @@ namespace Microsoft.R.DataInspection {
             if (string.IsNullOrEmpty(info.Expression)) {
                 throw new InvalidOperationException(Invariant($"{nameof(AssignAsync)} is not supported for this {nameof(REvaluationResultInfo)} because it doesn't have an associated {nameof(info.Expression)}."));
             }
-            return info.Session.ExecuteAsync(Invariant($"{info.Expression} <- {value}"), cancellationToken);
+            return info.Evaluator.ExecuteAsync(Invariant($"{info.Expression} <- {value}"), cancellationToken);
         }
 
         /// <summary>
@@ -98,7 +98,7 @@ namespace Microsoft.R.DataInspection {
         /// </remarks>
         /// <exception cref="RException">Evaluation of the expression produced an error.</exception>
         public static Task<IRValueInfo> GetValueAsync(this IREvaluationResultInfo info, REvaluationResultProperties properties, string repr, CancellationToken cancellationToken = default(CancellationToken)) =>
-            info.Session.EvaluateAndDescribeAsync(info.EnvironmentExpression, info.Expression, info.Name, properties, repr, cancellationToken);
+            info.Evaluator.EvaluateAndDescribeAsync(info.EnvironmentExpression, info.Expression, info.Name, properties, repr, cancellationToken);
 
         /// <summary>
         /// Computes the expression that can be used to produce the same value in any environment.

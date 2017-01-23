@@ -9,7 +9,6 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using Microsoft.Common.Core;
 using Microsoft.Common.Wpf.Imaging;
 using Microsoft.R.Editor.Imaging;
