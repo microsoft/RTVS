@@ -5,8 +5,10 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.UI.Commands;
+using Microsoft.R.Components.Controller;
+using static System.FormattableString;
 
-namespace Microsoft.R.Components.Controller {
+namespace Microsoft.VisualStudio.R.Package.Commands {
     public class AsyncCommandController : ICommandTarget {
         private Dictionary<Key, IAsyncCommand> CommandMap { get; } = new Dictionary<Key, IAsyncCommand>();
 
@@ -39,11 +41,15 @@ namespace Microsoft.R.Components.Controller {
         /// Adds command to the controller command table
         /// </summary>
         /// <param name="command">Command object</param>
-        public void AddCommand(Guid group, int id, IAsyncCommand command) {
+        public AsyncCommandController AddCommand(Guid group, int id, IAsyncCommand command) {
             var key = new Key(group, id);
             if (!CommandMap.ContainsKey(key)) {
                 CommandMap.Add(key, command);
+            } else {
+                throw new InvalidOperationException(Invariant($"Command with  group {group} and id {id} is already registered!"));
             }
+
+            return this;
         }
 
         public IAsyncCommand Find(Guid group, int id) {

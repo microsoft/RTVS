@@ -4,7 +4,7 @@
 using System;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Shell;
-using Microsoft.R.Components.Extensions;
+using Microsoft.Languages.Editor.Extensions;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Scopes;
 using Microsoft.R.Core.AST.Statements;

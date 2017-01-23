@@ -108,13 +108,15 @@
     <Compile Include="ConnectionManager\ViewModel\IConnectionStatusBarViewModel.cs" />
     <Compile Include="ConnectionManager\ViewModel\IConnectionViewModel.cs" />
     <Compile Include="ContentTypes\RContentTypeDefinition.cs" />
-    <Compile Include="Controller\CommandResult.cs" />
-    <Compile Include="Controller\ICommandTarget.cs" />
     <Compile Include="Documentation\Commands\OpenDocumentationCommand.cs" />
     <Compile Include="Documentation\LocalDocumentationPaths.cs" />
     <Compile Include="Documentation\OnlineDocumentationUrls.cs" />
     <Compile Include="Extensions\TextBufferExtensions.cs" />
     <Compile Include="Extensions\TextViewExtensions.cs" />
+    <Compile Include="Help\Commands\HelpHomeCommand.cs" />
+    <Compile Include="Help\Commands\HelpNextCommand.cs" />
+    <Compile Include="Help\Commands\HelpPreviousCommand.cs" />
+    <Compile Include="Help\Commands\HelpRefreshCommand.cs" />
     <Compile Include="Help\IHelpVisualComponent.cs" />
     <Compile Include="Help\IHelpVisualComponentContainerFactory.cs" />
     <Compile Include="History\Implementation\HistorySelectionTextAdornment.cs" />
@@ -187,7 +189,6 @@
     <Compile Include="Plots\Implementation\PlotClipboardData.cs" />
     <Compile Include="InteractiveWorkflow\Implementation\InteractiveWindowConsole.cs" />
     <Compile Include="Plots\Implementation\PlotMessageExtensions.cs" />
-    <Compile Include="Controller\AsyncCommandController.cs" />
     <Compile Include="Plots\Implementation\RPlotHistoryVisualComponent.cs" />
     <Compile Include="Plots\Implementation\View\RPlotHistoryControl.xaml.cs">
       <DependentUpon>RPlotHistoryControl.xaml</DependentUpon>
@@ -275,8 +276,6 @@
     <Compile Include="Search\ISearchControlProvider.cs" />
     <Compile Include="Search\ISearchHandler.cs" />
     <Compile Include="Search\SearchControlSettings.cs" />
-    <Compile Include="Services\ServiceManagerBase.cs" />
-    <Compile Include="Services\ServiceManagerEventArgs.cs" />
     <Compile Include="ConnectionManager\ConnectionInfo.cs" />
     <Compile Include="Settings\HelpBrowserType.cs" />
     <Compile Include="Settings\IRSettings.cs" />
@@ -290,9 +289,6 @@
     <Compile Include="Sql\Publish\IDacPackageServices.cs" />
     <Compile Include="Sql\Publish\IDacPackageServicesProvider.cs" />
     <Compile Include="StatusBar\IStatusBar.cs" />
-    <Compile Include="TextBuffer\ITextBufferListener.cs" />
-    <Compile Include="TextBuffer\TextBufferListenerEventArgs.cs" />
-    <Compile Include="TextBuffer\TextBufferListenerEvents.cs" />
     <Compile Include="View\IVisualComponent.cs" />
     <Compile Include="View\IVisualComponentContainer.cs" />
     <Compile Include="View\IVisualComponentContainerFactory.cs" />
@@ -387,7 +383,10 @@
   <ItemGroup>
     <Resource Include="Resources\packageicon.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Controller\" />
+    <Folder Include="Services\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\..\Common\BuildTasks\Microsoft.Common.BuildTasks.targets" />
   <Import Project="..\..\..\R.Build.Version.targets" />

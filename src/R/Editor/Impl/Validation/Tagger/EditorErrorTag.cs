@@ -143,7 +143,7 @@ namespace Microsoft.R.Editor.Validation.Tagger {
             get {
                 if (Span.Start < Span.Snapshot.Length) {
                     var textView = TextViewConnectionListener.GetFirstViewForBuffer(_textBuffer);
-                    var viewPoint = textView?.MapUpToView(new SnapshotPoint(_textBuffer.CurrentSnapshot, Span.Start));
+                    var viewPoint = textView?.MapUpToView(_textBuffer.CurrentSnapshot, Span.Start);
                     if (viewPoint.HasValue) {
                         return textView.TextBuffer.CurrentSnapshot.GetLineNumberFromPosition(viewPoint.Value) + 1;
                     }

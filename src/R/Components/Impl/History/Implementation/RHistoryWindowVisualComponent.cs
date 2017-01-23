@@ -3,8 +3,6 @@
 
 using System;
 using System.Windows;
-using Microsoft.R.Components.Controller;
-using Microsoft.R.Components.Services;
 using Microsoft.R.Components.View;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -21,13 +19,11 @@ namespace Microsoft.R.Components.History.Implementation {
             _history = historyProvider.GetAssociatedRHistory(historyTextBuffer);
 
             TextView = CreateTextView(historyTextBuffer, textEditorFactory);
-            Control = textEditorFactory.CreateTextViewHost(TextView, false).HostControl;
-            Controller = ServiceManagerBase.GetService<ICommandTarget>(TextView);
-
             TextView.Selection.SelectionChanged += TextViewSelectionChanged;
+
+            Control = textEditorFactory.CreateTextViewHost(TextView, false).HostControl;
         }
-        
-        public ICommandTarget Controller { get; set; }
+
         public FrameworkElement Control { get; }
         public IVisualComponentContainer<IVisualComponent> Container => _container;
         public IWpfTextView TextView { get; private set; }
@@ -37,7 +33,6 @@ namespace Microsoft.R.Components.History.Implementation {
                 return;
             }
 
-            Controller = null;
             TextView.Selection.SelectionChanged -= TextViewSelectionChanged;
             TextView.Close();
             TextView = null;
