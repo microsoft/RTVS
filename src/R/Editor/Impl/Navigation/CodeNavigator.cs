@@ -18,7 +18,7 @@ namespace Microsoft.R.Editor.Navigation {
                     var document = REditorDocument.FromTextBuffer(textBuffer);
                     var itemDefinition = document.EditorTree.AstRoot.FindItemDefinition(position.Value, itemName);
                     if (itemDefinition != null) {
-                        return textView.MapUpToView(new SnapshotPoint(document.EditorTree.TextSnapshot, itemDefinition.Start));
+                        return textView.MapUpToView(document.EditorTree.TextSnapshot, itemDefinition.Start);
                     }
                 }
             }

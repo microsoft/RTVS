@@ -56,6 +56,8 @@
     <Compile Include="ContainedLanguage\Definitions\IBufferGenerator.cs" />
     <Compile Include="ContainedLanguage\Definitions\IContainedLanguageHost.cs" />
     <Compile Include="ContainedLanguage\Definitions\IContainedLanguageHostProvider.cs" />
+    <Compile Include="Controller\CommandResult.cs" />
+    <Compile Include="Controller\ICommandTarget.cs" />
     <Compile Include="Diagnostics\IntegerSwitch.cs" />
     <Compile Include="DragDrop\DataObjectFlags.cs" />
     <Compile Include="DragDrop\DataObjectFormats.cs" />
@@ -115,6 +117,7 @@
     <Compile Include="Selection\SelectionTracker.cs" />
     <Compile Include="Selection\SelectionUndo.cs" />
     <Compile Include="Services\ServiceManager.cs" />
+    <Compile Include="Services\ServiceManagerEventArgs.cs" />
     <Compile Include="Shell\IEditorShell.cs" />
     <Compile Include="Shell\EditorShell.cs" />
     <Compile Include="Settings\CommonSettings.cs" />
@@ -129,9 +132,12 @@
     <Compile Include="Tasks\IdleTimeAsyncTask.cs" />
     <Compile Include="Tasks\IdleTimeAsyncTaskQueue.cs" />
     <Compile Include="Text\IncrementalChangeApplication.cs" />
+    <Compile Include="Text\ITextBufferListener.cs" />
     <Compile Include="Text\ITextSnapshotProvider.cs" />
     <Compile Include="Text\ITextViewListener.cs" />
     <Compile Include="Text\StringDifference.cs" />
+    <Compile Include="Text\TextBufferListenerEventArgs.cs" />
+    <Compile Include="Text\TextBufferListenerEvents.cs" />
     <Compile Include="Text\TextProvider.cs" />
     <Compile Include="Text\TextRangeExtensions.cs" />
     <Compile Include="Text\TextUtility.cs" />
@@ -149,10 +155,6 @@
     <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
       <Project>{8d408909-459f-4853-a36c-745118f99869}</Project>
       <Name>Microsoft.Common.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\R\Components\Impl\Microsoft.R.Components.csproj">
-      <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>
-      <Name>Microsoft.R.Components</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Core\Impl\Microsoft.Languages.Core.csproj">
       <Project>{25cd8690-6208-4740-b123-6dbce6b9444a}</Project>

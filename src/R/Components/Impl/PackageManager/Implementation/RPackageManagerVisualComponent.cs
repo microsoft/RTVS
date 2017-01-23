@@ -4,13 +4,11 @@
 using System;
 using System.Windows;
 using Microsoft.Common.Core.Shell;
-using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.PackageManager.Implementation.ViewModel;
 using Microsoft.R.Components.PackageManager.ViewModel;
 using Microsoft.R.Components.Search;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.View;
-using Microsoft.R.Wpf;
 using PackageManagerControl = Microsoft.R.Components.PackageManager.Implementation.View.PackageManagerControl;
 
 namespace Microsoft.R.Components.PackageManager.Implementation {
@@ -22,7 +20,6 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
         public RPackageManagerVisualComponent(IRPackageManager packageManager, IVisualComponentContainer<IRPackageManagerVisualComponent> container, ISearchControlProvider searchControlProvider, IRSettings settings, ICoreShell coreShell) {
             _viewModel = new RPackageManagerViewModel(packageManager, settings, coreShell);
             Container = container;
-            Controller = null;
             var control = new PackageManagerControl {
                 DataContext = _viewModel,
             };
@@ -40,7 +37,6 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             _viewModel.Dispose();
         }
 
-        public ICommandTarget Controller { get; }
         public FrameworkElement Control { get; }
         public IVisualComponentContainer<IVisualComponent> Container { get; }
     }

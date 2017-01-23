@@ -75,6 +75,7 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Browsers\WebBrowserRole.cs" />
+    <Compile Include="Commands\AsyncCommandController.cs" />
     <Compile Include="Commands\AsyncCommandRangeToOleMenuCommandShim.cs" />
     <Compile Include="Commands\CommandAsyncToOleMenuCommandShim.cs" />
     <Compile Include="Commands\CommandAsyncToOleMenuCommandShimFactory.cs" />
@@ -186,13 +187,9 @@
     <Compile Include="Feedback\SendFrownCommand.cs" />
     <Compile Include="Feedback\SendMailCommand.cs" />
     <Compile Include="Feedback\SendSmileCommand.cs" />
-    <Compile Include="Help\HelpHomeCommand.cs" />
-    <Compile Include="Help\HelpRefreshCommand.cs" />
-    <Compile Include="Help\HelpNextCommand.cs" />
     <Compile Include="Help\HelpWindowPane.cs" />
     <Compile Include="Help\NativeMethods.cs" />
     <Compile Include="Help\ShowHelpOnCurrentCommand.cs" />
-    <Compile Include="Help\HelpPreviousCommand.cs" />
     <Compile Include="History\Commands\CopySelectedHistoryCommand.cs" />
     <Compile Include="History\Commands\HistoryWindowVsStd2KCmdIdDown.cs" />
     <Compile Include="History\Commands\HistoryWindowVsStd2KCmdIdEnd.cs" />

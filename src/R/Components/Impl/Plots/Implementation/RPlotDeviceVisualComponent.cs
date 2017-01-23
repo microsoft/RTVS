@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Shell;
-using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.Plots.Implementation.View;
 using Microsoft.R.Components.Plots.Implementation.ViewModel;
 using Microsoft.R.Components.Plots.ViewModel;
@@ -22,7 +21,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
         private readonly IRPlotManager _plotManager;
         private readonly IRPlotDeviceViewModel _viewModel;
 
-        public RPlotDeviceVisualComponent(IRPlotManager plotManager, ICommandTarget controller, int instanceId, IVisualComponentContainer<IRPlotDeviceVisualComponent> container, ICoreShell coreShell) {
+        public RPlotDeviceVisualComponent(IRPlotManager plotManager, int instanceId, IVisualComponentContainer<IRPlotDeviceVisualComponent> container, ICoreShell coreShell) {
             if (plotManager == null) {
                 throw new ArgumentNullException(nameof(plotManager));
             }
@@ -57,7 +56,6 @@ namespace Microsoft.R.Components.Plots.Implementation {
             _plotManager.ActiveDeviceChanged += PlotManager_ActiveDeviceChanged;
 
             Control = control;
-            Controller = controller;
             Container = container;
         }
 
@@ -65,9 +63,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
         /// <summary>
         /// Device properties to use when running tests without UI.
         /// </summary>
-        public Nullable<PlotDeviceProperties> TestDeviceProperties { get; set; }
-
-        public ICommandTarget Controller { get; }
+        public PlotDeviceProperties? TestDeviceProperties { get; set; }
 
         public FrameworkElement Control { get; }
 
