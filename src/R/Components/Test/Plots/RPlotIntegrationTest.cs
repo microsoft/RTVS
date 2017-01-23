@@ -726,13 +726,16 @@ namespace Microsoft.R.Components.Test.Plots {
                 "plot(0:10)",
             });
 
-            var deviceVC = _workflow.Plots.GetPlotVisualComponent(_workflow.Plots.ActiveDevice);
+            var device = _workflow.Plots.ActiveDevice;
+            device.Should().NotBeNull();
+
+            var deviceVC = _workflow.Plots.GetPlotVisualComponent(device);
             var deviceCommands = new RPlotDeviceCommands(_workflow, deviceVC);
-            deviceVC.LocatorMode.Should().BeFalse();
+            device.LocatorMode.Should().BeFalse();
 
             deviceCommands.EndLocator.Should().BeInvisibleAndDisabled();
 
-            var firstLocatorModeTask = EventTaskSources.IRPlotDevice.LocatorModeChanged.Create(_workflow.Plots.ActiveDevice);
+            var firstLocatorModeTask = EventTaskSources.IRPlotDevice.LocatorModeChanged.Create(device);
             var locatorTask = ExecuteAndDoNotWaitForPlotsAsync(new [] {
                 "res <- locator()",
             });
@@ -752,30 +755,30 @@ namespace Microsoft.R.Components.Test.Plots {
             // The high-level locator() function stops its loop when it gets
             // the not clicked result.
             foreach (var point in points) {
-                deviceVC.LocatorMode.Should().BeTrue();
+                device.LocatorMode.Should().BeTrue();
                 deviceCommands.EndLocator.Should().BeEnabled();
 
                 // Send a result with a click point, which will causes
                 // locator mode to end and immediately start again
-                var locatorModeTask = EventTaskSources.IRPlotDevice.LocatorModeChanged.Create(_workflow.Plots.ActiveDevice);
-                deviceVC.ClickPlot((int)point.X, (int)point.Y);
+                var locatorModeTask = EventTaskSources.IRPlotDevice.LocatorModeChanged.Create(device);
+                await _workflow.Plots.EndLocatorModeAsync(device, LocatorResult.CreateClicked((int)point.X, (int)point.Y));
                 await locatorModeTask;
 
-                deviceVC.LocatorMode.Should().BeFalse();
+                device.LocatorMode.Should().BeFalse();
                 deviceCommands.EndLocator.Should().BeInvisibleAndDisabled();
 
-                locatorModeTask = EventTaskSources.IRPlotDevice.LocatorModeChanged.Create(_workflow.Plots.ActiveDevice);
+                locatorModeTask = EventTaskSources.IRPlotDevice.LocatorModeChanged.Create(device);
                 await locatorModeTask;
             }
 
             // Send a result with a not clicked result, which causes
             // locator mode to end, and the high-level locator() function
             // call will return.
-            var lastLocatorModeTask = EventTaskSources.IRPlotDevice.LocatorModeChanged.Create(_workflow.Plots.ActiveDevice);
+            var lastLocatorModeTask = EventTaskSources.IRPlotDevice.LocatorModeChanged.Create(device);
             await deviceCommands.EndLocator.InvokeAsync();
             await lastLocatorModeTask;
 
-            deviceVC.LocatorMode.Should().BeFalse();
+            device.LocatorMode.Should().BeFalse();
             deviceCommands.EndLocator.Should().BeInvisibleAndDisabled();
 
             string outputFilePath = _testFiles.GetDestinationPath("LocatorResult.csv");
@@ -790,35 +793,39 @@ namespace Microsoft.R.Components.Test.Plots {
             await locatorTask;
         }
 
-        [Test(ThreadType.UI, Skip = "https://github.com/Microsoft/RTVS/issues/2939")]
+        [Test(ThreadType.UI)]
         public async Task LocatorCommandNoClick() {
+            _plotDeviceVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(360, 360, 96);
+
             await InitializeGraphicsDevice();
 
             await ExecuteAndWaitForPlotsAsync(new string[] {
                 "plot(0:10)",
             });
 
-            var deviceVC = _workflow.Plots.GetPlotVisualComponent(_workflow.Plots.ActiveDevice);
-            var deviceCommands = new RPlotDeviceCommands(_workflow, deviceVC);
+            var device = _workflow.Plots.ActiveDevice;
+            device.Should().NotBeNull();
 
-            deviceVC.LocatorMode.Should().BeFalse();
+            var deviceVC = _workflow.Plots.GetPlotVisualComponent(device);
+            var deviceCommands = new RPlotDeviceCommands(_workflow, deviceVC);
+            device.LocatorMode.Should().BeFalse();
 
             deviceCommands.EndLocator.Should().BeInvisibleAndDisabled();
 
-            var locatorModeTask = EventTaskSources.IRPlotDevice.LocatorModeChanged.Create(_workflow.Plots.ActiveDevice);
+            var locatorModeTask = EventTaskSources.IRPlotDevice.LocatorModeChanged.Create(device);
             var locatorTask = ExecuteAndDoNotWaitForPlotsAsync(new string[] {
                 "res <- locator()",
             });
             await locatorModeTask;
 
-            deviceVC.LocatorMode.Should().BeTrue();
+            device.LocatorMode.Should().BeTrue();
             deviceCommands.EndLocator.Should().BeEnabled();
 
-            locatorModeTask = EventTaskSources.IRPlotDevice.LocatorModeChanged.Create(_workflow.Plots.ActiveDevice);
+            locatorModeTask = EventTaskSources.IRPlotDevice.LocatorModeChanged.Create(device);
             await deviceCommands.EndLocator.InvokeAsync();
             await locatorModeTask;
 
-            deviceVC.LocatorMode.Should().BeFalse();
+            device.LocatorMode.Should().BeFalse();
             deviceCommands.EndLocator.Should().BeInvisibleAndDisabled();
 
             string outputFilePath = _testFiles.GetDestinationPath("LocatorResultNoClick.csv");
@@ -830,6 +837,30 @@ namespace Microsoft.R.Components.Test.Plots {
             output.Trim().Should().Be("\"\"");
 
             await locatorTask;
+        }
+
+        [Test(ThreadType.UI)]
+        public async Task LocatorNotEnded() {
+            _plotDeviceVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(360, 360, 96);
+
+            await InitializeGraphicsDevice();
+
+            await ExecuteAndWaitForPlotsAsync(new string[] {
+                "plot(0:10)",
+            });
+
+            var device = _workflow.Plots.ActiveDevice;
+            device.Should().NotBeNull();
+
+            device.LocatorMode.Should().BeFalse();
+
+            var locatorModeTask = EventTaskSources.IRPlotDevice.LocatorModeChanged.Create(device);
+            var locatorTask = ExecuteAndDoNotWaitForPlotsAsync(new string[] {
+                "res <- locator()",
+            });
+            await locatorModeTask;
+
+            device.LocatorMode.Should().BeTrue();
         }
 
         [Test(ThreadType.UI)]

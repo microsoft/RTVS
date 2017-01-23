@@ -4,6 +4,7 @@
 using System.Threading.Tasks;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Components.Plots.Implementation.Commands {
     internal sealed class PlotDeviceEndLocatorCommand : PlotDeviceCommand, IAsyncCommand {
@@ -22,7 +23,8 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
         }
 
         public Task<CommandResult> InvokeAsync() {
-            VisualComponent.EndLocatorMode();
+            InteractiveWorkflow.Plots.EndLocatorModeAsync(VisualComponent.Device, LocatorResult.CreateNotClicked());
+
             return Task.FromResult(CommandResult.Executed);
         }
     }

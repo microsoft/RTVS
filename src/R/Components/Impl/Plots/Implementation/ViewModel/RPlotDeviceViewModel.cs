@@ -29,7 +29,6 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
 
         public int InstanceId { get; }
 
-        public bool IsInLocatorMode => _locatorTcs != null;
         public IRPlotDevice Device => _device;
 
         public event EventHandler DeviceNameChanged;
@@ -92,6 +91,7 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
             _device.PlotAddedOrUpdated += PlotAddedOrUpdated;
             _device.Cleared += Cleared;
             _device.DeviceNumChanged += DeviceNumChanged;
+            _device.LocatorModeChanged += DeviceLocatorModeChanged;
 
             Refresh(_device.ActivePlot);
         }
@@ -103,6 +103,7 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
                 _device.PlotAddedOrUpdated -= PlotAddedOrUpdated;
                 _device.Cleared -= Cleared;
                 _device.DeviceNumChanged -= DeviceNumChanged;
+                _device.LocatorModeChanged -= DeviceLocatorModeChanged;
             }
 
             _device = null;
@@ -116,12 +117,12 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
             }
         }
 
-        public void ClickPlot(int pixelX, int pixelY) {
+        public async Task ClickPlot(int pixelX, int pixelY) {
             _shell.AssertIsOnMainThread();
 
             if (LocatorMode) {
                 var result = LocatorResult.CreateClicked(pixelX, pixelY);
-                EndLocatorMode(result);
+                await _plotManager.EndLocatorModeAsync(_device, result);
             }
         }
 
@@ -136,37 +137,11 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
             await _plotManager.CopyOrMovePlotFromAsync(sourceDeviceId, sourcePlotId, _device, isMove);
         }
 
-        public Task<LocatorResult> StartLocatorModeAsync(CancellationToken ct) {
-            _shell.AssertIsOnMainThread();
-
-            _locatorTcs = new TaskCompletionSource<LocatorResult>();
-            ct.Register(EndLocatorMode);
-
-            LocatorMode = true;
-            LocatorModeChanged?.Invoke(this, EventArgs.Empty);
-
-            _device.LocatorMode = LocatorMode;
-
-            return _locatorTcs.Task;
-        }
-
-        public void EndLocatorMode() {
-            _shell.AssertIsOnMainThread();
-
-            EndLocatorMode(LocatorResult.CreateNotClicked());
-        }
-
-        public void EndLocatorMode(LocatorResult result) {
-            _shell.AssertIsOnMainThread();
-
-            var tcs = _locatorTcs;
-            _locatorTcs = null;
-            tcs?.SetResult(result);
-
-            LocatorMode = false;
-            LocatorModeChanged?.Invoke(this, EventArgs.Empty);
-
-            _device.LocatorMode = LocatorMode;
+        private void DeviceLocatorModeChanged(object sender, RPlotDeviceEventArgs e) {
+            _shell.DispatchOnUIThread(() => {
+                LocatorMode = e.Device.LocatorMode;
+                LocatorModeChanged?.Invoke(this, EventArgs.Empty);
+            });
         }
 
         private void DeviceNumChanged(object sender, RPlotDeviceEventArgs e) {

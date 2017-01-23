@@ -19,7 +19,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
 
         protected bool IsInLocatorMode {
             get {
-                return VisualComponent.LocatorMode;
+                return VisualComponent.Device.LocatorMode;
             }
         }
 

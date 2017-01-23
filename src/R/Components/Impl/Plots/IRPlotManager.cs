@@ -84,6 +84,11 @@ namespace Microsoft.R.Components.Plots {
         Task<LocatorResult> StartLocatorModeAsync(Guid deviceId, CancellationToken cancellationToken);
 
         /// <summary>
+        /// End the locator mode with the specified result.
+        /// </summary>
+        Task EndLocatorModeAsync(IRPlotDevice device, LocatorResult result);
+
+        /// <summary>
         /// Process an incoming device creation message from the host.
         /// This assigns the new device to an available visual component (creating one if necessary).
         /// </summary>

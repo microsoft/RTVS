@@ -14,17 +14,13 @@ namespace Microsoft.R.Components.Plots {
         void Unassign();
         int InstanceId { get; }
         bool HasPlot { get; }
-        bool LocatorMode { get; }
         int ActivePlotIndex { get; }
         int PlotCount { get; }
         string DeviceName { get; }
         bool IsDeviceActive { get; }
         IRPlotDevice Device { get; }
         IRPlot ActivePlot { get; }
-        Task<LocatorResult> StartLocatorModeAsync(CancellationToken ct);
-        void EndLocatorMode();
         // Functions below are for use by tests
-        void ClickPlot(int x, int y);
         Task ResizePlotAsync(int pixelWidth, int pixelHeight, int resolution);
     }
 }

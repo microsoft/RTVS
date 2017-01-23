@@ -47,8 +47,8 @@ namespace Microsoft.R.Components.Plots.Implementation {
                 .Add(() => control.ContextMenuRequested -= Control_ContextMenuRequested)
                 .Add(() => _viewModel.DeviceNameChanged -= ViewModel_DeviceNameChanged)
                 .Add(() => _viewModel.LocatorModeChanged -= ViewModel_LocatorModeChanged)
-                .Add(() => _viewModel.PlotChanged += ViewModel_PlotChanged)
-                .Add(() => _plotManager.ActiveDeviceChanged += PlotManager_ActiveDeviceChanged);
+                .Add(() => _viewModel.PlotChanged -= ViewModel_PlotChanged)
+                .Add(() => _plotManager.ActiveDeviceChanged -= PlotManager_ActiveDeviceChanged);
 
             control.ContextMenuRequested += Control_ContextMenuRequested;
             _viewModel.DeviceNameChanged += ViewModel_DeviceNameChanged;
@@ -74,8 +74,6 @@ namespace Microsoft.R.Components.Plots.Implementation {
         public IVisualComponentContainer<IVisualComponent> Container { get; }
 
         public bool HasPlot => _viewModel.PlotImage != null;
-
-        public bool LocatorMode => _viewModel.LocatorMode;
 
         public int ActivePlotIndex {
             get {
@@ -133,14 +131,6 @@ namespace Microsoft.R.Components.Plots.Implementation {
         public void Unassign() {
              _viewModel.Unassign();
             Container.UpdateCommandStatus(false);
-        }
-
-        public Task<LocatorResult> StartLocatorModeAsync(CancellationToken ct) => _viewModel.StartLocatorModeAsync(ct);
-
-        public void EndLocatorMode() => _viewModel.EndLocatorMode();
-
-        public void ClickPlot(int x, int y) {
-            _viewModel.ClickPlot(x, y);
         }
 
         public async Task ResizePlotAsync(int pixelWidth, int pixelHeight, int resolution) {
