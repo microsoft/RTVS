@@ -3,7 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
-using Microsoft.R.Components.Controller;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
@@ -46,15 +46,12 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
             }
         }
 
-        public async Task<CommandResult> InvokeAsync() {
+        public async Task InvokeAsync() {
             if (_enabled) {
                 _enabled = false;
                 _interactiveWorkflow.Operations.ClearPendingInputs();
                 await _session.CancelAllAsync();
-                return CommandResult.Executed;
             }
-
-            return CommandResult.NotSupported;
         }
     }
 }

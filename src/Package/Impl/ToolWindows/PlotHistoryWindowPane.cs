@@ -45,19 +45,19 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
         }
 
         protected override void OnCreate() {
-            var controller = new AsyncCommandController();
-            var visualComponent = new RPlotHistoryVisualComponent(_plotManager, controller, this, _coreShell);
-            var commands = new RPlotHistoryCommands(_plotManager.InteractiveWorkflow, visualComponent);
-
-            controller.AddCommand(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Copy, commands.Copy);
-            controller.AddCommand(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Cut, commands.Cut);
-            controller.AddCommand(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Delete, commands.Remove);
-            controller.AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdPlotHistoryActivatePlot, commands.ActivatePlot);
-            controller.AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdPlotHistoryZoomIn, commands.ZoomIn);
-            controller.AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdPlotHistoryZoomOut, commands.ZoomOut);
-            controller.AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdPlotHistoryAutoHide, commands.AutoHide);
+            var visualComponent = new RPlotHistoryVisualComponent(_plotManager, this, _coreShell);
             Component = visualComponent;
-            _commandTarget = new CommandTargetToOleShim(null, Component.Controller);
+
+            var commands = new RPlotHistoryCommands(_plotManager.InteractiveWorkflow, visualComponent);
+            var controller = new AsyncCommandController()
+                .AddCommand(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Copy, commands.Copy)
+                .AddCommand(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Cut, commands.Cut)
+                .AddCommand(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Delete, commands.Remove)
+                .AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdPlotHistoryActivatePlot, commands.ActivatePlot)
+                .AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdPlotHistoryZoomIn, commands.ZoomIn)
+                .AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdPlotHistoryZoomOut, commands.ZoomOut)
+                .AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdPlotHistoryAutoHide, commands.AutoHide);
+            _commandTarget = new CommandTargetToOleShim(null, controller);
             base.OnCreate();
         }
 

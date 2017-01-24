@@ -42,7 +42,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
             return new CoreServices(
                 telemetryService,
                 loggingPermissions,
-                Substitute.For<ISecurityService>(),
+                new TestSecurityService(), 
                 new TestTaskService(),
                 UIThreadHelper.Instance,
                 log,

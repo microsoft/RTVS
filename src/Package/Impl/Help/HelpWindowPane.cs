@@ -5,7 +5,9 @@ using System;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Help;
+using Microsoft.R.Components.Help.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.Imaging;
@@ -24,7 +26,10 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         public const string WindowGuidString = "9E909526-A616-43B2-A82B-FD639DCD40CB";
         public static Guid WindowGuid { get; } = new Guid(WindowGuidString);
 
-        public HelpWindowPane() {
+        private readonly ICoreShell _coreShell;
+
+        public HelpWindowPane(ICoreShell coreShell) {
+            _coreShell = coreShell;
             Caption = Resources.HelpWindowCaption;
             BitmapImageMoniker = KnownMonikers.StatusHelp;
             ToolBar = new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.helpWindowToolBarId);
@@ -32,7 +37,12 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
         protected override void OnCreate() {
             Component = new HelpVisualComponent { Container = this };
-            ToolBarCommandTarget = new CommandTargetToOleShim(null, Component.Controller);
+            var controller = new AsyncCommandController()
+                .AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpHome, new HelpHomeCommand(_coreShell.ExportProvider))
+                .AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpNext, new HelpNextCommand(Component))
+                .AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpPrevious, new HelpPreviousCommand(Component))
+                .AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpRefresh, new HelpRefreshCommand(Component));
+            ToolBarCommandTarget = new CommandTargetToOleShim(null, controller);
             base.OnCreate();
         }
 

@@ -5,7 +5,6 @@ using System;
 using System.Windows;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Shell;
-using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.Plots.Implementation.View;
 using Microsoft.R.Components.Plots.Implementation.ViewModel;
 using Microsoft.R.Components.Plots.ViewModel;
@@ -14,11 +13,10 @@ using Microsoft.R.Components.View;
 namespace Microsoft.R.Components.Plots.Implementation {
     public class RPlotHistoryVisualComponent : IRPlotHistoryVisualComponent {
         private readonly DisposableBag _disposableBag;
-        private readonly ICoreShell _shell;
         private readonly IRPlotManager _plotManager;
         private readonly IRPlotHistoryViewModel _viewModel;
 
-        public RPlotHistoryVisualComponent(IRPlotManager plotManager, ICommandTarget controller, IVisualComponentContainer<IRPlotHistoryVisualComponent> container, ICoreShell coreShell) {
+        public RPlotHistoryVisualComponent(IRPlotManager plotManager, IVisualComponentContainer<IRPlotHistoryVisualComponent> container, ICoreShell coreShell) {
             if (plotManager == null) {
                 throw new ArgumentNullException(nameof(plotManager));
             }
@@ -27,13 +25,8 @@ namespace Microsoft.R.Components.Plots.Implementation {
                 throw new ArgumentNullException(nameof(container));
             }
 
-            if (coreShell == null) {
-                throw new ArgumentNullException(nameof(coreShell));
-            }
-
             _plotManager = plotManager;
             _viewModel = new RPlotHistoryViewModel(plotManager, coreShell);
-            _shell = coreShell;
 
             var control = new RPlotHistoryControl {
                 DataContext = _viewModel
@@ -45,15 +38,12 @@ namespace Microsoft.R.Components.Plots.Implementation {
             control.ContextMenuRequested += Control_ContextMenuRequested;
 
             Control = control;
-            Controller = controller;
             Container = container;
         }
 
         public void Dispose() {
             _disposableBag.TryDispose();
         }
-
-        public ICommandTarget Controller { get; }
 
         public FrameworkElement Control { get; }
 
@@ -68,38 +58,19 @@ namespace Microsoft.R.Components.Plots.Implementation {
             }
         }
 
-        public bool CanDecreaseThumbnailSize {
-            get {
-                return _viewModel.ThumbnailSize > RPlotHistoryViewModel.MinThumbnailSize;
-            }
-        }
-
-        public bool CanIncreaseThumbnailSize {
-            get {
-                return _viewModel.ThumbnailSize < RPlotHistoryViewModel.MaxThumbnailSize;
-            }
-        }
+        public bool CanDecreaseThumbnailSize => _viewModel.ThumbnailSize > RPlotHistoryViewModel.MinThumbnailSize;
+        public bool CanIncreaseThumbnailSize => _viewModel.ThumbnailSize < RPlotHistoryViewModel.MaxThumbnailSize;
 
         public bool AutoHide {
-            get {
-                return _viewModel.AutoHide;
-            }
-
-            set {
-                _viewModel.AutoHide = value;
-            }
+            get { return _viewModel.AutoHide; }
+            set { _viewModel.AutoHide = value; }
         }
 
         private void Control_ContextMenuRequested(object sender, PointEventArgs e) {
             Container.ShowContextMenu(RPlotCommandIds.PlotHistoryContextMenu, e.Point);
         }
 
-        public void DecreaseThumbnailSize() {
-            _viewModel.DecreaseThumbnailSize();
-        }
-
-        public void IncreaseThumbnailSize() {
-            _viewModel.IncreaseThumbnailSize();
-        }
+        public void DecreaseThumbnailSize() => _viewModel.DecreaseThumbnailSize();
+        public void IncreaseThumbnailSize() => _viewModel.IncreaseThumbnailSize();
     }
 }

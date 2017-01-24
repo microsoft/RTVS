@@ -4,10 +4,13 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.UI.Commands;
+using Microsoft.R.Components.Controller;
+using static System.FormattableString;
 
-namespace Microsoft.R.Components.Controller {
+namespace Microsoft.VisualStudio.R.Package.Commands {
     public class AsyncCommandController : ICommandTarget {
-        private Dictionary<Key, IAsyncCommand> CommandMap { get; } = new Dictionary<Key, IAsyncCommand>();
+        private readonly Dictionary<Key, IAsyncCommand> _commandMap = new Dictionary<Key, IAsyncCommand>();
 
         public CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             CommandResult result = CommandResult.NotSupported;
@@ -38,16 +41,20 @@ namespace Microsoft.R.Components.Controller {
         /// Adds command to the controller command table
         /// </summary>
         /// <param name="command">Command object</param>
-        public void AddCommand(Guid group, int id, IAsyncCommand command) {
+        public AsyncCommandController AddCommand(Guid group, int id, IAsyncCommand command) {
             var key = new Key(group, id);
-            if (!CommandMap.ContainsKey(key)) {
-                CommandMap.Add(key, command);
+            if (!_commandMap.ContainsKey(key)) {
+                _commandMap.Add(key, command);
+            } else {
+                throw new InvalidOperationException(Invariant($"Command with  group {group} and id {id} is already registered!"));
             }
+
+            return this;
         }
 
         public IAsyncCommand Find(Guid group, int id) {
             IAsyncCommand cmd = null;
-            CommandMap.TryGetValue(new Key(group, id), out cmd);
+            _commandMap.TryGetValue(new Key(group, id), out cmd);
             return cmd;
         }
 

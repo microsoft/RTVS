@@ -14,7 +14,6 @@ using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Security;
 using Microsoft.Common.Core.Shell;
-using Microsoft.R.Components;
 using Microsoft.R.Components.ConnectionManager.Implementation.View;
 using Microsoft.R.Components.ConnectionManager.Implementation.ViewModel;
 using Microsoft.R.Components.Information;

@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
-using Microsoft.R.Components.Controller;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.VisualStudio.InteractiveWindow;
 
@@ -31,12 +31,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
             _interactiveWorkflow = interactiveWorkflow;
         }
 
-        public async Task<CommandResult> InvokeAsync() {
-            await DeleteProfileWorkerAsync();
-            return CommandResult.Executed;
-        }
-
-        private async Task DeleteProfileWorkerAsync() {
+        public async Task InvokeAsync() {
             var host = string.Empty; 
             try {
                 host = _interactiveWorkflow.Connections.ActiveConnection.Uri.Host;

@@ -3,7 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
-using Microsoft.R.Components.Controller;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 
 namespace Microsoft.R.Components.Plots.Commands {
@@ -18,13 +18,9 @@ namespace Microsoft.R.Components.Plots.Commands {
             _workflow = workflow;
         }
 
-        public CommandStatus Status {
-            get {
-                return CommandStatus.SupportedAndEnabled;
-            }
-        }
+        public CommandStatus Status => CommandStatus.SupportedAndEnabled;
 
-        public Task<CommandResult> InvokeAsync() {
+        public Task InvokeAsync() {
             try {
                 var component = _workflow.Plots.GetOrCreateMainPlotVisualComponent();
                 component.Container.Show(focus: true, immediate: false);
@@ -33,7 +29,7 @@ namespace Microsoft.R.Components.Plots.Commands {
             } catch (OperationCanceledException) {
             }
 
-            return Task.FromResult(CommandResult.Executed);
+            return Task.CompletedTask;
         }
     }
 }

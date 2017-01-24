@@ -1,13 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Windows;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager.Implementation.View;
 using Microsoft.R.Components.ConnectionManager.Implementation.ViewModel;
 using Microsoft.R.Components.ConnectionManager.ViewModel;
-using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.View;
 
@@ -18,7 +16,6 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         public ConnectionManagerVisualComponent(IConnectionManager connectionManager, IVisualComponentContainer<IConnectionManagerVisualComponent> container, IRSettings settings, ICoreShell coreShell) {
             _viewModel = new ConnectionManagerViewModel(connectionManager, settings, coreShell);
             Container = container;
-            Controller = null;
             var control = new ConnectionManagerControl(coreShell) {
                 DataContext = _viewModel
             };
@@ -29,7 +26,6 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             _viewModel.Dispose();
         }
 
-        public ICommandTarget Controller { get; }
         public FrameworkElement Control { get; }
         public IVisualComponentContainer<IVisualComponent> Container { get; }
     }

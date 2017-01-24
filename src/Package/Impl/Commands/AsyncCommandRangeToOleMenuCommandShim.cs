@@ -3,7 +3,7 @@
 
 using System;
 using Microsoft.Common.Core;
-using Microsoft.R.Components.Controller;
+using Microsoft.Common.Core.UI.Commands;
 
 namespace Microsoft.VisualStudio.R.Package.Commands {
     internal class AsyncCommandRangeToOleMenuCommandShim : PackageCommand {

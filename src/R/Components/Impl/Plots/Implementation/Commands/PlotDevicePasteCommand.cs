@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
-using Microsoft.R.Components.Controller;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 
 namespace Microsoft.R.Components.Plots.Implementation.Commands {
@@ -25,7 +25,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
             }
         }
 
-        public async Task<CommandResult> InvokeAsync() {
+        public async Task InvokeAsync() {
             try {
                 if (Clipboard.ContainsData(PlotClipboardData.Format)) {
                     var source = PlotClipboardData.Parse((string)Clipboard.GetData(PlotClipboardData.Format));
@@ -52,8 +52,6 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
             } catch (ExternalException ex) {
                 InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);
             }
-
-            return CommandResult.Executed;
         }
     }
 }

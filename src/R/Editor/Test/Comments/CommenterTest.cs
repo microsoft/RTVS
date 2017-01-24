@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.Languages.Editor.Shell;
@@ -19,12 +20,10 @@ namespace Microsoft.R.Editor.Test.Comments {
     [ExcludeFromCodeCoverage]
     [Category.R.Commenting]
     public class CommenterTest {
-        private readonly IExportProvider _exportProvider;
         private readonly IEditorShell _editorShell;
 
         public CommenterTest(IExportProvider exportProvider) {
-            _exportProvider = exportProvider;
-            _editorShell = _exportProvider.GetExportedValue<IEditorShell>();
+            _editorShell = exportProvider.GetExportedValue<IEditorShell>();
         }
 
         [Test]

@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Markdown.Editor.ContainedLanguage;
 using Microsoft.R.Components.Controller;

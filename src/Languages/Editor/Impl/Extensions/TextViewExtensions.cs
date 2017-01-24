@@ -3,6 +3,7 @@
 
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.VisualStudio.Language.Intellisense;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.Languages.Editor.Extensions {
@@ -14,6 +15,19 @@ namespace Microsoft.Languages.Editor.Extensions {
                 result = completionBroker.IsCompletionActive(textView);
             }
             return result;
+        }
+
+        public static SnapshotPoint? MapUpToView(this ITextView textView, SnapshotPoint position) {
+            if (textView.BufferGraph == null) {
+                // Unit test case
+                return position;
+            }
+            return textView.BufferGraph.MapUpToBuffer(
+                position,
+                PointTrackingMode.Positive,
+                PositionAffinity.Successor,
+                textView.TextBuffer
+             );
         }
     }
 }

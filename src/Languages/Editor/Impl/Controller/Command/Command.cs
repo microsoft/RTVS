@@ -3,19 +3,20 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.Controller;
 
 namespace Microsoft.Languages.Editor.Controller.Command {
     public class Command : ICommand {
-        bool _needCheckout = false;
-        CommandId[] _commandIds = null;
+        readonly bool _needCheckout;
+        readonly CommandId[] _commandIds;
 
         public Command(Guid group, int id, bool needCheckout)
-            : this(new CommandId[1] { new CommandId(group, id) }, needCheckout) {
+            : this(new[] { new CommandId(group, id) }, needCheckout) {
         }
 
         public Command(CommandId id, bool needCheckout)
-            : this(new CommandId[1] { id }, needCheckout) {
+            : this(new[] { id }, needCheckout) {
         }
 
         public Command(CommandId id)

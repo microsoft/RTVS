@@ -14,7 +14,6 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Tasks;
-using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.Help;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
@@ -55,24 +54,15 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             _session.Disconnected += OnRSessionDisconnected;
 
             _windowContentControl = new ContentControl();
-            Control = _windowContentControl;
-
-            var c = new Controller();
-            c.AddCommandSet(GetCommands());
-            Controller = c;
 
             CreateBrowser();
             VSColorTheme.ThemeChanged += OnColorThemeChanged;
         }
 
-        private void OnColorThemeChanged(ThemeChangedEventArgs e) {
-            SetThemeColors();
-        }
+        private void OnColorThemeChanged(ThemeChangedEventArgs e) => SetThemeColors();
 
         #region IVisualComponent
-        public ICommandTarget Controller { get; }
-
-        public FrameworkElement Control { get; }
+        public FrameworkElement Control => _windowContentControl;
         public IVisualComponentContainer<IVisualComponent> Container { get; internal set; }
 
         #endregion
@@ -270,16 +260,6 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             // # Choose 10 random port numbers between 10000 and 32000
             // ports <- 10000 + 22000*((stats::runif(10) + unclass(Sys.time())/300) %% 1)
             return uri.IsLoopback && uri.Port >= 10000 && uri.Port <= 32000 && !string.IsNullOrEmpty(uri.PathAndQuery);
-        }
-
-        private IEnumerable<ICommand> GetCommands() {
-            List<ICommand> commands = new List<ICommand>() {
-                new HelpPreviousCommand(this),
-                new HelpNextCommand(this),
-                new HelpHomeCommand(this),
-                new HelpRefreshCommand(this)
-            };
-            return commands;
         }
 
         public void Dispose() {

@@ -4,7 +4,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.R.Components.Controller;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 
 namespace Microsoft.R.Components.Documentation.Commands {
@@ -13,19 +13,16 @@ namespace Microsoft.R.Components.Documentation.Commands {
         private readonly string _onlineUrl;
         private readonly string _localRelativePath;
 
-        public OpenDocumentationCommand(IRInteractiveWorkflow interactiveWorkflow, string onlineUrl, string localRelativePath = null) {
+        public OpenDocumentationCommand(IRInteractiveWorkflow interactiveWorkflow, string onlineUrl,
+            string localRelativePath = null) {
             _interactiveWorkflow = interactiveWorkflow;
             _onlineUrl = onlineUrl;
             _localRelativePath = localRelativePath;
         }
 
-        public CommandStatus Status {
-            get {
-                return CommandStatus.Supported | CommandStatus.Enabled;
-            }
-        }
+        public CommandStatus Status => CommandStatus.Supported | CommandStatus.Enabled;
 
-        public Task<CommandResult> InvokeAsync() {
+        public Task InvokeAsync() {
             var url = _onlineUrl;
 
             if (!string.IsNullOrEmpty(_localRelativePath)) {
@@ -40,7 +37,7 @@ namespace Microsoft.R.Components.Documentation.Commands {
 
             OpenUrl(url);
 
-            return Task.FromResult(CommandResult.Executed);
+            return Task.CompletedTask;
         }
 
         private void OpenUrl(string url) {

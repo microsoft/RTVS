@@ -3,7 +3,7 @@
 
 using System.Threading.Tasks;
 
-namespace Microsoft.R.Components.Controller {
+namespace Microsoft.Common.Core.UI.Commands {
     /// <summary>
     /// An object that implements a single command. 
     /// </summary>
@@ -16,6 +16,6 @@ namespace Microsoft.R.Components.Controller {
         /// <summary>
         /// Executes the command.
         /// </summary>
-        Task<CommandResult> InvokeAsync();
+        Task InvokeAsync();
     }
 }

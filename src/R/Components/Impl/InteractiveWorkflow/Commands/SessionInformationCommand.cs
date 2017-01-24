@@ -8,7 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Telemetry;
-using Microsoft.R.Components.Controller;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Protocol;
@@ -39,10 +39,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
             }
         }
 
-        public async Task<CommandResult> InvokeAsync() {
-            await PrintBrokerInformationAsync();
-            return CommandResult.Executed;
-        }
+        public Task InvokeAsync() => PrintBrokerInformationAsync();
 
         private void OnBrokerChanged(object sender, EventArgs e) {
             if (_interactiveWorkflow.RSession.IsRemote) {
