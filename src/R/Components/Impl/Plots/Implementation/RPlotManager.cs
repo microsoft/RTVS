@@ -209,7 +209,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
 
             var tcs = _locatorTcs;
             _locatorTcs = null;
-            tcs?.SetResult(result);
+            tcs?.TrySetResult(result);
 
             _locatorCancelTokenRegistration?.Dispose();
             _locatorCancelTokenRegistration = null;
@@ -222,7 +222,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
 
             var tcs = _locatorTcs;
             _locatorTcs = null;
-            tcs?.SetCanceled();
+            tcs?.TrySetCanceled();
 
             _locatorCancelTokenRegistration?.Dispose();
             _locatorCancelTokenRegistration = null;
