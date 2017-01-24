@@ -204,17 +204,24 @@ namespace Microsoft.Languages.Editor.Extensions {
         /// the buffer graph to the project buffer of the specified content type, if any.
         /// </summary>
         public static SnapshotPoint? MapDown(this ITextBuffer viewBuffer, SnapshotPoint viewPoint, string contentTypeName) {
+            SnapshotPoint? point = null;
             if (viewBuffer.ContentType.TypeName.EqualsOrdinal(contentTypeName)) {
-                return viewPoint;
+                point = viewPoint;
             } else {
                 var pb = viewBuffer as IProjectionBuffer;
-                var targetBuffer = pb?.SourceBuffers.FirstOrDefault(x => x.ContentType.TypeName.EqualsOrdinal(contentTypeName));
-                if (targetBuffer != null) {
-                    var bg = viewBuffer.GetBufferGraph();
-                    return bg?.MapDownToBuffer(viewPoint, PointTrackingMode.Positive, targetBuffer, PositionAffinity.Successor);
+                var bg = viewBuffer.GetBufferGraph();
+                if (pb != null && bg != null) {
+                    // There may be multiple buffers with the same content type. 
+                    // This is normal in the interactive window. Therefore we must look 
+                    // for a buffer that CAN map the given point and not just take
+                    // the first one from the list.
+                    point = pb.SourceBuffers
+                            .Where(x => x.ContentType.TypeName.EqualsOrdinal(contentTypeName))
+                            .Select((buffer) => bg.MapDownToBuffer(viewPoint, PointTrackingMode.Positive, buffer, PositionAffinity.Successor))
+                            .FirstOrDefault(p => p.HasValue);
                 }
             }
-            return null;
+            return point;
         }
 
         /// <summary>

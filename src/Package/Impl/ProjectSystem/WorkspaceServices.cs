@@ -28,7 +28,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             get {
                 var projectFile = _pss.GetActiveProject()?.FullName;
                 // Either there is no project or it is R project
-                return string.IsNullOrEmpty(projectFile) && Path.GetExtension(projectFile).EqualsIgnoreCase(RContentTypeDefinition.VsRProjectExtension);
+                return string.IsNullOrEmpty(projectFile) || Path.GetExtension(projectFile).EqualsIgnoreCase(RContentTypeDefinition.VsRProjectExtension);
             }
         }
     }
