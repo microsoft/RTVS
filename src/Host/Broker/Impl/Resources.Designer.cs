@@ -142,6 +142,15 @@ namespace Microsoft.R.Host.Broker {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to RHost Exited with Win32 error : {0}.
+        /// </summary>
+        internal static string Error_ExitRHost {
+            get {
+                return ResourceManager.GetString("Error_ExitRHost", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to retrieve R installation data for interpreter \&quot;{0}\&quot; at \&quot;{1}\&quot;.
         /// </summary>
         internal static string Error_FailedRInstallationData {

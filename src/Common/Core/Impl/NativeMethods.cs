@@ -458,5 +458,17 @@ namespace Microsoft.Common.Core {
             public int Width => Right - Left;
             public int Height => Bottom - Top;
         }
+
+        [Flags]
+        public enum ErrorModes : uint {
+            SYSTEM_DEFAULT = 0x0,
+            SEM_FAILCRITICALERRORS = 0x0001,
+            SEM_NOALIGNMENTFAULTEXCEPT = 0x0004,
+            SEM_NOGPFAULTERRORBOX = 0x0002,
+            SEM_NOOPENFILEERRORBOX = 0x8000
+        }
+
+        [DllImport("kernel32.dll")]
+        public static extern ErrorModes SetErrorMode(ErrorModes uMode);
     }
 }
