@@ -133,25 +133,25 @@ namespace Microsoft.R.Host.Client.BrokerServices {
 
 
         private async Task<HttpResponseMessage> GetAsync(Uri uri, CancellationToken ct) {
-            using (_log.Measure(LogVerbosity.Traffic, Invariant($"GetAsync({uri.AbsoluteUri})"))) {
+            using (_log.Measure(LogVerbosity.Traffic, Invariant($"GetAsync({uri})"))) {
                 return await HttpClient.GetAsync(uri, ct);
             }
         }
 
         private async Task<HttpResponseMessage> PutAsync(Uri uri, CancellationToken cancellationToken, StringContent content) {
-            using (_log.Measure(LogVerbosity.Traffic, Invariant($"PutAsync({uri.AbsoluteUri})"))) {
+            using (_log.Measure(LogVerbosity.Traffic, Invariant($"PutAsync({uri})"))) {
                 return await HttpClient.PutAsync(uri, content, cancellationToken);
             }
         }
 
         private async Task<HttpResponseMessage> PostAsync(Uri uri, StreamContent content, CancellationToken ct) {
-            using (_log.Measure(LogVerbosity.Traffic, Invariant($"PostAsync({uri.AbsoluteUri})"))) {
+            using (_log.Measure(LogVerbosity.Traffic, Invariant($"PostAsync({uri})"))) {
                 return await HttpClient.PostAsync(uri, content, ct);
             }
         }
 
         private async Task<HttpResponseMessage> DeleteAsync(Uri uri, CancellationToken ct) {
-            using (_log.Measure(LogVerbosity.Traffic, Invariant($"DeleteAsync({uri.AbsoluteUri})"))) {
+            using (_log.Measure(LogVerbosity.Traffic, Invariant($"DeleteAsync({uri})"))) {
                 return await HttpClient.DeleteAsync(uri, ct);
             }
         }
