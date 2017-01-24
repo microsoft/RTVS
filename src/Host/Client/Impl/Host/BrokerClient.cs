@@ -111,7 +111,7 @@ namespace Microsoft.R.Host.Client.Host {
                 var sessionsService = new ProfileWebService(HttpClient, _credentials, Log);
                 await sessionsService.DeleteAsync(cancellationToken);
             } catch (HttpRequestException ex) {
-                throw new RHostDisconnectedException(Resources.Error_HostNotResponding.FormatInvariant(ex.Message), ex);
+                throw new RHostDisconnectedException(Resources.Error_HostNotResponding.FormatInvariant(Name, ex.Message), ex);
             }
         }
 
