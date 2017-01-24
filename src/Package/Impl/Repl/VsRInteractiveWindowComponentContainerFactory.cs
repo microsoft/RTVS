@@ -54,6 +54,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             var component = new RInteractiveWindowVisualComponent(vsWindow.InteractiveWindow, componentContainer, sessionProvider, _shell);
             componentContainer.Component = component;
 
+            RegisterFocusPreservingWindow(toolWindow);
+
+            return component;
+        }
+
+        private void RegisterFocusPreservingWindow(ToolWindowPane toolWindow) {
 #if !VS14
             var frame = toolWindow.Frame as IVsWindowFrame;
             if (frame != null) {
@@ -66,8 +72,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 }
             }
 #endif
-
-            return component;
         }
     }
 }
