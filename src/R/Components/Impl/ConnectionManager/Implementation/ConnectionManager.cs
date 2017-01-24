@@ -28,7 +28,7 @@ using Microsoft.R.Interpreters;
 namespace Microsoft.R.Components.ConnectionManager.Implementation {
     internal class ConnectionManager : IConnectionManager {
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
-        private readonly IRSettings _settings;
+        private readonly IRPersistentSettings _settings;
         private readonly ICoreShell _shell;
         private readonly IStatusBar _statusBar;
         private readonly IRSessionProvider _sessionProvider;
@@ -49,7 +49,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         public event EventHandler RecentConnectionsChanged;
         public event EventHandler ConnectionStateChanged;
 
-        public ConnectionManager(IStatusBar statusBar, IRSettings settings, IRInteractiveWorkflow interactiveWorkflow) {
+        public ConnectionManager(IStatusBar statusBar, IRPersistentSettings settings, IRInteractiveWorkflow interactiveWorkflow) {
             _statusBar = statusBar;
             _sessionProvider = interactiveWorkflow.RSessions;
             _settings = settings;
@@ -227,6 +227,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             _settings.Connections = RecentConnections
                 .Select(c => new ConnectionInfo (c))
                 .ToArray();
+            _settings.SaveSettingsAsync().DoNotWait();
         }
 
         private void UpdateRecentConnections(bool save = true) {

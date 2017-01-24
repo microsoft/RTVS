@@ -10,10 +10,10 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
     [Export(typeof(IConnectionManagerProvider))]
     internal class ConnectionManagerProvider : IConnectionManagerProvider {
         private readonly IStatusBar _statusBar;
-        private readonly IRSettings _settings;
+        private readonly IRPersistentSettings _settings;
 
         [ImportingConstructor]
-        public ConnectionManagerProvider(IStatusBar statusBar, IRSettings settings) {
+        public ConnectionManagerProvider(IStatusBar statusBar, IRPersistentSettings settings) {
             _statusBar = statusBar;
             _settings = settings;
         }
