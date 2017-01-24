@@ -15,6 +15,7 @@ namespace Microsoft.Common.Core.OS {
     public class Win32Process {
         private Win32Process(PROCESS_INFORMATION pi) {
             _hasExited = false;
+            _exitCodeLock = new object();
             ProcessId = pi.dwProcessId;
             MainThreadId = pi.dwThreadId;
             _processHandle = new SafeProcessHandle(pi.hProcess, true);
@@ -36,7 +37,7 @@ namespace Microsoft.Common.Core.OS {
         private RegisteredWaitHandle _registeredWait;
         private bool _hasExited;
         private uint _exitCode;
-
+        private object _exitCodeLock;
         public readonly int ProcessId;
         public readonly int MainThreadId;
 
@@ -64,7 +65,7 @@ namespace Microsoft.Common.Core.OS {
         }
 
         private void SetExitState() {
-            lock (this) {
+            lock (_exitCodeLock) {
                 if (!_hasExited) {
                     _hasExited = true;
                     if (!GetExitCodeProcess(_processHandle, out _exitCode)) {
