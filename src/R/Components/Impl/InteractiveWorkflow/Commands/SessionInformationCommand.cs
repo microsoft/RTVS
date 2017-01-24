@@ -129,9 +129,9 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
                 var serverVersion = new Version(aboutHost.Version.Major, aboutHost.Version.Minor);
                 var clientVersion = new Version(localVersion.Major, localVersion.Minor);
                 if (serverVersion > clientVersion) {
-                    message = Resources.Warning_RemoteVersionHigher.FormatInvariant(aboutHost.Version, clientVersion);
+                    message = Resources.Warning_RemoteVersionHigher.FormatInvariant(aboutHost.Version, localVersion);
                 } else if (serverVersion < clientVersion) {
-                    message = Resources.Warning_RemoteVersionLower.FormatInvariant(aboutHost.Version, clientVersion);
+                    message = Resources.Warning_RemoteVersionLower.FormatInvariant(aboutHost.Version, localVersion);
                 }
                 if (!string.IsNullOrEmpty(message)) {
                     sb.AppendLine(Environment.NewLine + message + Environment.NewLine);
