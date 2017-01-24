@@ -15,19 +15,20 @@ using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Utilities;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
     [Export(typeof(IInteractiveWindowComponentContainerFactory))]
     internal class VsRInteractiveWindowComponentContainerFactory : IInteractiveWindowComponentContainerFactory {
         private readonly Lazy<IVsInteractiveWindowFactory> _vsInteractiveWindowFactoryLazy;
         private readonly IContentTypeRegistryService _contentTypeRegistryService;
-        private readonly ICoreShell _shell;
+        private readonly IApplicationShell _shell;
 
         [ImportingConstructor]
         public VsRInteractiveWindowComponentContainerFactory(
             Lazy<IVsInteractiveWindowFactory> vsInteractiveWindowFactory,
             IContentTypeRegistryService contentTypeRegistryService,
-            ICoreShell shell) {
+            IApplicationShell shell) {
             _vsInteractiveWindowFactoryLazy = vsInteractiveWindowFactory;
             _contentTypeRegistryService = contentTypeRegistryService;
             _shell = shell;
@@ -41,7 +42,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             vsWindow = _vsInteractiveWindowFactoryLazy.Value.Create(RGuidList.ReplInteractiveWindowProviderGuid, instanceId, string.Empty, evaluator);
 #else
             var vsf2 = _vsInteractiveWindowFactoryLazy.Value as IVsInteractiveWindowFactory2; // Temporary for VS 2017 RC2
-            vsWindow = vsf2.Create(RGuidList.ReplInteractiveWindowProviderGuid, instanceId, string.Empty, evaluator, 
+            vsWindow = vsf2.Create(RGuidList.ReplInteractiveWindowProviderGuid, instanceId, string.Empty, evaluator,
                                    0, RGuidList.RCmdSetGuid, RPackageCommandId.replWindowToolBarId, null);
 #endif
 
@@ -52,7 +53,25 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             var componentContainer = new VisualComponentToolWindowAdapter<IInteractiveWindowVisualComponent>(toolWindow);
             var component = new RInteractiveWindowVisualComponent(vsWindow.InteractiveWindow, componentContainer, sessionProvider, _shell);
             componentContainer.Component = component;
+
+            RegisterFocusPreservingWindow(toolWindow);
+
             return component;
+        }
+
+        private void RegisterFocusPreservingWindow(ToolWindowPane toolWindow) {
+#if !VS14
+            var frame = toolWindow.Frame as IVsWindowFrame;
+            if (frame != null) {
+                Guid persistenceSlot;
+                if (frame.GetGuidProperty((int)__VSFPROPID.VSFPROPID_GuidPersistenceSlot, out persistenceSlot) >= 0) {
+                    var debugger = _shell.GetGlobalService<SVsShellDebugger>() as IVsDebugger6;
+                    if (debugger != null) {
+                        debugger.RegisterFocusPreservingWindow(persistenceSlot);
+                    }
+                }
+            }
+#endif
         }
     }
 }

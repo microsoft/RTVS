@@ -105,8 +105,9 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 return;
             }
 
-            // Check if REPL lost focus and focus moved to the editor
-            if (!ActiveWindow.TextView.HasAggregateFocus && !string.IsNullOrEmpty(e.New?.TextBuffer?.GetFilePath())) {
+            // Check if REPL lost focus and focus moved to the editor.
+            // In VS 2017 and above, this is handled by the debugger itself, via IVsDebugger6.RegisterFocusPreservingWindow.
+            if (_debuggerModeTracker.IsFocusStolenOnBreak && !ActiveWindow.TextView.HasAggregateFocus && !string.IsNullOrEmpty(e.New?.TextBuffer?.GetFilePath())) {
                 _replLostFocus = true;
                 Shell.DispatchOnUIThread(CheckPossibleBreakModeFocusChange);
             }
@@ -170,7 +171,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 var connectedToBroker = await Connections.TryConnectToPreviouslyUsedAsync();
                 if (!connectedToBroker) {
                     var showConnectionsWindow = Connections.RecentConnections.Any();
-                    if (!showConnectionsWindow){
+                    if (!showConnectionsWindow) {
                         var message = Resources.NoLocalR.FormatInvariant(Environment.NewLine + Environment.NewLine, Environment.NewLine);
                         showConnectionsWindow = Shell.ShowMessage(message, MessageButtons.YesNo) == MessageButtons.No;
                     }
