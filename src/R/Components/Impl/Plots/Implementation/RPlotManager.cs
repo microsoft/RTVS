@@ -204,7 +204,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
             return _locatorTcs.Task;
         }
 
-        public Task EndLocatorModeAsync(IRPlotDevice device, LocatorResult result) {
+        public void EndLocatorMode(IRPlotDevice device, LocatorResult result) {
             device.LocatorMode = false;
 
             var tcs = _locatorTcs;
@@ -212,8 +212,6 @@ namespace Microsoft.R.Components.Plots.Implementation {
             tcs?.TrySetResult(result);
 
             _locatorCancelTokenRegistration.Dispose();
-
-            return Task.CompletedTask;
         }
 
         private void CancelLocatorMode(IRPlotDevice device) {

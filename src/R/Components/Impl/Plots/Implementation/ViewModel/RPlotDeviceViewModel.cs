@@ -117,12 +117,12 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
             }
         }
 
-        public async Task ClickPlot(int pixelX, int pixelY) {
+        public void ClickPlot(int pixelX, int pixelY) {
             _shell.AssertIsOnMainThread();
 
             if (LocatorMode) {
                 var result = LocatorResult.CreateClicked(pixelX, pixelY);
-                await _plotManager.EndLocatorModeAsync(_device, result);
+                _plotManager.EndLocatorMode(_device, result);
             }
         }
 

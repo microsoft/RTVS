@@ -24,7 +24,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
         }
 
         public Task<CommandResult> InvokeAsync() {
-            InteractiveWorkflow.Plots.EndLocatorModeAsync(VisualComponent.Device, LocatorResult.CreateNotClicked()).DoNotWait();
+            InteractiveWorkflow.Plots.EndLocatorMode(VisualComponent.Device, LocatorResult.CreateNotClicked());
 
             return Task.FromResult(CommandResult.Executed);
         }

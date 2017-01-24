@@ -86,7 +86,7 @@ namespace Microsoft.R.Components.Plots {
         /// <summary>
         /// End the locator mode with the specified result.
         /// </summary>
-        Task EndLocatorModeAsync(IRPlotDevice device, LocatorResult result);
+        void EndLocatorMode(IRPlotDevice device, LocatorResult result);
 
         /// <summary>
         /// Process an incoming device creation message from the host.

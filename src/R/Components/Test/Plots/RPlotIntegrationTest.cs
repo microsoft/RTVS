@@ -761,7 +761,7 @@ namespace Microsoft.R.Components.Test.Plots {
                 // Send a result with a click point, which will causes
                 // locator mode to end and immediately start again
                 var locatorModeTask = EventTaskSources.IRPlotDevice.LocatorModeChanged.Create(device);
-                await _workflow.Plots.EndLocatorModeAsync(device, LocatorResult.CreateClicked((int)point.X, (int)point.Y));
+                _workflow.Plots.EndLocatorMode(device, LocatorResult.CreateClicked((int)point.X, (int)point.Y));
                 await locatorModeTask;
 
                 device.LocatorMode.Should().BeFalse();

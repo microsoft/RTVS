@@ -93,7 +93,7 @@ namespace Microsoft.R.Components.Plots.ViewModel {
         /// </summary>
         /// <param name="pixelX"></param>
         /// <param name="pixelY"></param>
-        Task ClickPlot(int pixelX, int pixelY);
+        void ClickPlot(int pixelX, int pixelY);
 
         /// <summary>
         /// Copy the specified plot from another device to this device.
