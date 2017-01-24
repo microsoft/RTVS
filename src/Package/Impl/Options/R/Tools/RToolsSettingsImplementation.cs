@@ -109,10 +109,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
 
         public ConnectionInfo[] Connections {
             get { return _connections; }
-            set {
-                SetProperty(ref _connections, value);
-                SaveSettingsAsync().DoNotWait();
-            }
+            set { SetProperty(ref _connections, value); }
         }
 
         public ConnectionInfo LastActiveConnection {
