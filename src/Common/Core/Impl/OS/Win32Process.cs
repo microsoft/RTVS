@@ -22,10 +22,7 @@ namespace Microsoft.Common.Core.OS {
             _wait = new ProcessWaitHandle(_processHandle);
             _registeredWait = ThreadPool.RegisterWaitForSingleObject(_wait, (o, t) => {
                 _registeredWait.Unregister(_wait);
-                _hasExited = true;
-                if (!GetExitCodeProcess(_processHandle, out _exitCode)) {
-                    throw new Win32Exception(Marshal.GetLastWin32Error());
-                }
+                SetExitState();
                 Exited?.Invoke(this, null);
                 _processHandle.Close();
                 _threadHandle.Close();
@@ -51,7 +48,10 @@ namespace Microsoft.Common.Core.OS {
 
         public void WaitForExit(int milliseconds) {
             ProcessWaitHandle processWaitHandle = new ProcessWaitHandle(_processHandle);
-            processWaitHandle.WaitOne(milliseconds);
+            if (processWaitHandle.WaitOne(milliseconds)) {
+                // This means the process exited while waiting.
+                SetExitState();
+            }
             processWaitHandle.Close();
         }
 
@@ -63,6 +63,18 @@ namespace Microsoft.Common.Core.OS {
             }
         }
 
+        private void SetExitState() {
+            lock (this) {
+                if (!_hasExited) {
+                    _hasExited = true;
+                    if (!GetExitCodeProcess(_processHandle, out _exitCode)) {
+                        throw new Win32Exception(Marshal.GetLastWin32Error());
+                    }
+                }
+            }
+        }
+
+        private static object _createProcessLock = new object();
         public static Win32Process StartProcessAsUser(WindowsIdentity winIdentity, string applicationName, string commandLine, string workingDirectory, Win32NativeEnvironmentBlock environment, out Stream stdin, out Stream stdout, out Stream stderror) {
 
             STARTUPINFO si = new STARTUPINFO();
@@ -117,43 +129,48 @@ namespace Microsoft.Common.Core.OS {
             SECURITY_ATTRIBUTES processAttr = CreateSecurityAttributes(winIdentity == null ? WellKnownSidType.AuthenticatedUserSid : WellKnownSidType.NetworkServiceSid);
             SECURITY_ATTRIBUTES threadAttr = CreateSecurityAttributes(winIdentity == null ? WellKnownSidType.AuthenticatedUserSid : WellKnownSidType.NetworkServiceSid);
 
-            PROCESS_INFORMATION pi;
-            try {
-                if(winIdentity == null) {
-                    if(!CreateProcess(applicationName, commandLine, ref processAttr, ref threadAttr, true,
-                        (uint)(CREATE_PROCESS_FLAGS.CREATE_UNICODE_ENVIRONMENT | CREATE_PROCESS_FLAGS.CREATE_NO_WINDOW),
-                        environment.NativeEnvironmentBlock,
-                        workingDirectory,
-                        ref si,
-                        out pi)) {
-                        throw new Win32Exception(Marshal.GetLastWin32Error());
+            lock (_createProcessLock) {
+                PROCESS_INFORMATION pi;
+                ErrorModes oldErrorMode = SetErrorMode(ErrorModes.SEM_FAILCRITICALERRORS);
+                try {
+                    if (winIdentity == null) {
+                        if (!CreateProcess(applicationName, commandLine, ref processAttr, ref threadAttr, true,
+                            (uint)(CREATE_PROCESS_FLAGS.CREATE_UNICODE_ENVIRONMENT | CREATE_PROCESS_FLAGS.CREATE_NO_WINDOW),
+                            environment.NativeEnvironmentBlock,
+                            workingDirectory,
+                            ref si,
+                            out pi)) {
+                            throw new Win32Exception(Marshal.GetLastWin32Error());
+                        }
+                    } else {
+                        if (!CreateProcessAsUser(
+                            winIdentity.Token, applicationName, commandLine, ref processAttr, ref threadAttr, true,
+                            (uint)(CREATE_PROCESS_FLAGS.CREATE_UNICODE_ENVIRONMENT | CREATE_PROCESS_FLAGS.CREATE_NO_WINDOW),
+                            environment.NativeEnvironmentBlock,
+                            workingDirectory,
+                            ref si,
+                            out pi)) {
+                            throw new Win32Exception(Marshal.GetLastWin32Error());
+                        }
                     }
-                } else {
-                    if (!CreateProcessAsUser(
-                        winIdentity.Token, applicationName, commandLine, ref processAttr, ref threadAttr, true,
-                        (uint)(CREATE_PROCESS_FLAGS.CREATE_UNICODE_ENVIRONMENT | CREATE_PROCESS_FLAGS.CREATE_NO_WINDOW),
-                        environment.NativeEnvironmentBlock,
-                        workingDirectory,
-                        ref si,
-                        out pi)) {
-                        throw new Win32Exception(Marshal.GetLastWin32Error());
+
+                    stdin = new FileStream(new SafeFileHandle(stdinWrite, true), FileAccess.Write, 0x1000, false);
+                    stdout = new FileStream(new SafeFileHandle(stdoutRead, true), FileAccess.Read, 0x1000, false);
+                    stderror = new FileStream(new SafeFileHandle(stderrorRead, true), FileAccess.Read, 0x1000, false);
+                } finally {
+                    SetErrorMode(oldErrorMode);
+
+                    if (processAttr.lpSecurityDescriptor != IntPtr.Zero) {
+                        Marshal.FreeHGlobal(processAttr.lpSecurityDescriptor);
+                    }
+
+                    if (threadAttr.lpSecurityDescriptor != IntPtr.Zero) {
+                        Marshal.FreeHGlobal(threadAttr.lpSecurityDescriptor);
                     }
                 }
 
-                stdin = new FileStream(new SafeFileHandle(stdinWrite, true), FileAccess.Write, 0x1000, false);
-                stdout = new FileStream(new SafeFileHandle(stdoutRead, true), FileAccess.Read, 0x1000, false);
-                stderror = new FileStream(new SafeFileHandle(stderrorRead, true), FileAccess.Read, 0x1000, false);
-            } finally {
-                if(processAttr.lpSecurityDescriptor != IntPtr.Zero) {
-                    Marshal.FreeHGlobal(processAttr.lpSecurityDescriptor);
-                }
-
-                if (threadAttr.lpSecurityDescriptor != IntPtr.Zero) {
-                    Marshal.FreeHGlobal(threadAttr.lpSecurityDescriptor);
-                }
+                return new Win32Process(pi);
             }
-
-            return new Win32Process(pi);
         }
 
         private static SECURITY_ATTRIBUTES CreateSecurityAttributes(WellKnownSidType sidType) {

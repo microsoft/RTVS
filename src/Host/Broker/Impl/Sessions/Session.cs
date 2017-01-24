@@ -135,6 +135,9 @@ namespace Microsoft.R.Host.Broker.Sessions {
                 _hostEnd?.Dispose();
                 _hostEnd = null;
                 State = SessionState.Terminated;
+                if (_process.ExitCode < 0) {
+                    _sessionLogger.LogInformation(Resources.Error_ExitRHost, _process.ExitCode);
+                }
             };
 
             _process.WaitForExit(250);
