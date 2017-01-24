@@ -102,24 +102,5 @@ namespace Microsoft.R.Components.Plots.ViewModel {
         /// <param name="sourcePlotId">Plot to copy.</param>
         /// <param name="isMove"><c>true</c> to delete the source plot after move.</param>
         Task CopyPlotFromAsync(Guid sourceDeviceId, Guid sourcePlotId, bool isMove);
-
-        /// <summary>
-        /// User initiated locator mode via script, wait for the user to click
-        /// on plot or end locator mode.
-        /// </summary>
-        /// <returns>Click result.</returns>
-        Task<LocatorResult> StartLocatorModeAsync(CancellationToken ct);
-
-        /// <summary>
-        /// End the locator mode with a locator result that indicate the user
-        /// wants to end the locator session.
-        /// </summary>
-        void EndLocatorMode();
-
-        /// <summary>
-        /// End the locator mode with the specified result.
-        /// </summary>
-        /// <param name="result">Click result.</param>
-        void EndLocatorMode(LocatorResult result);
     }
 }

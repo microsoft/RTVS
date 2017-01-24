@@ -24,11 +24,15 @@ namespace Microsoft.R.Components.Plots.Implementation {
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
         private readonly IFileSystem _fileSystem;
         private readonly DisposableBag _disposableBag;
+        private readonly object _devicesLock = new object();
         private readonly List<IRPlotDevice> _devices = new List<IRPlotDevice>();
         private readonly Dictionary<int, IRPlotDeviceVisualComponent> _visualComponents = new Dictionary<int, IRPlotDeviceVisualComponent>();
         private readonly Dictionary<Guid, IRPlotDeviceVisualComponent> _assignedVisualComponents = new Dictionary<Guid, IRPlotDeviceVisualComponent>();
         private readonly List<IRPlotDeviceVisualComponent> _unassignedVisualComponents = new List<IRPlotDeviceVisualComponent>();
         private readonly ICoreShell _shell;
+
+        private TaskCompletionSource<LocatorResult> _locatorTcs;
+        private CancellationTokenRegistration _locatorCancelTokenRegistration;
 
         public event EventHandler<RPlotDeviceEventArgs> ActiveDeviceChanged;
         public event EventHandler<RPlotDeviceEventArgs> DeviceAdded;
@@ -109,7 +113,9 @@ namespace Microsoft.R.Components.Plots.Implementation {
                 return;
             }
 
-            _devices.Remove(device);
+            lock (_devicesLock) {
+                _devices.Remove(device);
+            }
 
             IRPlotDeviceVisualComponent component;
             if (_assignedVisualComponents.TryGetValue(deviceId, out component)) {
@@ -159,7 +165,9 @@ namespace Microsoft.R.Components.Plots.Implementation {
             await _shell.SwitchToMainThreadAsync(cancellationToken);
 
             var device = new RPlotDevice(deviceId);
-            _devices.Add(device);
+            lock (_devicesLock) {
+                _devices.Add(device);
+            }
 
             PlotDeviceProperties props;
 
@@ -181,16 +189,39 @@ namespace Microsoft.R.Components.Plots.Implementation {
             return props;
         }
 
-        public async Task<LocatorResult> StartLocatorModeAsync(Guid deviceId, CancellationToken cancellationToken) {
-            await _shell.SwitchToMainThreadAsync(cancellationToken);
+        public Task<LocatorResult> StartLocatorModeAsync(Guid deviceId, CancellationToken cancellationToken) {
+            var device = FindDevice(deviceId);
+            device.LocatorMode = true;
 
-            var visualComponent = GetVisualComponentForDevice(deviceId);
-            if (visualComponent == null) {
-                return default(LocatorResult);
-            }
+            _locatorTcs = new TaskCompletionSource<LocatorResult>();
+            _locatorCancelTokenRegistration = cancellationToken.Register(() => CancelLocatorMode(device));
 
-            visualComponent.Container.Show(focus: false, immediate: true);
-            return await visualComponent.StartLocatorModeAsync(cancellationToken);
+            _shell.DispatchOnUIThread(() => {
+                var visualComponent = GetVisualComponentForDevice(deviceId);
+                visualComponent?.Container.Show(focus: false, immediate: true);
+            });
+
+            return _locatorTcs.Task;
+        }
+
+        public void EndLocatorMode(IRPlotDevice device, LocatorResult result) {
+            device.LocatorMode = false;
+
+            var tcs = _locatorTcs;
+            _locatorTcs = null;
+            tcs?.TrySetResult(result);
+
+            _locatorCancelTokenRegistration.Dispose();
+        }
+
+        private void CancelLocatorMode(IRPlotDevice device) {
+            device.LocatorMode = false;
+
+            var tcs = _locatorTcs;
+            _locatorTcs = null;
+            tcs?.TrySetCanceled();
+
+            _locatorCancelTokenRegistration.Dispose();
         }
 
         public async Task RemoveAllPlotsAsync(IRPlotDevice device) {
@@ -316,9 +347,12 @@ namespace Microsoft.R.Components.Plots.Implementation {
             InteractiveWorkflow.Shell.AssertIsOnMainThread();
 
             var plots = new List<IRPlot>();
-            foreach (var device in _devices) {
-                for (int i = 0; i < device.PlotCount; i++) {
-                    plots.Add(device.GetPlotAt(i));
+
+            lock (_devicesLock) {
+                foreach (var device in _devices) {
+                    for (int i = 0; i < device.PlotCount; i++) {
+                        plots.Add(device.GetPlotAt(i));
+                    }
                 }
             }
 
@@ -411,9 +445,9 @@ namespace Microsoft.R.Components.Plots.Implementation {
         }
 
         private IRPlotDevice FindDevice(Guid deviceId) {
-            InteractiveWorkflow.Shell.AssertIsOnMainThread();
-
-            return _devices.SingleOrDefault(d => d.DeviceId == deviceId);
+            lock (_devicesLock) {
+                return _devices.SingleOrDefault(d => d.DeviceId == deviceId);
+            }
         }
 
         private IRPlot FindPlot(Guid deviceId, Guid plotId) {
@@ -430,8 +464,11 @@ namespace Microsoft.R.Components.Plots.Implementation {
         private void RemoveAllDevices() {
             InteractiveWorkflow.Shell.AssertIsOnMainThread();
 
-            IRPlotDevice[] devices = _devices.ToArray();
-            _devices.Clear();
+            IRPlotDevice[] devices;
+            lock (_devicesLock) {
+                devices = _devices.ToArray();
+                _devices.Clear();
+            }
 
             foreach (var device in devices) {
                 DeviceRemoved?.Invoke(this, new RPlotDeviceEventArgs(device));
@@ -491,7 +528,12 @@ namespace Microsoft.R.Components.Plots.Implementation {
                 ActiveDevice = device;
 
                 // Update all the devices in parallel
-                var tasks = _devices.Select(RefreshDeviceNum);
+                IRPlotDevice[] devices;
+                lock (_devicesLock) {
+                    devices = _devices.ToArray();
+                }
+
+                var tasks = devices.Select(RefreshDeviceNum);
                 await Task.WhenAll(tasks);
 
                 _interactiveWorkflow.ActiveWindow?.Container.UpdateCommandStatus(false);

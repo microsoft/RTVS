@@ -2,8 +2,10 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Components.Plots.Implementation.Commands {
     internal sealed class PlotDeviceEndLocatorCommand : PlotDeviceCommand, IAsyncCommand {
@@ -22,7 +24,8 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
         }
 
         public Task<CommandResult> InvokeAsync() {
-            VisualComponent.EndLocatorMode();
+            InteractiveWorkflow.Plots.EndLocatorMode(VisualComponent.Device, LocatorResult.CreateNotClicked());
+
             return Task.FromResult(CommandResult.Executed);
         }
     }
