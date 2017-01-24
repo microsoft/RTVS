@@ -32,7 +32,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
         private readonly ICoreShell _shell;
 
         private TaskCompletionSource<LocatorResult> _locatorTcs;
-        private CancellationTokenRegistration? _locatorCancelTokenRegistration;
+        private CancellationTokenRegistration _locatorCancelTokenRegistration;
 
         public event EventHandler<RPlotDeviceEventArgs> ActiveDeviceChanged;
         public event EventHandler<RPlotDeviceEventArgs> DeviceAdded;
@@ -211,8 +211,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
             _locatorTcs = null;
             tcs?.TrySetResult(result);
 
-            _locatorCancelTokenRegistration?.Dispose();
-            _locatorCancelTokenRegistration = null;
+            _locatorCancelTokenRegistration.Dispose();
 
             return Task.CompletedTask;
         }
@@ -224,8 +223,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
             _locatorTcs = null;
             tcs?.TrySetCanceled();
 
-            _locatorCancelTokenRegistration?.Dispose();
-            _locatorCancelTokenRegistration = null;
+            _locatorCancelTokenRegistration.Dispose();
         }
 
         public async Task RemoveAllPlotsAsync(IRPlotDevice device) {
