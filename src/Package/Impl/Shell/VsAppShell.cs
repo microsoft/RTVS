@@ -18,7 +18,7 @@ using Microsoft.Languages.Editor.Host;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.R.Components.Controller;
-using Microsoft.R.Support.Settings;
+using Microsoft.R.Components.Settings;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Interop;
@@ -47,7 +47,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         private readonly ApplicationConstants _appConstants;
         private readonly ICoreServices _coreServices;
-        private IRPersistentSettings _settings;
+        private IRSettings _settings;
         private IdleTimeSource _idleTimeSource;
         private ExportProvider _exportProvider;
         private ICompositionService _compositionService;
@@ -89,13 +89,10 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             _idleTimeSource.ApplicationClosing += OnApplicationClosing;
             _idleTimeSource.ApplicationStarted += OnApplicationStarted;
 
-            _settings = _exportProvider.GetExportedValue<IRPersistentSettings>();
+            _settings = _exportProvider.GetExportedValue<IRSettings>();
             _settings.LoadSettings();
 
             EditorShell.Current = this;
-
-            _settings = _exportProvider.GetExportedValue<IRPersistentSettings>();
-            _settings.LoadSettings();
         }
 
         private void CheckVsStarted() {

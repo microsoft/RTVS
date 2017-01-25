@@ -1,16 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Common.Core.Enums;
 using Microsoft.Common.Core.Logging;
 using Microsoft.R.Components.ConnectionManager;
-using Microsoft.R.Components.ConnectionManager.Implementation;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Interpreters;
 using Microsoft.R.Support.Settings;
@@ -133,6 +132,12 @@ namespace Microsoft.R.Support.Test.Utility {
         }
 
         public bool ShowRToolbar { get; set; } = true;
+
+        #region IRPersistentSettings
+        public void LoadSettings() { }
+        public Task SaveSettingsAsync() => Task.CompletedTask;
+        public void Dispose() { }
+        #endregion
 
 #pragma warning disable 67
         public event PropertyChangedEventHandler PropertyChanged;

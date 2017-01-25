@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System.Reflection;
+using System;
 using Microsoft.Common.Core.Shell;
 
 namespace Microsoft.Common.Core.Extensions {
@@ -10,8 +10,10 @@ namespace Microsoft.Common.Core.Extensions {
             var properties = o.GetType().GetProperties();
             foreach (var p in properties) {
                 if (settings.SettingExists(p.Name)) {
-                    var value = settings.GetSetting(p.Name, p.PropertyType);
-                    p.SetValue(o, value);
+                    try {
+                        var value = settings.GetSetting(p.Name, p.PropertyType);
+                        p.SetValue(o, value);
+                    } catch(ArgumentException) { } // protect from settings store damage
                 }
             }
         }

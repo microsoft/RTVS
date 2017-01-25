@@ -23,8 +23,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace Microsoft.VisualStudio.R.Package.Options.R {
     [Export(typeof(IRSettings))]
     [Export(typeof(IRToolsSettings))]
-    [Export(typeof(IRPersistentSettings))]
-    internal sealed class RToolsSettingsImplementation : BindableBase, IRPersistentSettings {
+    internal sealed class RToolsSettingsImplementation : BindableBase, IRToolsSettings {
         private const int MaxDirectoryEntries = 8;
         private readonly ISettingsStorage _settings;
         private readonly ILoggingPermissions _loggingPermissions;
@@ -109,10 +108,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
 
         public ConnectionInfo[] Connections {
             get { return _connections; }
-            set {
-                SetProperty(ref _connections, value);
-                SaveSettingsAsync().DoNotWait();
-            }
+            set { SetProperty(ref _connections, value); }
         }
 
         public ConnectionInfo LastActiveConnection {

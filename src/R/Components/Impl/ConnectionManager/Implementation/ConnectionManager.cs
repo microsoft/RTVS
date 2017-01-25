@@ -14,7 +14,6 @@ using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Security;
 using Microsoft.Common.Core.Shell;
-using Microsoft.R.Components;
 using Microsoft.R.Components.ConnectionManager.Implementation.View;
 using Microsoft.R.Components.ConnectionManager.Implementation.ViewModel;
 using Microsoft.R.Components.Information;
@@ -227,6 +226,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             _settings.Connections = RecentConnections
                 .Select(c => new ConnectionInfo (c))
                 .ToArray();
+            _settings.SaveSettingsAsync().DoNotWait();
         }
 
         private void UpdateRecentConnections(bool save = true) {

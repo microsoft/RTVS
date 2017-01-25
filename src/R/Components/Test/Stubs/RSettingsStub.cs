@@ -3,6 +3,7 @@
 
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using Microsoft.Common.Core.Enums;
 using Microsoft.Common.Core.Logging;
 using Microsoft.R.Components.ConnectionManager;
@@ -25,6 +26,9 @@ namespace Microsoft.R.Components.Test.Stubs {
         public bool EvaluateActiveBindings { get; set; }
         public LogVerbosity LogVerbosity { get; set; }
 
+        public void LoadSettings() { }
+        public Task SaveSettingsAsync() => Task.CompletedTask;
+        public void Dispose() { }
 #pragma warning disable 67
         public event PropertyChangedEventHandler PropertyChanged;
     }

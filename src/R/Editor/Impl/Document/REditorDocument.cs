@@ -179,7 +179,7 @@ namespace Microsoft.R.Editor.Document {
             if (pb != null) {
                 return pb.MapDown(point, RContentTypeDefinition.ContentType);
             }
-            return null;
+            return point;
         }
 
         #region IDisposable
