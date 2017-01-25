@@ -100,8 +100,10 @@ namespace Microsoft.Common.Core {
 
         public static bool HasReadPermissions(this string path) {
             try {
-                Directory.GetFiles(path);
-                return true;
+                if (Directory.Exists(path)) {
+                    Directory.GetFiles(path);
+                    return true;
+                }
             } catch(IOException) { } catch(UnauthorizedAccessException) { }
             return false;
         }
