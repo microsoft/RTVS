@@ -1044,6 +1044,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Current R engine is already set to the Microsoft R Client..
+        /// </summary>
+        public static string Message_RClientIsAlreadySet {
+            get {
+                return ResourceManager.GetString("Message_RClientIsAlreadySet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R Tools News.
         /// </summary>
         public static string NewsWindowTitle {
@@ -1249,6 +1258,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Prompt_MsRClientJustInstalled {
             get {
                 return ResourceManager.GetString("Prompt_MsRClientJustInstalled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Microsoft R Client is not installed. Click Yes if you would you like to start installation of the Microsoft R Client now. Please close Visual Studio when the setup application starts and reopen it when Microsoft R Client installation is complete..
+        /// </summary>
+        public static string Prompt_RClientNotInstalled {
+            get {
+                return ResourceManager.GetString("Prompt_RClientNotInstalled", resourceCulture);
             }
         }
         
@@ -2113,6 +2131,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Survey/News Check.
+        /// </summary>
+        public static string Settings_SurveyNewsCheck {
+            get {
+                return ResourceManager.GetString("Settings_SurveyNewsCheck", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Specifies how often R Tools should check with the server for news and survey updates..
+        /// </summary>
+        public static string Settings_SurveyNewsCheck_Description {
+            get {
+                return ResourceManager.GetString("Settings_SurveyNewsCheck_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Syntax check.
         /// </summary>
         public static string Settings_SyntaxCheckCategory {
@@ -2553,6 +2589,42 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string SurrondWithSnippet {
             get {
                 return ResourceManager.GetString("SurrondWithSnippet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Once a day.
+        /// </summary>
+        public static string SurveyNewsPolicyCheckOnceDay {
+            get {
+                return ResourceManager.GetString("SurveyNewsPolicyCheckOnceDay", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Once a month.
+        /// </summary>
+        public static string SurveyNewsPolicyCheckOnceMonth {
+            get {
+                return ResourceManager.GetString("SurveyNewsPolicyCheckOnceMonth", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Once a week.
+        /// </summary>
+        public static string SurveyNewsPolicyCheckOnceWeek {
+            get {
+                return ResourceManager.GetString("SurveyNewsPolicyCheckOnceWeek", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Never.
+        /// </summary>
+        public static string SurveyNewsPolicyDisabled {
+            get {
+                return ResourceManager.GetString("SurveyNewsPolicyDisabled", resourceCulture);
             }
         }
         

@@ -18,6 +18,7 @@ using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Package.SurveyNews;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R {
@@ -43,6 +44,10 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         private bool _showPackageManagerDisclaimer = true;
         private HelpBrowserType _helpBrowserType = HelpBrowserType.Automatic;
         private bool _showDotPrefixedVariables;
+        private SurveyNewsPolicy _surveyNewsCheck = SurveyNewsPolicy.CheckOnceWeek;
+        private DateTime _surveyNewsLastCheck;
+        private string _surveyNewsFeedUrl = SurveyNewsUrls.Feed;
+        private string _surveyNewsIndexUrl = SurveyNewsUrls.Index;
         private bool _evaluateActiveBindings = true;
         private string _webHelpSearchString = "R site:stackoverflow.com";
         private BrowserType _webHelpSearchBrowserType = BrowserType.Internal;
@@ -146,6 +151,26 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         public bool ShowDotPrefixedVariables {
             get { return _showDotPrefixedVariables; }
             set { SetProperty(ref _showDotPrefixedVariables, value); }
+        }
+
+        public SurveyNewsPolicy SurveyNewsCheck {
+            get { return _surveyNewsCheck; }
+            set { SetProperty(ref _surveyNewsCheck, value); }
+        }
+
+        public DateTime SurveyNewsLastCheck {
+            get { return _surveyNewsLastCheck; }
+            set { SetProperty(ref _surveyNewsLastCheck, value); }
+        }
+
+        public string SurveyNewsFeedUrl {
+            get { return _surveyNewsFeedUrl; }
+            set { SetProperty(ref _surveyNewsFeedUrl, value); }
+        }
+
+        public string SurveyNewsIndexUrl {
+            get { return _surveyNewsIndexUrl; }
+            set { SetProperty(ref _surveyNewsIndexUrl, value); }
         }
 
         public bool EvaluateActiveBindings {
