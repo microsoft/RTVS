@@ -254,6 +254,9 @@
     <Compile Include="Sql\SettingsTest.cs" />
     <Compile Include="Sql\PublishOptionsDialogTest.cs" />
     <Compile Include="Sql\CommandTest.cs" />
+    <Compile Include="SurveyNews\SurveyNewsFeedClientTest.cs" />
+    <Compile Include="SurveyNews\SurveyNewsServiceTest.cs" />
+    <Compile Include="SurveyNews\SurveyNewsTestFilesFixture.cs" />
     <Compile Include="Telemetry\TelemetryTest.cs" />
     <Compile Include="Fixtures\ProjectTestFilesFixture.cs" />
     <Compile Include="Utility\CollectionUtilitiesTest.cs" />
@@ -270,6 +273,12 @@
       <Authenticode>Microsoft</Authenticode>
       <StrongName>StrongName</StrongName>
     </FilesToSign>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SurveyNews\Feeds\Empty.txt" />
+    <Content Include="SurveyNews\Feeds\Invalid.txt" />
+    <Content Include="SurveyNews\Feeds\Items.txt" />
+    <Content Include="SurveyNews\Feeds\NoItems.txt" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
