@@ -163,6 +163,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             return InteractiveWindow.Operations.ResetAsync();
         }
 
+        public Task CancelAsync() => _workflow.RSession.CancelAllAsync();
+
         public void SourceFiles(IEnumerable<string> files, bool echo) {
             Task.Run(async () => {
                 var shortNames = await _workflow.RSession.MakeRelativeToRUserDirectoryAsync(files);
