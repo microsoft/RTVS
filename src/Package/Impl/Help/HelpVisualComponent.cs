@@ -266,6 +266,9 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
         private static bool IsHelpUrl(string url) {
             Uri uri = new Uri(url);
+            if(uri.AbsoluteUri.EndsWithIgnoreCase(".pdf")) {
+                return false;
+            }
             // dynamicHelp.R (startDynamicHelp function):
             // # Choose 10 random port numbers between 10000 and 32000
             // ports <- 10000 + 22000*((stats::runif(10) + unclass(Sys.time())/300) %% 1)
