@@ -140,7 +140,6 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public const int icmdMicrosoftRProducts = 1406;
         public const int icmdCheckForUpdates = 1407;
         public const int icmdInstallRClient = 1408;
-        public const int icmdSwitchToRClient = 1409;
 
         public const int icmdSetDirectoryHere = 1500;
         public const int icmdSourceSelectedFiles = 1501;

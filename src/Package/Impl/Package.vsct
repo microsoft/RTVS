@@ -1373,17 +1373,6 @@
         </Strings>
       </Button>
 
-      <!-- Switch R to Microsoft R Client -->
-      <Button guid="guidRToolsCmdSet" id="icmdSwitchToRClient" priority="0x0450" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="rClientGroup"/>
-        <Icon guid="ImageCatalogGuid" id="RedChannel"/>
-        <CommandFlag>IconIsMoniker</CommandFlag>
-        <Strings>
-          <ButtonText>Chan&amp;ge R to Microsoft R Client</ButtonText>
-          <CommandName>Change R to Microsoft R Client</CommandName>
-        </Strings>
-      </Button>
-
       <!-- Microsoft R Products -->
       <Button guid="guidRToolsCmdSet" id="icmdMicrosoftRProducts" priority="0x0500" type="Button">
         <Parent guid="guidRToolsCmdSet" id="rClientGroup"/>
@@ -2891,7 +2880,6 @@
       <IDSymbol name="icmdMicrosoftRProducts" value="1406" />
       <IDSymbol name="icmdCheckForUpdates" value="1407" />
       <IDSymbol name="icmdInstallRClient" value="1408" />
-      <IDSymbol name="icmdSwitchToRClient" value="1409" />
 
       <!-- Project -->
       <IDSymbol name="icmdSetDirectoryHere" value="1500"/>

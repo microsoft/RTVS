@@ -60,7 +60,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new GoToEditorOptionsCommand(),
                 new ImportRSettingsCommand(),
                 new InstallRClientCommand(appShell),
-                new SwitchToRClientCommand(interactiveWorkflow.Connections, appShell),
                 new SurveyNewsCommand(appShell),
                 new SetupRemoteCommand(),
 

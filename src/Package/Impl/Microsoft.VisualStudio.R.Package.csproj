@@ -81,7 +81,6 @@
     <Compile Include="Commands\OleControllerChain.cs" />
     <Compile Include="Commands\R\HideAllPlotWindows.cs" />
     <Compile Include="Commands\R\ShowPlotWindowCommand.cs" />
-    <Compile Include="Commands\R\SwitchToRClientCommand.cs" />
     <Compile Include="Commands\SessionCommand.cs" />
     <Compile Include="DataInspect\Commands\DeleteAllVariablesCommand.cs" />
     <Compile Include="DataInspect\Commands\SessionCommand.cs" />
