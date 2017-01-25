@@ -266,7 +266,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
         private static bool IsHelpUrl(string url) {
             Uri uri = new Uri(url);
-            if(uri.AbsoluteUri.EndsWith(".pdf")) {
+            if(uri.AbsoluteUri.EndsWithIgnoreCase(".pdf")) {
                 return false;
             }
             // dynamicHelp.R (startDynamicHelp function):
