@@ -20,11 +20,11 @@ using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R {
     public class RToolsOptionsPage : DialogPage {
-        private readonly IRPersistentSettings _settings;
+        private readonly IRSettings _settings;
         private SettingsHolder _holder;
 
         public RToolsOptionsPage() {
-            _settings = VsAppShell.Current.ExportProvider.GetExportedValue<IRPersistentSettings>();
+            _settings = VsAppShell.Current.ExportProvider.GetExportedValue<IRSettings>();
             _holder = new SettingsHolder(_settings);
         }
 
@@ -211,10 +211,10 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         /// want to apply changes to the actual settings until user clicks OK.
         /// </summary>
         class SettingsHolder {
-            private readonly IRPersistentSettings _settings;
+            private readonly IRSettings _settings;
             private readonly IDictionary<string, object> _dict;
 
-            public SettingsHolder(IRPersistentSettings settings) {
+            public SettingsHolder(IRSettings settings) {
                 _settings = settings;
                 _dict = settings.GetPropertyValueDictionary();
             }

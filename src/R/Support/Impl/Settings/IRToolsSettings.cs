@@ -6,7 +6,7 @@ using Microsoft.Common.Core.Enums;
 using Microsoft.R.Components.Settings;
 
 namespace Microsoft.R.Support.Settings {
-    public interface IRToolsSettings : IRPersistentSettings {
+    public interface IRToolsSettings : IRSettings {
         YesNoAsk LoadRDataOnProjectLoad { get; set; }
         YesNoAsk SaveRDataOnProjectUnload { get; set; }
 

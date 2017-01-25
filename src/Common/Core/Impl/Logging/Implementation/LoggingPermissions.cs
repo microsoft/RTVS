@@ -88,6 +88,9 @@ namespace Microsoft.Common.Core.Logging {
         }
 
         private int? GetValueFromRegistry(string name, int minValue, int maxValue) {
+            if(_appConstants.LocalMachineHive == null) {
+                return minValue;
+            }
             using (var hlkm = _registry.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32)) {
                 try {
                     using (var key = hlkm.OpenSubKey(_appConstants.LocalMachineHive)) {
