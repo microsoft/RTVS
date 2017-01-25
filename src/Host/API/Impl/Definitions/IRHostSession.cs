@@ -25,12 +25,12 @@ namespace Microsoft.R.Host.Client {
         event EventHandler<EventArgs> Disconnected;
 
         /// <summary>
-        /// Awaitable task that completes when R host process has completed initialization.
+        /// Awaitable task that completes when R host process has finished initialization.
         /// </summary>
         Task HostStarted { get; }
 
         /// <summary>
-        /// Indicates if host process is currently running.
+        /// Indicates if R host process is currently running.
         /// </summary>
         bool IsHostRunning { get; }
 
@@ -87,7 +87,7 @@ namespace Microsoft.R.Host.Client {
         Task ExecuteAsync(string expression, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
-        /// Executes R code and returns output as it would happen in the interactive window.
+        /// Executes R code and returns output as it would appear in the interactive window.
         /// </summary>
         /// <param name="expression">Expression or block of R code to execute</param>
         /// <param name="cancellationToken">Cancellation token</param>

@@ -13,7 +13,6 @@ using static Microsoft.Common.Core.NativeMethods;
 namespace Microsoft.R.Host.UserProfile {
     class RUserProfileServices : IUserProfileServices {
         public IUserProfileServiceResult CreateUserProfile(IUserCredentials credentials, ILogger logger) {
-            RUserProfileServiceResponse result;
             StringBuilder profileDir = new StringBuilder(MAX_PATH);
             uint size = (uint)profileDir.Capacity;
 

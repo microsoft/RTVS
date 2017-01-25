@@ -10,11 +10,25 @@ using Microsoft.Common.Core;
 using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client {
+    /// <summary>
+    /// Utility class that provides methods for data conversion between R and C#
+    /// </summary>
     public static class Converter {
+        /// <summary>
+        /// Converts collection of objects to a list of specific type
+        /// </summary>
+        /// <typeparam name="T">Target type</typeparam>
+        /// <param name="e">Objects to convert</param>
+        /// <returns>List of objects converted to the target type</returns>
         public static List<T> ToListOf<T>(this IEnumerable<object> e) {
             return e.Select(x => (T)Convert.ChangeType(x, typeof(T))).ToList();
         }
 
+        /// <summary>
+        /// Converts object to a R string. For example, 'bool' to "TRUE" or "FALSE".
+        /// </summary>
+        /// <param name="value">Object value</param>
+        /// <returns>String representing object value in R syntax</returns>
         public static string ToRLiteral(this object value) {
             if (value == null) {
                 return "NULL";
@@ -41,6 +55,12 @@ namespace Microsoft.R.Host.Client {
             return rvalue;
         }
 
+        /// <summary>
+        /// Converts collection of object to R expression that creates
+        /// R list from the provided collection of .NET objects.
+        /// </summary>
+        /// <param name="e">Collection of objects</param>
+        /// <returns>Expression in R syntax that creates list ob objects</returns>
         public static string ToRListConstructor(this IEnumerable e) {
             var sb = new StringBuilder();
             sb.Append("c(");
@@ -54,6 +74,12 @@ namespace Microsoft.R.Host.Client {
             return sb.ToString();
         }
 
+        /// <summary>
+        /// Converts .NET data frame object to R expression that creates
+        /// R data frame from the provided .NET object.
+        /// </summary>
+        /// <param name="df">Data frame</param>
+        /// <returns>Expression in R syntax that creates R data frame</returns>
         public static string ToRDataFrameConstructor(this DataFrame df) {
             var sb = new StringBuilder();
             foreach (var list in df.Data) {
@@ -68,6 +94,12 @@ namespace Microsoft.R.Host.Client {
             return sb.ToString();
         }
 
+        /// <summary>
+        /// Constructs R function call from funtion name and arguments
+        /// </summary>
+        /// <param name="function">Function name</param>
+        /// <param name="arguments">Function arguments</param>
+        /// <returns>Expression in R syntax that invokes function with arguments</returns>
         public static string ToRFunctionCall(this string function, params object[] arguments) {
             var sb = new StringBuilder(function);
             sb.Append('(');
