@@ -25,7 +25,7 @@ namespace Microsoft.R.Host.Client {
         /// Data frame data
         /// </summary>
         public IReadOnlyList<IReadOnlyList<object>> Data { get; }
-
+        
         /// <summary>
         /// Constructs data frame
         /// </summary>
