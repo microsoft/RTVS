@@ -21,6 +21,7 @@
   <files>
     <!-- Actual reference -->
     <file src="Microsoft.R.Host.Client.API.dll" target="lib\net46" />
+    <file src="Microsoft.R.Host.Client.API.xml" target="lib\net46" />
     <file src="Microsoft.R.Common.Core.dll" target="lib\net46" />
     <!-- Targets to copy other binaries to the output -->
     <file src="Microsoft.R.Host.Client.API.targets" target="build" />

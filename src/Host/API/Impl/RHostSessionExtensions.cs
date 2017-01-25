@@ -10,6 +10,9 @@ using Microsoft.R.Host.Client.Host;
 using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client {
+    /// <summary>
+    /// Additional helpers for R session
+    /// </summary>
     public static class RHostSessionExtensions {
         /// <summary>
         /// Creates list of objects in R from list of .NET objects
@@ -59,11 +62,25 @@ namespace Microsoft.R.Host.Client {
             }
         }
 
+        /// <summary>
+        /// Retrieves length of R object
+        /// </summary>
+        /// <param name="session">R session</param>
+        /// <param name="expression">Expression to evaluate</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>Object kength</returns>
         public static async Task<int> GetLengthAsync(this IRHostSession session, string expression, CancellationToken cancellationToken = default(CancellationToken)) {
             var info = await session.GetInformationAsync(expression, cancellationToken);
             return info.Length;
         }
 
+        /// <summary>
+        /// Retrieves R type name for an object
+        /// </summary>
+        /// <param name="session">R session</param>
+        /// <param name="expression">Expression to evaluate</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>R type name</returns>
         public static async Task<string> GetTypeNameAsync(this IRHostSession session, string expression, CancellationToken cancellationToken = default(CancellationToken)) {
             var info = await session.GetInformationAsync(expression, cancellationToken);
             return info.TypeName;

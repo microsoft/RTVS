@@ -8,17 +8,41 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.R.DataInspection;
+using Microsoft.R.Host.Client.Host; // RHostDisconnectedException
 using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 using static Microsoft.R.DataInspection.REvaluationResultProperties;
 
 namespace Microsoft.R.Host.Client {
     public partial class RHostSession {
+        /// <summary>
+        /// Invokes R function with a set of arguments. Does not return any value.
+        /// </summary>
+        /// <param name="function">Function name</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <param name="args">Function arguments</param>
+        /// <exception cref="ArgumentException" />
+        /// <exception cref="REvaluationException" />
+        /// <exception cref="OperationCanceledException" />
+        /// <exception cref="RHostDisconnectedException" />
         public async Task InvokeAsync(string function, CancellationToken cancellationToken = default(CancellationToken), params object[] args) {
             Check.ArgumentNull(nameof(function), function);
             var fc = function.ToRFunctionCall(args);
             await ExecuteAsync(fc, cancellationToken);
         }
+
+        /// <summary>
+        /// Invokes R function with a set of arguments. Returns name of a 
+        /// temporary variable that received the result.
+        /// </summary>
+        /// <param name="function">Function name</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <param name="args">Function arguments</param>
+        /// <returns>Name of the variable that holds the data returned by the function</returns>
+        /// <exception cref="ArgumentException" />
+        /// <exception cref="REvaluationException" />
+        /// <exception cref="OperationCanceledException" />
+        /// <exception cref="RHostDisconnectedException" />
         public async Task<string> InvokeAndReturnAsync(string function, CancellationToken cancellationToken = default(CancellationToken), params object[] args) {
             Check.ArgumentNull(nameof(function), function);
             var fc = function.ToRFunctionCall(args);
@@ -28,12 +52,32 @@ namespace Microsoft.R.Host.Client {
             return result;
         }
 
+        /// <summary>
+        /// Retrieves list of unknown type from R variable
+        /// </summary>
+        /// <param name="expression">Expression (variable name) to fetch as list</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>List of objects</returns>
+        /// <exception cref="ArgumentException" />
+        /// <exception cref="REvaluationException" />
+        /// <exception cref="OperationCanceledException" />
+        /// <exception cref="RHostDisconnectedException" />
         public async Task<List<object>> GetListAsync(string expression, CancellationToken cancellationToken = default(CancellationToken)) {
             Check.ArgumentNull(nameof(expression), expression);
             var array = await GetJArrayAsync(expression, cancellationToken);
             return JArrayToObjectList(array);
         }
 
+        /// <summary>
+        /// Retrieves list of specific type from R variable
+        /// </summary>
+        /// <param name="expression">Expression (variable name) to fetch as list</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>List of values of the provided type</returns>
+        /// <exception cref="ArgumentException" />
+        /// <exception cref="REvaluationException" />
+        /// <exception cref="OperationCanceledException" />
+        /// <exception cref="RHostDisconnectedException" />
         public async Task<List<T>> GetListAsync<T>(string expression, CancellationToken cancellationToken = default(CancellationToken)) {
             Check.ArgumentNull(nameof(expression), expression);
             if (typeof(T) == typeof(object)) {
@@ -50,6 +94,16 @@ namespace Microsoft.R.Host.Client {
         }
 
         private const string _dfTempVariableName = ".rtvs.gdf.temp";
+        /// <summary>
+        /// Retrieves data frame from R variable
+        /// </summary>
+        /// <param name="expression">Expression (variable name) to fetch as data frame</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>Data frame</returns>
+        /// <exception cref="ArgumentException" />
+        /// <exception cref="REvaluationException" />
+        /// <exception cref="OperationCanceledException" />
+        /// <exception cref="RHostDisconnectedException" />
         public async Task<DataFrame> GetDataFrameAsync(string expression, CancellationToken cancellationToken = default(CancellationToken)) {
             Check.ArgumentNull(nameof(expression), expression);
             await ExecuteAsync(Invariant($"{_dfTempVariableName} <- {expression}"), cancellationToken);
@@ -82,6 +136,16 @@ namespace Microsoft.R.Host.Client {
             return new DataFrame(rowNames, colNames, data);
         }
 
+        /// <summary>
+        /// Retrieves information about R object or expression
+        /// </summary>
+        /// <param name="expression">Expression (variable name) to describe</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>Object information</returns>
+        /// <exception cref="ArgumentException" />
+        /// <exception cref="REvaluationException" />
+        /// <exception cref="OperationCanceledException" />
+        /// <exception cref="RHostDisconnectedException" />
         public async Task<IRObjectInformation> GetInformationAsync(string expression, CancellationToken cancellationToken = default(CancellationToken)) {
             var properties = TypeNameProperty | DimProperty | LengthProperty;
             var info = await _session.EvaluateAndDescribeAsync(expression, properties, null, cancellationToken);
