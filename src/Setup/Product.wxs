@@ -135,6 +135,7 @@
                       </Directory>
 
                       <Directory Id="HiddenProfilesFolder" Name="Profiles" />
+                      <Directory Id="SurveyNewsFolder" Name="SurveyNews" />
 
                       <Directory Id="SnippetsFolder" Name="Snippets">
                         <Directory Id="SnippetsAnalysisFolder" Name="analysis" />
@@ -214,6 +215,7 @@
     <?include ProjectTemplates.wxi ?>
     <?include SqlTemplates.wxi ?>
     <?include Profiles.wxi ?>
+    <?include SurveyNews.wxi ?>
     <?include Themes.wxi ?>
     <?include RtvsPackage.wxi ?>
     <?include Associations.wxi ?>

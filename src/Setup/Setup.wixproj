@@ -60,6 +60,7 @@
     <Content Include="RtvsPackageFiles1.wxi" />
     <Content Include="SqlTemplates.wxi" />
     <Content Include="project.json" />
+    <Content Include="SurveyNews.wxi" />
     <Content Include="Snippets.wxi" />
     <Content Include="Themes.wxi" />
     <Content Include="FileNewTemplates.wxi" />

@@ -416,6 +416,18 @@
   <data name="SaveWorkspaceOnProjectUnload" xml:space="preserve">
     <value>Save current workspace image to {0}?</value>
   </data>
+  <data name="SurveyNewsPolicyDisabled" xml:space="preserve">
+    <value>Never</value>
+  </data>
+  <data name="SurveyNewsPolicyCheckOnceDay" xml:space="preserve">
+    <value>Once a day</value>
+  </data>
+  <data name="SurveyNewsPolicyCheckOnceWeek" xml:space="preserve">
+    <value>Once a week</value>
+  </data>
+  <data name="SurveyNewsPolicyCheckOnceMonth" xml:space="preserve">
+    <value>Once a month</value>
+  </data>
   <data name="Settings_WorkspaceCategory" xml:space="preserve">
     <value>Workspace</value>
   </data>
@@ -560,6 +572,12 @@ If you have any screenshots demonstrating the issue, please include them as well
 Additional information:
 
 {0}</value>
+  </data>
+  <data name="Settings_SurveyNewsCheck" xml:space="preserve">
+    <value>Survey/News Check</value>
+  </data>
+  <data name="Settings_SurveyNewsCheck_Description" xml:space="preserve">
+    <value>Specifies how often R Tools should check with the server for news and survey updates.</value>
   </data>
   <data name="Status_WritingCSV" xml:space="preserve">
     <value>Writing data into CSV file...</value>
