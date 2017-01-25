@@ -33,7 +33,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow {
         void PositionCaretAtPrompt();
         void ClearPendingInputs();
         Task<ExecutionResult> ResetAsync();
-
+        Task CancelAsync();
         void SourceFiles(IEnumerable<string> files, bool echo);
 
         Task SourceFileAsync(string file, bool echo, Encoding encoding = null, CancellationToken cancellationToken = default(CancellationToken));

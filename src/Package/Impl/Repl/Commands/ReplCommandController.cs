@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Components.Controller;
@@ -151,6 +152,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         }
 
         private void HandleCancel(RCompletionController controller) {
+            Workflow.Operations.CancelAsync().DoNotWait();
             // Post interrupt command which knows if it can interrupt R or not
             VsAppShell.Current.PostCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdInterruptR);
         }
@@ -174,8 +176,14 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             if (TextView != null) {
                 ServiceManager.RemoveService<ReplCommandController>(TextView);
             }
-
             base.Dispose(disposing);
+        }
+
+        private IRInteractiveWorkflow Workflow {
+            get {
+                var interactiveWorkflowProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
+                return interactiveWorkflowProvider.GetOrCreate();
+            }
         }
     }
 }
