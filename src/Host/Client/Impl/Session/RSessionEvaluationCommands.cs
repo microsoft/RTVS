@@ -153,8 +153,18 @@ grDevices::deviceIsInteractive('ide')
         }
 
         public static Task<JArray> InstalledPackagesAsync(this IRExpressionEvaluator evaluation) {
-            var script = @"rtvs:::packages.installed()";
+            var script = "rtvs:::packages.installed()";
             return evaluation.EvaluateAsync<JArray>(script, REvaluationKind.Normal);
+        }
+
+        public static Task<JArray> InstalledPackagesFunctionsAsync(this IRExpressionEvaluator evaluation, REvaluationKind kind = REvaluationKind.Normal, CancellationToken cancellationToken = default(CancellationToken)) {
+            var script = "rtvs:::packages.installed.functions()";
+            return evaluation.EvaluateAsync<JArray>(script, kind, cancellationToken);
+        }
+
+        public static Task<JArray> PackagesFunctionsNamesAsync(this IRExpressionEvaluator evaluation, string packageName, REvaluationKind kind = REvaluationKind.Normal, CancellationToken cancellationToken = default(CancellationToken)) {
+            var script = $"rtvs:::package.functions.names({packageName.ToRStringLiteral()})";
+            return evaluation.EvaluateAsync<JArray>(script, kind, cancellationToken);
         }
 
         public static Task<JArray> AvailablePackagesAsync(this IRExpressionEvaluator evaluation) {

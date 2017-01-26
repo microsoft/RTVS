@@ -18,6 +18,7 @@ using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
+using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 
 namespace Microsoft.R.Support.Help.Packages {
@@ -87,29 +88,27 @@ namespace Microsoft.R.Support.Help.Packages {
         private async Task BuildIndexAsync(IBinaryAsyncLockToken lockToken) {
             try {
                 if (!lockToken.IsSet) {
-                    var startTotalTime = DateTime.Now;
-
                     await TaskUtilities.SwitchToBackgroundThread();
+                    var stopwatch = new Stopwatch();
+                    stopwatch.Start();
+
+                    // Ensure session is started
                     await _host.StartSessionAsync();
-                    Debug.WriteLine("R function host start: {0} ms", (DateTime.Now - startTotalTime).TotalMilliseconds);
+                    Debug.WriteLine("R function host start: {0} ms", stopwatch.ElapsedMilliseconds);
 
-                    var startTime = DateTime.Now;
-                    // Fetch list of available packages from R session
-                    await BuildInstalledPackagesIndexAsync();
-                    Debug.WriteLine("R package names/description: {0} ms", (DateTime.Now - startTime).TotalMilliseconds);
+                    // Fetch list of package functions from R session
+                    await LoadInstalledPackagesIndexAsync();
+                    Debug.WriteLine("Fetch list of package functions from R session: {0} ms", stopwatch.ElapsedMilliseconds);
 
-                    // Populate function index for preloaded packages first
-                    startTime = DateTime.Now;
-                    await BuildPreloadedPackagesFunctionListAsync();
-                    Debug.WriteLine("R function index (preloaded): {0} ms", (DateTime.Now - startTime).TotalMilliseconds);
+                    // Try load missing functions from cache or explicitly
+                    await LoadRemainingPackagesFunctions();
+                    Debug.WriteLine("Try load missing functions from cache or explicitly: {0} ms", stopwatch.ElapsedMilliseconds);
 
-                    // Populate function index for all remaining packages
-                    startTime = DateTime.Now;
-                    await BuildRemainingPackagesFunctionListAsync();
-                    Debug.WriteLine("R function index (remaining): {0} ms", (DateTime.Now - startTime).TotalMilliseconds);
-
+                    // Build index
                     await _functionIndex.BuildIndexAsync(this);
-                    Debug.WriteLine("R function index total: {0} ms", (DateTime.Now - startTotalTime).TotalMilliseconds);
+                    Debug.WriteLine("R function index total: {0} ms", stopwatch.ElapsedMilliseconds);
+
+                    stopwatch.Stop();
                 }
             } catch (RHostDisconnectedException ex) {
                 Debug.WriteLine(ex.Message);
@@ -176,29 +175,29 @@ namespace Microsoft.R.Support.Help.Packages {
             _host?.Dispose();
         }
 
-        private async Task BuildInstalledPackagesIndexAsync() {
-            var packages = await GetInstalledPackagesAsync();
-            foreach (var p in packages) {
-                _packages[p.Package] = new PackageInfo(_host, p.Package, p.Description, p.Version);
-            }
-            _packages["rtvs"] = new PackageInfo(_host, "rtvs", "R Tools", "1.0");
-        }
-
-        private async Task BuildPreloadedPackagesFunctionListAsync() {
-            foreach (var packageName in PreloadedPackages) {
-                PackageInfo pi;
-                _packages.TryGetValue(packageName, out pi);
-                if (pi != null) {
-                    await pi.LoadFunctionsIndexAsync();
+        private async Task LoadInstalledPackagesIndexAsync() {
+            var packagesFunctions = await _host.Session.InstalledPackagesFunctionsAsync(REvaluationKind.BaseEnv);
+            foreach (var package in packagesFunctions) {
+                var name = package.Value<string>("Package");
+                var description = package.Value<string>("Description");
+                var version = package.Value<string>("Version");
+                var functions = package.Value<JArray>("Functions");
+                if (functions.HasValues) {
+                    var functionNames = functions.Children<JValue>().Select(v => (string)v.Value);
+                    _packages[name] = new PackageInfo(_host, name, description, version, functionNames);
+                } else {
+                    _packages[name] = new PackageInfo(_host, name, description, version);
                 }
             }
+
+            if (!_packages.ContainsKey("rtvs")) {
+                _packages["rtvs"] = new PackageInfo(_host, "rtvs", "R Tools", "1.0");
+            }
         }
 
-        private async Task BuildRemainingPackagesFunctionListAsync() {
-            foreach (var pi in _packages.Values) {
-                if (!pi.Functions.Any()) {
-                    await pi.LoadFunctionsIndexAsync();
-                }
+        private async Task LoadRemainingPackagesFunctions() {
+            foreach (var pi in _packages.Values.Where(p => !p.Functions.Any())) {
+                await pi.LoadFunctionsIndexAsync();
             }
         }
 
