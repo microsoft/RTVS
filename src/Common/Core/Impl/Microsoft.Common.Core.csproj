@@ -90,6 +90,7 @@
     <Compile Include="OS\Win32NativeEnvironmentBlock.cs" />
     <Compile Include="OS\Win32Process.cs" />
     <Compile Include="OS\Win32MessageBox.cs" />
+    <Compile Include="OS\Win32ProcessExitEventArgs.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

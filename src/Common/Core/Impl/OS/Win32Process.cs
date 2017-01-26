@@ -24,7 +24,7 @@ namespace Microsoft.Common.Core.OS {
             _registeredWait = ThreadPool.RegisterWaitForSingleObject(_wait, (o, t) => {
                 _registeredWait.Unregister(_wait);
                 SetExitState();
-                Exited?.Invoke(this, null);
+                Exited?.Invoke(this, new Win32ProcessExitEventArgs(_exitCode));
                 _processHandle.Close();
                 _threadHandle.Close();
                 _wait.Close();
@@ -43,17 +43,17 @@ namespace Microsoft.Common.Core.OS {
 
         public bool HasExited => _hasExited;
 
-        public event EventHandler Exited;
+        public event EventHandler<Win32ProcessExitEventArgs> Exited;
 
         public int ExitCode =>  (int)_exitCode;
 
         public void WaitForExit(int milliseconds) {
-            ProcessWaitHandle processWaitHandle = new ProcessWaitHandle(_processHandle);
-            if (processWaitHandle.WaitOne(milliseconds)) {
-                // This means the process exited while waiting.
-                SetExitState();
+            using (ProcessWaitHandle processWaitHandle = new ProcessWaitHandle(_processHandle)) {
+                if (processWaitHandle.WaitOne(milliseconds)) {
+                    // This means the process exited while waiting.
+                    SetExitState();
+                }
             }
-            processWaitHandle.Close();
         }
 
         public void Kill() {
