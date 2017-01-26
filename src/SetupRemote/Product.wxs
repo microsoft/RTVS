@@ -74,7 +74,6 @@
         </ServiceInstall>
         <ServiceControl Id="RemoteRBrokerServiceUninstall" Name="RHostBrokerService" Remove="uninstall" Stop="uninstall"/>
         <fire:FirewallException Id="RBrokerSvcFirewallException" Name="Microsoft.R.Host.Broker" Program="[INSTALLFOLDER]Microsoft.R.Host.Broker.exe" Scope="any" Profile="all"/>
-        <fire:FirewallException Id="RHostFirewallException" Name="Microsoft.R.Host" Program="[INSTALLFOLDER]Microsoft.R.Host.exe" Scope="any" Profile="all"/>
       </Component>
     </DirectoryRef>
     <?include RtvsPackage.wxi ?>
