@@ -25,7 +25,6 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
         private bool _locatorMode;
         private bool _showWatermark;
         private bool _showError;
-        private TaskCompletionSource<LocatorResult> _locatorTcs;
 
         public int InstanceId { get; }
 
