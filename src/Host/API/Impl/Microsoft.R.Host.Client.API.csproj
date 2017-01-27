@@ -108,7 +108,7 @@
     <NugetExe>$(NuGetPackageRoot)\NuGet.CommandLine\3.5.0\tools\nuget.exe</NugetExe>
     <BuildVersion Condition="$(BuildVersion) == ''">0.6.0</BuildVersion>
     <BinPath>$([System.IO.Path]::GetFullPath($(OutputPath)))</BinPath>
-    <ConfigLetter Condition="$(Configuration) == 'Debug'">d</ConfigLetter>
-    <PostBuildEvent>$(NugetExe) pack "$(MSBuildThisFileDirectory)$(AssemblyName).nuspec" -OutputDirectory "$(BinPath) " -Version $(BuildVersion) -BasePath "$(BinPath) " -NonInteractive -Properties ConfigLetter="$(ConfigLetter)"</PostBuildEvent>
+    <ConfigSuffix Condition="$(Configuration) == 'Debug'">d</ConfigSuffix>
+    <PostBuildEvent>$(NugetExe) pack "$(MSBuildThisFileDirectory)$(AssemblyName).nuspec" -OutputDirectory "$(BinPath) " -Version $(BuildVersion) -BasePath "$(BinPath) " -NonInteractive -Properties ConfigSuffix="$(ConfigSuffix)"</PostBuildEvent>
   </PropertyGroup>
 </Project>
