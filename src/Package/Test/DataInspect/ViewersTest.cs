@@ -18,19 +18,23 @@ using Microsoft.VisualStudio.R.Package.DataInspect.Viewers;
 using Microsoft.VisualStudio.R.Package.Shell;
 using NSubstitute;
 using Xunit;
+using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 
 namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]   // required for tests using R Host 
     [Category.Viewers]
     public class ViewersTest : IAsyncLifetime {
+        private const REvaluationResultProperties AllFields = unchecked((REvaluationResultProperties)~0);
+
+        private readonly TestMethodFixture _testMethod;
         private readonly IRSessionProvider _sessionProvider;
         private readonly IObjectDetailsViewerAggregator _aggregator;
         private readonly IRInteractiveWorkflow _workflow;
 
-        public ViewersTest() {
+        public ViewersTest(TestMethodFixture testMethod) {
+            _testMethod = testMethod;
             _aggregator = VsAppShell.Current.ExportProvider.GetExportedValue<IObjectDetailsViewerAggregator>();
-
             _workflow = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
             _sessionProvider = _workflow.RSessions;
         }
@@ -72,19 +76,19 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                 funcViewer.Should().NotBeNull().And.BeOfType<CodeViewer>();
 
                 var gridViewer = await _aggregator.GetViewer(session, REnvironments.GlobalEnv, "airmiles");
-                gridViewer.Should().NotBeNull().And.BeOfType<Viewer1D>();
+                gridViewer.Should().NotBeNull().And.BeOfType<GridViewer>();
 
                 gridViewer = await _aggregator.GetViewer(session, REnvironments.GlobalEnv, "mtcars");
-                gridViewer.Should().NotBeNull().And.BeOfType<TableViewer>();
+                gridViewer.Should().NotBeNull().And.BeOfType<GridViewer>();
 
                 gridViewer = await _aggregator.GetViewer(session, REnvironments.GlobalEnv, "AirPassengers");
-                gridViewer.Should().NotBeNull().And.BeOfType<Viewer1D>();
+                gridViewer.Should().NotBeNull().And.BeOfType<GridViewer>();
 
                 gridViewer = await _aggregator.GetViewer(session, REnvironments.GlobalEnv, "list(c(1:10))");
-                gridViewer.Should().NotBeNull().And.BeOfType<ListViewer>();
+                gridViewer.Should().NotBeNull().And.BeOfType<GridViewer>();
 
                 gridViewer = await _aggregator.GetViewer(session, REnvironments.GlobalEnv, "c(1:10)");
-                gridViewer.Should().NotBeNull().And.BeOfType<VectorViewer>();
+                gridViewer.Should().NotBeNull().And.BeOfType<GridViewer>();
 
                 gridViewer.Capabilities.Should().HaveFlag(ViewerCapabilities.List | ViewerCapabilities.Table);
             }
@@ -96,7 +100,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         [InlineData("`?` <- function(a, b, c) { }; x <- `?`", "x", "function(a, b, c)")]
         public async Task FunctionViewerTest(string expression, string functionName, string expected) {
             using (var hostScript = new RHostScript(_workflow.RSessions)) {
-                if(!string.IsNullOrEmpty(expression)) {
+                if (!string.IsNullOrEmpty(expression)) {
                     await hostScript.Session.ExecuteAsync(expression);
                 }
                 var funcViewer = await _aggregator.GetViewer(hostScript.Session, REnvironments.GlobalEnv, functionName) as CodeViewer;
@@ -120,77 +124,69 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             }
         }
 
-        [Test]
-        public void TableViewerTest() {
+        [CompositeTest]
+        [InlineData("as.list")]
+        [InlineData("as.logical")]
+        [InlineData("as.integer")]
+        [InlineData("as.double")]
+        [InlineData("as.character")]
+        [InlineData("as.complex")]
+        public async Task GridViewerDimLengthTest(string cast) {
             var e = Substitute.For<IDataObjectEvaluator>();
-            var viewer = new TableViewer(_aggregator, e);
- 
-            var eval = Substitute.For<IRValueInfo>();
-            eval.Classes.Returns(new List<string>() { "foo" });
-
+            var viewer = new GridViewer(_aggregator, e);
             viewer.CanView(null).Should().BeFalse();
-            viewer.CanView(eval).Should().BeFalse();
 
-            eval.Dim.Count.Returns(0);
-            viewer.CanView(eval).Should().BeFalse();
+            using (var hostScript = new RHostScript(_sessionProvider)) {
+                var session = hostScript.Session;
 
-            foreach (var c in new string[] { "matrix", "data.frame", "table", "array" }) {
-                eval.Classes.Returns(new List<string>() { c });
-                eval.Dim.Count.Returns(3);
-                viewer.CanView(eval).Should().BeFalse();
-                eval.Dim.Count.Returns(2);
-                viewer.CanView(eval).Should().BeTrue();
-                eval.Dim.Count.Returns(1);
-                viewer.CanView(eval).Should().BeFalse();
-                eval.Dim.Count.Returns(0);
-                viewer.CanView(eval).Should().BeFalse();
+                await session.ExecuteAsync($"x <- {cast}(c())");
+                var value = await session.EvaluateAndDescribeAsync("x", AllFields, null);
+                viewer.CanView(value).Should().BeFalse();
+
+                await session.ExecuteAsync($"x <- {cast}(1)");
+                value = await session.EvaluateAndDescribeAsync("x", AllFields, null);
+                viewer.CanView(value).Should().BeTrue();
+
+                await session.ExecuteAsync($"x <- {cast}(1:100)");
+                value = await session.EvaluateAndDescribeAsync("x", AllFields, null);
+                viewer.CanView(value).Should().BeTrue();
+
+                await session.ExecuteAsync($"dim(x) <- 100");
+                value = await session.EvaluateAndDescribeAsync("x", AllFields, null);
+                viewer.CanView(value).Should().BeTrue();
+
+                await session.ExecuteAsync($"dim(x) <- c(10, 10)");
+                value = await session.EvaluateAndDescribeAsync("x", AllFields, null);
+                viewer.CanView(value).Should().BeTrue();
+
+                await session.ExecuteAsync($"dim(x) <- c(10, 5, 2)");
+                value = await session.EvaluateAndDescribeAsync("x", AllFields, null);
+                viewer.CanView(value).Should().BeFalse();
             }
-
-            eval.Dim.Returns((IReadOnlyList<int>)null);
-            foreach (var c in new string[] { "a", "b" }) {
-                eval.Classes.Returns(new List<string>() { c });
-                viewer.CanView(eval).Should().BeFalse();
-            }
-
-            eval.Classes.Returns(new List<string>() { "foo", "bar" });
-            viewer.CanView(eval).Should().BeFalse();
         }
 
-        [Test]
-        public void Viewer1DTest() {
+        [CompositeTest]
+        [InlineData("NULL")]
+        [InlineData(".GlobalEnv")]
+        [InlineData("pairlist(1)")]
+        [InlineData("function() {}")]
+        [InlineData("base::c")]
+        [InlineData("quote(x)")]
+        [InlineData("quote(1 + 2)")]
+        [InlineData("parse(text = '1; 2')")]
+        [InlineData("1 ~ 2")]
+        [InlineData("setClass('X', representation(x = 'logical'))()")]
+        public async Task GridViewerExcludeTest(string expr) {
             var e = Substitute.For<IDataObjectEvaluator>();
-            var viewer = new Viewer1D(_aggregator, e);
-
-            var eval = Substitute.For<IRValueInfo>();
-            eval.Classes.Returns(new List<string>() { "environment" });
-
+            var viewer = new GridViewer(_aggregator, e);
             viewer.CanView(null).Should().BeFalse();
-            viewer.CanView(eval).Should().BeFalse();
 
-            eval.Dim.Count.Returns(0);
-            viewer.CanView(eval).Should().BeFalse();
+            using (var hostScript = new RHostScript(_sessionProvider)) {
+                var session = hostScript.Session;
 
-            eval.Length.Returns(2);
-            foreach (var c in new string[] { "ts", "array" }) {
-                eval.Classes.Returns(new List<string>() { c });
-                eval.Dim.Count.Returns(2);
-                viewer.CanView(eval).Should().BeFalse();
-                eval.Dim.Count.Returns(1);
-                viewer.CanView(eval).Should().BeTrue();
-                eval.Dim.Count.Returns(0);
-                viewer.CanView(eval).Should().BeFalse();
-            }
-
-            eval.Dim.Returns((IReadOnlyList<int>)null);
-            foreach (var c in new string[] { "ts", "array" }) {
-                eval.Classes.Returns(new List<string>() { c });
-                viewer.CanView(eval).Should().BeTrue();
-            }
-
-            eval.Dim.Returns((IReadOnlyList<int>)null);
-            foreach (var c in new string[] { "a", "b" }) {
-                eval.Classes.Returns(new List<string>() { c });
-                viewer.CanView(eval).Should().BeFalse();
+                await session.ExecuteAsync($"x <- {expr}");
+                var value = await session.EvaluateAndDescribeAsync("x", AllFields, null);
+                viewer.CanView(value).Should().BeFalse();
             }
         }
 
