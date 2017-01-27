@@ -121,9 +121,6 @@
     <Compile Include="DataInspect\Viewers\DebugObjectEvaluator.cs" />
     <Compile Include="DataInspect\Viewers\FileViewer.cs" />
     <Compile Include="DataInspect\Viewers\CodeViewer.cs" />
-    <Compile Include="DataInspect\Viewers\Viewer1D.cs" />
-    <Compile Include="DataInspect\Viewers\VectorViewer.cs" />
-    <Compile Include="DataInspect\Viewers\ListViewer.cs" />
     <Compile Include="DataInspect\Viewers\GridViewerBase.cs" />
     <Compile Include="DataInspect\Viewers\GridViewer.cs" />
     <Compile Include="DataInspect\Viewers\ObjectDetailsViewerAggregator.cs" />
