@@ -66,7 +66,9 @@
     <Compile Include="Converter.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Microsoft.R.Host.Client.API.nuspec" />
+    <None Include="Microsoft.R.Host.Client.API.nuspec">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Microsoft.R.Host.Client.API.targets">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
