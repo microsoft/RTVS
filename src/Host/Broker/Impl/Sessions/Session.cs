@@ -131,12 +131,12 @@ namespace Microsoft.R.Host.Broker.Sessions {
                 }
             }
 
-            _process.Exited += delegate {
+            _process.Exited += delegate (object o, Win32ProcessExitEventArgs exitState){
                 _hostEnd?.Dispose();
                 _hostEnd = null;
                 State = SessionState.Terminated;
-                if (_process.ExitCode < 0) {
-                    _sessionLogger.LogInformation(Resources.Error_ExitRHost, _process.ExitCode);
+                if (exitState.HasError()) {
+                    _sessionLogger.LogInformation(Resources.Error_ExitRHost, exitState.ExitCode);
                 }
             };
 
