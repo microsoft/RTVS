@@ -19,6 +19,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow {
         IRSession RSession { get; }
         IRPackageManager Packages { get; }
         IRPlotManager Plots { get; }
+        IConsole Console { get; }
         IRInteractiveWorkflowOperations Operations { get; }
         IInteractiveWindowVisualComponent ActiveWindow { get; }
 

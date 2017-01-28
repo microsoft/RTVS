@@ -18,6 +18,8 @@ using Microsoft.R.Host.Client.Extensions;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.ProjectSystem;
+using Microsoft.Common.Core.Shell;
+using Microsoft.VisualStudio.R.Package.Shell;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Debuggers;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
@@ -36,6 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     internal class RDebugLaunchProvider : DebugLaunchProviderBase {
         private readonly ProjectProperties _properties;
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
+        private readonly IApplicationShell _shell;
         private readonly IProjectSystemServices _pss;
 
         [ImportingConstructor]
@@ -49,7 +52,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         internal IFileSystem FileSystem { get; set; } = new FileSystem();
 
         private IRSession Session => _interactiveWorkflow.RSession;
-        private IInteractiveWindow ProgressOutputWriter => _interactiveWorkflow.ActiveWindow.InteractiveWindow;
+
+        private IConsole Console => _interactiveWorkflow.Console;
 
         public override Task<bool> CanLaunchAsync(DebugLaunchOptions launchOptions) {
             return Task.FromResult(true);
@@ -103,7 +107,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             var startupFile = await GetStartupFileAsync(transferFiles, activeProject);
 
             if (string.IsNullOrWhiteSpace(startupFile)) {
-                _interactiveWorkflow.ActiveWindow?.InteractiveWindow.WriteErrorLine(Resources.Launch_NoStartupFile);
+                Console.WriteErrorLine(Resources.Launch_NoStartupFile);
                 return;
             }
             await SourceFileAsync(transferFiles, startupFile, $"{Resources.Launch_StartupFileDoesNotExist} {startupFile}");
@@ -131,23 +135,23 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                 try {
                     fileExists = await Session.EvaluateAsync<bool>($"file.exists({file.ToRPath().ToRStringLiteral()})", REvaluationKind.Normal);
                 } catch (RHostDisconnectedException rhdex) {
-                    ProgressOutputWriter.WriteLine(Resources.Error_UnableToVerifyFile.FormatInvariant(rhdex.Message));
+                    Console.WriteLine(Resources.Error_UnableToVerifyFile.FormatInvariant(rhdex.Message));
                 }
             } else {
                 fileExists = FileSystem.FileExists(file);
             }
 
             if (!fileExists) {
-                _interactiveWorkflow.ActiveWindow?.InteractiveWindow.WriteErrorLine(errorMessage);
+                Console.WriteErrorLine(errorMessage);
                 return;
             }
 
-            ProgressOutputWriter.WriteLine(string.Format(Resources.Info_SourcingFile, file));
+            Console.WriteLine(string.Format(Resources.Info_SourcingFile, file));
             await _interactiveWorkflow.Operations.SourceFileAsync(file, echo: false).SilenceException<Exception>();
         }
 
         private async Task SendProjectAsync(EnvDTE.Project project, string remotePath, string filterString, CancellationToken cancellationToken) {
-            ProgressOutputWriter.WriteLine(Resources.Info_PreparingProjectForTransfer);
+            Console.WriteLine(Resources.Info_PreparingProjectForTransfer);
 
             var projectDir = Path.GetDirectoryName(project.FullName);
             var projectName = Path.GetFileNameWithoutExtension(project.FullName);
@@ -156,23 +160,23 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             Matcher matcher = new Matcher(StringComparison.InvariantCultureIgnoreCase);
             matcher.AddIncludePatterns(filterString.Split(filterSplitter, StringSplitOptions.RemoveEmptyEntries));
 
-            ProgressOutputWriter.WriteLine(Resources.Info_RemoteDestination.FormatInvariant(remotePath));
-            ProgressOutputWriter.WriteLine(Resources.Info_FileTransferFilter.FormatInvariant(filterString));
-            ProgressOutputWriter.WriteLine(Resources.Info_CompressingFiles);
+            Console.WriteLine(Resources.Info_RemoteDestination.FormatInvariant(remotePath));
+            Console.WriteLine(Resources.Info_FileTransferFilter.FormatInvariant(filterString));
+            Console.WriteLine(Resources.Info_CompressingFiles);
 
             var compressedFilePath = FileSystem.CompressDirectory(projectDir, matcher, new Progress<string>((p) => {
-                ProgressOutputWriter.WriteLine(Resources.Info_LocalFilePath.FormatInvariant(p));
+                Console.WriteLine(Resources.Info_LocalFilePath.FormatInvariant(p));
                 string dest = p.MakeRelativePath(projectDir).ProjectRelativePathToRemoteProjectPath(remotePath, projectName);
-                ProgressOutputWriter.WriteLine(Resources.Info_RemoteFilePath.FormatInvariant(dest));
+                Console.WriteLine(Resources.Info_RemoteFilePath.FormatInvariant(dest));
             }), CancellationToken.None);
             
             using (var fts = new DataTransferSession(Session, FileSystem)) {
-                ProgressOutputWriter.WriteLine(Resources.Info_TransferringFiles);
+                Console.WriteLine(Resources.Info_TransferringFiles);
                 var remoteFile = await fts.SendFileAsync(compressedFilePath, true, null, cancellationToken);
                 await Session.EvaluateAsync<string>($"rtvs:::save_to_project_folder({remoteFile.Id}, {projectName.ToRStringLiteral()}, '{remotePath.ToRPath()}')", REvaluationKind.Normal, cancellationToken);
             }
 
-            ProgressOutputWriter.WriteLine(Resources.Info_TransferringFilesDone);
+            Console.WriteLine(Resources.Info_TransferringFilesDone);
         }
 
         private async Task<string> GetStartupFileAsync(bool transferFiles, EnvDTE.Project project) {

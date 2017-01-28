@@ -42,6 +42,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         public IRSession RSession { get; }
         public IRPackageManager Packages { get; }
         public IRPlotManager Plots { get; }
+        public IConsole Console { get; }
 
         public IRInteractiveWorkflowOperations Operations => _operations;
 
@@ -63,7 +64,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             _settings = settings;
 
             Shell = coreShell;
-            RSessions = new RSessionProvider(coreShell.Services, new InteractiveWindowConsole(this));
+            Console = new InteractiveWindowConsole(this);
+            RSessions = new RSessionProvider(coreShell.Services, Console);
 
             RSession = RSessions.GetOrCreate(SessionNames.InteractiveWindow);
             Connections = connectionsProvider.CreateConnectionManager(this);
