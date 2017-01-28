@@ -76,7 +76,7 @@ src/Mocks/Editor/project.json
 src/Debugger/Impl/project.json
 src/R/Support/Impl/project.json
 src/R/Sql/Impl/project.json
-
+src/R/Wpf/Impl/project.json
 
 # Windows Azure Build Output
 csx/
