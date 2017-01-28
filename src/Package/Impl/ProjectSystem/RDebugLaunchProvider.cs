@@ -38,7 +38,6 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     internal class RDebugLaunchProvider : DebugLaunchProviderBase {
         private readonly ProjectProperties _properties;
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
-        private readonly IApplicationShell _shell;
         private readonly IProjectSystemServices _pss;
 
         [ImportingConstructor]
