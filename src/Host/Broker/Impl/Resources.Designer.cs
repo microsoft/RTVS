@@ -322,7 +322,7 @@ namespace Microsoft.R.Host.Broker {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Starting R session for connection {0} of user {1} with command line: {2} {3}.
+        ///   Looks up a localized string similar to Starting R session for connection {0} of user {1} with command line: {2}.
         /// </summary>
         internal static string Info_StartingRHost {
             get {

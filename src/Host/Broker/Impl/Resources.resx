@@ -190,7 +190,7 @@
     <value>R session started for connection {0} of user {1}</value>
   </data>
   <data name="Info_StartingRHost" xml:space="preserve">
-    <value>Starting R session for connection {0} of user {1} with command line: {2} {3}</value>
+    <value>Starting R session for connection {0} of user {1} with command line: {2}</value>
   </data>
   <data name="Info_UserProfileServiceName" xml:space="preserve">
     <value>Microsoft.R.Host.UserProfile</value>
