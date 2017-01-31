@@ -5,4 +5,5 @@ using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.Test.Fixtures;
 
 [assembly: TestFrameworkOverride]
+[assembly: VsAssemblyLoader]
 [assembly: AssemblyFixtureImport(typeof(DisposeRInteractiveWorkflowFixture))]

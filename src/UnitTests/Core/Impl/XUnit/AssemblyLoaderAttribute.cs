@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -10,6 +11,8 @@ using Microsoft.Common.Core;
 using Xunit.Abstractions;
 
 namespace Microsoft.UnitTests.Core.XUnit {
+    [ExcludeFromCodeCoverage]
+    [AttributeUsage(AttributeTargets.Assembly)]
     public abstract class AssemblyLoaderAttribute : Attribute, IDisposable {
         public static IList<AssemblyLoaderAttribute> GetAssemblyLoaders(IAssemblyInfo assemblyInfo) {
             return assemblyInfo.GetCustomAttributes(typeof(AssemblyLoaderAttribute))
@@ -19,7 +22,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
                 .ToList();
         }
 
-        private readonly string[] _paths;
+        private readonly Dictionary<string, List<string>> _knownAssemblies = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
 
         protected AssemblyLoaderAttribute(string[] paths, string[] assembliesToResolve) {
             if (paths == null) {
@@ -30,11 +33,18 @@ namespace Microsoft.UnitTests.Core.XUnit {
                 throw new ArgumentException($"{nameof(paths)} should not be empty", nameof(paths));
             }
 
-            _paths = paths;
+            foreach (var path in new[] { Paths.Bin }.Concat(paths)) {
+                EnumerateAssemblies(path);
+            }
+
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
 
-            foreach (var assemblyName in assembliesToResolve) {
-                ResolveAssembly(assemblyName);
+            foreach (var assembly in assembliesToResolve) {
+                var assemblyName = Path.GetExtension(assembly).EqualsIgnoreCase(".dll")
+                    ? Path.GetFileNameWithoutExtension(assembly) ?? assembly
+                    : assembly;
+
+                Assembly.Load(assemblyName);
             }
         }
 
@@ -43,12 +53,18 @@ namespace Microsoft.UnitTests.Core.XUnit {
         }
 
         private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args) {
-            return ResolveAssembly(args.Name);
-        }
+            var assemblyName = new AssemblyName(args.Name).Name;
+            if (!Path.GetExtension(assemblyName).EqualsOrdinal(".dll")) {
+                assemblyName += ".dll";
+            }
 
-        private Assembly ResolveAssembly(string name) {
-            foreach (var path in _paths) {
-                var assembly = ResolveAssembly(path, name);
+            List<string> assemblyPaths;
+            if (!_knownAssemblies.TryGetValue(assemblyName, out assemblyPaths)) {
+                return null;
+            }
+
+            foreach (var assemblyPath in assemblyPaths) {
+                var assembly = LoadAssembly(assemblyPath);
                 if (assembly != null) {
                     return assembly;
                 }
@@ -57,20 +73,29 @@ namespace Microsoft.UnitTests.Core.XUnit {
             return null;
         }
 
-        private Assembly ResolveAssembly(string directory, string name) {
-            var assemblyName = new AssemblyName(name);
-
-            var path = Path.Combine(directory, assemblyName.Name);
-            if (!Path.GetExtension(path).EqualsOrdinal(".dll")) {
-                path += ".dll";
-            }
-
+        private static Assembly LoadAssembly(string assemblyPath) {
             try {
-                return Assembly.LoadFrom(path);
+                return Assembly.LoadFrom(assemblyPath);
+            } catch (FileLoadException) {
+                return null;
             } catch (IOException) {
                 return null;
             } catch (BadImageFormatException) {
                 return null;
+            }
+        }
+
+        private void EnumerateAssemblies(string directory) {
+            foreach (var path in Directory.EnumerateFiles(directory, "*.dll", SearchOption.AllDirectories)) {
+                var name = Path.GetFileName(path);
+                if (name != null) {
+                    List<string> paths;
+                    if (_knownAssemblies.TryGetValue(name, out paths)) {
+                        paths.Add(path);
+                    } else {
+                        _knownAssemblies[name] = new List<string>{ path };
+                    }
+                }
             }
         }
     }

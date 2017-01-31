@@ -11,7 +11,7 @@ using Microsoft.UnitTests.Core.Mef;
 namespace Microsoft.UnitTests.Core.XUnit {
     [ExcludeFromCodeCoverage]
     public abstract class AssemblyMefCatalogFixture : MefCatalogFixture {
-        protected override ComposablePartCatalog CreateCatalog() => CatalogFactory.CreateVsAssembliesCatalog(GetAssemblies().AsList());
+        protected override ComposablePartCatalog CreateCatalog() => CatalogFactory.CreateAssembliesCatalog(GetAssemblies().AsList());
 
         protected virtual IEnumerable<string> GetAssemblies() => Enumerable.Empty<string>();
     }

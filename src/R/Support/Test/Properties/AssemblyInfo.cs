@@ -3,8 +3,8 @@
 
 using Microsoft.R.Support.Test;
 using Microsoft.UnitTests.Core.XUnit;
-using Microsoft.UnitTests.References;
 
 [assembly: TestFrameworkOverride]
+[assembly: VsAssemblyLoader]
 [assembly: AssemblyFixtureImport(typeof(RSupportMefCatalogFixture))]
 

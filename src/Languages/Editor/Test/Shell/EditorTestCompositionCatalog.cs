@@ -151,7 +151,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
                 assemblies.AddRange(_rtvsEditorAssemblies);
                 assemblies.AddRange(_additionalAssemblies);
 
-                var aggregateCatalog = CatalogFactory.CreateVsAssembliesCatalog(assemblies);
+                var aggregateCatalog = CatalogFactory.CreateAssembliesCatalog(assemblies);
                 AssemblyCatalog thisAssemblyCatalog = new AssemblyCatalog(Assembly.GetExecutingAssembly());
                 aggregateCatalog.Catalogs.Add(thisAssemblyCatalog);
 

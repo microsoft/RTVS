@@ -5,4 +5,5 @@ using Microsoft.R.Editor.Test;
 using Microsoft.UnitTests.Core.XUnit;
 
 [assembly: TestFrameworkOverride]
+[assembly: VsAssemblyLoader]
 [assembly: AssemblyFixtureImport(typeof(REditorMefCatalogFixture))]
