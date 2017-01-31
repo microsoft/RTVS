@@ -15,7 +15,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
 
         public override bool CanView(IRValueInfo value) {
             // We can only view collections that have elements.
-            if (value == null || value.Length == null || value.Length == 0) {
+            if (value?.Length == null || value.Length == 0) {
                 return false;
             }
 
