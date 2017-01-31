@@ -34,7 +34,8 @@ namespace Microsoft.R.Components.Test {
                 "Microsoft.R.Components.Test.dll",
                 "Microsoft.VisualStudio.Editor.dll",
                 "Microsoft.VisualStudio.Language.Intellisense.dll",
-                "Microsoft.VisualStudio.Platform.VSEditor.dll"
+                "Microsoft.VisualStudio.Platform.VSEditor.dll",
+                "System.Collections.Immutable.dll"
             };
         }
 

@@ -21,8 +21,9 @@ namespace Microsoft.R.Support.Test {
     public class RSupportMefCatalogFixture : LanguagesEditorMefCatalogFixture {
         protected override IEnumerable<string> GetAssemblies() => base.GetAssemblies().Concat(new[] {
             "Microsoft.VisualStudio.InteractiveWindow.dll",
-            "Microsoft.R.Support",
-            "Microsoft.R.Support.Test"
+            "Microsoft.R.Support.dll",
+            "Microsoft.R.Support.Test.dll",
+            "System.Collections.Immutable.dll"
         });
 
         public override IExportProvider Create(CoreServicesFixture coreServices)

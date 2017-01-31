@@ -155,12 +155,13 @@ namespace Microsoft.Languages.Editor.Test.Shell {
                 AssemblyCatalog thisAssemblyCatalog = new AssemblyCatalog(Assembly.GetExecutingAssembly());
                 aggregateCatalog.Catalogs.Add(thisAssemblyCatalog);
 
-                container = BuildCatalog(aggregateCatalog);
+                var filteredCatalog = aggregateCatalog.Filter(cpd => !cpd.ContainsPartMetadataWithKey(PartMetadataAttributeNames.SkipInEditorTestCompositionCatalog));
+                container = BuildCatalog(filteredCatalog);
                 return container;
             }
         }
 
-        private CompositionContainer BuildCatalog(AggregateCatalog aggregateCatalog) {
+        private CompositionContainer BuildCatalog(ComposablePartCatalog aggregateCatalog) {
             CompositionContainer container = new CompositionContainer(aggregateCatalog, isThreadSafe: true);
             container.ComposeParts(container.Catalog.Parts.AsEnumerable());
 

@@ -42,8 +42,9 @@ namespace Microsoft.UnitTests.Core.Mef {
             }
 
             public AggregateCatalog CreateCatalog() {
-                EnumerateAssemblies(_knownVsAssemblyPaths, Paths.VsPrivateAssemblies);
                 EnumerateAssemblies(_knownVsAssemblyPaths, Paths.VsCommonExtensions);
+                EnumerateAssemblies(_knownVsAssemblyPaths, Paths.VsPrivateAssemblies);
+                EnumerateAssemblies(_knownVsAssemblyPaths, Paths.VsPublicAssemblies);
 
                 try {
                     var aggregateCatalog = new AggregateCatalog();
@@ -111,7 +112,11 @@ namespace Microsoft.UnitTests.Core.Mef {
                     assemblyName = Path.GetFileNameWithoutExtension(assemblyName);
                 }
 
-                return Assembly.Load(assemblyName);
+                try {
+                    return Assembly.Load(assemblyName);
+                } catch (FileLoadException) {
+                    return null;
+                }
             }
 
             private Assembly LoadVsAssembly(string assemblyFile) {

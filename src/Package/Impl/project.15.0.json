@@ -22,7 +22,6 @@
     "Microsoft.VisualStudio.Text.UI.Wpf": "15.0.26109-RC3",
     "Microsoft.VSSDK.BuildTools": "15.0.25929-RC2",
     "System.IO.Compression.ZipFile": "4.0.1",
-    "System.Collections.Immutable": "1.2.0",
     "VSSDK.DTE.8": "8.0.4"
   },
   "frameworks": {
