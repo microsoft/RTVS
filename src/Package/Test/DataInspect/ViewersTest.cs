@@ -73,22 +73,22 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                 var session = hostScript.Session;
 
                 var funcViewer = await _aggregator.GetViewer(session, REnvironments.GlobalEnv, "lm");
-                funcViewer.Should().NotBeNull().And.BeOfType<CodeViewer>();
+                funcViewer.Should().BeOfType<CodeViewer>();
 
                 var gridViewer = await _aggregator.GetViewer(session, REnvironments.GlobalEnv, "airmiles");
-                gridViewer.Should().NotBeNull().And.BeOfType<GridViewer>();
+                gridViewer.Should().BeOfType<GridViewer>();
 
                 gridViewer = await _aggregator.GetViewer(session, REnvironments.GlobalEnv, "mtcars");
-                gridViewer.Should().NotBeNull().And.BeOfType<GridViewer>();
+                gridViewer.Should().BeOfType<GridViewer>();
 
                 gridViewer = await _aggregator.GetViewer(session, REnvironments.GlobalEnv, "AirPassengers");
-                gridViewer.Should().NotBeNull().And.BeOfType<GridViewer>();
+                gridViewer.Should().BeOfType<GridViewer>();
 
                 gridViewer = await _aggregator.GetViewer(session, REnvironments.GlobalEnv, "list(c(1:10))");
-                gridViewer.Should().NotBeNull().And.BeOfType<GridViewer>();
+                gridViewer.Should().BeOfType<GridViewer>();
 
                 gridViewer = await _aggregator.GetViewer(session, REnvironments.GlobalEnv, "c(1:10)");
-                gridViewer.Should().NotBeNull().And.BeOfType<GridViewer>();
+                gridViewer.Should().BeOfType<GridViewer>();
 
                 gridViewer.Capabilities.Should().HaveFlag(ViewerCapabilities.List | ViewerCapabilities.Table);
             }
