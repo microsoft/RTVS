@@ -10,7 +10,7 @@ using static Microsoft.R.DataInspection.REvaluationResultProperties;
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public static class ObjectDetailsViewerAggregatorExtensions {
         public static async Task<IObjectDetailsViewer> GetViewer(this IObjectDetailsViewerAggregator aggregator, IRSession session, string environmentExpression, string expression, CancellationToken cancellationToken = default(CancellationToken)) {
-            var preliminary = await session.TryEvaluateAndDescribeAsync(expression, TypeNameProperty | ClassesProperty | DimProperty | LengthProperty, null, cancellationToken) as IRValueInfo;
+            var preliminary = await session.TryEvaluateAndDescribeAsync(expression, TypeNameProperty | ClassesProperty | DimProperty | LengthProperty | FlagsProperty, null, cancellationToken) as IRValueInfo;
             return preliminary != null ? aggregator.GetViewer(preliminary) : null;
         }
     }

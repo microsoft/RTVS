@@ -152,7 +152,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
                     order.Add(new ColumnSortOrder(Math.Abs(x) - 1, x < 0));
                 }
             }
-         
+
             var data = await GridDataSource.GetGridDataAsync(_session, expression, range, order);
 
             ToEnumerable(data.RowHeader).Should().Equal(expectedRowHeaders);
@@ -194,6 +194,32 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
             { "58", "3.3",          "1.0",          "versicolor" },
         }, sort: new[] { +3, -2 });
 
+        // Tibble-like objects are collections that, when sliced with [], always return
+        // result of the same shape, even if it's only one row or one column.
+        [Test]
+        [Category.R.DataGrid]
+        public Task TibbleLikeGrid() => Test(@"local({
+                attach(as.environment(list(`[.tibble` = function(x, row, col, drop = TRUE)  {
+                    class(x) <- NULL
+                    h <- if (missing(row)) dim(x)[[1]] else length(row)
+                    w <- if (missing(col)) dim(x)[[2]] else length(col)
+                    x <- x[row, col]
+                    dim(x) <- c(h, w)
+                    class(x) <- 'tibble'
+                    x
+                })))
+
+                tibble <- 1:12
+                dim(tibble) <- c(4, 3)
+                class(tibble) <- 'tibble'
+                tibble
+            })", 2, 1, new[,] {
+            { null,     "[,1]",     "[,2]" },
+            { "[2,]",    "2",       "6" },
+            { "[3,]",    "3",       "7" },
+            { "[4,]",    "4",       "8" },
+        });
+
         [Test]
         [Category.R.DataGrid]
         public Task MatrixGrid() => Test("matrix(1:20, 5, 4)", 2, 2, new[,] {
@@ -220,6 +246,15 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
             { "[2,]",   "b",        "1" },
             { "[3,]",   "a",        "1" },
         }, sort: new[] { -2, -1 });
+
+        [Test]
+        [Category.R.DataGrid]
+        public Task NonMatrix2DArray() => Test("local({ m <- 1:20; dim(m) <- c(5, 4); m })", 2, 2, new[,] {
+            { null,     "[,2]",     "[,3]" },
+            { "[2,]",   "7",        "12" },
+            { "[3,]",   "8",        "13" },
+            { "[4,]",   "9",        "14" },
+        });
 
         [Test]
         [Category.R.DataGrid]
@@ -259,6 +294,15 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
 
         [Test]
         [Category.R.DataGrid]
+        public Task NonArray1DGrid() => Test("local({ a <- 1:10; dim(a) <- 10; a })", 2, 1, new[,] {
+            { null,     "[]" },
+            { "[2]",    "2"  },
+            { "[3]",    "3"  },
+            { "[4]",    "4"  },
+        });
+
+        [Test]
+        [Category.R.DataGrid]
         public Task ArraySortedGrid() => Test("array(1:10)", 2, 1, new[,] {
             { null,     "[]" },
             { "[2]",    "9"  },
@@ -266,6 +310,14 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
             { "[4]",    "7"  },
         }, sort: new[] { -1 });
 
+        [Test]
+        [Category.R.DataGrid]
+        public Task FactorGrid() => Test("factor(1:3)", 1, 1, new[,] {
+            { null,     "[]" },
+            { "[1]",    "1"  },
+            { "[2]",    "2"  },
+            { "[3]",    "3"  },
+        });
 
         [Test]
         [Category.R.DataGrid]
@@ -283,6 +335,5 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
             { "[1,]",   "1",                "3" },
             { "[2,]",   "<externalptr> ",    "4" },
         });
-
     }
 }

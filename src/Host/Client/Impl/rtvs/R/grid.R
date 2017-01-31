@@ -54,6 +54,14 @@ grid_data <- function(x, rows, cols, row_selector) {
     data <- c(lapply(1:ncol(x), function(i) {
         col <- x[, i]
 
+        # Some 2D collections (e.g. tibble) produce 2D output when sliced by column. If that happens,
+        # use as.matrix to coerce it to a vector or list. Note: cannot use as.list, because that will
+        # just produce a list of 1 element, which is the column itself.
+        if (length(dim(col)) > 1) {
+            col <- as.matrix(col)
+            dim(col) <- NULL;
+        }
+
         if (is.atomic(col)) {
             # For atomic vectors, we want to apply format() to the whole thing at once,
             # so that it can determine the number of decimal places accordingly - e.g.
