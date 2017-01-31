@@ -83,11 +83,11 @@ namespace Microsoft.R.Host.Broker.Sessions {
 
             var useridentity = User as WindowsIdentity;
             // In remote broker User Identity type is always WindowsIdentity
-            string suppressUI = (useridentity == null) ? string.Empty : " --suppress-ui ";
+            string suppressUI = (useridentity == null) ? string.Empty : "--suppress-ui ";
             string brokerPath = Path.GetDirectoryName(typeof(Program).Assembly.GetAssemblyPath());
             string rhostExePath = Path.Combine(brokerPath, RHostExe);
             string logFolderParam = string.IsNullOrEmpty(logFolder) ? string.Empty : Invariant($"--rhost-log-dir \"{logFolder}\"");
-            string arguments = Invariant($"{suppressUI}--rhost-name \"{Id}\" {logFolderParam} --rhost-log-verbosity {(int)verbosity} {CommandLineArguments}");
+            string commandLine = Invariant($"\"{rhostExePath}\" {suppressUI}--rhost-name \"{Id}\" {logFolderParam} --rhost-log-verbosity {(int)verbosity} {CommandLineArguments}");
             var usernameBldr = new StringBuilder(NativeMethods.CREDUI_MAX_USERNAME_LENGTH + 1);
             var domainBldr = new StringBuilder(NativeMethods.CREDUI_MAX_DOMAIN_LENGTH + 1);
 
@@ -122,12 +122,12 @@ namespace Microsoft.R.Host.Broker.Sessions {
             _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "PATH", eb["PATH"]);
 
 
-            _sessionLogger.LogInformation(Resources.Info_StartingRHost, Id, User.Name, rhostExePath, arguments);
+            _sessionLogger.LogInformation(Resources.Info_StartingRHost, Id, User.Name, commandLine);
             using (Win32NativeEnvironmentBlock nativeEnv = eb.GetNativeEnvironmentBlock()) {
                 if (loggedOnUser) {
-                    _process = Win32Process.StartProcessAsUser(useridentity, rhostExePath, arguments, Path.GetDirectoryName(rhostExePath), nativeEnv, out stdin, out stdout, out stderror);
+                    _process = Win32Process.StartProcessAsUser(useridentity, rhostExePath, commandLine, Path.GetDirectoryName(rhostExePath), nativeEnv, out stdin, out stdout, out stderror);
                 } else {
-                    _process = Win32Process.StartProcessAsUser(null, rhostExePath, arguments, Path.GetDirectoryName(rhostExePath), nativeEnv, out stdin, out stdout, out stderror);
+                    _process = Win32Process.StartProcessAsUser(null, rhostExePath, commandLine, Path.GetDirectoryName(rhostExePath), nativeEnv, out stdin, out stdout, out stderror);
                 }
             }
 
