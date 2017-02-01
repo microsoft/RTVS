@@ -15,7 +15,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
 
         public override bool CanView(IRValueInfo value) {
             // We can only view collections that have elements.
-            if (value?.Length == null || value.Length == 0) {
+            var length = value?.Length ?? 0;
+            if (length == 0) {
                 return false;
             }
 
@@ -25,8 +26,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
                 return false;
             }
 
-            // We can only view dimensionless, 1D, or 2D collections. 
-            if (value.Dim != null && value.Dim.Count > 2) {
+            // We can only view dimensionless (treated as 1D), 1D, or 2D collections. 
+            // For 1D collections, only view if there's more than one element (for 2D, we still want
+            // to enable grid in that case to expose row & column names).
+            var dimCount = value.Dim?.Count ?? 1;
+            if (dimCount > 2 || (dimCount == 1 && length == 1)) {
                 return false;
             }
 
