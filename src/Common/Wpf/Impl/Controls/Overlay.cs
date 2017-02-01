@@ -123,7 +123,9 @@ namespace Microsoft.Common.Wpf.Controls {
             }
 
             private void OnValueChanged(object sender, EventArgs eventArgs) {
-                _layer.Update(AdornedElement);
+                if (VisualParent != null) {
+                    _layer.Update(AdornedElement);
+                }
             }
 
             public void Dispose() {
