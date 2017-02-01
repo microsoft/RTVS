@@ -10,7 +10,7 @@ namespace Microsoft.R.Editor.Test {
     // Fixture doesn't import itself. Use AssemblyFixtureImportAttribute
     [ExcludeFromCodeCoverage]
     public class REditorMefCatalogFixture : RSupportMefCatalogFixture {
-        protected override IEnumerable<string> GetBinDirectoryAssemblies() => base.GetBinDirectoryAssemblies().Concat(new[] {
+        protected override IEnumerable<string> GetAssemblies() => base.GetAssemblies().Concat(new[] {
             "Microsoft.R.Editor",
             "Microsoft.R.Editor.Test"
         });

@@ -38,6 +38,7 @@
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="XUnit\VsAssemblyLoaderAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="project.15.0.json" />

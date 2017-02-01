@@ -37,13 +37,14 @@ namespace Microsoft.UnitTests.Core {
             }
         }
 
-        private static Lazy<string> VsPrivateAssembliesLazy { get; } = Lazy.Create(() => Path.Combine(VsRoot, @"PrivateAssemblies\"));
         private static Lazy<string> VsCommonExtensionsLazy { get; } = Lazy.Create(() => Path.Combine(VsRoot, @"CommonExtensions\"));
+        private static Lazy<string> VsPrivateAssembliesLazy { get; } = Lazy.Create(() => Path.Combine(VsRoot, @"PrivateAssemblies\"));
+        private static Lazy<string> VsPublicAssembliesLazy { get; } = Lazy.Create(() => Path.Combine(VsRoot, @"PublicAssemblies\"));
         private static Lazy<string> BinLazy { get; } = Lazy.Create(() => Path.GetDirectoryName(typeof(Paths).Assembly.GetAssemblyPath()));
 
-
-        public static string VsPrivateAssemblies => VsPrivateAssembliesLazy.Value;
         public static string VsCommonExtensions => VsCommonExtensionsLazy.Value;
+        public static string VsPrivateAssemblies => VsPrivateAssembliesLazy.Value;
+        public static string VsPublicAssemblies => VsPublicAssembliesLazy.Value;
         public static string Bin => BinLazy.Value;
 
     }

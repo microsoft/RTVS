@@ -13,6 +13,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
             "Microsoft.VisualStudio.R.Package.dll",
             "Microsoft.VisualStudio.R.Package.Test.dll",
             "Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.dll",
+            "System.Collections.Immutable.dll"
         };
 
         public static EditorTestCompositionCatalog Current { get; } = new EditorTestCompositionCatalog(_assemblies);

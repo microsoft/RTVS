@@ -19,32 +19,23 @@ namespace Microsoft.R.Components.Test {
     [AssemblyFixture]
     [ExcludeFromCodeCoverage]
     public sealed class RComponentsMefCatalogFixture : AssemblyMefCatalogFixture {
-        protected override IEnumerable<string> GetBinDirectoryAssemblies() {
+        protected override IEnumerable<string> GetAssemblies() {
             return new[] {
+                "Microsoft.VisualStudio.CoreUtility.dll",
+                "Microsoft.VisualStudio.Text.Data.dll",
+                "Microsoft.VisualStudio.Text.Logic.dll",
+                "Microsoft.VisualStudio.Text.UI.dll",
+                "Microsoft.VisualStudio.Text.UI.Wpf.dll",
                 "Microsoft.VisualStudio.InteractiveWindow.dll",
                 "Microsoft.R.Host.Client.dll",
                 "Microsoft.R.Common.Core.dll",
                 "Microsoft.R.Common.Core.Test.dll",
                 "Microsoft.R.Components.dll",
                 "Microsoft.R.Components.Test.dll",
-            };
-        }
-
-        protected override IEnumerable<string> GetVsAssemblies() {
-            return new[] {
                 "Microsoft.VisualStudio.Editor.dll",
                 "Microsoft.VisualStudio.Language.Intellisense.dll",
-                "Microsoft.VisualStudio.Platform.VSEditor.dll"
-            };
-        }
-
-        protected override IEnumerable<string> GetLoadedAssemblies() {
-            return new[] {
-                "Microsoft.VisualStudio.CoreUtility.dll",
-                "Microsoft.VisualStudio.Text.Data.dll",
-                "Microsoft.VisualStudio.Text.Logic.dll",
-                "Microsoft.VisualStudio.Text.UI.dll",
-                "Microsoft.VisualStudio.Text.UI.Wpf.dll"
+                "Microsoft.VisualStudio.Platform.VSEditor.dll",
+                "System.Collections.Immutable.dll"
             };
         }
 

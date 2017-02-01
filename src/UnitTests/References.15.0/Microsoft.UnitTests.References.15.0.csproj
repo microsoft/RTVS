@@ -41,7 +41,6 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Dev15AssemblyLoaderAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
