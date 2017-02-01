@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -72,7 +73,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             }
         }
 
-        public override Microsoft.R.Components.Controller.CommandStatus Status(Guid group, int id) {
+        public override CommandStatus Status(Guid group, int id) {
             if (_interactiveWorkflow.ActiveWindow == null) {
                 return CommandStatus.Invisible;
             }

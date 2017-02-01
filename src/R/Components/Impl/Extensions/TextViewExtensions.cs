@@ -31,13 +31,15 @@ namespace Microsoft.R.Components.Extensions {
             return null;
         }
 
-        public static SnapshotPoint? MapUpToView(this ITextView textView, SnapshotPoint position) {
+        public static SnapshotPoint? MapUpToView(this ITextView textView, ITextSnapshot snapshot, int position) {
+            var snapshotPoint = new SnapshotPoint(snapshot, position);
             if (textView.BufferGraph == null) {
                 // Unit test case
-                return position;
+                return snapshotPoint;
             }
+
             return textView.BufferGraph.MapUpToBuffer(
-                position,
+                snapshotPoint,
                 PointTrackingMode.Positive,
                 PositionAffinity.Successor,
                 textView.TextBuffer

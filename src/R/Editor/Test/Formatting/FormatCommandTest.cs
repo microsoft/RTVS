@@ -1,14 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 using FluentAssertions;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Components.Controller;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Formatting;
 using Microsoft.R.Editor.Formatting.Data;
@@ -24,12 +23,10 @@ namespace Microsoft.R.Editor.Test.Formatting {
     [ExcludeFromCodeCoverage]
     [Category.R.Formatting]
     public class FormatCommandTest {
-        private readonly IExportProvider _exportProvider;
         private readonly IEditorShell _editorShell;
 
         public FormatCommandTest(IExportProvider exportProvider) {
-            _exportProvider = exportProvider;
-            _editorShell = _exportProvider.GetExportedValue<IEditorShell>();
+            _editorShell = exportProvider.GetExportedValue<IEditorShell>();
         }
 
         [CompositeTest]

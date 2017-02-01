@@ -58,6 +58,7 @@
     <Compile Include="Extensions\IOExtensionsTest.cs" />
     <Compile Include="Fakes\Shell\TestFileDialog.cs" />
     <Compile Include="Fakes\Shell\TestProgressDialog.cs" />
+    <Compile Include="Fakes\Shell\TestSecurityService.cs" />
     <Compile Include="Fakes\Shell\TestTaskService.cs" />
     <Compile Include="Fixtures\CoreServicesFixture.cs" />
     <Compile Include="Logging\PermissionsTest.cs" />

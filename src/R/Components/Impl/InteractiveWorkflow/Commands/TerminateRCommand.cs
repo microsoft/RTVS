@@ -4,7 +4,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
-using Microsoft.R.Components.Controller;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
@@ -31,13 +31,12 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
             }
         }
 
-        public async Task<CommandResult> InvokeAsync() {
+        public async Task InvokeAsync() {
             if (_coreShell.ShowMessage(Resources.Warning_TerminateR, MessageButtons.YesNo) == MessageButtons.Yes) {
                 foreach (var s in _interactiveWorkflow.RSessions.GetSessions().ToList()) {
-                    await s.StopHostAsync(true);
+                    await s.StopHostAsync();
                 }
             }
-            return CommandResult.Executed;
         }
     }
 }

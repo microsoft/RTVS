@@ -4,12 +4,13 @@
 using System;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
+using Microsoft.Languages.Editor.Services;
+using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.History.Implementation;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -48,7 +49,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
             _history = _historyProvider.GetAssociatedRHistory(Component.TextView);
             _history.HistoryChanged += OnHistoryChanged;
             _historyFiltering = _historyProvider.CreateFiltering(Component);
-            _commandTarget = new CommandTargetToOleShim(Component.TextView, Component.Controller);
+            _commandTarget = new CommandTargetToOleShim(Component.TextView, ServiceManager.GetService<ICommandTarget>(Component.TextView));
 
             base.OnCreate();
         }

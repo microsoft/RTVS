@@ -63,7 +63,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             InteractiveWindow.AddInput(expression);
 
             var buffer = InteractiveWindow.CurrentLanguageBuffer;
-            var endPoint = InteractiveWindow.TextView.MapUpToView(new SnapshotPoint(buffer.CurrentSnapshot, buffer.CurrentSnapshot.Length));
+            var endPoint = InteractiveWindow.TextView.MapUpToView(buffer.CurrentSnapshot, buffer.CurrentSnapshot.Length);
             if (endPoint != null) {
                 InteractiveWindow.TextView.Caret.MoveTo(endPoint.Value);
             }

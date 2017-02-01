@@ -5,7 +5,7 @@ using System;
 using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
-using Microsoft.R.Components.Controller;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 
 namespace Microsoft.R.Components.Plots.Implementation.Commands {
@@ -24,7 +24,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
             }
         }
 
-        public async Task<CommandResult> InvokeAsync() {
+        public async Task InvokeAsync() {
             var msg = string.Format(CultureInfo.CurrentUICulture, Resources.Plots_RemoveCurrentPlotWarning, VisualComponent.DeviceName);
             if (InteractiveWorkflow.Shell.ShowMessage(msg, MessageButtons.YesNo) == MessageButtons.Yes) {
                 try {
@@ -34,8 +34,6 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
                 } catch (OperationCanceledException) {
                 }
             }
-
-            return CommandResult.Executed;
         }
     }
 }

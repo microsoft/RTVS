@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel.Design;
 using System.Diagnostics;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.R.Package.Shell;

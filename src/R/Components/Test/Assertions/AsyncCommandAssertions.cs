@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using FluentAssertions.Primitives;
-using Microsoft.R.Components.Controller;
+using Microsoft.Common.Core.UI.Commands;
 
 namespace Microsoft.R.Components.Test.Assertions {
     [ExcludeFromCodeCoverage]

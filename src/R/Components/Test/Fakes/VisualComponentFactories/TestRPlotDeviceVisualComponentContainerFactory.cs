@@ -25,10 +25,10 @@ namespace Microsoft.R.Components.Test.Fakes.VisualComponentFactories {
             _coreShell = coreShell;
         }
 
-        public Nullable<PlotDeviceProperties> DeviceProperties { get; set; } = new PlotDeviceProperties(360, 360, 96);
+        public PlotDeviceProperties? DeviceProperties { get; set; } = new PlotDeviceProperties(360, 360, 96);
 
         public IVisualComponentContainer<IRPlotDeviceVisualComponent> GetOrCreate(IRPlotManager plotManager, IRSession session, int instanceId = 0) {
-            return GetOrCreate(instanceId, container => new RPlotDeviceVisualComponent(plotManager, null, instanceId, container, _coreShell) { TestDeviceProperties=DeviceProperties });
+            return GetOrCreate(instanceId, container => new RPlotDeviceVisualComponent(plotManager, instanceId, container, _coreShell) { TestDeviceProperties=DeviceProperties });
         }
     }
 }

@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Utility;
 using Microsoft.Languages.Editor.Shell;
-using Microsoft.R.Components.Extensions;
 
 namespace Microsoft.Languages.Editor.Tasks {
     /// <summary>

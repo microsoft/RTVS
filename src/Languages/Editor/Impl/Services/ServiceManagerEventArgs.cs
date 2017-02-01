@@ -4,7 +4,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Microsoft.R.Components.Services {
+namespace Microsoft.Languages.Editor.Services {
     [ExcludeFromCodeCoverage]
     public class ServiceManagerEventArgs : EventArgs {
         public object Service { get; }

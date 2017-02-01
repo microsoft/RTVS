@@ -1,10 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Threading.Tasks;
 
-namespace Microsoft.R.Components.Controller {
+namespace Microsoft.Common.Core.UI.Commands {
     public interface IAsyncCommandRange {
         /// <summary>
         /// Determines current command status.
@@ -22,7 +21,7 @@ namespace Microsoft.R.Components.Controller {
         /// Executes the command.
         /// </summary>
         /// <param name="index"></param>
-        Task<CommandResult> InvokeAsync(int index);
+        Task InvokeAsync(int index);
 
         /// <summary>
         /// Returns maximum index
