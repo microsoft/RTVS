@@ -84,7 +84,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                 gridViewer = await _aggregator.GetViewer(session, REnvironments.GlobalEnv, "AirPassengers");
                 gridViewer.Should().BeOfType<GridViewer>();
 
-                gridViewer = await _aggregator.GetViewer(session, REnvironments.GlobalEnv, "list(c(1:10))");
+                gridViewer = await _aggregator.GetViewer(session, REnvironments.GlobalEnv, "as.list(c(1:10))");
                 gridViewer.Should().BeOfType<GridViewer>();
 
                 gridViewer = await _aggregator.GetViewer(session, REnvironments.GlobalEnv, "c(1:10)");
@@ -145,7 +145,19 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
                 await session.ExecuteAsync($"x <- {cast}(1)");
                 value = await session.EvaluateAndDescribeAsync("x", AllFields, null);
+                viewer.CanView(value).Should().BeFalse();
+
+                value = await session.EvaluateAndDescribeAsync("dim(x) <- 1", AllFields, null);
+                value = await session.EvaluateAndDescribeAsync("x", AllFields, null);
+                viewer.CanView(value).Should().BeFalse();
+
+                value = await session.EvaluateAndDescribeAsync("dim(x) <- c(1, 1)", AllFields, null);
+                value = await session.EvaluateAndDescribeAsync("x", AllFields, null);
                 viewer.CanView(value).Should().BeTrue();
+
+                value = await session.EvaluateAndDescribeAsync("dim(x) <- c(1, 1, 1)", AllFields, null);
+                value = await session.EvaluateAndDescribeAsync("x", AllFields, null);
+                viewer.CanView(value).Should().BeFalse();
 
                 await session.ExecuteAsync($"x <- {cast}(1:100)");
                 value = await session.EvaluateAndDescribeAsync("x", AllFields, null);
