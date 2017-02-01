@@ -630,4 +630,7 @@ Please upgrade remote R Services installation to match.</value>
   <data name="BrokerDisconnected" xml:space="preserve">
     <value>Connection to the workspace has been terminated.</value>
   </data>
+  <data name="Warning_SaveOnReset" xml:space="preserve">
+    <value>Resetting R Host will loose the current state. Would you like to save state?</value>
+  </data>
 </root>
