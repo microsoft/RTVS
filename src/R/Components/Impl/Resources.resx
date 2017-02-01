@@ -631,6 +631,9 @@ Please upgrade remote R Services installation to match.</value>
     <value>Connection to the workspace has been terminated.</value>
   </data>
   <data name="Warning_SaveOnReset" xml:space="preserve">
-    <value>Resetting R Host will loose the current state. Would you like to save state?</value>
+    <value>Resetting R Host will clear the workspace. Would you like to save state?</value>
+  </data>
+  <data name="Error_FailedToSaveState" xml:space="preserve">
+    <value>Failed to save state, resetting anyway.</value>
   </data>
 </root>

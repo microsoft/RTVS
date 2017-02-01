@@ -588,6 +588,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to save state, resetting anyway..
+        /// </summary>
+        public static string Error_FailedToSaveState {
+            get {
+                return ResourceManager.GetString("Error_FailedToSaveState", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Timeout installing package {0}..
         /// </summary>
         public static string Error_InstallTimeout_Format {
@@ -1529,7 +1538,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Resetting R Host will loose the current state. Would you like to save state?.
+        ///   Looks up a localized string similar to Resetting R Host will clear the workspace. Would you like to save state?.
         /// </summary>
         public static string Warning_SaveOnReset {
             get {
