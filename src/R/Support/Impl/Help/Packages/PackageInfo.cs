@@ -7,10 +7,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Support.Help.Functions;
 using Newtonsoft.Json.Linq;
 using static System.FormattableString;
@@ -25,15 +25,19 @@ namespace Microsoft.R.Support.Help.Packages {
         /// Used to extract function names and descriptions when
         /// showing list of functions available in the file.
         /// </summary>
-        private readonly ConcurrentBag<INamedItemInfo> _functions = new ConcurrentBag<INamedItemInfo>();
+        private readonly ConcurrentBag<INamedItemInfo> _functions;
         private readonly IIntellisenseRSession _host;
         private readonly string _version;
         private bool _saved;
 
         public PackageInfo(IIntellisenseRSession host, string name, string description, string version) :
+            this(host, name, description, version, Enumerable.Empty<string>()) { }
+
+        public PackageInfo(IIntellisenseRSession host, string name, string description, string version, IEnumerable<string> functionNames) :
             base(name, description, NamedItemType.Package) {
             _host = host;
             _version = version;
+            _functions = new ConcurrentBag<INamedItemInfo>(functionNames.Select(fn => new FunctionInfo(fn)));
         }
 
         #region IPackageInfo
@@ -74,16 +78,8 @@ namespace Microsoft.R.Support.Help.Packages {
             var functions = TryRestoreFromCache();
             if (functions == null || !functions.Any()) {
                 try {
-                    var result = await _host.Session.EvaluateAsync<JArray>(Invariant($"as.list(getNamespaceExports('{this.Name}'))"), REvaluationKind.BaseEnv);
-                    functions = result
-                                    .Select(p => (string)((JValue)p).Value)
-                                    .Where(n => n.IndexOf(':') < 0);
-                    result = await _host.Session.EvaluateAsync<JArray>(Invariant($"as.list(ls('package:{this.Name}'))"), REvaluationKind.BaseEnv);
-                    var variables = result
-                                    .Select(p => (string)((JValue)p).Value)
-                                    .Where(n => n.IndexOf(':') < 0);
-
-                    functions = functions.Union(variables);
+                    var result = await _host.Session.PackagesFunctionsNamesAsync(Name, REvaluationKind.BaseEnv);
+                    functions = result.Children<JValue>().Select(v => (string)v.Value);
                 } catch (TaskCanceledException) { } catch (REvaluationException) { }
             } else {
                 _saved = true;

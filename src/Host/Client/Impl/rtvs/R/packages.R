@@ -1,11 +1,40 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See LICENSE in the project root for license information.
 
-packages.installed <- function() {
+packages.installed.functions <- function() {
+	unname(lapply(packages.installed.named(), function(p) {
+		result <- list()
+		result$Package <- p$Package
+		result$Description <- p$Description
+		result$Version <- p$Version
+		result$Functions <- package.functions.names(p$Package)
+		return(result)
+	}))
+}
+
+package.functions.names <- function(packageName) {
+    as.list(union(
+		tryCatch({
+			getNamespaceExports(packageName)
+		}, error = function(e) {
+			return(c())
+		}), 
+		tryCatch({
+			ls(paste0('package:', packageName))
+		}, error = function(e) {
+			return(c())
+		})
+	))
+}
+
+packages.installed.named <- function() {
     pkgs <- installed.packages(fields = c('Title', 'Author', 'Description'))
     pkgs <- pkgs[!duplicated(pkgs[, 'Package']),]
-    pkgs <- apply(pkgs, 1, as.list)
-    unname(pkgs)
+    return(apply(pkgs, 1, as.list))
+}
+
+packages.installed <- function() {
+    unname(packages.installed.named())
 }
 
 packages.loaded <- function() {
