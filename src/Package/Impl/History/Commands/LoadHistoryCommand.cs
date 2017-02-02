@@ -14,8 +14,9 @@ using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Text.Editor;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
-#endif
+#else
 using PathHelper = Microsoft.VisualStudio.ProjectSystem.PathHelper;
+#endif
 
 namespace Microsoft.VisualStudio.R.Package.History.Commands {
     internal class LoadHistoryCommand : ViewCommand {
