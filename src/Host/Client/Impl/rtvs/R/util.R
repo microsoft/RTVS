@@ -294,7 +294,7 @@ query_reload_autosave <- function() {
     }
 }
 
-disconnect_callback <- function() {
+save_state <- function() {
     message(sprintf('Autosaving workspace to image "%s" ...', autosave_filename));
     save.image(autosave_filename);
     message(' workspace saved successfully.');
@@ -302,7 +302,7 @@ disconnect_callback <- function() {
 
 enable_autosave <- function(delete_existing) {
     try({
-        set_disconnect_callback(disconnect_callback);
+        set_disconnect_callback(save_state);
 
         if (delete_existing) {
             message(sprintf('Deleting autosaved workspace image "%s".', autosave_filename));
