@@ -15,6 +15,8 @@ namespace Microsoft.R.Host.Client {
         private readonly SemaphoreSlim _receiveLock = new SemaphoreSlim(1, 1);
         private readonly SemaphoreSlim _sendLock = new SemaphoreSlim(1, 1);
 
+        public string CloseStatusDescription => _socket.CloseStatusDescription ?? string.Empty;
+
         public WebSocketMessageTransport(WebSocket socket) {
             _socket = socket;
         }

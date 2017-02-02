@@ -81,6 +81,8 @@ namespace Microsoft.R.Host.Client {
 
             if (message != null) {
                 Log.Response(message.ToString(), _rLoopDepth);
+            } else {
+                Log.Response(_transport.CloseStatusDescription, _rLoopDepth);
             }
 
             return message;
@@ -588,7 +590,12 @@ namespace Microsoft.R.Host.Client {
 
             try {
                 var message = await ReceiveMessageAsync(ct);
-                if (message == null || !message.IsNotification || message.Name != "!Microsoft.R.Host") {
+                if (message == null) {
+                    // Socket is closed before connection is established. Just exit.
+                    return;
+                }
+
+                if (!message.IsNotification || message.Name != "!Microsoft.R.Host") {
                     throw ProtocolError($"Microsoft.R.Host handshake expected:", message);
                 }
 
