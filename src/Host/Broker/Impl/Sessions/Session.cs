@@ -83,11 +83,12 @@ namespace Microsoft.R.Host.Broker.Sessions {
 
             var useridentity = User as WindowsIdentity;
             // In remote broker User Identity type is always WindowsIdentity
-            string suppressUI = (useridentity == null) ? string.Empty : "--suppress-ui ";
+            string suppressUI = (useridentity == null) ? string.Empty : "--rhost-suppress-ui ";
+            string isRepl = Id.StartsWithIgnoreCase("REPL") ? string.Empty : "--rhost-interactive ";
             string brokerPath = Path.GetDirectoryName(typeof(Program).Assembly.GetAssemblyPath());
             string rhostExePath = Path.Combine(brokerPath, RHostExe);
             string logFolderParam = string.IsNullOrEmpty(logFolder) ? string.Empty : Invariant($"--rhost-log-dir \"{logFolder}\"");
-            string commandLine = Invariant($"\"{rhostExePath}\" {suppressUI}--rhost-name \"{Id}\" {logFolderParam} --rhost-log-verbosity {(int)verbosity} {CommandLineArguments}");
+            string commandLine = Invariant($"\"{rhostExePath}\" {suppressUI}{isRepl}--rhost-name \"{Id}\" {logFolderParam} --rhost-log-verbosity {(int)verbosity} {CommandLineArguments}");
             var usernameBldr = new StringBuilder(NativeMethods.CREDUI_MAX_USERNAME_LENGTH + 1);
             var domainBldr = new StringBuilder(NativeMethods.CREDUI_MAX_DOMAIN_LENGTH + 1);
 
