@@ -99,7 +99,9 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
         public async Task<ExecutionResult> ResetAsync(bool initialize = true) {
             try {
+                bool isResetting = true;
                 if (Session.IsHostRunning) {
+                    isResetting = await SaveStateAsync();
                     WriteErrorLine(Environment.NewLine + Resources.MicrosoftRHostStopping);
                     await Session.StopHostAsync(true);
                 }
@@ -109,11 +111,25 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 }
 
                 WriteErrorLine(Environment.NewLine + Resources.MicrosoftRHostStarting);
-                return await InitializeAsync(true);
+                return await InitializeAsync(isResetting);
             } catch (Exception ex) {
                 Trace.Fail($"Exception in RInteractiveEvaluator.ResetAsync\n{ex}");
                 return ExecutionResult.Failure;
             }
+        }
+
+        private async Task<bool> SaveStateAsync() {
+            try {
+                if (MessageButtons.Yes == await _coreShell.ShowMessageAsync(Resources.Warning_SaveOnReset, MessageButtons.YesNo)) {
+                    await Session.ExecuteAsync("rtvs:::save_state()");
+                    return false;
+                }
+            } catch (RHostDisconnectedException rhdex) {
+                WriteRHostDisconnectedError(rhdex);
+                WriteErrorLine(Resources.Error_FailedToSaveState);
+            }
+
+            return true;
         }
 
         public bool CanExecuteCode(string text) {
