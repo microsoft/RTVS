@@ -84,7 +84,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
             var useridentity = User as WindowsIdentity;
             // In remote broker User Identity type is always WindowsIdentity
             string suppressUI = (useridentity == null) ? string.Empty : "--rhost-suppress-ui ";
-            string isRepl = Id.StartsWithIgnoreCase("REPL") ? string.Empty : "--rhost-interactive ";
+            string isRepl = Id.StartsWithIgnoreCase("REPL") ? "--rhost-interactive " : string.Empty;
             string brokerPath = Path.GetDirectoryName(typeof(Program).Assembly.GetAssemblyPath());
             string rhostExePath = Path.Combine(brokerPath, RHostExe);
             string logFolderParam = string.IsNullOrEmpty(logFolder) ? string.Empty : Invariant($"--rhost-log-dir \"{logFolder}\"");
