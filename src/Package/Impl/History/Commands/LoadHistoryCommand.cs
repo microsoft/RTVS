@@ -8,7 +8,6 @@ using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Support.Settings;
-using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
@@ -16,6 +15,7 @@ using Microsoft.VisualStudio.Text.Editor;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
 #endif
+using PathHelper = Microsoft.VisualStudio.ProjectSystem.PathHelper;
 
 namespace Microsoft.VisualStudio.R.Package.History.Commands {
     internal class LoadHistoryCommand : ViewCommand {
