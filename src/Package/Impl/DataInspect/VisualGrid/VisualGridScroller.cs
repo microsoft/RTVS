@@ -10,7 +10,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Logging;
 using Microsoft.VisualStudio.PlatformUI;
+using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
@@ -98,7 +100,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                         batch.Clear();
                     }
                 } catch (Exception ex) {
-                    Debug.Fail(ex.ToString());
+                    VsAppShell.Current.Services.Log.Write(LogVerbosity.Normal, MessageCategory.Error, "VisualGridScroller exception: " + ex);
                     batch.Clear();
                 }
             }
