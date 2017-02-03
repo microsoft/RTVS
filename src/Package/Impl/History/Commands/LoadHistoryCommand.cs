@@ -7,13 +7,14 @@ using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Support.Settings;
-using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Text.Editor;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
+#else
+using PathHelper = Microsoft.VisualStudio.ProjectSystem.PathHelper;
 #endif
 
 namespace Microsoft.VisualStudio.R.Package.History.Commands {
@@ -29,10 +30,10 @@ namespace Microsoft.VisualStudio.R.Package.History.Commands {
             _history = historyProvider.GetAssociatedRHistory(textView);
         }
 
-        public override Microsoft.R.Components.Controller.CommandStatus Status(Guid guid, int id) {
+        public override CommandStatus Status(Guid guid, int id) {
             return _interactiveWorkflow.ActiveWindow != null ?
-                Microsoft.R.Components.Controller.CommandStatus.SupportedAndEnabled :
-                Microsoft.R.Components.Controller.CommandStatus.Supported;
+                CommandStatus.SupportedAndEnabled :
+                CommandStatus.Supported;
         }
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
