@@ -384,6 +384,7 @@
     <Resource Include="Resources\packageicon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\..\..\Common\BuildTasks\Microsoft.Common.BuildTasks.targets" />
-  <Import Project="..\..\..\R.Build.Version.targets" />
+  <Import Project="$(SourceDirectory)Common\BuildTasks\Microsoft.Common.BuildTasks.targets" />
+  <Import Project="$(SourceDirectory)R.Build.Version.targets" />
+  <Import Project="$(SourceDirectory)R.Build.Loc.targets" />
 </Project>
