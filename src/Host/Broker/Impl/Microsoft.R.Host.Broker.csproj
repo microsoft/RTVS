@@ -165,6 +165,10 @@
       <Project>{8445A4FB-4443-432C-94E8-1408559B7F58}</Project>
       <Name>Microsoft.R.Interpreters</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Windows\Core\Impl\Microsoft.Windows.Core.csproj">
+      <Project>{01E3D8C2-9C24-492B-B13B-C6D7068B6BF8}</Project>
+      <Name>Microsoft.Windows.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Protocol\Impl\Microsoft.R.Host.Protocol.csproj">
       <Project>{c46e5f53-4caf-4c65-b173-ca8140fb41e0}</Project>
       <Name>Microsoft.R.Host.Protocol</Name>

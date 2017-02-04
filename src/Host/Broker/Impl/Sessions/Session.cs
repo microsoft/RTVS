@@ -17,6 +17,7 @@ using Microsoft.R.Host.Broker.Interpreters;
 using Microsoft.R.Host.Broker.Pipes;
 using Microsoft.R.Host.Broker.Startup;
 using Microsoft.R.Host.Protocol;
+using Microsoft.Windows.Core.OS;
 using static System.FormattableString;
 
 namespace Microsoft.R.Host.Broker.Sessions {

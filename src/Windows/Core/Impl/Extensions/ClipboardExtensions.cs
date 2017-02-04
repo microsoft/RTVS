@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using static System.FormattableString;
 
-namespace Microsoft.Common.Core {
+namespace Microsoft.Windows.Core {
     public static class ClipboardExtensions {
         public static void CopyToClipboard(this string data) {
             try {

@@ -1177,6 +1177,10 @@
       <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
     </ProjectReference>
+    <ProjectReference Include="..\..\Windows\Core\Impl\Microsoft.Windows.Core.csproj">
+      <Project>{01E3D8C2-9C24-492B-B13B-C6D7068B6BF8}</Project>
+      <Name>Microsoft.Windows.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Help\Themes\Dark.css">

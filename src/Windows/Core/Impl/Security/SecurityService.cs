@@ -9,11 +9,14 @@ using System.Security.Cryptography.X509Certificates;
 using System.Security.Principal;
 using System.Text;
 using System.Threading;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.OS;
+using Microsoft.Common.Core.Security;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Windows.Core.OS;
 using static Microsoft.Common.Core.NativeMethods;
 
-namespace Microsoft.Common.Core.Security {
+namespace Microsoft.Windows.Core.Security {
     public class SecurityService : ISecurityService {
         private readonly ICoreShell _coreShell;
 
@@ -24,7 +27,7 @@ namespace Microsoft.Common.Core.Security {
         public Credentials GetUserCredentials(string authority, string workspaceName, CancellationToken cancellationToken = default(CancellationToken)) {
             _coreShell.AssertIsOnMainThread();
 
-            var credentials = Credentials.ReadSavedCredentials(authority) ?? GetUserCredentials(workspaceName, cancellationToken);
+            var credentials = ReadSavedCredentials(authority) ?? GetUserCredentials(workspaceName, cancellationToken);
             return credentials;
         }
 
@@ -39,9 +42,9 @@ namespace Microsoft.Common.Core.Security {
             IntPtr credStorage = IntPtr.Zero;
             uint credSize;
             bool save = true;
-            CredUIWinFlags flags = CredUIWinFlags.CREDUIWIN_CHECKBOX;
+            var flags = CredUIWinFlags.CREDUIWIN_CHECKBOX;
             // For password, use native memory so it can be securely freed.
-            IntPtr passwordStorage = SecurityUtilities.CreatePasswordBuffer();
+            IntPtr passwordStorage = CreatePasswordBuffer();
             int inCredSize = 1024;
             IntPtr inCredBuffer = Marshal.AllocCoTaskMem(inCredSize);
 
@@ -99,8 +102,61 @@ namespace Microsoft.Common.Core.Security {
             return false;
         }
 
+        public void DeleteCredentials(string authority) {
+            if(!CredDelete(authority, CRED_TYPE.GENERIC, 0)) {
+                int err = Marshal.GetLastWin32Error();
+                if(err != ERROR_NOT_FOUND) {
+                    throw new Win32Exception(err);
+                }
+            }
+        }
+
         public bool DeleteUserCredentials(string authority) {
             return CredDelete(authority, CRED_TYPE.GENERIC, 0);
+        }
+
+        public void Save(Credentials credentials, string authority) {
+            if (!credentials.IsSaved()) {
+                CredentialData creds = default(CredentialData);
+                try {
+                    creds.TargetName = authority;
+                    // We have to save the credentials even if user selected NOT to save. Otherwise, user will be asked to enter
+                    // credentials for every REPL/intellisense/package/Connection test request. This can provide the best user experience.
+                    // We can limit how long the information is saved, in the case whee user selected not to save the credential persistence
+                    // is limited to the current log on session. The credentials will not be available if the use logs off and back on.
+                    creds.Persist = credentials.CanSave() ? CRED_PERSIST.CRED_PERSIST_ENTERPRISE : CRED_PERSIST.CRED_PERSIST_SESSION;
+                    creds.Type = CRED_TYPE.GENERIC;
+                    creds.UserName = credentials.UserName;
+                    creds.CredentialBlob = Marshal.SecureStringToCoTaskMemUnicode(credentials.Password);
+                    creds.CredentialBlobSize = (uint)((credentials.Password.Length + 1) * sizeof(char)); // unicode password + unicode null
+                    if (!CredWrite(ref creds, 0)) {
+                        var error = Marshal.GetLastWin32Error();
+                        throw new Win32Exception(error, Resources.Error_CredWriteFailed);
+                    }
+                    //Source = CredentialSource.Saved;
+                } finally {
+                    if (creds.CredentialBlob != IntPtr.Zero) {
+                        Marshal.ZeroFreeCoTaskMemUnicode(creds.CredentialBlob);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Used to obtain credentials from the Credential Manager
+        /// </summary>
+        public Credentials ReadSavedCredentials(string authority) {
+            using (CredentialHandle ch = CredentialHandle.ReadFromCredentialManager(authority)) {
+                if (ch != null) {
+                    CredentialData credData = ch.GetCredentialData();
+                    return null;//Credentials.Create(credData.UserName, SecurityUtilities.SecureStringFromNativeBuffer(credData.CredentialBlob), CredentialSource.Saved);
+                }
+                return null;
+            }
+        }
+
+        private static IntPtr CreatePasswordBuffer() {
+            return Marshal.AllocCoTaskMem(CREDUI_MAX_PASSWORD_LENGTH);
         }
     }
 }

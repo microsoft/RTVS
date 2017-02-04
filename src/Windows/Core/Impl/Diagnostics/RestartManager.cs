@@ -7,7 +7,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security;
 
-namespace Microsoft.Common.Core.Diagnostics {
+namespace Microsoft.Windows.Core.Diagnostics {
     public static class RestartManager {
         /// <summary>
         /// Given a list of filenames with absolute path, returns enumerable of process currently locking those files.

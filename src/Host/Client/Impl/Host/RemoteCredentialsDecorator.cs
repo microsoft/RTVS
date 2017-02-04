@@ -42,7 +42,7 @@ namespace Microsoft.R.Host.Client.Host {
 
             try {
                 var credentials = _credentials ?? _securityService.GetUserCredentials(_authority, _workspaceName, cancellationToken);
-                credentials.Save(_authority);
+                _securityService.Save(_credentials, _authority);
                 _credentials = credentials;
             } catch (Exception) {
                 token.Dispose();
@@ -56,7 +56,7 @@ namespace Microsoft.R.Host.Client.Host {
 
         public void InvalidateCredentials() {
             _credentials = null;
-            SecurityUtilities.DeleteCredentials(_authority);
+            _securityService.DeleteCredentials(_authority);
         }
     }
 }

@@ -7,13 +7,14 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Security.AccessControl;
 using System.Security.Principal;
-using Microsoft.Win32.SafeHandles;
 using System.Threading;
-using static Microsoft.Common.Core.NativeMethods;
+using Microsoft.Common.Core;
+using Microsoft.Common.Core.OS;
+using Microsoft.Win32.SafeHandles;
 
-namespace Microsoft.Common.Core.OS {
+namespace Microsoft.Windows.Core.OS {
     public class Win32Process {
-        private Win32Process(PROCESS_INFORMATION pi) {
+        private Win32Process(NativeMethods.PROCESS_INFORMATION pi) {
             _hasExited = false;
             _exitCodeLock = new object();
             ProcessId = pi.dwProcessId;
@@ -58,7 +59,7 @@ namespace Microsoft.Common.Core.OS {
 
         public void Kill() {
             if (!_processHandle.IsClosed) {
-                if(!TerminateProcess(_processHandle, IntPtr.Zero)) {
+                if(!NativeMethods.TerminateProcess(_processHandle, IntPtr.Zero)) {
                     throw new Win32Exception(Marshal.GetLastWin32Error());
                 }
             }
@@ -68,7 +69,7 @@ namespace Microsoft.Common.Core.OS {
             lock (_exitCodeLock) {
                 if (!_hasExited) {
                     _hasExited = true;
-                    if (!GetExitCodeProcess(_processHandle, out _exitCode)) {
+                    if (!NativeMethods.GetExitCodeProcess(_processHandle, out _exitCode)) {
                         throw new Win32Exception(Marshal.GetLastWin32Error());
                     }
                 }
@@ -78,8 +79,8 @@ namespace Microsoft.Common.Core.OS {
         private static object _createProcessLock = new object();
         public static Win32Process StartProcessAsUser(WindowsIdentity winIdentity, string applicationName, string commandLine, string workingDirectory, Win32NativeEnvironmentBlock environment, out Stream stdin, out Stream stdout, out Stream stderror) {
 
-            STARTUPINFO si = new STARTUPINFO();
-            si.cb = Marshal.SizeOf(typeof(STARTUPINFO));
+            NativeMethods.STARTUPINFO si = new NativeMethods.STARTUPINFO();
+            si.cb = Marshal.SizeOf(typeof(NativeMethods.STARTUPINFO));
 
             /* 
             When a process is started using CreateProcessAsUser function, the process will be started into a windowstation 
@@ -93,50 +94,50 @@ namespace Microsoft.Common.Core.OS {
 
             IntPtr stdinRead, stdinWrite, stdoutRead, stdoutWrite, stderrorRead, stderrorWrite;
 
-            SECURITY_ATTRIBUTES sa = default(SECURITY_ATTRIBUTES);
+            NativeMethods.SECURITY_ATTRIBUTES sa = default(NativeMethods.SECURITY_ATTRIBUTES);
             sa.nLength = Marshal.SizeOf(sa);
             sa.lpSecurityDescriptor = IntPtr.Zero;
             sa.bInheritHandle = true;
 
-            if (!CreatePipe(out stdinRead, out stdinWrite, ref sa, 0)) {
+            if (!NativeMethods.CreatePipe(out stdinRead, out stdinWrite, ref sa, 0)) {
                 throw new Win32Exception(Marshal.GetLastWin32Error());
             }
 
-            if (!SetHandleInformation(stdinWrite, HANDLE_FLAGS.INHERIT, HANDLE_FLAGS.None)) {
+            if (!NativeMethods.SetHandleInformation(stdinWrite, NativeMethods.HANDLE_FLAGS.INHERIT, NativeMethods.HANDLE_FLAGS.None)) {
                 throw new Win32Exception(Marshal.GetLastWin32Error());
             }
 
-            if (!CreatePipe(out stdoutRead, out stdoutWrite, ref sa, 0)) {
+            if (!NativeMethods.CreatePipe(out stdoutRead, out stdoutWrite, ref sa, 0)) {
                 throw new Win32Exception(Marshal.GetLastWin32Error());
             }
 
-            if (!SetHandleInformation(stdoutRead, HANDLE_FLAGS.INHERIT, HANDLE_FLAGS.None)) {
+            if (!NativeMethods.SetHandleInformation(stdoutRead, NativeMethods.HANDLE_FLAGS.INHERIT, NativeMethods.HANDLE_FLAGS.None)) {
                 throw new Win32Exception(Marshal.GetLastWin32Error());
             }
 
-            if (!CreatePipe(out stderrorRead, out stderrorWrite, ref sa, 0)) {
+            if (!NativeMethods.CreatePipe(out stderrorRead, out stderrorWrite, ref sa, 0)) {
                 throw new Win32Exception(Marshal.GetLastWin32Error());
             }
 
-            if (!SetHandleInformation(stderrorRead, HANDLE_FLAGS.INHERIT, HANDLE_FLAGS.None)) {
+            if (!NativeMethods.SetHandleInformation(stderrorRead, NativeMethods.HANDLE_FLAGS.INHERIT, NativeMethods.HANDLE_FLAGS.None)) {
                 throw new Win32Exception(Marshal.GetLastWin32Error());
             }
 
-            si.dwFlags = STARTF_USESTDHANDLES;
+            si.dwFlags = NativeMethods.STARTF_USESTDHANDLES;
             si.hStdInput = stdinRead;
             si.hStdOutput = stdoutWrite;
             si.hStdError = stderrorWrite;
 
-            SECURITY_ATTRIBUTES processAttr = CreateSecurityAttributes(winIdentity == null ? WellKnownSidType.AuthenticatedUserSid : WellKnownSidType.NetworkServiceSid);
-            SECURITY_ATTRIBUTES threadAttr = CreateSecurityAttributes(winIdentity == null ? WellKnownSidType.AuthenticatedUserSid : WellKnownSidType.NetworkServiceSid);
+            NativeMethods.SECURITY_ATTRIBUTES processAttr = CreateSecurityAttributes(winIdentity == null ? WellKnownSidType.AuthenticatedUserSid : WellKnownSidType.NetworkServiceSid);
+            NativeMethods.SECURITY_ATTRIBUTES threadAttr = CreateSecurityAttributes(winIdentity == null ? WellKnownSidType.AuthenticatedUserSid : WellKnownSidType.NetworkServiceSid);
 
             lock (_createProcessLock) {
-                PROCESS_INFORMATION pi;
-                ErrorModes oldErrorMode = SetErrorMode(ErrorModes.SEM_FAILCRITICALERRORS);
+                NativeMethods.PROCESS_INFORMATION pi;
+                NativeMethods.ErrorModes oldErrorMode = NativeMethods.SetErrorMode(NativeMethods.ErrorModes.SEM_FAILCRITICALERRORS);
                 try {
                     if (winIdentity == null) {
-                        if (!CreateProcess(applicationName, commandLine, ref processAttr, ref threadAttr, true,
-                            (uint)(CREATE_PROCESS_FLAGS.CREATE_UNICODE_ENVIRONMENT | CREATE_PROCESS_FLAGS.CREATE_NO_WINDOW),
+                        if (!NativeMethods.CreateProcess(applicationName, commandLine, ref processAttr, ref threadAttr, true,
+                            (uint)(NativeMethods.CREATE_PROCESS_FLAGS.CREATE_UNICODE_ENVIRONMENT | NativeMethods.CREATE_PROCESS_FLAGS.CREATE_NO_WINDOW),
                             environment.NativeEnvironmentBlock,
                             workingDirectory,
                             ref si,
@@ -144,9 +145,9 @@ namespace Microsoft.Common.Core.OS {
                             throw new Win32Exception(Marshal.GetLastWin32Error());
                         }
                     } else {
-                        if (!CreateProcessAsUser(
+                        if (!NativeMethods.CreateProcessAsUser(
                             winIdentity.Token, applicationName, commandLine, ref processAttr, ref threadAttr, true,
-                            (uint)(CREATE_PROCESS_FLAGS.CREATE_UNICODE_ENVIRONMENT | CREATE_PROCESS_FLAGS.CREATE_NO_WINDOW),
+                            (uint)(NativeMethods.CREATE_PROCESS_FLAGS.CREATE_UNICODE_ENVIRONMENT | NativeMethods.CREATE_PROCESS_FLAGS.CREATE_NO_WINDOW),
                             environment.NativeEnvironmentBlock,
                             workingDirectory,
                             ref si,
@@ -159,7 +160,7 @@ namespace Microsoft.Common.Core.OS {
                     stdout = new FileStream(new SafeFileHandle(stdoutRead, true), FileAccess.Read, 0x1000, false);
                     stderror = new FileStream(new SafeFileHandle(stderrorRead, true), FileAccess.Read, 0x1000, false);
                 } finally {
-                    SetErrorMode(oldErrorMode);
+                    NativeMethods.SetErrorMode(oldErrorMode);
 
                     if (processAttr.lpSecurityDescriptor != IntPtr.Zero) {
                         Marshal.FreeHGlobal(processAttr.lpSecurityDescriptor);
@@ -174,7 +175,7 @@ namespace Microsoft.Common.Core.OS {
             }
         }
 
-        private static SECURITY_ATTRIBUTES CreateSecurityAttributes(WellKnownSidType sidType) {
+        private static NativeMethods.SECURITY_ATTRIBUTES CreateSecurityAttributes(WellKnownSidType sidType) {
             // Grant access to Network Service.
             SecurityIdentifier networkService = new SecurityIdentifier(sidType, null);
             DiscretionaryAcl dacl = new DiscretionaryAcl(false, false, 1);
@@ -187,7 +188,7 @@ namespace Microsoft.Common.Core.OS {
             IntPtr dest = Marshal.AllocHGlobal(buffer.Length);
             Marshal.Copy(buffer, 0, dest, buffer.Length);
 
-            SECURITY_ATTRIBUTES sa = new SECURITY_ATTRIBUTES();
+            NativeMethods.SECURITY_ATTRIBUTES sa = new NativeMethods.SECURITY_ATTRIBUTES();
             sa.nLength = Marshal.SizeOf(sa);
             sa.lpSecurityDescriptor = dest;
 

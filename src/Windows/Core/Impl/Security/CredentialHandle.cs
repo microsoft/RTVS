@@ -4,10 +4,10 @@
 using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
+using Microsoft.Common.Core;
 using Microsoft.Win32.SafeHandles;
-using static Microsoft.Common.Core.NativeMethods;
 
-namespace Microsoft.Common.Core {
+namespace Microsoft.Windows.Core.Security {
     internal sealed class CredentialHandle : CriticalHandleZeroOrMinusOneIsInvalid {
 
         private CredentialHandle(IntPtr credHandle) {
@@ -16,7 +16,7 @@ namespace Microsoft.Common.Core {
 
         protected override bool ReleaseHandle() {
             if (!IsInvalid) {
-                CredFree(handle);
+                NativeMethods.CredFree(handle);
                 SetHandleAsInvalid();
                 return true;
             }
@@ -24,22 +24,22 @@ namespace Microsoft.Common.Core {
             return false;
         }
 
-        public CredentialData GetCredentialData() {
+        public NativeMethods.CredentialData GetCredentialData() {
             if (!IsInvalid) {
-                return Marshal.PtrToStructure<CredentialData>(handle);
+                return Marshal.PtrToStructure<NativeMethods.CredentialData>(handle);
             }
             throw new InvalidOperationException(Resources.Error_CredentialHandleInvalid);
         }
 
         public static CredentialHandle ReadFromCredentialManager(string authority) {
             IntPtr creds;
-            if (CredRead(authority, CRED_TYPE.GENERIC, 0, out creds)) {
+            if (NativeMethods.CredRead(authority, NativeMethods.CRED_TYPE.GENERIC, 0, out creds)) {
                 return new CredentialHandle(creds);
             } else {
                 var error = Marshal.GetLastWin32Error();
                 // if credentials were not found then continue to prompt user for credentials.
                 // otherwise there was an error while reading credentials. 
-                if (error != ERROR_NOT_FOUND) {
+                if (error != NativeMethods.ERROR_NOT_FOUND) {
                     throw new Win32Exception(error, Resources.Error_CredReadFailed);
                 }
             }

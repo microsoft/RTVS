@@ -5,14 +5,11 @@ using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Security;
-using static Microsoft.Common.Core.NativeMethods;
+using Microsoft.Common.Core;
+using Microsoft.Common.Core.Security;
 
-namespace Microsoft.Common.Core.Security {
+namespace Microsoft.Windows.Core.Security {
     public static class SecurityUtilities {
-        public static IntPtr CreatePasswordBuffer() {
-            return Marshal.AllocCoTaskMem(CREDUI_MAX_PASSWORD_LENGTH);
-        }
-
         public static SecureString ToSecureString(this string s) {
             if (s == null) {
                 return null;
@@ -57,19 +54,10 @@ namespace Microsoft.Common.Core.Security {
             }
         }
 
-        public static void DeleteCredentials(string authority) {
-            if(!CredDelete(authority, CRED_TYPE.GENERIC, 0)) {
-                int err = Marshal.GetLastWin32Error();
-                if(err != ERROR_NOT_FOUND) {
-                    throw new Win32Exception(err);
-                }
-            }
-        }
-
         public static string GetUserName(string authority) {
             using (CredentialHandle ch = CredentialHandle.ReadFromCredentialManager(authority)) {
                 if (ch != null) {
-                    CredentialData credData = ch.GetCredentialData();
+                    NativeMethods.CredentialData credData = ch.GetCredentialData();
                     return credData.UserName;
                 }
                 return string.Empty;

@@ -20,12 +20,6 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.IO.Compression" />
-    <Reference Include="System.IO.Compression.FileSystem" />
-    <Reference Include="System.Security" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
@@ -36,7 +30,6 @@
     <Compile Include="Disposables\DisposableBag.cs" />
     <Compile Include="Enums\YesNo.cs" />
     <Compile Include="Extensions\ArraySegmentExtensions.cs" />
-    <Compile Include="Extensions\ClipboardExtensions.cs" />
     <Compile Include="Exceptions\CriticalException.cs" />
     <Compile Include="Extensions\MatcherExtensions.cs" />
     <Compile Include="Extensions\MathExtensions.cs" />
@@ -44,6 +37,7 @@
     <Compile Include="Extensions\SettingsExtensions.cs" />
     <Compile Include="Extensions\StreamExtensions.cs" />
     <Compile Include="Extensions\TaskCompletionSourceExtensions.cs" />
+    <Compile Include="Extensions\ZipFileExtensions.cs" />
     <Compile Include="IO\IUserProfileNamedPipeFactory.cs" />
     <Compile Include="IO\KnownFolderGuids.cs" />
     <Compile Include="Json\Json.cs" />
@@ -59,32 +53,15 @@
     <Compile Include="Logging\Implementation\LoggingPermissions.cs" />
     <Compile Include="Logging\LogVerbosity.cs" />
     <Compile Include="Logging\MessageCategory.cs" />
-    <Compile Include="NativeMethods.cs" />
     <Compile Include="Net\FileDownloader.cs" />
     <Compile Include="Net\IFileDownloader.cs" />
     <Compile Include="Net\Network.cs" />
     <Compile Include="Net\WebSocketHelper.cs" />
-    <Compile Include="OS\ErrorCodeConverter.cs" />
     <Compile Include="OS\IUserCredentials.cs" />
     <Compile Include="OS\IUserProfileCreatorResult.cs" />
     <Compile Include="OS\IUserProfileServices.cs" />
-    <Compile Include="OS\ProcessWaitHandle.cs" />
-    <Compile Include="OS\SafeThreadHandle.cs" />
-    <Compile Include="OS\Win32EnvironmentBlock.cs" />
-    <Compile Include="OS\Win32NativeEnvironmentBlock.cs" />
-    <Compile Include="OS\Win32Process.cs" />
-    <Compile Include="OS\Win32MessageBox.cs" />
-    <Compile Include="OS\Win32ProcessExitEventArgs.cs" />
-    <Compile Include="Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Security\CredentialHandle.cs" />
     <Compile Include="Security\Credentials.cs" />
     <Compile Include="Security\ISecurityService.cs" />
-    <Compile Include="Security\SecurityService.cs" />
-    <Compile Include="Security\SecurityUtilities.cs" />
     <Compile Include="Services\ICoreServices.cs" />
     <Compile Include="Services\CoreServices.cs" />
     <Compile Include="Shell\CoreShellExtensions.cs" />
@@ -106,7 +83,6 @@
     <Compile Include="Threading\BackgroundThreadAwaitable.cs" />
     <Compile Include="Threading\BackgroundThreadAwaiter.cs" />
     <Compile Include="Collections\ListExtensions.cs" />
-    <Compile Include="Diagnostics\RestartManager.cs" />
     <Compile Include="Disposables\DisposeToken.cs" />
     <Compile Include="Extensions\CharExtensions.cs" />
     <Compile Include="Extensions\IOExtensions.cs" />
@@ -180,12 +156,7 @@
       <StrongName>StrongName</StrongName>
     </FilesToSign>
   </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Import Project="$(SourceDirectory)R.Build.Loc.targets" />
