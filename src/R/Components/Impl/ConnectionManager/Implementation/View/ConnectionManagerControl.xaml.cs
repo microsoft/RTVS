@@ -14,7 +14,6 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
     /// <summary>
     /// Interaction logic for ConnectionManagerControl.xaml
     /// </summary>
-    [Localizability(LocalizationCategory.NeverLocalize)]
     public partial class ConnectionManagerControl : UserControl {
         private IConnectionManagerViewModel Model => DataContext as IConnectionManagerViewModel;
 

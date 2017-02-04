@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.ObjectModel;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
@@ -10,7 +9,6 @@ namespace Microsoft.R.Wpf.Controls {
     /// <summary>
     /// Interaction logic for Spinner.xaml
     /// </summary>
-    [Localizability(LocalizationCategory.NeverLocalize)]
     public partial class Spinner : UserControl {
         public Spinner() {
             InitializeComponent();

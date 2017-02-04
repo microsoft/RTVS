@@ -10,9 +10,9 @@
       <TranslationFile>$(SourceDirectory)loc\lcl\{Lang}\$(AssemblyName).lcl</TranslationFile>
       <!--Required: translation file-->
       <LciCommentFile>$(SourceDirectory)loc\lci\$(AssemblyName).$(OutputFileExtension).lci</LciCommentFile>
-      <!--<SettingsFile>
-        $(SourceDirectory)\LocSettings.lss
-      </SettingsFile>-->
+      <SettingsFile>
+        $(LSBuildRoot)\MCP_excludeBaml.lss
+      </SettingsFile>
     </FilesToLocalize>
   </ItemGroup>
 

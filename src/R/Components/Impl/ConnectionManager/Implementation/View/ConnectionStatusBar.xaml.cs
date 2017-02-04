@@ -10,7 +10,6 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
     /// <summary>
     /// Interaction logic for ConnectionStatusBar.xaml
     /// </summary>
-    [Localizability(LocalizationCategory.NeverLocalize)]
     public partial class ConnectionStatusBar : UserControl {
         public IConnectionStatusBarViewModel Model => DataContext as IConnectionStatusBarViewModel;
 
