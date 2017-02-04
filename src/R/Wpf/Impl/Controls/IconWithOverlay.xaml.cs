@@ -8,6 +8,7 @@ namespace Microsoft.R.Wpf {
     /// <summary>
     /// Interaction logic for IconWithOverlay.xaml
     /// </summary>
+    [Localizability(LocalizationCategory.NeverLocalize)]
     public partial class IconWithOverlay : UserControl {
         public IconWithOverlay() {
             InitializeComponent();
