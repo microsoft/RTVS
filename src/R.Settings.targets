@@ -52,6 +52,7 @@
     <WarningLevel>4</WarningLevel>
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <CodeAnalysisRuleSet>$(SourceDirectory)DevDivRuleSet.ruleset</CodeAnalysisRuleSet>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -61,5 +62,18 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <RunCodeAnalysis>false</RunCodeAnalysis>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <BaseIntermediateOutputPath>$(ObjDirectory)</BaseIntermediateOutputPath>
+    <BaseOutputPath>$(BinDirectory)</BaseOutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\$(AssemblyName)\</IntermediateOutputPath>
+    <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <DefineConstants Condition="'$(VisualStudioVersion)'=='14.0'">VS14;$(DefineConstants)</DefineConstants>
+    <DefineConstants Condition="'$(VisualStudioVersion)'=='15.0'">VS15;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
 </Project>
