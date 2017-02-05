@@ -16,6 +16,8 @@
       <!-- Do not have this show up in Solution Explorer in VS -->
       <InProject>false</InProject>
     </SignFilesDependsOn>
+    <WPFDependency Include="$(OutputPath)\Microsoft.R.Common.Wpf.dll" />
+    <WPFDependency Include="$(OutputPath)\Microsoft.R.Wpf.dll" />
   </ItemGroup>
 
   <Target Name="GatherLocalizedOutputsForSigning" Condition="'$(LocalizationEnabled)' == 'true'">
