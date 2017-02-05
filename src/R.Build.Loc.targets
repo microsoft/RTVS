@@ -1,5 +1,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
+    <UICulture>en</UICulture>
     <OutputFileExtension Condition="'$(OutputType)' == 'Library'">dll</OutputFileExtension>
     <OutputFileExtension Condition="'$(OutputType)' != 'Library'">exe</OutputFileExtension>
   </PropertyGroup>
