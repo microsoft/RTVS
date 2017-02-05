@@ -73,6 +73,7 @@
   </PropertyGroup>
   
   <PropertyGroup>
+    <UICulture>en</UICulture>
     <DefineConstants Condition="'$(VisualStudioVersion)'=='14.0'">VS14;$(DefineConstants)</DefineConstants>
     <DefineConstants Condition="'$(VisualStudioVersion)'=='15.0'">VS15;$(DefineConstants)</DefineConstants>
   </PropertyGroup>

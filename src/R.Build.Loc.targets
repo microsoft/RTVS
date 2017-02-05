@@ -10,9 +10,7 @@
       <TranslationFile>$(SourceDirectory)loc\lcl\{Lang}\$(AssemblyName).lcl</TranslationFile>
       <!--Required: translation file-->
       <LciCommentFile>$(SourceDirectory)loc\lci\$(AssemblyName).$(OutputFileExtension).lci</LciCommentFile>
-      <!--<SettingsFile>$(LSBuildRoot)\MCP_excludeBaml.lss</SettingsFile>-->
-      <!--<WPFDependency Include="$(OutputPath)\Microsoft.R.Wpf.dll" />
-      <WPFDependency Include="$(OutputPath)\Microsoft.R.Common.Wpf.dll" />-->
+      <SettingsFile>$(LSBuildRoot)\MCP_excludeBaml.lss</SettingsFile>
     </FilesToLocalize>
     <SignFilesDependsOn Include="GatherLocalizedOutputsForSigning">
       <!-- Do not have this show up in Solution Explorer in VS -->
