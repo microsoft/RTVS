@@ -10,7 +10,7 @@
       <TranslationFile>$(SourceDirectory)loc\lcl\{Lang}\$(AssemblyName).lcl</TranslationFile>
       <!--Required: translation file-->
       <LciCommentFile>$(SourceDirectory)loc\lci\$(AssemblyName).$(OutputFileExtension).lci</LciCommentFile>
-      <SettingsFile>$(LSBuildRoot)\MCP_excludeBaml.lss</SettingsFile>
+      <!--<SettingsFile>$(LSBuildRoot)\MCP_excludeBaml.lss</SettingsFile>-->
       <!--<WPFDependency Include="$(OutputPath)\Microsoft.R.Wpf.dll" />
       <WPFDependency Include="$(OutputPath)\Microsoft.R.Common.Wpf.dll" />-->
     </FilesToLocalize>
