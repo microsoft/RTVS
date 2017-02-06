@@ -543,7 +543,8 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to User directory and files under it were successfully deleted from remote machine {0}. You can click &quot;Reset&quot; to re-create your user profile and start a new session..
+        ///   Looks up a localized string similar to User directory and files under it were successfully deleted from remote machine {0}. 
+        ///You can click &quot;Reset&quot; to re-create your user profile and start a new session..
         /// </summary>
         public static string DeleteProfile_Success {
             get {
