@@ -2,27 +2,28 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 using System.Windows;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Logging;
 using Microsoft.VisualStudio.PlatformUI;
+using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
     /// Handles scroll command
     /// </summary>
     internal sealed class VisualGridScroller {
-        private TaskScheduler _ui;
-        private BlockingCollection<ScrollCommand> _scrollCommands;
+        private readonly TaskScheduler _ui;
+        private readonly BufferBlock<ScrollCommand> _scrollCommands;
 
-        private CancellationTokenSource _cancelSource;
-        private MatrixView _owner;
-        private Task _handlerTask;
+        private readonly CancellationTokenSource _cancelSource;
+        private readonly MatrixView _owner;
+        private readonly Task _handlerTask;
 
         public VisualGridScroller(MatrixView owner) {
             _ui = TaskScheduler.FromCurrentSynchronizationContext();
@@ -32,7 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 _owner.ColumnHeader.SortOrderChanged += OnSortOrderChanged;
             }
             _cancelSource = new CancellationTokenSource();
-            _scrollCommands = new BlockingCollection<ScrollCommand>();
+            _scrollCommands = new BufferBlock<ScrollCommand>();
 
             // silence every exception and don't wait
             _handlerTask = ScrollCommandsHandler(_cancelSource.Token).SilenceException<Exception>();
@@ -46,15 +47,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         internal void StopScroller() => _cancelSource.Cancel();
 
         internal void EnqueueCommand(GridUpdateType code, double param) {
-            _scrollCommands.Add(new ScrollCommand(code, param));
+            _scrollCommands.Post(new ScrollCommand(code, param));
         }
 
         internal void EnqueueCommand(GridUpdateType code, double offset, ThumbTrack track) {
-            _scrollCommands.Add(new ScrollCommand(code, offset, track));
+            _scrollCommands.Post(new ScrollCommand(code, offset, track));
         }
 
         internal void EnqueueCommand(GridUpdateType code, Size size) {
-            _scrollCommands.Add(new ScrollCommand(code, size));
+            _scrollCommands.Post(new ScrollCommand(code, size));
         }
 
         private static GridUpdateType[] RepeatSkip = new GridUpdateType[] { GridUpdateType.SizeChange, GridUpdateType.SetHorizontalOffset, GridUpdateType.SetVerticalOffset, GridUpdateType.Refresh };
@@ -66,7 +67,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             const int ScrollCommandUpperBound = 100;
             List<ScrollCommand> batch = new List<ScrollCommand>();
 
-            foreach (var command in _scrollCommands.GetConsumingEnumerable(cancellationToken)) {
+            while (true) {
+                var command = await _scrollCommands.ReceiveAsync(cancellationToken);
                 try {
                     batch.Add(command);
                     if (_scrollCommands.Count > 0
@@ -98,7 +100,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                         batch.Clear();
                     }
                 } catch (Exception ex) {
-                    Debug.Fail(ex.ToString());
+                    VsAppShell.Current.Services.Log.Write(LogVerbosity.Normal, MessageCategory.Error, "VisualGridScroller exception: " + ex);
                     batch.Clear();
                 }
             }
