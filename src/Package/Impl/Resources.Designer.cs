@@ -1252,6 +1252,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Plot history is empty.
+        /// </summary>
+        public static string PlotHistory_EmptyWatermark1 {
+            get {
+                return ResourceManager.GetString("PlotHistory_EmptyWatermark1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Run plotting command in R Interactive Window.
+        /// </summary>
+        public static string PlotHistory_EmptyWatermark2 {
+            get {
+                return ResourceManager.GetString("PlotHistory_EmptyWatermark2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R Plot History.
         /// </summary>
         public static string PlotHistoryWindowCaption {
@@ -2697,6 +2715,24 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string SurveyNewsPolicyDisabled {
             get {
                 return ResourceManager.GetString("SurveyNewsPolicyDisabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Data Frame.
+        /// </summary>
+        public static string Tab_DataFrame {
+            get {
+                return ResourceManager.GetString("Tab_DataFrame", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Input File.
+        /// </summary>
+        public static string Tab_InputFile {
+            get {
+                return ResourceManager.GetString("Tab_InputFile", resourceCulture);
             }
         }
         

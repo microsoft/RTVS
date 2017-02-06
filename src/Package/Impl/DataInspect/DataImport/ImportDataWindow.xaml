@@ -47,8 +47,8 @@
                     Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" MinHeight="22" MinWidth="22" 
                     FontSize="{Binding ElementName=Self, Path=FontSize, Converter={x:Static wpf:Converters.Scale155}}" 
                     Foreground="{DynamicResource {x:Static wpf:Brushes.WindowTextKey}}"/>
-            <RadioButton Grid.Column="4" x:Name="TabFile" GroupName="Tabs" Template="{StaticResource TabHeaderToggleButton}" Content="Input File" />
-            <RadioButton Grid.Column="6" x:Name="TabFrame" GroupName="Tabs" Template="{StaticResource TabHeaderToggleButton}" Content="Data Frame" IsChecked="True" />
+            <RadioButton Grid.Column="4" x:Name="TabFile" GroupName="Tabs" Template="{StaticResource TabHeaderToggleButton}" Content="{x:Static components:Resources.Tab_InputFile}" />
+            <RadioButton Grid.Column="6" x:Name="TabFrame" GroupName="Tabs" Template="{StaticResource TabHeaderToggleButton}" Content="{x:Static components:Resources.Tab_DataFrame}" IsChecked="True" />
         </Grid>
 
         <Border Grid.Row="1" Margin="12,12,12,0" BorderThickness="0,1,1,1" BorderBrush="{DynamicResource {x:Static wpf:Brushes.ActiveBorderKey}}" VerticalAlignment="Stretch">
