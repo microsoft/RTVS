@@ -16,7 +16,7 @@
     "Microsoft.VisualStudio.TextManager.Interop.12.0": "12.0.30110",
     "Microsoft.VisualStudio.ProjectSystem": "14.1.170-pre",
     "NSubstitute": "1.10.0",
-    "System.IO.Compression.ZipFile": "4.0.1",
+    "System.IO.Compression.ZipFile": "4.3.0",
     "VSSDK.DTE.8": "8.0.4",
     "xunit": "2.2.0-beta1-build3239",
     "xunit.runner.visualstudio": "2.2.0-beta1-build1144"

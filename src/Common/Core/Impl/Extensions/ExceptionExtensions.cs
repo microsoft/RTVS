@@ -3,7 +3,6 @@
 
 using System;
 using System.Threading;
-using Microsoft.Common.Core.Exceptions;
 
 namespace Microsoft.Common.Core {
     public static class ExceptionExtensions {
@@ -14,8 +13,7 @@ namespace Microsoft.Common.Core {
             return ex is StackOverflowException ||
                 ex is OutOfMemoryException ||
                 ex is ThreadAbortException ||
-                ex is AccessViolationException ||
-                ex is CriticalException;
+                ex is AccessViolationException;
         }
 
         public static bool IsProtocolException(this Exception ex) {

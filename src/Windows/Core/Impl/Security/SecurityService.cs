@@ -155,6 +155,16 @@ namespace Microsoft.Windows.Core.Security {
             }
         }
 
+        public string GetUserName(string authority) {
+            using (var ch = CredentialHandle.ReadFromCredentialManager(authority)) {
+                if (ch != null) {
+                    NativeMethods.CredentialData credData = ch.GetCredentialData();
+                    return credData.UserName;
+                }
+                return string.Empty;
+            }
+        }
+
         private static IntPtr CreatePasswordBuffer() {
             return Marshal.AllocCoTaskMem(CREDUI_MAX_PASSWORD_LENGTH);
         }

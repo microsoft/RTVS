@@ -13,5 +13,6 @@ namespace Microsoft.Common.Core.Security {
         bool DeleteUserCredentials(string authority);
         void Save(Credentials credentials, string authority);
         void DeleteCredentials(string authority);
+        string GetUserName(string authority);
     }
 }

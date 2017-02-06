@@ -18,10 +18,6 @@
   </PropertyGroup>
   <Import Project="..\..\..\R.Settings.targets" />
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.ComponentModel.Composition" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
@@ -30,14 +26,15 @@
     <Compile Include="Disposables\DisposableBag.cs" />
     <Compile Include="Enums\YesNo.cs" />
     <Compile Include="Extensions\ArraySegmentExtensions.cs" />
-    <Compile Include="Exceptions\CriticalException.cs" />
+    <Compile Include="Extensions\CompositionBatchExtensions.cs" />
+    <Compile Include="Extensions\CompositionBatchExtensions.FactoryReflectionComposablePart.cs" />
     <Compile Include="Extensions\MatcherExtensions.cs" />
     <Compile Include="Extensions\MathExtensions.cs" />
     <Compile Include="Extensions\ReflectionExtensions.cs" />
+    <Compile Include="Extensions\SecureStringExtensions.cs" />
     <Compile Include="Extensions\SettingsExtensions.cs" />
     <Compile Include="Extensions\StreamExtensions.cs" />
     <Compile Include="Extensions\TaskCompletionSourceExtensions.cs" />
-    <Compile Include="Extensions\ZipFileExtensions.cs" />
     <Compile Include="IO\IUserProfileNamedPipeFactory.cs" />
     <Compile Include="IO\KnownFolderGuids.cs" />
     <Compile Include="Json\Json.cs" />
@@ -60,6 +57,7 @@
     <Compile Include="OS\IUserCredentials.cs" />
     <Compile Include="OS\IUserProfileCreatorResult.cs" />
     <Compile Include="OS\IUserProfileServices.cs" />
+    <Compile Include="OS\ProcessServices.cs" />
     <Compile Include="Security\Credentials.cs" />
     <Compile Include="Security\ISecurityService.cs" />
     <Compile Include="Services\ICoreServices.cs" />
@@ -89,7 +87,6 @@
     <Compile Include="IO\FileVersionInfo.cs" />
     <Compile Include="IO\IFileVersionInfo.cs" />
     <Compile Include="OS\IProcessServices.cs" />
-    <Compile Include="OS\ProcessServices.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Extensions\AssemblyExtensions.cs" />
     <Compile Include="Collections\DictionaryExtensions.cs" />
@@ -98,8 +95,6 @@
     <Compile Include="Disposables\DefaultDisposable.cs" />
     <Compile Include="Disposables\Disposable.cs" />
     <Compile Include="Enums\YesNoAsk.cs" />
-    <Compile Include="Extensions\CompositionBatchExtensions.cs" />
-    <Compile Include="Extensions\CompositionBatchExtensions.FactoryReflectionComposablePart.cs" />
     <Compile Include="IO\DirectoryInfoProxy.cs" />
     <Compile Include="IO\FileInfoProxy.cs" />
     <Compile Include="IO\FileSystem.cs" />
@@ -156,7 +151,6 @@
       <StrongName>StrongName</StrongName>
     </FilesToSign>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Import Project="$(SourceDirectory)R.Build.Loc.targets" />
