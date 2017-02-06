@@ -40,7 +40,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             RemoteHost = remoteHostIp;
             RemotePort = remotePort;
 
-            _remoteUriService = new RemoteUriWebService(baseAddress);
+            _remoteUriService = new RemoteUriWebService(baseAddress, services, console);
         }
 
         public async Task InitializeAsync(CancellationToken ct) {

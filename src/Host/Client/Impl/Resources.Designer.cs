@@ -216,6 +216,16 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to HTTP server for remote stopped with following exception:
+        ///{0}.
+        /// </summary>
+        internal static string Error_RemoteWebServerException {
+            get {
+                return ResourceManager.GetString("Error_RemoteWebServerException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to HTTP server for remote {0} failed : {1}.
         /// </summary>
         internal static string Error_RemoteWebServerFailed {
