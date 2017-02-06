@@ -88,7 +88,7 @@
                     </Grid.ColumnDefinitions>
 
                     <!-- Name -->
-                    <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="Bold" Text="Name" VerticalAlignment="Center" />
+                    <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="Bold" Text="{x:Static pkg:Resources.Label_Name}" VerticalAlignment="Center" />
                     <TextBox Grid.Row="0" Grid.Column="2" x:Name="VariableNameBox" VerticalContentAlignment="Center" 
                              Background="{DynamicResource {x:Static wpf:Brushes.WindowKey}}" 
                              Foreground="{DynamicResource {x:Static wpf:Brushes.WindowTextKey}}" />

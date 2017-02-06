@@ -80,7 +80,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     [ProvideDebugPortSupplier("R Interactive sessions", typeof(RDebugPortSupplier), DebuggerGuids.PortSupplierString, typeof(RDebugPortPicker))]
     [ProvideComClass(typeof(RDebugPortPicker))]
     [ProvideComClass(typeof(AD7CustomViewer))]
-    [ProvideNewFileTemplates(RGuidList.MiscFilesProjectGuidString, RGuidList.RPackageGuidString, "#106", @"Templates\NewItem\")]
+    [ProvideNewFileTemplates(RGuidList.MiscFilesProjectGuidString, RGuidList.RPackageGuidString, RContentTypeDefinition.LanguageName, @"Templates\NewItem\")]
     [ProvideCodeExpansions(RGuidList.RLanguageServiceGuidString, false, 0,
                            RContentTypeDefinition.LanguageName, @"Snippets\SnippetsIndex.xml")]
     [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "analysis", @"Snippets\analysis")]

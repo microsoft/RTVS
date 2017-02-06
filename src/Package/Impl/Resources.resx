@@ -1093,4 +1093,7 @@ Click OK to open MiKTeX download page in the default browser. R Remote Services 
   <data name="Tab_InputFile" xml:space="preserve">
     <value>Input File</value>
   </data>
+  <data name="Label_Name" xml:space="preserve">
+    <value>Name:</value>
+  </data>
 </root>

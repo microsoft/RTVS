@@ -935,6 +935,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Name:.
+        /// </summary>
+        public static string Label_Name {
+            get {
+                return ResourceManager.GetString("Label_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Quote:.
         /// </summary>
         public static string Label_Quote {
