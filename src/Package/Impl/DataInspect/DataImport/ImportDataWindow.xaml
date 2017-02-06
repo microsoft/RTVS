@@ -94,37 +94,37 @@
                              Foreground="{DynamicResource {x:Static wpf:Brushes.WindowTextKey}}" />
 
                     <!-- Encoding -->
-                    <TextBlock Grid.Row="2" Grid.Column="0" FontWeight="Bold" Text="Encoding" VerticalAlignment="Center" />
+                    <TextBlock Grid.Row="2" Grid.Column="0" FontWeight="Bold" Text="{x:Static components:Resources.Label_Encoding}" VerticalAlignment="Center" />
                     <ComboBox Grid.Row="2" Grid.Column="2" x:Name="EncodingComboBox" SelectionChanged="ComboBox_SelectionChanged"
                               ItemTemplate="{StaticResource KvpItemTemplate}" ItemsSource="{Binding ElementName=Self, Path=Encodings}"
                               SelectedIndex="0"/>
 
                     <!-- Row names -->
-                    <TextBlock Grid.Row="4" Grid.Column="0" FontWeight="Bold" Text="Row names" VerticalAlignment="Center" />
+                    <TextBlock Grid.Row="4" Grid.Column="0" FontWeight="Bold" Text="{x:Static components:Resources.Label_RowNames" VerticalAlignment="Center" />
                     <ComboBox Grid.Row="4" Grid.Column="2" x:Name="RowNamesComboBox" SelectionChanged="ComboBox_SelectionChanged" 
                               ItemTemplate="{StaticResource KvpItemTemplate}" ItemsSource="{Binding ElementName=Self, Path=RowNames}"
                               SelectedIndex="0"/>
 
                     <!-- Separator -->
-                    <TextBlock Grid.Row="6" Grid.Column="0" FontWeight="Bold" Text="Separator" VerticalAlignment="Center" />
+                    <TextBlock Grid.Row="6" Grid.Column="0" FontWeight="Bold" Text="{x:Static components:Resources.Label_Separator}" VerticalAlignment="Center" />
                     <ComboBox Grid.Row="6" Grid.Column="2" x:Name="SeparatorComboBox" SelectionChanged="ComboBox_SelectionChanged" 
                               ItemTemplate="{StaticResource KvpItemTemplate}" ItemsSource="{Binding ElementName=Self, Path=Separators}"
                               SelectedIndex="1" />
 
                     <!-- Decimal -->
-                    <TextBlock Grid.Row="8" Grid.Column="0" FontWeight="Bold" Text="Decimal" VerticalAlignment="Center" />
+                    <TextBlock Grid.Row="8" Grid.Column="0" FontWeight="Bold" Text="{x:Static components:Resources.Label_Decimal}" VerticalAlignment="Center" />
                     <ComboBox Grid.Row="8" Grid.Column="2" x:Name="DecimalComboBox" SelectionChanged="ComboBox_SelectionChanged" 
                               ItemTemplate="{StaticResource KvpItemTemplate}" ItemsSource="{Binding ElementName=Self, Path=Decimals}"
                               SelectedIndex="0" />
 
                     <!-- Quote -->
-                    <TextBlock Grid.Row="10" Grid.Column="0" FontWeight="Bold" Text="Quote" VerticalAlignment="Center" />
+                    <TextBlock Grid.Row="10" Grid.Column="0" FontWeight="Bold" Text="{x:Static components:Resources.Label_Quote}" VerticalAlignment="Center" />
                     <ComboBox Grid.Row="10" Grid.Column="2" x:Name="QuoteComboBox" SelectionChanged="ComboBox_SelectionChanged" 
                               ItemTemplate="{StaticResource KvpItemTemplate}" ItemsSource="{Binding ElementName=Self, Path=Quotes}"
                               SelectedIndex="0" />
 
                     <!-- Comment -->
-                    <TextBlock Grid.Row="12" Grid.Column="0" FontWeight="Bold" Text="Comment" VerticalAlignment="Center" />
+                    <TextBlock Grid.Row="12" Grid.Column="0" FontWeight="Bold" Text="{x:Static components:Resources.Label_Comment}" VerticalAlignment="Center" />
                     <ComboBox Grid.Row="12" Grid.Column="2" x:Name="CommentComboBox" SelectionChanged="ComboBox_SelectionChanged" 
                               ItemTemplate="{StaticResource KvpItemTemplate}" ItemsSource="{Binding ElementName=Self, Path=Comments}"
                               SelectedIndex="0" />
@@ -142,7 +142,7 @@
                              Foreground="{DynamicResource {x:Static wpf:Brushes.WindowTextKey}}" />
 
                     <!-- Header -->
-                    <TextBlock Grid.Row="18" Grid.Column="0" FontWeight="Bold" Text="Header" VerticalAlignment="Center" />
+                    <TextBlock Grid.Row="18" Grid.Column="0" FontWeight="Bold" Text="{x:Static components:Resources.Label_Header}" VerticalAlignment="Center" />
                     <CheckBox Grid.Row="18" Grid.Column="2" VerticalAlignment="Center" Margin="0,1,0,0" HorizontalAlignment="Left"
                               x:Name="HeaderCheckBox" IsChecked="True" Unchecked="HeaderCheckBox_Changed" Checked="HeaderCheckBox_Changed" />
                 </Grid>
