@@ -636,4 +636,13 @@ Please upgrade remote R Services installation to match.</value>
   <data name="Error_FailedToSaveState" xml:space="preserve">
     <value>Failed to save state, resetting anyway.</value>
   </data>
+  <data name="Error_RenderingPlot" xml:space="preserve">
+    <value>Error rendering plot</value>
+  </data>
+  <data name="PlotHistory_EmptyWatermark" xml:space="preserve">
+    <value>Plot history is empty</value>
+  </data>
+  <data name="Plot_EmptyWatermark" xml:space="preserve">
+    <value>Run plotting command in R Interactive Window</value>
+  </data>
 </root>

@@ -13,7 +13,6 @@ using Microsoft.R.Components.Settings.Mirrors;
 using Microsoft.R.Debugger;
 using Microsoft.R.Debugger.PortSupplier;
 using Microsoft.R.Support.Help;
-using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.InteractiveWindow.Shell;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Package.Registration;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Shell;
@@ -54,13 +53,13 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         EnableFormatSelection = true, DefaultToInsertSpaces = true, RequestStockColors = true)]
     [ShowBraceCompletion(RContentTypeDefinition.LanguageName)]
     [LanguageEditorOptions(RContentTypeDefinition.LanguageName, 2, true, true)]
-    [ProvideLanguageEditorOptionPage(typeof(REditorOptionsDialog), RContentTypeDefinition.LanguageName, "", "Advanced", "#20136")]
+    [ProvideLanguageEditorOptionPage(typeof(REditorOptionsDialog), RContentTypeDefinition.LanguageName, "", "#150", "#20136")]
     [ProvideKeyBindingTable(RGuidList.REditorFactoryGuidString, 200)]
     [ProvideProjectFileGenerator(typeof(RProjectFileGenerator), RGuidList.CpsProjectFactoryGuidString, FileExtensions = RContentTypeDefinition.RStudioProjectExtensionNoDot, DisplayGeneratorFilter = 300)]
     [DeveloperActivity(RContentTypeDefinition.LanguageName, RGuidList.RPackageGuidString, sortPriority: 40)]
     [ProvideCpsProjectFactory(RGuidList.CpsProjectFactoryGuidString, RContentTypeDefinition.LanguageName)]
-    [ProvideOptionPage(typeof(RToolsOptionsPage), ProductName, "Advanced", 20116, 20136, true)]
-    [ProvideProfileAttribute(typeof(RToolsOptionsPage), ProductName, "Advanced", 20116, 20136, isToolsOptionPage: true, DescriptionResourceID = 20116)]
+    [ProvideOptionPage(typeof(RToolsOptionsPage), ProductName, "#150", 20116, 20136, true)]
+    [ProvideProfileAttribute(typeof(RToolsOptionsPage), ProductName, "#150", 20116, 20136, isToolsOptionPage: true, DescriptionResourceID = 20116)]
     [ProvideSetting(ProductName + ".Connections", SettingScope.RoamedAndShared, SettingStorage.Registry)]
     [ProvideSetting(ProductName + ".CranMirror", SettingScope.RoamedAndShared, SettingStorage.Registry)]
     [ProvideSetting(ProductName + ".WebHelpSearchString", SettingScope.RoamedAndShared, SettingStorage.Registry)]

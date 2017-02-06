@@ -31,7 +31,7 @@
                 <ColumnDefinition Width="6" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <TextBlock Grid.Column="0" Text="{x:Static components:Resources.Label_URL}" VerticalAlignment="Center" />
+            <TextBlock Grid.Column="0" Text="{x:Static pkg:Resources.Label_URL}" VerticalAlignment="Center" />
             <TextBox Grid.Column="2" x:Name="UrlTextBox" MinHeight="20" VerticalContentAlignment="Center" />
             <ProgressBar Grid.Column="2" x:Name="DownloadProgressBar" Visibility="Collapsed" Minimum="0" Maximum="100" />
         </Grid>

@@ -6,7 +6,6 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Logging;
 using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {

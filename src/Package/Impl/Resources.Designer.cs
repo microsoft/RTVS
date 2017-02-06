@@ -1252,24 +1252,6 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Plot history is empty.
-        /// </summary>
-        public static string PlotHistory_EmptyWatermark1 {
-            get {
-                return ResourceManager.GetString("PlotHistory_EmptyWatermark1", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Run plotting command in R Interactive Window.
-        /// </summary>
-        public static string PlotHistory_EmptyWatermark2 {
-            get {
-                return ResourceManager.GetString("PlotHistory_EmptyWatermark2", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to R Plot History.
         /// </summary>
         public static string PlotHistoryWindowCaption {

@@ -119,9 +119,11 @@
   </resheader>
   <data name="106" xml:space="preserve">
     <value>R</value>
+    <comment>Do not localize (programming language name)</comment>
   </data>
   <data name="107" xml:space="preserve">
-    <value>Markdown</value>
+    <value>R Markdown</value>
+    <comment>Do not localize (programming language name)</comment>
   </data>
   <data name="150" xml:space="preserve">
     <value>Advanced</value>
@@ -145,13 +147,15 @@
     <value>Options for statement completion, word wrap, and line number display.</value>
   </data>
   <data name="300" xml:space="preserve">
-    <value>R Studio Project Files (*.rproj);*.rproj</value>
+    <value>RStudio Project Files (*.rproj);*.rproj</value>
+    <comment>"RStudio" is a trademark</comment>
   </data>
   <data name="3001" xml:space="preserve">
     <value>R Script</value>
   </data>
   <data name="3002" xml:space="preserve">
     <value>R Markdown</value>
+    <comment>Do not localize (programming language name)</comment>
   </data>
   <data name="3003" xml:space="preserve">
     <value>R  Documentation</value>
@@ -179,6 +183,7 @@
   </data>
   <data name="3012" xml:space="preserve">
     <value>R Markdown is an authoring format that enables easy creation of dynamic documents, presentations, and reports from R</value>
+    <comment>'R Markdown' is a common name</comment>
   </data>
   <data name="3013" xml:space="preserve">
     <value>Generic R Documentation file </value>
@@ -261,15 +266,18 @@
   </data>
   <data name="8001" xml:space="preserve">
     <value>Data Science (R) - RStudio shortcuts</value>
+    <comment>"RStudio" is a trademark</comment>
   </data>
   <data name="8002" xml:space="preserve">
     <value>Data Science (R) with RStudio shortcuts</value>
+    <comment>"RStudio" is a trademark</comment>
   </data>
   <data name="8010" xml:space="preserve">
     <value>Customizes the environment to improve the visibility of commands and options that are most relevant to doing data science and machine learning work using R.</value>
   </data>
   <data name="8011" xml:space="preserve">
     <value>Provides RStudio-compatible keyboard shortcuts for many functions in R Tools for Visual Studio.</value>
+    <comment>"RStudio" is a trademark</comment>
   </data>
   <data name="8012" xml:space="preserve">
     <value>Customizes the environment to improve the visibility of commands and options that are most relevant to doing data science and machine learning work using R. Includes RStudio-compatible keyboard shortcuts.</value>

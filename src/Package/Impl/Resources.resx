@@ -1087,12 +1087,6 @@ Click OK to open MiKTeX download page in the default browser. R Remote Services 
   <data name="Label_URL" xml:space="preserve">
     <value>URL:</value>
   </data>
-  <data name="PlotHistory_EmptyWatermark1" xml:space="preserve">
-    <value>Plot history is empty</value>
-  </data>
-  <data name="PlotHistory_EmptyWatermark2" xml:space="preserve">
-    <value>Run plotting command in R Interactive Window</value>
-  </data>
   <data name="Tab_DataFrame" xml:space="preserve">
     <value>Data Frame</value>
   </data>
