@@ -6,6 +6,8 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Design;
 using System.Diagnostics;
+using System.IO;
+using System.Reflection;
 using System.Threading;
 using System.Windows.Threading;
 using Microsoft.Common.Core;
@@ -61,6 +63,19 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             FileDialog = new VsFileDialog(this);
 
             _coreServices = new CoreServices(_appConstants, telemetryService, new VsTaskService(), this, new SecurityService(this));
+
+            AppDomain.CurrentDomain.AssemblyResolve += OnAssemblyResolve;
+        }
+
+        private Assembly OnAssemblyResolve(object sender, ResolveEventArgs args) {
+            var assemblyName = new AssemblyName(args.Name).Name;
+            var thisAsmPath = Assembly.GetExecutingAssembly().GetAssemblyPath();
+            var asmPath = Path.Combine(Path.GetDirectoryName(thisAsmPath), assemblyName) + ".dll";
+            Assembly asm = null;
+            try {
+                asm = Assembly.LoadFrom(asmPath);
+            } catch(Exception) { }
+            return asm;
         }
 
         public static void EnsureInitialized() {
