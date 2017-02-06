@@ -191,7 +191,7 @@
   </ItemGroup>
   <!-- libuv.dll is not properly copied to output directory by NuGet -->
   <ItemGroup>
-    <Content Include="$(NuGetPackageRoot)\Libuv\1.9.0\runtimes\win7-x64\native\*" Condition="'$(Platform)' == 'x64'">
+    <Content Include="$(NuGetPackageRoot)\Libuv\1.9.1\runtimes\win7-x64\native\*">
       <Link>%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Visible>True</Visible>
@@ -202,5 +202,6 @@
     </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\..\..\R.Build.Version.targets" />
+  <Import Project="$(SourceDirectory)R.Build.Version.targets" />
+  <Import Project="$(SourceDirectory)R.Build.Loc.targets" />
 </Project>
