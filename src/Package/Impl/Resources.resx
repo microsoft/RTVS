@@ -1063,4 +1063,10 @@ Click OK to open MiKTeX download page in the default browser. R Remote Services 
   <data name="Error_CannotExportToCsv" xml:space="preserve">
     <value>This object cannot be exported to CSV for viewing in Excel</value>
   </data>
+  <data name="Settings_ShowSaveOnResetConfirmationDialog" xml:space="preserve">
+    <value>Prompt to save workspace on reset</value>
+  </data>
+  <data name="Settings_ShowSaveOnResetConfirmationDialog_Description" xml:space="preserve">
+    <value>Show prompt to save workspace when resetting interactive session</value>
+  </data>
 </root>

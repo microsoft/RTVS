@@ -1538,7 +1538,10 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Resetting R Host will clear the workspace. Would you like to save state?.
+        ///   Looks up a localized string similar to Resetting R session will clear the workspace. Would you like to save state?
+        ///
+        ///This prompt can be suppressed in R Tools | Options.
+        ///    .
         /// </summary>
         public static string Warning_SaveOnReset {
             get {

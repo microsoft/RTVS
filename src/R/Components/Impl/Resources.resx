@@ -634,6 +634,9 @@ Please upgrade remote R Services installation to match.</value>
     <value>Failed to save state, resetting anyway.</value>
   </data>
   <data name="Warning_SaveOnReset" xml:space="preserve">
-    <value>Resetting R Host will clear the workspace. Would you like to save state?</value>
+    <value>Resetting R session will clear the workspace. Would you like to save state?
+
+This prompt can be suppressed in R Tools | Options.
+    </value>
   </data>
 </root>

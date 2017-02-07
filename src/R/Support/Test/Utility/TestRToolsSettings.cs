@@ -59,6 +59,11 @@ namespace Microsoft.R.Support.Test.Utility {
             set { }
         }
 
+        public YesNo ShowSaveOnResetConfirmationDialog {
+            get { return YesNo.Yes; }
+            set { }
+        }
+
         public YesNoAsk LoadRDataOnProjectLoad {
             get { return YesNoAsk.Yes; }
             set { }
