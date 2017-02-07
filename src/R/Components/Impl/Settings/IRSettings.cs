@@ -11,7 +11,7 @@ using Microsoft.R.Components.ConnectionManager;
 namespace Microsoft.R.Components.Settings {
     public interface IRSettings : INotifyPropertyChanged, IDisposable {
         YesNo ShowWorkspaceSwitchConfirmationDialog { get; set; }
-
+        YesNo ShowSaveOnResetConfirmationDialog { get; set; }
         bool AlwaysSaveHistory { get; set; }
         bool ClearFilterOnAddHistory { get; set; }
         bool MultilineHistorySelection { get; set; }

@@ -36,6 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         private ConnectionInfo _lastActiveConnection;
 
         private YesNo _showConfirmationDialogWhenSwitch = YesNo.Yes;
+        private YesNo _showShowSaveOnResetConfirmationDialog = YesNo.Yes;
         private YesNoAsk _loadRDataOnProjectLoad = YesNoAsk.No;
         private YesNoAsk _saveRDataOnProjectUnload = YesNoAsk.No;
         private bool _alwaysSaveHistory = true;
@@ -65,6 +66,11 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         public YesNo ShowWorkspaceSwitchConfirmationDialog {
             get { return _showConfirmationDialogWhenSwitch; }
             set { SetProperty(ref _showConfirmationDialogWhenSwitch, value); }
+        }
+
+        public YesNo ShowSaveOnResetConfirmationDialog {
+            get { return _showShowSaveOnResetConfirmationDialog; }
+            set { SetProperty(ref _showShowSaveOnResetConfirmationDialog, value); }
         }
 
         /// <summary>
