@@ -5,6 +5,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:local="clr-namespace:Microsoft.R.Components.Plots.Implementation.View"
              xmlns:vm="clr-namespace:Microsoft.R.Components.Plots.ViewModel"
+             xmlns:components="clr-namespace:Microsoft.R.Components"
              xmlns:wpf="clr-namespace:Microsoft.Common.Wpf;assembly=Microsoft.R.Common.Wpf"
              xmlns:rwpf="clr-namespace:Microsoft.R.Wpf;assembly=Microsoft.R.Wpf"
              wpf:LambdaProperties.ImportedNamespaces="Microsoft.R.Components.Plots.ViewModel"
@@ -27,10 +28,10 @@
                    Foreground="{DynamicResource {x:Static rwpf:Brushes.WindowTextKey}}"
                    TextAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center"
                    TextWrapping="Wrap">
-            <Run>Plot history is empty</Run>
+            <Run Text="{x:Static components:Resources.PlotHistory_EmptyWatermark}" />
             <LineBreak/>
             <LineBreak/>
-            <Run>Run plotting command in R Interactive Window</Run>
+            <Run Text="{x:Static components:Resources.Plot_EmptyWatermark}" />
         </TextBlock>
 
         <ListView x:Name="HistoryListView"

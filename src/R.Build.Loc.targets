@@ -1,0 +1,29 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <OutputFileExtension Condition="'$(OutputType)' == 'Library'">dll</OutputFileExtension>
+    <OutputFileExtension Condition="'$(OutputType)' != 'Library'">exe</OutputFileExtension>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FilesToLocalize Include="$(OutputPath)\$(AssemblyName).$(OutputFileExtension)">
+      <!--Required: Files to be localized -->
+      <TranslationFile>$(SourceDirectory)loc\lcl\{Lang}\$(AssemblyName).lcl</TranslationFile>
+      <!--Required: translation file-->
+      <LciCommentFile>$(SourceDirectory)loc\lci\$(AssemblyName).$(OutputFileExtension).lci</LciCommentFile>
+      <SettingsFile>$(LSBuildRoot)\MCP_excludeBaml.lss</SettingsFile>
+    </FilesToLocalize>
+    <SignFilesDependsOn Include="GatherLocalizedOutputsForSigning">
+      <!-- Do not have this show up in Solution Explorer in VS -->
+      <InProject>false</InProject>
+    </SignFilesDependsOn>
+  </ItemGroup>
+
+  <Target Name="GatherLocalizedOutputsForSigning" Condition="'$(LocalizationEnabled)' == 'true'">
+    <ItemGroup>
+      <FilesToSign Include="$(OutputPath)\localize\**\$(AssemblyName).resources.$(OutputFileExtension)">
+        <Authenticode>Microsoft</Authenticode>
+        <StrongName>StrongName</StrongName>
+      </FilesToSign>
+    </ItemGroup>
+  </Target>
+</Project>

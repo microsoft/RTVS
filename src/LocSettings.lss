@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LS_SETTINGS_FILE>
+  <optionSet id="Parser 223" displayName="Baml Pom Parser" helpText="Avalon Baml files (*.baml)">
+    <option id="REFERENCED_ASSEMBLIES_DIRECTORY">
+      <string defaultValue="" currentValue="$(Build.SourcesDirectory)\bin\$(VisualStudioVersion)\$(BuildConfiguration)"/>
+    </option>
+  </optionSet>
+</LS_SETTINGS_FILE>
+

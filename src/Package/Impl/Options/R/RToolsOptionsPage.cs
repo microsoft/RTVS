@@ -188,6 +188,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [LocCategory("Settings_LogCategory")]
         [CustomLocDisplayName("Settings_LogLevel")]
         [LocDescription("Settings_LogLevel_Description")]
+        [TypeConverter(typeof(LogLevelTypeConverter))]
 #if DEBUG
         [DefaultValue(LogVerbosity.Traffic)]
 #else

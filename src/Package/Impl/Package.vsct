@@ -1197,18 +1197,6 @@
           <CommandName>Preview Word</CommandName>
         </Strings>
       </Button>
-
-      <Button guid="guidMdToolsCmdSet" id="cmdidPublish" priority="0x0100" type="Button">
-        <!-- Actual publishing is not yet supported -->
-        <!--<Parent guid="guidRToolsCmdSet" id="publishPublishSubMenuGroup"/>-->
-        <Icon guid="ImageCatalogGuid" id="PublishAllWebSites"/>
-        <CommandFlag>IconIsMoniker</CommandFlag>
-        <CommandFlag>DefaultDisabled</CommandFlag>
-        <Strings>
-          <ButtonText>Publish...</ButtonText>
-          <CommandName>Publish</CommandName>
-        </Strings>
-      </Button>
       <!-- End of Publish flyout -->
 
       <!-- Windows flyout -->
@@ -1970,18 +1958,6 @@
           <ButtonText>E&amp;xecute Current Chunk</ButtonText>
         </Strings>
       </Button>
-
-      <Button guid="guidMdToolsCmdSet" id="cmdidPublish" priority="0x0104" type="Button">
-        <!-- Actual publishing is not yet supported -->
-        <!--<Parent guid="guidMdToolsCmdSet" id="groupPreview"/>-->
-        <Icon guid="ImageCatalogGuid" id="PublishAllWebSites"/>
-        <CommandFlag>IconIsMoniker</CommandFlag>
-        <CommandFlag>DefaultInvisible</CommandFlag>
-        <CommandFlag>DynamicVisibility</CommandFlag>
-        <Strings>
-          <ButtonText>&amp;Publish</ButtonText>
-        </Strings>
-      </Button>
     </Buttons>
 
     <!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
@@ -2654,7 +2630,6 @@
       <IDSymbol name="cmdidPreviewHtml" value="601" />
       <IDSymbol name="cmdidPreviewPdf" value="602" />
       <IDSymbol name="cmdidPreviewWord" value="603" />
-      <IDSymbol name="cmdidPublish" value="610" />
       <IDSymbol name="cmdidRunRChunk" value="611" />
     </GuidSymbol>
 

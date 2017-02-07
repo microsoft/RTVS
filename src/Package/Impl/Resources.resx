@@ -1063,4 +1063,37 @@ Click OK to open MiKTeX download page in the default browser. R Remote Services 
   <data name="Error_CannotExportToCsv" xml:space="preserve">
     <value>This object cannot be exported to CSV for viewing in Excel</value>
   </data>
+  <data name="Label_Comment" xml:space="preserve">
+    <value>Comment:</value>
+  </data>
+  <data name="Label_Decimal" xml:space="preserve">
+    <value>Decimal:</value>
+  </data>
+  <data name="Label_Encoding" xml:space="preserve">
+    <value>Encoding:</value>
+  </data>
+  <data name="Label_Header" xml:space="preserve">
+    <value>Header:</value>
+  </data>
+  <data name="Label_Quote" xml:space="preserve">
+    <value>Quote:</value>
+  </data>
+  <data name="Label_RowNames" xml:space="preserve">
+    <value>Row names:</value>
+  </data>
+  <data name="Label_Separator" xml:space="preserve">
+    <value>Separator:</value>
+  </data>
+  <data name="Label_URL" xml:space="preserve">
+    <value>URL:</value>
+  </data>
+  <data name="Tab_DataFrame" xml:space="preserve">
+    <value>Data Frame</value>
+  </data>
+  <data name="Tab_InputFile" xml:space="preserve">
+    <value>Input File</value>
+  </data>
+  <data name="Label_Name" xml:space="preserve">
+    <value>Name:</value>
+  </data>
 </root>

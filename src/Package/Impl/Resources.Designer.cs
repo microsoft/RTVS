@@ -899,6 +899,87 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Comment:.
+        /// </summary>
+        public static string Label_Comment {
+            get {
+                return ResourceManager.GetString("Label_Comment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Decimal:.
+        /// </summary>
+        public static string Label_Decimal {
+            get {
+                return ResourceManager.GetString("Label_Decimal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Encoding:.
+        /// </summary>
+        public static string Label_Encoding {
+            get {
+                return ResourceManager.GetString("Label_Encoding", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Header:.
+        /// </summary>
+        public static string Label_Header {
+            get {
+                return ResourceManager.GetString("Label_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name:.
+        /// </summary>
+        public static string Label_Name {
+            get {
+                return ResourceManager.GetString("Label_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Quote:.
+        /// </summary>
+        public static string Label_Quote {
+            get {
+                return ResourceManager.GetString("Label_Quote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Row names:.
+        /// </summary>
+        public static string Label_RowNames {
+            get {
+                return ResourceManager.GetString("Label_RowNames", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Separator:.
+        /// </summary>
+        public static string Label_Separator {
+            get {
+                return ResourceManager.GetString("Label_Separator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to URL:.
+        /// </summary>
+        public static string Label_URL {
+            get {
+                return ResourceManager.GetString("Label_URL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R.
         /// </summary>
         public static string LanguageName {
@@ -2625,6 +2706,24 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string SurveyNewsPolicyDisabled {
             get {
                 return ResourceManager.GetString("SurveyNewsPolicyDisabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Data Frame.
+        /// </summary>
+        public static string Tab_DataFrame {
+            get {
+                return ResourceManager.GetString("Tab_DataFrame", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Input File.
+        /// </summary>
+        public static string Tab_InputFile {
+            get {
+                return ResourceManager.GetString("Tab_InputFile", resourceCulture);
             }
         }
         

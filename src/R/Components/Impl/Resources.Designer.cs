@@ -606,6 +606,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error rendering plot.
+        /// </summary>
+        public static string Error_RenderingPlot {
+            get {
+                return ResourceManager.GetString("Error_RenderingPlot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Command line text cannot be converted to default OS code page. Please set locale for non-Unicode programs in Control Panel -&gt; Region -&gt; Administrative to the locale you wish to use..
         /// </summary>
         public static string Error_ReplUnicodeCoversion {
@@ -1178,6 +1187,24 @@ namespace Microsoft.R.Components {
         public static string PhysicalMemory {
             get {
                 return ResourceManager.GetString("PhysicalMemory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Run plotting command in R Interactive Window.
+        /// </summary>
+        public static string Plot_EmptyWatermark {
+            get {
+                return ResourceManager.GetString("Plot_EmptyWatermark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plot history is empty.
+        /// </summary>
+        public static string PlotHistory_EmptyWatermark {
+            get {
+                return ResourceManager.GetString("PlotHistory_EmptyWatermark", resourceCulture);
             }
         }
         
