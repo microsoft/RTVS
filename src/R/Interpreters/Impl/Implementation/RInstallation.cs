@@ -10,6 +10,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
 using Microsoft.Win32;
+using Microsoft.Windows.Core.OS;
 using static System.FormattableString;
 
 namespace Microsoft.R.Interpreters {

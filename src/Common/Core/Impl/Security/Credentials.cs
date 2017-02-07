@@ -38,7 +38,7 @@ namespace Microsoft.Common.Core.Security {
         }
 
         private static Credentials Create(string userName, SecureString password, CredentialSource source) {
-            var creds = new Credentials() { UserName = userName, Password = password, Source = source };
+            var creds = new Credentials { UserName = userName, Password = password, Source = source };
             creds.Password.MakeReadOnly();
             return creds;
         }

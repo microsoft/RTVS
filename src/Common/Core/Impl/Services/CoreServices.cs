@@ -16,16 +16,17 @@ namespace Microsoft.Common.Core.Services {
         public CoreServices(IApplicationConstants appConstants
             , ITelemetryService telemetry
             , ITaskService tasks
+            , IProcessServices processServices
+            , ILoggingPermissions loggingPermissions
             , IMainThread mainThread
             , ISecurityService security) {
 
-            Registry = new RegistryImpl();
-            LoggingPermissions = new LoggingPermissions(appConstants, telemetry, Registry);
+            LoggingPermissions = loggingPermissions;
             Telemetry = telemetry;
             Security = security;
             Tasks = tasks;
 
-            ProcessServices = new ProcessServices();
+            ProcessServices = processServices;
             FileSystem = new FileSystem();
             MainThread = mainThread;
 
@@ -39,7 +40,6 @@ namespace Microsoft.Common.Core.Services {
             , IMainThread mainThread
             , IActionLog log
             , IFileSystem fs
-            , IRegistry registry
             , IProcessServices ps) {
 
             LoggingPermissions = permissions;
@@ -50,7 +50,6 @@ namespace Microsoft.Common.Core.Services {
             Tasks = tasks;
 
             ProcessServices = ps;
-            Registry = registry;
             FileSystem = fs;
             MainThread = mainThread;
         }
@@ -59,7 +58,6 @@ namespace Microsoft.Common.Core.Services {
         public IFileSystem FileSystem { get; } 
         public ILoggingPermissions LoggingPermissions { get; }
         public IProcessServices ProcessServices { get; }
-        public IRegistry Registry { get; } 
         public ISecurityService Security { get; }
         public ITelemetryService Telemetry { get; }
         public ITaskService Tasks { get; }

@@ -114,6 +114,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Windows", "Windows", "{BD32
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Windows.Core", "Windows\Core\Impl\Microsoft.Windows.Core.csproj", "{01E3D8C2-9C24-492B-B13B-C6D7068B6BF8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Windows.Core.Test", "Windows\Core\Test\Microsoft.Windows.Core.Test.csproj", "{1F89902F-853E-44B5-93A7-E237984C4FB7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -720,6 +722,18 @@ Global
 		{01E3D8C2-9C24-492B-B13B-C6D7068B6BF8}.Release|x64.Build.0 = Release|Any CPU
 		{01E3D8C2-9C24-492B-B13B-C6D7068B6BF8}.Release|x86.ActiveCfg = Release|Any CPU
 		{01E3D8C2-9C24-492B-B13B-C6D7068B6BF8}.Release|x86.Build.0 = Release|Any CPU
+		{1F89902F-853E-44B5-93A7-E237984C4FB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F89902F-853E-44B5-93A7-E237984C4FB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F89902F-853E-44B5-93A7-E237984C4FB7}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1F89902F-853E-44B5-93A7-E237984C4FB7}.Debug|x64.Build.0 = Debug|Any CPU
+		{1F89902F-853E-44B5-93A7-E237984C4FB7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1F89902F-853E-44B5-93A7-E237984C4FB7}.Debug|x86.Build.0 = Debug|Any CPU
+		{1F89902F-853E-44B5-93A7-E237984C4FB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F89902F-853E-44B5-93A7-E237984C4FB7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F89902F-853E-44B5-93A7-E237984C4FB7}.Release|x64.ActiveCfg = Release|Any CPU
+		{1F89902F-853E-44B5-93A7-E237984C4FB7}.Release|x64.Build.0 = Release|Any CPU
+		{1F89902F-853E-44B5-93A7-E237984C4FB7}.Release|x86.ActiveCfg = Release|Any CPU
+		{1F89902F-853E-44B5-93A7-E237984C4FB7}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -755,5 +769,6 @@ Global
 		{4AA5CE64-5BE2-414C-8AD9-E3110E490DC4} = {84AF58FA-5E3E-45AB-9AB5-543C3CACD563}
 		{4277FA64-BBFB-4382-BE1F-8DBD91A8022C} = {EE50720D-A0E5-45EE-B2EC-E065B569DB27}
 		{01E3D8C2-9C24-492B-B13B-C6D7068B6BF8} = {BD32A9DB-6AC3-4495-8682-E04ACC4917D0}
+		{1F89902F-853E-44B5-93A7-E237984C4FB7} = {EE50720D-A0E5-45EE-B2EC-E065B569DB27}
 	EndGlobalSection
 EndGlobal

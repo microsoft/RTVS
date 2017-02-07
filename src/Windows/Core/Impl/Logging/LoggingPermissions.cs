@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Extensions;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;

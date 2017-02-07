@@ -14,6 +14,7 @@ using Microsoft.Common.Core.Telemetry;
 using Microsoft.R.Interpreters;
 using Microsoft.VisualStudio.R.Package.Telemetry;
 using Microsoft.VisualStudio.R.Package.Utilities;
+using Microsoft.Windows.Core.Network;
 
 namespace Microsoft.VisualStudio.R.Package.RClient {
     [Export(typeof(IMicrosoftRClientInstaller))]

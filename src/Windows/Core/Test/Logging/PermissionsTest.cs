@@ -13,7 +13,7 @@ using Microsoft.Win32;
 using NSubstitute;
 using Xunit;
 
-namespace Microsoft.Common.Core.Test.Logging {
+namespace Microsoft.Windows.Core.Test.Logging {
     [ExcludeFromCodeCoverage]
     [Category.Logging]
     public class PermissionsTest {
@@ -30,7 +30,7 @@ namespace Microsoft.Common.Core.Test.Logging {
             var constants = Substitute.For<IApplicationConstants>();
             constants.LocalMachineHive.Returns("rtvs");
 
-            var rtvsKey = Substitute.For<IRegistryKey>(); ;
+            var rtvsKey = Substitute.For<IRegistryKey>();
             rtvsKey.GetValue(LoggingPermissions.LogVerbosityValueName).Returns(logVerbosity);
             rtvsKey.GetValue(LoggingPermissions.FeedbackValueName).Returns(feedbackSetting);
 
