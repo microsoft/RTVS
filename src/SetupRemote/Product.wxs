@@ -52,7 +52,7 @@
           <util:PermissionEx User="Authenticated Users" ServiceStart="yes" ServiceStop="yes" ServicePauseContinue="yes"
               ServiceInterrogate="yes" ServiceChangeConfig="yes" ServiceEnumerateDependents="yes" ServiceQueryConfig="yes"
               ServiceQueryStatus="yes" ServiceUserDefinedControl="yes" />
-          <util:ServiceConfig FirstFailureActionType="restart" SecondFailureActionType="restart" ThirdFailureActionType="reboot"/>
+          <util:ServiceConfig FirstFailureActionType="restart" SecondFailureActionType="none" ThirdFailureActionType="none"/>
         </ServiceInstall>
         <ServiceControl Id="UserProfileServiceUninstall" Name="RUserProfileService" Remove="uninstall" Stop="uninstall"/>
       </Component>
@@ -69,7 +69,7 @@
           <util:PermissionEx User="Authenticated Users" ServiceStart="yes" ServiceStop="yes" ServicePauseContinue="yes"
               ServiceInterrogate="yes" ServiceChangeConfig="yes" ServiceEnumerateDependents="yes" ServiceQueryConfig="yes"
               ServiceQueryStatus="yes" ServiceUserDefinedControl="yes" />
-          <util:ServiceConfig FirstFailureActionType="restart" SecondFailureActionType="restart" ThirdFailureActionType="reboot"/>
+          <util:ServiceConfig FirstFailureActionType="restart" SecondFailureActionType="none" ThirdFailureActionType="none"/>
           <ServiceDependency Id="RUserProfileService" Group="no"/>
         </ServiceInstall>
         <ServiceControl Id="RemoteRBrokerServiceUninstall" Name="RHostBrokerService" Remove="uninstall" Stop="uninstall"/>
