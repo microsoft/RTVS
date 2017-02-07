@@ -47,7 +47,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [TypeConverter(typeof(YesNoTypeConverter))]
         [DefaultValue(YesNoAsk.Yes)]
         public YesNo ShowWorkspaceSwitchConfirmationDialog {
-            get { return _holder.GetValue(YesNo.No); }
+            get { return _holder.GetValue(YesNo.Yes); }
             set { _holder.SetValue(value); }
         }
 
@@ -57,7 +57,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [TypeConverter(typeof(YesNoTypeConverter))]
         [DefaultValue(YesNoAsk.Yes)]
         public YesNo ShowSaveOnResetConfirmationDialog {
-            get { return _holder.GetValue(YesNo.No); }
+            get { return _holder.GetValue(YesNo.Yes); }
             set { _holder.SetValue(value); }
         }
 
