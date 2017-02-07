@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.Common.Core.Enums;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager;
@@ -120,15 +121,16 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
         private async Task<bool> SaveStateAsync() {
             try {
-                if (MessageButtons.Yes == await _coreShell.ShowMessageAsync(Resources.Warning_SaveOnReset, MessageButtons.YesNo)) {
-                    await Session.ExecuteAsync("rtvs:::save_state()");
-                    return false;
+                if (_settings.ShowSaveOnResetConfirmationDialog == YesNo.Yes) {
+                    if (MessageButtons.Yes == await _coreShell.ShowMessageAsync(Resources.Warning_SaveOnReset, MessageButtons.YesNo)) {
+                        await Session.ExecuteAsync("rtvs:::save_state()");
+                        return false;
+                    }
                 }
             } catch (RHostDisconnectedException rhdex) {
                 WriteRHostDisconnectedError(rhdex);
                 WriteErrorLine(Resources.Error_FailedToSaveState);
             }
-
             return true;
         }
 

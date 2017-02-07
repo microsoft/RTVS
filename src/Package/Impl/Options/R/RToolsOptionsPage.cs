@@ -45,13 +45,23 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [CustomLocDisplayName(nameof(Resources.Settings_ShowWorkspaceSwitchConfirmationDialog))]
         [LocDescription(nameof(Resources.Settings_ShowWorkspaceSwitchConfirmationDialog_Description))]
         [TypeConverter(typeof(YesNoTypeConverter))]
-        [DefaultValue(YesNoAsk.No)]
+        [DefaultValue(YesNoAsk.Yes)]
         public YesNo ShowWorkspaceSwitchConfirmationDialog {
-            get { return _holder.GetValue(YesNo.No); }
+            get { return _holder.GetValue(YesNo.Yes); }
             set { _holder.SetValue(value); }
         }
 
-        [LocCategory("Settings_WorkspaceCategory")]
+        [LocCategory(nameof(Resources.Settings_WorkspaceCategory))]
+        [CustomLocDisplayName(nameof(Resources.Settings_ShowSaveOnResetConfirmationDialog))]
+        [LocDescription(nameof(Resources.Settings_ShowSaveOnResetConfirmationDialog_Description))]
+        [TypeConverter(typeof(YesNoTypeConverter))]
+        [DefaultValue(YesNoAsk.Yes)]
+        public YesNo ShowSaveOnResetConfirmationDialog {
+            get { return _holder.GetValue(YesNo.Yes); }
+            set { _holder.SetValue(value); }
+        }
+
+        [LocCategory(nameof(Resources.Settings_WorkspaceCategory))]
         [CustomLocDisplayName(nameof(Resources.Settings_LoadRDataOnProjectLoad))]
         [LocDescription(nameof(Resources.Settings_LoadRDataOnProjectLoad_Description))]
         [TypeConverter(typeof(YesNoAskTypeConverter))]
@@ -61,7 +71,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set { _holder.SetValue(value); }
         }
 
-        [LocCategory("Settings_WorkspaceCategory")]
+        [LocCategory(nameof(Resources.Settings_WorkspaceCategory))]
         [CustomLocDisplayName("Settings_SaveRDataOnProjectUnload")]
         [LocDescription("Settings_SaveRDataOnProjectUnload_Description")]
         [TypeConverter(typeof(YesNoAskTypeConverter))]

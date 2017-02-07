@@ -2140,6 +2140,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Prompt to save workspace on reset.
+        /// </summary>
+        public static string Settings_ShowSaveOnResetConfirmationDialog {
+            get {
+                return ResourceManager.GetString("Settings_ShowSaveOnResetConfirmationDialog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show prompt to save workspace when resetting interactive session.
+        /// </summary>
+        public static string Settings_ShowSaveOnResetConfirmationDialog_Description {
+            get {
+                return ResourceManager.GetString("Settings_ShowSaveOnResetConfirmationDialog_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Show TCL functions.
         /// </summary>
         public static string Settings_ShowTclFunctions {

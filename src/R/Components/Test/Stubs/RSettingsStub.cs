@@ -13,6 +13,7 @@ namespace Microsoft.R.Components.Test.Stubs {
     [ExcludeFromCodeCoverage]
     public sealed class RSettingsStub : IRSettings {
         public YesNo ShowWorkspaceSwitchConfirmationDialog { get; set; }
+        public YesNo ShowSaveOnResetConfirmationDialog { get; set; }
         public bool AlwaysSaveHistory { get; set; }
         public bool ClearFilterOnAddHistory { get; set; }
         public bool MultilineHistorySelection { get; set; }
