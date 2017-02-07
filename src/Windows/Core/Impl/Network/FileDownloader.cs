@@ -4,8 +4,9 @@
 using System;
 using System.Net;
 using System.Threading;
+using Microsoft.Common.Core.Net;
 
-namespace Microsoft.Common.Core.Net {
+namespace Microsoft.Windows.Core.Network {
     public sealed class FileDownloader : IFileDownloader {
         public string Download(string url, string dstPath, CancellationToken ct) {
             try {

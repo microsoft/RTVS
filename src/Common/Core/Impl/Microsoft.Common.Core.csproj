@@ -50,7 +50,6 @@
     <Compile Include="Logging\Implementation\LoggingPermissions.cs" />
     <Compile Include="Logging\LogVerbosity.cs" />
     <Compile Include="Logging\MessageCategory.cs" />
-    <Compile Include="Net\FileDownloader.cs" />
     <Compile Include="Net\IFileDownloader.cs" />
     <Compile Include="Net\Network.cs" />
     <Compile Include="Net\WebSocketHelper.cs" />
