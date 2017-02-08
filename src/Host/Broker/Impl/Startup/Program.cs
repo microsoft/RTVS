@@ -20,12 +20,8 @@ namespace Microsoft.R.Host.Broker.Startup {
                 configuration = configBuilder.Build();
             }
 
-            CommonStartup.CommonStartupInit(configuration);
-            if (!string.IsNullOrWhiteSpace(startAs) || startAs.EqualsIgnoreCase("service")) {
-                CommonStartup.StartService(configuration); 
-            } else {
-                CommonStartup.StartApp(configuration);
-            }
+            bool isService = !string.IsNullOrWhiteSpace(startAs) && startAs.EqualsIgnoreCase("service");
+            CommonStartup.Start(configuration, isService);
         }
     }
 }

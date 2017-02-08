@@ -7,8 +7,8 @@ using System.Globalization;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Extensions.Logging;
 
-namespace Microsoft.R.Host.UserProfile {
-    internal sealed class ServiceLogger : ILogger, IDisposable {
+namespace Microsoft.Common.Core.Logging {
+    public sealed class ServiceLogger : ILogger, IDisposable {
         private readonly string _category;
 
         public ServiceLogger(string category) {

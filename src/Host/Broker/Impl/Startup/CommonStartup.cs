@@ -4,12 +4,14 @@
 using System;
 using System.IO;
 using System.IO.Pipes;
+using System.ServiceProcess;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
+using Microsoft.Common.Core.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -17,8 +19,6 @@ using Microsoft.R.Host.Broker.Logging;
 using Microsoft.R.Host.Broker.Security;
 using Microsoft.R.Host.Protocol;
 using Newtonsoft.Json;
-using System.Diagnostics;
-using System.ServiceProcess;
 
 namespace Microsoft.R.Host.Broker.Startup {
     internal class CommonStartup {
@@ -28,12 +28,15 @@ namespace Microsoft.R.Host.Broker.Startup {
         private static readonly SecurityOptions _securityOptions = new SecurityOptions();
         private static readonly LoggingOptions _loggingOptions = new LoggingOptions();
         private static readonly CancellationTokenSource _cts = new CancellationTokenSource();
+        private static bool IsService { get; set; }
 
         internal static IConfigurationRoot Configuration { get; set; }
 
         internal static CancellationToken CancellationToken => _cts.Token;
+        internal static ILogger Logger => _logger;
 
-        internal static void CommonStartupInit(IConfigurationRoot configuration) {
+        internal static void Start(IConfigurationRoot configuration, bool isService) {
+            IsService = isService;
             Configuration = configuration;
             Configuration.GetSection("startup").Bind(_startupOptions);
             Configuration.GetSection("security").Bind(_securityOptions);
@@ -43,14 +46,25 @@ namespace Microsoft.R.Host.Broker.Startup {
                 .AddDebug()
                 .AddConsole(LogLevel.Trace)
                 .AddProvider(new FileLoggerProvider(_startupOptions.Name, _loggingOptions.LogFolder));
+
+            if (isService) {
+                _loggerFactory.AddProvider(new ServiceLoggerProvider());
+            }
+            
             _logger = _loggerFactory.CreateLogger<Program>();
 
             if (_startupOptions.Name != null) {
                 _logger.LogInformation(Resources.Info_BrokerName, _startupOptions.Name);
             }
+
+            if (isService) {
+                StartService(configuration);
+            } else {
+                StartApp(configuration);
+            }
         }
 
-        internal static void StartApp(IConfigurationRoot configuration) {
+        private static void StartApp(IConfigurationRoot configuration) {
             var tlsConfig = new TlsConfiguration(_logger, _securityOptions);
             var httpsOptions = tlsConfig.GetHttpsOptions(Configuration);
 
@@ -73,7 +87,7 @@ namespace Microsoft.R.Host.Broker.Startup {
             return null;
         }
 
-        internal static void StartService(IConfigurationRoot configuration) {
+        private static void StartService(IConfigurationRoot configuration) {
 #if DEBUG
             // Uncomment line below to debug service
             // Debugger.Launch();
@@ -87,7 +101,7 @@ namespace Microsoft.R.Host.Broker.Startup {
 
             Uri uri = GetServerUri(Configuration);
             try {
-                CreateWebHost(httpsOptions).Run();
+                CreateWebHost(httpsOptions).Run(CancellationToken);
             } catch (AggregateException ex) when (ex.IsPortInUseException()) {
                 _logger.LogError(0, ex.InnerException, Resources.Error_ConfiguredPortNotAvailable, uri?.Port);
             }
@@ -142,6 +156,12 @@ namespace Microsoft.R.Host.Broker.Startup {
             return webHost;
         }
 
+        private static void ServiceExit() {
+            using (var serviceController = new ServiceController(Resources.Text_ServiceName)) {
+                serviceController.Stop();
+            }
+        }
+
         internal static void Exit() {
             _cts.Cancel();
 
@@ -150,8 +170,23 @@ namespace Microsoft.R.Host.Broker.Startup {
                 // but if it didn't work, just terminate it.
                 await Task.Delay(10000);
                 _logger.LogCritical(Resources.Critical_TimeOutShutdown);
-                Environment.Exit((int)BrokerExitCodes.Timeout);
+                if (IsService) {
+                    ServiceExit();
+                } else {
+                    Environment.Exit((int)BrokerExitCodes.Timeout);
+                }
             });
+        }
+
+        internal static void Exit(int errorCode, string logMessage, params object[] logArgs) {
+            _cts.Cancel();
+
+            _logger.LogCritical(logMessage, logArgs);
+            if (IsService) {
+                ServiceExit();
+            } else {
+                Environment.Exit(errorCode);
+            }
         }
     }
 }

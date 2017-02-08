@@ -1,15 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using Microsoft.Extensions.Logging;
-using static System.FormattableString;
 
-namespace Microsoft.R.Host.UserProfile {
-    class ServiceLoggerProvider : ILoggerProvider {
+namespace Microsoft.Common.Core.Logging {
+    public class ServiceLoggerProvider : ILoggerProvider {
         private readonly List<ServiceLogger> _loggers = new List<ServiceLogger>();
 
         public ServiceLoggerProvider() {

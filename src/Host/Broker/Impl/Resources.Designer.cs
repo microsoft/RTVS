@@ -358,6 +358,15 @@ namespace Microsoft.R.Host.Broker {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to RHostBrokerService.
+        /// </summary>
+        internal static string Text_ServiceName {
+            get {
+                return ResourceManager.GetString("Text_ServiceName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Auto-detecting R ....
         /// </summary>
         internal static string Trace_AutoDetectingR {

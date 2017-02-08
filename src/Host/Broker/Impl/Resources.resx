@@ -255,4 +255,7 @@
   <data name="Error_ExitRHost" xml:space="preserve">
     <value>RHost Exited with Win32 error : {0}</value>
   </data>
+  <data name="Text_ServiceName" xml:space="preserve">
+    <value>RHostBrokerService</value>
+  </data>
 </root>

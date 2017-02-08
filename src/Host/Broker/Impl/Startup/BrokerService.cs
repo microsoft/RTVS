@@ -4,6 +4,7 @@
 using System.ServiceProcess;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Extensions.Logging;
 using Microsoft.R.Host.Broker.Startup;
 
 namespace Microsoft.R.Host.Broker {
@@ -13,11 +14,10 @@ namespace Microsoft.R.Host.Broker {
         }
 
         protected override void OnStart(string[] args) {
-            Task.Run(() => CommonStartup.CreateAndRunWebHostForService()).DoNotWait();
-        }
-
-        protected override void OnStop() {
-            CommonStartup.Exit();
+            Task.Run(() => {
+                CommonStartup.CreateAndRunWebHostForService();
+                Stop();
+            }).DoNotWait();
         }
     }
 }
