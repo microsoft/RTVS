@@ -369,7 +369,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport
         }
 
         private void RunButton_PreviewKeyUp(object sender, KeyEventArgs e) {
-            DoDefaultAction().DoNotWait();
+            if (e.Key == Key.Enter || e.Key == Key.Space) {
+                DoDefaultAction().DoNotWait();
+            }
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e) {
@@ -377,7 +379,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport
         }
 
         private void CancelButton_PreviewKeyUp(object sender, KeyEventArgs e) {
-            Close();
+            if (e.Key == Key.Enter || e.Key == Key.Space) {
+                Close();
+            }
         }
     }
 }
