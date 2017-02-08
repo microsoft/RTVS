@@ -13,13 +13,22 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebSockets.Protocol;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Services;
 using Microsoft.R.Host.Protocol;
 using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client.BrokerServices {
     public class RemoteUriWebService : IRemoteUriWebService {
-        public RemoteUriWebService(string baseUri) {
+        private readonly ICoreServices _services;
+        private readonly IConsole _console;
+        private readonly IActionLog _log;
+
+        public RemoteUriWebService(string baseUri, ICoreServices services, IConsole console) {
             PostUri = new Uri(new Uri(baseUri), new Uri("/remoteuri", UriKind.Relative));
+            _services = services;
+            _console = console;
+            _log = _services.Log;
         }
 
         private Uri PostUri { get; }
@@ -43,7 +52,8 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             }
 
             // Add RTVS headers
-            request.Headers.Add(CustomHttpHeaders.RTVSRequestedURL, GetRemoteUrl(context.Request.Url, remoteBaseUrl));
+            var remoteUri = GetRemoteUri(context.Request.Url, remoteBaseUrl);
+            request.Headers.Add(CustomHttpHeaders.RTVSRequestedURL, remoteUri.ToString());
 
             if (context.Request.InputStream.CanSeek && context.Request.InputStream.Length > 0) {
                 using (Stream reqStream = await request.GetRequestStreamAsync()) {
@@ -73,17 +83,23 @@ namespace Microsoft.R.Host.Client.BrokerServices {
                 }
             } catch (WebException wex) when (wex.Status == WebExceptionStatus.ProtocolError) {
                 response = wex.Response as HttpWebResponse;
+            } catch (OperationCanceledException) {
+                WebServer.Stop(remoteUri.Port);
+            } catch (Exception ex) when (!ex.IsCriticalException()) {
+                _log?.WriteLine(LogVerbosity.Normal, MessageCategory.Error, Resources.Error_RemoteWebServerException.FormatInvariant(ex.Message));
+                _console?.WriteErrorLine(Resources.Error_RemoteWebServerException.FormatInvariant(ex.Message));
+                WebServer.Stop(remoteUri.Port);
             } finally {
                 response?.Close();
             }
         }
 
-        private string GetRemoteUrl(Uri url, string remoteBase) {
+        private Uri GetRemoteUri(Uri url, string remoteBase) {
             Uri remote = new Uri(Invariant($"http://{remoteBase}"));
             UriBuilder ub = new UriBuilder(url);
             ub.Host = remote.Host;
             ub.Port = remote.Port;
-            return ub.Uri.ToString();
+            return ub.Uri;
         }
 
         private static string ReplaceAndGet(string value, string url1, string url2) {

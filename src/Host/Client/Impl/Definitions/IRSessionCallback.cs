@@ -80,5 +80,7 @@ namespace Microsoft.R.Host.Client {
         /// Saves data to file sent from RHost.
         /// </summary>
         Task<string> FetchFileAsync(string remoteFileName, ulong remoteBlobId, string localPath, CancellationToken cancellationToken);
+
+        string GetLocalizedString(string id);
     }
 }

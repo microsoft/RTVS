@@ -1435,6 +1435,69 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Autosaving workspace to image &quot;%s&quot; ....
+        /// </summary>
+        public static string rtvs_AutosavingWorkspace {
+            get {
+                return ResourceManager.GetString("rtvs_AutosavingWorkspace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete autosaved workspace image &quot;%s&quot;?.
+        /// </summary>
+        public static string rtvs_ConfirmDeleteWorkspace {
+            get {
+                return ResourceManager.GetString("rtvs_ConfirmDeleteWorkspace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Deleting autosaved workspace image &quot;%s&quot;..
+        /// </summary>
+        public static string rtvs_DeletingWorkspace {
+            get {
+                return ResourceManager.GetString("rtvs_DeletingWorkspace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to load workspace from autosaved image &quot;%s&quot;..
+        /// </summary>
+        public static string rtvs_FailedToLoadWorkspace {
+            get {
+                return ResourceManager.GetString("rtvs_FailedToLoadWorkspace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loaded workspace from autosaved image &quot;%s&quot;..
+        /// </summary>
+        public static string rtvs_LoadedWorkspace {
+            get {
+                return ResourceManager.GetString("rtvs_LoadedWorkspace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Previous R session terminated, and its global workspace has been saved to image &quot;%s&quot;. Would you like to reload it?.
+        /// </summary>
+        public static string rtvs_SessionTerminatedUnexpectedly {
+            get {
+                return ResourceManager.GetString("rtvs_SessionTerminatedUnexpectedly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to  workspace saved successfully..
+        /// </summary>
+        public static string rtvs_WorkspaceSavedSuccessfully {
+            get {
+                return ResourceManager.GetString("rtvs_WorkspaceSavedSuccessfully", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Secure.
         /// </summary>
         public static string SecureConnection {

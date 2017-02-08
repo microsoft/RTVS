@@ -234,4 +234,8 @@ Please reinstall R Tools for Visual Studio 2015</value>
     <value>{0} is missing from the installation directory.
 Please reinstall Data Science workload or repair the Visual Studio installation.</value>
   </data>
+  <data name="Error_RemoteWebServerException" xml:space="preserve">
+    <value>HTTP server for remote stopped with following exception:
+{0}</value>
+  </data>
 </root>
