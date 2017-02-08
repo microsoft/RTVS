@@ -551,6 +551,11 @@ namespace Microsoft.R.Host.Client {
                                     }
                                 }).DoNotWait();
                                 break;
+
+                            case "?LocStr":
+                                await RespondAsync(message, ct, _callbacks.GetLocalizedString(message.GetString(0, "id")));
+                                break;
+
                             default:
                                 throw ProtocolError($"Unrecognized host message name:", message);
                         }

@@ -19,6 +19,10 @@ send_request_and_get_response <- function(name, ...) {
     call_embedded('send_request_and_get_response', name, list(...))
 }
 
+locstr <- function(id) {
+    send_request_and_get_response('?LocStr', id)[[1]]
+}
+
 memory_connection <- function(max_length = NA, expected_length = NA, overflow_suffix = '', eof_marker = '') {
     call_embedded('memory_connection', max_length, expected_length, overflow_suffix, eof_marker)
 }
@@ -267,7 +271,7 @@ query_reload_autosave <- function() {
         return(FALSE);
     }
 
-    msg <- 'Previous R session terminated unexpectedly, and its global workspace has been saved to image "%s". Would you like to reload it?';
+    msg <- locstr('rtvs_SessionTerminatedUnexpectedly');
     res <- winDialog('yesno', sprintf(msg, autosave_filename));
 
     if (identical(res, 'YES')) {
@@ -279,25 +283,25 @@ query_reload_autosave <- function() {
         });
 
         if (loaded) {
-            message(sprintf('Loaded workspace from autosaved image "%s".', autosave_filename));
+            message(sprintf(locstr('rtvs_LoadedWorkspace'), autosave_filename));
             # If we loaded the file successfully, it's safe to delete it - this session contains the reloaded
             # state now, and if there's another disconnect, it will be autosaved again.
             return(TRUE);
         } else {
-            warning(sprintf('Failed to load workspace from autosaved image "%s".', autosave_filename), call. = FALSE, immediate. = TRUE);
+            warning(sprintf(locstr('rtvs_FailedToLoadWorkspace'), autosave_filename), call. = FALSE, immediate. = TRUE);
             return(FALSE);
         }
     } else {
-        msg <- 'Delete autosaved workspace image "%s"?';
+        msg <- locstr('rtvs_ConfirmDeleteWorkspace');
         res <- winDialog('yesno', sprintf(msg, autosave_filename));
         return(identical(res, 'YES'));
     }
 }
 
 save_state <- function() {
-    message(sprintf('Autosaving workspace to image "%s" ...', autosave_filename));
+    message(sprintf(locstr('rtvs_AutosavingWorkspace'), autosave_filename));
     save.image(autosave_filename);
-    message(' workspace saved successfully.');
+    message(locstr('rtvs_WorkspaceSavedSuccessfully'));
 }
 
 enable_autosave <- function(delete_existing) {
@@ -305,7 +309,7 @@ enable_autosave <- function(delete_existing) {
         set_disconnect_callback(save_state);
 
         if (delete_existing) {
-            message(sprintf('Deleting autosaved workspace image "%s".', autosave_filename));
+            message(sprintf(locstr('rtvs_DeletingWorkspace'), autosave_filename));
             unlink(autosave_filename);
         }
     });

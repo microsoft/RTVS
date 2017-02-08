@@ -22,6 +22,7 @@ namespace Microsoft.R.Host.Client.Test.Stubs {
         public IList<int> ViewLibraryCalls { get; } = new List<int>();
         public IList<Tuple<string, string, bool>> ShowFileCalls { get; } = new List<Tuple<string, string, bool>>();
         public IList<Tuple<string, string>> SaveFileCalls { get; } = new List<Tuple<string, string>>();
+        public IList<string> GetLocalizedStringCalls { get; } = new List<string>();
 
         public Func<string, MessageButtons, Task<MessageButtons>> ShowMessageCallsHandler { get; set; } = 
             (m, b) => Task.FromResult(b.HasFlag(MessageButtons.Yes) ? MessageButtons.Yes : MessageButtons.OK);
@@ -105,6 +106,11 @@ namespace Microsoft.R.Host.Client.Test.Stubs {
             SaveFileCalls.Add(new Tuple<string, string>(remotePath, localPath));
             SaveFileHandler?.Invoke(remotePath, remoteBlobId, localPath);
             return Task.FromResult(string.Empty);
+        }
+
+        public string GetLocalizedString(string id) {
+            GetLocalizedStringCalls.Add(id);
+            return null;
         }
     }
 }
