@@ -56,9 +56,6 @@ namespace Microsoft.VisualStudio.R.Package.Wpf
             Brushes.ListPaneBackgroundKey = VsBrushes.BrandedUIBackgroundKey;
             Brushes.SplitterBackgroundKey = VsBrushes.CommandShelfBackgroundGradientKey;
 
-            Brushes.FocusedBackgroudBrushKey = EnvironmentColors.ComboBoxFocusedBackgroundBrushKey;
-            Brushes.FocusedBorderBrushKey = EnvironmentColors.ComboBoxFocusedBorderBrushKey;
-
             Brushes.ToolWindowBackgroundColorKey = EnvironmentColors.ToolWindowBackgroundColorKey;
             Brushes.ToolWindowBackgroundKey = EnvironmentColors.ToolWindowBackgroundBrushKey;
             Brushes.ToolWindowBorderKey = EnvironmentColors.ToolWindowBorderBrushKey;
