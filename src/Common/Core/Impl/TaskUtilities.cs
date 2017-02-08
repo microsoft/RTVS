@@ -96,8 +96,8 @@ namespace Microsoft.Common.Core {
             var isLast = Interlocked.Decrement(ref continuationState.Count) == 0;
             switch (task.Status) {
                 case TaskStatus.RanToCompletion:
-                    if (isLast) {
-                        continuationState.TaskCompletionSource.TrySetResult(true);
+                    if (isLast && continuationState.TaskCompletionSource.TrySetResult(true)) {
+                        continuationState.CancellationTokenSource.Dispose();
                     }
                     break;
                 case TaskStatus.Canceled:
@@ -114,10 +114,6 @@ namespace Microsoft.Common.Core {
                         continuationState.CancellationTokenSource.Cancel();
                     }
                     break;
-            }
-
-            if (isLast) {
-                continuationState.CancellationTokenSource.Dispose();
             }
         }
 
