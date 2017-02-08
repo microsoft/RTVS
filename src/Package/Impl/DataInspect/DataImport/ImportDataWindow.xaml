@@ -89,9 +89,7 @@
 
                     <!-- Name -->
                     <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="Bold" Text="{x:Static pkg:Resources.Label_Name}" VerticalAlignment="Center" />
-                    <TextBox Grid.Row="0" Grid.Column="2" x:Name="VariableNameBox" VerticalContentAlignment="Center" 
-                             Background="{DynamicResource {x:Static wpf:Brushes.WindowKey}}" 
-                             Foreground="{DynamicResource {x:Static wpf:Brushes.WindowTextKey}}" />
+                    <TextBox Grid.Row="0" Grid.Column="2" x:Name="VariableNameBox" VerticalContentAlignment="Center" />
 
                     <!-- Encoding -->
                     <TextBlock Grid.Row="2" Grid.Column="0" FontWeight="Bold" Text="{x:Static pkg:Resources.Label_Encoding}" VerticalAlignment="Center" />
@@ -131,15 +129,11 @@
 
                     <!-- Name -->
                     <TextBlock Grid.Row="14" Grid.Column="0" FontWeight="Bold" Text="na.strings" VerticalAlignment="Center" />
-                    <TextBox Grid.Row="14" Grid.Column="2" x:Name="NaStringTextBox" VerticalContentAlignment="Center" 
-                             Background="{DynamicResource {x:Static wpf:Brushes.WindowKey}}" 
-                             Foreground="{DynamicResource {x:Static wpf:Brushes.WindowTextKey}}" />
+                    <TextBox Grid.Row="14" Grid.Column="2" x:Name="NaStringTextBox" VerticalContentAlignment="Center" />
 
                     <!-- NRows -->
                     <TextBlock Grid.Row="16" Grid.Column="0" FontWeight="Bold" Text="NRows" VerticalAlignment="Center" />
-                    <TextBox Grid.Row="16" Grid.Column="2" x:Name="NRowsTextBox" VerticalContentAlignment="Center" 
-                             Background="{DynamicResource {x:Static wpf:Brushes.WindowKey}}" 
-                             Foreground="{DynamicResource {x:Static wpf:Brushes.WindowTextKey}}" />
+                    <TextBox Grid.Row="16" Grid.Column="2" x:Name="NRowsTextBox" VerticalContentAlignment="Center" />
 
                     <!-- Header -->
                     <TextBlock Grid.Row="18" Grid.Column="0" FontWeight="Bold" Text="{x:Static pkg:Resources.Label_Header}" VerticalAlignment="Center" />
@@ -196,7 +190,6 @@
                                     <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.WindowTextKey}}" />
                                     <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.WindowKey}}" />
                                     <Setter Property="Padding" Value="4" />
-                                    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
                                     <Setter Property="BorderThickness" Value="0" />
                                 </Style>
                             </DataGrid.CellStyle>
