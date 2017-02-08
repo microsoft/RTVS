@@ -267,7 +267,7 @@ query_reload_autosave <- function() {
         return(FALSE);
     }
 
-    msg <- 'Previous R session terminated unexpectedly, and its global workspace has been saved to image "%s". Would you like to reload it?';
+    msg <- 'Previous R session terminated and its global workspace has been saved to image "%s". Would you like to reload it?';
     res <- winDialog('yesno', sprintf(msg, autosave_filename));
 
     if (identical(res, 'YES')) {
