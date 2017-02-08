@@ -3,9 +3,7 @@
 
 using Microsoft.VisualStudio.PlatformUI;
 
-namespace Microsoft.VisualStudio.R.Package.Wpf
-{
-    public class PlatformDialogWindow: DialogWindow
-    {
+namespace Microsoft.VisualStudio.R.Package.Wpf {
+    public class PlatformDialogWindow : DialogWindow {
     }
 }

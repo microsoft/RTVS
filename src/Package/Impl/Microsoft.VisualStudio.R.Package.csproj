@@ -529,11 +529,8 @@
     <Compile Include="Windows\GotoSolutionExplorerCommand.cs" />
     <Compile Include="Windows\GotoEditorWindowCommand.cs" />
     <Compile Include="Windows\RToolWindowPane.cs" />
-    <Compile Include="Wpf\ConfigurationControl.cs" />
     <Compile Include="Wpf\Controls.cs" />
     <Compile Include="Wpf\Dialogs.cs" />
-    <Compile Include="Wpf\LabelledButton.cs" />
-    <Compile Include="Wpf\LabelledControl.cs" />
     <Compile Include="Wpf\NativeMethods.cs" />
     <Compile Include="Wpf\WpfHelper.cs" />
   </ItemGroup>

@@ -32,6 +32,10 @@ namespace Microsoft.VisualStudio.R.Package.Wpf
 
         private static void OverrideBrushes()
         {
+            if (SystemParameters.HighContrast) {
+                return; // Use system theme colors
+            }
+
             Brushes.ActiveBorderKey = VsBrushes.ActiveBorderKey;
             Brushes.BorderBrushKey = VsBrushes.BrandedUIBorderKey;
             Brushes.ButtonFaceBrushKey = VsBrushes.ButtonFaceKey;
@@ -51,6 +55,9 @@ namespace Microsoft.VisualStudio.R.Package.Wpf
             Brushes.LegalMessageBackgroundKey = VsBrushes.BrandedUIBackgroundKey;
             Brushes.ListPaneBackgroundKey = VsBrushes.BrandedUIBackgroundKey;
             Brushes.SplitterBackgroundKey = VsBrushes.CommandShelfBackgroundGradientKey;
+
+            Brushes.FocusedBackgroudBrushKey = EnvironmentColors.ComboBoxFocusedBackgroundBrushKey;
+            Brushes.FocusedBorderBrushKey = EnvironmentColors.ComboBoxFocusedBorderBrushKey;
 
             Brushes.ToolWindowBackgroundColorKey = EnvironmentColors.ToolWindowBackgroundColorKey;
             Brushes.ToolWindowBackgroundKey = EnvironmentColors.ToolWindowBackgroundBrushKey;
@@ -109,7 +116,7 @@ namespace Microsoft.VisualStudio.R.Package.Wpf
             Brushes.StatusBarTextColorKey = EnvironmentColors.StatusBarTextColorKey;
 
             Brushes.SelectedItemActiveBrushKey = TreeViewColors.SelectedItemActiveBrushKey;
-            Brushes.SelectedItemActiveBrushKey = TreeViewColors.SelectedItemActiveColorKey;
+            Brushes.SelectedItemActiveColorKey = TreeViewColors.SelectedItemActiveColorKey;
 
             Brushes.FailMessageTextBrushKey = TreeViewColors.ValidationSquigglesBrushKey;
             // TODO: may need to pick a better color of specify custom key
