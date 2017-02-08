@@ -271,7 +271,7 @@ namespace Microsoft.R.Host.Client.Session {
             Interlocked.Exchange(ref _initializedTcs, new TaskCompletionSourceEx<object>());
 
             var initializationCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            var hostRunTask = RunHost(initializationCts.Token);
+            var hostRunTask = RunHost(_host, _hostStartedTcs, initializationCts.Token);
             Interlocked.Exchange(ref _hostRunTask, hostRunTask)?.DoNotWait();
 
             await _hostStartedTcs.Task;
@@ -360,15 +360,18 @@ namespace Microsoft.R.Host.Client.Session {
             return _disableMutatingOnReadConsole.Increment();
         }
 
-        private async Task RunHost(CancellationToken initializationCt) {
+        private static async Task RunHost(RHost host, TaskCompletionSourceEx<object> hostStartedTcs, CancellationToken initializationCt) {
             try {
-                await _host.Run(initializationCt);
+                await host.Run(initializationCt);
             } catch (OperationCanceledException oce) {
-                _hostStartedTcs.TrySetCanceled(oce);
+                hostStartedTcs.TrySetCanceled(oce);
             } catch (MessageTransportException mte) {
-                _hostStartedTcs.TrySetCanceled(new RHostDisconnectedException(string.Empty, mte));
+                hostStartedTcs.TrySetCanceled(new RHostDisconnectedException(string.Empty, mte));
             } catch (Exception ex) {
-                _hostStartedTcs.TrySetException(ex);
+                hostStartedTcs.TrySetException(ex);
+            } finally {
+                // RHost.Run shouldn't be completed before `IRCallback.Connected` is called
+                hostStartedTcs.TrySetCanceled(new RHostDisconnectedException(Resources.Error_UnknownError));
             }
         }
 
@@ -492,7 +495,7 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
         Task IRCallbacks.Connected(string rVersion) {
             Prompt = GetDefaultPrompt();
             _isHostRunning = true;
-            _hostStartedTcs.SetResult(null);
+            _hostStartedTcs.TrySetResult(null);
             Connected?.Invoke(this, new RConnectedEventArgs(rVersion));
             Mutated?.Invoke(this, EventArgs.Empty);
             return Task.CompletedTask;
