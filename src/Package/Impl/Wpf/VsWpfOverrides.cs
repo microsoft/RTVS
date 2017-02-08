@@ -32,6 +32,10 @@ namespace Microsoft.VisualStudio.R.Package.Wpf
 
         private static void OverrideBrushes()
         {
+            if (SystemParameters.HighContrast) {
+                return; // Use system theme colors
+            }
+
             Brushes.ActiveBorderKey = VsBrushes.ActiveBorderKey;
             Brushes.BorderBrushKey = VsBrushes.BrandedUIBorderKey;
             Brushes.ButtonFaceBrushKey = VsBrushes.ButtonFaceKey;
@@ -109,7 +113,7 @@ namespace Microsoft.VisualStudio.R.Package.Wpf
             Brushes.StatusBarTextColorKey = EnvironmentColors.StatusBarTextColorKey;
 
             Brushes.SelectedItemActiveBrushKey = TreeViewColors.SelectedItemActiveBrushKey;
-            Brushes.SelectedItemActiveBrushKey = TreeViewColors.SelectedItemActiveColorKey;
+            Brushes.SelectedItemActiveColorKey = TreeViewColors.SelectedItemActiveColorKey;
 
             Brushes.FailMessageTextBrushKey = TreeViewColors.ValidationSquigglesBrushKey;
             // TODO: may need to pick a better color of specify custom key
