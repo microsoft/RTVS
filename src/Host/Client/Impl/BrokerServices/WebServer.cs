@@ -19,11 +19,12 @@ namespace Microsoft.R.Host.Client.BrokerServices {
         private readonly string _baseAddress;
         private readonly ICoreServices _services;
         private readonly IConsole _console;
+        private readonly IActionLog _log;
         private readonly string _name;
 
         private HttpListener _listener;
 
-        private IActionLog Log => _services.Log;
+        
 
         public string LocalHost { get; }
         public int LocalPort { get; private set; }
@@ -35,6 +36,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             _baseAddress = baseAddress;
             _services = services;
             _console = console;
+            _log = _services.Log;
 
             LocalHost = IPAddress.Loopback.ToString();
             RemoteHost = remoteHostIp;
@@ -67,7 +69,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
                     continue;
                 } catch (ObjectDisposedException) {
                     // Socket got closed
-                    Log.WriteLine(LogVerbosity.Minimal, MessageCategory.Error, Resources.Error_RemoteWebServerCreationFailed.FormatInvariant(_name));
+                    _log.WriteLine(LogVerbosity.Minimal, MessageCategory.Error, Resources.Error_RemoteWebServerCreationFailed.FormatInvariant(_name));
                     _console.WriteErrorLine(Resources.Error_RemoteWebServerCreationFailed.FormatInvariant(_name));
                     throw new OperationCanceledException();
                 }
@@ -75,7 +77,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             }
 
             try {
-                Log.WriteLine(LogVerbosity.Minimal, MessageCategory.General, Resources.Info_RemoteWebServerStarted.FormatInvariant(_name, LocalHost, LocalPort));
+                _log.WriteLine(LogVerbosity.Minimal, MessageCategory.General, Resources.Info_RemoteWebServerStarted.FormatInvariant(_name, LocalHost, LocalPort));
                 _console.WriteErrorLine(Resources.Info_RemoteWebServerStarted.FormatInvariant(_name, LocalHost, LocalPort));
                 _console.WriteErrorLine(Resources.Info_RemoteWebServerDetails.FormatInvariant(Environment.MachineName, LocalHost, LocalPort, _name, _baseAddress));
             } catch {
@@ -88,7 +90,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
                     _listener.Stop();
                 }
                 _listener.Close();
-                Log.WriteLine(LogVerbosity.Minimal, MessageCategory.General, Resources.Info_RemoteWebServerStopped.FormatInvariant(_name));
+                _log.WriteLine(LogVerbosity.Minimal, MessageCategory.General, Resources.Info_RemoteWebServerStopped.FormatInvariant(_name));
                 _console.WriteErrorLine(Resources.Info_RemoteWebServerStopped.FormatInvariant(_name));
             } catch (Exception ex) when (!ex.IsCriticalException()) {
             }
@@ -126,7 +128,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             } catch(Exception ex) {
                 if (Servers.ContainsKey(RemotePort)) {
                     // Log only if we expect this web server to be running and it fails.
-                    Log.WriteLine(LogVerbosity.Minimal, MessageCategory.Error, Resources.Error_RemoteWebServerFailed.FormatInvariant(_name, ex.Message));
+                    _log.WriteLine(LogVerbosity.Minimal, MessageCategory.Error, Resources.Error_RemoteWebServerFailed.FormatInvariant(_name, ex.Message));
                     _console.WriteErrorLine(Resources.Error_RemoteWebServerFailed.FormatInvariant(_name, ex.Message));
                 }
             } finally {
