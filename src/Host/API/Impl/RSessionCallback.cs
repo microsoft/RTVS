@@ -51,5 +51,7 @@ namespace Microsoft.R.Host.Client {
         public Task ViewFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken = default(CancellationToken)) => Task.CompletedTask;
         public Task ViewLibraryAsync(CancellationToken cancellationToken = default(CancellationToken)) => Task.CompletedTask;
         public Task ViewObjectAsync(string expression, string title, CancellationToken cancellationToken = default(CancellationToken)) => Task.CompletedTask;
+
+        public string GetLocalizedString(string id) => null;
     }
 }

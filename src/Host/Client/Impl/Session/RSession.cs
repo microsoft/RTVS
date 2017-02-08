@@ -725,6 +725,9 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
             return callback != null ? callback.FetchFileAsync(remoteFileName, remoteBlobId, localPath, cancellationToken) : Task.FromResult(string.Empty);
         }
 
+        string IRCallbacks.GetLocalizedString(string id) =>
+            _callback?.GetLocalizedString(id);
+
         private class BeforeInitializedRExpressionEvaluator : IRExpressionEvaluator {
             private readonly RSession _session;
 

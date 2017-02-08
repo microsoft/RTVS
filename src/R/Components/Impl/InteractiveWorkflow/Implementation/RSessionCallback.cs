@@ -146,5 +146,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             }
             return localPath;
         }
+
+        public string GetLocalizedString(string id) =>
+            Resources.ResourceManager.GetString(id, Resources.Culture);
     }
 }

@@ -646,6 +646,27 @@ Please upgrade remote R Services installation to match.</value>
   <data name="Plot_EmptyWatermark" xml:space="preserve">
     <value>Run plotting command in R Interactive Window</value>
   </data>
+  <data name="rtvs_AutosavingWorkspace" xml:space="preserve">
+    <value>Autosaving workspace to image "%s" ...</value>
+  </data>
+  <data name="rtvs_ConfirmDeleteWorkspace" xml:space="preserve">
+    <value>Delete autosaved workspace image "%s"?</value>
+  </data>
+  <data name="rtvs_DeletingWorkspace" xml:space="preserve">
+    <value>Deleting autosaved workspace image "%s".</value>
+  </data>
+  <data name="rtvs_FailedToLoadWorkspace" xml:space="preserve">
+    <value>Failed to load workspace from autosaved image "%s".</value>
+  </data>
+  <data name="rtvs_LoadedWorkspace" xml:space="preserve">
+    <value>Loaded workspace from autosaved image "%s".</value>
+  </data>
+  <data name="rtvs_SessionTerminatedUnexpectedly" xml:space="preserve">
+    <value>Previous R session terminated, and its global workspace has been saved to image "%s". Would you like to reload it?</value>
+  </data>
+  <data name="rtvs_WorkspaceSavedSuccessfully" xml:space="preserve">
+    <value> workspace saved successfully.</value>
+  </data>
   <data name="Error_FailedToSaveState" xml:space="preserve">
     <value>Failed to save state, resetting anyway.</value>
   </data>

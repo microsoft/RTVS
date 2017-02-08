@@ -182,6 +182,8 @@ namespace Microsoft.R.Host.Client {
             await Console.Error.WriteLineAsync(Invariant($"PlotDeviceDestroy called for {deviceId}."));
         }
 
+        public string GetLocalizedString(string id) => null;
+
         class MaxLoggingPermissions : ILoggingPermissions {
             public LogVerbosity CurrentVerbosity { get; set; } = LogVerbosity.Traffic;
             public bool IsFeedbackPermitted => true;
