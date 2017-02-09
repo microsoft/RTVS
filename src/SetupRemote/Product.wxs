@@ -4,7 +4,8 @@
 
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
      xmlns:util="http://schemas.microsoft.com/wix/UtilExtension"
-     xmlns:fire="http://schemas.microsoft.com/wix/FirewallExtension">
+     xmlns:fire="http://schemas.microsoft.com/wix/FirewallExtension"
+     xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
 
   <Product Id="*"
            Name="$(var.ProductName)"
@@ -20,6 +21,8 @@
 
     <MediaTemplate EmbedCab="yes" />
     <?include Feature.wxi ?>
+
+    <PropertyRef Id="NETFRAMEWORK40CLIENTINSTALLROOTDIR"/>
     
     <!-- Set seclogon service to autostart -->
     <CustomAction Id='SecLogonServiceAutoStart'
@@ -55,6 +58,7 @@
           <util:ServiceConfig FirstFailureActionType="restart" SecondFailureActionType="restart" ThirdFailureActionType="reboot"/>
         </ServiceInstall>
         <ServiceControl Id="UserProfileServiceUninstall" Name="RUserProfileService" Remove="uninstall" Stop="uninstall"/>
+        <util:EventSource Log="Application" Name="RUserProfileService" EventMessageFile="[NETFRAMEWORK40CLIENTINSTALLROOTDIR]EventLogMessages.dll"/>
       </Component>
       
       <!-- Remote R Host Broker service installer -->
@@ -74,6 +78,7 @@
         </ServiceInstall>
         <ServiceControl Id="RemoteRBrokerServiceUninstall" Name="RHostBrokerService" Remove="uninstall" Stop="uninstall"/>
         <fire:FirewallException Id="RBrokerSvcFirewallException" Name="Microsoft.R.Host.Broker" Program="[INSTALLFOLDER]Microsoft.R.Host.Broker.exe" Scope="any" Profile="all"/>
+        <util:EventSource Log="Application" Name="RHostBrokerService" EventMessageFile="[NETFRAMEWORK40CLIENTINSTALLROOTDIR]EventLogMessages.dll"/>
       </Component>
     </DirectoryRef>
     <?include RtvsPackage.wxi ?>

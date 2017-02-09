@@ -33,7 +33,7 @@ namespace Microsoft.R.Host.UserProfile {
             _loggerFactory = new LoggerFactory();
             _loggerFactory
                 .AddDebug()
-                .AddProvider(new ServiceLoggerProvider());
+                .AddProvider(new ServiceLoggerProvider(LogLevel.Trace, Resources.Text_ServiceName));
             _logger = _loggerFactory.CreateLogger<RUserProfileService>();
 
             _cts = new CancellationTokenSource();

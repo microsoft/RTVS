@@ -10,9 +10,13 @@ using Microsoft.Extensions.Logging;
 namespace Microsoft.Common.Core.Logging {
     public sealed class ServiceLogger : ILogger, IDisposable {
         private readonly string _category;
+        private readonly LogLevel _logLevel;
+        private readonly string _eventLogSource;
 
-        public ServiceLogger(string category) {
+        public ServiceLogger(string category, LogLevel minLogLevel, string eventLogSource) {
             _category = category;
+            _logLevel = minLogLevel;
+            _eventLogSource = eventLogSource;
         }
 
         public void Dispose() {
@@ -26,12 +30,15 @@ namespace Microsoft.Common.Core.Logging {
             return true;
         }
 
-
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter) {
+            if(logLevel < _logLevel) {
+                return;
+            }
+
             string message = formatter(state, exception);
             using (EventLog eventLog = new EventLog("Application")) {
                 EventLogEntryType logType = GetLogType(logLevel);
-                eventLog.Source = "Application";
+                eventLog.Source = _eventLogSource;
                 string logMessage;
                 if (exception != null) {
                     logMessage = string.Format(CultureInfo.CurrentCulture, "[{0:u}] <{1}> ({2}):{3}{4}{5}Exception: {6}", DateTime.Now, _category, logLevel.ToString()[0], Environment.NewLine, message, Environment.NewLine, exception);

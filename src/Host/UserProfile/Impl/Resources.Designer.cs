@@ -176,5 +176,14 @@ namespace Microsoft.R.Host.UserProfile {
                 return ResourceManager.GetString("Text_ServiceDisplayName", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to RUserProfileService.
+        /// </summary>
+        internal static string Text_ServiceName {
+            get {
+                return ResourceManager.GetString("Text_ServiceName", resourceCulture);
+            }
+        }
     }
 }

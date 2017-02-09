@@ -37,7 +37,7 @@ namespace Microsoft.R.Host.UserProfile {
             rUserProfileProcessInstaller.Username = null;
 
             // If you make changes here make sure you edit the product.wxs and RUserProfileService.Designer.cs
-            rUserProfileServiceInstaller.ServiceName = "RUserProfileService";
+            rUserProfileServiceInstaller.ServiceName = Resources.Text_ServiceName;
             rUserProfileServiceInstaller.DisplayName = Resources.Text_ServiceDisplayName;
             rUserProfileServiceInstaller.Description = Resources.Text_ServiceDescription;
 

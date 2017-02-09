@@ -48,7 +48,7 @@ namespace Microsoft.R.Host.Broker.Startup {
                 .AddProvider(new FileLoggerProvider(_startupOptions.Name, _loggingOptions.LogFolder));
 
             if (isService) {
-                _loggerFactory.AddProvider(new ServiceLoggerProvider());
+                _loggerFactory.AddProvider(new ServiceLoggerProvider(LogLevel.Warning, Resources.Text_ServiceName));
             }
             
             _logger = _loggerFactory.CreateLogger<Program>();
@@ -166,13 +166,13 @@ namespace Microsoft.R.Host.Broker.Startup {
             _cts.Cancel();
 
             Task.Run(async () => {
-                // Give cooperative cancellation 10 seconds to shut the process down gracefully,
-                // but if it didn't work, just terminate it.
-                await Task.Delay(10000);
-                _logger.LogCritical(Resources.Critical_TimeOutShutdown);
                 if (IsService) {
                     ServiceExit();
                 } else {
+                    // Give cooperative cancellation 10 seconds to shut the process down gracefully,
+                    // but if it didn't work, just terminate it.
+                    await Task.Delay(10000);
+                    _logger.LogCritical(Resources.Critical_TimeOutShutdown);
                     Environment.Exit((int)BrokerExitCodes.Timeout);
                 }
             });

@@ -11,7 +11,7 @@ using static System.FormattableString;
 namespace Microsoft.R.Host.Broker.Logging {
     internal sealed class FileLoggerProvider : ILoggerProvider {
         private readonly StreamWriter _writer;
-        private readonly List<ILogger> _loggers = new List<ILogger>();
+        private readonly List<FileLogger> _loggers = new List<FileLogger>();
 
         public FileLoggerProvider(string name = null, string logFolder = null)
             : this(File.CreateText(GetLogFileName(name, logFolder))) {
@@ -40,7 +40,7 @@ namespace Microsoft.R.Host.Broker.Logging {
         }
 
         public void Dispose() {
-            foreach (IDisposable logger in _loggers) {
+            foreach (var logger in _loggers) {
                 logger.Dispose();
             }
             _writer.Dispose();
