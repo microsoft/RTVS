@@ -57,6 +57,7 @@ namespace Microsoft.R.Editor.Signatures {
             int parameterIndex = -1;
             string parameterName;
             bool namedParameter = false;
+            string packageName = null;
 
             if (!GetFunction(astRoot, ref position, out functionCall, out functionVariable)) {
                 return null;
@@ -65,8 +66,14 @@ namespace Microsoft.R.Editor.Signatures {
             parameterIndex = functionCall.GetParameterIndex(position);
             parameterName = functionCall.GetParameterName(parameterIndex, out namedParameter);
 
+            var op = functionVariable.Parent as Operator;
+            if (op != null && op.OperatorType == OperatorType.Namespace) {
+                var id = (op.LeftOperand as Variable)?.Identifier;
+                packageName = id != null ? astRoot.TextProvider.GetText(id) : null;
+            }
+
             if (!string.IsNullOrEmpty(functionVariable.Name) && functionCall != null && parameterIndex >= 0) {
-                return new ParameterInfo(functionVariable.Name, functionCall, parameterIndex, parameterName, namedParameter);
+                return new ParameterInfo(packageName, functionVariable.Name, functionCall, parameterIndex, parameterName, namedParameter);
             }
 
             return null;

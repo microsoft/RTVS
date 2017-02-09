@@ -66,7 +66,12 @@ namespace Microsoft.R.Editor.Signatures {
                 IFunctionInfo functionInfo = null;
 
                 // First try user-defined function
-                functionInfo = ast.GetUserFunctionInfo(parametersInfo.FunctionName, position);
+                if (string.IsNullOrEmpty(parametersInfo.PackageName)) {
+                    functionInfo = ast.GetUserFunctionInfo(parametersInfo.FunctionName, position);
+                } else {
+                    packageName = parametersInfo.PackageName;
+                }
+
                 if (functionInfo == null) {
                     var functionIndex = _shell.ExportProvider.GetExportedValue<IFunctionIndex>();
                     // Then try package functions
