@@ -94,6 +94,14 @@
       <Project>{25cd8690-6208-4740-b123-6dbce6b9444a}</Project>
       <Name>Microsoft.Languages.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Windows\Core\Impl\Microsoft.Windows.Core.csproj">
+      <Project>{01E3D8C2-9C24-492B-B13B-C6D7068B6BF8}</Project>
+      <Name>Microsoft.Windows.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Windows\Core\Test\Microsoft.Windows.Core.Test.csproj">
+      <Project>{1f89902f-853e-44b5-93a7-e237984c4fb7}</Project>
+      <Name>Microsoft.Windows.Core.Test</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Editor\Microsoft.VisualStudio.Editor.Mocks.csproj">
       <Project>{5fcb86d5-4b25-4039-858c-b5a06eb702e1}</Project>
       <Name>Microsoft.VisualStudio.Editor.Mocks</Name>

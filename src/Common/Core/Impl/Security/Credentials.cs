@@ -44,7 +44,11 @@ namespace Microsoft.Common.Core.Security {
         }
 
         public NetworkCredential GetCredential(Uri uri, string authType) {
+#if NETSTANDARD1_6
+            return new NetworkCredential(UserName, Password.ToUnsecureString());
+#else
             return new NetworkCredential(UserName, Password);
+#endif            
         }
     }
 }

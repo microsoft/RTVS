@@ -21,13 +21,9 @@
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Composition\INamedExport.cs" />
-    <Compile Include="Composition\NamedExportLocator.cs" />
     <Compile Include="Disposables\DisposableBag.cs" />
     <Compile Include="Enums\YesNo.cs" />
     <Compile Include="Extensions\ArraySegmentExtensions.cs" />
-    <Compile Include="Extensions\CompositionBatchExtensions.cs" />
-    <Compile Include="Extensions\CompositionBatchExtensions.FactoryReflectionComposablePart.cs" />
     <Compile Include="Extensions\MatcherExtensions.cs" />
     <Compile Include="Extensions\MathExtensions.cs" />
     <Compile Include="Extensions\ReflectionExtensions.cs" />
@@ -59,7 +55,6 @@
     <Compile Include="Security\ISecurityService.cs" />
     <Compile Include="Services\ICoreServices.cs" />
     <Compile Include="Services\CoreServices.cs" />
-    <Compile Include="Shell\CoreShellExtensions.cs" />
     <Compile Include="Shell\IApplicationConstants.cs" />
     <Compile Include="Shell\UIColorTheme.cs" />
     <Compile Include="Shell\IFileDialog.cs" />
@@ -104,9 +99,6 @@
     <Compile Include="IO\IFileSystemInfo.cs" />
     <Compile Include="IO\IFileSystemWatcher.cs" />
     <Compile Include="Lazy.cs" />
-    <Compile Include="Shell\CoreShell.cs" />
-    <Compile Include="Shell\ICompositionCatalog.cs" />
-    <Compile Include="Shell\ICoreShell.cs" />
     <Compile Include="Shell\IIdleTimeService.cs" />
     <Compile Include="Shell\MessageButtons.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />

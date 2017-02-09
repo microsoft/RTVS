@@ -154,6 +154,14 @@
       <Project>{5EF2AD64-D6FE-446B-B350-8C7F0DF0834D}</Project>
       <Name>Microsoft.UnitTests.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Windows\Core\Impl\Microsoft.Windows.Core.csproj">
+      <Project>{01e3d8c2-9c24-492b-b13b-c6d7068b6bf8}</Project>
+      <Name>Microsoft.Windows.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Windows\Core\Test\Microsoft.Windows.Core.Test.csproj">
+      <Project>{1f89902f-853e-44b5-93a7-e237984c4fb7}</Project>
+      <Name>Microsoft.Windows.Core.Test</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Impl\Microsoft.VisualStudio.R.Package.csproj">
       <Project>{26035fe3-25ab-45ec-bb45-7fd0b6c1d545}</Project>
       <Name>Microsoft.VisualStudio.R.Package</Name>

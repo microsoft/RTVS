@@ -198,6 +198,14 @@
       <Project>{5EF2AD64-D6FE-446B-B350-8C7F0DF0834D}</Project>
       <Name>Microsoft.UnitTests.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Windows\Core\Impl\Microsoft.Windows.Core.csproj">
+      <Project>{01e3d8c2-9c24-492b-b13b-c6d7068b6bf8}</Project>
+      <Name>Microsoft.Windows.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Windows\Core\Test\Microsoft.Windows.Core.Test.csproj">
+      <Project>{1f89902f-853e-44b5-93a7-e237984c4fb7}</Project>
+      <Name>Microsoft.Windows.Core.Test</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Components\Impl\Microsoft.R.Components.csproj">
       <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>
       <Name>Microsoft.R.Components</Name>
