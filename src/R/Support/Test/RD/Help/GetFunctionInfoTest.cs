@@ -127,7 +127,7 @@ is.matrix(x)
                 .And.OnlyContain(f => f.Signatures.Count == 1)
                 .And.OnlyContain(f => f.Description == "These functions represent an experimental interface for adjustments to environments and bindings within environments. They allow for locking environments as well as individual bindings, and for linking a variable to a function.")
                 .And.Equal(new [] {
-                    4,4,4,4,4,4,4
+                    2,1,2,2,2,3,2
                 }, (a, e) => a.Signatures[0].Arguments.Count == e);
 
             functionInfos[0].Signatures[0].Arguments[0].Description.Should().Be("an environment.");
