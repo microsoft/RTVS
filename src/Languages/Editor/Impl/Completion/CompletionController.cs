@@ -232,9 +232,9 @@ namespace Microsoft.Languages.Editor.Completion {
         /// <summary>
         /// Is there an active completion session? (is the dropdown showing?)
         /// </summary>
-        public virtual bool HasActiveCompletionSession => CompletionSession != null && !CompletionSession.IsDismissed;
+        public bool HasActiveCompletionSession => CompletionSession != null && !CompletionSession.IsDismissed;
 
-        protected bool HasActiveSignatureSession(ITextView textView) => HasActiveSignatureSession(textView, Shell);
+        public bool HasActiveSignatureSession(ITextView textView) => HasActiveSignatureSession(textView, Shell);
 
         /// <summary>
         /// Is there an active signature help session? (is the tooltip showing?)

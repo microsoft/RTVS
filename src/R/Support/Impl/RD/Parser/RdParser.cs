@@ -78,22 +78,11 @@ namespace Microsoft.R.Support.RD.Parser {
                 }
             }
 
-            // Merge descriptions into signatures. Add all arguments
-            // listed in the \arguments{} section since function signature
-            // does not always list all possible arguments.
+            // Merge descriptions into signatures
             if (argumentDescriptions != null && signatureInfos != null) {
                 foreach (ISignatureInfo sigInfo in signatureInfos) {
                     // Add missing arguments from the \arguments{} section
-                    foreach (string name in argumentDescriptions.Keys) {
-                        // TODO: do we need HashSet here instead? Generally arguments
-                        // list is relatively short, about 10 items on average.
-                        if (sigInfo.Arguments.FirstOrDefault(x => x.Name.Equals(name)) == null) {
-                            sigInfo.Arguments.Add(new ArgumentInfo(name));
-                        }
-                    }
-
-                    // Add description if it is not there yet
-                    foreach (var arg in sigInfo.Arguments.Where(x => string.IsNullOrEmpty(x.Description))) {
+                    foreach (var arg in sigInfo.Arguments) {
                         string description;
                         if (argumentDescriptions.TryGetValue(arg.Name, out description)) {
                             ((NamedItemInfo)arg).Description = description ?? string.Empty;

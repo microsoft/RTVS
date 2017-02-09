@@ -46,8 +46,9 @@ namespace Microsoft.R.Editor.Signatures {
                         broker.DismissAllSessions((ITextView)p);
                         broker.TriggerSignatureHelp((ITextView)p);
                     }, session.TextView, this.GetType(), processNow: true);
+                } else {
+                    AugmentSignatureHelpSession(session, signatures, document.EditorTree.AstRoot, TriggerSignatureHelp, null);
                 }
-                AugmentSignatureHelpSession(session, signatures, document.EditorTree.AstRoot, TriggerSignatureHelp, null);
             }
         }
 
