@@ -8,12 +8,12 @@ using Microsoft.Common.Core.Disposables;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Common.Core.Logging {
-    public sealed class ServiceLogger : ILogger, IDisposable {
+    public sealed class EventLogLogger : ILogger, IDisposable {
         private readonly string _category;
         private readonly LogLevel _logLevel;
         private readonly string _eventLogSource;
 
-        public ServiceLogger(string category, LogLevel minLogLevel, string eventLogSource) {
+        public EventLogLogger(string category, LogLevel minLogLevel, string eventLogSource) {
             _category = category;
             _logLevel = minLogLevel;
             _eventLogSource = eventLogSource;
@@ -27,7 +27,7 @@ namespace Microsoft.Common.Core.Logging {
         }
 
         public bool IsEnabled(LogLevel logLevel) {
-            return true;
+            return logLevel >= _logLevel;
         }
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter) {

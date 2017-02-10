@@ -142,7 +142,7 @@ namespace Microsoft.R.Host.Broker {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to RHost Exited with Win32 error : {0}.
+        ///   Looks up a localized string similar to R Host Exited with Win32 error : {0}.
         /// </summary>
         internal static string Error_ExitRHost {
             get {
@@ -349,7 +349,7 @@ namespace Microsoft.R.Host.Broker {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R Host Broker Service.
+        ///   Looks up a localized string similar to R Remote Service.
         /// </summary>
         internal static string Text_ServiceDisplayName {
             get {
@@ -358,7 +358,7 @@ namespace Microsoft.R.Host.Broker {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to RHostBrokerService.
+        ///   Looks up a localized string similar to RRemoteService.
         /// </summary>
         internal static string Text_ServiceName {
             get {

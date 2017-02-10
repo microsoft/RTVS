@@ -48,7 +48,7 @@ namespace Microsoft.R.Host.Broker.Startup {
                 .AddProvider(new FileLoggerProvider(_startupOptions.Name, _loggingOptions.LogFolder));
 
             if (isService) {
-                _loggerFactory.AddProvider(new ServiceLoggerProvider(LogLevel.Warning, Resources.Text_ServiceName));
+                _loggerFactory.AddProvider(new EventLogLoggerProvider(LogLevel.Warning, Resources.Text_ServiceName));
             }
             
             _logger = _loggerFactory.CreateLogger<Program>();
