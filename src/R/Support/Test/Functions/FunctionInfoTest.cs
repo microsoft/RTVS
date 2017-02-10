@@ -60,12 +60,12 @@ namespace Microsoft.R.Support.Test.Functions {
             functionInfo.Should().NotBeNull();
             functionInfo.Name.Should().Be("eval");
             functionInfo.Description.Should().NotBeEmpty();
-            functionInfo.Signatures.Should().ContainSingle().Which.Arguments.Should().HaveCount(4);
+            functionInfo.Signatures.Should().ContainSingle().Which.Arguments.Should().HaveCount(3);
 
             List<int> locusPoints = new List<int>();
             string signature = functionInfo.Signatures[0].GetSignatureString("eval", locusPoints);
-            signature.Should().Be("eval(expr, envir = parent.frame(), enclos = if(is.list(envir) || is.pairlist(envir)) parent.frame() else baseenv(), n)");
-            locusPoints.Should().Equal(5, 11, 35, 116, 117);
+            signature.Should().Be("eval(expr, envir = parent.frame(), enclos = if(is.list(envir) || is.pairlist(envir)) parent.frame() else baseenv())");
+            locusPoints.Should().Equal(5, 11, 35, 114);
         }
     }
 }

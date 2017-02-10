@@ -85,7 +85,10 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
                 await eval.ResetAsync(initialize: false);
                 window.FlushOutput();
                 text = window.OutputBuffer.CurrentSnapshot.GetText();
-                text.Should().StartWith(Environment.NewLine + Microsoft.R.Components.Resources.MicrosoftRHostStopping + Environment.NewLine + Environment.NewLine + Microsoft.R.Components.Resources.MicrosoftRHostStopped);
+                text.Should()
+                    .StartWith(Resources.rtvs_AutosavingWorkspace.Substring(0, 8))
+                    .And.Contain(Resources.MicrosoftRHostStopping)
+                    .And.Contain(Resources.MicrosoftRHostStopped);
             }
         }
 

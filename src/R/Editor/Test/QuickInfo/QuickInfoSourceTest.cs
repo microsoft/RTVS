@@ -49,7 +49,7 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
 
             session.ApplicableSpan.Should().NotBeNull();
             session.QuickInfoContent.Should().ContainSingle()
-                .Which.ToString().Should().StartWith("as.matrix(x, ..., data, nrow, ncol, byrow, dimnames, rownames.force)");
+                .Which.ToString().Should().StartWith("as.matrix(x, ...)");
         }
 
         [Test]

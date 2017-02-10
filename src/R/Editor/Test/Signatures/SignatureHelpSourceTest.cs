@@ -37,9 +37,9 @@ namespace Microsoft.R.Editor.Test.Signatures {
             await signatureHelpSource.AugmentSignatureHelpSessionAsync(signatureHelpSession, signatures, ast);
 
             signatures.Should().ContainSingle();
-            signatures[0].Parameters.Should().HaveCount(8);
+            signatures[0].Parameters.Should().HaveCount(2);
             signatures[0].CurrentParameter.Name.Should().Be("x");
-            signatures[0].Content.Should().Be("as.matrix(x, ..., data, nrow, ncol, byrow, dimnames, rownames.force)");
+            signatures[0].Content.Should().Be("as.matrix(x, ...)");
             signatures[0].Documentation.Should().NotBeEmpty();
         }
 

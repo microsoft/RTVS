@@ -243,13 +243,13 @@ namespace Microsoft.Languages.Editor.Extensions {
         /// buffer maps location up the buffer graph from the buffer of the specified
         /// content type to the view buffer.
         /// </summary>
-        public static SnapshotSpan? MapUp(this ITextBuffer viewBuffer, Span sourceSpan, string contentTypeName) {
+        public static SnapshotSpan? MapUp(this ITextBuffer viewBuffer, SnapshotSpan sourceSpan, string contentTypeName) {
             if (viewBuffer.ContentType.TypeName.EqualsOrdinal(contentTypeName)) {
                 return new SnapshotSpan(viewBuffer.CurrentSnapshot, sourceSpan);
             } else {
                 var bg = viewBuffer.GetBufferGraph();
                 var sourceBuffer = (viewBuffer as IProjectionBuffer)?.SourceBuffers.FirstOrDefault(x => x.ContentType.TypeName.EqualsOrdinal(contentTypeName));
-                var spans = bg?.MapUpToBuffer(new SnapshotSpan(sourceBuffer.CurrentSnapshot, sourceSpan), SpanTrackingMode.EdgePositive, viewBuffer);
+                var spans = bg?.MapUpToBuffer(sourceSpan, SpanTrackingMode.EdgePositive, viewBuffer);
                 return spans?.FirstOrDefault();
             }
         }

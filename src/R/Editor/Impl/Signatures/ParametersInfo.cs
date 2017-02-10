@@ -35,19 +35,25 @@ namespace Microsoft.R.Editor.Signatures {
         public string FunctionName { get; private set; }
 
         /// <summary>
+        /// Package name
+        /// </summary>
+        public string PackageName { get; private set; }
+
+        /// <summary>
         /// Function signature end in the current text snapshot
         /// </summary>
         public int SignatureEnd {
             get { return FunctionCall.SignatureEnd; }
         }
 
-        public ParameterInfo(string functionName, FunctionCall functionCall, int parameterIndex, string parameterName, bool namedParameter) {
+        public ParameterInfo(string packageName, string functionName, FunctionCall functionCall, int parameterIndex, string parameterName, bool namedParameter) {
             if (functionName == null)
                 throw new ArgumentNullException(nameof(functionName));
 
             if (functionCall == null)
                 throw new ArgumentNullException(nameof(functionCall));
 
+            PackageName = packageName;
             FunctionName = functionName;
             FunctionCall = functionCall;
             ParameterIndex = parameterIndex;

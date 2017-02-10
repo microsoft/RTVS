@@ -31,7 +31,8 @@ namespace Microsoft.R.Editor.Navigation.Text {
             if (point.HasValue) {
                 Span? span = RTextStructure.GetWordSpan(point.Value.Snapshot, point.Value.Position);
                 if (span.HasValue && span.Value.Length > 0) {
-                    var viewSpan = _textBuffer.MapUp(span.Value, RContentTypeDefinition.ContentType);
+                    var snapshotSpan = new SnapshotSpan(point.Value.Snapshot, span.Value);
+                    var viewSpan = _textBuffer.MapUp(snapshotSpan, RContentTypeDefinition.ContentType);
                     if (viewSpan.HasValue) {
                         return new TextExtent(viewSpan.Value, isSignificant: true);
                     }

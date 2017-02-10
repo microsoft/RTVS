@@ -153,9 +153,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         }
 
         private void HandleCancel(RCompletionController controller) {
-            Workflow.Operations.CancelAsync().DoNotWait();
-            // Post interrupt command which knows if it can interrupt R or not
-            VsAppShell.Current.PostCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdInterruptR);
+            if (!controller.HasActiveCompletionSession && !controller.HasActiveSignatureSession(TextView)) {
+                Workflow.Operations.CancelAsync().DoNotWait();
+                // Post interrupt command which knows if it can interrupt R or not
+                VsAppShell.Current.PostCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdInterruptR);
+            }
         }
 
         private void HandleF1Help(RCompletionController controller) {
