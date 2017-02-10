@@ -35,7 +35,7 @@ namespace Microsoft.R.Editor.Signatures {
         public string FunctionName { get; private set; }
 
         /// <summary>
-        /// Function name
+        /// Package name
         /// </summary>
         public string PackageName { get; private set; }
 
