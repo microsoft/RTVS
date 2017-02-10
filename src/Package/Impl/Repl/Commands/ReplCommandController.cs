@@ -83,7 +83,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                     if (id == (int)VSConstants.VSStd2KCmdID.RETURN) {
                         return HandleEnter(controller);
                     } else if (id == (int)VSConstants.VSStd2KCmdID.CANCEL) {
-                        HandleCancel(controller, TextView);
+                        HandleCancel(controller);
                         // Allow VS to continue processing cancel
                     }
                 }
@@ -152,8 +152,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             }
         }
 
-        private void HandleCancel(RCompletionController controller, ITextView textView) {
-            if (!controller.HasActiveCompletionSession && !controller.HasActiveSignatureSession(textView)) {
+        private void HandleCancel(RCompletionController controller) {
+            if (!controller.HasActiveCompletionSession && !controller.HasActiveSignatureSession(TextView)) {
                 Workflow.Operations.CancelAsync().DoNotWait();
                 // Post interrupt command which knows if it can interrupt R or not
                 VsAppShell.Current.PostCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdInterruptR);
