@@ -26,10 +26,9 @@ namespace Microsoft.VisualStudio.R.Package.Wpf {
                     if (obj is Color) {
                         color = (Color)obj;
                     }
-                } else {
-                    Debug.Fail("SetImageBackgroundColor: Unknown resource key type");
                 }
 
+                Debug.Assert(color.HasValue, "SetImageBackgroundColor: Unknown resource key type or color not found");
                 if (color.HasValue) {
                     ImageThemingUtilities.SetImageBackgroundColor(o, color.Value);
                 }
