@@ -23,12 +23,12 @@ namespace Microsoft.Common.Core.Security {
             _coreShell = coreShell;
         }
 
-        public Task<Credentials> GetUserCredentialsAsync(string authority, string workspaceName, CancellationToken cancellationToken = default(CancellationToken)) {
+        public Credentials GetUserCredentials(string authority, string workspaceName, CancellationToken cancellationToken = default(CancellationToken)) {
             _coreShell.AssertIsOnMainThread();
 
             var credentials = SecurityUtilities.ReadCredentials(authority);
             if (credentials != null) {
-                return Task.FromResult(credentials);
+                return credentials;
             }
 
             var credui = new CREDUI_INFO {
@@ -66,7 +66,7 @@ namespace Microsoft.Common.Core.Security {
                     throw new Win32Exception(Marshal.GetLastWin32Error());
                 }
 
-                return Task.FromResult(Credentials.CreateCredentails(userNameBuilder.ToString(), SecurityUtilities.SecureStringFromNativeBuffer(passwordStorage), save));
+                return Credentials.CreateCredentails(userNameBuilder.ToString(), SecurityUtilities.SecureStringFromNativeBuffer(passwordStorage), save);
             } finally {
                 if (inCredBuffer != IntPtr.Zero) {
                     Marshal.FreeCoTaskMem(inCredBuffer);
