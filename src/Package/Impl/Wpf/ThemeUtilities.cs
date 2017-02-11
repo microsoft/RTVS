@@ -14,12 +14,27 @@ namespace Microsoft.VisualStudio.R.Package.Wpf {
     [Export(typeof(IThemeUtilities))]
     class ThemeUtilities : IThemeUtilities {
         public void SetImageBackgroundColor(DependencyObject o, object themeKey) {
-            if(!VsAppShell.Current.IsUnitTestEnvironment) {
-                Debug.Assert(themeKey is ThemeResourceKey);
-                var color = VSColorTheme.GetThemedColor(themeKey as ThemeResourceKey);
-                ImageThemingUtilities.SetImageBackgroundColor(o, Color.FromArgb(color.A, color.R, color.G, color.B));
+            if (!VsAppShell.Current.IsUnitTestEnvironment) {
+                Color? color = null;
+                if (themeKey is ThemeResourceKey) {
+                    // VS theme colors
+                    var themeColor = VSColorTheme.GetThemedColor(themeKey as ThemeResourceKey);
+                    color = Color.FromArgb(themeColor.A, themeColor.R, themeColor.G, themeColor.B);
+                } else if (themeKey is ResourceKey) {
+                    // High contrast or system colors
+                    var obj = (o as FrameworkElement)?.TryFindResource(themeKey as ResourceKey);
+                    if (obj is Color) {
+                        color = (Color)obj;
+                    }
+                }
+
+                Debug.Assert(color.HasValue, "SetImageBackgroundColor: Unknown resource key type or color not found");
+                if (color.HasValue) {
+                    ImageThemingUtilities.SetImageBackgroundColor(o, color.Value);
+                }
             }
         }
+
         public void SetThemeScrollBars(DependencyObject o) {
             if (!VsAppShell.Current.IsUnitTestEnvironment) {
                 ImageThemingUtilities.SetThemeScrollBars(o, true);
