@@ -32,7 +32,7 @@ namespace Microsoft.R.StackTracing.Test {
 
         public async Task InitializeAsync() {
             await _sessionProvider.TrySwitchBrokerAsync(nameof(CallStackTest));
-            await _session.StartHostAsync(new RHostStartupInfo(), new RHostClientTestApp(), 50000);
+            await _session.StartHostAsync(new RHostStartupInfo(isInteractive: true), new RHostClientTestApp(), 50000);
         }
 
         public async Task DisposeAsync() {

@@ -42,7 +42,7 @@ namespace Microsoft.Common.Core.Test.Fixtures {
             try {
                 var logsFolder = Path.Combine(DeployFilesFixture.TestFilesRoot, "Logs");
                 Directory.CreateDirectory(logsFolder);
-                _log.SetLog(new Logger(testInput.FileSytemSafeName, logsFolder, _services.LoggingPermissions));
+                _log.SetLog(new Logger(testInput.FileSytemSafeName, logsFolder, new MaxLoggingPermissions()));
             } catch (Exception) {
                 return Task.FromResult(Task.FromResult(new RunSummary {Failed = 1}));
             }
@@ -57,7 +57,13 @@ namespace Microsoft.Common.Core.Test.Fixtures {
             return base.DisposeAsync(result, messageBus);
         }
 
-        public class LogProxy : IActionLog {
+        private class MaxLoggingPermissions : ILoggingPermissions {
+            public LogVerbosity CurrentVerbosity { get; set; } = LogVerbosity.Traffic;
+            public bool IsFeedbackPermitted => true;
+            public LogVerbosity MaxVerbosity => LogVerbosity.Traffic;
+        }
+
+        private class LogProxy : IActionLog {
             private IActionLog _log;
 
             public void SetLog(IActionLog log) {

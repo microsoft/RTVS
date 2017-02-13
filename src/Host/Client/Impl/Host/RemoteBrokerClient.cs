@@ -13,6 +13,7 @@ using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Net;
 using Microsoft.Common.Core.Services;
 using Microsoft.R.Host.Client.BrokerServices;
+using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Client.Host {
     internal sealed class RemoteBrokerClient : BrokerClient {
@@ -37,6 +38,18 @@ namespace Microsoft.R.Host.Client.Host {
 
             CreateHttpClient(connectionInfo.Uri);
             HttpClientHandler.ServerCertificateValidationCallback = ValidateCertificateHttpHandler;
+        }
+
+        public override async Task<RHost> ConnectAsync(HostConnectionInfo connectionInfo, CancellationToken cancellationToken = new CancellationToken()) {
+            var host = await base.ConnectAsync(connectionInfo, cancellationToken);
+
+            var aboutHost = await GetHostInformationAsync<AboutHost>(cancellationToken);
+            var brokerIncompatibleMessage = aboutHost?.IsHostVersionCompatible();
+            if (brokerIncompatibleMessage != null) {
+                throw new RHostDisconnectedException(brokerIncompatibleMessage);
+            }
+
+            return host;
         }
 
         public override Task<string> HandleUrlAsync(string url, CancellationToken cancellationToken) =>
