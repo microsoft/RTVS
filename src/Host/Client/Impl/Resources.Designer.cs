@@ -207,6 +207,15 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Remote R requested to open {0}, but only http:// URIs are supported for remote..
+        /// </summary>
+        internal static string Error_RemoteUriNotSupported {
+            get {
+                return ResourceManager.GetString("Error_RemoteUriNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Version of R Services on the remote machine ({0})
         ///is higher than the version of R Tools on the local computer ({1}). 
         ///Please upgrade local R Tools installation to match..

@@ -689,7 +689,9 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
             var callback = _callback;
             if (callback != null) {
                 var newUrl = await BrokerClient.HandleUrlAsync(url, cancellationToken);
-                await callback.ShowHelpAsync(newUrl, cancellationToken);
+                if (newUrl != null) {
+                    await callback.ShowHelpAsync(newUrl, cancellationToken);
+                }
             }
         }
 
