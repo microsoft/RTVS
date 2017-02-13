@@ -57,7 +57,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
 
         private async Task<T> RepeatUntilAuthenticatedAsync<T>(Func<CancellationToken, Task<T>> action, CancellationToken cancellationToken) {
             while (true) {
-                await _credentialsDecorator.LockCredentialsAsync(cancellationToken);
+                await _credentialsDecorator.GetCredentialsFromUserAsync(cancellationToken);
                 try {
                     return await action(cancellationToken);
                 } catch (UnauthorizedAccessException) {

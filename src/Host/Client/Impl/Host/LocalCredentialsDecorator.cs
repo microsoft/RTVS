@@ -14,7 +14,7 @@ namespace Microsoft.R.Host.Client.Host {
 
         public string Password => LocalCredentials.Password;
 
-        public Task LockCredentialsAsync(CancellationToken cancellationToken = default(CancellationToken)) => Task.CompletedTask;
+        public Task GetCredentialsFromUserAsync(CancellationToken cancellationToken = default(CancellationToken)) => Task.CompletedTask;
 
         public void InvalidateCredentials() {
             // Local broker authentication should never fail - if it does, it's a bug, and we want to surface it right away.

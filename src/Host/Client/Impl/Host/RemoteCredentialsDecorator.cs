@@ -32,7 +32,7 @@ namespace Microsoft.R.Host.Client.Host {
             }
         }
 
-        public async Task LockCredentialsAsync(CancellationToken cancellationToken = default(CancellationToken)) {
+        public async Task GetCredentialsFromUserAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             // If there is already a LockCredentialsAsync request for which there hasn't been a validation yet, wait until it completes.
             // This can happen when two sessions are being created concurrently, and we don't want to pop the credential prompt twice -
             // the first prompt should be validated and saved, and then the same credentials will be reused for the second session.

@@ -189,7 +189,7 @@ namespace Microsoft.R.Host.Client.Host {
                 while (true) {
                     var request = wsClient.CreateRequest(pipeUri);
 
-                    await _credentials.LockCredentialsAsync(cancellationToken);
+                    await _credentials.GetCredentialsFromUserAsync(cancellationToken);
                     try {
                         request.AuthenticationLevel = AuthenticationLevel.MutualAuthRequested;
                         request.Credentials = HttpClientHandler.Credentials;
