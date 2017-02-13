@@ -131,7 +131,7 @@ namespace Microsoft.R.Host.Client.Host {
                     }
                 }
 
-                await CreateBrokerSessionAsync(uniqueSessionName, connectionInfo.UseRHostCommandLineArguments, cancellationToken);
+                await CreateBrokerSessionAsync(uniqueSessionName, connectionInfo.UseRHostCommandLineArguments, connectionInfo.IsInteractive, cancellationToken);
                 var webSocket = await ConnectToBrokerAsync(uniqueSessionName, cancellationToken);
                 return CreateRHost(uniqueSessionName, connectionInfo.Callbacks, webSocket);
             } catch (HttpRequestException ex) {
@@ -153,7 +153,7 @@ namespace Microsoft.R.Host.Client.Host {
             return sessions.Any(s => s.Id == name);
         }
 
-        private async Task CreateBrokerSessionAsync(string name, bool useRCommandLineArguments, CancellationToken cancellationToken) {
+        private async Task CreateBrokerSessionAsync(string name, bool useRCommandLineArguments, bool isInteractive, CancellationToken cancellationToken) {
             var rCommandLineArguments = useRCommandLineArguments && _rCommandLineArguments != null ? _rCommandLineArguments : null;
             var sessions = new SessionsWebService(HttpClient, _credentials, Log);
             using (Log.Measure(LogVerbosity.Normal, Invariant($"Create broker session \"{name}\""))) {
@@ -161,6 +161,7 @@ namespace Microsoft.R.Host.Client.Host {
                     await sessions.PutAsync(name, new SessionCreateRequest {
                         InterpreterId = _interpreterId,
                         CommandLineArguments = rCommandLineArguments,
+                        IsInteractive = isInteractive,
                     }, cancellationToken);
                 } catch (BrokerApiErrorException apiex) {
                     throw new RHostDisconnectedException(MessageFromBrokerApiException(apiex), apiex);

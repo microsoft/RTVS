@@ -10,6 +10,7 @@ using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Tasks;
 using Microsoft.Common.Core.Telemetry;
+using Microsoft.Common.Core.Test.Stubs.Shell;
 using Microsoft.Common.Core.Test.Telemetry;
 using Microsoft.UnitTests.Core.Threading;
 using NSubstitute;
@@ -42,7 +43,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
             return new CoreServices(
                 telemetryService,
                 loggingPermissions,
-                new TestSecurityService(), 
+                new SecurityServiceStub(), 
                 new TestTaskService(),
                 UIThreadHelper.Instance,
                 log,

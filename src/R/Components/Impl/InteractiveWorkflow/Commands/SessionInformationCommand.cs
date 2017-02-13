@@ -120,21 +120,6 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
                 }
             }
 
-            var localVersion = Assembly.GetExecutingAssembly().GetName().Version;
-            if (localVersion.Major != 0 || localVersion.Minor != 0) { // Filter out debug builds
-                string message = null;
-                var serverVersion = new Version(aboutHost.Version.Major, aboutHost.Version.Minor);
-                var clientVersion = new Version(localVersion.Major, localVersion.Minor);
-                if (serverVersion > clientVersion) {
-                    message = Resources.Warning_RemoteVersionHigher.FormatInvariant(aboutHost.Version, localVersion);
-                } else if (serverVersion < clientVersion) {
-                    message = Resources.Warning_RemoteVersionLower.FormatInvariant(aboutHost.Version, localVersion);
-                }
-                if (!string.IsNullOrEmpty(message)) {
-                    sb.AppendLine(Environment.NewLine + message + Environment.NewLine);
-                }
-            }
-
             _console.WriteError(sb.ToString());
             if (reportTelemetry) {
                 var services = _interactiveWorkflow.Shell.Services;

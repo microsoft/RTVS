@@ -618,16 +618,6 @@ You can click "Reset" to re-create your user profile and start a new session.</v
     <value>If you want to select specific R version, specify its id 
 number in the connection URL in the form 'https://remote:5444#2'</value>
   </data>
-  <data name="Warning_RemoteVersionHigher" xml:space="preserve">
-    <value>WARNING: Version of R Services on the remote machine ({0})
-is higher than the version of R Tools on the local computer ({1}). 
-Please upgrade local R Tools installation to match.</value>
-  </data>
-  <data name="Warning_RemoteVersionLower" xml:space="preserve">
-    <value>WARNING: Version of R Services on the remote machine ({0})
-is lower than the version of R Tools on the local computer ({1}). 
-Please upgrade remote R Services installation to match.</value>
-  </data>
   <data name="BrokerDisconnected" xml:space="preserve">
     <value>Connection to the workspace has been terminated.</value>
   </data>

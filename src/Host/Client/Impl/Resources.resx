@@ -238,4 +238,14 @@ Please reinstall Data Science workload or repair the Visual Studio installation.
     <value>HTTP server for remote stopped with following exception:
 {0}</value>
   </data>
+  <data name="Error_RemoteVersionHigher" xml:space="preserve">
+    <value>Version of R Services on the remote machine ({0})
+is higher than the version of R Tools on the local computer ({1}). 
+Please upgrade local R Tools installation to match.</value>
+  </data>
+  <data name="Error_RemoteVersionLower" xml:space="preserve">
+    <value>Version of R Services on the remote machine ({0})
+is lower than the version of R Tools on the local computer ({1}). 
+Please upgrade remote R Services installation to match.</value>
+  </data>
 </root>

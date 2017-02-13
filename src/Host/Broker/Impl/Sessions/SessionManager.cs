@@ -111,7 +111,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
             }
         }
 
-        public Session CreateSession(IIdentity user, string id, Interpreter interpreter, string profilePath, string commandLineArguments) {
+        public Session CreateSession(IIdentity user, string id, Interpreter interpreter, string profilePath, string commandLineArguments, bool isInteractive) {
             Session session;
 
             lock (_sessions) {
@@ -129,7 +129,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
                 }
 
                 var userSessions = GetOrCreateSessionList(user);
-                session = new Session(this, user, id, interpreter, commandLineArguments, _sessionLogger, _messageLogger);
+                session = new Session(this, user, id, interpreter, commandLineArguments, isInteractive, _sessionLogger, _messageLogger);
                 session.StateChanged += Session_StateChanged;
 
                 userSessions.Add(session);

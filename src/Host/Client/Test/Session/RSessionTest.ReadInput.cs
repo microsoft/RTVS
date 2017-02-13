@@ -32,7 +32,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
             }
 
             public async Task InitializeAsync() {
-                await _session.StartHostAsync(new RHostStartupInfo (), _callback, 50000);
+                await _session.StartHostAsync(new RHostStartupInfo (isInteractive:true), _callback, 50000);
 
                 _taskObserver.ObserveTaskFailure(_session.RHost.GetRHostRunTask());
             }

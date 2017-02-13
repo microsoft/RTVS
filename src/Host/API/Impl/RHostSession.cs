@@ -143,7 +143,7 @@ namespace Microsoft.R.Host.Client {
         public Task StartHostAsync(IRHostSessionCallback callback, string workingDirectory = null, int codePage = 0, int timeout = 3000, CancellationToken cancellationToken = default(CancellationToken)) {
             _userSessionCallback = callback;
             _rSessionCallback = new RSessionCallback(_userSessionCallback);
-            var startupInfo = new RHostStartupInfo(null, workingDirectory, codePage);
+            var startupInfo = new RHostStartupInfo(null, workingDirectory, codePage, isInteractive:true);
             return _session.StartHostAsync(startupInfo, _rSessionCallback, timeout, cancellationToken);
         }
 

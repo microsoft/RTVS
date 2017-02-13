@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Security;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Test.Stubs.Shell;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
@@ -127,9 +128,8 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
             };
 
             using (var workflow = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate()) {
-                var security = workflow.Shell.Services.Security;
-                security.GetUserCredentialsAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
-                    .ThrowsForAnyArgs(new RHostDisconnectedException());
+                var security = (SecurityServiceStub)workflow.Shell.Services.Security;
+                security.GetUserCredentialsAsyncHandler = delegate { throw new RHostDisconnectedException(); };
 
                 var connectionManager = workflow.Connections;
                 await connectionManager.ConnectAsync(unreachableConnection).Should().BeCompletedAsync();

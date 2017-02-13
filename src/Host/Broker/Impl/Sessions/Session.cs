@@ -23,6 +23,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
     public class Session {
         private const string RHostExe = "Microsoft.R.Host.exe";
 
+        private readonly bool _isInteractive;
         private readonly ILogger _sessionLogger;
         private Win32Process _process;
         private MessagePipe _pipe;
@@ -65,12 +66,13 @@ namespace Microsoft.R.Host.Broker.Sessions {
             State = State,
         };
 
-        internal Session(SessionManager manager, IIdentity user, string id, Interpreter interpreter, string commandLineArguments, ILogger sessionLogger, ILogger messageLogger) {
+        internal Session(SessionManager manager, IIdentity user, string id, Interpreter interpreter, string commandLineArguments, bool isInteractive, ILogger sessionLogger, ILogger messageLogger) {
             Manager = manager;
             Interpreter = interpreter;
             User = user;
             Id = id;
             CommandLineArguments = commandLineArguments;
+            _isInteractive = isInteractive;
             _sessionLogger = sessionLogger;
 
             _pipe = new MessagePipe(messageLogger);
@@ -84,7 +86,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
             var useridentity = User as WindowsIdentity;
             // In remote broker User Identity type is always WindowsIdentity
             string suppressUI = (useridentity == null) ? string.Empty : "--rhost-suppress-ui ";
-            string isRepl = Id.StartsWithIgnoreCase("REPL") ? "--rhost-interactive " : string.Empty;
+            string isRepl = _isInteractive ? "--rhost-interactive " : string.Empty;
             string brokerPath = Path.GetDirectoryName(typeof(Program).Assembly.GetAssemblyPath());
             string rhostExePath = Path.Combine(brokerPath, RHostExe);
             string logFolderParam = string.IsNullOrEmpty(logFolder) ? string.Empty : Invariant($"--rhost-log-dir \"{logFolder}\"");

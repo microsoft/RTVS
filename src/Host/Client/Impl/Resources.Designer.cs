@@ -207,6 +207,28 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Version of R Services on the remote machine ({0})
+        ///is higher than the version of R Tools on the local computer ({1}). 
+        ///Please upgrade local R Tools installation to match..
+        /// </summary>
+        internal static string Error_RemoteVersionHigher {
+            get {
+                return ResourceManager.GetString("Error_RemoteVersionHigher", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Version of R Services on the remote machine ({0})
+        ///is lower than the version of R Tools on the local computer ({1}). 
+        ///Please upgrade remote R Services installation to match..
+        /// </summary>
+        internal static string Error_RemoteVersionLower {
+            get {
+                return ResourceManager.GetString("Error_RemoteVersionLower", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to create HTTP server for remote {0}..
         /// </summary>
         internal static string Error_RemoteWebServerCreationFailed {

@@ -82,7 +82,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         private async Task<ExecutionResult> InitializeAsync(bool isResetting) {
             try {
                 if (!Session.IsHostRunning) {
-                    var startupInfo = new RHostStartupInfo(_settings.CranMirror, _settings.WorkingDirectory, _settings.RCodePage, _terminalWidth, !isResetting, true);
+                    var startupInfo = new RHostStartupInfo(_settings.CranMirror, _settings.WorkingDirectory, _settings.RCodePage, _terminalWidth, !isResetting, true, true);
                     await Session.EnsureHostStartedAsync(startupInfo, new RSessionCallback(CurrentWindow, Session, _settings, _coreShell, new FileSystem()));
                 }
                 return ExecutionResult.Success;
