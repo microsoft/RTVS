@@ -9,8 +9,6 @@ using System.Security.Cryptography.X509Certificates;
 using System.Security.Principal;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
 using static Microsoft.Common.Core.NativeMethods;
@@ -26,7 +24,7 @@ namespace Microsoft.Common.Core.Security {
         public Credentials GetUserCredentials(string authority, string workspaceName, CancellationToken cancellationToken = default(CancellationToken)) {
             _coreShell.AssertIsOnMainThread();
 
-            var credentials = SecurityUtilities.ReadCredentials(authority);
+            var credentials = Credentials.ReadSavedCredentials(authority);
             if (credentials != null) {
                 return credentials;
             }
@@ -66,7 +64,7 @@ namespace Microsoft.Common.Core.Security {
                     throw new Win32Exception(Marshal.GetLastWin32Error());
                 }
 
-                return Credentials.CreateCredentails(userNameBuilder.ToString(), SecurityUtilities.SecureStringFromNativeBuffer(passwordStorage), save);
+                return Credentials.CreateCredentials(userNameBuilder.ToString(), SecurityUtilities.SecureStringFromNativeBuffer(passwordStorage), save);
             } finally {
                 if (inCredBuffer != IntPtr.Zero) {
                     Marshal.FreeCoTaskMem(inCredBuffer);

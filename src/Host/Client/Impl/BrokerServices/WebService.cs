@@ -57,14 +57,13 @@ namespace Microsoft.R.Host.Client.BrokerServices {
 
         private async Task<T> RepeatUntilAuthenticatedAsync<T>(Func<CancellationToken, Task<T>> action, CancellationToken cancellationToken) {
             while (true) {
-                using (await _credentialsDecorator.LockCredentialsAsync(cancellationToken)) {
-                    try {
-                        return await action(cancellationToken);
-                    } catch (UnauthorizedAccessException) {
-                        _credentialsDecorator.InvalidateCredentials();
-                    } catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested) {
-                        throw new HttpRequestException(Resources.Error_OperationTimedOut);
-                    }
+                await _credentialsDecorator.LockCredentialsAsync(cancellationToken);
+                try {
+                    return await action(cancellationToken);
+                } catch (UnauthorizedAccessException) {
+                    _credentialsDecorator.InvalidateCredentials();
+                } catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested) {
+                    throw new HttpRequestException(Resources.Error_OperationTimedOut);
                 }
             }
         }

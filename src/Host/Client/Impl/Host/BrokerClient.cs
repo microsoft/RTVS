@@ -189,16 +189,15 @@ namespace Microsoft.R.Host.Client.Host {
                 while (true) {
                     var request = wsClient.CreateRequest(pipeUri);
 
-                    using (await _credentials.LockCredentialsAsync(cancellationToken)) {
-                        try {
-                            request.AuthenticationLevel = AuthenticationLevel.MutualAuthRequested;
-                            request.Credentials = HttpClientHandler.Credentials;
-                            return await wsClient.ConnectAsync(request, cancellationToken);
-                        } catch (UnauthorizedAccessException) {
-                            _credentials.InvalidateCredentials();
-                        } catch (Exception ex) when (ex is InvalidOperationException) {
-                            throw new RHostDisconnectedException(Resources.HttpErrorCreatingSession.FormatInvariant(Name, ex.Message), ex);
-                        }
+                    await _credentials.LockCredentialsAsync(cancellationToken);
+                    try {
+                        request.AuthenticationLevel = AuthenticationLevel.MutualAuthRequested;
+                        request.Credentials = HttpClientHandler.Credentials;
+                        return await wsClient.ConnectAsync(request, cancellationToken);
+                    } catch (UnauthorizedAccessException) {
+                        _credentials.InvalidateCredentials();
+                    } catch (Exception ex) when (ex is InvalidOperationException) {
+                        throw new RHostDisconnectedException(Resources.HttpErrorCreatingSession.FormatInvariant(Name, ex.Message), ex);
                     }
                 }
             }

@@ -4,10 +4,8 @@
 using System;
 using System.Diagnostics;
 using System.Net;
-using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Common.Core.Disposables;
 using Microsoft.R.Host.Client.BrokerServices;
 
 namespace Microsoft.R.Host.Client.Host {
@@ -16,7 +14,7 @@ namespace Microsoft.R.Host.Client.Host {
 
         public string Password => LocalCredentials.Password;
 
-        public Task<IDisposable> LockCredentialsAsync(CancellationToken cancellationToken = default(CancellationToken)) => Disposable.EmptyTask;
+        public Task LockCredentialsAsync(CancellationToken cancellationToken = default(CancellationToken)) => Task.CompletedTask;
 
         public void InvalidateCredentials() {
             // Local broker authentication should never fail - if it does, it's a bug, and we want to surface it right away.
