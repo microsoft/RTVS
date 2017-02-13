@@ -94,7 +94,7 @@ namespace Microsoft.Common.Core.Security {
                     creds.Type = CRED_TYPE.GENERIC;
                     creds.UserName = credentials.UserName;
                     creds.CredentialBlob = Marshal.SecureStringToCoTaskMemUnicode(credentials.Password);
-                    creds.CredentialBlobSize = (uint)(credentials.Password.Length * sizeof(ushort));
+                    creds.CredentialBlobSize = (uint)((credentials.Password.Length + 1) * sizeof(char)); // unicode password + unicode null
                     if (!CredWrite(ref creds, 0)) {
                         var error = Marshal.GetLastWin32Error();
                         throw new Win32Exception(error, Resources.Error_CredWriteFailed);
