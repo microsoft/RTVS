@@ -52,8 +52,14 @@ namespace Microsoft.R.Host.Client.Host {
             return host;
         }
 
-        public override Task<string> HandleUrlAsync(string url, CancellationToken cancellationToken) =>
-            WebServer.CreateWebServerAsync(url, HttpClient.BaseAddress.ToString(), Name, _services, _console, cancellationToken);
+        public override async Task<string> HandleUrlAsync(string url, CancellationToken cancellationToken) {
+            if (!url.StartsWithIgnoreCase("http://")) {
+                _console.WriteError(string.Format(Resources.Error_RemoteUriNotSupported, url));
+                return null;
+            }
+
+            return await WebServer.CreateWebServerAsync(url, HttpClient.BaseAddress.ToString(), Name, _services, _console, cancellationToken);
+        }
 
         protected override async Task<Exception> HandleHttpRequestExceptionAsync(HttpRequestException exception) {
             // Broker is not responding. Try regular ping.

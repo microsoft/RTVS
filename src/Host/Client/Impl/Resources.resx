@@ -248,4 +248,7 @@ Please upgrade local R Tools installation to match.</value>
 is lower than the version of R Tools on the local computer ({1}). 
 Please upgrade remote R Services installation to match.</value>
   </data>
+  <data name="Error_RemoteUriNotSupported" xml:space="preserve">
+    <value>Remote R requested to open {0}, but only http:// URIs are supported for remote.</value>
+  </data>
 </root>
