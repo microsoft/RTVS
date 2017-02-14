@@ -16,10 +16,10 @@ namespace Microsoft.R.Host.Client.BrokerServices {
         /// Retrieval of credentials was canceled by the user (for example, by clicking the "Cancel" button in the dialog).
         /// Usually, this indicates that the operation that asked for credentials should be canceled as well.
         /// </exception>
-        Task GetCredentialsFromUserAsync(CancellationToken cancellationToken = default(CancellationToken));
+        Task<IDisposable> LockCredentialsAsync(CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
-        /// Called after the request that used credentials updated by an earlier call to <see cref="GetCredentialsFromUserAsync"/> completes.
+        /// Called after the request that used credentials updated by an earlier call to <see cref="LockCredentialsAsync"/> completes.
         /// </summary>
         void InvalidateCredentials();
     }

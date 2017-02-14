@@ -24,16 +24,17 @@ namespace Microsoft.Common.Core.Security {
         public Credentials GetUserCredentials(string authority, string workspaceName, CancellationToken cancellationToken = default(CancellationToken)) {
             _coreShell.AssertIsOnMainThread();
 
-            var credentials = Credentials.ReadSavedCredentials(authority);
-            if (credentials != null) {
-                return credentials;
-            }
+            var credentials = Credentials.ReadSavedCredentials(authority) ?? GetUserCredentials(workspaceName, cancellationToken);
+            return credentials;
+        }
 
+        private Credentials GetUserCredentials(string workspaceName, CancellationToken cancellationToken) {
             var credui = new CREDUI_INFO {
                 cbSize = Marshal.SizeOf(typeof(CREDUI_INFO)),
                 hwndParent = _coreShell.AppConstants.ApplicationWindowHandle,
                 pszCaptionText = Resources.Info_ConnectingTo.FormatInvariant(workspaceName)
             };
+
             uint authPkg = 0;
             IntPtr credStorage = IntPtr.Zero;
             uint credSize;
