@@ -16,12 +16,11 @@ namespace Microsoft.R.Host.Client.Host {
     internal class RemoteCredentialsDecorator : ICredentialsDecorator {
         private readonly ISecurityService _securityService;
         private readonly IMainThread _mainThread;
-        private Credentials _credentials;
+        private volatile Credentials _credentials;
         private readonly string _authority;
         private readonly AsyncReaderWriterLock _lock;
         private bool _credentialsAreValid;
         private readonly string _workspaceName;
-        private object _credentialsLock;
 
         public RemoteCredentialsDecorator(string credentialAuthority, string workspaceName, ISecurityService securityService, IMainThread mainThread) {
             _securityService = securityService;
@@ -30,13 +29,11 @@ namespace Microsoft.R.Host.Client.Host {
             _lock = new AsyncReaderWriterLock();
             _credentialsAreValid = true;
             _workspaceName = workspaceName;
-            _credentialsLock = new object();
         }
 
         public NetworkCredential GetCredential(Uri uri, string authType) {
-            lock (_credentialsLock) {
-                return new NetworkCredential(_credentials?.UserName, _credentials?.Password);
-            }
+            var credentials = _credentials;
+            return credentials != null ? new NetworkCredential(credentials.UserName, credentials.Password) : new NetworkCredential();
         }
 
         public async Task<IDisposable> LockCredentialsAsync(CancellationToken cancellationToken = default(CancellationToken)) {
@@ -47,17 +44,15 @@ namespace Microsoft.R.Host.Client.Host {
 
             await _mainThread.SwitchToAsync(cancellationToken);
 
-            lock (_credentialsLock) {
-                try {
-                    _credentials = _securityService.GetUserCredentials(_authority, _workspaceName, cancellationToken);
-                } catch (Exception) {
-                    token.Dispose();
-                    throw;
-                }
-
-                Volatile.Write(ref _credentialsAreValid, true);
-                SecurityUtilities.WriteCredentials(_authority, _credentials);
+            try {
+                _credentials = _securityService.GetUserCredentials(_authority, _workspaceName, cancellationToken);
+            } catch (Exception) {
+                token.Dispose();
+                throw;
             }
+
+            Volatile.Write(ref _credentialsAreValid, true);
+            SecurityUtilities.WriteCredentials(_authority, _credentials);
 
             return Disposable.Create(() => {
                 token.Dispose();
@@ -65,10 +60,8 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         public void InvalidateCredentials() {
-            lock (_credentialsLock) {
-                Volatile.Write(ref _credentialsAreValid, false);
-                SecurityUtilities.DeleteCredentials(_authority);
-            }
+            Volatile.Write(ref _credentialsAreValid, false);
+            SecurityUtilities.DeleteCredentials(_authority);
         }
     }
 }
