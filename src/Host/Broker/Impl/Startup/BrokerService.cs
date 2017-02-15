@@ -4,18 +4,20 @@
 using System.ServiceProcess;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 using Microsoft.R.Host.Broker.Startup;
 
 namespace Microsoft.R.Host.Broker {
     partial class BrokerService : ServiceBase {
-        public BrokerService() {
+        private readonly IConfigurationRoot _configuration;
+        public BrokerService(IConfigurationRoot configuration) {
+            _configuration = configuration;
             InitializeComponent();
         }
 
         protected override void OnStart(string[] args) {
             Task.Run(() => {
-                CommonStartup.CreateAndRunWebHostForService();
+                CommonStartup.CreateAndRunWebHostForService(_configuration);
                 Stop();
             }).DoNotWait();
         }

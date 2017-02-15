@@ -133,6 +133,15 @@ namespace Microsoft.R.Host.Broker {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Command Line or Config File error: {0}.
+        /// </summary>
+        internal static string Error_ConfigFailed {
+            get {
+                return ResourceManager.GetString("Error_ConfigFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Server port {0} is already in use..
         /// </summary>
         internal static string Error_ConfiguredPortNotAvailable {

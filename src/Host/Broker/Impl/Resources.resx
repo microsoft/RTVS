@@ -258,4 +258,7 @@
   <data name="Text_ServiceName" xml:space="preserve">
     <value>RRemoteService</value>
   </data>
+  <data name="Error_ConfigFailed" xml:space="preserve">
+    <value>Command Line or Config File error: {0}</value>
+  </data>
 </root>

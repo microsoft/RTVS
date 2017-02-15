@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,26 +38,6 @@ namespace Microsoft.R.Host.Broker.Startup {
 
         internal static void Start(IConfigurationRoot configuration, bool isService) {
             IsService = isService;
-            Configuration = configuration;
-            Configuration.GetSection("startup").Bind(_startupOptions);
-            Configuration.GetSection("security").Bind(_securityOptions);
-            Configuration.GetSection("logging").Bind(_loggingOptions);
-
-            _loggerFactory
-                .AddDebug()
-                .AddConsole(LogLevel.Trace)
-                .AddProvider(new FileLoggerProvider(_startupOptions.Name, _loggingOptions.LogFolder));
-
-            if (isService) {
-                _loggerFactory.AddProvider(new EventLogLoggerProvider(LogLevel.Warning, Resources.Text_ServiceName));
-            }
-            
-            _logger = _loggerFactory.CreateLogger<Program>();
-
-            if (_startupOptions.Name != null) {
-                _logger.LogInformation(Resources.Info_BrokerName, _startupOptions.Name);
-            }
-
             if (isService) {
                 StartService(configuration);
             } else {
@@ -64,15 +45,67 @@ namespace Microsoft.R.Host.Broker.Startup {
             }
         }
 
+        private static void ApplyCommonConfiguration(IConfigurationRoot configuration, EventLogLoggerProvider eventLogProvider = null) {
+            // This is needed because we are trying to read the config file. At this point we don't have the config info for the logger 
+            // we generally use in the broker. Log will be visible if the user runs broker interactively for broker running locally. Log 
+            // will be added to windows event log for the remote broker.
+            using (ILoggerFactory configLoggerFactory = new LoggerFactory()) {
+                configLoggerFactory
+                    .AddDebug()
+                    .AddConsole(LogLevel.Trace);
+
+                if (eventLogProvider != null) {
+                    configLoggerFactory.AddProvider(eventLogProvider);
+                }
+
+                ILogger logger = configLoggerFactory.CreateLogger<BrokerService>();
+                try {
+                    string configFile = configuration["config"];
+                    if (configFile != null) {
+                        var configBuilder = new ConfigurationBuilder().AddJsonFile(configFile, optional: false);
+                        configuration = configBuilder.Build();
+                    }
+
+                    Configuration = configuration;
+                    Configuration.GetSection("startup").Bind(_startupOptions);
+                    Configuration.GetSection("security").Bind(_securityOptions);
+                    Configuration.GetSection("logging").Bind(_loggingOptions);
+                } catch (Exception ex) when (!ex.IsCriticalException()) {
+                    logger.LogCritical(Resources.Error_ConfigFailed, ex.Message);
+                    Exit((int)BrokerExitCodes.BadConfigFile, Resources.Error_ConfigFailed, ex.Message);
+                }
+            }
+        }
+
+        private static ILogger GetLogger(ILoggerFactory loggerFactory, string name) {
+            var logger = loggerFactory.CreateLogger<Program>();
+
+            if (name != null) {
+                logger.LogInformation(Resources.Info_BrokerName, name);
+            }
+
+            return logger;
+        }
+
         private static void StartApp(IConfigurationRoot configuration) {
+            ApplyCommonConfiguration(configuration);
+
+            _loggerFactory
+                .AddDebug()
+                .AddConsole(LogLevel.Trace)
+                .AddProvider(new FileLoggerProvider(_startupOptions.Name, _loggingOptions.LogFolder));
+
+            _logger = GetLogger(_loggerFactory, _startupOptions.Name);
+
             var tlsConfig = new TlsConfiguration(_logger, _securityOptions);
             var httpsOptions = tlsConfig.GetHttpsOptions(Configuration);
 
             Uri uri = GetServerUri(Configuration);
             try {
-                CreateWebHost(httpsOptions).Run();
+                CreateWebHost(httpsOptions).Run(CancellationToken);
             } catch (AggregateException ex) when (ex.IsPortInUseException()) {
                 _logger.LogError(0, ex.InnerException, Resources.Error_ConfiguredPortNotAvailable, uri?.Port);
+                Exit((int)BrokerExitCodes.PortInUse, null);
             }
         }
 
@@ -92,10 +125,21 @@ namespace Microsoft.R.Host.Broker.Startup {
             // Uncomment line below to debug service
             // Debugger.Launch();
 #endif
-            ServiceBase.Run(new ServiceBase[] { new BrokerService() });
+            ServiceBase.Run(new ServiceBase[] { new BrokerService(configuration) });
         }
 
-        internal static void CreateAndRunWebHostForService() {
+        internal static void CreateAndRunWebHostForService(IConfigurationRoot configuration) {
+            ApplyCommonConfiguration(configuration, new EventLogLoggerProvider(LogLevel.Warning, Resources.Text_ServiceName));
+
+            _loggerFactory
+                .AddDebug()
+                .AddConsole(LogLevel.Trace)
+                .AddProvider(new FileLoggerProvider(_startupOptions.Name, _loggingOptions.LogFolder));
+
+            // Add service event logs in addition to file logs.
+            _loggerFactory.AddProvider(new EventLogLoggerProvider(LogLevel.Warning, Resources.Text_ServiceName));
+            _logger = GetLogger(_loggerFactory, _startupOptions.Name);
+
             var tlsConfig = new TlsConfiguration(_logger, _securityOptions);
             var httpsOptions = tlsConfig.GetHttpsOptions(Configuration);
 
@@ -104,6 +148,7 @@ namespace Microsoft.R.Host.Broker.Startup {
                 CreateWebHost(httpsOptions).Run(CancellationToken);
             } catch (AggregateException ex) when (ex.IsPortInUseException()) {
                 _logger.LogError(0, ex.InnerException, Resources.Error_ConfiguredPortNotAvailable, uri?.Port);
+                Exit((int)BrokerExitCodes.PortInUse, null);
             }
         }
 
@@ -163,7 +208,7 @@ namespace Microsoft.R.Host.Broker.Startup {
         }
 
         internal static void Exit() {
-            _cts.Cancel();
+            _cts?.Cancel();
 
             Task.Run(async () => {
                 if (IsService) {
@@ -172,16 +217,19 @@ namespace Microsoft.R.Host.Broker.Startup {
                     // Give cooperative cancellation 10 seconds to shut the process down gracefully,
                     // but if it didn't work, just terminate it.
                     await Task.Delay(10000);
-                    _logger.LogCritical(Resources.Critical_TimeOutShutdown);
+                    _logger?.LogCritical(Resources.Critical_TimeOutShutdown);
                     Environment.Exit((int)BrokerExitCodes.Timeout);
                 }
             });
         }
 
         internal static void Exit(int errorCode, string logMessage, params object[] logArgs) {
-            _cts.Cancel();
+            _cts?.Cancel();
 
-            _logger.LogCritical(logMessage, logArgs);
+            if (!string.IsNullOrEmpty(logMessage)) {
+                _logger?.LogCritical(logMessage, logArgs);
+            }
+
             if (IsService) {
                 ServiceExit();
             } else {
