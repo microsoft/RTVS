@@ -9,8 +9,6 @@ using System.Security.Cryptography.X509Certificates;
 using System.Security.Principal;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
 using static Microsoft.Common.Core.NativeMethods;
@@ -23,19 +21,20 @@ namespace Microsoft.Common.Core.Security {
             _coreShell = coreShell;
         }
 
-        public Task<Credentials> GetUserCredentialsAsync(string authority, string workspaceName, CancellationToken cancellationToken = default(CancellationToken)) {
+        public Credentials GetUserCredentials(string authority, string workspaceName, CancellationToken cancellationToken = default(CancellationToken)) {
             _coreShell.AssertIsOnMainThread();
 
-            var credentials = SecurityUtilities.ReadCredentials(authority);
-            if (credentials != null) {
-                return Task.FromResult(credentials);
-            }
+            var credentials = Credentials.ReadSavedCredentials(authority) ?? GetUserCredentials(workspaceName, cancellationToken);
+            return credentials;
+        }
 
+        private Credentials GetUserCredentials(string workspaceName, CancellationToken cancellationToken) {
             var credui = new CREDUI_INFO {
                 cbSize = Marshal.SizeOf(typeof(CREDUI_INFO)),
                 hwndParent = _coreShell.AppConstants.ApplicationWindowHandle,
                 pszCaptionText = Resources.Info_ConnectingTo.FormatInvariant(workspaceName)
             };
+
             uint authPkg = 0;
             IntPtr credStorage = IntPtr.Zero;
             uint credSize;
@@ -66,7 +65,7 @@ namespace Microsoft.Common.Core.Security {
                     throw new Win32Exception(Marshal.GetLastWin32Error());
                 }
 
-                return Task.FromResult(Credentials.CreateCredentails(userNameBuilder.ToString(), SecurityUtilities.SecureStringFromNativeBuffer(passwordStorage), save));
+                return Credentials.CreateCredentials(userNameBuilder.ToString(), SecurityUtilities.SecureStringFromNativeBuffer(passwordStorage), save);
             } finally {
                 if (inCredBuffer != IntPtr.Zero) {
                     Marshal.FreeCoTaskMem(inCredBuffer);

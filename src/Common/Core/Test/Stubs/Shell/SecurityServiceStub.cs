@@ -14,12 +14,12 @@ namespace Microsoft.Common.Core.Test.Stubs.Shell {
         public ConcurrentQueue<Tuple<X509Certificate, string>> ValidateX509CertificateCalls { get; } = new ConcurrentQueue<Tuple<X509Certificate, string>>();
         public ConcurrentQueue<string> DeleteUserCredentialsCalls { get; } = new ConcurrentQueue<string>();
 
-        public Func<string, string, CancellationToken, Task<Credentials>> GetUserCredentialsAsyncHandler { get; set; } =
+        public Func<string, string, CancellationToken, Credentials> GetUserCredentialsAsyncHandler { get; set; } =
             (authority, workspaceName, cancellationToken) => { throw new NotImplementedException(); };
         public Func<X509Certificate, string, bool> ValidateX509CertificateHandler { get; set; } = (deviceId, ct) => true;
         public Func<string, bool> DeleteUserCredentialsHandler { get; set; } = authority => true;
 
-        public Task<Credentials> GetUserCredentialsAsync(string authority, string workspaceName, CancellationToken cancellationToken = new CancellationToken()) {
+        public Credentials GetUserCredentials(string authority, string workspaceName, CancellationToken cancellationToken = new CancellationToken()) {
             GetUserCredentialsAsyncCalls.Enqueue(new Tuple<string, string, CancellationToken>(authority, workspaceName, cancellationToken));
             var handler = GetUserCredentialsAsyncHandler;
             if (handler != null) {

@@ -57,17 +57,12 @@ namespace Microsoft.Common.Core.Security {
             }
         }
 
-        public static bool DeleteCredentials(string authority) {
-            return CredDelete(authority, CRED_TYPE.GENERIC, 0);
-        }
-
-        public static Credentials ReadCredentials(string authority) {
-            using (CredentialHandle ch = CredentialHandle.ReadFromCredentialManager(authority)) {
-                if (ch != null) {
-                    CredentialData credData = ch.GetCredentialData();
-                    return Credentials.CreateSavedCredentails(credData.UserName, SecureStringFromNativeBuffer(credData.CredentialBlob));
+        public static void DeleteCredentials(string authority) {
+            if(!CredDelete(authority, CRED_TYPE.GENERIC, 0)) {
+                int err = Marshal.GetLastWin32Error();
+                if(err != ERROR_NOT_FOUND) {
+                    throw new Win32Exception(err);
                 }
-                return null;
             }
         }
 
@@ -78,32 +73,6 @@ namespace Microsoft.Common.Core.Security {
                     return credData.UserName;
                 }
                 return string.Empty;
-            }
-        }
-
-        public static void WriteCredentials(string authority, Credentials credentials) {
-            if(!credentials.IsSaved()) {
-                CredentialData creds = default(CredentialData);
-                try {
-                    creds.TargetName = authority;
-                    // We have to save the credentials even if user selected NOT to save. Otherwise, user will be asked to enter
-                    // credentials for every REPL/intellisense/package/Connection test request. This can provide the best user experience.
-                    // We can limit how long the information is saved, in the case whee user selected not to save the credential persistence
-                    // is limited to the current log on session. The credentials will not be available if the use logs off and back on.
-                    creds.Persist = credentials.CanSave() ? CRED_PERSIST.CRED_PERSIST_ENTERPRISE : CRED_PERSIST.CRED_PERSIST_SESSION;
-                    creds.Type = CRED_TYPE.GENERIC;
-                    creds.UserName = credentials.UserName;
-                    creds.CredentialBlob = Marshal.SecureStringToCoTaskMemUnicode(credentials.Password);
-                    creds.CredentialBlobSize = (uint)(credentials.Password.Length * sizeof(ushort));
-                    if (!CredWrite(ref creds, 0)) {
-                        var error = Marshal.GetLastWin32Error();
-                        throw new Win32Exception(error, Resources.Error_CredWriteFailed);
-                    }
-                } finally {
-                    if (creds.CredentialBlob != IntPtr.Zero) {
-                        Marshal.ZeroFreeCoTaskMemUnicode(creds.CredentialBlob);
-                    }
-                }
             }
         }
     }

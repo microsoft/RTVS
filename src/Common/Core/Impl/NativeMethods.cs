@@ -129,7 +129,7 @@ namespace Microsoft.Common.Core {
         [DllImport("advapi32.dll", SetLastError = true)]
         public static extern bool CredFree([In] IntPtr buffer);
 
-        [DllImport("advapi32.dll", EntryPoint = "CredDeleteW", CharSet = CharSet.Unicode)]
+        [DllImport("advapi32.dll", EntryPoint = "CredDeleteW", CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern bool CredDelete(string target, CRED_TYPE type, int flags);
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
