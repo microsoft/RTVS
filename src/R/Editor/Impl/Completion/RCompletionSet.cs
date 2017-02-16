@@ -75,7 +75,7 @@ namespace Microsoft.R.Editor.Completion {
 
         private int Match(string typedText, string compText, char commitChar) {
             if (compText[compText.Length-1] == commitChar) { // like 'name ='
-                if (compText.StartsWithOrdinal(typedText)) {
+                if (compText.StartsWithIgnoreCase(typedText)) {
                     return compText.Length;
                 }
             }
