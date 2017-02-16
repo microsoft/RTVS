@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
-using System.Resources;
 
 namespace Microsoft.VisualStudio.R.Package.Options.Attributes {
     internal class EnumTypeConverter<T> : TypeConverter {
@@ -63,7 +62,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.Attributes {
         }
 
         public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType) {
-            if (value.GetType() == destinationType) {
+            if (value == null || value.GetType() == destinationType) {
                 return value;
             }
 
