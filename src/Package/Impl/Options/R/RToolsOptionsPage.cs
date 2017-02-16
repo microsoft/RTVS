@@ -198,7 +198,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [LocCategory("Settings_LogCategory")]
         [CustomLocDisplayName("Settings_LogLevel")]
         [LocDescription("Settings_LogLevel_Description")]
-        [TypeConverter(typeof(LogLevelTypeConverter))]
+        [TypeConverter(typeof(LogVerbosityTypeConverter))]
         [DefaultValue(LogVerbosity.Normal)]
         public LogVerbosity LogVerbosity {
             get {

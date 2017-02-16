@@ -206,7 +206,7 @@
     <Compile Include="Options\PackageManager\PackageSourceOptionsPage.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Options\R\Tools\LogLevelTypeConverter.cs" />
+    <Compile Include="Options\R\Tools\LogVerbosityTypeConverter.cs" />
     <Compile Include="Options\R\Tools\EncodingTypeConverter.cs" />
     <Compile Include="History\Commands\ToggleMultilineHistorySelectionCommand.cs" />
     <Compile Include="History\HistoryWindowPane.cs" />
