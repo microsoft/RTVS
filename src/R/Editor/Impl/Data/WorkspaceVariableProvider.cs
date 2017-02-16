@@ -70,9 +70,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 string[] parts = variableName.Split(_selectors);
 
                 if ((parts.Length == 0 || parts[0].Length == 0) && variableName.Length > 0) {
-                        // Something odd like $$ or $@ so we got empty parts
-                        // and yet variable name is not empty. Don't show anything.
-                        return new INamedItemInfo[0];
+                    // Something odd like $$ or $@ so we got empty parts
+                    // and yet variable name is not empty. Don't show anything.
+                    return new INamedItemInfo[0];
                 }
 
                 if (parts.Length == 0 || parts[0].Length == 0 || variableName.IndexOfAny(_selectors) < 0) {
@@ -102,7 +102,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                 if (infoList != null) {
                     return infoList
-                                .Where(m => m is IRValueInfo && 
+                                .Where(m => m is IRValueInfo &&
                                                (((IRValueInfo)m).AccessorKind == RChildAccessorKind.At ||
                                                 ((IRValueInfo)m).AccessorKind == RChildAccessorKind.Dollar))
                                 .Take(maxCount)
@@ -118,7 +118,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private static string TrimToTrailingSelector(string name) {
             int i = name.Length - 1;
             for (; i >= 0; i--) {
-                if(_selectors.Contains(name[i])) {
+                if (_selectors.Contains(name[i])) {
                     return name.Substring(0, i);
                 }
             }
@@ -173,7 +173,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                         }
                     }
                 }
-            } finally {
+            } catch (REvaluationException) { } finally {
                 _updating = false;
             }
         }
