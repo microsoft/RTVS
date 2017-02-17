@@ -40,5 +40,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public string EnvironmentExpression { get; }
 
         public REnvironmentKind Kind { get; }
+
+        // For Accessibility: screen reader reads values returned by 'ToString()'
+        public override string ToString() => Name ?? base.ToString();
     }
 }
