@@ -4,7 +4,6 @@
 using Microsoft.Common.Core;
 using Microsoft.Extensions.Configuration;
 
-
 namespace Microsoft.R.Host.Broker.Startup {
     public class Program {
         static Program() { }
@@ -14,18 +13,9 @@ namespace Microsoft.R.Host.Broker.Startup {
             var configuration = configBuilder.Build();
 
             string startAs = configuration["start.as"];
-            string configFile = configuration["config"];
-            if (configFile != null) {
-                configBuilder.AddJsonFile(configFile, optional: false);
-                configuration = configBuilder.Build();
-            }
+            bool isService = !string.IsNullOrWhiteSpace(startAs) && startAs.EqualsIgnoreCase("service");
 
-            CommonStartup.CommonStartupInit(configuration);
-            if (!string.IsNullOrWhiteSpace(startAs) || startAs.EqualsIgnoreCase("service")) {
-                CommonStartup.StartService(configuration); 
-            } else {
-                CommonStartup.StartApp(configuration);
-            }
+            CommonStartup.Start(configuration, isService);
         }
     }
 }

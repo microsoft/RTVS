@@ -27,7 +27,7 @@ namespace Microsoft.R.Host.Broker {
         /// </summary>
         private void InitializeComponent() {
             components = new System.ComponentModel.Container();
-            this.ServiceName = "RHostBrokerService";
+            this.ServiceName = Resources.Text_ServiceName;
             this.CanPauseAndContinue = false;
         }
 
