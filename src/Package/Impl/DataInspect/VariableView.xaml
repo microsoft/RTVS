@@ -83,9 +83,11 @@
                     <ToggleButton x:Name="Expander"
                               Grid.Column="1"
                               Style="{StaticResource ExpanderToggleStyle}"
-                              ClickMode="Press" IsChecked="{Binding IsExpanded, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                              ClickMode="Press" IsChecked="{Binding IsExpanded, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                              AutomationProperties.Name="Expand variable"/>
                     <imaging:CrispImage Grid.Column="2" Width="16" Height="16" Opacity="0.5"
-                                        Moniker="{Binding Model.Content.DebugEvaluation, Converter={wpf:Lambda '(IREvaluationResultInfo info) => GetVariableIcon(info)'}}">
+                                        Moniker="{Binding Model.Content.DebugEvaluation, Converter={wpf:Lambda '(IREvaluationResultInfo info) => GetVariableIcon(info)'}}"
+                                        AutomationProperties.Name="">
                         <imaging:CrispImage.ToolTip>
                             <TextBlock>
                                 <TextBlock.Text>
@@ -159,10 +161,11 @@
                   Margin="4"
                   ItemsSource="{Binding Environments}"
                   SelectedItem="{Binding SelectedEnvironment}"
-                  SelectionChanged="EnvironmentComboBox_SelectionChanged">
+                  SelectionChanged="EnvironmentComboBox_SelectionChanged"
+                  AutomationProperties.Name="{x:Static pkg:Resources.VariableExplorer_EnvironmentsCombo_AccessibleName}">
             <ComboBox.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
+                    <StackPanel Orientation="Horizontal" AutomationProperties.Name="{Binding Name}">
                         <imaging:CrispImage Width="16" Height="16" Moniker="{Binding Kind, Converter={wpf:Lambda '(REnvironmentKind kind) => GetEnvironmentIcon(kind)'}}"/>
                         <TextBlock Text="{Binding Name}" Margin="6,0,0,0" />
                     </StackPanel>
@@ -180,7 +183,7 @@
                                     </ControlTemplate>
                                 </Setter.Value>
                             </Setter>
-                        </DataTrigger>
+                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
             </ComboBox.ItemContainerStyle>

@@ -193,6 +193,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         #endregion
 
+        // For Accessibility: screen reader reads values returned by 'to string'
+        public override string ToString() => Description ?? base.ToString();
+
+        public string Description {
+            get {
+                var vm = Model.Content as VariableViewModel;
+                return vm != null ? Resources.VariableExplorer_EntryDescription.FormatInvariant(vm.Name, vm.TypeName, vm.Value) : null;
+            }
+        }
         #region private
 
         private void RemoveChildren() {

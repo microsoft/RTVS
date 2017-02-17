@@ -1102,4 +1102,10 @@ Click OK to open MiKTeX download page in the default browser. R Remote Services 
   <data name="Settings_ShowSaveOnResetConfirmationDialog_Description" xml:space="preserve">
     <value>Show prompt to save workspace when resetting interactive session</value>
   </data>
+  <data name="VariableExplorer_EntryDescription" xml:space="preserve">
+    <value>Variable {0}, Type: {1}, Value: {2}</value>
+  </data>
+  <data name="VariableExplorer_EnvironmentsCombo_AccessibleName" xml:space="preserve">
+    <value>Selected environment</value>
+  </data>
 </root>

@@ -215,6 +215,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 DeleteCurrentVariableAsync().DoNotWait();
             } else if (e.Key == Key.Apps) {
                 ShowContextMenu();
+            } else if(e.Key == Key.Space) {
+                var selection = RootTreeGrid?.SelectedItem as ObservableTreeNode;
+                if (selection != null && selection.HasChildren) {
+                    selection.IsExpanded = !selection.IsExpanded;
+                }
             }
             base.OnPreviewKeyUp(e);
         }

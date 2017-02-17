@@ -2773,11 +2773,29 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Variable {0}, Type: {1}, Value: {2}.
+        /// </summary>
+        public static string VariableExplorer_EntryDescription {
+            get {
+                return ResourceManager.GetString("VariableExplorer_EntryDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No R Interactive.
         /// </summary>
         public static string VariableExplorer_EnvironmentName {
             get {
                 return ResourceManager.GetString("VariableExplorer_EnvironmentName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selected environment.
+        /// </summary>
+        public static string VariableExplorer_EnvironmentsCombo_AccessibleName {
+            get {
+                return ResourceManager.GetString("VariableExplorer_EnvironmentsCombo_AccessibleName", resourceCulture);
             }
         }
         
