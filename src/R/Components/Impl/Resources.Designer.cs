@@ -760,6 +760,51 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Package: {0}, State: {1}, {2}, Description: {3}.
+        /// </summary>
+        public static string Package_AccessibleDescription {
+            get {
+                return ResourceManager.GetString("Package_AccessibleDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Installed.
+        /// </summary>
+        public static string Package_AccessibleState_Installed {
+            get {
+                return ResourceManager.GetString("Package_AccessibleState_Installed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loaded.
+        /// </summary>
+        public static string Package_AccessibleState_Loaded {
+            get {
+                return ResourceManager.GetString("Package_AccessibleState_Loaded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not installed.
+        /// </summary>
+        public static string Package_AccessibleState_NotInstalled {
+            get {
+                return ResourceManager.GetString("Package_AccessibleState_NotInstalled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not loaded.
+        /// </summary>
+        public static string Package_AccessibleState_NotLoaded {
+            get {
+                return ResourceManager.GetString("Package_AccessibleState_NotLoaded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Authors:.
         /// </summary>
         public static string Package_Authors {
