@@ -6,5 +6,7 @@ namespace Microsoft.R.Host.Protocol {
         NoError,
         Timeout,
         NoCertificate,
+        BadConfigFile,
+        PortInUse,
     }
 }

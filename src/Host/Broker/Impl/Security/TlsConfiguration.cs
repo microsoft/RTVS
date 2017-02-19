@@ -8,6 +8,7 @@ using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.R.Host.Broker.Startup;
 using Microsoft.R.Host.Protocol;
 using static System.FormattableString;
 
@@ -46,8 +47,7 @@ namespace Microsoft.R.Host.Broker.Security {
 #if DEBUG
                 return null;
 #else
-                _logger.LogCritical(Resources.Critical_NoTlsCertificate, certName);
-                Environment.Exit((int)BrokerExitCodes.NoCertificate);
+                CommonStartup.Exit((int)BrokerExitCodes.NoCertificate, Resources.Critical_NoTlsCertificate, certName);
 #endif
             }
 

@@ -40,7 +40,7 @@ namespace Microsoft.R.Host.Broker {
             // 
             // brokerServiceInstaller
             // 
-            this.brokerServiceInstaller.ServiceName = "RHostBrokerService";
+            this.brokerServiceInstaller.ServiceName = Resources.Text_ServiceName;
             this.brokerServiceInstaller.DisplayName = Resources.Text_ServiceDisplayName;
             this.brokerServiceInstaller.DisplayName = Resources.Text_ServiceDescription;
             // 

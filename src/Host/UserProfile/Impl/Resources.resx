@@ -156,4 +156,7 @@
   <data name="Text_ServiceDisplayName" xml:space="preserve">
     <value>R User Profile Service</value>
   </data>
+  <data name="Text_ServiceName" xml:space="preserve">
+    <value>RUserProfileService</value>
+  </data>
 </root>
