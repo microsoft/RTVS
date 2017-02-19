@@ -413,7 +413,7 @@ namespace Microsoft.R.Host.Client {
                             throw ProtocolError($"Mismatched response - message name does not match request '{request.MessageName}':", message);
                         }
 
-                        request.Handle(this, message);
+                        Task.Run(() => request.Handle(this, message)).DoNotWait();
                         continue;
                     }
 
