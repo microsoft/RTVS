@@ -1,0 +1,52 @@
+﻿<ui:PlatformDialogWindow x:Class="Microsoft.VisualStudio.R.Package.ExportDialog.ExportImageDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:pkg="clr-namespace:Microsoft.VisualStudio.R.Package"
+        xmlns:ui="clr-namespace:Microsoft.VisualStudio.R.Package.Wpf"  
+        xmlns:wpf="clr-namespace:Microsoft.R.Wpf;assembly=Microsoft.R.Wpf"
+        xmlns:local="clr-namespace:Microsoft.VisualStudio.R.Package.ExportDialog"
+        xmlns:components="clr-namespace:Microsoft.R.Components;assembly=Microsoft.R.Components"
+        mc:Ignorable="d" MinHeight="150" x:Name="Self"
+        ShowInTaskbar="False" WindowStyle="SingleBorderWindow"
+        Background="{DynamicResource {x:Static wpf:Brushes.BackgroundBrushKey}}"
+        Foreground="{DynamicResource {x:Static wpf:Brushes.UITextKey}}"
+        Title="{x:Static pkg:Resources.ExportImageDialog_Title}" SizeToContent="WidthAndHeight">
+    <Grid Margin="0,0,0,-3">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition />
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel  Orientation="Horizontal" HorizontalAlignment="Left">
+                <TextBlock  FontWeight="Bold" Text="{x:Static pkg:Resources.label_Width}" VerticalAlignment="Center" Margin="10,10"/>
+                <TextBox x:Name="VariableWidthBox" HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding Path=UserWidth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Width="80" VerticalContentAlignment="Center" Margin="10,5" KeyboardNavigation.TabIndex="0" LostFocus="WidthTextbox_LostFocus"/>
+            </StackPanel>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0"  HorizontalAlignment="Left">
+                <TextBlock FontWeight="Bold" Text="{x:Static pkg:Resources.label_Height}" VerticalAlignment="Center" />
+                <TextBox x:Name="VariableHeightBox" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="{Binding Path=UserHeight, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Width="80" VerticalContentAlignment="Center" Margin="10,0" KeyboardNavigation.TabIndex="1" LostFocus="HeightTextbox_LostFocus"/>
+            </StackPanel>
+            <CheckBox x:Name="AspectRatioCheckBox" Grid.Column="2" Content="{x:Static pkg:Resources.CheckBox_AspectRatio}" VerticalAlignment="Center" Margin="20,0" KeyboardNavigation.TabIndex="2" IsChecked="{Binding MaintainAspectRatio,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"/>
+        </Grid>
+        <Separator Grid.Row="2"/>
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <CheckBox Name="ViewPlotCheckBox" Content="{x:Static pkg:Resources.CheckBox_ViewPlot}" HorizontalAlignment="Left" Margin="10,10" KeyboardNavigation.TabIndex="3" IsChecked="{Binding ViewPlotAfterSaving,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" VerticalAlignment="Center"/> 
+            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button x:Name="SaveButton" Content="{x:Static components:Resources.Save}" HorizontalAlignment="Right"  VerticalAlignment="Top" Width="75"  Margin="10,10" Click="SaveButton_Click" KeyboardNavigation.TabIndex="4"/>
+                <Button x:Name="CancelButton" Content="{x:Static components:Resources.Cancel}" HorizontalAlignment="Right"  VerticalAlignment="Top" Width="75"  Margin="10,10" Click="CancelButton_Click" KeyboardNavigation.TabIndex="5"/>
+            </StackPanel>
+        </Grid>       
+    </Grid>
+</ui:PlatformDialogWindow>

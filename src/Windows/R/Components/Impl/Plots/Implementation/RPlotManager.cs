@@ -297,8 +297,8 @@ namespace Microsoft.R.Components.Plots.Implementation {
         public Task ExportToMetafileAsync(IRPlot plot, string outputFilePath, double inchWidth, double inchHeight, int resolution) =>
             ExportAsync(outputFilePath, _interactiveWorkflow.RSession.ExportPlotToMetafileAsync(plot.ParentDevice.DeviceId, plot.PlotId, outputFilePath, inchWidth, inchHeight, resolution));
 
-        public Task ExportToPdfAsync(IRPlot plot, string outputFilePath, double inchWidth, double inchHeight) =>
-            ExportAsync(outputFilePath, _interactiveWorkflow.RSession.ExportToPdfAsync(plot.ParentDevice.DeviceId, plot.PlotId, outputFilePath, inchWidth, inchHeight));
+        public Task ExportToPdfAsync(IRPlot plot, ExportPdfParameters exportPdfParameters) =>
+            ExportAsync(exportPdfParameters.FilePath, _interactiveWorkflow.RSession.ExportToPdfAsync(plot.ParentDevice.DeviceId, plot.PlotId, exportPdfParameters));
 
         public async Task ActivateDeviceAsync(IRPlotDevice device) {
             Debug.Assert(device != null);

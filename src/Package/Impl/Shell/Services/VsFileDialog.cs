@@ -4,8 +4,10 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI;
+using Microsoft.VisualStudio.R.Package.ExportDialog;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
@@ -24,6 +26,42 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         public string ShowSaveFileDialog(string filter, string initialPath = null, string title = null)
             => BrowseForFileSave(_shell.GetDialogOwnerWindow(), filter, initialPath, title);
+
+        public ExportImageParameters ShowExportImageDialog(ExportArguments imageArguments, string filter, string initialPath = null, string title = null)
+            => ShowSaveExportImageDialog(_shell.GetDialogOwnerWindow(), imageArguments, filter, initialPath, title);
+
+        public ExportPdfParameters ShowExportPdfDialog(ExportArguments pdfArguements, string filter, string initialPath = null, string title = null) =>
+            ShowSaveExportPdfDialog(_shell.GetDialogOwnerWindow(),pdfArguements, filter, initialPath, title);
+        
+
+        private static ExportPdfParameters ShowSaveExportPdfDialog(IntPtr owner,ExportArguments pdfArguments, string filter, string initialPath = null, string title = null) {
+            ExportPdfParameters pdfParameters = null;
+            ExportPDFDialog exportPdfDialog = new ExportPDFDialog(pdfArguments);
+            exportPdfDialog.ShowModal();
+
+            pdfParameters = exportPdfDialog.GetExportParameters();
+            if (exportPdfDialog.DialogResult == true) {
+                pdfParameters.FilePath = BrowseForFileSave(owner, filter, initialPath, title);
+            } else {
+                return null;
+            }
+            return pdfParameters;
+        }
+
+        private static ExportImageParameters ShowSaveExportImageDialog(IntPtr owner, ExportArguments imageArguments,string filter, string initialPath = null, string title = null) {
+            ExportImageParameters exportParameters = null;
+            ExportImageDialog exportImageDialog = new ExportImageDialog(imageArguments);
+            exportImageDialog.ShowModal();
+
+            exportParameters = exportImageDialog.GetExportParameters();
+            if(exportImageDialog.DialogResult == true) {
+                exportParameters.FilePath = BrowseForFileSave(owner, filter, initialPath, title);
+            } else {
+                return null;
+            }
+            
+            return exportParameters;
+        }
 
         private string BrowseForFileOpen(IntPtr owner, string filter, string initialPath = null, string title = null) {
             var uiShell = _shell.GetService<IVsUIShell>(typeof(SVsUIShell));
@@ -100,5 +138,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 }
             }
         }
+
     }
 }

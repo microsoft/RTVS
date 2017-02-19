@@ -675,6 +675,9 @@ This prompt can be suppressed in R Tools | Options.
   <data name="rtvs_WorkspaceSavedSuccessfully" xml:space="preserve">
     <value> workspace saved successfully.</value>
   </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
   <data name="Package_AccessibleDescription" xml:space="preserve">
     <value>Package: {0}, State: {1}, {2}, Description: {3}</value>
   </data>

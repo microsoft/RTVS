@@ -29,5 +29,25 @@ namespace Microsoft.Common.Core.UI {
         /// <param name="title"></param>
         /// <returns>Full path to the file selected, or <c>null</c>.</returns>
         string ShowSaveFileDialog(string filter, string initialPath = null, string title = null);
+
+        /// <summary>
+        /// Show the export image dialog box.
+        /// </summary>
+        /// <param name="imageArguments"></param>
+        /// <param name="filter"></param>
+        /// <param name="initialPath"></param>
+        /// <param name="title"></param>
+        /// <returns></returns>
+        ExportImageParameters ShowExportImageDialog(ExportArguments imageArguments, string filter, string initialPath = null, string title = null);
+
+        /// <summary>
+        /// Show the export PDF dialog box.
+        /// </summary>
+        /// <param name="pdfArguments"></param>
+        /// <param name="filter"></param>
+        /// <param name="initialPath"></param>
+        /// <param name="title"></param>
+        /// <returns></returns>
+        ExportPdfParameters ShowExportPdfDialog(ExportArguments pdfArguments,string filter, string initialPath = null, string title = null);
     }
 }

@@ -4,6 +4,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 
@@ -197,14 +198,14 @@ namespace Microsoft.R.Components.Plots {
         /// <summary>
         /// Execute code in the session to export the active plot as a PDF.
         /// </summary>
-        /// <param name="outputFilePath">File to save to.</param>
+        /// <param name="exportPdfParameters">Parameters to be passed to pdf export function, includes save file path.</param>
         /// <exception cref="RPlotManagerException">
         /// An error occurred with the session and the user should be notified.
         /// </exception>
         /// <exception cref="OperationCanceledException">
         /// The session was reset, etc. this can be silenced.
         /// </exception>
-        Task ExportToPdfAsync(IRPlot plot, string outputFilePath, double inchWidth, double inchHeight);
+        Task ExportToPdfAsync(IRPlot plot, ExportPdfParameters exportPdfParameters);
 
         /// <summary>
         /// Execute code in the session to change the active graphics device.

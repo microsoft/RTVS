@@ -191,13 +191,13 @@ export_to_image <- function(device_id, plot_id, device, width, height, resolutio
 }
 
 # Helper to export current plot to pdf
-export_to_pdf <- function(device_id, plot_id, width, height) {
+export_to_pdf <- function(device_id, plot_id, pdf_device, width, height, paper) {
     prev_device_num <- dev.cur()
     graphics.ide.setactivedeviceid(device_id)
     graphics.ide.selectplot(device_id, plot_id, force_render = FALSE)
     filepath <- tempfile('plot_', fileext = '.pdf')
     on.exit(unlink(filepath))
-    dev.copy(device = pdf, file = filepath, width = width, height = height)
+    dev.copy(device = pdf_device, file = filepath, width = width, height = height, paper = paper)
     dev.off()
     dev.set(prev_device_num)
     create_blob(readBin(filepath, 'raw', file.info(filepath)$size))

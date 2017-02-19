@@ -26,24 +26,29 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
 
         public async Task InvokeAsync() {
             var fd = InteractiveWorkflow.Shell.FileDialog();
-            string filePath = fd.ShowSaveFileDialog(Resources.Plots_ExportAsImageFilter, null, Resources.Plots_ExportAsImageDialogTitle);
-            if (!string.IsNullOrEmpty(filePath)) {
-                string device = DeviceFromFileExtension(filePath);
+            ExportArguments exportImageArguments = new ExportArguments(VisualComponent.Device.PixelWidth, VisualComponent.Device.PixelHeight, VisualComponent.Device.Resolution);
+            ExportImageParameters exportImageParameters = fd.ShowExportImageDialog(exportImageArguments, Resources.Plots_ExportAsImageFilter, null, Resources.Plots_ExportAsImageDialogTitle);
+            if (!string.IsNullOrEmpty(exportImageParameters?.FilePath)) {
+                string device = DeviceFromFileExtension(exportImageParameters.FilePath);
                 if (!string.IsNullOrEmpty(device)) {
                     try {
                         await InteractiveWorkflow.Plots.ExportToBitmapAsync(
                             VisualComponent.ActivePlot,
                             device,
-                            filePath,
-                            VisualComponent.Device.PixelWidth,
-                            VisualComponent.Device.PixelHeight,
-                            VisualComponent.Device.Resolution);
+                            exportImageParameters.FilePath,
+                            exportImageParameters.PixelWidth,
+                            exportImageParameters.PixelHeight,
+                            exportImageParameters.Resolution);
+                        if(exportImageParameters.ViewPlot) {
+                            var process = new ProcessServices();
+                            process.Start(exportImageParameters.FilePath);
+                        }
                     } catch (RPlotManagerException ex) {
                         InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);
                     } catch (OperationCanceledException) {
                     }
                 } else {
-                    InteractiveWorkflow.Shell.ShowErrorMessage(string.Format(Resources.Plots_ExportUnsupportedImageFormat, Path.GetExtension(filePath)));
+                    InteractiveWorkflow.Shell.ShowErrorMessage(string.Format(Resources.Plots_ExportUnsupportedImageFormat, Path.GetExtension(exportImageParameters.FilePath)));
                 }
             }
         }

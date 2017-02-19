@@ -191,8 +191,8 @@ grDevices::deviceIsInteractive('ide')
             return evaluation.EvaluateAsync<ulong>(script, REvaluationKind.Normal);
         }
 
-        public static Task<ulong> ExportToPdfAsync(this IRExpressionEvaluator evaluation, Guid deviceId, Guid plotId, string outputFilePath, double widthInInches, double heightInInches) {
-            var script = Invariant($"rtvs:::export_to_pdf({deviceId.ToString().ToRStringLiteral()}, {plotId.ToString().ToRStringLiteral()}, {widthInInches}, {heightInInches})");
+        public static Task<ulong> ExportToPdfAsync(this IRExpressionEvaluator evaluation, Guid deviceId, Guid plotId, ExportPdfParameters pdfParams) {
+            string script = Invariant($"rtvs:::export_to_pdf({deviceId.ToString().ToRStringLiteral()}, {plotId.ToString().ToRStringLiteral()}, {pdfParams.PdfDevice}, {pdfParams.WidthInInches}, {pdfParams.HeightInInches}, {pdfParams.PaperName.ToRStringLiteral()})");
             return evaluation.EvaluateAsync<ulong>(script, REvaluationKind.Normal);
         }
 
