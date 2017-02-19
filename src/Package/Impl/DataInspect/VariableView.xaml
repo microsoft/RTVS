@@ -86,8 +86,7 @@
                               ClickMode="Press" IsChecked="{Binding IsExpanded, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                               AutomationProperties.Name="Expand variable"/>
                     <imaging:CrispImage Grid.Column="2" Width="16" Height="16" Opacity="0.5"
-                                        Moniker="{Binding Model.Content.DebugEvaluation, Converter={wpf:Lambda '(IREvaluationResultInfo info) => GetVariableIcon(info)'}}"
-                                        AutomationProperties.Name="">
+                                        Moniker="{Binding Model.Content.DebugEvaluation, Converter={wpf:Lambda '(IREvaluationResultInfo info) => GetVariableIcon(info)'}}">
                         <imaging:CrispImage.ToolTip>
                             <TextBlock>
                                 <TextBlock.Text>
