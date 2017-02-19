@@ -198,20 +198,10 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [LocCategory("Settings_LogCategory")]
         [CustomLocDisplayName("Settings_LogLevel")]
         [LocDescription("Settings_LogLevel_Description")]
-        [TypeConverter(typeof(LogLevelTypeConverter))]
-#if DEBUG
-        [DefaultValue(LogVerbosity.Traffic)]
-#else
+        [TypeConverter(typeof(LogVerbosityTypeConverter))]
         [DefaultValue(LogVerbosity.Normal)]
-#endif
         public LogVerbosity LogVerbosity {
-            get {
-#if DEBUG
-                return _holder.GetValue<LogVerbosity>(LogVerbosity.Traffic);
-#else
-                return _holder.GetValue<LogVerbosity>(LogVerbosity.Normal);
-#endif
-            }
+            get { return _holder.GetValue<LogVerbosity>(LogVerbosity.Normal); }
             set { _holder.SetValue(value); }
         }
 
@@ -242,7 +232,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
 
             public T GetValue<T>(T defaultValue, [CallerMemberName] string name = null) {
                 object value;
-                return _dict.TryGetValue(name, out value) ? (T)value : default (T);
+                return _dict.TryGetValue(name, out value) ? (T)value : default(T);
             }
 
             public T GetValue<T>([CallerMemberName] string name = null) => GetValue<T>(default(T), name);

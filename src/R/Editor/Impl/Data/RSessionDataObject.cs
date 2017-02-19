@@ -108,22 +108,24 @@ namespace Microsoft.R.Editor.Data {
                 return null;
             }
 
-            if (valueEvaluation.HasChildren) {
-                await TaskUtilities.SwitchToBackgroundThread();
-                REvaluationResultProperties properties =
-                    ExpressionProperty |
-                    AccessorKindProperty |
-                    TypeNameProperty |
-                    ClassesProperty |
-                    LengthProperty |
-                    SlotCountProperty |
-                    AttributeCountProperty |
-                    DimProperty |
-                    FlagsProperty |
-                    (RToolsSettings.Current.EvaluateActiveBindings ? ComputedValueProperty : 0);
-                var children = await valueEvaluation.DescribeChildrenAsync(properties, RValueRepresentations.Str(MaxReprLength), MaxChildrenCount);
-                return EvaluateChildren(children);
-            }
+            await TaskUtilities.SwitchToBackgroundThread();
+            try {
+                if (valueEvaluation.HasChildren) {
+                    REvaluationResultProperties properties =
+                        ExpressionProperty |
+                        AccessorKindProperty |
+                        TypeNameProperty |
+                        ClassesProperty |
+                        LengthProperty |
+                        SlotCountProperty |
+                        AttributeCountProperty |
+                        DimProperty |
+                        FlagsProperty |
+                        (RToolsSettings.Current.EvaluateActiveBindings ? ComputedValueProperty : 0);
+                    var children = await valueEvaluation.DescribeChildrenAsync(properties, RValueRepresentations.Str(MaxReprLength), MaxChildrenCount);
+                    return EvaluateChildren(children);
+                }
+            } catch(REvaluationException) { }
 
             return null;
         }

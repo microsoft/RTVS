@@ -33,7 +33,7 @@ namespace Microsoft.R.Components.Sql {
                         var result = DataConnectionDialog.Show(dlg);
                         switch(result) {
                             case DialogResult.Cancel:
-                                return originalConnectionString;
+                                return null;
                             case DialogResult.OK:
                                 _odbcConnectionString = dlg.ConnectionString.SqlClientToOdbc();
                                 break;
