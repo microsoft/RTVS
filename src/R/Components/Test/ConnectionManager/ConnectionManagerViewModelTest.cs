@@ -95,7 +95,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
             _cmvm.Connect(connection, true);
 
             connection = _cmvm.LocalConnections.Should().ContainSingle(c => c.Name == name).Which;
-            _cmvm.Edit(connection);
+            _cmvm.TryEdit(connection);
 
             _cmvm.Connect(connection, connectToEdited);
 
@@ -111,7 +111,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
             connection = _cmvm.LocalConnections.First(c => c.IsConnected);
             var name = connection.Name;
 
-            _cmvm.EditNew();
+            _cmvm.TryEditNew();
             _cmvm.EditedConnection.Name = name;
             _cmvm.EditedConnection.Path = connection.Path;
             _cmvm.EditedConnection.UpdatePath();
@@ -126,7 +126,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
             var connection = _cmvm.LocalConnections.First(c => c.IsUserCreated);
             var copyName = $"{connection.Name} Copy";
 
-            _cmvm.EditNew();
+            _cmvm.TryEditNew();
             _cmvm.EditedConnection.Name = copyName;
             _cmvm.EditedConnection.Path = connection.Path;
             _cmvm.EditedConnection.UpdatePath();
@@ -144,7 +144,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
             var connection = _cmvm.LocalConnections.First(c => c.IsUserCreated);
             var copyName = $"{connection.Name} Copy";
 
-            _cmvm.EditNew();
+            _cmvm.TryEditNew();
             _cmvm.EditedConnection.Name = copyName;
             _cmvm.EditedConnection.Path = connection.Path;
             _cmvm.EditedConnection.UpdatePath();
@@ -156,7 +156,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
             connectionCopy = _cmvm.LocalConnections.First(c => c.IsConnected);
 
             var copy2Name = $"{copyName} 2";
-            _cmvm.Edit(connectionCopy);
+            _cmvm.TryEdit(connectionCopy);
             connectionCopy.Name = copy2Name;
             _cmvm.Save(connectionCopy);
 
@@ -177,7 +177,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
             connection = _cmvm.LocalConnections.First(c => c.IsConnected);
             var name = connection.Name + Guid.NewGuid();
 
-            _cmvm.EditNew();
+            _cmvm.TryEditNew();
             _cmvm.EditedConnection.Name = name;
             _cmvm.EditedConnection.Path = connection.Path;
             _cmvm.EditedConnection.UpdatePath();
@@ -201,7 +201,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
             var connectedName = connection.Name;
             var name = Guid.NewGuid().ToString();
 
-            _cmvm.EditNew();
+            _cmvm.TryEditNew();
             _cmvm.EditedConnection.Name = name;
             _cmvm.EditedConnection.Path = connection.Path;
             _cmvm.EditedConnection.UpdatePath();
@@ -210,7 +210,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
             var names = _cmvm.LocalConnections.Select(c => c.Name).ToList();
 
             connection = _cmvm.LocalConnections.First(c => c.Name.EqualsOrdinal(name));
-            _cmvm.Edit(connection);
+            _cmvm.TryEdit(connection);
             connection.Name = connectedName;
             _cmvm.Save(connection);
 
@@ -224,14 +224,14 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
 
         [Test(ThreadType.UI)]
         public void AddRemote_Edit_NoChanges() {
-            _cmvm.EditNew();
+            _cmvm.TryEditNew();
 
             _cmvm.EditedConnection.Path = "https://machine";
             _cmvm.EditedConnection.UpdatePath();
             _cmvm.Save(_cmvm.EditedConnection);
 
             var connection = _cmvm.RemoteConnections.Should().ContainSingle(c => c.Name == "machine").Which;
-            _cmvm.Edit(connection);
+            _cmvm.TryEdit(connection);
             _cmvm.Save(connection);
 
             _cmvm.RemoteConnections.Should().ContainSingle(c => ReferenceEquals(c, connection))
@@ -240,12 +240,12 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
 
         [Test(ThreadType.UI)]
         public void AddTwoRemotesWithFragments() {
-            _cmvm.EditNew();
+            _cmvm.TryEditNew();
             _cmvm.EditedConnection.Path = "https://machine#123";
             _cmvm.EditedConnection.UpdatePath();
             _cmvm.Save(_cmvm.EditedConnection);
 
-            _cmvm.EditNew();
+            _cmvm.TryEditNew();
             _cmvm.EditedConnection.Name = "machine2";
             _cmvm.EditedConnection.Path = "https://machine#456";
             _cmvm.EditedConnection.UpdatePath();
@@ -264,7 +264,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
         [InlineData("https://machine2", "machine2", "https://machine2:5444")]
         [InlineData("https://machine2:5444", "machine2", "https://machine2:5444")]
         public void AddRemote_Edit_ChangePath(string newPath, string expectedMachineName, string expectedPath) {
-            _cmvm.EditNew();
+            _cmvm.TryEditNew();
 
             _cmvm.EditedConnection.Path = "https://machine";
             _cmvm.EditedConnection.UpdatePath();
@@ -272,7 +272,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
 
             var connection = _cmvm.RemoteConnections.Should().ContainSingle(c => c.Name == "machine").Which;
 
-            _cmvm.Edit(connection);
+            _cmvm.TryEdit(connection);
             connection.Path = newPath;
             _cmvm.EditedConnection.UpdatePath();
             _cmvm.Save(connection);
@@ -283,7 +283,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
 
         [Test(ThreadType.UI)]
         public void AddRemote_Edit_ChangeCommandLine() {
-            _cmvm.EditNew();
+            _cmvm.TryEditNew();
 
             _cmvm.EditedConnection.Path = "https://machine";
             _cmvm.EditedConnection.UpdatePath();
@@ -291,7 +291,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
 
             var connection = _cmvm.RemoteConnections.Should().ContainSingle(c => c.Name == "machine").Which;
 
-            _cmvm.Edit(connection);
+            _cmvm.TryEdit(connection);
             connection.RCommandLineArguments = "--args 5";
             _cmvm.Save(connection);
 
@@ -301,7 +301,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
 
         [Test(ThreadType.UI)]
         public void AddRemote_Edit_Rename() {
-            _cmvm.EditNew();
+            _cmvm.TryEditNew();
 
             _cmvm.EditedConnection.Path = "https://machine";
             _cmvm.EditedConnection.UpdatePath();
@@ -309,7 +309,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
 
             var connection = (ConnectionViewModel)_cmvm.RemoteConnections.Should().ContainSingle(c => c.Name == "machine").Which;
 
-            _cmvm.Edit(connection);
+            _cmvm.TryEdit(connection);
             connection.Name = "Custom Name";
             _cmvm.Save(connection);
 

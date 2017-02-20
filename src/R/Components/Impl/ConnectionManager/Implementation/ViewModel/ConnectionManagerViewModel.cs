@@ -89,9 +89,10 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             return true;
         }
 
-        public void EditNew() {
+        public bool TryEditNew() {
             Shell.AssertIsOnMainThread();
             IsEditingNew = TryStartEditing(new ConnectionViewModel());
+            return IsEditingNew;
         }
 
         public void CancelEdit() {
@@ -135,13 +136,13 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             }
         }
 
-        public void Edit(IConnectionViewModel connection) {
+        public bool TryEdit(IConnectionViewModel connection) {
             Shell.AssertIsOnMainThread();
             if (connection == null) {
-                return;
+                return false;
             }
 
-            TryStartEditing(connection);
+            return TryStartEditing(connection);
         }
 
         public void CancelTestConnection() {

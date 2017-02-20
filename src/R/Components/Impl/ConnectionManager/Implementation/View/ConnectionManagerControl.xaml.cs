@@ -38,7 +38,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
         }
 
         private void ButtonAdd_Click(object sender, RoutedEventArgs e) {
-            Model?.EditNew();
+            Model?.TryEditNew();
         }
 
         private void ButtonPath_Click(object sender, RoutedEventArgs e) {
@@ -46,8 +46,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
         }
 
         private void ButtonEdit_Click(object sender, RoutedEventArgs e) {
-            Model?.Edit(GetConnection(e));
-            ScrollEditedIntoView();
+            if (Model?.TryEdit(GetConnection(e)) == true) {
+                ScrollEditedIntoView();
+            }
         }
 
         private void ButtonDelete_Click(object sender, RoutedEventArgs e) {
@@ -72,10 +73,10 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
                 list.SelectedItems.Add(model.EditedConnection);
             }
         }
-
-        private void Connection_KeyUp(object sender, KeyEventArgs e) {
-            if (e.Key == Key.Enter) {
-                HandleConnect(e, true);
+        
+        private void Connection_PreviewKeyUp(object sender, KeyEventArgs e) {
+            if (e.Key == Key.Delete && !(e.OriginalSource is TextBox)) {
+                Model?.TryDelete(GetConnection(e));
             }
         }
 
@@ -84,8 +85,20 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
             e.Handled = true;
         }
 
+        private void EditConnection_PreviewKeyUp(object sender, KeyEventArgs e) {
+            if (e.Key == Key.Escape) {
+                Model?.CancelEdit();
+            }
+        }
+
         private void PathTextBox_LostFocus(object sender, RoutedEventArgs e) {
             ((sender as TextBox)?.DataContext as IConnectionViewModel)?.UpdatePath();
+        }
+
+        private void TextBoxName_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e) {
+            if (e.NewValue != e.OldValue && (bool)e.NewValue) {
+                (sender as TextBox)?.Focus();
+            }
         }
 
         private void HandleConnect(RoutedEventArgs e, bool connectToEdited) {

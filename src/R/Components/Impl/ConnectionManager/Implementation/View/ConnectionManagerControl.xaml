@@ -33,26 +33,50 @@
             </Style>
 
             <Style x:Key="DeleteButtonStyle" TargetType="Button" BasedOn="{StaticResource ToolWindowButtonStyle}">
-                <Style.Triggers>
-                    <Trigger Property="IsEnabled" Value="True">
-                        <Setter Property="ToolTip" Value="{x:Static components:Resources.ConnectionManager_DeleteTooltip}" />
-                    </Trigger>
-                    <Trigger Property="IsEnabled" Value="False">
-                        <Setter Property="ToolTip" Value="{x:Static components:Resources.ConnectionManager_DeleteTooltipDisabled}" />
-                    </Trigger>
-                </Style.Triggers>
+                <EventSetter Event="Click" Handler="ButtonDelete_Click" />
                 <Setter Property="Opacity" Value="{Binding Path=IsUserCreated, Converter={x:Static rwpf:Converters.FalseIsGrayedOut}}" />
                 <Setter Property="IsEnabled" Value="{Binding Path=IsUserCreated}" />
                 <Setter Property="ToolTipService.ShowOnDisabled" Value="True" />
+                <Setter Property="Background" Value="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundKey}}" />
+                <Style.Triggers>
+                    <Trigger Property="IsEnabled" Value="True">
+                        <Setter Property="ToolTip">
+                            <Setter.Value>
+                                <TextBlock Text="{Binding Path=Name, StringFormat={x:Static components:Resources.ConnectionManager_DeleteTooltip_Format}}" />
+                            </Setter.Value>
+                        </Setter>
+                        <Setter Property="AutomationProperties.Name" Value="{Binding Path=Name, StringFormat={x:Static components:Resources.ConnectionManager_DeleteTooltip_Format}}" />
+                    </Trigger>
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter Property="ToolTip">
+                            <Setter.Value>
+                                <TextBlock Text="{x:Static components:Resources.ConnectionManager_DeleteTooltipDisabled}" />
+                            </Setter.Value>
+                        </Setter>
+                        <Setter Property="AutomationProperties.Name" Value="{x:Static components:Resources.ConnectionManager_DeleteTooltipDisabled}" />
+                    </Trigger>
+                </Style.Triggers>
             </Style>
 
             <Style x:Key="EditButtonStyle" TargetType="Button" BasedOn="{StaticResource ToolWindowButtonStyle}">
+                <EventSetter Event="Click" Handler="ButtonEdit_Click" />
+                <Setter Property="Background" Value="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundKey}}" />
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding Path=IsRemote}" Value="False">
-                        <Setter Property="ToolTip" Value="{x:Static components:Resources.ConnectionManager_EditLocalTooltip}" />
+                        <Setter Property="ToolTip">
+                            <Setter.Value>
+                                <TextBlock Text="{Binding Path=Name, StringFormat={x:Static components:Resources.ConnectionManager_EditLocalTooltip_Format}}" />
+                            </Setter.Value>
+                        </Setter>
+                        <Setter Property="AutomationProperties.Name" Value="{Binding Path=Name, StringFormat={x:Static components:Resources.ConnectionManager_EditLocalTooltip_Format}}" />
                     </DataTrigger>
                     <DataTrigger Binding="{Binding Path=IsRemote}" Value="True">
-                        <Setter Property="ToolTip" Value="{x:Static components:Resources.ConnectionManager_EditRemoteTooltip}" />
+                        <Setter Property="ToolTip">
+                            <Setter.Value>
+                                <TextBlock Text="{Binding Path=Name, StringFormat={x:Static components:Resources.ConnectionManager_EditRemoteTooltip_Format}}" />
+                            </Setter.Value>
+                        </Setter>
+                        <Setter Property="AutomationProperties.Name" Value="{Binding Path=Name, StringFormat={x:Static components:Resources.ConnectionManager_EditRemoteTooltip_Format}}" />
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
@@ -68,9 +92,56 @@
                 </Style.Setters>
             </Style>
 
+            <Style x:Key="ToggleButtonLocalConnectionsStyle" TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource ExpandCollapseToggleStyle}">
+                <Setter Property="IsChecked" Value="True" />
+                <Setter Property="Content" Value="{x:Static components:Resources.ConnectionManager_LocalConnections}" />
+                <Setter Property="Visibility" Value="{Binding Path=HasLocalConnections, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}" />
+                <Style.Triggers>
+                    <Trigger Property="IsChecked" Value="True">
+                        <Setter Property="ToolTip">
+                            <Setter.Value>
+                                <TextBlock Text="{x:Static components:Resources.ConnectionManager_LocalConnections_Collapse}" />
+                            </Setter.Value>
+                        </Setter>
+                        <Setter Property="AutomationProperties.Name" Value="{x:Static components:Resources.ConnectionManager_LocalConnections_Collapse}" />
+                    </Trigger>
+                    <Trigger Property="IsChecked" Value="False">
+                        <Setter Property="ToolTip">
+                            <Setter.Value>
+                                <TextBlock Text="{x:Static components:Resources.ConnectionManager_LocalConnections_Expand}" />
+                            </Setter.Value>
+                        </Setter>
+                        <Setter Property="AutomationProperties.Name" Value="{x:Static components:Resources.ConnectionManager_LocalConnections_Expand}" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style x:Key="ToggleButtonRemoteConnectionsStyle" TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource ExpandCollapseToggleStyle}">
+                <Setter Property="IsChecked" Value="True" />
+                <Setter Property="Content" Value="{x:Static components:Resources.ConnectionManager_RemoteConnections}" />
+                <Style.Triggers>
+                    <Trigger Property="IsChecked" Value="True">
+                        <Setter Property="ToolTip">
+                            <Setter.Value>
+                                <TextBlock Text="{x:Static components:Resources.ConnectionManager_RemoteConnections_Collapse}" />
+                            </Setter.Value>
+                        </Setter>
+                        <Setter Property="AutomationProperties.Name" Value="{x:Static components:Resources.ConnectionManager_RemoteConnections_Collapse}" />
+                    </Trigger>
+                    <Trigger Property="IsChecked" Value="False">
+                        <Setter Property="ToolTip">
+                            <Setter.Value>
+                                <TextBlock Text="{x:Static components:Resources.ConnectionManager_RemoteConnections_Expand}" />
+                            </Setter.Value>
+                        </Setter>
+                        <Setter Property="AutomationProperties.Name" Value="{x:Static components:Resources.ConnectionManager_RemoteConnections_Expand}" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+            
             <DataTemplate x:Key="EditConnectionDataTemplate" DataType="{x:Type viewModel:IConnectionViewModel}">
                 <AdornerDecorator>
-                    <Grid Margin="0,6,0,8"
+                    <Grid Margin="0,6,0,8" PreviewKeyUp="EditConnection_PreviewKeyUp"
                           Background="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundKey}}">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
@@ -86,15 +157,16 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
-                        <imaging:CrispImage Grid.Row="0" x:Name="NameValidityIndicator" Style="{StaticResource ValidityIndicatorStyle}" />
-                        <imaging:CrispImage Grid.Row="1" x:Name="PathValidityIndicator" Style="{StaticResource ValidityIndicatorStyle}" />
+                        <imaging:CrispImage Grid.Row="0" Grid.Column="0" x:Name="NameValidityIndicator" Style="{StaticResource ValidityIndicatorStyle}" />
+                        <imaging:CrispImage Grid.Row="1" Grid.Column="0" x:Name="PathValidityIndicator" Style="{StaticResource ValidityIndicatorStyle}" />
 
                         <TextBox Grid.Row="0" Grid.Column="1" Style="{StaticResource InputTextBoxStyle}"
                                  Text="{Binding Path=Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                  controls:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_Name}"
                                  Background="{DynamicResource {x:Static rwpf:Brushes.BackgroundBrushKey}}" 
                                  Foreground="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}"
-                                 ToolTip="{Binding Path=NameTextBoxTooltip}"/>
+                                 ToolTip="{Binding Path=NameTextBoxTooltip}"
+                                 IsVisibleChanged="TextBoxName_IsVisibleChanged"/>
 
                         <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource InputTextBoxStyle}" 
                                  Text="{Binding Path=Path, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -173,10 +245,10 @@
                 </AdornerDecorator>
                 
                 <DataTemplate.Triggers>
-                    <DataTrigger Binding="{Binding IsNameValid}" Value="False">
+                    <DataTrigger Binding="{Binding Path=IsNameValid}" Value="False">
                         <Setter TargetName="NameValidityIndicator" Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.StatusRequiredOutline}"/>
                     </DataTrigger>
-                    <DataTrigger Binding="{Binding IsPathValid}" Value="False">
+                    <DataTrigger Binding="{Binding Path=IsPathValid}" Value="False">
                         <Setter TargetName="PathValidityIndicator" Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.StatusRequiredOutline}"/>
                     </DataTrigger>
                 </DataTemplate.Triggers>
@@ -213,8 +285,7 @@
                                           ContentTemplate="{StaticResource ConnectButtonDataTemplate}" />
 
                         <!-- Name, path  -->
-                        <TextBlock Grid.Row="0" Grid.Column="2" Margin="0,1,6,2" 
-                                   Text="{Binding Path=Name}"
+                        <TextBlock Grid.Row="0" Grid.Column="2" Margin="0,1,6,2" Text="{Binding Path=Name}"
                                    FontWeight="{Binding Path=IsConnected, Converter={x:Static rwpf:Converters.TrueIsBold}}"
                                    ToolTip="{Binding Path=ConnectionTooltip}"
                                    TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
@@ -230,6 +301,8 @@
                                 Visibility="{Binding Path=IsConnected, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}"
                                 Margin="0,0,8,0" Background="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundKey}}"
                                 IsEnabled="{Binding Path=IsValid}"
+                                AutomationProperties.Name="{Binding Path=Name, StringFormat={x:Static components:Resources.ConnectionManager_ConnectTooltip}}"
+                                AutomationProperties.HelpText="{Binding Path=ConnectionTooltip}"
                                 Opacity="{Binding Path=IsValid, Converter={x:Static rwpf:Converters.FalseIsGrayedOut}}">
                             <Button.ToolTip>
                                 <TextBlock Text="{Binding Path=Name, StringFormat={x:Static components:Resources.ConnectionManager_ConnectTooltip}}" />
@@ -238,14 +311,12 @@
                         </Button>
 
                         <!-- edit/properties button -->
-                        <Button x:Name="ButtonEdit" Grid.Row="0" Grid.Column="4" Style="{StaticResource EditButtonStyle}" Click="ButtonEdit_Click"
-                                Background="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundKey}}">
+                        <Button x:Name="ButtonEdit" Grid.Row="0" Grid.Column="4" Style="{StaticResource EditButtonStyle}">
                             <imaging:CrispImage  Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.Settings}" />
                         </Button>
 
                         <!-- delete button -->
-                        <Button x:Name="ButtonDelete" Grid.Row="0" Grid.Column="5" Style="{StaticResource DeleteButtonStyle}" Click="ButtonDelete_Click"
-                                Background="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundKey}}">
+                        <Button x:Name="ButtonDelete" Grid.Row="0" Grid.Column="5" Style="{StaticResource DeleteButtonStyle}">
                             <imaging:CrispImage  Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.Cancel}" />
                         </Button>
 
@@ -259,7 +330,9 @@
 
             <Style x:Key="ConnectionsListBoxItemStyle" TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource FillingListBoxItemStyle}">
                 <EventSetter Event="MouseDoubleClick" Handler="Connection_MouseDoubleClick" />
-                <EventSetter Event="KeyUp" Handler="Connection_KeyUp" />
+                <EventSetter Event="PreviewKeyUp" Handler="Connection_PreviewKeyUp" />
+                <Setter Property="IsTabStop" Value="False" />
+                <Setter Property="Focusable" Value="False"/>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type ListBoxItem}">
@@ -301,9 +374,11 @@
                 <Setter Property="VirtualizingPanel.CacheLengthUnit" Value="Page"/>
                 <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                 <Setter Property="BorderThickness" Value="0,0,0,0" />
+                <Setter Property="IsTabStop" Value="False" />
                 <Setter Property="ItemContainerStyle" Value="{StaticResource ConnectionsListBoxItemStyle}" />
                 <Setter Property="ItemTemplateSelector" Value="{StaticResource TypeDataTemplateSelector}"/>
                 <Setter Property="SelectionMode" Value="Multiple"/>
+                <Setter Property="KeyboardNavigation.TabNavigation" Value="Continue" />
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type ListBox}">
@@ -354,11 +429,7 @@
             </DockPanel>
 
             <!-- Local connections header -->
-            <ToggleButton x:Name="ToggleButtonLocalConnections"
-                          DockPanel.Dock="Top" Style="{StaticResource ExpandCollapseToggleStyle}"
-                          ToolTip="{x:Static components:Resources.ConnectionManager_LocalConnectionsTooltip}" IsChecked="True"
-                          Content="{x:Static components:Resources.ConnectionManager_LocalConnections}"
-                          Visibility="{Binding Path=HasLocalConnections, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}"/>
+            <ToggleButton x:Name="ToggleButtonLocalConnections" Style="{StaticResource ToggleButtonLocalConnectionsStyle}" DockPanel.Dock="Top" />
 
             <!-- Local connections -->
             <ListBox x:Name="LocalList" 
@@ -366,10 +437,7 @@
                      Visibility="{Binding ElementName=ToggleButtonLocalConnections, Path=IsChecked, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}"/>
 
             <!-- Remote connections header -->
-            <ToggleButton x:Name="ToggleButtonRemoteConnections"
-                          DockPanel.Dock="Top" Style="{StaticResource ExpandCollapseToggleStyle}"
-                          ToolTip="{x:Static components:Resources.ConnectionManager_RemoteConnectionsTooltip}" IsChecked="True"
-                          Content="{x:Static components:Resources.ConnectionManager_RemoteConnections}"/>
+            <ToggleButton x:Name="ToggleButtonRemoteConnections" Style="{StaticResource ToggleButtonRemoteConnectionsStyle}" DockPanel.Dock="Top" />
 
             <!-- Remote connections -->
             <ListBox x:Name="RemoteList"
