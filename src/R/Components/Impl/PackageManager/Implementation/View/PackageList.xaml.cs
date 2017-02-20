@@ -4,6 +4,7 @@
 using System;
 using System.Linq;
 using System.Windows;
+using System.Windows.Automation.Peers;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.Common.Core;
@@ -12,6 +13,7 @@ using Microsoft.R.Components.PackageManager.ViewModel;
 namespace Microsoft.R.Components.PackageManager.Implementation.View {
     public partial class PackageList : UserControl {
         private IRPackageManagerViewModel Model => DataContext as IRPackageManagerViewModel;
+        private AutomationPeer _peer;
 
         // Indicates wether check boxes are enabled on packages
         private bool _checkBoxesEnabled;
@@ -52,8 +54,9 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View {
         }
 
         private void List_PreviewKeyUp(object sender, KeyEventArgs e) {
-            if (e.Key == Key.Enter) {
+            if (e.Key == Key.Enter || e.Key == Key.Space) {
                 Model?.DefaultActionAsync().DoNotWait();
+                AutomationPeer?.RaiseAutomationEvent(AutomationEvents.AutomationFocusChanged);
             }
         }
 
@@ -87,6 +90,18 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View {
         private void ButtonUnload_Click(object sender, RoutedEventArgs e) {
             var package = GetPackage(e);
             Model?.UnloadAsync(package).DoNotWait();
+        }
+
+        protected override AutomationPeer OnCreateAutomationPeer() {
+            _peer = _peer ?? base.OnCreateAutomationPeer();
+            return _peer;
+        }
+
+        private AutomationPeer AutomationPeer {
+            get {
+                _peer = _peer ?? UIElementAutomationPeer.CreatePeerForElement(this);
+                return _peer;
+            }
         }
     }
 }

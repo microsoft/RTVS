@@ -214,5 +214,16 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
 
             HasDetails = true;
         }
+
+        public string AccessibleDescription {
+            get {
+                string installed = IsInstalled ? Resources.Package_AccessibleState_Installed : Resources.Package_AccessibleState_NotInstalled;
+                string loaded = string.Empty;
+                if (IsInstalled) {
+                    loaded = IsLoaded ? Resources.Package_AccessibleState_Loaded : Resources.Package_AccessibleState_NotLoaded;
+                }
+                return Resources.Package_AccessibleDescription.FormatInvariant(Name, installed, loaded, Description);
+            }
+        }
     }
 }

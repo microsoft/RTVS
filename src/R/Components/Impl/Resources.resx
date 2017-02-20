@@ -627,7 +627,10 @@ number in the connection URL in the form 'https://remote:5444#2'</value>
     <value>Connection to the workspace has been terminated.</value>
   </data>
   <data name="Warning_SaveOnReset" xml:space="preserve">
-    <value>Resetting R Host will clear the workspace. Would you like to save state?</value>
+    <value>Resetting R session will clear the workspace. Would you like to save state?
+
+This prompt can be suppressed in R Tools | Options.
+    </value>
   </data>
   <data name="Error_FailedToSaveState" xml:space="preserve">
     <value>Failed to save state, resetting anyway.</value>
@@ -662,13 +665,19 @@ number in the connection URL in the form 'https://remote:5444#2'</value>
   <data name="rtvs_WorkspaceSavedSuccessfully" xml:space="preserve">
     <value> workspace saved successfully.</value>
   </data>
-  <data name="Error_FailedToSaveState" xml:space="preserve">
-    <value>Failed to save state, resetting anyway.</value>
+  <data name="Package_AccessibleDescription" xml:space="preserve">
+    <value>Package: {0}, State: {1}, {2}, Description: {3}</value>
   </data>
-  <data name="Warning_SaveOnReset" xml:space="preserve">
-    <value>Resetting R session will clear the workspace. Would you like to save state?
-
-This prompt can be suppressed in R Tools | Options.
-    </value>
+  <data name="Package_AccessibleState_Installed" xml:space="preserve">
+    <value>Installed</value>
+  </data>
+  <data name="Package_AccessibleState_Loaded" xml:space="preserve">
+    <value>Loaded</value>
+  </data>
+  <data name="Package_AccessibleState_NotInstalled" xml:space="preserve">
+    <value>Not installed</value>
+  </data>
+  <data name="Package_AccessibleState_NotLoaded" xml:space="preserve">
+    <value>Not loaded</value>
   </data>
 </root>
