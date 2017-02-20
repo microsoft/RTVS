@@ -40,5 +40,6 @@ namespace Microsoft.R.Components.PackageManager.ViewModel {
         Task InstallAsync();
         Task UninstallAsync();
         Task UpdateAsync();
+        string AccessibleDescription { get; }
     }
 }

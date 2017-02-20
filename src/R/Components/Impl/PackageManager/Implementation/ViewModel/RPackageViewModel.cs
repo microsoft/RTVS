@@ -215,16 +215,15 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             HasDetails = true;
         }
 
-        // For Accessibility: screen reader reads values returned by 'ToString()'
-        public override string ToString() => GetAccessibleDescription();
-
-        private string GetAccessibleDescription() {
-            string installed = IsInstalled ? Resources.Package_AccessibleState_Installed : Resources.Package_AccessibleState_NotInstalled;
-            string loaded = string.Empty;
-            if (IsInstalled) {
-                loaded = IsLoaded ? Resources.Package_AccessibleState_Loaded : Resources.Package_AccessibleState_NotLoaded;
+        public string AccessibleDescription {
+            get {
+                string installed = IsInstalled ? Resources.Package_AccessibleState_Installed : Resources.Package_AccessibleState_NotInstalled;
+                string loaded = string.Empty;
+                if (IsInstalled) {
+                    loaded = IsLoaded ? Resources.Package_AccessibleState_Loaded : Resources.Package_AccessibleState_NotLoaded;
+                }
+                return Resources.Package_AccessibleDescription.FormatInvariant(Name, installed, loaded, Description);
             }
-            return Resources.Package_AccessibleDescription.FormatInvariant(Name, installed, loaded, Description);
         }
     }
 }

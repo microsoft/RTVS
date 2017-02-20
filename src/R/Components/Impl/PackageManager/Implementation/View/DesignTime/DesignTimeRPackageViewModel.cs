@@ -26,6 +26,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View.DesignTime {
             LibraryPath = "~/LibPath"; 
             RepositoryUri = new Uri("https://cran.rstudio.com");
             Built = "R 3.3.0; ; 2016-02-16 11:24:44 UTC; windows";
+            AccessibleDescription = "Accessible description";
 
             IsInstalled = true;
             IsUpdateAvailable = true;
@@ -82,6 +83,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View.DesignTime {
         public Task InstallAsync() => Task.CompletedTask;
         public Task UninstallAsync() => Task.CompletedTask;
         public Task UpdateAsync() => Task.CompletedTask;
+        public string AccessibleDescription { get; }
     }
 #endif
 }
