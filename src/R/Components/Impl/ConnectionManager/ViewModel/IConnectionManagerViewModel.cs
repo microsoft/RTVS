@@ -15,8 +15,8 @@ namespace Microsoft.R.Components.ConnectionManager.ViewModel {
         bool IsEditingNew { get; }
         bool IsConnected { get; }
         
-        void Edit(IConnectionViewModel connection);
-        void EditNew();
+        bool TryEdit(IConnectionViewModel connection);
+        bool TryEditNew();
         void CancelEdit();
         void Save(IConnectionViewModel connectionViewModel);
 

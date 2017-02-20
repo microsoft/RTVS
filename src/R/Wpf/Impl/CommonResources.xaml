@@ -399,7 +399,6 @@
     </Style>
 
     <Style x:Key="ExpandCollapseToggleStyle" TargetType="{x:Type ToggleButton}">
-        <Setter Property="Focusable" Value="False" />
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.UITextKey}}"/>
         <Setter Property="Template">

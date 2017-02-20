@@ -106,8 +106,6 @@
     </Compile>
     <Compile Include="RUserProfileServicesHelper.cs" />
     <Compile Include="RUserProfileServices.cs" />
-    <Compile Include="ServiceLogger.cs" />
-    <Compile Include="ServiceLoggerProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <FilesToSign Include="$(OutputPath)\$(AssemblyName).exe">

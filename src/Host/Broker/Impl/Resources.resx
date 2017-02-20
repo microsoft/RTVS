@@ -250,9 +250,15 @@
     <value>Creates and manages R Host (Microsoft.R.Host.exe) sessions.</value>
   </data>
   <data name="Text_ServiceDisplayName" xml:space="preserve">
-    <value>R Host Broker Service</value>
+    <value>R Remote Service</value>
   </data>
   <data name="Error_ExitRHost" xml:space="preserve">
-    <value>RHost Exited with Win32 error : {0}</value>
+    <value>R Host Exited with Win32 error : {0}</value>
+  </data>
+  <data name="Text_ServiceName" xml:space="preserve">
+    <value>RRemoteService</value>
+  </data>
+  <data name="Error_ConfigFailed" xml:space="preserve">
+    <value>Command Line or Config File error: {0}</value>
   </data>
 </root>

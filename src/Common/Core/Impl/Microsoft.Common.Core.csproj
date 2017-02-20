@@ -49,6 +49,8 @@
     <Compile Include="Json\Json.cs" />
     <Compile Include="Logging\ILoggingPermissions.cs" />
     <Compile Include="Logging\Implementation\NullLogWriter.cs" />
+    <Compile Include="Logging\Implementation\EventLogLogger.cs" />
+    <Compile Include="Logging\Implementation\EventLogLoggerProvider.cs" />
     <Compile Include="Logging\LogExtensions.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Logging\Implementation\FileLogWriter.cs" />

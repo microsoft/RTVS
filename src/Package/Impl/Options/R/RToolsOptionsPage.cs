@@ -201,13 +201,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [TypeConverter(typeof(LogVerbosityTypeConverter))]
         [DefaultValue(LogVerbosity.Normal)]
         public LogVerbosity LogVerbosity {
-            get {
-                var permissions = VsAppShell.Current.Services.LoggingPermissions;
-                var value = _holder.GetValue<LogVerbosity>(permissions.MaxVerbosity);
-                value = MathExtensions.Min<LogVerbosity>(value, permissions.MaxVerbosity);
-                _holder.SetValue(value);
-                return value;
-            }
+            get { return _holder.GetValue<LogVerbosity>(LogVerbosity.Normal); }
             set { _holder.SetValue(value); }
         }
 

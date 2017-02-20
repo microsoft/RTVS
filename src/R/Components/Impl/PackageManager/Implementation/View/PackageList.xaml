@@ -153,6 +153,7 @@
             <!-- the style of the ListBoxItem when the item is a package. -->
             <Style x:Key="PackageItemStyle" TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource FillingListBoxItemStyle}">
                 <EventSetter Event="MouseDoubleClick" Handler="List_MouseDoubleClick" />
+                <Setter Property="AutomationProperties.Name" Value="{Binding AccessibleDescription}" />
             </Style>
         </ResourceDictionary>
     </UserControl.Resources>

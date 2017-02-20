@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
 using Microsoft.Extensions.Logging;
 
@@ -32,7 +33,7 @@ namespace Microsoft.R.Host.UserProfile {
             _loggerFactory = new LoggerFactory();
             _loggerFactory
                 .AddDebug()
-                .AddProvider(new ServiceLoggerProvider());
+                .AddProvider(new EventLogLoggerProvider(LogLevel.Trace, Resources.Text_ServiceName));
             _logger = _loggerFactory.CreateLogger<RUserProfileService>();
 
             _cts = new CancellationTokenSource();

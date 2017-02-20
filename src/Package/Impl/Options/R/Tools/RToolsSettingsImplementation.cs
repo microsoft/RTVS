@@ -226,6 +226,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         #region IRPersistentSettings
         public void LoadSettings() {
             _settings.LoadPropertyValues(this);
+            // Correct setting if stored value exceed currently set maximum
+            LogVerbosity = MathExtensions.Min<LogVerbosity>(LogVerbosity, _loggingPermissions.MaxVerbosity);
             _loggingPermissions.CurrentVerbosity = LogVerbosity;
         }
 

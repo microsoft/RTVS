@@ -318,14 +318,29 @@
   <data name="ConnectionManager_RemoteConnections" xml:space="preserve">
     <value>Remote</value>
   </data>
-  <data name="ConnectionManager_LocalConnectionsTooltip" xml:space="preserve">
-    <value>Expand/Collapse list of local R installations</value>
+  <data name="ConnectionManager_LocalConnections_Expand" xml:space="preserve">
+    <value>Expand list of local R installations</value>
   </data>
-  <data name="ConnectionManager_RemoteConnectionsTooltip" xml:space="preserve">
-    <value>Expand/Collapse list of remote workspaces</value>
+  <data name="ConnectionManager_RemoteConnections_Expand" xml:space="preserve">
+    <value>Expand list of remote workspaces</value>
+  </data>
+  <data name="ConnectionManager_LocalConnections_Collapse" xml:space="preserve">
+    <value>Collapse list of local R installations</value>
+  </data>
+  <data name="ConnectionManager_RemoteConnections_Collapse" xml:space="preserve">
+    <value>Collapse list of remote workspaces</value>
   </data>
   <data name="ConnectionManager_ConnectTooltip" xml:space="preserve">
-    <value>Connect to '{0}'.</value>
+    <value>Connect to '{0}'</value>
+  </data>
+  <data name="ConnectionManager_EditLocalTooltip_Format" xml:space="preserve">
+    <value>Edit local connection '{0}'</value>
+  </data>
+  <data name="ConnectionManager_EditRemoteTooltip_Format" xml:space="preserve">
+    <value>Edit remote connection '{0}'</value>
+  </data>
+  <data name="ConnectionManager_DeleteTooltip_Format" xml:space="preserve">
+    <value>Delete connection '{0}'</value>
   </data>
   <data name="ConnectionManager_Name" xml:space="preserve">
     <value>Entry name</value>
@@ -338,12 +353,6 @@
   </data>
   <data name="ConnectionManager_Add" xml:space="preserve">
     <value>Add</value>
-  </data>
-  <data name="ConnectionManager_EditLocalTooltip" xml:space="preserve">
-    <value>Edit R interpreter information</value>
-  </data>
-  <data name="ConnectionManager_DeleteTooltip" xml:space="preserve">
-    <value>Delete connection</value>
   </data>
   <data name="ConnectionManager_Save" xml:space="preserve">
     <value>Save</value>
@@ -493,9 +502,6 @@ If you want to delete all data on the remote machine you must delete your user p
   <data name="ConnectionManager_DeleteTooltipDisabled" xml:space="preserve">
     <value>Entry for the automatically detected local R cannot be deleted. It will be removed when this R version is uninstalled.</value>
   </data>
-  <data name="ConnectionManager_EditRemoteTooltip" xml:space="preserve">
-    <value>Edit remote connection information</value>
-  </data>
   <data name="ConnectionManager_Connected" xml:space="preserve">
     <value>Connected</value>
   </data>
@@ -508,8 +514,7 @@ Arguments: {1}</value>
   </data>
   <data name="ConnectionManager_InformationTooltipFormatRemote" xml:space="preserve">
     <value>Host: {0}
-Arguments: {1}
-    </value>
+Arguments: {1}</value>
   </data>
   <data name="ConnectionManager_SwitchConnectionProgressBarMessage" xml:space="preserve">
     <value>Switching connection "{0}" to "{1}"</value>
@@ -622,7 +627,10 @@ number in the connection URL in the form 'https://remote:5444#2'</value>
     <value>Connection to the workspace has been terminated.</value>
   </data>
   <data name="Warning_SaveOnReset" xml:space="preserve">
-    <value>Resetting R Host will clear the workspace. Would you like to save state?</value>
+    <value>Resetting R session will clear the workspace. Would you like to save state?
+
+This prompt can be suppressed in R Tools | Options.
+    </value>
   </data>
   <data name="Error_FailedToSaveState" xml:space="preserve">
     <value>Failed to save state, resetting anyway.</value>
@@ -657,13 +665,19 @@ number in the connection URL in the form 'https://remote:5444#2'</value>
   <data name="rtvs_WorkspaceSavedSuccessfully" xml:space="preserve">
     <value> workspace saved successfully.</value>
   </data>
-  <data name="Error_FailedToSaveState" xml:space="preserve">
-    <value>Failed to save state, resetting anyway.</value>
+  <data name="Package_AccessibleDescription" xml:space="preserve">
+    <value>Package: {0}, State: {1}, {2}, Description: {3}</value>
   </data>
-  <data name="Warning_SaveOnReset" xml:space="preserve">
-    <value>Resetting R session will clear the workspace. Would you like to save state?
-
-This prompt can be suppressed in R Tools | Options.
-    </value>
+  <data name="Package_AccessibleState_Installed" xml:space="preserve">
+    <value>Installed</value>
+  </data>
+  <data name="Package_AccessibleState_Loaded" xml:space="preserve">
+    <value>Loaded</value>
+  </data>
+  <data name="Package_AccessibleState_NotInstalled" xml:space="preserve">
+    <value>Not installed</value>
+  </data>
+  <data name="Package_AccessibleState_NotLoaded" xml:space="preserve">
+    <value>Not loaded</value>
   </data>
 </root>

@@ -108,9 +108,9 @@ namespace Microsoft.R.Editor.Data {
                 return null;
             }
 
+            await TaskUtilities.SwitchToBackgroundThread();
             try {
                 if (valueEvaluation.HasChildren) {
-                    await TaskUtilities.SwitchToBackgroundThread();
                     REvaluationResultProperties properties =
                         ExpressionProperty |
                         AccessorKindProperty |
