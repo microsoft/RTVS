@@ -2391,7 +2391,7 @@
                                                 },
                                                 {
                                                   "Name": "DataContext",
-                                                  "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                  "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                 },
                                                 {
                                                   "Name": "Name",
@@ -2432,7 +2432,7 @@
                                                     },
                                                     {
                                                       "Name": "DataContext",
-                                                      "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                      "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                     },
                                                     {
                                                       "Name": "Name",
@@ -2469,7 +2469,7 @@
                                                       "Properties": [
                                                         {
                                                           "Name": "DataContext",
-                                                          "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                          "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                         },
                                                         {
                                                           "Name": "Name",
@@ -2510,7 +2510,7 @@
                                                             },
                                                             {
                                                               "Name": "DataContext",
-                                                              "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                              "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                             },
                                                             {
                                                               "Name": "Name",
@@ -2547,7 +2547,7 @@
                                                               "Properties": [
                                                                 {
                                                                   "Name": "DataContext",
-                                                                  "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                                  "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                                 },
                                                                 {
                                                                   "Name": "Name",
@@ -2584,7 +2584,7 @@
                                                                   "Properties": [
                                                                     {
                                                                       "Name": "DataContext",
-                                                                      "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                                      "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                                     },
                                                                     {
                                                                       "Name": "Name",
@@ -2633,7 +2633,7 @@
                                                                         },
                                                                         {
                                                                           "Name": "DataContext",
-                                                                          "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                                          "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                                         },
                                                                         {
                                                                           "Name": "Name",
@@ -2674,7 +2674,7 @@
                                                                             },
                                                                             {
                                                                               "Name": "DataContext",
-                                                                              "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                                              "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                                             },
                                                                             {
                                                                               "Name": "Name",
@@ -2719,7 +2719,7 @@
                                                                                 },
                                                                                 {
                                                                                   "Name": "DataContext",
-                                                                                  "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                                                  "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                                                 },
                                                                                 {
                                                                                   "Name": "Name",
@@ -2756,7 +2756,7 @@
                                                                                   "Properties": [
                                                                                     {
                                                                                       "Name": "Content",
-                                                                                      "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                                                      "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                                                     },
                                                                                     {
                                                                                       "Name": "ContentTemplate",
@@ -2764,7 +2764,7 @@
                                                                                     },
                                                                                     {
                                                                                       "Name": "DataContext",
-                                                                                      "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                                                      "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                                                     },
                                                                                     {
                                                                                       "Name": "Name",
@@ -2801,7 +2801,7 @@
                                                                                       "Properties": [
                                                                                         {
                                                                                           "Name": "DataContext",
-                                                                                          "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                                                          "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                                                         },
                                                                                         {
                                                                                           "Name": "Name",
@@ -2838,7 +2838,7 @@
                                                                                           "Properties": [
                                                                                             {
                                                                                               "Name": "DataContext",
-                                                                                              "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                                                              "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                                                             },
                                                                                             {
                                                                                               "Name": "Name",
@@ -2888,7 +2888,7 @@
                                                                                             },
                                                                                             {
                                                                                               "Name": "DataContext",
-                                                                                              "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                                                              "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                                                             },
                                                                                             {
                                                                                               "Name": "Name",
@@ -2929,7 +2929,7 @@
                                                                                                 },
                                                                                                 {
                                                                                                   "Name": "DataContext",
-                                                                                                  "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                                                                  "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                                                                 },
                                                                                                 {
                                                                                                   "Name": "Name",
@@ -2970,7 +2970,7 @@
                                                                                                     },
                                                                                                     {
                                                                                                       "Name": "DataContext",
-                                                                                                      "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                                                                      "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                                                                     },
                                                                                                     {
                                                                                                       "Name": "Name",
@@ -3012,7 +3012,7 @@
                                                                                           "Properties": [
                                                                                             {
                                                                                               "Name": "DataContext",
-                                                                                              "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                                                              "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                                                             },
                                                                                             {
                                                                                               "Name": "Name",
@@ -3062,7 +3062,7 @@
                                                                                             },
                                                                                             {
                                                                                               "Name": "DataContext",
-                                                                                              "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                                                              "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                                                             },
                                                                                             {
                                                                                               "Name": "Name",
@@ -3122,7 +3122,7 @@
                                                                         },
                                                                         {
                                                                           "Name": "DataContext",
-                                                                          "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                                          "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                                         },
                                                                         {
                                                                           "Name": "Name",
@@ -3163,7 +3163,7 @@
                                                                             },
                                                                             {
                                                                               "Name": "DataContext",
-                                                                              "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                                              "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                                             },
                                                                             {
                                                                               "Name": "Name",
@@ -3208,7 +3208,7 @@
                                                                                 },
                                                                                 {
                                                                                   "Name": "DataContext",
-                                                                                  "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                                                  "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                                                 },
                                                                                 {
                                                                                   "Name": "Name",
@@ -3245,7 +3245,7 @@
                                                                                   "Properties": [
                                                                                     {
                                                                                       "Name": "Content",
-                                                                                      "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                                                      "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                                                     },
                                                                                     {
                                                                                       "Name": "ContentTemplate",
@@ -3253,7 +3253,7 @@
                                                                                     },
                                                                                     {
                                                                                       "Name": "DataContext",
-                                                                                      "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                                                      "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                                                     },
                                                                                     {
                                                                                       "Name": "Name",
@@ -3290,7 +3290,7 @@
                                                                                       "Properties": [
                                                                                         {
                                                                                           "Name": "DataContext",
-                                                                                          "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                                                          "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                                                         },
                                                                                         {
                                                                                           "Name": "Name",
@@ -3339,7 +3339,7 @@
                                                                                             },
                                                                                             {
                                                                                               "Name": "DataContext",
-                                                                                              "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                                                              "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                                                             },
                                                                                             {
                                                                                               "Name": "Name",
@@ -3377,7 +3377,7 @@
                                                                                           "Properties": [
                                                                                             {
                                                                                               "Name": "DataContext",
-                                                                                              "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                                                              "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                                                             },
                                                                                             {
                                                                                               "Name": "Name",
@@ -3426,7 +3426,7 @@
                                                                                                 },
                                                                                                 {
                                                                                                   "Name": "DataContext",
-                                                                                                  "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                                                                  "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                                                                 },
                                                                                                 {
                                                                                                   "Name": "Name",
@@ -3467,7 +3467,7 @@
                                                                                                     },
                                                                                                     {
                                                                                                       "Name": "DataContext",
-                                                                                                      "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                                                                      "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                                                                     },
                                                                                                     {
                                                                                                       "Name": "Name",
@@ -3512,7 +3512,7 @@
                                                                                                         },
                                                                                                         {
                                                                                                           "Name": "DataContext",
-                                                                                                          "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                                                                          "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                                                                         },
                                                                                                         {
                                                                                                           "Name": "Name",
@@ -3549,7 +3549,7 @@
                                                                                                           "Properties": [
                                                                                                             {
                                                                                                               "Name": "DataContext",
-                                                                                                              "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                                                                              "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                                                                             },
                                                                                                             {
                                                                                                               "Name": "Name",
@@ -3605,7 +3605,7 @@
                                                                                                 },
                                                                                                 {
                                                                                                   "Name": "DataContext",
-                                                                                                  "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                                                                  "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                                                                 },
                                                                                                 {
                                                                                                   "Name": "Name",
@@ -3646,7 +3646,7 @@
                                                                                                     },
                                                                                                     {
                                                                                                       "Name": "DataContext",
-                                                                                                      "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                                                                      "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                                                                     },
                                                                                                     {
                                                                                                       "Name": "Name",
@@ -3691,7 +3691,7 @@
                                                                                                         },
                                                                                                         {
                                                                                                           "Name": "DataContext",
-                                                                                                          "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                                                                          "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                                                                         },
                                                                                                         {
                                                                                                           "Name": "Name",
@@ -3728,7 +3728,7 @@
                                                                                                           "Properties": [
                                                                                                             {
                                                                                                               "Name": "DataContext",
-                                                                                                              "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                                                                              "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                                                                             },
                                                                                                             {
                                                                                                               "Name": "Name",
@@ -3790,7 +3790,7 @@
                                                           "Properties": [
                                                             {
                                                               "Name": "Content",
-                                                              "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                              "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                             },
                                                             {
                                                               "Name": "ContentTemplate",
@@ -3848,7 +3848,7 @@
                                                             },
                                                             {
                                                               "Name": "DataContext",
-                                                              "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                              "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                             },
                                                             {
                                                               "Name": "Name",
@@ -3885,7 +3885,7 @@
                                                               "Properties": [
                                                                 {
                                                                   "Name": "DataContext",
-                                                                  "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                                  "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                                 },
                                                                 {
                                                                   "Name": "Name",
@@ -3926,7 +3926,7 @@
                                                                     },
                                                                     {
                                                                       "Name": "DataContext",
-                                                                      "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                                      "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                                     },
                                                                     {
                                                                       "Name": "Name",
@@ -3963,7 +3963,7 @@
                                                                       "Properties": [
                                                                         {
                                                                           "Name": "DataContext",
-                                                                          "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                                          "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                                         },
                                                                         {
                                                                           "Name": "Name",
@@ -4050,7 +4050,7 @@
                                                                             },
                                                                             {
                                                                               "Name": "DataContext",
-                                                                              "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                                              "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                                             },
                                                                             {
                                                                               "Name": "Name",
@@ -4096,7 +4096,7 @@
                                                                     },
                                                                     {
                                                                       "Name": "DataContext",
-                                                                      "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                                      "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                                     },
                                                                     {
                                                                       "Name": "Name",
@@ -4138,7 +4138,7 @@
                                                                     },
                                                                     {
                                                                       "Name": "DataContext",
-                                                                      "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                                      "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                                     },
                                                                     {
                                                                       "Name": "Name",
@@ -4179,7 +4179,7 @@
                                                                         },
                                                                         {
                                                                           "Name": "DataContext",
-                                                                          "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                                          "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                                         },
                                                                         {
                                                                           "Name": "Name",
