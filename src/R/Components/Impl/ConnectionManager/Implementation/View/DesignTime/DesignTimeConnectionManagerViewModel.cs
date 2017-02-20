@@ -33,10 +33,10 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View.DesignTim
         public bool IsEditingNew => true;
         public bool IsConnected => false;
         
-        public void EditNew() {}
+        public bool TryEditNew() => false;
         public void CancelEdit() { }
         public void BrowseLocalPath(IConnectionViewModel connection) { }
-        public void Edit(IConnectionViewModel connection) { }
+        public bool TryEdit(IConnectionViewModel connection) => false;
         public Task TestConnectionAsync(IConnectionViewModel connection) => Task.CompletedTask;
         public void CancelTestConnection() { }
         public void Save(IConnectionViewModel connectionViewModel) { }

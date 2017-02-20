@@ -160,7 +160,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Connect to &apos;{0}&apos;..
+        ///   Looks up a localized string similar to Connect to &apos;{0}&apos;.
         /// </summary>
         public static string ConnectionManager_ConnectTooltip {
             get {
@@ -178,11 +178,11 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Delete connection.
+        ///   Looks up a localized string similar to Delete connection &apos;{0}&apos;.
         /// </summary>
-        public static string ConnectionManager_DeleteTooltip {
+        public static string ConnectionManager_DeleteTooltip_Format {
             get {
-                return ResourceManager.GetString("ConnectionManager_DeleteTooltip", resourceCulture);
+                return ResourceManager.GetString("ConnectionManager_DeleteTooltip_Format", resourceCulture);
             }
         }
         
@@ -214,20 +214,20 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Edit R interpreter information.
+        ///   Looks up a localized string similar to Edit local connection &apos;{0}&apos;.
         /// </summary>
-        public static string ConnectionManager_EditLocalTooltip {
+        public static string ConnectionManager_EditLocalTooltip_Format {
             get {
-                return ResourceManager.GetString("ConnectionManager_EditLocalTooltip", resourceCulture);
+                return ResourceManager.GetString("ConnectionManager_EditLocalTooltip_Format", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Edit remote connection information.
+        ///   Looks up a localized string similar to Edit remote connection &apos;{0}&apos;.
         /// </summary>
-        public static string ConnectionManager_EditRemoteTooltip {
+        public static string ConnectionManager_EditRemoteTooltip_Format {
             get {
-                return ResourceManager.GetString("ConnectionManager_EditRemoteTooltip", resourceCulture);
+                return ResourceManager.GetString("ConnectionManager_EditRemoteTooltip_Format", resourceCulture);
             }
         }
         
@@ -243,8 +243,7 @@ namespace Microsoft.R.Components {
         
         /// <summary>
         ///   Looks up a localized string similar to Host: {0}
-        ///Arguments: {1}
-        ///    .
+        ///Arguments: {1}.
         /// </summary>
         public static string ConnectionManager_InformationTooltipFormatRemote {
             get {
@@ -280,11 +279,20 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Expand/Collapse list of local R installations.
+        ///   Looks up a localized string similar to Collapse list of local R installations.
         /// </summary>
-        public static string ConnectionManager_LocalConnectionsTooltip {
+        public static string ConnectionManager_LocalConnections_Collapse {
             get {
-                return ResourceManager.GetString("ConnectionManager_LocalConnectionsTooltip", resourceCulture);
+                return ResourceManager.GetString("ConnectionManager_LocalConnections_Collapse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Expand list of local R installations.
+        /// </summary>
+        public static string ConnectionManager_LocalConnections_Expand {
+            get {
+                return ResourceManager.GetString("ConnectionManager_LocalConnections_Expand", resourceCulture);
             }
         }
         
@@ -343,11 +351,20 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Expand/Collapse list of remote workspaces.
+        ///   Looks up a localized string similar to Collapse list of remote workspaces.
         /// </summary>
-        public static string ConnectionManager_RemoteConnectionsTooltip {
+        public static string ConnectionManager_RemoteConnections_Collapse {
             get {
-                return ResourceManager.GetString("ConnectionManager_RemoteConnectionsTooltip", resourceCulture);
+                return ResourceManager.GetString("ConnectionManager_RemoteConnections_Collapse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Expand list of remote workspaces.
+        /// </summary>
+        public static string ConnectionManager_RemoteConnections_Expand {
+            get {
+                return ResourceManager.GetString("ConnectionManager_RemoteConnections_Expand", resourceCulture);
             }
         }
         
