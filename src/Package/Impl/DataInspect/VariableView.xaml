@@ -84,7 +84,7 @@
                               Grid.Column="1"
                               Style="{StaticResource ExpanderToggleStyle}"
                               ClickMode="Press" IsChecked="{Binding IsExpanded, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                              AutomationProperties.Name="Expand variable"/>
+                              AutomationProperties.Name="{x:Static pkg:Resources.VariableExplorer_ExpandVariable}"/>
                     <imaging:CrispImage Grid.Column="2" Width="16" Height="16" Opacity="0.5"
                                         Moniker="{Binding Model.Content.DebugEvaluation, Converter={wpf:Lambda '(IREvaluationResultInfo info) => GetVariableIcon(info)'}}">
                         <imaging:CrispImage.ToolTip>
@@ -182,8 +182,9 @@
                                     </ControlTemplate>
                                 </Setter.Value>
                             </Setter>
-                         </DataTrigger>
+                        </DataTrigger>
                     </Style.Triggers>
+                    <Setter Property="AutomationProperties.Name" Value="{Binding Name}" />
                 </Style>
             </ComboBox.ItemContainerStyle>
         </ComboBox>

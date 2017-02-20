@@ -2809,6 +2809,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Expand variable.
+        /// </summary>
+        public static string VariableExplorer_ExpandVariable {
+            get {
+                return ResourceManager.GetString("VariableExplorer_ExpandVariable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Name.
         /// </summary>
         public static string VariableExplorer_NameHeader {

@@ -1108,4 +1108,7 @@ Click OK to open MiKTeX download page in the default browser. R Remote Services 
   <data name="VariableExplorer_EnvironmentsCombo_AccessibleName" xml:space="preserve">
     <value>Selected environment</value>
   </data>
+  <data name="VariableExplorer_ExpandVariable" xml:space="preserve">
+    <value>Expand variable</value>
+  </data>
 </root>
