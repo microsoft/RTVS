@@ -598,7 +598,8 @@ Reconnecting to the same remote server will create a brand new profile.
 Are you sure you want to delete your user profile and all the associated remote files?</value>
   </data>
   <data name="DeleteProfile_Error" xml:space="preserve">
-    <value>Failed to delete user profile. Please see logs for the RUserProfileService on the remote machine {0}. Requires admin access to examine the logs.</value>
+    <value>Failed to delete user profile, try again few minutes later.
+If it continues to fail, please check the logs for RUserProfileService on the remote machine {0}.</value>
   </data>
   <data name="DeleteProfile_Success" xml:space="preserve">
     <value>User directory and files under it were successfully deleted from remote machine {0}. 
