@@ -201,18 +201,23 @@ namespace Microsoft.R.Support.Help.Packages {
         }
 
         private async Task UpdateInstalledPackagesAsync() {
-            var token = await _buildIndexLock.WaitAsync();
-            try {
-                var installed = await GetInstalledPackagesAsync();
-                var installedNames = installed.Select(p => p.Package).Append("rtvs");
+            var token = await _buildIndexLock.ResetAsync();
+            if (!token.IsSet) {
+                try {
+                    var installed = await GetInstalledPackagesAsync();
+                    var installedNames = installed.Select(p => p.Package).Append("rtvs").ToList();
 
-                var currentNames = _packages.Keys.ToArray();
-                var removedNames = currentNames.Except(installedNames);
-                _packages.RemoveWhere((kvp) => removedNames.Contains(kvp.Key));
+                    var currentNames = _packages.Keys.ToArray();
+                    var removedNames = currentNames.Except(installedNames);
+                    _packages.RemoveWhere((kvp) => removedNames.Contains(kvp.Key));
 
-                var added = installed.Where(p => !currentNames.Contains(p.Package));
-                await AddPackagesToIndexAsync(added);
-            } catch (OperationCanceledException) { }
+                    var added = installed.Where(p => !currentNames.Contains(p.Package));
+                    await AddPackagesToIndexAsync(added);
+                } catch (OperationCanceledException) {
+                } finally {
+                    token.Reset();
+                }
+            }
         }
 
         /// <summary>
