@@ -20,12 +20,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// <summary>
         /// total number of items in row
         /// </summary>
-        int RowCount { get; }
+        long RowCount { get; }
 
         /// <summary>
         /// total number of items in column
         /// </summary>
-        int ColumnCount { get; }
+        long ColumnCount { get; }
 
         bool CanSort { get; }
 

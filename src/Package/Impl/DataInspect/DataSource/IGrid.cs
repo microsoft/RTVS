@@ -18,7 +18,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// <exception cref="ArgumentOutOfRangeException">when index is out of range</exception>
         /// <exception cref="InvalidOperationException">when failed at setting or getting the value</exception>
         /// <exception cref="NotSupportedException">setter, when the grid is read only</exception>
-        T this[int rowIndex, int columnIndex] {
+        T this[long rowIndex, long columnIndex] {
             get; set;
         }
     }
@@ -26,7 +26,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public interface IRange<T> {
         Range Range { get; }
 
-        T this[int index] {
+        T this[long index] {
             get; set;
         }
     }

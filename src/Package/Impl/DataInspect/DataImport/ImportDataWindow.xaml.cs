@@ -158,7 +158,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport
                 if (expression != null) {
                     try {
                         var grid = await GridDataSource.GetGridDataAsync(expression, null);
-
                         PopulateDataFramePreview(grid);
                         DataFramePreview.Visibility = Visibility.Visible;
                     } catch (Exception ex) {
@@ -200,7 +199,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport
             var dg = DataFramePreview;
             dg.Columns.Clear();
 
-            for (int i = 0; i < gridData.ColumnHeader.Range.Count; i++) {
+            for (long i = 0; i < gridData.ColumnHeader.Range.Count; i++) {
                 dg.Columns.Add(new DataGridTextColumn() {
                     Header = gridData.ColumnHeader[gridData.ColumnHeader.Range.Start + i],
                     Binding = new Binding(Invariant($"Values[{i}]")),
@@ -208,12 +207,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport
             }
 
             var rows = new List<DataFramePreviewRowItem>();
-            for (var r = 0; r < gridData.Grid.Range.Rows.Count; r++) {
+            for (long r = 0; r < gridData.Grid.Range.Rows.Count; r++) {
                 var row = new DataFramePreviewRowItem {
                     RowName = gridData.RowHeader[gridData.RowHeader.Range.Start + r]
                 };
 
-                for (int c = 0; c < gridData.Grid.Range.Columns.Count; c++) {
+                for (long c = 0; c < gridData.Grid.Range.Columns.Count; c++) {
                     row.Values.Add(gridData.Grid[gridData.Grid.Range.Rows.Start + r, gridData.Grid.Range.Columns.Start + c].ToUnicodeQuotes());
                 }
 

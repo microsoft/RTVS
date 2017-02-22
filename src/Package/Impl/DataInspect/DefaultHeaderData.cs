@@ -20,9 +20,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _is1D = is1D;
         }
 
-        public string this[int index] {
+        public string this[long index] {
             get {
-                int rIndex = checked(index + 1);
+                long rIndex = checked(index + 1);
                 if (_is1D) {
                     switch (_mode) {
                         case Mode.Column:

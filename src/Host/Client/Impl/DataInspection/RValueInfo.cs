@@ -19,15 +19,15 @@ namespace Microsoft.R.DataInspection {
 
         public IReadOnlyList<string> Classes { get; }
 
-        public int? Length { get; }
+        public long? Length { get; }
 
-        public int? AttributeCount { get; }
+        public long? AttributeCount { get; }
 
-        public int? SlotCount { get; }
+        public long? SlotCount { get; }
 
-        public int? NameCount { get; }
+        public long? NameCount { get; }
 
-        public IReadOnlyList<int> Dim { get; }
+        public IReadOnlyList<long> Dim { get; }
 
         public RValueFlags Flags { get; }
 
@@ -71,11 +71,11 @@ namespace Microsoft.R.DataInspection {
             RChildAccessorKind accessorKind,
             string typeName,
             IReadOnlyList<string> classes,
-            int? length,
-            int? attributeCount,
-            int? slotCount,
-            int? nameCount,
-            IReadOnlyList<int> dim,
+            long? length,
+            long? attributeCount,
+            long? slotCount,
+            long? nameCount,
+            IReadOnlyList<long> dim,
             RValueFlags flags,
             bool canCoerceToDataFrame
         ) : base(evaluator, environmentExpression, expression, name) {
@@ -98,10 +98,10 @@ namespace Microsoft.R.DataInspection {
 
             Representation = json.Value<string>(FieldNames.Repr);
             TypeName = json.Value<string>(FieldNames.Type);
-            Length = json.Value<int?>(FieldNames.Length);
-            AttributeCount = json.Value<int?>(FieldNames.AttributeCount);
-            SlotCount = json.Value<int?>(FieldNames.SlotCount);
-            NameCount = json.Value<int?>(FieldNames.NameCount);
+            Length = json.Value<long?>(FieldNames.Length);
+            AttributeCount = json.Value<long?>(FieldNames.AttributeCount);
+            SlotCount = json.Value<long?>(FieldNames.SlotCount);
+            NameCount = json.Value<long?>(FieldNames.NameCount);
             CanCoerceToDataFrame = json.Value<bool?>(FieldNames.CanCoerceToDataFrame) ?? false;
 
             var classes = json.Value<JArray>(FieldNames.Classes);
@@ -111,7 +111,7 @@ namespace Microsoft.R.DataInspection {
 
             var dim = json.Value<JArray>(FieldNames.Dim);
             if (dim != null) {
-                Dim = dim.Select(t => t.Value<int>()).ToArray();
+                Dim = dim.Select(t => t.Value<long>()).ToArray();
             }
 
             var kind = json.Value<string>(FieldNames.AccessorKind);

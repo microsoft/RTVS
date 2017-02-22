@@ -13,8 +13,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     internal class GridPoints {
         #region fields and ctor
 
-        private int _rowCount;
-        private int _columnCount;
+        private long _rowCount;
+        private long _columnCount;
 
         private double[] _xPositions;
         private double[] _yPositions;
@@ -24,7 +24,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private bool _xPositionValid;
         private bool _yPositionValid;
 
-        public GridPoints(int rowCount, int columnCount, Size initialViewportSize) {
+        public GridPoints(long rowCount, long columnCount, Size initialViewportSize) {
             Reset(rowCount, columnCount);
 
             _viewportHeight = Math.Max(MinItemHeight, initialViewportSize.Height);
@@ -33,7 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         #endregion
 
-        public void Reset(int rowCount, int columnCount) {
+        public void Reset(long rowCount, long columnCount) {
             _rowCount = rowCount;
             _columnCount = columnCount;
 
@@ -185,21 +185,21 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             return new PointAccessor(this, scrollDirection);
         }
 
-        public double xPosition(int xIndex) {
+        public double xPosition(long xIndex) {
             EnsureXPositions();
             return _xPositions[xIndex] - HorizontalComputedOffset;
         }
 
-        public double yPosition(int yIndex) {
+        public double yPosition(long yIndex) {
             EnsureYPositions();
             return _yPositions[yIndex] - VerticalComputedOffset;
         }
 
-        public double GetWidth(int columnIndex) {
+        public double GetWidth(long columnIndex) {
             return _width[columnIndex];
         }
 
-        public void SetWidth(int xIndex, double value) {
+        public void SetWidth(long xIndex, double value) {
             if (_width[xIndex].LessThan(value)) {
                 _width[xIndex] = value;
                 _xPositionValid = false;
@@ -207,11 +207,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
-        public double GetHeight(int rowIndex) {
+        public double GetHeight(long rowIndex) {
             return _height[rowIndex];
         }
 
-        public void SetHeight(int yIndex, double value) {
+        public void SetHeight(long yIndex, double value) {
             if (_height[yIndex].LessThan(value)) {
                 _height[yIndex] = value;
                 _yPositionValid = false;
@@ -243,33 +243,33 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
-        public int xIndex(double position) {
+        public long xIndex(double position) {
             EnsureXPositions();
-            int index = Index(position, _xPositions);
+            long index = Index(position, _xPositions);
 
             // _xPositions has one more item than columns
             return Math.Min(index, _columnCount - 1);
         }
 
-        public int yIndex(double position) {
+        public long yIndex(double position) {
             EnsureYPositions();
-            int index = Index(position, _yPositions);
+            long index = Index(position, _yPositions);
 
             // _yPositions has one more item than rows
             return Math.Min(index, _rowCount - 1);
         }
 
-        private int Index(double position, double[] positions) {
-            int index = Array.BinarySearch(positions, position);
+        private long Index(double position, double[] positions) {
+            long index = Array.BinarySearch(positions, position);
             return (index < 0) ? (~index) - 1 : index;
         }
 
         private void InitializeWidthAndHeight() {
-            for (int i = 0; i < _columnCount; i++) {
+            for (long i = 0; i < _columnCount; i++) {
                 _width[i] = MinItemWidth;
             }
 
-            for (int i = 0; i < _rowCount; i++) {
+            for (long i = 0; i < _rowCount; i++) {
                 _height[i] = MinItemHeight;
             }
 
@@ -280,15 +280,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         public GridRange ComputeDataViewport(Rect visualViewport) {
-            int columnStart = Math.Max(0, xIndex(visualViewport.X));
-            int rowStart = Math.Max(0, yIndex(visualViewport.Y));
+            long columnStart = Math.Max(0, xIndex(visualViewport.X));
+            long rowStart = Math.Max(0, yIndex(visualViewport.Y));
 
             Debug.Assert(HorizontalComputedOffset >= _xPositions[columnStart]);
             Debug.Assert(VerticalComputedOffset >= _yPositions[rowStart]);
 
             double width = _xPositions[columnStart] - HorizontalComputedOffset;
-            int columnCount = 0;
-            for (int c = columnStart; c < _columnCount; c++) {
+            long columnCount = 0;
+            for (long c = columnStart; c < _columnCount; c++) {
                 width += GetWidth(c);
                 columnCount++;
                 if (width.GreaterThanOrClose(visualViewport.Width)) {
@@ -297,7 +297,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
 
             if (width.LessThan(visualViewport.Width)) {
-                for (int c = columnStart - 1; c >= 0; c--) {
+                for (long c = columnStart - 1; c >= 0; c--) {
                     width += GetWidth(c);
                     if (width.GreaterThanOrClose(visualViewport.Width)) {
                         break;
@@ -306,9 +306,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
 
             double height = _yPositions[rowStart] - VerticalComputedOffset;
-            int rowEnd = rowStart;
-            int rowCount = 0;
-            for (int r = rowStart; r < _rowCount; r++) {
+            long rowEnd = rowStart;
+            long rowCount = 0;
+            for (long r = rowStart; r < _rowCount; r++) {
                 height += GetHeight(r);
                 rowCount++;
                 if (height.GreaterThanOrClose(visualViewport.Height)) {
@@ -317,7 +317,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
 
             if (height.LessThan(visualViewport.Height)) {
-                for (int r = rowStart - 1; r >= 0; r--) {
+                for (long r = rowStart - 1; r >= 0; r--) {
                     height += GetHeight(r);
                     if (height.GreaterThanOrClose(visualViewport.Height)) {
                         break;
@@ -345,7 +345,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         private void ComputeYPositions() {
             double height = 0.0;
-            for (int i = 0; i < _rowCount; i++) {
+            for (long i = 0; i < _rowCount; i++) {
                 height += _height[i];
                 _yPositions[i + 1] = height;
             }
@@ -360,7 +360,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         private void ComputeXPositions() {
             double width = 0.0;
-            for (int i = 0; i < _columnCount; i++) {
+            for (long i = 0; i < _columnCount; i++) {
                 width += _width[i];
                 _xPositions[i + 1] = width;
             }
@@ -422,7 +422,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             public Indexer<double> yPosition { get; }
 
-            private static void NotSupportedSetter(int index, double value) {
+            private static void NotSupportedSetter(long index, double value) {
                 throw new NotSupportedException("Setter is not supported");
             }
         }

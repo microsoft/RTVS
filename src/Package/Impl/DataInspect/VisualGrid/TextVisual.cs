@@ -21,18 +21,18 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         public static readonly DependencyProperty RowProperty =
-            DependencyProperty.Register("Row", typeof(int), typeof(TextVisual), new PropertyMetadata());
+            DependencyProperty.Register("Row", typeof(long), typeof(TextVisual), new PropertyMetadata());
 
-        public virtual int Row {
-            get { return (int)GetValue(RowProperty); }
+        public virtual long Row {
+            get { return (long)GetValue(RowProperty); }
             set { SetValue(RowProperty, value); }
         }
 
         public static readonly DependencyProperty ColumnProperty =
-            DependencyProperty.Register("Column", typeof(int), typeof(TextVisual), new PropertyMetadata());
+            DependencyProperty.Register("Column", typeof(long), typeof(TextVisual), new PropertyMetadata());
 
-        public virtual int Column {
-            get { return (int)GetValue(ColumnProperty); }
+        public virtual long Column {
+            get { return (long)GetValue(ColumnProperty); }
             set { SetValue(ColumnProperty, value); }
         }
         #endregion

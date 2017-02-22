@@ -7,6 +7,8 @@ using Microsoft.R.DataInspection;
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     [Export(typeof(IObjectDetailsViewer))]
     internal sealed class GridViewer : GridViewerBase {
+        private const long MaxDim = 10000000;
+
         [ImportingConstructor]
         public GridViewer(IObjectDetailsViewerAggregator aggregator, IDataObjectEvaluator evaluator) :
             base(aggregator, evaluator) { }
@@ -32,6 +34,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             var dimCount = value.Dim?.Count ?? 1;
             if (dimCount > 2 || (dimCount == 1 && length == 1)) {
                 return false;
+            }
+
+            // Grid viewer allocates arrays of doubles of the size of each dimension, to precompute cell coordinates.
+            // If a given dimension is too large, the corresponding array can easily OOM on allocation. So, restrict
+            // dimensions to reasonable sizes.
+            foreach (var dim in value.Dim ?? new[] { length }) {
+                if (dim > MaxDim) {
+                    return false;
+                }
             }
 
             return true;

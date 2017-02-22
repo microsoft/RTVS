@@ -163,7 +163,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
-        private void InitVisual(int r, int c, IGrid<string> data, TextVisual visual) {
+        private void InitVisual(long r, long c, IGrid<string> data, TextVisual visual) {
             visual.Row = r;
             visual.Column = c;
             visual.Text = data[r, c];

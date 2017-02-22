@@ -29,9 +29,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
-        public int ColumnCount { get; }
+        public long ColumnCount { get; }
 
-        public int RowCount { get; }
+        public long RowCount { get; }
 
         public bool CanSort { get; }
 

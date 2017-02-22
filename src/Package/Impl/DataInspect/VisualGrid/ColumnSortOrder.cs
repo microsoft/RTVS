@@ -3,9 +3,9 @@
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public class ColumnSortOrder {
-        public int ColumnIndex { get; }
+        public long ColumnIndex { get; }
         public bool Descending { get; set; }
-        public ColumnSortOrder(int columnIndex, bool descending) {
+        public ColumnSortOrder(long columnIndex, bool descending) {
             ColumnIndex = columnIndex;
             Descending = descending;
         }

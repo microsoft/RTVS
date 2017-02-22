@@ -16,11 +16,11 @@ namespace Microsoft.R.Host.Client {
         /// <summary>
         /// Object length (such an number of elements in a list)
         /// </summary>
-        int Length { get; }
+        long Length { get; }
 
         /// <summary>
         /// Number of dimensions in the object.
         /// </summary>
-        IReadOnlyList<int> Dim { get; }
+        IReadOnlyList<long> Dim { get; }
     }
 }
