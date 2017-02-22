@@ -70,8 +70,7 @@ namespace Microsoft.R.Support.Help.Packages {
         }
 
         private void OnPackagesChanged(object sender, EventArgs e) {
-            _buildIndexLock.EnqueueReset();
-            ScheduleIdleTimeRebuild();
+            UpdateInstalledPackagesAsync().DoNotWait();
         }
 
         #region IPackageIndex
@@ -201,38 +200,60 @@ namespace Microsoft.R.Support.Help.Packages {
             }
         }
 
+        private async Task UpdateInstalledPackagesAsync() {
+            var token = await _buildIndexLock.ResetAsync();
+            if (!token.IsSet) {
+                try {
+                    var installed = await GetInstalledPackagesAsync();
+                    var installedNames = installed.Select(p => p.Package).Append("rtvs").ToList();
+
+                    var currentNames = _packages.Keys.ToArray();
+                    var removedNames = currentNames.Except(installedNames);
+                    _packages.RemoveWhere((kvp) => removedNames.Contains(kvp.Key));
+
+                    var added = installed.Where(p => !currentNames.Contains(p.Package));
+                    await AddPackagesToIndexAsync(added);
+                } catch (OperationCanceledException) {
+                } finally {
+                    token.Reset();
+                }
+            }
+        }
+
         /// <summary>
         /// From the supplied names selects packages that are not in the index and attempts
         /// to add them to the index. This typically applies to packages that were just installed.
         /// </summary>
         private async Task<IEnumerable<IPackageInfo>> TryAddMissingPackagesAsync(IEnumerable<string> packageNames) {
-            var list = new List<IPackageInfo>();
+            var info = Enumerable.Empty<IPackageInfo>();
             // Do not attempt to add new package when index is still being built
             if (packageNames.Any() && _buildIndexLock.IsSet) {
                 try {
                     var installedPackages = await GetInstalledPackagesAsync();
                     var packagesNotInIndex = installedPackages.Where(p => packageNames.Contains(p.Package));
-                    foreach (var p in packagesNotInIndex) {
-                        var info = new PackageInfo(_host, p.Package, p.Description, p.Version);
-                        _packages[p.Package] = info;
-
-                        await info.LoadFunctionsIndexAsync();
-                        _functionIndex.RegisterPackageFunctions(info);
-
-                        list.Add(info);
-                    }
+                    info = await AddPackagesToIndexAsync(packagesNotInIndex);
                 } catch (RHostDisconnectedException) { }
+            }
+            return info;
+        }
+
+        private async Task<IEnumerable<IPackageInfo>> AddPackagesToIndexAsync(IEnumerable<RPackage> packages) {
+            var list = new List<IPackageInfo>();
+            foreach (var p in packages) {
+                var info = new PackageInfo(_host, p.Package, p.Description, p.Version);
+                _packages[p.Package] = info;
+
+                await info.LoadFunctionsIndexAsync();
+                _functionIndex.RegisterPackageFunctions(info);
+                list.Add(info);
             }
             return list;
         }
 
         private async Task<IEnumerable<RPackage>> GetInstalledPackagesAsync() {
-            try {
-                await _host.StartSessionAsync();
-                var result = await _host.Session.InstalledPackagesAsync();
-                return result.Select(p => p.ToObject<RPackage>());
-            } catch (TaskCanceledException) { }
-            return Enumerable.Empty<RPackage>();
+            await _host.StartSessionAsync();
+            var result = await _host.Session.InstalledPackagesAsync();
+            return result.Select(p => p.ToObject<RPackage>());
         }
 
         private async Task<IEnumerable<string>> GetLoadedPackagesAsync() {
