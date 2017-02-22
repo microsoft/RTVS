@@ -23,13 +23,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public Range Range { get; }
 
-        public T this[int index] {
+        public T this[long index] {
             get {
-                return _list[index - Range.Start];
+                return _list[checked((int)(index - Range.Start))];
             }
 
             set {
-                _list[index - Range.Start] = value;
+                _list[checked((int)( index - Range.Start))] = value;
             }
         }
     }

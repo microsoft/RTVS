@@ -16,7 +16,7 @@ namespace Microsoft.R.Editor.Data {
 
         bool HasChildren { get; }
 
-        IReadOnlyList<int> Dimensions { get; }
+        IReadOnlyList<long> Dimensions { get; }
 
         bool IsHidden { get; }
 

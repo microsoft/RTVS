@@ -175,8 +175,8 @@ namespace Microsoft.R.Host.Client {
 
         private class RObjectInfo: IRObjectInformation {
             public string TypeName { get; set; }
-            public int Length { get; set; }
-            public IReadOnlyList<int> Dim { get; set; }
+            public long Length { get; set; }
+            public IReadOnlyList<long> Dim { get; set; }
         }
     }
 }

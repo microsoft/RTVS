@@ -69,7 +69,7 @@ namespace Microsoft.R.Host.Client {
         /// <param name="expression">Expression to evaluate</param>
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns>Object kength</returns>
-        public static async Task<int> GetLengthAsync(this IRHostSession session, string expression, CancellationToken cancellationToken = default(CancellationToken)) {
+        public static async Task<long> GetLengthAsync(this IRHostSession session, string expression, CancellationToken cancellationToken = default(CancellationToken)) {
             var info = await session.GetInformationAsync(expression, cancellationToken);
             return info.Length;
         }

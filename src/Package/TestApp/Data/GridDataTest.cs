@@ -22,7 +22,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
     [ExcludeFromCodeCoverage]
     public class GridDataTest : IAsyncLifetime {
         private struct GridElement<T> {
-            public int X, Y;
+            public long X, Y;
             public T Value;
 
             public override string ToString() => $"[{Y}, {X}] = {Value}";
@@ -47,8 +47,8 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         }
 
         private static IEnumerable<T> ToEnumerable<T>(IRange<T> range) {
-            int start = range.Range.Start, end = start + range.Range.Count;
-            for (int i = start; i < end; ++i) {
+            long start = range.Range.Start, end = start + range.Range.Count;
+            for (long i = start; i < end; ++i) {
                 yield return range[i];
             }
         }

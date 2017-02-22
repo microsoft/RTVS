@@ -11,19 +11,19 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// </summary>
     [DebuggerDisplay("[{Start},{_end})")]
     public struct Range {
-        int _end;
+        long _end;
 
-        public Range(int start, int count) {
+        public Range(long start, long count) {
             Start = start;
             Count = count;
             _end = start + count;
         }
 
-        public int Start { get; }
+        public long Start { get; }
 
-        public int Count { get; }
+        public long Count { get; }
 
-        public bool Contains(int value) {
+        public bool Contains(long value) {
             return (value >= Start) && (value < _end);
         }
 
@@ -33,13 +33,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             return (other.Start <= this.Start) && (other._end >= this._end);
         }
 
-        public IEnumerable<int> GetEnumerable(bool ascending = true) {
+        public IEnumerable<long> GetEnumerable(bool ascending = true) {
             if (ascending) {
-                for (int i = Start; i < _end; i++) {
+                for (long i = Start; i < _end; i++) {
                     yield return i;
                 }
             } else {
-                for (int i = _end - 1; i >= Start; i--) {
+                for (long i = _end - 1; i >= Start; i--) {
                     yield return i;
                 }
             }

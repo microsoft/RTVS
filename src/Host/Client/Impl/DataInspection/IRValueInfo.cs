@@ -39,22 +39,22 @@ namespace Microsoft.R.DataInspection {
         /// <summary>
         /// Length of the value, as computed by <c>length(...)</c>.
         /// </summary>
-        int? Length { get; }
+        long? Length { get; }
 
         /// <summary>
         /// Number of attributes that this value has, as computed by <c>length(attributes(...))</c>.
         /// </summary>
-        int? AttributeCount { get; }
+        long? AttributeCount { get; }
 
         /// <summary>
         /// Number of slots that this value has, as computed by <c>length(slotNames(class(...)))</c>.
         /// </summary>
-        int? SlotCount { get; }
+        long? SlotCount { get; }
 
         /// <summary>
         /// Number of names that the children of value have, as computed by <c>length(names(...))</c>.
         /// </summary>
-        int? NameCount { get; }
+        long? NameCount { get; }
 
         /// <summary>
         /// Dimensions that this value has, as computed by <c>dim(...)</c>.
@@ -63,7 +63,7 @@ namespace Microsoft.R.DataInspection {
         /// If <see cref="REvaluationResultProperties.DimProperty"/> was not specified, this property will be
         /// <see langword="null"/>, rather than an empty collection.
         /// </remarks>
-        IReadOnlyList<int> Dim { get; }
+        IReadOnlyList<long> Dim { get; }
 
         /// <summary>
         /// Various miscellaneous flags describing this value.

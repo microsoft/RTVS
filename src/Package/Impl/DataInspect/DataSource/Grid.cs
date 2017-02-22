@@ -12,10 +12,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public class Grid<T> : IGrid<T> {
         private IList<T> _list;
 
-        public Grid(GridRange range, Func<int, int, T> createNew) {
+        public Grid(GridRange range, Func<long, long, T> createNew) {
             Range = range;
 
-            _list = new List<T>(range.Rows.Count * range.Columns.Count);
+            _list = new List<T>(checked((int)(range.Rows.Count * range.Columns.Count)));
 
             foreach (int c in range.Columns.GetEnumerable()) {
                 foreach (int r in range.Rows.GetEnumerable()) {
@@ -33,7 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _list = list;
         }
 
-        public T this[int rowIndex, int columnIndex] {
+        public T this[long rowIndex, long columnIndex] {
             get {
                 return _list[ListIndex(rowIndex, columnIndex)];
             }
@@ -44,8 +44,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public GridRange Range { get; }
 
-        private int ListIndex(int rowIndex, int columnIndex) {
-            return ((columnIndex - Range.Columns.Start) * Range.Rows.Count) + (rowIndex - Range.Rows.Start);
+        private int ListIndex(long rowIndex, long columnIndex) {
+            return checked((int)(((columnIndex - Range.Columns.Start) * Range.Rows.Count) + (rowIndex - Range.Rows.Start)));
         }
     }
 
@@ -55,8 +55,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <typeparam name="T"></typeparam>
     public class RangeToGrid<T> : IGrid<T> {
         IRange<T> _data;
-        Func<int, int, T> _getItemFunc;
-        Action<int, int, T> _setItemFunc;
+        Func<long, long, T> _getItemFunc;
+        Action<long, long, T> _setItemFunc;
 
         public RangeToGrid(Range range, IRange<T> data, bool takeColumn) {
             if (takeColumn) {
@@ -72,7 +72,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _data = data;
         }
 
-        public T this[int rowIndex, int columnIndex] {
+        public T this[long rowIndex, long columnIndex] {
             get {
                 return _getItemFunc(rowIndex, columnIndex);
             }
@@ -83,7 +83,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public GridRange Range { get; }
 
-        private T GetItemColumnMode(int rowIndex, int columnIndex) {
+        private T GetItemColumnMode(long rowIndex, long columnIndex) {
             if (rowIndex != 0) {
                 throw new ArgumentOutOfRangeException(nameof(rowIndex));
             }
@@ -91,7 +91,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             return _data[columnIndex];
         }
 
-        private void SetItemColumnMode(int rowIndex, int columnIndex, T value) {
+        private void SetItemColumnMode(long rowIndex, long columnIndex, T value) {
             if (rowIndex != 0) {
                 throw new ArgumentOutOfRangeException(nameof(rowIndex));
             }
@@ -99,7 +99,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _data[columnIndex] = value;
         }
 
-        private T GetItemRowMode(int rowIndex, int columnIndex) {
+        private T GetItemRowMode(long rowIndex, long columnIndex) {
             if (columnIndex != 0) {
                 throw new ArgumentOutOfRangeException(nameof(columnIndex));
             }
@@ -107,7 +107,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             return _data[rowIndex];
         }
 
-        private void SetItemRowMode(int rowIndex, int columnIndex, T value) {
+        private void SetItemRowMode(long rowIndex, long columnIndex, T value) {
             if (columnIndex != 0) {
                 throw new ArgumentOutOfRangeException(nameof(columnIndex));
             }
@@ -123,14 +123,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             Range = range;
             _data = data;
         }
+
         public GridRange Range { get; }
 
-        public T this[int rowIndex, int columnIndex] {
+        public T this[long rowIndex, long columnIndex] {
             get {
-                return _data[columnIndex - Range.Columns.Start][rowIndex - Range.Rows.Start];
+                return _data[checked((int)(columnIndex - Range.Columns.Start))][checked((int)(rowIndex - Range.Rows.Start))];
             }
             set {
-                _data[columnIndex - Range.Columns.Start][rowIndex - Range.Rows.Start] = value;
+                _data[checked((int)(columnIndex - Range.Columns.Start))][checked((int)(rowIndex - Range.Rows.Start))] = value;
             }
         }
     }

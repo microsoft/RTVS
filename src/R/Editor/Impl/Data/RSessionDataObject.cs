@@ -58,7 +58,9 @@ namespace Microsoft.R.Editor.Data {
                 }
             }
 
-            if (Dimensions == null) Dimensions = new List<int>();
+            if (Dimensions == null) {
+                Dimensions = new List<long>();
+            }
 
             MaxChildrenCount = maxChildrenCount;
         }
@@ -77,9 +79,9 @@ namespace Microsoft.R.Editor.Data {
             if (valueInfo.Dim != null) {
                 Dimensions = valueInfo.Dim;
             } else if (valueInfo.Length.HasValue) {
-                Dimensions = new List<int>() { valueInfo.Length.Value, 1 };
+                Dimensions = new List<long>() { valueInfo.Length.Value, 1 };
             } else {
-                Dimensions = new List<int>();
+                Dimensions = new List<long>();
             }
         }
 
@@ -172,7 +174,7 @@ namespace Microsoft.R.Editor.Data {
 
         public bool HasChildren { get; protected set; }
 
-        public IReadOnlyList<int> Dimensions { get; protected set; }
+        public IReadOnlyList<long> Dimensions { get; protected set; }
 
         public bool IsHidden {
             get { return Name.StartsWithOrdinal(HiddenVariablePrefix); }

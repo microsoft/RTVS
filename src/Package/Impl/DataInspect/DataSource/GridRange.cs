@@ -15,7 +15,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public Range Columns { get; }
 
-        public bool Contains(int row, int column) {
+        public bool Contains(long row, long column) {
             return Rows.Contains(row) && Columns.Contains(column);
         }
 

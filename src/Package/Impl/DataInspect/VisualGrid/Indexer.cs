@@ -9,15 +9,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// </summary>
     /// <typeparam name="TValue"></typeparam>
     internal class Indexer<TValue> {
-        private Func<int, TValue> _getter;
-        private Action<int, TValue> _setter;
+        private Func<long, TValue> _getter;
+        private Action<long, TValue> _setter;
 
-        public Indexer(Func<int, TValue> getter, Action<int, TValue> setter) {
+        public Indexer(Func<long, TValue> getter, Action<long, TValue> setter) {
             _getter = getter;
             _setter = setter;
         }
 
-        public TValue this[int index] {
+        public TValue this[long index] {
             get {
                 return _getter(index);
             }

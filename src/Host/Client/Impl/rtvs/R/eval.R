@@ -39,6 +39,12 @@ describe_object <- function(obj, res, fields, repr = NULL) {
 
     if (field('classes')) {
         classes <- NA_if_error(class(obj));
+
+        # Since the entire class vector is serialized, restrict exceedingly large numbers of classes.
+        if (length(classes) > 1000) {
+            classes <- classes[1:1000];
+        }
+
         res$classes <- lapply(classes, function(cls) {
             if (!is.character(cls) || length(cls) != 1 || is.na(cls)) NA else cls
         });
@@ -62,7 +68,8 @@ describe_object <- function(obj, res, fields, repr = NULL) {
 
     if (field('dim')) {
         dim <- NA_if_error(dim(obj));
-        if (is.integer(dim) && !anyNA(dim)) {
+        # Since the entire dimension vector is serialized, restrict exceedingly large numbers of dimensions.
+        if (is.integer(dim) && !anyNA(dim) && length(dim) < 1000) {
             res$dim <- as.list(dim);
         }
     }
