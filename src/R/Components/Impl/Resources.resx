@@ -304,7 +304,7 @@
     <value>R host process is not available.</value>
   </data>
   <data name="PackageManager_TransportError" xml:space="preserve">
-    <value>Connection to R host process failed.</value>
+    <value>Workspace is disconnected or R session is not running.</value>
   </data>
   <data name="PackageManager_PackageUninstallWarning" xml:space="preserve">
     <value>Are you sure you wish to permanently uninstall '{0}' package from library '{1}'? This action cannot be undone.</value>

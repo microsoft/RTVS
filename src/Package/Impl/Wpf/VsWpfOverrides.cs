@@ -112,9 +112,6 @@ namespace Microsoft.VisualStudio.R.Package.Wpf
             Brushes.StatusBarTextBrushKey = EnvironmentColors.StatusBarTextBrushKey;
             Brushes.StatusBarTextColorKey = EnvironmentColors.StatusBarTextColorKey;
 
-            Brushes.SelectedItemActiveBrushKey = TreeViewColors.SelectedItemActiveBrushKey;
-            Brushes.SelectedItemActiveColorKey = TreeViewColors.SelectedItemActiveColorKey;
-
             Brushes.FailMessageTextBrushKey = TreeViewColors.ValidationSquigglesBrushKey;
             // TODO: may need to pick a better color of specify custom key
             Brushes.SuccessMessageTextBrushKey = ProgressBarColors.IndicatorFillBrushKey;

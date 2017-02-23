@@ -6,8 +6,6 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Design;
 using System.Diagnostics;
-using System.IO;
-using System.Reflection;
 using System.Threading;
 using System.Windows.Threading;
 using Microsoft.Common.Core;
@@ -43,7 +41,9 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
     [Export(typeof(IEditorShell))]
     [Export(typeof(IApplicationShell))]
     [Export(typeof(IMainThread))]
-    public sealed class VsAppShell : IApplicationShell, IMainThread, IIdleTimeService, IVsShellPropertyEvents, IDisposable {
+    public sealed class VsAppShell : IApplicationShell, IMainThread, IIdleTimeService, IVsShellPropertyEvents, IVsBroadcastMessageEvents, IDisposable {
+        private const int WM_SYSCOLORCHANGE = 0x15;
+
         private static VsAppShell _instance;
         private static IApplicationShell _testShell;
 
@@ -55,6 +55,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private ICompositionService _compositionService;
         private IVsShell _vsShell;
         private uint _vsShellEventsCookie;
+        private uint _vsShellBroadcastEventsCookie;
 
         [ImportingConstructor]
         public VsAppShell(ITelemetryService telemetryService) {
@@ -120,6 +121,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                     _vsShell.AdviseShellPropertyChanges(this, out _vsShellEventsCookie);
                 }
             }
+            _vsShell.AdviseBroadcastMessages(this, out _vsShellBroadcastEventsCookie);
         }
 
         private void OnApplicationStarted(object sender, EventArgs e) {
@@ -257,6 +259,11 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// Fires when host application is terminating
         /// </summary>
         public event EventHandler<EventArgs> Terminating;
+
+        /// <summary>
+        /// Fires when host application UI theme changed.
+        /// </summary>
+        public event EventHandler<EventArgs> UIThemeChanged;
 
         /// <summary>
         /// Displays error message in a host-specific UI
@@ -448,17 +455,31 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         public int OnShellPropertyChange(int propid, object var) {
             if (propid == (int)__VSSPROPID4.VSSPROPID_ShellInitialized) {
                 Started?.Invoke(this, EventArgs.Empty);
-                DisconnectFromShellEvents();
             }
             return VSConstants.S_OK;
         }
 
         private void DisconnectFromShellEvents() {
-            if (_vsShell != null && _vsShellEventsCookie != 0) {
-                _vsShell.UnadviseShellPropertyChanges(_vsShellEventsCookie);
-                _vsShellEventsCookie = 0;
+            if (_vsShell != null) {
+                if (_vsShellEventsCookie != 0) {
+                    _vsShell.UnadviseShellPropertyChanges(_vsShellEventsCookie);
+                    _vsShellEventsCookie = 0;
+                }
+                if (_vsShellBroadcastEventsCookie != 0) {
+                    _vsShell.UnadviseBroadcastMessages(_vsShellBroadcastEventsCookie);
+                    _vsShellBroadcastEventsCookie = 0;
+                }
             }
         }
+
+        #region IVsBroadcastMessageEvents
+        public int OnBroadcastMessage(uint msg, IntPtr wParam, IntPtr lParam) {
+            if (msg == WM_SYSCOLORCHANGE) {
+                UIThemeChanged?.Invoke(this, EventArgs.Empty);
+            }
+            return VSConstants.S_OK;
+        }
+        #endregion
 
         public ICoreServices Services => _coreServices;
         public IApplicationConstants AppConstants => _appConstants;

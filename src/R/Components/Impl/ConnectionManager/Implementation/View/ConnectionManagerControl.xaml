@@ -37,7 +37,6 @@
                 <Setter Property="Opacity" Value="{Binding Path=IsUserCreated, Converter={x:Static rwpf:Converters.FalseIsGrayedOut}}" />
                 <Setter Property="IsEnabled" Value="{Binding Path=IsUserCreated}" />
                 <Setter Property="ToolTipService.ShowOnDisabled" Value="True" />
-                <Setter Property="Background" Value="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundKey}}" />
                 <Style.Triggers>
                     <Trigger Property="IsEnabled" Value="True">
                         <Setter Property="ToolTip">
@@ -60,7 +59,6 @@
 
             <Style x:Key="EditButtonStyle" TargetType="Button" BasedOn="{StaticResource ToolWindowButtonStyle}">
                 <EventSetter Event="Click" Handler="ButtonEdit_Click" />
-                <Setter Property="Background" Value="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundKey}}" />
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding Path=IsRemote}" Value="False">
                         <Setter Property="ToolTip">
@@ -138,7 +136,7 @@
                     </Trigger>
                 </Style.Triggers>
             </Style>
-            
+
             <DataTemplate x:Key="EditConnectionDataTemplate" DataType="{x:Type viewModel:IConnectionViewModel}">
                 <AdornerDecorator>
                     <Grid Margin="0,6,0,8" PreviewKeyUp="EditConnection_PreviewKeyUp"
@@ -243,7 +241,7 @@
                         </WrapPanel>
                     </Grid>
                 </AdornerDecorator>
-                
+
                 <DataTemplate.Triggers>
                     <DataTrigger Binding="{Binding Path=IsNameValid}" Value="False">
                         <Setter TargetName="NameValidityIndicator" Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.StatusRequiredOutline}"/>
@@ -336,27 +334,16 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                            <Border x:Name="Border" BorderThickness="0" Background="{TemplateBinding Background}"
+                            <Border BorderThickness="0" Background="{TemplateBinding Background}"
                                     Padding="0" SnapsToDevicePixels="true">
-                                <StackPanel>
-                                    <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                                       SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
                                                       VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
-                                </StackPanel>
                             </Border>
                             <ControlTemplate.Triggers>
-                                <!-- set the background for IsEnabled == false -->
-                                <Trigger Property="IsEnabled" Value="false">
-                                    <Setter Property="Background" TargetName="Border" Value="{DynamicResource {x:Static rwpf:Brushes.ListPaneBackgroundKey}}" />
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="TextBlock.Foreground" Value="{DynamicResource {x:Static rwpf:Brushes.ControlLinkTextHoverKey}}" />
                                 </Trigger>
-                                <MultiTrigger>
-                                    <MultiTrigger.Conditions>
-                                        <Condition Property="IsMouseOver" Value="True" />
-                                        <Condition Property="IsSelected" Value="False" />
-                                    </MultiTrigger.Conditions>
-                                    <Setter Property="Background" TargetName="Border" Value="{DynamicResource {x:Static rwpf:Brushes.ContentMouseOverBrushKey}}" />
-                                    <Setter Property="TextBlock.Foreground" Value="{DynamicResource {x:Static rwpf:Brushes.ContentMouseOverTextBrushKey}}" />
-                                </MultiTrigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
                     </Setter.Value>

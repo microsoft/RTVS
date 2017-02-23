@@ -36,6 +36,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
         public event EventHandler<EventArgs> Started;
         public event EventHandler<EventArgs> Idle;
         public event EventHandler<EventArgs> Terminating;
+        public event EventHandler<EventArgs> UIThemeChanged;
 
         public void ShowErrorMessage(string message) {
             LastShownErrorMessage = message;

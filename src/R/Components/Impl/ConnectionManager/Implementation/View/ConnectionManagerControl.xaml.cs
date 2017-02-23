@@ -15,12 +15,23 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
     /// Interaction logic for ConnectionManagerControl.xaml
     /// </summary>
     public partial class ConnectionManagerControl : UserControl {
+        private readonly ICoreShell _coreShell;
         private IConnectionManagerViewModel Model => DataContext as IConnectionManagerViewModel;
 
         public ConnectionManagerControl(ICoreShell coreShell) {
             InitializeComponent();
 
-            var theme = coreShell.ExportProvider.GetExportedValue<IThemeUtilities>();
+            _coreShell = coreShell;
+            _coreShell.UIThemeChanged += OnUIThemeChanged;
+            SetImageBackground();
+        }
+
+        private void OnUIThemeChanged(object sender, System.EventArgs e) {
+            SetImageBackground();
+        }
+
+        private void SetImageBackground() {
+            var theme = _coreShell.ExportProvider.GetExportedValue<IThemeUtilities>();
             theme.SetImageBackgroundColor(this, Brushes.ToolWindowBackgroundColorKey);
             theme.SetThemeScrollBars(this);
         }

@@ -12,12 +12,12 @@ namespace Microsoft.R.Wpf {
         public static object ButtonTextBrushKey { get; set; } = SystemColors.ControlTextBrushKey;
         public static object ComboBoxBorderKey { get; set; } = SystemColors.InactiveBorderBrushKey;
         public static object ContentBrushKey { get; set; } = SystemColors.WindowBrushKey;
-        public static object ContentInactiveSelectedBrushKey { get; set; } = SystemColors.ControlTextBrushKey;
-        public static object ContentInactiveSelectedTextBrushKey { get; set; } = SystemColors.ControlTextBrushKey;
-        public static object ContentMouseOverBrushKey { get; set; } = SystemColors.ControlTextBrushKey;
-        public static object ContentMouseOverTextBrushKey { get; set; } = SystemColors.ControlTextBrushKey;
-        public static object ContentSelectedBrushKey { get; set; } = SystemColors.ActiveCaptionBrushKey;
-        public static object ContentSelectedTextBrushKey { get; set; } = SystemColors.ActiveCaptionTextBrushKey;
+        public static object ContentInactiveSelectedBrushKey { get; set; } = SystemColors.InactiveSelectionHighlightBrush;
+        public static object ContentInactiveSelectedTextBrushKey { get; set; } = SystemColors.InactiveSelectionHighlightTextBrushKey;
+        public static object ContentMouseOverBrushKey { get; set; } = SystemColors.ControlBrushKey;
+        public static object ContentMouseOverTextBrushKey { get; set; } = SystemColors.HotTrackBrushKey;
+        public static object ContentSelectedBrushKey { get; set; } = SystemColors.HighlightBrushKey;
+        public static object ContentSelectedTextBrushKey { get; set; } = SystemColors.HighlightTextBrushKey;
         public static object ControlKey { get; set; } = SystemColors.ControlBrushKey;
         public static object ControlDarkKey { get; set; } = SystemColors.ControlDarkBrushKey;
         public static object ControlLightKey { get; set; } = SystemColors.ControlLightBrushKey;
@@ -80,19 +80,16 @@ namespace Microsoft.R.Wpf {
         public static object StatusBarTextBrushKey { get; set; } = SystemColors.ControlTextBrushKey; 
         public static object StatusBarTextColorKey { get; set; } = SystemColors.ControlTextColorKey;
 
-        public static object SelectedItemActiveBrushKey { get; set; } = SystemColors.ControlTextBrushKey;
-        public static object SelectedItemActiveColorKey { get; set; } = SystemColors.ControlTextColorKey;
-
         public static object SuccessMessageTextBrushKey { get; set; } = SystemColors.ControlTextBrushKey;
         public static object FailMessageTextBrushKey { get; set; } = SystemColors.ControlTextBrushKey;
         public static object ScrollBarBackgroundBrushKey { get; set; } = SystemColors.WindowBrushKey;
 
         public static object TreeViewBackgroundBrushKey { get; set; } = SystemColors.WindowBrushKey;
         public static object TreeViewBackgroundTextBrushKey { get; set; } = SystemColors.WindowTextBrushKey;
-        public static object TreeViewSelectedItemActiveBrushKey { get; set; } = SystemColors.WindowBrushKey;
-        public static object TreeViewSelectedItemActiveTextBrushKey { get; set; } = SystemColors.WindowTextBrushKey;
+        public static object TreeViewSelectedItemActiveBrushKey { get; set; } = SystemColors.HighlightBrushKey;
+        public static object TreeViewSelectedItemActiveTextBrushKey { get; set; } = SystemColors.HighlightTextBrushKey;
         public static object TreeViewGlyphBrushKey { get; set; } = SystemColors.WindowTextBrushKey;
-        public static object TreeViewGlyphMouseOverBrushKey { get; set; } = SystemColors.WindowTextBrushKey;
+        public static object TreeViewGlyphMouseOverBrushKey { get; set; } = SystemColors.HotTrackBrushKey;
 
         public static object GridLineBrushKey { get; set; } = SystemColors.WindowTextBrushKey;
     }

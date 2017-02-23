@@ -78,6 +78,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
 #pragma warning disable 0067
         public event EventHandler<EventArgs> Started;
         public event EventHandler<EventArgs> Terminating;
+        public event EventHandler<EventArgs> UIThemeChanged;
 #pragma warning restore 0067
 
         #region IMainThread

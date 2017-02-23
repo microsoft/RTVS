@@ -1201,7 +1201,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Connection to R host process failed..
+        ///   Looks up a localized string similar to Workspace is disconnected or R session is not running..
         /// </summary>
         public static string PackageManager_TransportError {
             get {

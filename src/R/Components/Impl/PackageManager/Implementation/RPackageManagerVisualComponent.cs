@@ -20,7 +20,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
         public RPackageManagerVisualComponent(IRPackageManager packageManager, IVisualComponentContainer<IRPackageManagerVisualComponent> container, ISearchControlProvider searchControlProvider, IRSettings settings, ICoreShell coreShell) {
             _viewModel = new RPackageManagerViewModel(packageManager, settings, coreShell);
             Container = container;
-            var control = new PackageManagerControl {
+            var control = new PackageManagerControl(coreShell) {
                 DataContext = _viewModel,
             };
             Control = control;

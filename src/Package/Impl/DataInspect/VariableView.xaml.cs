@@ -49,19 +49,16 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public VariableView(IRToolsSettings settings, ICoreShell shell) {
             _settings = settings;
             _shell = shell;
+            _shell.UIThemeChanged += OnUIThemeChanged;
 
             InitializeComponent();
+            SetImageBackground();
 
             _aggregator = _shell.ExportProvider.GetExportedValue<IObjectDetailsViewerAggregator>();
-
             SetRootNode(VariableViewModel.Ellipsis);
 
             SortDirection = ListSortDirection.Ascending;
             RootTreeGrid.Sorting += RootTreeGrid_Sorting;
-
-            var theme = shell.ExportProvider.GetExportedValue<IThemeUtilities>();
-            theme.SetImageBackgroundColor(RootTreeGrid, Brushes.ToolWindowBackgroundColorKey);
-            theme.SetThemeScrollBars(RootTreeGrid);
 
             var workflow = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
             _session = workflow.RSession;
@@ -69,6 +66,16 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _environmentProvider = new REnvironmentProvider(_session, shell.Services.MainThread);
             EnvironmentComboBox.DataContext = _environmentProvider;
             _environmentProvider.RefreshEnvironmentsAsync().DoNotWait();
+        }
+
+        private void OnUIThemeChanged(object sender, EventArgs e) {
+            SetImageBackground();
+        }
+
+        private void SetImageBackground() {
+            var theme = _shell.ExportProvider.GetExportedValue<IThemeUtilities>();
+            theme.SetImageBackgroundColor(RootTreeGrid, Brushes.ToolWindowBackgroundColorKey);
+            theme.SetThemeScrollBars(RootTreeGrid);
         }
 
         public void Dispose() {

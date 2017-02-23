@@ -9,6 +9,8 @@
              xmlns:view="clr-namespace:Microsoft.R.Components.PackageManager.Implementation.View"
              xmlns:designTime="clr-namespace:Microsoft.R.Components.PackageManager.Implementation.View.DesignTime"
              xmlns:viewModel="clr-namespace:Microsoft.R.Components.PackageManager.ViewModel"
+             xmlns:imaging="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.Imaging"
+             xmlns:imagecatalog="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.ImageCatalog"
              mc:Ignorable="d" x:Name="Self"
              d:DataContext="{d:DesignInstance Type=designTime:DesignTimeRPackageManagerViewModel, IsDesignTimeCreatable=True}"
              d:DesignHeight="250" d:DesignWidth="800">
@@ -102,7 +104,7 @@
                                         <Binding Path="IsInstalled" />
                                     </MultiBinding>
                                 </Button.Visibility>
-                                <Rectangle Fill="{StaticResource IconUninstall}" Width="16" Height="16" />
+                                <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.Cancel}" />
                             </Button>
 
                             <!-- install button -->
@@ -118,7 +120,7 @@
                                         </TextBlock.Text>
                                     </TextBlock>
                                 </Button.ToolTip>
-                                <Rectangle Fill="{StaticResource IconInstall}" Width="16" Height="16" />
+                                <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.Download}" />
                             </Button>
 
                             <!-- version to update to -->
@@ -143,7 +145,7 @@
                                         </TextBlock.Text>
                                     </TextBlock>
                                 </Button.ToolTip>
-                                <Rectangle Fill="{StaticResource IconUpdateAvailableIndicator}" Width="16" Height="16" />
+                                <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.Upload}" />
                             </Button>
                         </Grid>
                     </Grid>
@@ -168,7 +170,6 @@
                     <ColumnDefinition Width="auto" />
                 </Grid.ColumnDefinitions>
                 <CheckBox x:Name="CheckBoxSelectAllPackages" Grid.Column="0" Margin="16, 8" VerticalAlignment="Center"
-                          Checked="CheckBoxSelectAllPackages_Checked" Unchecked="CheckBoxSelectAllPackages_Unchecked"
                           Foreground="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}" Content="{x:Static components:Resources.PackageManager_SelectAllPackages}" />
                 <Button x:Name="ButtonUpdate" Grid.Column="2" MinWidth="100" MinHeight="24" Margin="24,8" VerticalAlignment="Center"
                         Click="ButtonUpdate_Click" Content="{x:Static components:Resources.Update}" />
