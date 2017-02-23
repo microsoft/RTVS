@@ -42,6 +42,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
     [Export(typeof(IApplicationShell))]
     [Export(typeof(IMainThread))]
     public sealed class VsAppShell : IApplicationShell, IMainThread, IIdleTimeService, IVsShellPropertyEvents, IVsBroadcastMessageEvents, IDisposable {
+        private const int WM_SYSCOLORCHANGE = 0x15;
+
         private static VsAppShell _instance;
         private static IApplicationShell _testShell;
 
@@ -472,7 +474,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         #region IVsBroadcastMessageEvents
         public int OnBroadcastMessage(uint msg, IntPtr wParam, IntPtr lParam) {
-            if (msg == 0x15 /* WM_SYSCOLORCHANGE */) {
+            if (msg == WM_SYSCOLORCHANGE) {
                 UIThemeChanged?.Invoke(this, EventArgs.Empty);
             }
             return VSConstants.S_OK;
