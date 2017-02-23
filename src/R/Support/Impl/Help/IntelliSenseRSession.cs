@@ -65,12 +65,12 @@ namespace Microsoft.R.Support.Help {
 
             if (session != null && session.IsHostRunning) {
                 try {
-                    packageName = await session.EvaluateAsync<string>(
+                    var candidate = await session.EvaluateAsync<string>(
                         Invariant(
                             $"as.list(find('{functionName}', mode='function')[1])[[1]]"
                         ), REvaluationKind.Normal);
-                    if (packageName != null && packageName.StartsWithOrdinal("package:")) {
-                        packageName = packageName.Substring(8);
+                    if (candidate != null && candidate.StartsWithOrdinal("package:")) {
+                        packageName = candidate.Substring(8);
                     }
                 } catch (Exception) { }
             }
@@ -109,7 +109,7 @@ namespace Microsoft.R.Support.Help {
                 if (_loadedPackages == null) {
                     if (_workflow.RSession != null) {
                         _workflow.RSession.Mutated += OnInteractiveSessionMutated;
-                        UpdateListOfLoadedPackagesAsync().Wait(2000);
+                        UpdateListOfLoadedPackagesAsync().DoNotWait();
                     }
                 }
                 return _loadedPackages ?? Enumerable.Empty<string>();

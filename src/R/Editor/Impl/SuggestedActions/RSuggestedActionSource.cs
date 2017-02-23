@@ -73,7 +73,8 @@ namespace Microsoft.R.Editor.SuggestedActions {
         public event EventHandler<EventArgs> SuggestedActionsChanged;
 
         public IEnumerable<SuggestedActionSet> GetSuggestedActions(ISuggestedActionCategorySet requestedActionCategories, SnapshotSpan range, CancellationToken cancellationToken) {
-            if (cancellationToken.IsCancellationRequested ||
+            if (_textView == null ||
+                cancellationToken.IsCancellationRequested ||
                 !range.Snapshot.TextBuffer.ContentType.TypeName.EqualsOrdinal(RContentTypeDefinition.ContentType)) {
                 return Enumerable.Empty<SuggestedActionSet>();
             }
@@ -100,7 +101,7 @@ namespace Microsoft.R.Editor.SuggestedActions {
         }
 
         public Task<bool> HasSuggestedActionsAsync(ISuggestedActionCategorySet requestedActionCategories, SnapshotSpan range, CancellationToken cancellationToken) {
-            if (!_textView.Caret.InVirtualSpace) {
+            if (_textView != null && !_textView.Caret.InVirtualSpace) {
                 var rPosition = _textView.MapDownToR(_textView.Caret.Position.BufferPosition);
                 if (rPosition.HasValue) {
                     foreach (IRSuggestedActionProvider actionProvider in _suggestedActionProviders) {

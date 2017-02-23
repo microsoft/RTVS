@@ -115,7 +115,7 @@ namespace Microsoft.R.Support.Help.Functions {
         /// </summary>
         private IFunctionInfo TryGetCachedFunctionInfo(string functionName, ref string packageName) {
             IFunctionInfo functionInfo = null;
-            if (string.IsNullOrEmpty(packageName)) {
+           if (string.IsNullOrEmpty(packageName)) {
                 // Find packages that the function may belong to. There may be more than one.
                 List<string> packages;
                 if (!_functionToPackageMap.TryGetValue(functionName, out packages) || packages.Count == 0) {
