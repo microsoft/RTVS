@@ -153,7 +153,8 @@ namespace Microsoft.R.Host.Client.Session {
                     BrokerChanging?.Invoke(this, EventArgs.Empty);
 
                     await StopSessionsAsync(_sessions.Values, false, cancellationToken);
-                    _brokerProxy.Set(new NullBrokerClient());
+                    var oldBroker = _brokerProxy.Set(new NullBrokerClient());
+                    oldBroker?.Dispose();
 
                     OnBrokerChanged();
                 }
