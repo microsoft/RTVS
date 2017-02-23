@@ -5,7 +5,10 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.PackageManager.ViewModel;
+using Microsoft.R.Wpf;
+using Microsoft.R.Wpf.Themes;
 
 namespace Microsoft.R.Components.PackageManager.Implementation.View {
     /// <summary>
@@ -14,8 +17,9 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View {
     public partial class PackageManagerControl : UserControl {
         public IRPackageManagerViewModel Model => DataContext as IRPackageManagerViewModel;
 
-        public PackageManagerControl() {
+        public PackageManagerControl(ICoreShell coreShell) {
             InitializeComponent();
+            ListPackages.Initialize(coreShell);
         }
 
         private void CheckBoxSuppressLegalDisclaimer_Checked(object sender, RoutedEventArgs e) {

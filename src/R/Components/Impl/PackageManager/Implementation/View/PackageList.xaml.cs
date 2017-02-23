@@ -8,12 +8,16 @@ using System.Windows.Automation.Peers;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.PackageManager.ViewModel;
+using Microsoft.R.Wpf;
+using Microsoft.R.Wpf.Themes;
 
 namespace Microsoft.R.Components.PackageManager.Implementation.View {
     public partial class PackageList : UserControl {
         private IRPackageManagerViewModel Model => DataContext as IRPackageManagerViewModel;
         private AutomationPeer _peer;
+        private ICoreShell _coreShell;
 
         // Indicates wether check boxes are enabled on packages
         private bool _checkBoxesEnabled;
@@ -36,12 +40,20 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View {
             CheckBoxesEnabled = false;
         }
 
-        private void CheckBoxSelectAllPackages_Checked(object sender, RoutedEventArgs e) {
-            throw new NotImplementedException();
+        public void Initialize(ICoreShell coreShell) {
+            _coreShell = coreShell;
+            _coreShell.UIThemeChanged += OnUIThemeChanged;
+            SetImageBackground();
         }
 
-        private void CheckBoxSelectAllPackages_Unchecked(object sender, RoutedEventArgs e) {
-            throw new NotImplementedException();
+        private void OnUIThemeChanged(object sender, EventArgs e) {
+            SetImageBackground();
+        }
+
+        public void SetImageBackground() {
+            var theme = _coreShell.ExportProvider.GetExportedValue<IThemeUtilities>();
+            theme.SetImageBackgroundColor(List, Brushes.ToolWindowBackgroundColorKey);
+            theme.SetThemeScrollBars(List);
         }
 
         private void ButtonUpdate_Click(object sender, RoutedEventArgs e) {

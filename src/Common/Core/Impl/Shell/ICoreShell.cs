@@ -47,6 +47,11 @@ namespace Microsoft.Common.Core.Shell {
         event EventHandler<EventArgs> Terminating;
 
         /// <summary>
+        /// Fires when host application UI theme changed.
+        /// </summary>
+        event EventHandler<EventArgs> UIThemeChanged;
+
+        /// <summary>
         /// Displays error message in a host-specific UI
         /// </summary>
         void ShowErrorMessage(string message);
