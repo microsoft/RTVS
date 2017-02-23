@@ -165,7 +165,7 @@
     </ControlTemplate>
 
     <ControlTemplate x:Key="FillingListBoxItemTemplate" TargetType="{x:Type ListBoxItem}">
-        <Border x:Name="Border" BorderThickness="0" Padding="0" SnapsToDevicePixels="true">
+        <Border x:Name="Border" BorderThickness="0" Background="{TemplateBinding Background}" Padding="0" SnapsToDevicePixels="true">
             <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                               SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
                               VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />

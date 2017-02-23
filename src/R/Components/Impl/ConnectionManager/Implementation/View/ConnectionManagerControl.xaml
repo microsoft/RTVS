@@ -297,7 +297,7 @@
                         <!-- connect button -->
                         <Button x:Name="ButtonConnect" Grid.Row="0"  Grid.Column="3" Style="{StaticResource ToolWindowButtonStyle}" Click="ButtonConnect_Click" 
                                 Visibility="{Binding Path=IsConnected, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}"
-                                Margin="0,0,8,0"
+                                Margin="0,0,8,0" Background="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundKey}}"
                                 IsEnabled="{Binding Path=IsValid}"
                                 AutomationProperties.Name="{Binding Path=Name, StringFormat={x:Static components:Resources.ConnectionManager_ConnectTooltip}}"
                                 AutomationProperties.HelpText="{Binding Path=ConnectionTooltip}"
@@ -330,13 +330,16 @@
                 <EventSetter Event="MouseDoubleClick" Handler="Connection_MouseDoubleClick" />
                 <EventSetter Event="PreviewKeyUp" Handler="Connection_PreviewKeyUp" />
                 <Setter Property="IsTabStop" Value="False" />
-                <!--<Setter Property="Focusable" Value="False"/>-->
+                <Setter Property="Focusable" Value="False"/>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            <Border BorderThickness="0" Background="{TemplateBinding Background}"
+                                    Padding="0" SnapsToDevicePixels="true">
+                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                                       SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
                                                       VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                            </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
                                     <Setter Property="TextBlock.Foreground" Value="{DynamicResource {x:Static rwpf:Brushes.ControlLinkTextHoverKey}}" />
