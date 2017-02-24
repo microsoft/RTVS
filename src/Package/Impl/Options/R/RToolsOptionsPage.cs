@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing.Design;
 using System.Runtime.CompilerServices;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Enums;
@@ -73,7 +74,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [LocDescription(nameof(Resources.Settings_AlwaysSaveHistory_Description))]
         [DefaultValue(true)]
         public bool AlwaysSaveHistory {
-            get { return _holder.GetValue<bool>(true); }
+            get { return _holder.GetValue(true); }
             set { _holder.SetValue(value); }
         }
 
@@ -82,7 +83,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [LocDescription(nameof(Resources.Settings_ClearFilterOnAddHistory_Description))]
         [DefaultValue(true)]
         public bool ClearFilterOnAddHistory {
-            get { return _holder.GetValue<bool>(true); }
+            get { return _holder.GetValue(true); }
             set { _holder.SetValue(value); }
         }
 
@@ -91,7 +92,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [LocDescription(nameof(Resources.Settings_MultilineHistorySelection_Description))]
         [DefaultValue(true)]
         public bool MultilineHistorySelection {
-            get { return _holder.GetValue<bool>(true); }
+            get { return _holder.GetValue(true); }
             set { _holder.SetValue(value); }
         }
 
@@ -108,10 +109,11 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [LocCategory(nameof(Resources.Settings_REngineCategory))]
         [CustomLocDisplayName(nameof(Resources.Settings_WorkingDirectory))]
         [LocDescription(nameof(Resources.Settings_WorkingDirectory_Description))]
+        [Editor(typeof(BrowserForFolderUIEditor), typeof(UITypeEditor))]
         [DefaultValue("~")]
         public string WorkingDirectory {
-            get { return _holder.GetValue<string>("~"); }
-            set { _holder.SetValue(value); }
+            get { return _holder.GetValue("~", "WorkingDirectory"); }
+            set { _holder.SetValue(value ?? "~"); }
         }
 
         [LocCategory(nameof(Resources.Settings_REngineCategory))]
@@ -120,7 +122,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [TypeConverter(typeof(EncodingTypeConverter))]
         [DefaultValue(0)]
         public int RCodePage {
-            get { return _holder.GetValue<int>(0); }
+            get { return _holder.GetValue(0); }
             set { _holder.SetValue(value); }
         }
 
@@ -129,7 +131,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [LocDescription(nameof(Resources.Settings_EvaluateActiveBindings_Description))]
         [DefaultValue(true)]
         public bool EvaluateActiveBindings {
-            get { return _holder.GetValue<bool>(true); }
+            get { return _holder.GetValue(true); }
             set { _holder.SetValue(value); }
         }
 
@@ -138,7 +140,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [LocDescription(nameof(Resources.Settings_ShowDotPrefixedVariables_Description))]
         [DefaultValue(false)]
         public bool ShowDotPrefixedVariables {
-            get { return _holder.GetValue<bool>(false); }
+            get { return _holder.GetValue(false); }
             set { _holder.SetValue(value); }
         }
 
@@ -148,7 +150,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [TypeConverter(typeof(HelpBrowserTypeConverter))]
         [DefaultValue(HelpBrowserType.Automatic)]
         public HelpBrowserType HelpBrowserType {
-            get { return _holder.GetValue<HelpBrowserType>(HelpBrowserType.Automatic); }
+            get { return _holder.GetValue(HelpBrowserType.Automatic); }
             set { _holder.SetValue(value); }
         }
 
@@ -157,7 +159,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [LocDescription(nameof(Resources.Settings_WebHelpSearchString_Description))]
         [DefaultValue("R site:stackoverflow.com")]
         public string WebHelpSearchString {
-            get { return _holder.GetValue<string>("R site:stackoverflow.com", "WebHelpSearchString"); }
+            get { return _holder.GetValue("R site:stackoverflow.com", "WebHelpSearchString"); }
             set { _holder.SetValue(value); }
         }
 
@@ -167,7 +169,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [TypeConverter(typeof(BrowserTypeConverter))]
         [DefaultValue(BrowserType.Internal)]
         public BrowserType WebHelpSearchBrowserType {
-            get { return _holder.GetValue<BrowserType>(BrowserType.Internal); }
+            get { return _holder.GetValue(BrowserType.Internal); }
             set { _holder.SetValue(value); }
         }
 
@@ -177,7 +179,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [TypeConverter(typeof(BrowserTypeConverter))]
         [DefaultValue(BrowserType.Internal)]
         public BrowserType HtmlBrowserType {
-            get { return _holder.GetValue<BrowserType>(BrowserType.Internal); }
+            get { return _holder.GetValue(BrowserType.Internal); }
             set { _holder.SetValue(value); }
         }
 
@@ -187,7 +189,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [TypeConverter(typeof(BrowserTypeConverter))]
         [DefaultValue(BrowserType.External)]
         public BrowserType MarkdownBrowserType {
-            get { return _holder.GetValue<BrowserType>(BrowserType.External); }
+            get { return _holder.GetValue(BrowserType.External); }
             set { _holder.SetValue(value); }
         }
 
@@ -197,7 +199,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [TypeConverter(typeof(SurveyNewsPolicyTypeConverter))]
         [DefaultValue(SurveyNewsPolicy.CheckOnceWeek)]
         public SurveyNewsPolicy SurveyNewsCheck {
-            get { return _holder.GetValue<SurveyNewsPolicy>(SurveyNewsPolicy.CheckOnceWeek); }
+            get { return _holder.GetValue(SurveyNewsPolicy.CheckOnceWeek); }
             set { _holder.SetValue(value); }
         }
 
@@ -207,7 +209,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [TypeConverter(typeof(LogVerbosityTypeConverter))]
         [DefaultValue(LogVerbosity.Normal)]
         public LogVerbosity LogVerbosity {
-            get { return _holder.GetValue<LogVerbosity>(LogVerbosity.Normal); }
+            get { return _holder.GetValue(LogVerbosity.Normal); }
             set { _holder.SetValue(value); }
         }
 
