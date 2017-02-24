@@ -168,6 +168,15 @@
   <data name="PackageManager_NoLoadedPackagesNoRSession" xml:space="preserve">
     <value>Warning: Interactive Window is disconnected from R Session, so there is no information about loaded packages.</value>
   </data>
+  <data name="PackageManager_CantLoadAvailablePackages_NoConnection" xml:space="preserve">
+    <value>Error: Can't get list of available packages because connection to workspace failed.</value>
+  </data>
+  <data name="PackageManager_CantLoadInstalledPackages_NoConnection" xml:space="preserve">
+    <value>Error: Can't get list of installed packages because connection to workspace failed.</value>
+  </data>
+  <data name="PackageManager_CantLoadLoadedPackages_NoConnection" xml:space="preserve">
+    <value>Error: Can't get list of loaded packages because connection to workspace failed.</value>
+  </data>
   <data name="PackageManager_CantLoadPackageNoRSession" xml:space="preserve">
     <value>Error: Package {0} can't be loaded because Interactive Window is disconnected from R session.</value>
   </data>

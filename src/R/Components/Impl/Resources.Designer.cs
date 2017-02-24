@@ -958,6 +958,33 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error: Can&apos;t get list of available packages because connection to workspace failed..
+        /// </summary>
+        public static string PackageManager_CantLoadAvailablePackages_NoConnection {
+            get {
+                return ResourceManager.GetString("PackageManager_CantLoadAvailablePackages_NoConnection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error: Can&apos;t get list of installed packages because connection to workspace failed..
+        /// </summary>
+        public static string PackageManager_CantLoadInstalledPackages_NoConnection {
+            get {
+                return ResourceManager.GetString("PackageManager_CantLoadInstalledPackages_NoConnection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error: Can&apos;t get list of loaded packages because connection to workspace failed..
+        /// </summary>
+        public static string PackageManager_CantLoadLoadedPackages_NoConnection {
+            get {
+                return ResourceManager.GetString("PackageManager_CantLoadLoadedPackages_NoConnection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error: Package {0} can&apos;t be loaded because Interactive Window is disconnected from R session..
         /// </summary>
         public static string PackageManager_CantLoadPackageNoRSession {
