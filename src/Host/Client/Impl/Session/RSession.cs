@@ -88,6 +88,7 @@ namespace Microsoft.R.Host.Client.Session {
             Name = name;
             BrokerClient = brokerClient;
             _onDispose = onDispose;
+
             _disposeToken = DisposeToken.Create<RSession>();
             _disableMutatingOnReadConsole = new CountdownDisposable(() => {
                 if (!_delayedMutatedOnReadConsole) {
@@ -141,7 +142,7 @@ namespace Microsoft.R.Host.Client.Session {
 
             return _isHostRunning ? requestSource.CreateRequestTask : CanceledBeginInteractionTask;
         }
-        
+
         public Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind = REvaluationKind.Normal, CancellationToken cancellationToken = default(CancellationToken)) {
             _processingChangeDirectoryCommand = expression.StartsWithOrdinal("setwd");
             return EvaluateAsync(expression, kind, true, cancellationToken);
@@ -401,7 +402,7 @@ namespace Microsoft.R.Host.Client.Session {
                 if (!IsRemote && !string.IsNullOrEmpty(wd) && wd.HasReadPermissions()) {
                     try {
                         await evaluator.SetWorkingDirectoryAsync(wd);
-                    } catch(REvaluationException) {
+                    } catch (REvaluationException) {
                         await evaluator.SetDefaultWorkingDirectoryAsync();
                     }
                 } else {
@@ -571,7 +572,7 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
                 }
             } while (consoleInput == null);
 
-            
+
             // We only want to fire 'directory changed' events when it is initiated by the user
             _processingChangeDirectoryCommand = consoleInput.StartsWithOrdinal("setwd");
 
@@ -740,7 +741,7 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
                 _session = session;
             }
 
-            public Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind, CancellationToken cancellationToken = new CancellationToken()) 
+            public Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind, CancellationToken cancellationToken = new CancellationToken())
                 => _session.EvaluateAsync(expression, kind, false, cancellationToken);
         }
 

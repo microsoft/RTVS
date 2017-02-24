@@ -1111,4 +1111,10 @@ Click OK to open MiKTeX download page in the default browser. R Remote Services 
   <data name="VariableExplorer_ExpandVariable" xml:space="preserve">
     <value>Expand variable</value>
   </data>
+  <data name="Settings_WorkingDirectory" xml:space="preserve">
+    <value>Working directory</value>
+  </data>
+  <data name="Settings_WorkingDirectory_Description" xml:space="preserve">
+    <value>Working directory to set When R session starts.</value>
+  </data>
 </root>

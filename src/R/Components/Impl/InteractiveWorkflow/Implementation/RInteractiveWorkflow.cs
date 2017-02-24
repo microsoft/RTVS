@@ -65,7 +65,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
             Shell = coreShell;
             Console = new InteractiveWindowConsole(this);
-            RSessions = new RSessionProvider(coreShell.Services, Console);
+            RSessions = new RSessionProvider(coreShell.Services, Console, settings.WorkingDirectory);
 
             RSession = RSessions.GetOrCreate(SessionNames.InteractiveWindow);
             Connections = connectionsProvider.CreateConnectionManager(this);
