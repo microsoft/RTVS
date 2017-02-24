@@ -187,11 +187,6 @@
                     <TextBlock Grid.Column="1" Text="{x:Static components:Resources.Loading}" HorizontalAlignment="Left" VerticalAlignment="Center"
                                Foreground="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}"/>
                 </Grid>
-                <Grid.Visibility>
-                    <MultiBinding Converter="{x:Static rwpf:Converters.AnyIsNotCollapsed}">
-                        <Binding Path="IsLoading" />
-                    </MultiBinding>
-                </Grid.Visibility>
             </Grid>
             <ListBox x:Name="List" Background="{DynamicResource {x:Static rwpf:Brushes.ListPaneBackgroundKey}}" Foreground="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}"
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Visible" ItemContainerStyle="{DynamicResource PackageItemStyle}"
