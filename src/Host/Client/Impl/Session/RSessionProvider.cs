@@ -24,7 +24,6 @@ namespace Microsoft.R.Host.Client.Session {
         private readonly BrokerClientProxy _brokerProxy;
         private readonly ICoreServices _services;
         private readonly IConsole _console;
-        private readonly bool _workingDirectory;
 
         private volatile bool _isConnected;
 
