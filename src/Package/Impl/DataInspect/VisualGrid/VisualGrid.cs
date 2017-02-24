@@ -214,11 +214,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _gridLine?.Draw(_dataViewport, points);
         }
 
-        protected override void OnRender(DrawingContext drawingContext) {
-            base.OnRender(drawingContext);
-            drawingContext.DrawRectangle(Background, null, new Rect(RenderSize));
-        }
-
         protected override int VisualChildrenCount {
             get {
                 if (_visualChildren.Count == 0) return 0;

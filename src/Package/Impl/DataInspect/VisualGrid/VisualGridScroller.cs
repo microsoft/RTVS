@@ -10,6 +10,7 @@ using System.Threading.Tasks.Dataflow;
 using System.Windows;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.Shell;
 
@@ -18,7 +19,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// Handles scroll command
     /// </summary>
     internal sealed class VisualGridScroller {
-        private readonly TaskScheduler _ui;
         private readonly BufferBlock<ScrollCommand> _scrollCommands;
 
         private readonly CancellationTokenSource _cancelSource;
@@ -26,8 +26,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private readonly Task _handlerTask;
 
         public VisualGridScroller(MatrixView owner) {
-            _ui = TaskScheduler.FromCurrentSynchronizationContext();
-
             _owner = owner;
             if (_owner.ColumnHeader != null) {
                 _owner.ColumnHeader.SortOrderChanged += OnSortOrderChanged;
@@ -197,21 +195,18 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     throw new InvalidOperationException("Couldn't acquire enough data");
                 }
 
-                // actual drawing runs in UI thread
-                await Task.Factory.StartNew(
-                    () => DrawVisuals(newViewport, data, updateType, visualViewport, suppressNotification),
-                    token,
-                    TaskCreationOptions.None,
-                    _ui);
+                await DrawVisualsAsync(newViewport, data, updateType, visualViewport, suppressNotification);
             } catch (OperationCanceledException) { }
         }
 
-        private void DrawVisuals(
+        private async Task DrawVisualsAsync(
             GridRange dataViewport,
             IGridData<string> data,
             GridUpdateType updateType,
             Rect visualViewport,
             bool suppressNotification) {
+
+            await VsAppShell.Current.SwitchToMainThreadAsync();
 
             using (var deferal = Points.DeferChangeNotification(suppressNotification)) {
                 // measure points
