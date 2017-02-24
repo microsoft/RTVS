@@ -1115,6 +1115,6 @@ Click OK to open MiKTeX download page in the default browser. R Remote Services 
     <value>Working directory</value>
   </data>
   <data name="Settings_WorkingDirectory_Description" xml:space="preserve">
-    <value>Working directory to set When R session starts.</value>
+    <value>Working directory to set when R session starts.</value>
   </data>
 </root>

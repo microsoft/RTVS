@@ -113,7 +113,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [DefaultValue("~")]
         public string WorkingDirectory {
             get { return _holder.GetValue("~", "WorkingDirectory"); }
-            set { _holder.SetValue(value ?? "~"); }
+            set { _holder.SetValue(value); }
         }
 
         [LocCategory(nameof(Resources.Settings_REngineCategory))]
