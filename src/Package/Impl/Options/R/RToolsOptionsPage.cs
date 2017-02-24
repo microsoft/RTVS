@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing.Design;
 using System.Runtime.CompilerServices;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Enums;
@@ -26,19 +27,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         public RToolsOptionsPage() {
             _settings = VsAppShell.Current.ExportProvider.GetExportedValue<IRSettings>();
             _holder = new SettingsHolder(_settings);
-        }
-
-        [Browsable(false)]
-        public bool IsLoadingFromStorage { get; private set; }
-
-        [LocCategory("Settings_GeneralCategory")]
-        [CustomLocDisplayName("Settings_CranMirror")]
-        [LocDescription("Settings_CranMirror_Description")]
-        [TypeConverter(typeof(CranMirrorTypeConverter))]
-        [DefaultValue(null)]
-        public string CranMirror {
-            get { return _holder.GetValue<string>(); }
-            set { _holder.SetValue(value); }
         }
 
         [LocCategory(nameof(Resources.Settings_WorkspaceCategory))]
@@ -72,8 +60,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         }
 
         [LocCategory(nameof(Resources.Settings_WorkspaceCategory))]
-        [CustomLocDisplayName("Settings_SaveRDataOnProjectUnload")]
-        [LocDescription("Settings_SaveRDataOnProjectUnload_Description")]
+        [CustomLocDisplayName(nameof(Resources.Settings_SaveRDataOnProjectUnload))]
+        [LocDescription(nameof(Resources.Settings_SaveRDataOnProjectUnload_Description))]
         [TypeConverter(typeof(YesNoAskTypeConverter))]
         [DefaultValue(YesNoAsk.No)]
         public YesNoAsk SaveRDataOnProjectUnload {
@@ -81,127 +69,147 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set { _holder.SetValue(value); }
         }
 
-        [LocCategory("Settings_HistoryCategory")]
-        [CustomLocDisplayName("Settings_AlwaysSaveHistory")]
-        [LocDescription("Settings_AlwaysSaveHistory_Description")]
+        [LocCategory(nameof(Resources.Settings_HistoryCategory))]
+        [CustomLocDisplayName(nameof(Resources.Settings_AlwaysSaveHistory))]
+        [LocDescription(nameof(Resources.Settings_AlwaysSaveHistory_Description))]
         [DefaultValue(true)]
         public bool AlwaysSaveHistory {
-            get { return _holder.GetValue<bool>(true); }
+            get { return _holder.GetValue(true); }
             set { _holder.SetValue(value); }
         }
 
-        [LocCategory("Settings_HistoryCategory")]
-        [CustomLocDisplayName("Settings_ClearFilterOnAddHistory")]
-        [LocDescription("Settings_ClearFilterOnAddHistory_Description")]
+        [LocCategory(nameof(Resources.Settings_HistoryCategory))]
+        [CustomLocDisplayName(nameof(Resources.Settings_ClearFilterOnAddHistory))]
+        [LocDescription(nameof(Resources.Settings_ClearFilterOnAddHistory_Description))]
         [DefaultValue(true)]
         public bool ClearFilterOnAddHistory {
-            get { return _holder.GetValue<bool>(true); }
+            get { return _holder.GetValue(true); }
             set { _holder.SetValue(value); }
         }
 
-        [LocCategory("Settings_HistoryCategory")]
-        [CustomLocDisplayName("Settings_MultilineHistorySelection")]
-        [LocDescription("Settings_MultilineHistorySelection_Description")]
+        [LocCategory(nameof(Resources.Settings_HistoryCategory))]
+        [CustomLocDisplayName(nameof(Resources.Settings_MultilineHistorySelection))]
+        [LocDescription(nameof(Resources.Settings_MultilineHistorySelection_Description))]
         [DefaultValue(true)]
         public bool MultilineHistorySelection {
-            get { return _holder.GetValue<bool>(true); }
+            get { return _holder.GetValue(true); }
             set { _holder.SetValue(value); }
         }
 
-        [LocCategory("Settings_REngineCategory")]
-        [CustomLocDisplayName("Settings_RCodePage")]
-        [LocDescription("Settings_RCodePage_Description")]
+        [LocCategory(nameof(Resources.Settings_REngineCategory))]
+        [CustomLocDisplayName(nameof(Resources.Settings_CranMirror))]
+        [LocDescription(nameof(Resources.Settings_CranMirror_Description))]
+        [TypeConverter(typeof(CranMirrorTypeConverter))]
+        [DefaultValue(null)]
+        public string CranMirror {
+            get { return _holder.GetValue<string>(); }
+            set { _holder.SetValue(value); }
+        }
+
+        [LocCategory(nameof(Resources.Settings_REngineCategory))]
+        [CustomLocDisplayName(nameof(Resources.Settings_WorkingDirectory))]
+        [LocDescription(nameof(Resources.Settings_WorkingDirectory_Description))]
+        [Editor(typeof(BrowserForFolderUIEditor), typeof(UITypeEditor))]
+        [DefaultValue("~")]
+        public string WorkingDirectory {
+            get { return _holder.GetValue("~", "WorkingDirectory"); }
+            set { _holder.SetValue(value); }
+        }
+
+        [LocCategory(nameof(Resources.Settings_REngineCategory))]
+        [CustomLocDisplayName(nameof(Resources.Settings_RCodePage))]
+        [LocDescription(nameof(Resources.Settings_RCodePage_Description))]
         [TypeConverter(typeof(EncodingTypeConverter))]
         [DefaultValue(0)]
         public int RCodePage {
-            get { return _holder.GetValue<int>(0); }
+            get { return _holder.GetValue(0); }
             set { _holder.SetValue(value); }
         }
 
-        [LocCategory("Settings_DebuggingCategory")]
-        [CustomLocDisplayName("Settings_EvaluateActiveBindings")]
-        [LocDescription("Settings_EvaluateActiveBindings_Description")]
+        [LocCategory(nameof(Resources.Settings_DebuggingCategory))]
+        [CustomLocDisplayName(nameof(Resources.Settings_EvaluateActiveBindings))]
+        [LocDescription(nameof(Resources.Settings_EvaluateActiveBindings_Description))]
         [DefaultValue(true)]
         public bool EvaluateActiveBindings {
-            get { return _holder.GetValue<bool>(true); }
+            get { return _holder.GetValue(true); }
             set { _holder.SetValue(value); }
         }
 
-        [LocCategory("Settings_DebuggingCategory")]
-        [CustomLocDisplayName("Settings_ShowDotPrefixedVariables")]
-        [LocDescription("Settings_ShowDotPrefixedVariables_Description")]
+        [LocCategory(nameof(Resources.Settings_DebuggingCategory))]
+        [CustomLocDisplayName(nameof(Resources.Settings_ShowDotPrefixedVariables))]
+        [LocDescription(nameof(Resources.Settings_ShowDotPrefixedVariables_Description))]
         [DefaultValue(false)]
         public bool ShowDotPrefixedVariables {
-            get { return _holder.GetValue<bool>(false); }
+            get { return _holder.GetValue(false); }
             set { _holder.SetValue(value); }
         }
 
-        [LocCategory("Settings_HelpCategory")]
-        [CustomLocDisplayName("Settings_HelpBrowser")]
-        [LocDescription("Settings_HelpBrowser_Description")]
+        [LocCategory(nameof(Resources.Settings_HelpCategory))]
+        [CustomLocDisplayName(nameof(Resources.Settings_HelpBrowser))]
+        [LocDescription(nameof(Resources.Settings_HelpBrowser_Description))]
         [TypeConverter(typeof(HelpBrowserTypeConverter))]
         [DefaultValue(HelpBrowserType.Automatic)]
         public HelpBrowserType HelpBrowserType {
-            get { return _holder.GetValue<HelpBrowserType>(HelpBrowserType.Automatic); }
+            get { return _holder.GetValue(HelpBrowserType.Automatic); }
             set { _holder.SetValue(value); }
         }
 
-        [LocCategory("Settings_HelpCategory")]
-        [CustomLocDisplayName("Settings_WebHelpSearchString")]
-        [LocDescription("Settings_WebHelpSearchString_Description")]
+        [LocCategory(nameof(Resources.Settings_HelpCategory))]
+        [CustomLocDisplayName(nameof(Resources.Settings_WebHelpSearchString))]
+        [LocDescription(nameof(Resources.Settings_WebHelpSearchString_Description))]
         [DefaultValue("R site:stackoverflow.com")]
         public string WebHelpSearchString {
-            get { return _holder.GetValue<string>("R site:stackoverflow.com", "WebHelpSearchString"); }
+            get { return _holder.GetValue("R site:stackoverflow.com", "WebHelpSearchString"); }
             set { _holder.SetValue(value); }
         }
 
-        [LocCategory("Settings_HelpCategory")]
-        [CustomLocDisplayName("Settings_WebHelpSearchBrowserType")]
-        [LocDescription("Settings_WebHelpSearchBrowserType_Description")]
+        [LocCategory(nameof(Resources.Settings_HelpCategory))]
+        [CustomLocDisplayName(nameof(Resources.Settings_WebHelpSearchBrowserType))]
+        [LocDescription(nameof(Resources.Settings_WebHelpSearchBrowserType_Description))]
         [TypeConverter(typeof(BrowserTypeConverter))]
         [DefaultValue(BrowserType.Internal)]
         public BrowserType WebHelpSearchBrowserType {
-            get { return _holder.GetValue<BrowserType>(BrowserType.Internal); }
+            get { return _holder.GetValue(BrowserType.Internal); }
             set { _holder.SetValue(value); }
         }
 
-        [LocCategory("Settings_HtmlCategory")]
-        [CustomLocDisplayName("Settings_HtmlBrowserType")]
-        [LocDescription("Settings_HtmlBrowserType_Description")]
+        [LocCategory(nameof(Resources.Settings_HtmlCategory))]
+        [CustomLocDisplayName(nameof(Resources.Settings_HtmlBrowserType))]
+        [LocDescription(nameof(Resources.Settings_HtmlBrowserType_Description))]
         [TypeConverter(typeof(BrowserTypeConverter))]
         [DefaultValue(BrowserType.Internal)]
         public BrowserType HtmlBrowserType {
-            get { return _holder.GetValue<BrowserType>(BrowserType.Internal); }
+            get { return _holder.GetValue(BrowserType.Internal); }
             set { _holder.SetValue(value); }
         }
 
-        [LocCategory("Settings_MarkdownCategory")]
-        [CustomLocDisplayName("Settings_MarkdownBrowserType")]
-        [LocDescription("Settings_MarkdownBrowserType_Description")]
+        [LocCategory(nameof(Resources.Settings_MarkdownCategory))]
+        [CustomLocDisplayName(nameof(Resources.Settings_MarkdownBrowserType))]
+        [LocDescription(nameof(Resources.Settings_MarkdownBrowserType_Description))]
         [TypeConverter(typeof(BrowserTypeConverter))]
         [DefaultValue(BrowserType.External)]
         public BrowserType MarkdownBrowserType {
-            get { return _holder.GetValue<BrowserType>(BrowserType.External); }
+            get { return _holder.GetValue(BrowserType.External); }
             set { _holder.SetValue(value); }
         }
 
-        [LocCategory("Settings_GeneralCategory")]
-        [CustomLocDisplayName("Settings_SurveyNewsCheck")]
-        [LocDescription("Settings_SurveyNewsCheck_Description")]
+        [LocCategory(nameof(Resources.Settings_GeneralCategory))]
+        [CustomLocDisplayName(nameof(Resources.Settings_SurveyNewsCheck))]
+        [LocDescription(nameof(Resources.Settings_SurveyNewsCheck_Description))]
         [TypeConverter(typeof(SurveyNewsPolicyTypeConverter))]
         [DefaultValue(SurveyNewsPolicy.CheckOnceWeek)]
         public SurveyNewsPolicy SurveyNewsCheck {
-            get { return _holder.GetValue<SurveyNewsPolicy>(SurveyNewsPolicy.CheckOnceWeek); }
+            get { return _holder.GetValue(SurveyNewsPolicy.CheckOnceWeek); }
             set { _holder.SetValue(value); }
         }
 
-        [LocCategory("Settings_LogCategory")]
-        [CustomLocDisplayName("Settings_LogLevel")]
-        [LocDescription("Settings_LogLevel_Description")]
+        [LocCategory(nameof(Resources.Settings_LogCategory))]
+        [CustomLocDisplayName(nameof(Resources.Settings_LogLevel))]
+        [LocDescription(nameof(Resources.Settings_LogLevel_Description))]
         [TypeConverter(typeof(LogVerbosityTypeConverter))]
         [DefaultValue(LogVerbosity.Normal)]
         public LogVerbosity LogVerbosity {
-            get { return _holder.GetValue<LogVerbosity>(LogVerbosity.Normal); }
+            get { return _holder.GetValue(LogVerbosity.Normal); }
             set { _holder.SetValue(value); }
         }
 
