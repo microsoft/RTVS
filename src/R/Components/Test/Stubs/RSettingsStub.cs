@@ -26,7 +26,6 @@ namespace Microsoft.R.Components.Test.Stubs {
         public int RCodePage { get; set; }
         public bool EvaluateActiveBindings { get; set; }
         public LogVerbosity LogVerbosity { get; set; }
-        public bool SetDefaultWorkingDirectory { get; set; }
 
         public void LoadSettings() { }
         public Task SaveSettingsAsync() => Task.CompletedTask;

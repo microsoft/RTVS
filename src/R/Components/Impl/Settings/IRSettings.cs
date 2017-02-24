@@ -63,11 +63,6 @@ namespace Microsoft.R.Components.Settings {
 
         LogVerbosity LogVerbosity { get; set; }
 
-        /// <summary>
-        /// Controls if R session should set working directory to `~` or leave it unchanged.
-        /// </summary>
-        bool SetDefaultWorkingDirectory { get; set; }
-
         void LoadSettings();
         Task SaveSettingsAsync();
     }

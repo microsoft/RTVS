@@ -157,11 +157,6 @@ namespace Microsoft.R.Support.Test.Utility {
             set { }
         }
 
-        public bool SetDefaultWorkingDirectory {
-            get { return true; }
-            set { }
-        }
-
         public bool ShowRToolbar { get; set; } = true;
 
         #region IRPersistentSettings

@@ -55,7 +55,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         private BrowserType _htmlBrowserType = BrowserType.Internal;
         private BrowserType _markdownBrowserType = BrowserType.External;
         private LogVerbosity _logVerbosity = LogVerbosity.Normal;
-        private bool _setDefaultWorkingDirectory = true;
 
         [ImportingConstructor]
         public RToolsSettingsImplementation(ISettingsStorage settings, ICoreShell coreShell) {
@@ -209,15 +208,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             get { return _logVerbosity; }
             set { SetProperty(ref _logVerbosity, value); }
         }
-
-        /// <summary>
-        /// Controls if R session should set working directory to `~` or leave it unchanged.
-        /// </summary>
-        public bool SetDefaultWorkingDirectory {
-            get { return _setDefaultWorkingDirectory; }
-            set { SetProperty(ref _setDefaultWorkingDirectory, value); }
-        }
-
 
         public bool ShowRToolbar { get; set; } = true;
 
