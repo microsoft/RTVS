@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Include>
-  <?define ProductName="R Remote Services for Visual Studio" ?>
+  <?define ProductName="R Remote Services 1.0 RC2 for Visual Studio" ?>
 
   <!-- 
      Uncomment this to simulate loc build.
