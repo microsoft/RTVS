@@ -195,7 +195,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     throw new InvalidOperationException("Couldn't acquire enough data");
                 }
 
-                await DrawVisualsAsync(newViewport, data, updateType, visualViewport, suppressNotification);
+                await DrawVisualsAsync(newViewport, data, updateType, visualViewport, suppressNotification, token);
             } catch (OperationCanceledException) { }
         }
 
@@ -204,9 +204,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             IGridData<string> data,
             GridUpdateType updateType,
             Rect visualViewport,
-            bool suppressNotification) {
+            bool suppressNotification,
+            CancellationToken token) {
 
-            await VsAppShell.Current.SwitchToMainThreadAsync();
+            await VsAppShell.Current.SwitchToMainThreadAsync(token);
 
             using (var deferal = Points.DeferChangeNotification(suppressNotification)) {
                 // measure points
