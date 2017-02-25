@@ -1021,7 +1021,7 @@
       </Button>
 
       <Button guid="guidRToolsCmdSet" id="icmdExportPlotAsImage" priority="0x0100" type="Button">
-        <Icon guid="ImageCatalogGuid" id="ASPWebSite"/>
+        <Icon guid="ImageCatalogGuid" id="Image"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
