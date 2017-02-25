@@ -15,11 +15,13 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
         private readonly IActiveWpfTextViewTracker _activeTextViewTracker;
         private readonly bool _echo;
+        private readonly FileSystem _fs;
 
         public SourceRScriptCommand(IRInteractiveWorkflow interactiveWorkflow, IActiveWpfTextViewTracker activeTextViewTracker, bool echo) {
             _interactiveWorkflow = interactiveWorkflow;
             _activeTextViewTracker = activeTextViewTracker;
             _echo = echo;
+            _fs = new FileSystem();
         }
 
         public CommandStatus Status {
@@ -29,8 +31,18 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
                     status |= CommandStatus.Invisible;
                 } else if (RContentTypeDefinition.ContentType != _activeTextViewTracker.LastActiveTextView?.TextBuffer?.ContentType?.TypeName) {
                     status |= CommandStatus.Invisible;
-                } else if (!string.IsNullOrEmpty(GetFilePath())) {
-                    status |= CommandStatus.Enabled;
+                } else {
+                    var filePath = GetFilePath();
+                    if (!string.IsNullOrEmpty(filePath)) {
+                        var session = _interactiveWorkflow.RSession;
+                        if (session.IsRemote) {
+                            if (_fs.FileExists(filePath)) {
+                                status |= CommandStatus.Enabled;
+                            }
+                        } else {
+                            status |= CommandStatus.Enabled;
+                        }
+                    }
                 }
                 return status;
             }
