@@ -1085,7 +1085,6 @@
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.IO.Compression" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
@@ -1563,6 +1562,7 @@
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.AspNetCore.WebUtilities.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Net.Http.Headers.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Net.Http.Server.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Microsoft.Win32.Primitives.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.AppContext.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Buffers.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Collections.Immutable.dll" />
@@ -1577,9 +1577,11 @@
       <VSIXSourceItem Include="$(OutputPath)\System.Diagnostics.DiagnosticSource.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Diagnostics.FileVersionInfo.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Diagnostics.StackTrace.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\System.IO.Compression.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.IO.Compression.ZipFile.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.IO.FileSystem.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.IO.FileSystem.Primitives.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\System.Net.Http.WinHttpHandler.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Numerics.Vectors.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Reflection.Metadata.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Runtime.InteropServices.RuntimeInformation.dll" />

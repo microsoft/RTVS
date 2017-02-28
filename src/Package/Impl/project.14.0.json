@@ -22,7 +22,10 @@
     "Microsoft.VisualStudio.Text.UI": "14.3.25407",
     "Microsoft.VisualStudio.Text.UI.Wpf": "14.3.25407",
     "Microsoft.VSSDK.BuildTools": "14.3.25420",
-    "System.IO.Compression.ZipFile": "4.3.0",
+    "Microsoft.Win32.Primitives": "4.0.0",
+    "System.IO.Compression": "4.0.0",
+    "System.IO.Compression.ZipFile": "4.0.0",
+    "System.Net.Http.WinHttpHandler": "4.0.0",
     "VSSDK.DTE.8": "8.0.4"
   },
   "frameworks": {

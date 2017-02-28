@@ -97,6 +97,7 @@
   <File Source="$(var.BinDir)\System.IO.Compression.ZipFile.dll" />
   <File Source="$(var.BinDir)\System.IO.FileSystem.dll" />
   <File Source="$(var.BinDir)\System.IO.FileSystem.Primitives.dll" />
+  <File Source="$(var.BinDir)\System.Net.Http.WinHttpHandler.dll" />
   <File Source="$(var.BinDir)\System.Numerics.Vectors.dll" />
   <File Source="$(var.BinDir)\System.Reflection.Metadata.dll" />
   <File Source="$(var.BinDir)\System.Runtime.InteropServices.RuntimeInformation.dll" />
