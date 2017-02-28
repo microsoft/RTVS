@@ -213,7 +213,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
 
         private void UpdateWorkingDirectoryList(string newDirectory) {
             List<string> list = new List<string>(WorkingDirectoryList);
-            if (!list.Contains(newDirectory, StringComparer.OrdinalIgnoreCase)) {
+            if (!string.IsNullOrEmpty(newDirectory) && !list.Contains(newDirectory, StringComparer.OrdinalIgnoreCase)) {
                 list.Insert(0, newDirectory);
                 if (list.Count > MaxDirectoryEntries) {
                     list.RemoveAt(list.Count - 1);
