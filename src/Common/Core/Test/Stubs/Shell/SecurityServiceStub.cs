@@ -12,14 +12,13 @@ namespace Microsoft.Common.Core.Test.Stubs.Shell {
         public ConcurrentQueue<Tuple<X509Certificate, string>> ValidateX509CertificateCalls { get; } = new ConcurrentQueue<Tuple<X509Certificate, string>>();
         public ConcurrentQueue<string> DeleteUserCredentialsCalls { get; } = new ConcurrentQueue<string>();
         public ConcurrentQueue<string> DeleteCredentialsCalls { get; } = new ConcurrentQueue<string>();
-        public ConcurrentQueue<string> ReadSavedCredentialsCalls { get; } = new ConcurrentQueue<string>();
-        public ConcurrentQueue<Tuple<Credentials, string>> SaveCredentialsCalls { get; } = new ConcurrentQueue<Tuple<Credentials, string>>();
+        public ConcurrentQueue<string> GetUserNameCalls { get; } = new ConcurrentQueue<string>();
 
         public Func<string, string, Credentials> GetUserCredentialsHandler { get; set; } = (authority, workspaceName) => { throw new NotImplementedException(); };
-        public Action<Credentials, string> SaveCredentialsHandler { get; set; } = (credentials, authority) => { throw new NotImplementedException(); };
         public Func<X509Certificate, string, bool> ValidateX509CertificateHandler { get; set; } = (deviceId, ct) => true;
         public Func<string, bool> DeleteUserCredentialsHandler { get; set; } = authority => true;
         public Action<string> DeleteCredentialsHandler { get; set; } = authority => {};
+        public Func<string, string> GetUserNameHandler { get; set; } = authority => { throw new NotImplementedException(); };
 
         public Credentials GetUserCredentials(string authority, string workspaceName) {
             GetUserCredentialsCalls.Enqueue(new Tuple<string, string>(authority, workspaceName));
@@ -50,17 +49,7 @@ namespace Microsoft.Common.Core.Test.Stubs.Shell {
 
             throw new NotImplementedException();
         }
-
-        public void Save(Credentials credentials, string authority) {
-            SaveCredentialsCalls.Enqueue(new Tuple<Credentials, string>(credentials, authority));
-            var handler = SaveCredentialsHandler;
-            if (handler != null) {
-                handler(credentials, authority);
-            } else {
-                throw new NotImplementedException();
-            }
-        }
-
+        
         public void DeleteCredentials(string authority) {
             DeleteCredentialsCalls.Enqueue(authority);
             var handler = DeleteCredentialsHandler;
@@ -69,6 +58,16 @@ namespace Microsoft.Common.Core.Test.Stubs.Shell {
             } else {
                 throw new NotImplementedException();
             }
+        }
+
+        public string GetUserName(string authority) {
+            GetUserNameCalls.Enqueue(authority);
+            var handler = GetUserNameHandler;
+            if (handler != null) {
+                return handler(authority);
+            }
+
+            throw new NotImplementedException();
         }
     }
 }

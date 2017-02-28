@@ -8,7 +8,6 @@ namespace Microsoft.Common.Core.Security {
         Credentials GetUserCredentials(string authority, string workspaceName);
         bool ValidateX509Certificate(X509Certificate certificate, string message);
         bool DeleteUserCredentials(string authority);
-        void Save(Credentials credentials, string authority);
         void DeleteCredentials(string authority);
         string GetUserName(string authority);
     }
