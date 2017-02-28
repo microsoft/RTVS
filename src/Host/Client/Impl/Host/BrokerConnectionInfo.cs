@@ -26,10 +26,12 @@ namespace Microsoft.R.Host.Client.Host {
                 return new BrokerConnectionInfo();
             }
 
-            if (uri.IsFile) {
-                return new BrokerConnectionInfo(name, uri, rCommandLineArguments, string.Empty, false, string.Empty);
-            }
+            return uri.IsFile 
+                ? new BrokerConnectionInfo(name, uri, rCommandLineArguments, string.Empty, false, string.Empty) 
+                : CreateRemote(name, uri, rCommandLineArguments);
+        }
 
+        private static BrokerConnectionInfo CreateRemote(string name, Uri uri, string rCommandLineArguments) {
             var fragment = uri.Fragment;
             var interpreterId = string.IsNullOrEmpty(fragment) ? string.Empty : fragment.Substring(1);
             uri = new Uri(uri.GetLeftPart(UriPartial.Query));

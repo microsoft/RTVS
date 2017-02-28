@@ -35,9 +35,8 @@
     <Compile Include="IO\KnownFolderGuids.cs" />
     <Compile Include="Json\Json.cs" />
     <Compile Include="Logging\ILoggingPermissions.cs" />
-    <Compile Include="Logging\Implementation\NullLogWriter.cs" />
-    <Compile Include="Logging\Implementation\EventLogLogger.cs" />
-    <Compile Include="Logging\Implementation\EventLogLoggerProvider.cs" />
+    <Compile Include="Logging\EventLogLogger.cs" />
+    <Compile Include="Logging\EventLogLoggerProvider.cs" />
     <Compile Include="Logging\LogExtensions.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Logging\FileLogWriter.cs" />
@@ -45,6 +44,7 @@
     <Compile Include="Logging\IActionLogWriter.cs" />
     <Compile Include="Logging\LogVerbosity.cs" />
     <Compile Include="Logging\MessageCategory.cs" />
+    <Compile Include="Logging\NullLogWriter.cs" />
     <Compile Include="Net\IFileDownloader.cs" />
     <Compile Include="Net\Network.cs" />
     <Compile Include="Net\WebSocketHelper.cs" />

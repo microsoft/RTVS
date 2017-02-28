@@ -8,7 +8,6 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Principal;
 using System.Text;
-using System.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Security;
@@ -24,14 +23,22 @@ namespace Microsoft.Windows.Core.Security {
             _coreShell = coreShell;
         }
 
-        public Credentials GetUserCredentials(string authority, string workspaceName, CancellationToken cancellationToken = default(CancellationToken)) {
+        public Credentials GetUserCredentials(string authority, string workspaceName) {
             _coreShell.AssertIsOnMainThread();
-
-            var credentials = ReadSavedCredentials(authority) ?? GetUserCredentials(workspaceName, cancellationToken);
-            return credentials;
+            return ReadSavedCredentials(authority) ?? GetUserCredentials(workspaceName);
         }
 
-        private Credentials GetUserCredentials(string workspaceName, CancellationToken cancellationToken) {
+        private Credentials ReadSavedCredentials(string authority) {
+            using (var ch = CredentialHandle.ReadFromCredentialManager(authority)) {
+                if (ch != null) {
+                    var credData = ch.GetCredentialData();
+                    Credentials.Create(credData.UserName, SecurityUtilities.SecureStringFromNativeBuffer(credData.CredentialBlob), CredentialSource.Saved);
+                }
+                return null;
+            }
+        }
+
+        private Credentials GetUserCredentials(string workspaceName) {
             var credui = new CREDUI_INFO {
                 cbSize = Marshal.SizeOf(typeof(CREDUI_INFO)),
                 hwndParent = _coreShell.AppConstants.ApplicationWindowHandle,
@@ -142,23 +149,10 @@ namespace Microsoft.Windows.Core.Security {
             }
         }
 
-        /// <summary>
-        /// Used to obtain credentials from the Credential Manager
-        /// </summary>
-        public Credentials ReadSavedCredentials(string authority) {
-            using (CredentialHandle ch = CredentialHandle.ReadFromCredentialManager(authority)) {
-                if (ch != null) {
-                    CredentialData credData = ch.GetCredentialData();
-                    return null;//Credentials.Create(credData.UserName, SecurityUtilities.SecureStringFromNativeBuffer(credData.CredentialBlob), CredentialSource.Saved);
-                }
-                return null;
-            }
-        }
-
         public string GetUserName(string authority) {
             using (var ch = CredentialHandle.ReadFromCredentialManager(authority)) {
                 if (ch != null) {
-                    NativeMethods.CredentialData credData = ch.GetCredentialData();
+                    var credData = ch.GetCredentialData();
                     return credData.UserName;
                 }
                 return string.Empty;

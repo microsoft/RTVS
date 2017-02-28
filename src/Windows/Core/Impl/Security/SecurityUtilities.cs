@@ -10,7 +10,6 @@ using Microsoft.Common.Core.Security;
 
 namespace Microsoft.Windows.Core.Security {
     public static class SecurityUtilities {
-
         public static IntPtr CreateSecureStringBuffer(int length) {
             var sec = new SecureString();
             for (int i = 0; i <= length; i++) {
@@ -21,32 +20,12 @@ namespace Microsoft.Windows.Core.Security {
 
         public static SecureString SecureStringFromNativeBuffer(IntPtr nativeBuffer) {
             var ss = new SecureString();
-            unsafe
-            {
+            unsafe {
                 for (char* p = (char*)nativeBuffer; *p != '\0'; p++) {
                     ss.AppendChar(*p);
                 }
             }
             return ss;
-        }
-
-        public static Credentials ReadCredentials(string authority) {
-            using (CredentialHandle ch = CredentialHandle.ReadFromCredentialManager(authority)) {
-                if (ch != null) {
-                    NativeMethods.CredentialData credData = ch.GetCredentialData();
-                    return Credentials.CreateSavedCredentails(credData.UserName, SecureStringFromNativeBuffer(credData.CredentialBlob));
-                }
-                return null;
-            }
-        }
-        public static string GetUserName(string authority) {
-            using (CredentialHandle ch = CredentialHandle.ReadFromCredentialManager(authority)) {
-                if (ch != null) {
-                    NativeMethods.CredentialData credData = ch.GetCredentialData();
-                    return credData.UserName;
-                }
-                return string.Empty;
-            }
         }
     }
 }
