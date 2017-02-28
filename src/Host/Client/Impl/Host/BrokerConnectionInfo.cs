@@ -18,7 +18,7 @@ namespace Microsoft.R.Host.Client.Host {
         public string InterpreterId { get; }
         public string CredentialAuthority => GetCredentialAuthority(Name);
 
-        public static BrokerConnectionInfo Create(string name, string path, string rCommandLineArguments = null) {
+        public static BrokerConnectionInfo Create(ISecurityService securityService, string name, string path, string rCommandLineArguments = null) {
             rCommandLineArguments = rCommandLineArguments ?? string.Empty;
 
             Uri uri;
@@ -28,14 +28,14 @@ namespace Microsoft.R.Host.Client.Host {
 
             return uri.IsFile 
                 ? new BrokerConnectionInfo(name, uri, rCommandLineArguments, string.Empty, false, string.Empty) 
-                : CreateRemote(name, uri, rCommandLineArguments);
+                : CreateRemote(name, uri, securityService, rCommandLineArguments);
         }
 
-        private static BrokerConnectionInfo CreateRemote(string name, Uri uri, string rCommandLineArguments) {
+        private static BrokerConnectionInfo CreateRemote(string name, Uri uri, ISecurityService securityService, string rCommandLineArguments) {
             var fragment = uri.Fragment;
             var interpreterId = string.IsNullOrEmpty(fragment) ? string.Empty : fragment.Substring(1);
             uri = new Uri(uri.GetLeftPart(UriPartial.Query));
-            string username = SecurityUtilities.GetUserName(GetCredentialAuthority(name));
+            string username = securityService.GetUserName(GetCredentialAuthority(name));
             return new BrokerConnectionInfo(name, uri, rCommandLineArguments, interpreterId, true, username);
         }
 

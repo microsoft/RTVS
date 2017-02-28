@@ -75,7 +75,7 @@ namespace Microsoft.R.Host.Client {
                 url = engine.InstallPath;
             }
 
-            var ci = BrokerConnectionInfo.Create(name, url);
+            var ci = BrokerConnectionInfo.Create(null, name, url);
             var bc = new LocalBrokerClient(name, ci, new CoreServices(), new NullConsole());
             return new RHostSession(new RSession(0, name, bc, new NullLock(), () => { }));
         }

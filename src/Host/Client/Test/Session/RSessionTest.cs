@@ -183,7 +183,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [Test]
         [Category.R.Session]
         public void StartRHostMissing() {
-            var brokerClient = new LocalBrokerClient(nameof(RSessionTest), BrokerConnectionInfo.Create("C", @"C:\"), _coreServices, new NullConsole(), Environment.SystemDirectory);
+            var brokerClient = new LocalBrokerClient(nameof(RSessionTest), BrokerConnectionInfo.Create(null, "C", @"C:\"), _coreServices, new NullConsole(), Environment.SystemDirectory);
             var session = new RSession(0, _testMethod.FileSystemSafeName, brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo(), null, 10000);
 
@@ -206,7 +206,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [Test]
         [Category.R.Session]
         public async Task StopBeforeInitialized_RHostMissing() {
-            var brokerClient = new LocalBrokerClient(nameof(RSessionTest), BrokerConnectionInfo.Create("C", @"C:\"), _coreServices, new NullConsole(), Environment.SystemDirectory);
+            var brokerClient = new LocalBrokerClient(nameof(RSessionTest), BrokerConnectionInfo.Create(null, "C", @"C:\"), _coreServices, new NullConsole(), Environment.SystemDirectory);
             var session = new RSession(0, _testMethod.FileSystemSafeName, brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo (), null, 10000);
             var startTask = Task.Run(start).SilenceException<RHostBinaryMissingException>();
@@ -247,7 +247,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
         private static IBrokerClient CreateLocalBrokerClient(ICoreServices coreServices, string name) 
             => new LocalBrokerClient(name, 
-                BrokerConnectionInfo.Create("Test", new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath),
+                BrokerConnectionInfo.Create(null, "Test", new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath),
                 coreServices, 
                 new NullConsole());
 
