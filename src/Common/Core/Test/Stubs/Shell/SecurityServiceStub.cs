@@ -18,7 +18,7 @@ namespace Microsoft.Common.Core.Test.Stubs.Shell {
         public Func<X509Certificate, string, bool> ValidateX509CertificateHandler { get; set; } = (deviceId, ct) => true;
         public Func<string, bool> DeleteUserCredentialsHandler { get; set; } = authority => true;
         public Action<string> DeleteCredentialsHandler { get; set; } = authority => {};
-        public Func<string, string> GetUserNameHandler { get; set; } = authority => { throw new NotImplementedException(); };
+        public Func<string, string> GetUserNameHandler { get; set; } = authority => authority;
 
         public Credentials GetUserCredentials(string authority, string workspaceName) {
             GetUserCredentialsCalls.Enqueue(new Tuple<string, string>(authority, workspaceName));

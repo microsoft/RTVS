@@ -7,12 +7,19 @@ using Microsoft.R.Host.Client.Host;
 
 namespace Microsoft.R.Components.ConnectionManager {
     internal class Connection : ConnectionInfo, IConnection {
-        public static Connection Create(ISecurityService securityService, IConnectionInfo connectionInfo) 
-            => Create(securityService, connectionInfo.Name, connectionInfo.Path, connectionInfo.RCommandLineArguments, connectionInfo.IsUserCreated);
+        public static Connection Create(ISecurityService securityService, IConnectionInfo connectionInfo) {
+            var brokerConnectionInfo = BrokerConnectionInfo.Create(securityService, connectionInfo.Name, connectionInfo.Path, connectionInfo.RCommandLineArguments);
+            return new Connection(brokerConnectionInfo, connectionInfo);
+        }
 
         public static Connection Create(ISecurityService securityService, string name, string path, string rCommandLineArguments, bool isUserCreated) {
             var brokerConnectionInfo = BrokerConnectionInfo.Create(securityService, name, path, rCommandLineArguments);
             return new Connection(brokerConnectionInfo, path, isUserCreated);
+        }
+
+        private Connection(BrokerConnectionInfo brokerConnectionInfo, IConnectionInfo connectionInfo) 
+            : base(connectionInfo) {
+            BrokerConnectionInfo = brokerConnectionInfo;
         }
 
         private Connection(BrokerConnectionInfo brokerConnectionInfo, string path, bool isUserCreated) 
