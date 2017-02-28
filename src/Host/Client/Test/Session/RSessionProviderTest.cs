@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -222,10 +223,13 @@ namespace Microsoft.R.Host.Client.Test.Session {
                 await sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(SwitchBrokerWithCancellation));
                 await session.EnsureHostStartedAsync(new RHostStartupInfo(), null, 1000);
 
+                var stopwatch = new Stopwatch();
+                stopwatch.Start();
                 var result = await sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(SwitchBrokerWithCancellation) + "1",
                     cancellationToken: new CancellationTokenSource(timeout).Token);
+                stopwatch.Stop();
 
-                result.Should().BeFalse();
+                result.Should().Be(stopwatch.ElapsedMilliseconds < timeout);
             }
         }
 
