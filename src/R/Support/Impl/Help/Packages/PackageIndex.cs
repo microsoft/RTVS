@@ -109,7 +109,7 @@ namespace Microsoft.R.Support.Help.Packages {
 
                     stopwatch.Stop();
                 }
-            } catch (OperationCanceledException ex) {
+            } catch (RException ex) {
                 Debug.WriteLine(ex.Message);
                 ScheduleIdleTimeRebuild();
             } finally {
@@ -193,7 +193,7 @@ namespace Microsoft.R.Support.Help.Packages {
                 if (!_packages.ContainsKey("rtvs")) {
                     _packages["rtvs"] = new PackageInfo(_host, "rtvs", "R Tools", "1.0");
                 }
-            } catch (REvaluationException) { }
+            } catch (RException) { }
         }
 
         private async Task LoadRemainingPackagesFunctions() {
@@ -215,8 +215,7 @@ namespace Microsoft.R.Support.Help.Packages {
 
                     var added = installed.Where(p => !currentNames.Contains(p.Package));
                     await AddPackagesToIndexAsync(added);
-                } catch (REvaluationException) {
-                } catch (OperationCanceledException) {
+                } catch (RException) {
                 } finally {
                     token.Reset();
                 }
@@ -235,7 +234,7 @@ namespace Microsoft.R.Support.Help.Packages {
                     var installedPackages = await GetInstalledPackagesAsync();
                     var packagesNotInIndex = installedPackages.Where(p => packageNames.Contains(p.Package));
                     info = await AddPackagesToIndexAsync(packagesNotInIndex);
-                } catch (REvaluationException) { } catch (OperationCanceledException) { }
+                } catch (RException) { }
             }
             return info;
         }
@@ -263,7 +262,7 @@ namespace Microsoft.R.Support.Help.Packages {
             try {
                 await _host.StartSessionAsync();
                 return _host.LoadedPackageNames;
-            } catch (OperationCanceledException) { }
+            } catch (RException) { }
             return Enumerable.Empty<string>();
         }
 

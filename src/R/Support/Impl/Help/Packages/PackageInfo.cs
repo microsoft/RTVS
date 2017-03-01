@@ -80,7 +80,7 @@ namespace Microsoft.R.Support.Help.Packages {
                 try {
                     var result = await _host.Session.PackagesFunctionsNamesAsync(Name, REvaluationKind.BaseEnv);
                     functions = result.Children<JValue>().Select(v => (string)v.Value);
-                } catch (OperationCanceledException) { } catch (REvaluationException) { }
+                } catch (RException) { }
             } else {
                 _saved = true;
             }
