@@ -35,8 +35,6 @@
     <Compile Include="IO\KnownFolderGuids.cs" />
     <Compile Include="Json\Json.cs" />
     <Compile Include="Logging\ILoggingPermissions.cs" />
-    <Compile Include="Logging\EventLogLogger.cs" />
-    <Compile Include="Logging\EventLogLoggerProvider.cs" />
     <Compile Include="Logging\LogExtensions.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Logging\FileLogWriter.cs" />
