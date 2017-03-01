@@ -212,7 +212,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         public bool ShowRToolbar { get; set; } = true;
 
         private void UpdateWorkingDirectoryList(string newDirectory) {
-            List<string> list = new List<string>(WorkingDirectoryList);
+            List<string> list = new List<string>(WorkingDirectoryList ?? Enumerable.Empty<string>());
             if (!string.IsNullOrEmpty(newDirectory) && !list.Contains(newDirectory, StringComparer.OrdinalIgnoreCase)) {
                 list.Insert(0, newDirectory);
                 if (list.Count > MaxDirectoryEntries) {
