@@ -109,7 +109,7 @@ namespace Microsoft.R.Support.Help.Packages {
 
                     stopwatch.Stop();
                 }
-            } catch (RHostDisconnectedException ex) {
+            } catch (OperationCanceledException ex) {
                 Debug.WriteLine(ex.Message);
                 ScheduleIdleTimeRebuild();
             } finally {
@@ -175,23 +175,25 @@ namespace Microsoft.R.Support.Help.Packages {
         }
 
         private async Task LoadInstalledPackagesIndexAsync() {
-            var packagesFunctions = await _host.Session.InstalledPackagesFunctionsAsync(REvaluationKind.BaseEnv);
-            foreach (var package in packagesFunctions) {
-                var name = package.Value<string>("Package");
-                var description = package.Value<string>("Description");
-                var version = package.Value<string>("Version");
-                var functions = package.Value<JArray>("Functions");
-                if (functions.HasValues) {
-                    var functionNames = functions.Children<JValue>().Select(v => (string)v.Value);
-                    _packages[name] = new PackageInfo(_host, name, description, version, functionNames);
-                } else {
-                    _packages[name] = new PackageInfo(_host, name, description, version);
+            try {
+                var packagesFunctions = await _host.Session.InstalledPackagesFunctionsAsync(REvaluationKind.BaseEnv);
+                foreach (var package in packagesFunctions) {
+                    var name = package.Value<string>("Package");
+                    var description = package.Value<string>("Description");
+                    var version = package.Value<string>("Version");
+                    var functions = package.Value<JArray>("Functions");
+                    if (functions.HasValues) {
+                        var functionNames = functions.Children<JValue>().Select(v => (string)v.Value);
+                        _packages[name] = new PackageInfo(_host, name, description, version, functionNames);
+                    } else {
+                        _packages[name] = new PackageInfo(_host, name, description, version);
+                    }
                 }
-            }
 
-            if (!_packages.ContainsKey("rtvs")) {
-                _packages["rtvs"] = new PackageInfo(_host, "rtvs", "R Tools", "1.0");
-            }
+                if (!_packages.ContainsKey("rtvs")) {
+                    _packages["rtvs"] = new PackageInfo(_host, "rtvs", "R Tools", "1.0");
+                }
+            } catch (REvaluationException) { }
         }
 
         private async Task LoadRemainingPackagesFunctions() {
@@ -213,6 +215,7 @@ namespace Microsoft.R.Support.Help.Packages {
 
                     var added = installed.Where(p => !currentNames.Contains(p.Package));
                     await AddPackagesToIndexAsync(added);
+                } catch (REvaluationException) {
                 } catch (OperationCanceledException) {
                 } finally {
                     token.Reset();
@@ -232,7 +235,7 @@ namespace Microsoft.R.Support.Help.Packages {
                     var installedPackages = await GetInstalledPackagesAsync();
                     var packagesNotInIndex = installedPackages.Where(p => packageNames.Contains(p.Package));
                     info = await AddPackagesToIndexAsync(packagesNotInIndex);
-                } catch (RHostDisconnectedException) { }
+                } catch (REvaluationException) { } catch (OperationCanceledException) { }
             }
             return info;
         }
