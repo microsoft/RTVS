@@ -19,7 +19,8 @@ namespace Microsoft.R.Core.Formatting {
         public IndentType IndentType { get; set; } = IndentType.Spaces;
 
         public bool SpaceAfterComma { get; set; } = true;
-
         public bool SpaceAfterKeyword { get; set; } = true;
+        public bool SpacesAroundEquals { get; set; } = true;
+        public bool SpaceBeforeCurly { get; set; } = true;
     }
 }

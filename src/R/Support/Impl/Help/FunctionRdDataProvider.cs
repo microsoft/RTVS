@@ -38,7 +38,7 @@ namespace Microsoft.R.Host.Client.Signatures {
         /// Asynchronously fetches RD data on the function from R.
         /// </summary>
         public async Task<string> GetFunctionRdDataAsync(string functionName, string packageName) {
-            if(packageName.EqualsOrdinal("rtvs")) {
+            if (packageName.EqualsOrdinal("rtvs")) {
                 return GetRtvsFunctionRdData(functionName);
             }
 
@@ -48,7 +48,7 @@ namespace Microsoft.R.Host.Client.Signatures {
             string command = GetCommandText(functionName, packageName);
             try {
                 return await _host.Session.EvaluateAsync<string>(command, REvaluationKind.Normal);
-            } catch (RException) { }
+            } catch (RException) { } catch (OperationCanceledException) { }
 
             // Sometimes there is no information in a specific package.
             // For example, Matrix exports 'as.matrix' and base does it as well.
@@ -56,7 +56,7 @@ namespace Microsoft.R.Host.Client.Signatures {
             command = GetCommandText(functionName, null);
             try {
                 return await _host.Session.EvaluateAsync<string>(command, REvaluationKind.Normal);
-            } catch (RException) { }
+            } catch (RException) { } catch (OperationCanceledException) { }
 
             return string.Empty;
         }
@@ -72,7 +72,7 @@ namespace Microsoft.R.Host.Client.Signatures {
             var asmPath = Assembly.GetExecutingAssembly().GetAssemblyPath();
             var asmFolder = Path.GetDirectoryName(asmPath);
             var dataFilePath = Path.Combine(asmFolder, @"rtvs\man", Path.ChangeExtension(functionName, "rd"));
-            if(File.Exists(dataFilePath)) {
+            if (File.Exists(dataFilePath)) {
                 return File.ReadAllText(dataFilePath);
             }
             return string.Empty;

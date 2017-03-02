@@ -77,6 +77,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor {
         [LocCategory("Settings_FormattingCategory")]
         [CustomLocDisplayName("Settings_BracesExpanded")]
         [LocDescription("Settings_BracesExpanded_Description")]
+        [TypeConverter(typeof(OnOffTypeConverter))]
         [DefaultValue(false)]
         public bool BracesOnNewLine {
             get { return REditorSettings.FormatOptions.BracesOnNewLine; }
@@ -101,6 +102,26 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor {
         public bool SpaceAfterComma {
             get { return REditorSettings.FormatOptions.SpaceAfterComma; }
             set { REditorSettings.FormatOptions.SpaceAfterComma = value; }
+        }
+
+        [LocCategory("Settings_FormattingCategory")]
+        [CustomLocDisplayName("Settings_SpaceBeforeCurly")]
+        [LocDescription("Settings_SpaceBeforeCurly_Description")]
+        [TypeConverter(typeof(OnOffTypeConverter))]
+        [DefaultValue(true)]
+        public bool SpaceBeforeCurly {
+            get { return REditorSettings.FormatOptions.SpaceBeforeCurly; }
+            set { REditorSettings.FormatOptions.SpaceBeforeCurly = value; }
+        }
+
+        [LocCategory("Settings_FormattingCategory")]
+        [CustomLocDisplayName("Settings_SpacesAroundEquals")]
+        [LocDescription("Settings_SpacesAroundEquals_Description")]
+        [TypeConverter(typeof(OnOffTypeConverter))]
+        [DefaultValue(true)]
+        public bool SpacesAroundEquals {
+            get { return REditorSettings.FormatOptions.SpacesAroundEquals; }
+            set { REditorSettings.FormatOptions.SpacesAroundEquals = value; }
         }
 
         [LocCategory("Settings_FormattingCategory")]
