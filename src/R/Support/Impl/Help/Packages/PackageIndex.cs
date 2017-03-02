@@ -109,7 +109,7 @@ namespace Microsoft.R.Support.Help.Packages {
 
                     stopwatch.Stop();
                 }
-            } catch (RException ex) {
+            } catch (Exception ex) when (!ex.IsCriticalException()) {
                 Debug.WriteLine(ex.Message);
                 ScheduleIdleTimeRebuild();
             } finally {
@@ -193,7 +193,7 @@ namespace Microsoft.R.Support.Help.Packages {
                 if (!_packages.ContainsKey("rtvs")) {
                     _packages["rtvs"] = new PackageInfo(_host, "rtvs", "R Tools", "1.0");
                 }
-            } catch (RException) { }
+            } catch (RException) { } catch (OperationCanceledException) { }
         }
 
         private async Task LoadRemainingPackagesFunctions() {
@@ -215,8 +215,7 @@ namespace Microsoft.R.Support.Help.Packages {
 
                     var added = installed.Where(p => !currentNames.Contains(p.Package));
                     await AddPackagesToIndexAsync(added);
-                } catch (RException) {
-                } finally {
+                } catch (RException) { } catch (OperationCanceledException) { } finally {
                     token.Reset();
                 }
             }
@@ -234,7 +233,7 @@ namespace Microsoft.R.Support.Help.Packages {
                     var installedPackages = await GetInstalledPackagesAsync();
                     var packagesNotInIndex = installedPackages.Where(p => packageNames.Contains(p.Package));
                     info = await AddPackagesToIndexAsync(packagesNotInIndex);
-                } catch (RException) { }
+                } catch (RException) { } catch (OperationCanceledException) { }
             }
             return info;
         }
@@ -262,7 +261,7 @@ namespace Microsoft.R.Support.Help.Packages {
             try {
                 await _host.StartSessionAsync();
                 return _host.LoadedPackageNames;
-            } catch (RException) { }
+            } catch (RException) { } catch (OperationCanceledException) { }
             return Enumerable.Empty<string>();
         }
 

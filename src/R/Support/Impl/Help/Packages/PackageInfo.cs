@@ -77,10 +77,8 @@ namespace Microsoft.R.Support.Help.Packages {
         private async Task<IEnumerable<string>> GetFunctionNamesAsync() {
             var functions = TryRestoreFromCache();
             if (functions == null || !functions.Any()) {
-                try {
-                    var result = await _host.Session.PackagesFunctionsNamesAsync(Name, REvaluationKind.BaseEnv);
-                    functions = result.Children<JValue>().Select(v => (string)v.Value);
-                } catch (RException) { }
+                var result = await _host.Session.PackagesFunctionsNamesAsync(Name, REvaluationKind.BaseEnv);
+                functions = result.Children<JValue>().Select(v => (string)v.Value);
             } else {
                 _saved = true;
             }
