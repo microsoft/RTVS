@@ -41,17 +41,29 @@
                     MinWidth="10" MinHeight="10" SnapsToDevicePixels="true"
                    Fill="{Binding HeaderBackground, RelativeSource={RelativeSource AncestorType={x:Type local:MatrixView}}}" />
         </Border>
+        
         <local:VisualGrid x:Name="ColumnHeader" ScrollDirection="Horizontal" FocusVisualStyle="{StaticResource EmptyFocusVisualStyle}"
-                          Grid.Row="0" Grid.Column="1" Header="{Binding CanSort}" />
+                          Grid.Row="0" Grid.Column="1" Header="{Binding CanSort}" 
+                          FontFamily="{DynamicResource {x:Static rwpf:FontKeys.CaptionFontFamilyKey}}"
+                          FontSize="{DynamicResource {x:Static rwpf:FontKeys.CaptionFontSizeKey}}"
+                          FontWeight="DemiBold" />
+        
         <Rectangle x:Name="RightTopCorner"
                    Grid.Row="0" Grid.Column="2" MinWidth="10" MinHeight="10"
-                   Fill="{DynamicResource {x:Static rwpf:Brushes.ScrollBarBackgroundBrushKey}}"/>
+                   Fill="{DynamicResource {x:Static rwpf:Brushes.ScrollBarBackgroundBrushKey}}" />
         
         <!-- Row 1 -->
         <local:VisualGrid x:Name="RowHeader" ScrollDirection="Vertical" FocusVisualStyle="{StaticResource EmptyFocusVisualStyle}"
-                            Grid.Row="1" Grid.Column="0" />
+                            Grid.Row="1" Grid.Column="0" 
+                          FontFamily="{DynamicResource {x:Static rwpf:FontKeys.CaptionFontFamilyKey}}"
+                          FontSize="{DynamicResource {x:Static rwpf:FontKeys.CaptionFontSizeKey}}"
+                          FontWeight="DemiBold" />
+        
         <local:VisualGrid x:Name="Data" ScrollDirection="Both" FocusVisualStyle="{StaticResource EmptyFocusVisualStyle}"
-                        Grid.Row="1" Grid.Column="1" />
+                        Grid.Row="1" Grid.Column="1" 
+                          FontFamily="{DynamicResource {x:Static rwpf:FontKeys.EnvironmentFontFamilyKey}}"
+                          FontSize="{DynamicResource {x:Static rwpf:FontKeys.EnvironmentFontSizeKey}}"/>
+        
         <ScrollBar x:Name="VerticalScrollBar" Orientation="Vertical"
                    Grid.Row="1" Grid.Column="2"
                    Minimum="0"
