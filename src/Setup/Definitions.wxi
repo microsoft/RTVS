@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Include>
   <?define ProductNamePart1="R Tools " ?>
-  <?define ProductNamePart2=" RC2 for Visual Studio 2015" ?>
+  <?define ProductNamePart2=" for Visual Studio 2015" ?>
   <?define ProductName="$(var.ProductNamePart1)$(var.ProductVersion)$(var.ProductNamePart2)" ?>
 
   <!-- 
