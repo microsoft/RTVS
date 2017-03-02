@@ -53,38 +53,34 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         #region Font
 
-        public static readonly DependencyProperty FontFamilyProperty = TextElement.FontFamilyProperty.AddOwner(typeof(VisualGrid));
-
+        public static readonly DependencyProperty FontFamilyProperty = TextElement.FontFamilyProperty.AddOwner(typeof(VisualGrid),
+                                                        new FrameworkPropertyMetadata(new FontFamily("Segoe UI"), FrameworkPropertyMetadataOptions.Inherits,
+                                                        new PropertyChangedCallback(OnTypefaceParametersChanged)));
         [Localizability(LocalizationCategory.Font)]
         public FontFamily FontFamily {
             get { return (FontFamily)GetValue(FontFamilyProperty); }
-            set {
-                _typeFace = null;
-                SetValue(FontFamilyProperty, value);
-            }
+            set { SetValue(FontFamilyProperty, value); }
         }
 
-        public static readonly DependencyProperty FontSizeProperty = TextElement.FontSizeProperty.AddOwner(typeof(VisualGrid));
-
+        public static readonly DependencyProperty FontSizeProperty = TextElement.FontSizeProperty.AddOwner(typeof(VisualGrid),
+                                                       new FrameworkPropertyMetadata(12.0, FrameworkPropertyMetadataOptions.Inherits,
+                                                       new PropertyChangedCallback(OnTypefaceParametersChanged)));
         [TypeConverter(typeof(FontSizeConverter))]
         public double FontSize {
             get { return (double)GetValue(FontSizeProperty); }
-            set {
-                _typeFace = null;
-                SetValue(FontSizeProperty, value);
-            }
+            set { SetValue(FontSizeProperty, value); }
         }
 
-        public static readonly DependencyProperty FontWeightProperty = TextElement.FontWeightProperty.AddOwner(typeof(VisualGrid));
-
+        public static readonly DependencyProperty FontWeightProperty = TextElement.FontWeightProperty.AddOwner(typeof(VisualGrid),
+                                                       new FrameworkPropertyMetadata(FontWeights.Normal, FrameworkPropertyMetadataOptions.Inherits,
+                                                       new PropertyChangedCallback(OnTypefaceParametersChanged)));
         [TypeConverter(typeof(FontWeightConverter))]
         public FontWeight FontWeight {
             get { return (FontWeight)GetValue(FontWeightProperty); }
-            set {
-                _typeFace = null;
-                SetValue(FontWeightProperty, value);
-            }
+            set { SetValue(FontWeightProperty, value); }
         }
+
+        private static void OnTypefaceParametersChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((VisualGrid)d)._typeFace = null;
 
         private Typeface _typeFace;
         private Typeface Typeface {
@@ -93,7 +89,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     if (FontFamily != null && FontSize > 0) {
                         try {
                             _typeFace = new Typeface(FontFamily, FontStyles.Normal, FontWeight, FontStretches.Normal);
-                        } catch(ArgumentException) { }
+                        } catch (ArgumentException) { }
                     }
                     _typeFace = _typeFace ?? new Typeface(new FontFamily("Segoe UI"), FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
                 }
