@@ -4,6 +4,8 @@
 using System;
 using System.ComponentModel.Composition;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Debugger;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Utilities {
@@ -39,5 +41,15 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         public event EventHandler EnterBreakMode;
 
         public event EventHandler LeaveBreakMode;
+
+        public bool IsRDebugger() {
+            var debugger2 = VsAppShell.Current.GetGlobalService<IVsDebugger2>(typeof(IVsDebugger));
+            Guid engine = Guid.Empty;
+            string engineName;
+            if(VSConstants.S_OK == debugger2.GetEngineName(ref engine, out engineName)) {
+                return DebuggerGuids.DebugEngine == engine;
+            }
+            return false;
+        }
     }
 }
