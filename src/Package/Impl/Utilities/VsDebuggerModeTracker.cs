@@ -46,7 +46,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
 
         public bool IsRDebugger() {
             DTE dte = VsAppShell.Current.GetGlobalService<DTE>();
-            var processName = dte?.Debugger?.CurrentProcess.Name;
+            var processName = dte?.Debugger?.CurrentProcess?.Name;
             return !string.IsNullOrEmpty(processName) && processName.StartsWithOrdinal(DebuggerSessionConstants.RSessionNamePrefix);
         }
     }
