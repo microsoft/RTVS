@@ -9,6 +9,7 @@ using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Debugger;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.Utilities {
     [Export]
@@ -46,8 +47,13 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
 
         public bool IsRDebugger() {
             DTE dte = VsAppShell.Current.GetGlobalService<DTE>();
-            var processName = dte?.Debugger?.CurrentProcess?.Name;
-            return !string.IsNullOrEmpty(processName) && processName.StartsWithOrdinal(DebuggerSessionConstants.RSessionNamePrefix);
+            var process2 = dte?.Debugger?.CurrentProcess as EnvDTE80.Process2;
+            var transportId = process2?.Transport?.ID;
+            Guid transportGuid;
+            if (!string.IsNullOrEmpty(transportId) && Guid.TryParse(transportId, out transportGuid)) {
+                return transportGuid == DebuggerGuids.PortSupplier;
+            }
+            return false;
         }
     }
 }
