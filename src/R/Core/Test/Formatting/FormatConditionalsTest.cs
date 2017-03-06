@@ -72,6 +72,20 @@ namespace Microsoft.R.Core.Test.Formatting {
         }
 
         [CompositeTest]
+        [InlineData("if(TRUE){}", true, "if (TRUE) { }")]
+        [InlineData("if(TRUE){}", false, "if (TRUE){ }")]
+        [InlineData("if(TRUE){\n}", true, "if (TRUE) {\n}")]
+        [InlineData("if(TRUE){\n}", false, "if (TRUE){\n}")]
+        public void ConditionalTest06(string original, bool spaceBeforeCurly, string expected) {
+            var options = new RFormatOptions() {
+                SpaceBeforeCurly = spaceBeforeCurly
+            };
+            RFormatter f = new RFormatter(options);
+            string actual = f.Format(original);
+            actual.Should().Be(expected);
+        }
+
+        [CompositeTest]
         [InlineData("if(true) x<-2", "if (true) x <- 2")]
         [InlineData("if(true)\nx<-2", "if (true)\n  x <- 2")]
         [InlineData("if(true) x<-2 else x<-1", "if (true) x <- 2 else x <- 1")]

@@ -3,8 +3,13 @@
 
 using System;
 using System.ComponentModel.Composition;
+using EnvDTE;
+using Microsoft.Common.Core;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Debugger;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.Utilities {
     [Export]
@@ -39,5 +44,16 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         public event EventHandler EnterBreakMode;
 
         public event EventHandler LeaveBreakMode;
+
+        public bool IsRDebugger() {
+            DTE dte = VsAppShell.Current.GetGlobalService<DTE>();
+            var process2 = dte?.Debugger?.CurrentProcess as EnvDTE80.Process2;
+            var transportId = process2?.Transport?.ID;
+            Guid transportGuid;
+            if (!string.IsNullOrEmpty(transportId) && Guid.TryParse(transportId, out transportGuid)) {
+                return transportGuid == DebuggerGuids.PortSupplier;
+            }
+            return false;
+        }
     }
 }

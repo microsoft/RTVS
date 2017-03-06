@@ -68,5 +68,23 @@ namespace Microsoft.R.Debugger {
                 return ResourceManager.GetString("DebuggerInProgress", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Allows attaching to an R Interactive window to debug the code executed in it..
+        /// </summary>
+        public static string PortSupplierDescription {
+            get {
+                return ResourceManager.GetString("PortSupplierDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R session {0}.
+        /// </summary>
+        public static string RSessionNameFormat {
+            get {
+                return ResourceManager.GetString("RSessionNameFormat", resourceCulture);
+            }
+        }
     }
 }
