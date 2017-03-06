@@ -586,7 +586,7 @@ namespace Microsoft.R.Core.Formatting {
                 case "@":
                     return true;
                 case "=":
-                    return _braceHandler != null && _braceHandler.IsInArguments() && !_options.SpacesAroundEquals;
+                    return !_options.SpacesAroundEquals;
             }
 
             return false;
