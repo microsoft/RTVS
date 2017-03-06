@@ -28,7 +28,7 @@ namespace Microsoft.R.Debugger.PortSupplier {
 
             public uint ProcessId => RDebugPortSupplier.GetProcessId(_sessionId);
 
-            public string Name => Invariant($"R session {_sessionId}");
+            public string Name => Invariant($"{DebuggerSessionConstants.RSessionNamePrefix} {_sessionId}");
 
             public DebugProcess(DebugPort port, IRSession session) {
                 _port = port;
