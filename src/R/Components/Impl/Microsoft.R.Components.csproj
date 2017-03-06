@@ -26,7 +26,7 @@
   <ItemGroup>
     <Reference Include="Microsoft.Data.ConnectionUI.Dialog">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(LibDirectory)\Microsoft.Data.ConnectionUI.Dialog.dll</HintPath>
+      <HintPath>$(LibDirectory)\$(VisualStudioVersion)\Microsoft.Data.ConnectionUI.Dialog.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.InteractiveWindow">
       <Private>True</Private>
