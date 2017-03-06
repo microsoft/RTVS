@@ -32,6 +32,9 @@ namespace Microsoft.R.Core.Test.Formatting {
         [CompositeTest]
         [InlineData("x=1", true, "x = 1")]
         [InlineData("x=1", false, "x=1")]
+        [InlineData("y <- 'x=1'", false, "y <- 'x=1'")]
+        [InlineData("y <- 'x=1'", true, "y <- 'x=1'")]
+        [InlineData("x=1", false, "x=1")]
         [InlineData("x <- function(a=1,b=2)", true, "x <- function(a = 1, b = 2)")]
         [InlineData("x <- function(a=1,b=2)", false, "x <- function(a=1, b=2)")]
         public void Formatter_FormatEquals(string original, bool spaceAroundEquals, string expected) {
