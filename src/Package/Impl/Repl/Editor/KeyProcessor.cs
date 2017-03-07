@@ -4,28 +4,30 @@
 using System;
 using System.Linq;
 using System.Windows.Input;
-using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Components.ContentTypes;
+using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Editor {
     internal sealed class ReplKeyProcessor : KeyProcessor {
         private readonly IWpfTextView _textView;
-        private readonly IRInteractiveWorkflowProvider _provider;
+        private IInteractiveWindow _interactiveWindow;
 
-        public ReplKeyProcessor(IWpfTextView textView, IRInteractiveWorkflowProvider provider) {
+        public ReplKeyProcessor(IWpfTextView textView) {
             _textView = textView;
-            _provider = provider;
         }
 
         public override void PreviewKeyDown(KeyEventArgs args) {
-            var iw = _provider.GetOrCreate()?.ActiveWindow?.InteractiveWindow;
-            if (_textView != iw?.TextView) {
-                return;
+            if (_interactiveWindow == null) {
+                _interactiveWindow = _textView.TextBuffer.GetInteractiveWindow();
+                if (_interactiveWindow == null) {
+                    return;
+                }
             }
 
-            var tb = iw?.CurrentLanguageBuffer;
-            if (tb == null) {
+            var tb = _interactiveWindow.CurrentLanguageBuffer;
+            if (tb == null || !tb.ContentType.IsOfType(RContentTypeDefinition.ContentType)) {
                 return;
             }
 
