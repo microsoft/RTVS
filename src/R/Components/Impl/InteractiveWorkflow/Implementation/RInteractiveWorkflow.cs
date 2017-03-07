@@ -4,7 +4,6 @@
 using System;
 using System.ComponentModel;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
@@ -17,7 +16,6 @@ using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Settings.Mirrors;
-using Microsoft.R.Components.Workspace;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Interpreters;
@@ -127,7 +125,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 // i.e. user worked in the REPL and not in the editor. Pull 
                 // the focus back here. 
                 _replLostFocus = false;
-                if (IsRProjectActive()) {
+                if (_debuggerModeTracker.IsRDebugger()) {
                     ActiveWindow.Container.Show(focus: true, immediate: false);
                 }
 
@@ -139,11 +137,6 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         private void RSessionDisconnected(object o, EventArgs eventArgs) {
             Operations.ClearPendingInputs();
             ActiveWindow?.Container.UpdateCommandStatus(false);
-        }
-
-        private bool IsRProjectActive() {
-            var wss = Shell.ExportProvider.GetExportedValue<IWorkspaceServices>();
-            return wss.IsRProjectActive;
         }
 
         public Task<IInteractiveWindowVisualComponent> GetOrCreateVisualComponentAsync(int instanceId = 0) {

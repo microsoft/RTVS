@@ -165,14 +165,15 @@ namespace Microsoft.R.Editor.Formatting {
             bool nextLineStartsWithOperator = tokens.Count > 0 && tokens[0].TokenType == RTokenType.Operator;
 
             for (int i = lineNum - 1; i >= 0; i--) {
-                text = textBuffer.CurrentSnapshot.GetLineFromLineNumber(i).GetText();
+                var line = textBuffer.CurrentSnapshot.GetLineFromLineNumber(i);
+                text = line.GetText();
                 tokens = tokenizer.Tokenize(text);
 
                 if (tokens.Count > 0) {
                     if (!nextLineStartsWithOperator && tokens[tokens.Count - 1].TokenType != RTokenType.Operator) {
                         break;
                     }
-                    position = tokens[0].Start;
+                    position = tokens[0].Start + line.Start;
                     nextLineStartsWithOperator = tokens[0].TokenType == RTokenType.Operator;
                 }
             }

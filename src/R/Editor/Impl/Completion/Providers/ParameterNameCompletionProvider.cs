@@ -10,6 +10,7 @@ using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Arguments;
 using Microsoft.R.Core.AST.Operators;
+using Microsoft.R.Editor.Settings;
 using Microsoft.R.Editor.Signatures;
 using Microsoft.R.Support.Help;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -61,8 +62,8 @@ namespace Microsoft.R.Editor.Completion.Providers {
             var possibleArguments = arguments.Where(x => !x.Key.EqualsOrdinal("...") && !declaredArguments.Contains(x.Key, StringComparer.OrdinalIgnoreCase));
 
             foreach (var arg in possibleArguments) {
-                string displayText = arg.Key + " =";
-                string insertionText = arg.Key + " = ";
+                string displayText = arg.Key + (REditorSettings.FormatOptions.SpacesAroundEquals ? " =" : "=");
+                string insertionText = arg.Key + (REditorSettings.FormatOptions.SpacesAroundEquals ? " = " : "=");
                 completions.Add(new RCompletion(displayText, insertionText, arg.Value.Description, functionGlyph));
             }
 

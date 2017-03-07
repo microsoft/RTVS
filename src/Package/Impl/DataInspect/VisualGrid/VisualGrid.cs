@@ -53,45 +53,47 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         #region Font
 
-        public static readonly DependencyProperty FontFamilyProperty =
-                TextElement.FontFamilyProperty.AddOwner(typeof(VisualGrid));
-
+        public static readonly DependencyProperty FontFamilyProperty = TextElement.FontFamilyProperty.AddOwner(typeof(VisualGrid),
+                                                        new FrameworkPropertyMetadata(new FontFamily("Segoe UI"), FrameworkPropertyMetadataOptions.Inherits,
+                                                        new PropertyChangedCallback(OnTypefaceParametersChanged)));
         [Localizability(LocalizationCategory.Font)]
         public FontFamily FontFamily {
             get { return (FontFamily)GetValue(FontFamilyProperty); }
-            set {
-                _typeFace = null;
-                SetValue(FontFamilyProperty, value);
-            }
+            set { SetValue(FontFamilyProperty, value); }
         }
 
-        public static readonly DependencyProperty FontSizeProperty =
-                TextElement.FontSizeProperty.AddOwner(
-                        typeof(VisualGrid));
-
+        public static readonly DependencyProperty FontSizeProperty = TextElement.FontSizeProperty.AddOwner(typeof(VisualGrid),
+                                                       new FrameworkPropertyMetadata(12.0, FrameworkPropertyMetadataOptions.Inherits,
+                                                       new PropertyChangedCallback(OnTypefaceParametersChanged)));
         [TypeConverter(typeof(FontSizeConverter))]
         public double FontSize {
             get { return (double)GetValue(FontSizeProperty); }
             set { SetValue(FontSizeProperty, value); }
         }
 
+        public static readonly DependencyProperty FontWeightProperty = TextElement.FontWeightProperty.AddOwner(typeof(VisualGrid),
+                                                       new FrameworkPropertyMetadata(FontWeights.Normal, FrameworkPropertyMetadataOptions.Inherits,
+                                                       new PropertyChangedCallback(OnTypefaceParametersChanged)));
+        [TypeConverter(typeof(FontWeightConverter))]
+        public FontWeight FontWeight {
+            get { return (FontWeight)GetValue(FontWeightProperty); }
+            set { SetValue(FontWeightProperty, value); }
+        }
+
+        private static void OnTypefaceParametersChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((VisualGrid)d)._typeFace = null;
+
         private Typeface _typeFace;
         private Typeface Typeface {
             get {
                 if (_typeFace == null) {
-                    _typeFace = ChooseTypeface();
+                    if (FontFamily != null && FontSize > 0) {
+                        try {
+                            _typeFace = new Typeface(FontFamily, FontStyles.Normal, FontWeight, FontStretches.Normal);
+                        } catch (ArgumentException) { }
+                    }
+                    _typeFace = _typeFace ?? new Typeface(new FontFamily("Segoe UI"), FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
                 }
                 return _typeFace;
-            }
-        }
-
-        private Typeface ChooseTypeface() {
-            if (ScrollDirection == ScrollDirection.Vertical
-                || ScrollDirection == ScrollDirection.Horizontal) {
-                // TODO: fall back
-                return FontFamily.GetTypefaces().First(tf => tf.Style == FontStyles.Normal && tf.Weight == FontWeights.DemiBold && tf.Stretch == FontStretches.Normal);
-            } else {
-                return FontFamily.GetTypefaces().First(tf => tf.Style == FontStyles.Normal && tf.Weight == FontWeights.Normal && tf.Stretch == FontStretches.Normal);
             }
         }
 

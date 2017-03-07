@@ -106,7 +106,7 @@
   <Import Project="..\..\..\R.Build.Version.targets" />
   <PropertyGroup>
     <NugetExe>$(NuGetPackageRoot)\NuGet.CommandLine\3.5.0\tools\nuget.exe</NugetExe>
-    <BuildVersion Condition="$(BuildVersion) == ''">0.6.0</BuildVersion>
+    <BuildVersion Condition="$(BuildVersion) == ''">1.0.0</BuildVersion>
     <BinPath>$([System.IO.Path]::GetFullPath($(OutputPath)))</BinPath>
     <ConfigSuffix Condition="$(Configuration) == 'Debug'">d</ConfigSuffix>
     <PostBuildEvent>$(NugetExe) pack "$(MSBuildThisFileDirectory)$(AssemblyName).nuspec" -OutputDirectory "$(BinPath) " -Version $(BuildVersion) -BasePath "$(BinPath) " -NonInteractive -Properties ConfigSuffix="$(ConfigSuffix)"</PostBuildEvent>
