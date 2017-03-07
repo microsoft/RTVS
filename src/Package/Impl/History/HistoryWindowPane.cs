@@ -54,6 +54,14 @@ namespace Microsoft.VisualStudio.R.Package.History {
             base.OnCreate();
         }
 
+        public override bool OnNavigationKeyDown(uint dwNavigationKey, uint dwModifiers) {
+            if (dwNavigationKey == (uint)VSConstants.VsSearchNavigationKeys.SNK_Down && dwModifiers == (uint)VSConstants.VsUIAccelModifiers.VSAM_Control) {
+                Component.TextView.VisualElement.Focus();
+                return true;
+            }
+            return base.OnNavigationKeyDown(dwNavigationKey, dwModifiers);
+        }
+
         public override void OnToolWindowCreated() {
             Guid commandUiGuid = VSConstants.GUID_TextEditorFactory;
             ((IVsWindowFrame)Frame).SetGuidProperty((int)__VSFPROPID.VSFPROPID_InheritKeyBindings, ref commandUiGuid);
