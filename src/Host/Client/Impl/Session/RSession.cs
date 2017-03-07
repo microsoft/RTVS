@@ -603,7 +603,7 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
         }
 
         private async Task WriteErrorAsync(string text) {
-            _host?.Log.WriteFormat(LogVerbosity.Minimal, MessageCategory.Error, text);
+            _host?.Log.Write(LogVerbosity.Minimal, MessageCategory.Error, text);
             await ((IRCallbacks)this).WriteConsoleEx(text + "\n", OutputType.Error, CancellationToken.None);
         }
 
