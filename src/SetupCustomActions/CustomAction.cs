@@ -47,7 +47,7 @@ namespace SetupCustomActions {
 
             if (ds == DialogResult.Yes) {
                 session["InstallVS"] = "Yes";
-                Process.Start("https://www.visualstudio.com/en-us/products/visual-studio-community-vs.aspx");
+                Process.Start("https://www.microsoft.com/en-us/download/details.aspx?id=48146");
             }
 
             session.Log("End VS detection action");
