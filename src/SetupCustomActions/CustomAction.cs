@@ -12,47 +12,6 @@ using System.IO;
 namespace SetupCustomActions {
     public class CustomActions {
         private const string vsVersion = "14.0";
-        private const string vsServicingKeyName = @"SOFTWARE\Microsoft\DevDiv\vs\Servicing\" + vsVersion;
-
-        [CustomAction]
-        public static ActionResult VsCommunityInstallAction(Session session) {
-            ActionResult actionResult = ActionResult.UserExit;
-            DialogResult ds = DialogResult.No;
-            bool vsInstalled = false;
-            string[] vsKeys = new string[] { @"\enterprise", @"\professional", @"\community" };
-
-            session.Log("Begin VS detection action");
-            session["InstallVS"] = "No";
-
-            using (RegistryKey hklm = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32)) {
-                foreach (var vsk in vsKeys) {
-                    try {
-                        using (var key = hklm.OpenSubKey(vsServicingKeyName + vsk)) {
-                            object value = key.GetValue("Install");
-                            if (value != null && ((int)value) == 1) {
-                                vsInstalled = true;
-                                actionResult = ActionResult.Success;
-                                break;
-                            }
-                        }
-                    } catch (Exception) { }
-                }
-            }
-
-            if (!vsInstalled) {
-                using (var form = new InstallVsCommunityForm()) {
-                    ds = form.ShowDialog(new SetupWindowHandle());
-                }
-            }
-
-            if (ds == DialogResult.Yes) {
-                session["InstallVS"] = "Yes";
-                Process.Start("https://www.microsoft.com/en-us/download/details.aspx?id=48146");
-            }
-
-            session.Log("End VS detection action");
-            return actionResult;
-        }
 
         [CustomAction]
         public static ActionResult ShowMicrosoftROfferingsAction(Session session) {

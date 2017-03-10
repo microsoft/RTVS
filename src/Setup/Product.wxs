@@ -59,12 +59,6 @@
       Execute="immediate"
       Return='check'/>
 
-    <CustomAction Id='VsCommunityInstallPrompt'
-          BinaryKey='CustomActions'
-          DllEntry='VsCommunityInstallAction'
-          Execute="immediate"
-          Return='check'/>
-
     <CustomAction Id='ShowMicrosoftROfferings'
           BinaryKey='CustomActions'
           DllEntry='ShowMicrosoftROfferingsAction'
@@ -76,7 +70,6 @@
     </UI>
 
     <InstallExecuteSequence>
-      <Custom Action="VsCommunityInstallPrompt" Before="InstallFiles">NOT Installed</Custom>
       <Custom Action="ShowMicrosoftROfferings" After="InstallFinalize">NOT Installed</Custom>
       <Custom Action="VS2015InstallTemplates" Before="InstallFinalize" />
       <Custom Action="VS2015UpdateConfiguration" Before="InstallFinalize" />
