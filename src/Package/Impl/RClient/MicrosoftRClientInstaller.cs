@@ -43,7 +43,7 @@ namespace Microsoft.VisualStudio.R.Package.RClient {
                 // Suppress 'Operation canceled by the user' if user clicks 'No' to elevation dialog.
                 try {
                     coreShell.ShowMessage(Resources.PleaseRestartVisualStudioAfterRClientSetup, MessageButtons.OK);
-                    coreShell.Services.ProcessServices.Start(rClientExe);
+                    coreShell.Services.Process.Start(rClientExe);
                 } catch (Win32Exception ex) {
                     if((uint)ex.NativeErrorCode == 0x800704C7) {
                         coreShell.Services.Telemetry.ReportEvent(TelemetryArea.Configuration, RtvsTelemetry.ConfigurationEvents.RClientInstallCancel);

@@ -40,7 +40,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.RClient {
             ps.When(x => x.Start(Arg.Any<string>())).Do(c => {
                 c.Args()[0].Should().NotBeNull();
             });
-            services.ProcessServices.Returns(ps);
+            services.Process.Returns(ps);
 
             coreShell.Services.Returns(services);
             coreShell.ShowMessage(Arg.Any<string>(), Arg.Any<MessageButtons>()).Returns(MessageButtons.Yes);
@@ -69,7 +69,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.RClient {
             ps.When(x => x.Start(Arg.Any<string>())).Do(c => {
                 throw new Win32Exception((unchecked((int)0x800704C7)));
             });
-            services.ProcessServices.Returns(ps);
+            services.Process.Returns(ps);
 
             telemetryEvents.Clear();
             inst.LaunchRClientSetup(coreShell, downloader);

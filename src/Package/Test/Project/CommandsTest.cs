@@ -98,7 +98,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
             });
 
             var cs = Substitute.For<ICoreServices>();
-            cs.ProcessServices.Returns(ps);
+            cs.Process.Returns(ps);
 
             var cmd = new OpenCommandPromptCommand(cs);
             CheckSingleNodeCommandStatus(cmd, RPackageCommandId.icmdOpenCmdPromptHere, nodes1, nodes2);

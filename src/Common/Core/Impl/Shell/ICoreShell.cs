@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.ComponentModel.Design;
 using System.Threading;
 using Microsoft.Common.Core.Services;
 
@@ -13,6 +12,11 @@ namespace Microsoft.Common.Core.Shell {
     /// services and so on.
     /// </summary>
     public interface ICoreShell : ICompositionCatalog {
+        /// <summary>
+        /// Application-global services access
+        /// </summary>
+        IServiceContainer GlobalServices { get; }
+
         /// <summary>
         /// Provides a way to execute action on UI thread while
         /// UI thread is waiting for the completion of the action.
@@ -59,10 +63,7 @@ namespace Microsoft.Common.Core.Shell {
         /// <summary>
         /// Shows the context menu with the specified command ID at the specified location
         /// </summary>
-        /// <param name="commandId"></param>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        void ShowContextMenu(CommandID commandId, int x, int y, object commandTarget = null);
+        void ShowContextMenu(System.ComponentModel.Design.CommandID commandId, int x, int y, object commandTarget = null);
 
         /// <summary>
         /// Displays message with specified buttons in a host-specific UI

@@ -29,7 +29,7 @@ namespace Microsoft.R.Editor.Commands {
 
                 var url = GetHotUrl(_wpfTextView, e);
                 if (!string.IsNullOrEmpty(url)) {
-                    _shell.Services.ProcessServices.Start(url);
+                    _shell.Services.Process.Start(url);
                     return;
                 }
                 // If this is a Ctrl+Click or double-click then post the select word command.

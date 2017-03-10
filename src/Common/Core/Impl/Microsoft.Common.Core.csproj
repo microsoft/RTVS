@@ -87,6 +87,12 @@
     <Compile Include="Security\SecurityUtilities.cs" />
     <Compile Include="Services\ICoreServices.cs" />
     <Compile Include="Services\CoreServices.cs" />
+    <Compile Include="Services\IServiceContainer.cs" />
+    <Compile Include="Services\IServiceFactory.cs" />
+    <Compile Include="Services\IServiceManager.cs" />
+    <Compile Include="Services\PropertyDictionary.cs" />
+    <Compile Include="Services\ServiceManager.cs" />
+    <Compile Include="Services\ServiceContainerEventArgs.cs" />
     <Compile Include="Shell\CoreShellExtensions.cs" />
     <Compile Include="Shell\IApplicationConstants.cs" />
     <Compile Include="Shell\UIColorTheme.cs" />

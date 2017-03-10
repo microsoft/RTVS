@@ -4,7 +4,6 @@
 using System;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
-using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Threading;
 using System.Windows.Threading;
@@ -197,6 +196,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         #endregion
 
         #region ICoreShell
+        public IServiceContainer GlobalServices { get; }
+
         /// <summary>
         /// Retrieves Visual Studio global service from global VS service provider.
         /// This method is not thread safe and should not be called from async methods.
@@ -276,11 +277,13 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, OLEMSGICON.OLEMSGICON_CRITICAL, 0, out result);
         }
 
-        public void ShowContextMenu(CommandID commandId, int x, int y, object commandTarget = null) {
+        public void ShowContextMenu(System.ComponentModel.Design.CommandID commandId, int x, int y, object commandTarget = null) {
             if (commandTarget == null) {
                 var package = EnsurePackageLoaded(RGuidList.RPackageGuid);
                 if (package != null) {
-                    var menuService = (IMenuCommandService)((IServiceProvider)package).GetService(typeof(IMenuCommandService));
+                    var sp = (IServiceProvider) package;
+                    var menuService = (System.ComponentModel.Design.IMenuCommandService)sp
+                        .GetService(typeof(System.ComponentModel.Design.IMenuCommandService));
                     menuService.ShowContextMenu(commandId, x, y);
                 }
             } else {

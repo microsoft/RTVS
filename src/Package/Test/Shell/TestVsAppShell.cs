@@ -7,6 +7,7 @@ using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core.Extensions;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.Languages.Editor.Shell;
@@ -68,6 +69,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
                 }
             });
         }
+
+        public IServiceContainer GlobalServices { get; }
 
         #region ICompositionCatalog
         public ICompositionService CompositionService { get; private set; }

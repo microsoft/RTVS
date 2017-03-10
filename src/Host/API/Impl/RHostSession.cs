@@ -251,7 +251,7 @@ namespace Microsoft.R.Host.Client {
             public IActionLog Log => new NullLog();
             public ILoggingPermissions LoggingPermissions => null;
             public IMainThread MainThread => null;
-            public IProcessServices ProcessServices => new ProcessServices();
+            public IProcessServices Process => new ProcessServices();
             public IRegistry Registry => new RegistryImpl();
             public ISecurityService Security => null;
             public ITaskService Tasks => null;

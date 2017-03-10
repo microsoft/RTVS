@@ -5,6 +5,7 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
@@ -35,6 +36,8 @@ namespace Microsoft.Languages.Editor.Test.Shell {
             _instance = new TestEditorShell(EditorTestCompositionCatalog.Current, UIThreadHelper.Instance.Thread);
             EditorShell.Current = _instance;
         }
+
+        public IServiceContainer GlobalServices { get; }
 
         #region ICompositionCatalog
         public ICompositionService CompositionService { get; private set; }

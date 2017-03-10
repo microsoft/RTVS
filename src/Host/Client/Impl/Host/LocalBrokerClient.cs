@@ -172,7 +172,7 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         private Process StartBroker(ProcessStartInfo psi) {
-            var process = _services.ProcessServices.Start(psi);
+            var process = _services.Process.Start(psi);
             process.WaitForExit(250);
             if (process.HasExited && process.ExitCode < 0) {
                 var message = ErrorCodeConverter.MessageFromErrorCode(process.ExitCode);
