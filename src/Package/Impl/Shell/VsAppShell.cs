@@ -95,6 +95,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
             CheckVsStarted();
             ConfigureIdleSource();
+            ConfigureServices();
 
             _settings = _exportProvider.GetExportedValue<IRSettings>();
             _settings.LoadSettings();
@@ -182,8 +183,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         #endregion
 
         #region ICoreShell
-        public IServiceContainer GlobalServices { get; }
-
         /// <summary>
         /// Retrieves Visual Studio global service from global VS service provider.
         /// This method is not thread safe and should not be called from async methods.
