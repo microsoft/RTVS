@@ -17,7 +17,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public HideAllPlotWindowsCommand(IApplicationShell appShell) :
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdPlotWindowsHideAll) {
             _appShell = appShell;
-            _shell = appShell.GetGlobalService<IVsUIShell4>(typeof(SVsUIShell));
+            _shell = appShell.GlobalServices.GetService<IVsUIShell4>(typeof(SVsUIShell));
         }
 
         protected override void SetStatus() {

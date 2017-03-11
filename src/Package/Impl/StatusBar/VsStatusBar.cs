@@ -30,7 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.StatusBar {
         }
 
         private Visual GetRootVisual() {
-            var shell = _shell.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+            var shell = _shell.GlobalServices.GetService<IVsUIShell>(typeof(SVsUIShell));
             IntPtr window;
             shell.GetDialogOwnerHwnd(out window);
 

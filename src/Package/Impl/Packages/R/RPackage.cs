@@ -184,7 +184,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         }
 
         private bool IsCommandLineMode() {
-            var shell = VsAppShell.Current.GetGlobalService<IVsShell>(typeof(SVsShell));
+            var shell = VsAppShell.Current.GlobalServices.GetService<IVsShell>(typeof(SVsShell));
             if (shell != null) {
                 object value;
                 shell.GetProperty((int)__VSSPROPID.VSSPROPID_IsInCommandLineMode, out value);

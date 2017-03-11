@@ -27,7 +27,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         public static T GetBufferAdapter<T>(this ITextBuffer textBuffer) where T : class {
             var vsTextBuffer = AdaptersFactoryService.GetBufferAdapter(textBuffer);
             if(vsTextBuffer == null) {
-                var sp = VsAppShell.Current.GetGlobalService<IServiceProvider>();
+                var sp = VsAppShell.Current.GlobalServices.GetService<IServiceProvider>();
                 vsTextBuffer = AdaptersFactoryService.CreateVsTextBufferAdapterForSecondaryBuffer(sp, textBuffer);
             }
             return vsTextBuffer as T;

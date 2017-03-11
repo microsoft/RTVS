@@ -16,7 +16,7 @@ namespace Microsoft.VisualStudio.R.Package.Browsers {
         private readonly IProcessServices _ps;
 
         private readonly IVsWebBrowsingService _wbs;
-        private IVsWebBrowsingService WebBrowserService => _wbs ?? VsAppShell.Current.GetGlobalService<IVsWebBrowsingService>(typeof(SVsWebBrowsingService));
+        private IVsWebBrowsingService WebBrowserService => _wbs ?? VsAppShell.Current.GlobalServices.GetService<IVsWebBrowsingService>(typeof(SVsWebBrowsingService));
 
         private readonly IRToolsSettings _settings;
         private IRToolsSettings Settings => _settings ?? RToolsSettings.Current;

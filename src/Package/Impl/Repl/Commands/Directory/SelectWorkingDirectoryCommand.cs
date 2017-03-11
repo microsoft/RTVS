@@ -28,7 +28,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         }
 
         protected override void Handle() {
-            IVsUIShell uiShell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+            IVsUIShell uiShell = VsAppShell.Current.GlobalServices.GetService<IVsUIShell>(typeof(SVsUIShell));
             IntPtr dialogOwner;
             uiShell.GetDialogOwnerHwnd(out dialogOwner);
 

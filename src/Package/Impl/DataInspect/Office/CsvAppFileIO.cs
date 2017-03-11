@@ -54,7 +54,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
             var file = pss.GetUniqueFileName(folder, csvFileName, "csv", appendUnderscore: true);
 
             string currentStatusText;
-            var statusBar = appShell.GetGlobalService<IVsStatusbar>(typeof(SVsStatusbar));
+            var statusBar = appShell.GlobalServices.GetService<IVsStatusbar>(typeof(SVsStatusbar));
             statusBar.GetText(out currentStatusText);
 
             try {

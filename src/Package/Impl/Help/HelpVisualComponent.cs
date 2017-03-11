@@ -228,7 +228,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
             // Upon navigation we need to ask VS to update UI so 
             // Back/Forward buttons become properly enabled or disabled.
-            IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+            IVsUIShell shell = VsAppShell.Current.GlobalServices.GetService<IVsUIShell>(typeof(SVsUIShell));
             shell.UpdateCommandUI(0);
         }
 

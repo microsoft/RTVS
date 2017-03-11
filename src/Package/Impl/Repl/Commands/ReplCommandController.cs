@@ -33,7 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             : base(textView, textBuffer, VsAppShell.Current) {
             ServiceManager.AddService(this, textView, VsAppShell.Current);
 
-            var textManager = VsAppShell.Current.GetGlobalService<IVsTextManager2>(typeof(SVsTextManager));
+            var textManager = VsAppShell.Current.GlobalServices.GetService<IVsTextManager2>(typeof(SVsTextManager));
             IVsExpansionManager expansionManager;
             textManager.GetExpansionManager(out expansionManager);
 

@@ -65,7 +65,7 @@ namespace Microsoft.VisualStudio.R.Package.Packages {
             }
 
             var settings = VsAppShell.Current.ExportProvider.GetExportedValue<IRToolsSettings>();
-            var dte = VsAppShell.Current.GetGlobalService<DTE2>(typeof(DTE));
+            var dte = VsAppShell.Current.GlobalServices.GetService<DTE2>(typeof(DTE));
             _toolbar = new RToolbar(dte, settings);
             _toolbar.Show();
         }

@@ -10,13 +10,13 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
     public static class AppShellExtensions {
         public static IntPtr GetDialogOwnerWindow(this IApplicationShell appShell) {
             IntPtr vsWindow;
-            var uiShell = appShell.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+            var uiShell = appShell.GlobalServices.GetService<IVsUIShell>(typeof(SVsUIShell));
             uiShell.GetDialogOwnerHwnd(out vsWindow);
             return vsWindow;
         }
 
         public static Font GetUiFont(this IApplicationShell appShell) {
-            var fontSvc = appShell.GetGlobalService<IUIHostLocale2>(typeof(SUIHostLocale));
+            var fontSvc = appShell.GlobalServices.GetService<IUIHostLocale2>(typeof(SUIHostLocale));
             if (fontSvc != null) {
                 var logFont = new UIDLGLOGFONT[1];
                 int hr = fontSvc.GetDialogFont(logFont);
@@ -28,7 +28,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
 
         public static void PostCommand(this IApplicationShell appShell, Guid guid, int id) {
-            var uiShell = appShell.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+            var uiShell = appShell.GlobalServices.GetService<IVsUIShell>(typeof(SVsUIShell));
             var o = new object();
             uiShell.PostExecCommand(ref guid, (uint)id, 0, ref o);
         }

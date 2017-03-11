@@ -184,23 +184,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         #region ICoreShell
         /// <summary>
-        /// Retrieves Visual Studio global service from global VS service provider.
-        /// This method is not thread safe and should not be called from async methods.
-        /// </summary>
-        /// <typeparam name="T">Service interface type such as IVsUiShell</typeparam>
-        /// <param name="type">Service type if different from T, such as typeof(SVSUiShell)</param>
-        /// <returns>Service instance of null if not found.</returns>
-        public T GetGlobalService<T>(Type type = null) where T : class {
-            this.AssertIsOnMainThread();
-            if (IsUnitTestEnvironment) {
-                System.IServiceProvider sp = RPackage.Current;
-                return sp.GetService(type ?? typeof(T)) as T;
-            }
-
-            return VsPackage.GetGlobalService(type ?? typeof(T)) as T;
-        }
-
-        /// <summary>
         /// Provides a way to execute action on UI thread while
         /// UI thread is waiting for the completion of the action.
         /// May be implemented using ThreadHelper in VS or via
@@ -250,7 +233,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// Displays error message in a host-specific UI
         /// </summary>
         public void ShowErrorMessage(string message) {
-            var shell = GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+            var shell = GlobalServices.GetService<IVsUIShell>(typeof(SVsUIShell));
             int result;
 
             shell.ShowMessageBox(0, Guid.Empty, null, message, null, 0,
@@ -271,7 +254,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 if (target == null) {
                     throw new ArgumentException(Invariant($"{nameof(commandTarget)} must implement ICommandTarget"));
                 }
-                var shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+                var shell = VsAppShell.Current.GlobalServices.GetService<IVsUIShell>(typeof(SVsUIShell));
                 var pts = new POINTS[1];
                 pts[0].x = (short)x;
                 pts[0].y = (short)y;
@@ -283,7 +266,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// Displays question in a host-specific UI
         /// </summary>
         public MessageButtons ShowMessage(string message, MessageButtons buttons, MessageType messageType = MessageType.Information) {
-            var shell = GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+            var shell = GlobalServices.GetService<IVsUIShell>(typeof(SVsUIShell));
             int result;
 
             var oleButtons = GetOleButtonFlags(buttons);
@@ -320,7 +303,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         public void UpdateCommandStatus(bool immediate) {
             DispatchOnUIThread(() => {
-                var uiShell = GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+                var uiShell = GlobalServices.GetService<IVsUIShell>(typeof(SVsUIShell));
                 uiShell.UpdateCommandUI(immediate ? 1 : 0);
             });
         }
