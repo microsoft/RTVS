@@ -13,7 +13,6 @@ using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Core.Threading;
-using Microsoft.Languages.Editor.Host;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.R.Components.Controller;
@@ -40,7 +39,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
     [Export(typeof(IEditorShell))]
     [Export(typeof(IApplicationShell))]
     [Export(typeof(IMainThread))]
-    public sealed class VsAppShell : IApplicationShell, IMainThread, IIdleTimeSource, IVsShellPropertyEvents, IVsBroadcastMessageEvents, IDisposable {
+    public sealed partial class VsAppShell : IApplicationShell, IMainThread, IIdleTimeSource, IVsShellPropertyEvents, IVsBroadcastMessageEvents, IDisposable {
         private const int WM_SYSCOLORCHANGE = 0x15;
 
         private static VsAppShell _instance;
@@ -49,7 +48,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private readonly ApplicationConstants _appConstants;
         private readonly ICoreServices _coreServices;
         private IRSettings _settings;
-        private IdleTimeSource _idleTimeSource;
         private ExportProvider _exportProvider;
         private ICompositionService _compositionService;
         private IVsShell _vsShell;
@@ -96,11 +94,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             _exportProvider = componentModel.DefaultExportProvider;
 
             CheckVsStarted();
-
-            _idleTimeSource = new IdleTimeSource();
-            _idleTimeSource.Idle += OnIdle;
-            _idleTimeSource.ApplicationClosing += OnApplicationClosing;
-            _idleTimeSource.ApplicationStarted += OnApplicationStarted;
+            ConfigureIdleSource();
 
             _settings = _exportProvider.GetExportedValue<IRSettings>();
             _settings.LoadSettings();
@@ -121,14 +115,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 }
             }
             _vsShell.AdviseBroadcastMessages(this, out _vsShellBroadcastEventsCookie);
-        }
-
-        private void OnApplicationStarted(object sender, EventArgs e) {
-            _appConstants.Initialize();
-        }
-
-        private void OnApplicationClosing(object sender, EventArgs e) {
-            Terminating?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -252,11 +238,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         public event EventHandler<EventArgs> Started;
 
         /// <summary>
-        /// Fires when host application enters idle state.
-        /// </summary>
-        public event EventHandler<EventArgs> Idle;
-
-        /// <summary>
         /// Fires when host application is terminating
         /// </summary>
         public event EventHandler<EventArgs> Terminating;
@@ -349,12 +330,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         #endregion
 
-        #region IIdleTimeService
-        public void DoIdle() {
-            Idle?.Invoke(this, EventArgs.Empty);
-        }
-        #endregion
-
         #region IEditorShell 
         /// <summary>
         /// Provides shim that implements ICommandTarget over 
@@ -425,10 +400,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             DisconnectFromShellEvents();
             _settings?.Dispose();
             (_coreServices?.Log as IDisposable)?.Dispose();
-        }
-
-        void OnIdle(object sender, EventArgs args) {
-            DoIdle();
         }
 
         private OLEMSGBUTTON GetOleButtonFlags(MessageButtons buttons) {

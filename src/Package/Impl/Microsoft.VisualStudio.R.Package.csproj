@@ -230,6 +230,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Shell\ApplicationConstants.cs" />
+    <Compile Include="Shell\VsAppShell.Idle.cs" />
     <Compile Include="Shell\VsFileDialog.cs" />
     <Compile Include="Shell\VsProgressDialog.cs" />
     <Compile Include="Shell\VsTaskService.cs" />
