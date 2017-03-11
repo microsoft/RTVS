@@ -2,13 +2,10 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.ComponentModel;
-using System.ComponentModel.Composition;
 using System.Globalization;
 using System.IO;
-using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Net;
-using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.R.Interpreters;
@@ -16,7 +13,6 @@ using Microsoft.VisualStudio.R.Package.Telemetry;
 using Microsoft.VisualStudio.R.Package.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.RClient {
-    [Export(typeof(IMicrosoftRClientInstaller))]
     internal sealed class MicrosoftRClientInstaller : IMicrosoftRClientInstaller {
         public void LaunchRClientSetup(ICoreShell coreShell, IFileDownloader downloader = null) {
             coreShell.Services.Telemetry.ReportEvent(TelemetryArea.Configuration, RtvsTelemetry.ConfigurationEvents.RClientInstallYes);

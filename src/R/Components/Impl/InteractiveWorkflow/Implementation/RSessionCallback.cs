@@ -34,7 +34,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             _coreShell = coreShell;
             _fileSystem = fileSystem;
 
-            var workflowProvider = _coreShell.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
+            var workflowProvider = _coreShell.GlobalServices.GetService<IRInteractiveWorkflowProvider>();
             _workflow = workflowProvider.GetOrCreate();
         }
 
@@ -56,7 +56,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             if (_settings.HelpBrowserType == HelpBrowserType.External) {
                 Process.Start(url);
             } else {
-                var container = _coreShell.ExportProvider.GetExportedValue<IHelpVisualComponentContainerFactory>().GetOrCreate();
+                var container = _coreShell.GlobalServices.GetService<IHelpVisualComponentContainerFactory>().GetOrCreate();
                 container.Component.Navigate(url);
             }
         }
@@ -94,18 +94,18 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         }
 
         public Task ViewObjectAsync(string expression, string title, CancellationToken cancellationToken = default(CancellationToken)) {
-            var viewer = _coreShell.ExportProvider.GetExportedValue<IObjectViewer>();
+            var viewer = _coreShell.GlobalServices.GetService<IObjectViewer>();
             return viewer?.ViewObjectDetails(_session, REnvironments.GlobalEnv, expression, title, cancellationToken) ?? Task.CompletedTask;
         }
 
         public async Task ViewLibraryAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             await _coreShell.SwitchToMainThreadAsync(cancellationToken);
-            var containerFactory = _coreShell.ExportProvider.GetExportedValue<IRPackageManagerVisualComponentContainerFactory>();
+            var containerFactory = _coreShell.GlobalServices.GetService<IRPackageManagerVisualComponentContainerFactory>();
             _workflow.Packages.GetOrCreateVisualComponent(containerFactory).Container.Show(focus: true, immediate: false);
         }
 
         public async Task ViewFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken = default(CancellationToken)) {
-            var viewer = _coreShell.ExportProvider.GetExportedValue<IObjectViewer>();
+            var viewer = _coreShell.GlobalServices.GetService<IObjectViewer>();
             var task = Task.CompletedTask;
 
             if (_session.IsRemote) {

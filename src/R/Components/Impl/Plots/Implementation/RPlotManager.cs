@@ -433,7 +433,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
 
             // If we have no plot window to reuse, create one
             if (component == null) {
-                var containerFactory = InteractiveWorkflow.Shell.ExportProvider.GetExportedValue<IRPlotDeviceVisualComponentContainerFactory>();
+                var containerFactory = InteractiveWorkflow.Shell.GlobalServices.GetService<IRPlotDeviceVisualComponentContainerFactory>();
                 component = GetOrCreateVisualComponent(containerFactory, GetUnusedInstanceId());
             }
 

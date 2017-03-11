@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.R.Packages.R;
 using VsPackage = Microsoft.VisualStudio.Shell.Package;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
-    internal sealed class VsServiceManager: ServiceManager {
+    internal sealed class VsServiceManager : ServiceManager {
         private readonly IApplicationShell _appShell;
 
         public VsServiceManager(IApplicationShell appShell) {
@@ -21,7 +21,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             var service = base.GetService<T>(type);
             if (service == null) {
                 // First try MEF
-                service = _appShell.ExportProvider.GetExportedValue<T>();
+                service = _appShell.ExportProvider.GetExportedValueOrDefault<T>();
                 if (service == null) {
                     // Now try VS services. Only allowed on UI thread.
                     _appShell.AssertIsOnMainThread();

@@ -134,7 +134,7 @@ namespace Microsoft.Languages.Editor.Extensions {
 
         public static void AddBufferDisposedAction(this ITextBuffer textBuffer, ICoreShell shell, Action<ITextBuffer, ICoreShell> callback) {
             if (shell != null) {
-                ITextDocumentFactoryService textDocumentFactoryService = shell.ExportProvider.GetExportedValue<ITextDocumentFactoryService>();
+                ITextDocumentFactoryService textDocumentFactoryService = shell.GlobalServices.GetService<ITextDocumentFactoryService>();
                 ITextDocument textDocument;
 
                 if (textDocumentFactoryService.TryGetTextDocument(textBuffer, out textDocument)) {

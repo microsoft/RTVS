@@ -94,11 +94,12 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             _exportProvider = componentModel.DefaultExportProvider;
 
             CheckVsStarted();
-            ConfigureIdleSource();
-            ConfigureServices();
 
             _settings = _exportProvider.GetExportedValue<IRSettings>();
             _settings.LoadSettings();
+
+            ConfigureIdleSource();
+            ConfigureServices();
 
             EditorShell.Current = this;
         }
