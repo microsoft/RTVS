@@ -40,7 +40,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
     [Export(typeof(IEditorShell))]
     [Export(typeof(IApplicationShell))]
     [Export(typeof(IMainThread))]
-    public sealed class VsAppShell : IApplicationShell, IMainThread, IIdleTimeService, IVsShellPropertyEvents, IVsBroadcastMessageEvents, IDisposable {
+    public sealed class VsAppShell : IApplicationShell, IMainThread, IIdleTimeSource, IVsShellPropertyEvents, IVsBroadcastMessageEvents, IDisposable {
         private const int WM_SYSCOLORCHANGE = 0x15;
 
         private static VsAppShell _instance;

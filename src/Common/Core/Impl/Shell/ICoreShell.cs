@@ -11,7 +11,7 @@ namespace Microsoft.Common.Core.Shell {
     /// composition container, export provider, global VS IDE
     /// services and so on.
     /// </summary>
-    public interface ICoreShell : ICompositionCatalog {
+    public interface ICoreShell : IIdleTimeService, ICompositionCatalog {
         /// <summary>
         /// Application-global services access
         /// </summary>
@@ -39,11 +39,6 @@ namespace Microsoft.Common.Core.Shell {
         /// Fires when host application has completed it's startup sequence
         /// </summary>
         event EventHandler<EventArgs> Started;
-
-        /// <summary>
-        /// Fires when host application enters idle state.
-        /// </summary>
-        event EventHandler<EventArgs> Idle;
 
         /// <summary>
         /// Fires when host application is terminating
