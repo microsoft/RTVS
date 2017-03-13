@@ -15,13 +15,15 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
     [ExcludeFromCodeCoverage]
     public class TestCoreShell : ICoreShell, IMainThread {
         private readonly CompositionContainer _container;
+        private readonly TestServiceManager _serviceManager;
 
         public TestCoreShell(CompositionContainer container, ICoreServices services) {
             _container = container;
             Services = services;
+            _serviceManager = new TestServiceManager(container);
         }
 
-        public IServiceContainer GlobalServices { get; }
+        public IServiceContainer GlobalServices => _serviceManager;
 
         public ExportProvider ExportProvider => _container;
         public ICompositionService CompositionService => _container;
