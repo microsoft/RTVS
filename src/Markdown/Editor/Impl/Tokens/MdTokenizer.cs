@@ -186,7 +186,13 @@ namespace Microsoft.Markdown.Editor.Tokens {
                     if (rLanguage) {
                         // Code is inside ``` and after the language name.
                         // We still want to colorize numbers in ```{r, x = 1.0, ...}
-                        AddCodeToken(ticksStart, _cs.Position - ticksStart, leadingSeparatorLength, trailingSeparatorLength);
+                        int length = _cs.Position - ticksStart;
+                        if (eof) {
+                            // At the end of the file current position if one less. 
+                            // since end is not included, we want end to be at the buffer length;
+                            length++;
+                        }
+                        AddCodeToken(ticksStart, length, leadingSeparatorLength, trailingSeparatorLength);
                     } else {
                         AddToken(MarkdownTokenType.Monospace, ticksStart, _cs.Position - ticksStart);
                     }
