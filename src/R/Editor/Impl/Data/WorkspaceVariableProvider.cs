@@ -85,7 +85,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 }
 
                 // May be a package object line mtcars$
-                variableName = TrimToTrailingSelector(variableName);
+                variableName = TrimToFirstSelector(variableName);
                 var session = Workflow.RSession;
 
                 IReadOnlyList<IREvaluationResultInfo> infoList = null;
@@ -115,14 +115,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
         #endregion
 
-        private static string TrimToTrailingSelector(string name) {
-            int i = name.Length - 1;
-            for (; i >= 0; i--) {
-                if (_selectors.Contains(name[i])) {
-                    return name.Substring(0, i);
-                }
-            }
-            return string.Empty;
+        private static string TrimToFirstSelector(string name) {
+            var index = name.IndexOfAny(_selectors);
+            return index >= 0 ? name.Substring(0, index) : name;
         }
 
         private static string TrimLeadingSelector(string name) {
