@@ -21,7 +21,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
 
         public async static void OnCommand(object sender, EventArgs args) {
             try {
-                var service = VsAppShell.Current.ExportProvider.GetExportedValue<ISurveyNewsService>();
+                var service = VsAppShell.Current.GlobalServices.GetService<ISurveyNewsService>();
                 await service.CheckSurveyNewsAsync(true);
             } catch (Exception ex) when (!ex.IsCriticalException()) {
                 _coreShell.Services.Log.Write(LogVerbosity.Normal, MessageCategory.Error, "SurveyNewsCommand exception: " + ex.Message);

@@ -161,7 +161,7 @@ namespace Microsoft.Languages.Editor.Application.Controller {
         private ICompletionBroker CompletionBroker {
             get {
                 if (_completionBroker == null) {
-                    _completionBroker = _coreShell.ExportProvider.GetExportedValue<ICompletionBroker>();
+                    _completionBroker = _coreShell.GlobalServices.GetService<ICompletionBroker>();
                 }
 
                 return _completionBroker;

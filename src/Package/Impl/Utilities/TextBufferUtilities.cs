@@ -15,7 +15,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         public static IVsEditorAdaptersFactoryService AdaptersFactoryService {
             get {
                 if (_adaptersFactoryService == null) {
-                    _adaptersFactoryService = VsAppShell.Current.ExportProvider.GetExportedValue<IVsEditorAdaptersFactoryService>();
+                    _adaptersFactoryService = VsAppShell.Current.GlobalServices.GetService<IVsEditorAdaptersFactoryService>();
                 }
                 return _adaptersFactoryService;
             }

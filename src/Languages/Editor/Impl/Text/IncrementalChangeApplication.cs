@@ -113,7 +113,7 @@ namespace Microsoft.Languages.Editor.Text {
                 return Disposable.Empty;
             }
 
-            var textBufferUndoManagerProvider = editorShell.ExportProvider.GetExportedValue<ITextBufferUndoManagerProvider>();
+            var textBufferUndoManagerProvider = editorShell.GlobalServices.GetService<ITextBufferUndoManagerProvider>();
             return new SelectionUndo(selectionTracker, textBufferUndoManagerProvider, transactionName, automaticTracking: false);
         }
     }

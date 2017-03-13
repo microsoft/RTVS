@@ -21,8 +21,8 @@ namespace Microsoft.Languages.Editor.Undo {
 
         public CompoundUndoAction(ITextView textView, IEditorShell editorShell, bool addRollbackOnCancel = true) {
             if (!editorShell.IsUnitTestEnvironment) {
-                IEditorOperationsFactoryService operationsService = editorShell.ExportProvider.GetExportedValue<IEditorOperationsFactoryService>();
-                ITextBufferUndoManagerProvider undoProvider = editorShell.ExportProvider.GetExportedValue<ITextBufferUndoManagerProvider>();
+                IEditorOperationsFactoryService operationsService = editorShell.GlobalServices.GetService<IEditorOperationsFactoryService>();
+                ITextBufferUndoManagerProvider undoProvider = editorShell.GlobalServices.GetService<ITextBufferUndoManagerProvider>();
 
                 _editorOperations = operationsService.GetEditorOperations(textView);
                 _undoManager = undoProvider.GetTextBufferUndoManager(_editorOperations.TextView.TextBuffer);

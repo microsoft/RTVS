@@ -169,7 +169,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport
 
         private bool Execute(string expression) {
             try {
-                var workflow = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
+                var workflow = VsAppShell.Current.GlobalServices.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
                 workflow.Operations.ExecuteExpression(expression);
                 return true;
             } catch (Exception ex) {

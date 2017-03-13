@@ -117,7 +117,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 IReadOnlyList<IREvaluationResultInfo> children = await valueEvaluation.DescribeChildrenAsync(properties, Repr, MaxChildrenCount);
 
                 result = new List<IRSessionDataObject>();
-                var aggregator = VsAppShell.Current.ExportProvider.GetExportedValue<IObjectDetailsViewerAggregator>();
+                var aggregator = VsAppShell.Current.GlobalServices.GetService<IObjectDetailsViewerAggregator>();
                 for (int i = 0; i < children.Count; i++) {
                     result.Add(new VariableViewModel(children[i], aggregator, index: i, maxChildrenCount: GetMaxChildrenCount(children[i])));
                 }
@@ -163,7 +163,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public async Task DeleteAsync(string envExpr) {
             if (!_deleted) {
                 _deleted = true;
-                var workflow = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
+                var workflow = VsAppShell.Current.GlobalServices.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
                 var session = workflow.RSession;
                 try {
                     using (var e = await session.BeginInteractionAsync(isVisible: false)) {
