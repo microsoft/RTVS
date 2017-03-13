@@ -8,13 +8,13 @@ using System.IO;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Net;
+using Microsoft.Common.Core.Network;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.R.Interpreters;
 using Microsoft.VisualStudio.R.Package.Telemetry;
 using Microsoft.VisualStudio.R.Package.Utilities;
-using Microsoft.Windows.Core.Network;
 
 namespace Microsoft.VisualStudio.R.Package.RClient {
     [Export(typeof(IMicrosoftRClientInstaller))]

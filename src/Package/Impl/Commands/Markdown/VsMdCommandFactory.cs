@@ -18,7 +18,6 @@ using Microsoft.VisualStudio.R.Packages.Markdown;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
-using Microsoft.Windows.Core.OS;
 
 namespace Microsoft.VisualStudio.R.Package.Commands.MD {
     [Export(typeof(ICommandFactory))]

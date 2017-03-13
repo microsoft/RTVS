@@ -13,7 +13,6 @@ using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Core.Test.Stubs.Shell;
 using Microsoft.Common.Core.Test.Telemetry;
 using Microsoft.UnitTests.Core.Threading;
-using Microsoft.Windows.Core.OS;
 using NSubstitute;
 
 namespace Microsoft.Common.Core.Test.Fakes.Shell {

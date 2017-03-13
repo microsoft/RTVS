@@ -9,13 +9,10 @@ using System.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Principal;
 using System.Text;
-using Microsoft.Common.Core;
-using Microsoft.Common.Core.Security;
+using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Windows.Core.OS;
-using static Microsoft.Common.Core.NativeMethods;
 
-namespace Microsoft.Windows.Core.Security {
+namespace Microsoft.Common.Core.Security {
     public class SecurityService : ISecurityService {
         private readonly ICoreShell _coreShell;
 
@@ -47,16 +44,16 @@ namespace Microsoft.Windows.Core.Security {
         }
 
         public void DeleteCredentials(string authority) {
-            if(!CredDelete(authority, CRED_TYPE.GENERIC, 0)) {
+            if(!NativeMethods.CredDelete(authority, NativeMethods.CRED_TYPE.GENERIC, 0)) {
                 int err = Marshal.GetLastWin32Error();
-                if(err != ERROR_NOT_FOUND) {
+                if(err != NativeMethods.ERROR_NOT_FOUND) {
                     throw new Win32Exception(err);
                 }
             }
         }
 
         public bool DeleteUserCredentials(string authority) {
-            return CredDelete(authority, CRED_TYPE.GENERIC, 0);
+            return NativeMethods.CredDelete(authority, NativeMethods.CRED_TYPE.GENERIC, 0);
         }
 
         public string GetUserName(string authority) {
@@ -80,8 +77,8 @@ namespace Microsoft.Windows.Core.Security {
         }
 
         private Credentials PromptForWindowsCredentials(string authority, string workspaceName) {
-            var credui = new CREDUI_INFO {
-                cbSize = Marshal.SizeOf(typeof(CREDUI_INFO)),
+            var credui = new NativeMethods.CREDUI_INFO {
+                cbSize = Marshal.SizeOf(typeof(NativeMethods.CREDUI_INFO)),
                 hwndParent = _coreShell.AppConstants.ApplicationWindowHandle,
                 pszCaptionText = Resources.Info_ConnectingTo.FormatInvariant(workspaceName)
             };
@@ -89,30 +86,30 @@ namespace Microsoft.Windows.Core.Security {
             uint authPkg = 0;
             IntPtr credStorage = IntPtr.Zero;
             bool save = true;
-            var flags = CredUIWinFlags.CREDUIWIN_CHECKBOX;
+            var flags = NativeMethods.CredUIWinFlags.CREDUIWIN_CHECKBOX;
             // For password, use native memory so it can be securely freed.
             IntPtr passwordStorage = CreatePasswordBuffer();
             int inCredSize = 1024;
             IntPtr inCredBuffer = Marshal.AllocCoTaskMem(inCredSize);
 
             try {
-                if (!CredPackAuthenticationBuffer(0, WindowsIdentity.GetCurrent().Name, "", inCredBuffer, ref inCredSize)) {
+                if (!NativeMethods.CredPackAuthenticationBuffer(0, WindowsIdentity.GetCurrent().Name, "", inCredBuffer, ref inCredSize)) {
                     int error = Marshal.GetLastWin32Error();
                     throw new Win32Exception(error);
                 }
 
                 uint credSize;
-                var err = CredUIPromptForWindowsCredentials(ref credui, 0, ref authPkg, inCredBuffer, (uint)inCredSize, out credStorage, out credSize, ref save, flags);
+                var err = NativeMethods.CredUIPromptForWindowsCredentials(ref credui, 0, ref authPkg, inCredBuffer, (uint)inCredSize, out credStorage, out credSize, ref save, flags);
                 if (err != 0) {
                     throw new OperationCanceledException();
                 }
 
-                StringBuilder userNameBuilder = new StringBuilder(CRED_MAX_USERNAME_LENGTH);
-                int userNameLen = CRED_MAX_USERNAME_LENGTH;
-                StringBuilder domainBuilder = new StringBuilder(CRED_MAX_USERNAME_LENGTH);
-                int domainLen = CRED_MAX_USERNAME_LENGTH;
-                int passLen = CREDUI_MAX_PASSWORD_LENGTH;
-                if (!CredUnPackAuthenticationBuffer(CRED_PACK_PROTECTED_CREDENTIALS, credStorage, credSize, userNameBuilder, ref userNameLen, domainBuilder, ref domainLen, passwordStorage, ref passLen)) {
+                StringBuilder userNameBuilder = new StringBuilder(NativeMethods.CRED_MAX_USERNAME_LENGTH);
+                int userNameLen = NativeMethods.CRED_MAX_USERNAME_LENGTH;
+                StringBuilder domainBuilder = new StringBuilder(NativeMethods.CRED_MAX_USERNAME_LENGTH);
+                int domainLen = NativeMethods.CRED_MAX_USERNAME_LENGTH;
+                int passLen = NativeMethods.CREDUI_MAX_PASSWORD_LENGTH;
+                if (!NativeMethods.CredUnPackAuthenticationBuffer(NativeMethods.CRED_PACK_PROTECTED_CREDENTIALS, credStorage, credSize, userNameBuilder, ref userNameLen, domainBuilder, ref domainLen, passwordStorage, ref passLen)) {
                     throw new Win32Exception(Marshal.GetLastWin32Error());
                 }
 
@@ -135,19 +132,19 @@ namespace Microsoft.Windows.Core.Security {
         }
         
         private static Credentials Save(string userName, SecureString password, string authority, bool save) {
-            var creds = default(CredentialData);
+            var creds = default(NativeMethods.CredentialData);
             try {
                 creds.TargetName = authority;
                 // We have to save the credentials even if user selected NOT to save. Otherwise, user will be asked to enter
                 // credentials for every REPL/intellisense/package/Connection test request. This can provide the best user experience.
                 // We can limit how long the information is saved, in the case whee user selected not to save the credential persistence
                 // is limited to the current log on session. The credentials will not be available if the use logs off and back on.
-                creds.Persist = save ? CRED_PERSIST.CRED_PERSIST_ENTERPRISE : CRED_PERSIST.CRED_PERSIST_SESSION;
-                creds.Type = CRED_TYPE.GENERIC;
+                creds.Persist = save ? NativeMethods.CRED_PERSIST.CRED_PERSIST_ENTERPRISE : NativeMethods.CRED_PERSIST.CRED_PERSIST_SESSION;
+                creds.Type = NativeMethods.CRED_TYPE.GENERIC;
                 creds.UserName = userName;
                 creds.CredentialBlob = Marshal.SecureStringToCoTaskMemUnicode(password);
                 creds.CredentialBlobSize = (uint)((password.Length + 1) * sizeof(char)); // unicode password + unicode null
-                if (!CredWrite(ref creds, 0)) {
+                if (!NativeMethods.CredWrite(ref creds, 0)) {
                     var error = Marshal.GetLastWin32Error();
                     throw new Win32Exception(error, Resources.Error_CredWriteFailed);
                 }
@@ -160,7 +157,7 @@ namespace Microsoft.Windows.Core.Security {
         }
 
         private static IntPtr CreatePasswordBuffer() {
-            return Marshal.AllocCoTaskMem(CREDUI_MAX_PASSWORD_LENGTH);
+            return Marshal.AllocCoTaskMem(NativeMethods.CREDUI_MAX_PASSWORD_LENGTH);
         }
     }
 }

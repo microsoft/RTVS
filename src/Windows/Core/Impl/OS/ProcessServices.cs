@@ -2,9 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Diagnostics;
-using Microsoft.Common.Core.OS;
 
-namespace Microsoft.Windows.Core.OS {
+namespace Microsoft.Common.Core.OS {
     public sealed class ProcessServices : IProcessServices {
         public Process Start(ProcessStartInfo psi) => Process.Start(psi);
 

@@ -4,10 +4,9 @@
 using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
-using Microsoft.Common.Core;
 using Microsoft.Win32.SafeHandles;
 
-namespace Microsoft.Windows.Core.Security {
+namespace Microsoft.Common.Core.Security {
     internal sealed class CredentialHandle : CriticalHandleZeroOrMinusOneIsInvalid {
 
         private CredentialHandle(IntPtr credHandle) {

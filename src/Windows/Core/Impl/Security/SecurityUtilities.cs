@@ -2,13 +2,10 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Security;
-using Microsoft.Common.Core;
-using Microsoft.Common.Core.Security;
 
-namespace Microsoft.Windows.Core.Security {
+namespace Microsoft.Common.Core.Security {
     public static class SecurityUtilities {
         public static IntPtr CreateSecureStringBuffer(int length) {
             var sec = new SecureString();

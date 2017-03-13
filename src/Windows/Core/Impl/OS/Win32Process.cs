@@ -8,11 +8,9 @@ using System.Runtime.InteropServices;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Threading;
-using Microsoft.Common.Core;
-using Microsoft.Common.Core.OS;
 using Microsoft.Win32.SafeHandles;
 
-namespace Microsoft.Windows.Core.OS {
+namespace Microsoft.Common.Core.OS {
     public class Win32Process {
         private Win32Process(NativeMethods.PROCESS_INFORMATION pi) {
             _hasExited = false;
