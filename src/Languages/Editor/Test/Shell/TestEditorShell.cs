@@ -19,13 +19,12 @@ namespace Microsoft.Languages.Editor.Test.Shell {
     [ExcludeFromCodeCoverage]
     internal sealed class TestEditorShell : TestShellBase, IEditorShell {
         private static TestEditorShell _instance;
-        private readonly TestServiceManager _serviceManager;
 
-        private TestEditorShell(ICompositionCatalog catalog, Thread mainThread) {
+        private TestEditorShell(ICompositionCatalog catalog, Thread mainThread) :
+            base(catalog.ExportProvider) {
             CompositionService = catalog.CompositionService;
             ExportProvider = catalog.ExportProvider;
             MainThread = mainThread;
-            _serviceManager = new TestServiceManager(ExportProvider);
         }
 
         /// <summary>
@@ -39,8 +38,6 @@ namespace Microsoft.Languages.Editor.Test.Shell {
             _instance = new TestEditorShell(EditorTestCompositionCatalog.Current, UIThreadHelper.Instance.Thread);
             EditorShell.Current = _instance;
         }
-
-        public IServiceContainer GlobalServices => _serviceManager;
 
         #region ICompositionCatalog
         public ICompositionService CompositionService { get; private set; }

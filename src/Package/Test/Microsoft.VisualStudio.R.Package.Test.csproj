@@ -246,6 +246,8 @@
     <Compile Include="Mocks\VsRegisterProjectGeneratorsMock.cs" />
     <Compile Include="Package\RPackageTest.cs" />
     <Compile Include="Mocks\InteractiveWindowComponentContainerFactoryMock.cs" />
+    <Compile Include="Shell\TestVsAppShell.cs" />
+    <Compile Include="Shell\VsTestCompositionCatalog.cs" />
     <Compile Include="Sql\ExtensionsTest.cs" />
     <Compile Include="Sql\PublishOptionsDialogModelTest.cs" />
     <Compile Include="Sql\SProcPublisherTest.cs" />
