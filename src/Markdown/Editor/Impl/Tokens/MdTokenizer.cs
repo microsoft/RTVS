@@ -180,19 +180,17 @@ namespace Microsoft.Markdown.Editor.Tokens {
                 }
 
                 if (endOfBlock || endOfInline || eof) {
-                    _cs.Advance(trailingSeparatorLength); // past the end of block now
+                    if (eof) {
+                        // At the end of the file current position if one less. 
+                        // since end is not included, we want end to be at the buffer length;
+                        _cs.MoveToNextChar();
+                    } else {
+                        _cs.Advance(trailingSeparatorLength); // past the end of block now
+                    }
 
                     // Opening ticks
                     if (rLanguage) {
-                        // Code is inside ``` and after the language name.
-                        // We still want to colorize numbers in ```{r, x = 1.0, ...}
-                        int length = _cs.Position - ticksStart;
-                        if (eof) {
-                            // At the end of the file current position if one less. 
-                            // since end is not included, we want end to be at the buffer length;
-                            length++;
-                        }
-                        AddCodeToken(ticksStart, length, leadingSeparatorLength, trailingSeparatorLength);
+                        AddCodeToken(ticksStart, _cs.Position - ticksStart, leadingSeparatorLength, trailingSeparatorLength);
                     } else {
                         AddToken(MarkdownTokenType.Monospace, ticksStart, _cs.Position - ticksStart);
                     }
