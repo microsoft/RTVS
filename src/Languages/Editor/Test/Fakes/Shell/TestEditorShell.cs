@@ -20,15 +20,17 @@ using Microsoft.VisualStudio.Text.Editor;
 namespace Microsoft.Languages.Editor.Test.Fakes.Shell {
     public class TestEditorShell : IEditorShell, IMainThread {
         private readonly CompositionContainer _container;
+        private readonly TestServiceManager _serviceManager;
 
         public TestEditorShell(CompositionContainer container, ICoreServices coreServices) {
             FileDialog = new TestFileDialog();
             ProgressDialog = new TestProgressDialog();
             _container = container;
             Services = coreServices;
+            _serviceManager = new TestServiceManager(container);
         }
 
-        public IServiceContainer GlobalServices { get; }
+        public IServiceContainer GlobalServices => _serviceManager;
 
         public ExportProvider ExportProvider => _container;
         public ICompositionService CompositionService => _container;

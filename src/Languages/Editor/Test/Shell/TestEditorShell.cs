@@ -7,6 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.R.Components.Controller;
@@ -18,11 +19,13 @@ namespace Microsoft.Languages.Editor.Test.Shell {
     [ExcludeFromCodeCoverage]
     internal sealed class TestEditorShell : TestShellBase, IEditorShell {
         private static TestEditorShell _instance;
+        private readonly TestServiceManager _serviceManager;
 
         private TestEditorShell(ICompositionCatalog catalog, Thread mainThread) {
             CompositionService = catalog.CompositionService;
             ExportProvider = catalog.ExportProvider;
             MainThread = mainThread;
+            _serviceManager = new TestServiceManager(ExportProvider);
         }
 
         /// <summary>
@@ -37,7 +40,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
             EditorShell.Current = _instance;
         }
 
-        public IServiceContainer GlobalServices { get; }
+        public IServiceContainer GlobalServices => _serviceManager;
 
         #region ICompositionCatalog
         public ICompositionService CompositionService { get; private set; }
