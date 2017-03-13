@@ -19,9 +19,6 @@
   <PropertyGroup>
     <StartupObject />
   </PropertyGroup>
-  <PropertyGroup>
-    <PreBuildEvent>copy /y "$(MSBuildProjectDirectory)\project.$(VisualStudioVersion).json" "$(MSBuildProjectDirectory)\project.json"</PreBuildEvent>
-  </PropertyGroup>
   <ItemGroup>
     <Compile Include="Composition\ContentTypeLocator.cs" />
     <Compile Include="Controller\BaseController.cs" />
@@ -102,8 +99,6 @@
     </FilesToSign>
   </ItemGroup>
   <ItemGroup>
-    <None Include="project.15.0.json" />
-    <None Include="project.14.0.json" />
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup />

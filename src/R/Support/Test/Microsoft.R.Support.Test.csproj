@@ -152,14 +152,7 @@
         </ProjectReference>
       </ItemGroup>
     </When>
-    <When Condition="'$(VisualStudioVersion)'=='15.0'">
-      <ItemGroup>
-        <ProjectReference Include="..\..\..\UnitTests\References.15.0\Microsoft.UnitTests.References.15.0.csproj">
-          <Project>{4297FA87-629A-4000-8169-D97E8E64890E}</Project>
-          <Name>Microsoft.UnitTests.References.15.0</Name>
-        </ProjectReference>
-      </ItemGroup>
-    </When>
+    <When Condition="'$(VisualStudioVersion)'=='15.0'" />
   </Choose>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">

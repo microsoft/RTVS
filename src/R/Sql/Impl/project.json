@@ -1,0 +1,16 @@
+﻿{
+  "dependencies": {
+    "MicroBuild.Core": "0.2.0",
+    "Microsoft.SqlServer.DacFx.x86": "130.3485.1",
+    "Microsoft.VisualStudio.Shell.Interop.10.0": "10.0.30319",
+    "Microsoft.VisualStudio.Shell.Interop.11.0": "11.0.61030",
+    "Microsoft.VisualStudio.Shell.Interop.14.0.DesignTime": "15.0.25726-Preview5",
+    "Microsoft.VisualStudio.Text.UI.Wpf": "15.0.26201"
+  },
+  "frameworks": {
+    "net46": {}
+  },
+  "runtimes": {
+    "win": {}
+  }
+}

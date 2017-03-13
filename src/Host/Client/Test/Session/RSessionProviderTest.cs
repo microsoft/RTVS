@@ -286,10 +286,15 @@ namespace Microsoft.R.Host.Client.Test.Session {
             await session2.HostStarted.Should().BeCompletedAsync();
 
             var sessionProviderDisposeTask = Task.Delay(timeout).ContinueWith(t => sessionProvider.Dispose());
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
             var result = await sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(SwitchBroker_DisposeSessionProvider) + "1");
+            stopwatch.Stop();
+
             await sessionProviderDisposeTask;
 
-            result.Should().BeFalse();
+            result.Should().Be(stopwatch.ElapsedMilliseconds < timeout);
         }
 
         [Test]

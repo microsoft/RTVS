@@ -21,48 +21,10 @@
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
   </PropertyGroup>
-  <PropertyGroup>
-    <DefineConstants Condition="'$(VisualStudioVersion)'=='14.0'">VS14;$(DefineConstants)</DefineConstants>
-    <DefineConstants Condition="'$(VisualStudioVersion)'=='15.0'">VS15;$(DefineConstants)</DefineConstants>
-    <PreBuildEvent>copy /y "$(MSBuildProjectDirectory)\project.$(VisualStudioVersion).json" "$(MSBuildProjectDirectory)\project.json"</PreBuildEvent>
-  </PropertyGroup>
   <Import Project="..\..\R.Settings.targets" />
-  <PropertyGroup>
-    <BaseIntermediateOutputPath>$(ObjDirectory)</BaseIntermediateOutputPath>
-    <BaseOutputPath>$(BinDirectory)</BaseOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\$(AssemblyName)\</IntermediateOutputPath>
-    <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
-  </PropertyGroup>
-  <!--
-  <ItemGroup Condition="'$(VisualStudioVersion)'=='14.0'" >
-    <Reference Include="Microsoft.Build, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.ProjectSystem.Interop.dll" />
-    <Reference Include="$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.ProjectSystem.V14Only.dll" />
-    <Reference Include="$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.ProjectSystem.VS.V14Only.dll" />
-    <Reference Include="$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.ProjectSystem.Utilities.v14.0.dll" />
-  </ItemGroup>
-  -->
   <ItemGroup>
     <Reference Include="System" />
   </ItemGroup>
-  <Choose>
-    <When Condition="'$(VisualStudioVersion)'=='14.0'">
-      <ItemGroup>
-        <ProjectReference Include="..\..\UnitTests\References.14.0\Microsoft.UnitTests.References.14.0.csproj">
-          <Project>{78203460-9937-45E5-81CC-3045DDC10527}</Project>
-          <Name>Microsoft.UnitTests.References.14.0</Name>
-        </ProjectReference>
-      </ItemGroup>
-    </When>
-    <When Condition="'$(VisualStudioVersion)'=='15.0'">
-      <ItemGroup>
-        <ProjectReference Include="..\..\UnitTests\References.15.0\Microsoft.UnitTests.References.15.0.csproj">
-          <Project>{4297FA87-629A-4000-8169-D97E8E64890E}</Project>
-          <Name>Microsoft.UnitTests.References.15.0</Name>
-        </ProjectReference>
-      </ItemGroup>
-    </When>
-  </Choose>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
       <Project>{8D408909-459F-4853-A36C-745118F99869}</Project>
@@ -101,8 +63,6 @@
     <None Include="..\..\UnitTests\References.$(VisualStudioVersion)\app.config">
       <Link>app.config</Link>
     </None>
-    <None Include="project.14.0.json" />
-    <None Include="project.15.0.json" />
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>

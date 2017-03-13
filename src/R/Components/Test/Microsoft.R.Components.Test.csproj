@@ -18,11 +18,6 @@
   </PropertyGroup>
   <Import Project="..\..\..\R.Settings.targets" />
   <PropertyGroup>
-    <DefineConstants Condition="'$(VisualStudioVersion)'=='14.0'">VS14;$(DefineConstants)</DefineConstants>
-    <DefineConstants Condition="'$(VisualStudioVersion)'=='15.0'">VS15;$(DefineConstants)</DefineConstants>
-    <PreBuildEvent>copy /y "$(MSBuildProjectDirectory)\project.$(VisualStudioVersion).json" "$(MSBuildProjectDirectory)\project.json"</PreBuildEvent>
-  </PropertyGroup>
-  <PropertyGroup>
     <BaseIntermediateOutputPath>$(ObjDirectory)</BaseIntermediateOutputPath>
     <BaseOutputPath>$(BinDirectory)</BaseOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\$(AssemblyName)\</IntermediateOutputPath>
@@ -141,8 +136,6 @@
     <None Include="Files\Repos\Repo1\bin\windows\contrib\3.3\rtvslib1_0.1.0.zip" />
     <None Include="Files\Repos\Repo1\src\contrib\PACKAGES" />
     <None Include="Files\Repos\Repo1\src\contrib\rtvslib1_0.1.0.tar.gz" />
-    <None Include="project.15.0.json" />
-    <None Include="project.14.0.json" />
     <None Include="project.json" />
   </ItemGroup>
   <Choose>
@@ -154,14 +147,7 @@
         </ProjectReference>
       </ItemGroup>
     </When>
-    <When Condition="'$(VisualStudioVersion)'=='15.0'">
-      <ItemGroup>
-        <ProjectReference Include="..\..\..\UnitTests\References.15.0\Microsoft.UnitTests.References.15.0.csproj">
-          <Project>{4297FA87-629A-4000-8169-D97E8E64890E}</Project>
-          <Name>Microsoft.UnitTests.References.15.0</Name>
-        </ProjectReference>
-      </ItemGroup>
-    </When>
+    <When Condition="'$(VisualStudioVersion)'=='15.0'" />
   </Choose>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
