@@ -4,9 +4,6 @@
 using System;
 using System.Collections.Immutable;
 using Microsoft.VisualStudio.ProjectSystem;
-#if VS14
-using Microsoft.VisualStudio.ProjectSystem.Designers;
-#endif
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     internal abstract class ProjectCommand : ICommandGroupHandler {

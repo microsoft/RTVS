@@ -108,8 +108,7 @@
     <Compile Include="MenuCommandServiceMock.cs" />
     <Compile Include="OleComponentManagerMock.cs" />
     <Compile Include="ProjectServiceAccessorMock.cs" />
-    <Compile Include="ProjectServiceMock14.cs" />
-    <Compile Include="ProjectServiceMock15.cs" />
+    <Compile Include="ProjectServiceMock.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

@@ -16,19 +16,9 @@ using Microsoft.R.Debugger.PortSupplier;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Extensions;
 using Microsoft.R.Host.Client.Host;
-using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.ProjectSystem;
-using Microsoft.Common.Core.Shell;
-using Microsoft.VisualStudio.R.Package.Shell;
-#if VS14
-using Microsoft.VisualStudio.ProjectSystem.Debuggers;
-using Microsoft.VisualStudio.ProjectSystem.Utilities;
-using Microsoft.VisualStudio.ProjectSystem.Utilities.DebuggerProviders;
-using Microsoft.VisualStudio.ProjectSystem.VS.Debuggers;
-#else
 using Microsoft.VisualStudio.ProjectSystem.Debug;
 using Microsoft.VisualStudio.ProjectSystem.VS.Debug;
-#endif
 using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {

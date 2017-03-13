@@ -30,11 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             if(IsSqlToolsInstalled()) {
                 return TryGetDacServices();
             } else {
-#if VS14
-                var message = Resources.SqlPublish_NoSqlToolsVS14;
-#else
                 var message = Resources.SqlPublish_NoSqlToolsVS15;
-#endif
                 _coreShell.ShowErrorMessage(message);
             }
             return null;

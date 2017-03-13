@@ -15,10 +15,6 @@ using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
-#if VS14
-using Microsoft.VisualStudio.ProjectSystem.Designers;
-using Microsoft.VisualStudio.ProjectSystem.Utilities;
-#endif
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     internal class OpenRDataCommandGroupHandler : IAsyncCommandGroupHandler {

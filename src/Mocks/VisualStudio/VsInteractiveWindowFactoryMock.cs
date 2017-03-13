@@ -13,12 +13,8 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace Microsoft.VisualStudio.Shell.Mocks {
     [ExcludeFromCodeCoverage]
     [Export(typeof(IVsInteractiveWindowFactory))]
-#if VS14
-    public sealed class VsInteractiveWindowFactoryMock : IVsInteractiveWindowFactory {
-#else
     [Export(typeof(IVsInteractiveWindowFactory2))]
     public sealed class VsInteractiveWindowFactoryMock : IVsInteractiveWindowFactory2 {
-#endif
         public IVsInteractiveWindow Create(Guid providerId, int instanceId, string title, IInteractiveEvaluator evaluator, __VSCREATETOOLWIN creationFlags = 0) 
             => new VsInteractiveWindowMock(new WpfTextViewMock(new TextBufferMock(string.Empty, "R")), evaluator);
 

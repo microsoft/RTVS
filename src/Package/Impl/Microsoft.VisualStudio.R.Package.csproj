@@ -369,7 +369,6 @@
     <Compile Include="ProjectSystem\OpenRDataVsStd97CommandGroupHandler.cs" />
     <Compile Include="ProjectSystem\OpenRDataVsUiHierarchyWindowCommandGroupHandler.cs" />
     <Compile Include="ProjectSystem\ProjectIconProvider.cs" />
-    <Compile Include="ProjectSystem\ProjectTreeModifier.cs" />
     <Compile Include="Publishing\Commands\PreviewWordCommand.cs" />
     <Compile Include="Publishing\Commands\PreviewPdfCommand.cs" />
     <Compile Include="Publishing\Commands\PreviewHtmlCommand.cs" />

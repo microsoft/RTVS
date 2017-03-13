@@ -6,12 +6,7 @@ using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using System.Linq;
 using Microsoft.Common.Core.Shell;
-#if VS14
-using Microsoft.VisualStudio.ProjectSystem.Designers;
-#endif
-#if VS15
 using Microsoft.VisualStudio.ProjectSystem.Properties;
-#endif
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     internal static class IVsHierarchyExtensions {

@@ -1,13 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System.Collections.Generic;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Utilities;
-#if VS14
-using Microsoft.VisualStudio.ProjectSystem.Utilities;
-#endif
 using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {

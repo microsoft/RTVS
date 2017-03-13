@@ -1,6 +1,5 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
-#if VS15
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -53,4 +52,3 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
         }
     }
 }
-#endif

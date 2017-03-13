@@ -11,18 +11,13 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Application.Configuration;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.ProjectSystem;
+using Microsoft.VisualStudio.ProjectSystem.Properties;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration;
 using Microsoft.VisualStudio.R.Package.Sql;
 using Microsoft.VisualStudio.R.Package.Sql.Publish;
 using Microsoft.VisualStudio.Shell.Interop;
 using NSubstitute;
-#if VS14
-using Microsoft.VisualStudio.ProjectSystem.Designers;
-#endif
-#if VS15
-using Microsoft.VisualStudio.ProjectSystem.Properties;
-#endif
 
 namespace Microsoft.VisualStudio.R.Package.Test.Sql {
     [ExcludeFromCodeCoverage]

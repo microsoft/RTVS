@@ -3,11 +3,6 @@
 
 namespace Microsoft.Common.Core {
     public static class Toolset {
-#if VS14
-        public const string Version = "14.0";
-#endif
-#if VS15
         public const string Version = "15.0";
-#endif
     }
 }

@@ -12,9 +12,7 @@ using Microsoft.Common.Core.Disposables;
 using Microsoft.R.Components.Application.Configuration;
 using Microsoft.R.Host.Client.Extensions;
 using Microsoft.VisualStudio.ProjectSystem;
-#if VS15
 using IThreadHandling = Microsoft.VisualStudio.ProjectSystem.IProjectThreadingService;
-#endif
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration {
     /// <summary>
