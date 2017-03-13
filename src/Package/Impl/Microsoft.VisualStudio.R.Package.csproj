@@ -1581,6 +1581,7 @@
       <VSIXSourceItem Include="$(OutputPath)\System.Net.Http.WinHttpHandler.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Numerics.Vectors.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Reflection.Metadata.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\System.Runtime.CompilerServices.Unsafe.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Runtime.InteropServices.RuntimeInformation.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Security.Cryptography.Algorithms.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Security.Cryptography.Encoding.dll" />
