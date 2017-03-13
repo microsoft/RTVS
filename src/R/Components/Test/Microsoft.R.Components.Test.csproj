@@ -119,7 +119,7 @@
     </FilesToSign>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\UnitTests\References.$(VisualStudioVersion)\app.config">
+    <None Include="..\..\..\UnitTests\app.config">
       <Link>app.config</Link>
     </None>
     <None Include="Files\Packages\rtvslib1\.Rbuildignore" />
@@ -182,9 +182,9 @@
       <Project>{5ef2ad64-d6fe-446b-b350-8c7f0df0834d}</Project>
       <Name>Microsoft.UnitTests.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Windows\Core\Impl\Microsoft.Windows.Core.csproj">
+    <ProjectReference Include="..\..\..\Windows\Core\Impl\Microsoft.Rtvs.Core.Windows.csproj">
       <Project>{01E3D8C2-9C24-492B-B13B-C6D7068B6BF8}</Project>
-      <Name>Microsoft.Windows.Core</Name>
+      <Name>Microsoft.Rtvs.Core.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Windows\Core\Test\Microsoft.Windows.Core.Test.csproj">
       <Project>{1f89902f-853e-44b5-93a7-e237984c4fb7}</Project>

@@ -83,9 +83,9 @@
       <Project>{25cd8690-6208-4740-b123-6dbce6b9444a}</Project>
       <Name>Microsoft.Languages.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Windows\Core\Impl\Microsoft.Windows.Core.csproj">
+    <ProjectReference Include="..\..\Windows\Core\Impl\Microsoft.Rtvs.Core.Windows.csproj">
       <Project>{01E3D8C2-9C24-492B-B13B-C6D7068B6BF8}</Project>
-      <Name>Microsoft.Windows.Core</Name>
+      <Name>Microsoft.Rtvs.Core.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Windows\Core\Test\Microsoft.Windows.Core.Test.csproj">
       <Project>{1f89902f-853e-44b5-93a7-e237984c4fb7}</Project>

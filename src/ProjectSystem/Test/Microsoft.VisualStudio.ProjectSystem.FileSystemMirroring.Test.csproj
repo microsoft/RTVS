@@ -60,7 +60,7 @@
     <Compile Include="Project\FileSystemMirroringProjectUtilitiesTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\UnitTests\References.$(VisualStudioVersion)\app.config">
+    <None Include="..\..\UnitTests\app.config">
       <Link>app.config</Link>
     </None>
     <None Include="project.json" />

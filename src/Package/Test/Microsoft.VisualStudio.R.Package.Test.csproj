@@ -55,7 +55,7 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\UnitTests\References.$(VisualStudioVersion)\app.config">
+    <None Include="..\..\UnitTests\app.config">
       <Link>app.config</Link>
     </None>
     <None Include="Files\PropertyGridMultiple01-2.settings.r" />
@@ -179,9 +179,9 @@
       <Project>{5EF2AD64-D6FE-446B-B350-8C7F0DF0834D}</Project>
       <Name>Microsoft.UnitTests.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Windows\Core\Impl\Microsoft.Windows.Core.csproj">
+    <ProjectReference Include="..\..\Windows\Core\Impl\Microsoft.Rtvs.Core.Windows.csproj">
       <Project>{01e3d8c2-9c24-492b-b13b-c6d7068b6bf8}</Project>
-      <Name>Microsoft.Windows.Core</Name>
+      <Name>Microsoft.Rtvs.Core.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Windows\Core\Test\Microsoft.Windows.Core.Test.csproj">
       <Project>{1F89902F-853E-44B5-93A7-E237984C4FB7}</Project>

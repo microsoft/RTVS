@@ -7,8 +7,8 @@
     <ProjectGuid>{01E3D8C2-9C24-492B-B13B-C6D7068B6BF8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Microsoft.Windows.Core</RootNamespace>
-    <AssemblyName>Microsoft.RTVS.Windows.Core</AssemblyName>
+    <RootNamespace>Microsoft.Common.Core</RootNamespace>
+    <AssemblyName>Microsoft.Rtvs.Core.Windows</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>

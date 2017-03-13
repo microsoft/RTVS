@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Include>
-  <File Source="$(var.BinDir)\rtvs\Man\fetch_file.Rd" />
-</Include>
