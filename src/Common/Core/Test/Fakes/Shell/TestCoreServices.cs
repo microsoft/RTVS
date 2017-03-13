@@ -27,7 +27,6 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
                 UIThreadHelper.Instance,
                 Substitute.For<IActionLog>(),
                 fs ?? Substitute.For<IFileSystem>(),
-                registry ?? Substitute.For<IRegistry>(),
                 ps ?? Substitute.For<IProcessServices>());
         }
 
@@ -48,7 +47,6 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
                 UIThreadHelper.Instance,
                 log,
                 fileSystem,
-                registry,
                 processServices);
         }
 

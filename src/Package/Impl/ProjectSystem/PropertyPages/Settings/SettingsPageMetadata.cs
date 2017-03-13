@@ -3,14 +3,8 @@
 
 using System;
 using System.ComponentModel.Composition;
-#if VS14
-using Microsoft.VisualStudio.ProjectSystem.Utilities;
-using Microsoft.VisualStudio.ProjectSystem.VS;
-#endif
-#if VS15
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.VS.Properties;
-#endif
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings {
     [Export(typeof(IPageMetadata))]

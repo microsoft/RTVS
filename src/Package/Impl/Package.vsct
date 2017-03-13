@@ -2938,9 +2938,6 @@
     <!-- InteractiveWindow Guid -->
     <GuidSymbol name="guidInteractiveWindowCmdSet" value="{00B8868B-F9F5-4970-A048-410B05508506}">
       <!-- https://github.com/dotnet/roslyn/blob/master/src/InteractiveWindow/VisualStudio/InteractiveWindow.vsct -->
-      <!-- VS14 only -->
-      <IDSymbol name="menuIdInteractiveToolbar" value="0x2000"/>
-      <!-- End of VS14 only -->
       <IDSymbol name="menuIdInteractiveContextMenu" value="0x2100" />
       <IDSymbol name="cmdidReset" value="0x0105"/>
       <IDSymbol name="cmdidHistoryNext" value="0x0106"/>

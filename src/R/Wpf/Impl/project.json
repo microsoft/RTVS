@@ -1,0 +1,13 @@
+﻿{
+  "dependencies": {
+    "MicroBuild.Core": "0.2.0",
+    "Microsoft.VisualStudio.ImageCatalog": "15.0.26201",
+    "Microsoft.VisualStudio.Imaging": "15.0.26201"
+  },
+  "frameworks": {
+    "net46": {}
+  },
+  "runtimes": {
+    "win": {}
+  }
+}

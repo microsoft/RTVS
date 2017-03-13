@@ -7,9 +7,6 @@ using Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration;
 using Microsoft.Common.Core;
 using Microsoft.R.Components.Sql;
 using Microsoft.R.Components.InteractiveWorkflow;
-#if VS14
-using Microsoft.VisualStudio.ProjectSystem.Utilities;
-#endif
 
 namespace Microsoft.VisualStudio.R.Package.Sql {
     internal sealed class AddDbConnectionCommand : ConfigurationSettingCommand {

@@ -9,9 +9,6 @@ using Microsoft.Common.Core.OS;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring;
 using Microsoft.Common.Core;
-#if VS14
-using Microsoft.VisualStudio.ProjectSystem.Designers;
-#endif
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     internal abstract class CommandPromptCommand : ICommandGroupHandler {

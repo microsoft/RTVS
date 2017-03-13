@@ -99,10 +99,9 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 CreateRCmdSetCommand(RPackageCommandId.icmdDeleteProfile, new DeleteProfileCommand(interactiveWorkflow)),
 
                 new ResetReplCommand(interactiveWorkflow),
-#if VS15
                 new PrevHistoryReplCommand(interactiveWorkflow),
                 new NextHistoryReplCommand(interactiveWorkflow),
-#endif
+
                 // Directory management
                 new SetDirectoryToSourceCommand(interactiveWorkflow, textViewTracker),
                 new SetDirectoryToProjectCommand(interactiveWorkflow, pss),

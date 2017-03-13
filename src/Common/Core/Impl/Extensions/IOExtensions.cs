@@ -109,15 +109,8 @@ namespace Microsoft.Common.Core {
         }
 
         public static bool HasWritePermission(this string path) {
-            var accessControlList = Directory.GetAccessControl(path);
-            if (accessControlList == null) {
-                return false;
-            }
-
+            var accessControlList = new DirectorySecurity(path, AccessControlSections.Access | AccessControlSections.Owner | AccessControlSections.Group);
             var accessRules = accessControlList.GetAccessRules(true, true, typeof(SecurityIdentifier));
-            if (accessRules == null) {
-                return false;
-            }
 
             bool allowWrite = false;
             bool denyWrite = false;

@@ -9,6 +9,8 @@ using System.Diagnostics;
 using System.Threading;
 using System.Windows.Threading;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Security;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
@@ -63,7 +65,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             ProgressDialog = new VsProgressDialog(this);
             FileDialog = new VsFileDialog(this);
 
-            _coreServices = new CoreServices(_appConstants, telemetryService, new VsTaskService(), this, new SecurityService(this));
+            var loggingPermissions = new LoggingPermissions(_appConstants, telemetryService, new RegistryImpl());
+            _coreServices = new CoreServices(_appConstants, telemetryService, new VsTaskService(), new ProcessServices(), loggingPermissions, this, new SecurityService(this));
         }
 
         //private Assembly OnAssemblyResolve(object sender, ResolveEventArgs args) {

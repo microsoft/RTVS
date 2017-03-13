@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Include>
-  <DirectoryRef Id="SurveyNewsFolder">
-    <Component Id="SurveyNews" Guid="{3685A25D-AD34-4AF5-810E-EE55A511D4B5}">
-      <File Source="$(var.BinDir)\SurveyNews\NoSurveyNewsFeed.mht" />
-    </Component>
-  </DirectoryRef>
-</Include>

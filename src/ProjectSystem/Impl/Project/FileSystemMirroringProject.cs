@@ -13,17 +13,14 @@ using Microsoft.Build.Construction;
 using Microsoft.Build.Evaluation;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
-using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Logging;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.MsBuild;
-#if VS14
-using Microsoft.VisualStudio.ProjectSystem.Utilities;
-#endif
+
 
 namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project {
     public class FileSystemMirroringProject : IFileSystemMirroringProjectTemporaryItems {
-        private readonly static XProjDocument EmptyProject;
+        private static readonly XProjDocument EmptyProject;
 
         private readonly UnconfiguredProject _unconfiguredProject;
         private readonly IProjectLockService _projectLockService;
@@ -159,11 +156,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project {
         /// </summary>
         private ProjectRootElement CreateEmptyMsBuildProject(string projectFilePath, ProjectCollection collection) {
             using (XmlReader reader = EmptyProject.CreateReader()) {
-#if VS14
-                ProjectRootElement importFile = ProjectRootElement.Create(reader, collection);
-#else
-                ProjectRootElement importFile = ProjectRootElement.Create(reader, collection, preserveFormatting: false);
-#endif
+                var importFile = ProjectRootElement.Create(reader, collection, preserveFormatting: false);
                 importFile.FullPath = projectFilePath;
                 return importFile;
             }

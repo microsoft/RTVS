@@ -30,12 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             return VSConstants.S_OK;
         }
 
-        public bool IsFocusStolenOnBreak =>
-#if VS14
-            true;
-#else
-            false;
-#endif
+        public bool IsFocusStolenOnBreak => false;
 
         public bool IsInBreakMode { get; private set; }
 

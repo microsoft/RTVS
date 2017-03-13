@@ -5,9 +5,6 @@ using System;
 using System.Collections.Immutable;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring;
-#if VS14
-using Microsoft.VisualStudio.ProjectSystem.Designers;
-#endif
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     internal abstract class AddItemCommand : ICommandGroupHandler {

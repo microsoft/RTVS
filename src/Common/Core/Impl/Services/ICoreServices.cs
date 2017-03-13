@@ -16,7 +16,6 @@ namespace Microsoft.Common.Core.Services {
         IFileSystem FileSystem { get; }
         ILoggingPermissions LoggingPermissions { get; }
         IProcessServices ProcessServices { get; }
-        IRegistry Registry { get; }
         ISecurityService Security { get; }
         ITelemetryService Telemetry { get; }
         ITaskService Tasks { get; }

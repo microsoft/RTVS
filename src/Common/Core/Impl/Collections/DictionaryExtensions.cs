@@ -15,7 +15,7 @@ namespace Microsoft.Common.Core {
                 if (dict == null) {
                     var attr = BindingFlags.Public | BindingFlags.Instance;
                     dict = new Dictionary<string, object>();
-                    foreach (var property in data.GetType().GetProperties(attr)) {
+                    foreach (var property in data.GetType().GetTypeInfo().GetProperties(attr)) {
                         if (property.CanRead) {
                             dict.Add(property.Name, property.GetValue(data, null));
                         }

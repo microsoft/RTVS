@@ -3,11 +3,7 @@
 
 using System.ComponentModel.Composition;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.ProjectSystem;
-#if VS14
-using Microsoft.VisualStudio.ProjectSystem.Utilities;
-#endif
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     [ExportCommandGroup("5EFC7975-14BC-11CF-9B2B-00AA00573819")]

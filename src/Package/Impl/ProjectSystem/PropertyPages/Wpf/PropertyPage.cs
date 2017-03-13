@@ -11,9 +11,7 @@ using System.Windows.Forms;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.Shell.Interop;
-#if VS15
 using IThreadHandling = Microsoft.VisualStudio.ProjectSystem.IProjectThreadingService;
-#endif
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
     internal abstract class PropertyPage : UserControl, IPropertyPage, IVsDebuggerEvents {
