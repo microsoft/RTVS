@@ -60,7 +60,7 @@ namespace Microsoft.R.Debugger.PortSupplier {
         }
 
         public int GetDescription(enum_PORT_SUPPLIER_DESCRIPTION_FLAGS[] pdwFlags, out string pbstrText) {
-            pbstrText = "Allows attaching to an R Interactive window to debug the code executed in it.";
+            pbstrText = Resources.PortSupplierDescription;
             return VSConstants.S_OK;
         }
 

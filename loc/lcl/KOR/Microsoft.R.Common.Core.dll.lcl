@@ -16,30 +16,45 @@
       <Item ItemId=";Error_CredReadFailed" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Reading credentails failed with Win32 error.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Win32 오류로 인해 자격 증명을 읽지 못했습니다.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";Error_CredWriteFailed" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Writing credentails failed with Win32 error.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Win32 오류로 인해 자격 증명을 쓰지 못했습니다.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";Error_CredentialHandleInvalid" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Credential handle is invalid.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[자격 증명 핸들이 잘못되었습니다.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";Info_ConnectingTo" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Connecting to {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0}에 연결하는 중]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";MessageBoxTitle" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[R Tools for Visual Studio]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[R Tools for Visual Studio]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -49,7 +64,7 @@
     <Disp Icon="Ver" Disp="true" LocTbl="false" Path=" \ ;Version \ 8 \ 0" />
     <Item ItemId=";AssemblyVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.0.30217.2203]]></Val>
+        <Val><![CDATA[1.0.30224.2310]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -62,12 +77,15 @@
     <Item ItemId=";FileDescription" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text">
         <Val><![CDATA[ ]]></Val>
+        <Tgt Cat="Text" Stat="Loc" Orig="New">
+          <Val><![CDATA[ ]]></Val>
+        </Tgt>
       </Str>
       <Disp Icon="Str" />
     </Item>
     <Item ItemId=";FileVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.0.30217.2203]]></Val>
+        <Val><![CDATA[1.0.30224.2310]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -80,6 +98,9 @@
     <Item ItemId=";LegalCopyright" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text">
         <Val><![CDATA[© Microsoft Corporation. All rights reserved.]]></Val>
+        <Tgt Cat="Text" Stat="Loc" Orig="New">
+          <Val><![CDATA[© Microsoft Corporation. All rights reserved.]]></Val>
+        </Tgt>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -92,12 +113,15 @@
     <Item ItemId=";ProductName" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text">
         <Val><![CDATA[R Tools for Visual Studio]]></Val>
+        <Tgt Cat="Text" Stat="Loc" Orig="New">
+          <Val><![CDATA[R Tools for Visual Studio]]></Val>
+        </Tgt>
       </Str>
       <Disp Icon="Str" />
     </Item>
     <Item ItemId=";ProductVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.0.30217.2203]]></Val>
+        <Val><![CDATA[1.0.30224.2310]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>

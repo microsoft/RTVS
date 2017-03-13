@@ -1117,4 +1117,16 @@ Click OK to open MiKTeX download page in the default browser. R Remote Services 
   <data name="Settings_WorkingDirectory_Description" xml:space="preserve">
     <value>Working directory to set when R session starts.</value>
   </data>
+  <data name="Settings_SpaceBeforeCurly" xml:space="preserve">
+    <value>Space before {</value>
+  </data>
+  <data name="Settings_SpaceBeforeCurly_Description" xml:space="preserve">
+    <value>Determines if formatter should be adding space before opening curly brace</value>
+  </data>
+  <data name="Settings_SpacesAroundEquals" xml:space="preserve">
+    <value>Spaces around =</value>
+  </data>
+  <data name="Settings_SpacesAroundEquals_Description" xml:space="preserve">
+    <value>Determines if formatter should place spaces around equals sign</value>
+  </data>
 </root>

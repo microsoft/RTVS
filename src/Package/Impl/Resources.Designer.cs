@@ -2230,6 +2230,42 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Space before {.
+        /// </summary>
+        public static string Settings_SpaceBeforeCurly {
+            get {
+                return ResourceManager.GetString("Settings_SpaceBeforeCurly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Determines if formatter should be adding space before opening curly brace.
+        /// </summary>
+        public static string Settings_SpaceBeforeCurly_Description {
+            get {
+                return ResourceManager.GetString("Settings_SpaceBeforeCurly_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Spaces around =.
+        /// </summary>
+        public static string Settings_SpacesAroundEquals {
+            get {
+                return ResourceManager.GetString("Settings_SpacesAroundEquals", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Determines if formatter should place spaces around equals sign.
+        /// </summary>
+        public static string Settings_SpacesAroundEquals_Description {
+            get {
+                return ResourceManager.GetString("Settings_SpacesAroundEquals_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Survey/News Check.
         /// </summary>
         public static string Settings_SurveyNewsCheck {

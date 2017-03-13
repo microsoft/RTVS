@@ -98,16 +98,13 @@ namespace Microsoft.R.Editor.Formatting {
             ITextSnapshotLine line = snapshot.GetLineFromLineNumber(lineNumber + offset);
             ITextRange formatRange = new TextRange(line.Start, line.Length);
 
-            UndoableFormatRange(textView, textBuffer, formatRange, editorShell, exactRange: true);
+            UndoableFormatRange(textView, textBuffer, formatRange, editorShell);
         }
 
-        public static void UndoableFormatRange(ITextView textView, ITextBuffer textBuffer, ITextRange formatRange, IEditorShell editorShell, bool exactRange = false) {
+        public static void UndoableFormatRange(ITextView textView, ITextBuffer textBuffer, ITextRange formatRange, IEditorShell editorShell) {
             using (var undoAction = editorShell.CreateCompoundAction(textView, textView.TextBuffer)) {
                 undoAction.Open(Resources.AutoFormat);
-                var result = exactRange
-                    ? RangeFormatter.FormatRangeExact(textView, textBuffer, formatRange, REditorSettings.FormatOptions, editorShell)
-                    : RangeFormatter.FormatRange(textView, textBuffer, formatRange, REditorSettings.FormatOptions, editorShell);
-
+                var result = RangeFormatter.FormatRange(textView, textBuffer, formatRange, REditorSettings.FormatOptions, editorShell);
                 if (result) {
                     undoAction.Commit();
                 }

@@ -141,6 +141,7 @@ namespace Microsoft.R.Editor.Completion {
                     rset?.SelectBestMatch();
                 }
 
+                bool unique = completionSet.SelectionStatus.IsUnique;
                 switch (typedChar) {
                     case '=':
                     case '<':
@@ -153,7 +154,6 @@ namespace Microsoft.R.Editor.Completion {
                     case '|':
                     case '&':
                     case '!':
-                    case ':':
                     case '@':
                     case '$':
                     case '(':
@@ -163,7 +163,16 @@ namespace Microsoft.R.Editor.Completion {
                     case ']':
                     case '}':
                     case ';':
-                        return completionSet.SelectionStatus.IsUnique;
+                        return unique;
+
+                    case ':':
+                        // : completes only if not preceded by another :
+                        // so we can avoid false positive when user is typing stats:::
+                        var caretPosition = TextView.Caret.Position.BufferPosition;
+                        if (caretPosition > 0) {
+                            unique &= TextView.TextBuffer.CurrentSnapshot[caretPosition - 1] != ':';
+                        }
+                        return unique;
                 }
 
                 if (typedChar == ' ' && !REditorSettings.CommitOnSpace) {

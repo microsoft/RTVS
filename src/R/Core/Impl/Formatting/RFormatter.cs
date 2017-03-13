@@ -103,7 +103,8 @@ namespace Microsoft.R.Core.Formatting {
             // If scope is empty, make it { } unless there is a line break already in it
             if (_tokens.NextToken.TokenType == RTokenType.CloseCurlyBrace &&
                 _textProvider.IsWhiteSpaceOnlyRange(_tokens.CurrentToken.End, _tokens.NextToken.Start)) {
-                AppendToken(leadingSpace: _tokens.PreviousToken.TokenType == RTokenType.CloseBrace, trailingSpace: true);
+                var ls = _tokens.PreviousToken.TokenType == RTokenType.CloseBrace && _options.SpaceBeforeCurly;
+                AppendToken(leadingSpace: ls, trailingSpace: true);
                 AppendToken(leadingSpace: false, trailingSpace: false);
                 return;
             }
@@ -122,7 +123,7 @@ namespace Microsoft.R.Core.Formatting {
             } else {
                 // Add space if curly is preceded by )
                 bool precededByCloseBrace = _tokens.PreviousToken.TokenType == RTokenType.CloseBrace;
-                if (precededByCloseBrace) {
+                if (precededByCloseBrace && _options.SpaceBeforeCurly) {
                     _tb.AppendSpace();
                 }
             }
@@ -584,6 +585,8 @@ namespace Microsoft.R.Core.Formatting {
                 case "$":
                 case "@":
                     return true;
+                case "=":
+                    return !_options.SpacesAroundEquals;
             }
 
             return false;

@@ -19,84 +19,126 @@
       <Item ItemId=";Error_ClientTimedOut" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Client took too long to respond.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[El cliente ha tardado demasiado en responder.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";Error_DeleteUserProfileFailed" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to delete user profile for user {0}\{1}, with Win32 error {2}.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[No se pudo eliminar el perfil del usuario {0}\{1}, con error de Win32 {2}.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";Error_UserLogonFailed" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to logon user {0}\{1}, with Win32 error {2}.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[No se pudo iniciar la sesión del usuario {0}\{1}, con error de Win32 {2}.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";Error_UserProfileCreateFailed" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to create user profile for user {0}\{1}, with Win32 error {2}.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[No se pudo crear el perfil del usuario {0}\{1}, con error de Win32 {2}.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";Error_UserProfileDirectoryWasNotFound" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[User profile directory expected but not found for user {0}\{1}, Win32 error {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Se esperaba el directorio de perfil de usuario pero no se ha encontrado para {0}\{1}, error de Win32 {0}.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";Error_UserProfileServiceError" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[User profile service failed with exception: {0}.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Error en el servicio de perfil de usuario con la excepción siguiente: {0}.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";Info_DeletedUserProfile" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[User profile deleted for user {0}\{1}.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Se ha eliminado el perfil del usuario {0}\{1}.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";Info_DeletingUserProfile" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Deleting user profile for user {0}\{1}.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Eliminando el perfil del usuario {0}\{1}.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";Info_UserProfileAlreadyExists" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[User profile already exists for user  {0}\{1}.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ya existe el perfil del usuario {0}\{1}.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";Info_UserProfileCreated" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Created user profile for user {0}\{1}.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Perfil de usuario creado para {0}\{1}.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";Info_UserProfileDirectoryFound" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[User profile directory was found for user {0}\{1}, path: {2}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Se ha encontrado el directorio de perfil del usuario {0}\{1}, ruta de acceso: {2}.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";Text_ServiceDescription" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Creates Windows User profile for users connecting via R Host Broker]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Crea el perfil de usuario de Windows para usuarios que se conectan mediante el agente de host de R.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";Text_ServiceDisplayName" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[R User Profile Service]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Servicio de perfil de usuario de R]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";Text_ServiceName" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[RUserProfileService]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[RUserProfileService]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -106,7 +148,7 @@
     <Disp Icon="Ver" Disp="true" LocTbl="false" Path=" \ ;Version \ 8 \ 0" />
     <Item ItemId=";AssemblyVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.0.30217.2203]]></Val>
+        <Val><![CDATA[1.0.30227.2212]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -119,12 +161,15 @@
     <Item ItemId=";FileDescription" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text">
         <Val><![CDATA[ ]]></Val>
+        <Tgt Cat="Text" Stat="Loc" Orig="New">
+          <Val><![CDATA[ ]]></Val>
+        </Tgt>
       </Str>
       <Disp Icon="Str" />
     </Item>
     <Item ItemId=";FileVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.0.30217.2203]]></Val>
+        <Val><![CDATA[1.0.30227.2212]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -137,6 +182,9 @@
     <Item ItemId=";LegalCopyright" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text">
         <Val><![CDATA[© Microsoft Corporation. All rights reserved.]]></Val>
+        <Tgt Cat="Text" Stat="Loc" Orig="New">
+          <Val><![CDATA[© Microsoft Corporation. Todos los derechos reservados.]]></Val>
+        </Tgt>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -149,12 +197,15 @@
     <Item ItemId=";ProductName" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text">
         <Val><![CDATA[R Tools for Visual Studio]]></Val>
+        <Tgt Cat="Text" Stat="Loc" Orig="New">
+          <Val><![CDATA[Herramientas de R para Visual Studio]]></Val>
+        </Tgt>
       </Str>
       <Disp Icon="Str" />
     </Item>
     <Item ItemId=";ProductVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.0.30217.2203]]></Val>
+        <Val><![CDATA[1.0.30227.2212]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>

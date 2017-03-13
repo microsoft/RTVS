@@ -127,7 +127,7 @@ namespace Microsoft.R.Support.Help {
                     var loadedPackages = await session.EvaluateAsync<string[]>("as.list(.packages())", REvaluationKind.Normal);
                     Interlocked.Exchange(ref _loadedPackages, loadedPackages);
                 }
-            } catch (RHostDisconnectedException) { } catch (RException) { }
+            } catch (OperationCanceledException) { } catch (RException) { }
         }
 
         private IRSession GetLoadedPackagesInspectionSession() {

@@ -505,6 +505,21 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
             }
         }
 
+        [Test]
+        public async Task R_PackageMemberCompletion() {
+            using (var script = await _editorHost.StartScript(ExportProvider, RContentTypeDefinition.ContentType, Workflow.RSessions)) {
+                PrimeIntellisenseProviders(script);
+                script.DoIdle(500);
+
+                script.Type("AIC");
+                script.MoveLeft(3);
+                script.Type("stats:::");
+                script.DoIdle(100);
+                script.EditorText.Should().Be("stats:::AIC");
+                script.View.Caret.Position.BufferPosition.Position.Should().Be(8);
+            }
+        }
+
         private void PrimeIntellisenseProviders(IEditorScript script) {
             // Prime variable provider
             UIThreadHelper.Instance.Invoke(() => {

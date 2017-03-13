@@ -19,6 +19,8 @@ namespace Microsoft.R.Components.Test.Fakes.Trackers {
 
         public bool IsFocusStolenOnBreak => false;
 
+        public bool IsRDebugger() => true;
+
 #pragma warning disable 67
         public event EventHandler EnterBreakMode;
         public event EventHandler LeaveBreakMode;
