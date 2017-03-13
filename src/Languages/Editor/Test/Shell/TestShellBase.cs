@@ -25,7 +25,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
             ProgressDialog = new TestProgressDialog();
         }
 
-        public IServiceContainer GlobalServices => _serviceManager;
+        public virtual IServiceContainer GlobalServices => _serviceManager;
 
         public void ShowErrorMessage(string msg) { }
 

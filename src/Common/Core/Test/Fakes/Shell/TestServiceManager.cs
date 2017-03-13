@@ -6,7 +6,7 @@ using System.ComponentModel.Composition.Hosting;
 using Microsoft.Common.Core.Services;
 
 namespace Microsoft.Common.Core.Test.Fakes.Shell {
-    public sealed class TestServiceManager: ServiceManager {
+    public class TestServiceManager: ServiceManager {
         private readonly ExportProvider _exportProvider;
 
         public TestServiceManager(ExportProvider exportProvider) {

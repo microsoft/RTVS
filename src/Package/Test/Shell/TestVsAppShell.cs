@@ -7,6 +7,7 @@ using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core.Extensions;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.Languages.Editor.Shell;
@@ -29,6 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
     /// </summary>
     [ExcludeFromCodeCoverage]
     sealed class TestVsAppShell : TestShellBase, IApplicationShell {
+        private readonly VsTestServiceManager _serviceManager;
         private static TestVsAppShell _instance;
         private static readonly object _shellLock = new object();
 
@@ -36,7 +38,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
             CompositionService = VsTestCompositionCatalog.Current.CompositionService;
             ExportProvider = VsTestCompositionCatalog.Current.ExportProvider;
             MainThread = UIThreadHelper.Instance.Thread;
+            _serviceManager = new VsTestServiceManager(ExportProvider);
         }
+
+        public override IServiceContainer GlobalServices => _serviceManager;
 
         public static void Create() {
             // Called via reflection in test cases. Creates instance
