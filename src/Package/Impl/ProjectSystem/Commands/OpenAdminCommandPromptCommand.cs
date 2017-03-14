@@ -7,12 +7,8 @@ using System.IO;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Commands;
 using static System.FormattableString;
-using Microsoft.Common.Core.OS;
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Services;
-#if VS14
-using Microsoft.VisualStudio.ProjectSystem.Utilities;
-#endif
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     [ExportCommandGroup("AD87578C-B324-44DC-A12A-B01A6ED5C6E3")]

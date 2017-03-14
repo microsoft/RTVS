@@ -1,4 +1,4 @@
-<?xml version="1.0" ?>
+﻿<?xml version="1.0" ?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Microsoft.R.Host.Client.API</id>
@@ -127,10 +127,10 @@
     <file src="System.IO.Compression.ZipFile.dll" target="build" />
     <file src="System.IO.FileSystem.dll" target="build" />
     <file src="System.IO.FileSystem.Primitives.dll" target="build" />
+    <File src="System.Net.Http.WinHttpHandler.dll" target="build" />
     <file src="System.Numerics.Vectors.dll" target="build" />
     <file src="System.Reflection.Metadata.dll" target="build" />
     <file src="System.Runtime.InteropServices.RuntimeInformation.dll" target="build" />
-    <file src="System.Runtime.Serialization.Primitives.dll" target="build" />
     <file src="System.Security.Cryptography.Algorithms.dll" target="build" />
     <file src="System.Security.Cryptography.Encoding.dll" target="build" />
     <file src="System.Security.Cryptography.Primitives.dll" target="build" />

@@ -26,7 +26,6 @@ namespace Microsoft.Common.Core.Test.Fixtures {
         public IFileSystem FileSystem => _services.FileSystem;
         public ILoggingPermissions LoggingPermissions => _services.LoggingPermissions;
         public IProcessServices Process => _services.Process;
-        public IRegistry Registry => _services.Registry;
         public ISecurityService Security => _services.Security;
         public ITelemetryService Telemetry => _services.Telemetry;
         public ITaskService Tasks => _services.Tasks;

@@ -12,22 +12,16 @@ using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.ProjectSystem;
+using Microsoft.VisualStudio.ProjectSystem.Properties;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Sql;
 using Microsoft.VisualStudio.Shell.Interop;
-using NSubstitute;
-using static System.FormattableString;
 using Microsoft.R.Components.Sql.Publish;
 using Microsoft.Common.Core.Shell;
-
-#if VS14
-using Microsoft.VisualStudio.ProjectSystem.Designers;
-#elif VS15
-using Microsoft.VisualStudio.ProjectSystem.Properties;
-#endif
+using NSubstitute;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Sql {
     [ExcludeFromCodeCoverage]

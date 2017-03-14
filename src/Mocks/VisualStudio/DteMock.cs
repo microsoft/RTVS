@@ -45,7 +45,7 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
         public bool UserControl { get; set; }
         public string Version { get; set; }
         public WindowConfigurations WindowConfigurations { get; set; }
-        public Windows Windows { get; set; }
+        public EnvDTE.Windows Windows { get; set; }
 
         public void ExecuteCommand(string CommandName, string CommandArgs = "") {
             throw new NotImplementedException();

@@ -4,10 +4,6 @@
 using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project;
-#if VS14
-using Microsoft.VisualStudio.ProjectSystem.Items;
-using Microsoft.VisualStudio.ProjectSystem.Utilities;
-#endif
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     [Export(typeof(IProjectSourceItemProviderExtension))]

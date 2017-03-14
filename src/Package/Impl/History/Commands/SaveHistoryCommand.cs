@@ -12,9 +12,6 @@ using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Text.Editor;
-#if VS14
-using Microsoft.VisualStudio.ProjectSystem.Utilities;
-#endif
 using CommandStatus = Microsoft.Common.Core.UI.Commands.CommandStatus;
 
 namespace Microsoft.VisualStudio.R.Package.History.Commands {

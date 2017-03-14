@@ -3,7 +3,7 @@
 
 using System;
 using System.Security;
-using Microsoft.Common.Core.Security;
+using Microsoft.Common.Core;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

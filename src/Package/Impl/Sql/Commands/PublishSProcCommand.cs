@@ -15,12 +15,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using EnvDTE;
 using Microsoft.R.Components.Sql.Publish;
 using Microsoft.Common.Core.Shell;
-#if VS14
-using Microsoft.VisualStudio.ProjectSystem.Designers;
-using Microsoft.VisualStudio.ProjectSystem.Utilities;
-#else
 using Microsoft.VisualStudio.ProjectSystem;
-#endif
 
 namespace Microsoft.VisualStudio.R.Package.Sql {
     [ExportCommandGroup("AD87578C-B324-44DC-A12A-B01A6ED5C6E3")]

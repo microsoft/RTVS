@@ -44,7 +44,7 @@ namespace Microsoft.R.Host.Client.Host {
 
         protected DisposableBag DisposableBag { get; } = DisposableBag.Create<BrokerClient>();
         protected IActionLog Log { get; }
-        protected WebRequestHandler HttpClientHandler { get; private set; }
+        protected WinHttpHandler HttpClientHandler { get; private set; }
         protected HttpClient HttpClient { get; private set; }
 
         public BrokerConnectionInfo ConnectionInfo { get; }
@@ -64,9 +64,9 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         protected void CreateHttpClient(Uri baseAddress) {
-            HttpClientHandler = new WebRequestHandler {
+            HttpClientHandler = new WinHttpHandler {
                 PreAuthenticate = true,
-                Credentials = _credentials
+                ServerCredentials = _credentials
             };
 
             try {
@@ -192,7 +192,7 @@ namespace Microsoft.R.Host.Client.Host {
                     using (await _credentials.LockCredentialsAsync(cancellationToken)) {
                         try {
                             request.AuthenticationLevel = AuthenticationLevel.MutualAuthRequested;
-                            request.Credentials = HttpClientHandler.Credentials;
+                            request.Credentials = HttpClientHandler.ServerCredentials;
                             return await wsClient.ConnectAsync(request, cancellationToken);
                         } catch (UnauthorizedAccessException) {
                             _credentials.InvalidateCredentials();

@@ -129,7 +129,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
 
             using (var workflow = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate()) {
                 var security = (SecurityServiceStub)workflow.Shell.Services.Security;
-                security.GetUserCredentialsAsyncHandler = delegate { throw new RHostDisconnectedException(); };
+                security.GetUserCredentialsHandler = delegate { throw new RHostDisconnectedException(); };
 
                 var connectionManager = workflow.Connections;
                 await connectionManager.ConnectAsync(unreachableConnection).Should().BeCompletedAsync();

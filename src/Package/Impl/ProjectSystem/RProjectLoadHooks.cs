@@ -22,20 +22,13 @@ using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project;
-using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.SurveyNews;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.Common.Core.Logging;
-#if VS14
-using Microsoft.VisualStudio.ProjectSystem.Utilities;
-using IThreadHandling = Microsoft.VisualStudio.ProjectSystem.IThreadHandling;
-#endif
-#if VS15
 using Microsoft.VisualStudio.ProjectSystem.VS;
 using IThreadHandling = Microsoft.VisualStudio.ProjectSystem.IProjectThreadingService;
-#endif
 
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
@@ -98,13 +91,9 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         }
 
         [AppliesTo(ProjectConstants.RtvsProjectCapability)]
-#if VS14
-        [UnconfiguredProjectAutoLoad2(completeBy: UnconfiguredProjectLoadCheckpoint.CapabilitiesEstablished)]
-#else
         [ProjectAutoLoad(startAfter: ProjectLoadCheckpoint.UnconfiguredProjectLocalCapabilitiesEstablished,
                          completeBy: ProjectLoadCheckpoint.BeforeLoadInitialConfiguration,
                          RequiresUIThread = false)]
-#endif
         public async Task InitializeProjectFromDiskAsync() {
             await Project.CreateInMemoryImport();
             _fileWatcher.Start();

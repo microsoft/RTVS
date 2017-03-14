@@ -1,199 +1,38 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{8D408909-459F-4853-A36C-745118F99869}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Microsoft.Common.Core</RootNamespace>
+    <TargetFrameworks>netstandard1.6;net46</TargetFrameworks>
     <AssemblyName>Microsoft.R.Common.Core</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
   </PropertyGroup>
   <Import Project="..\..\..\R.Settings.targets" />
   <ItemGroup>
+    <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
+    <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="1.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="1.1.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+    <PackageReference Include="System.ComponentModel" Version="4.3.0" />
+    <PackageReference Include="System.Composition" Version="1.0.31" />
+    <PackageReference Include="System.Diagnostics.FileVersionInfo" Version="4.3.0" />
+    <PackageReference Include="System.Diagnostics.Process" Version="4.3.0" />
+    <PackageReference Include="System.Diagnostics.TraceSource" Version="4.3.0" />
+    <PackageReference Include="System.IO.Compression" Version="4.3.0" />
+    <PackageReference Include="System.IO.FileSystem.AccessControl" Version="4.3.0" />
+    <PackageReference Include="System.IO.FileSystem.Watcher" Version="4.3.0" />
+    <PackageReference Include="System.IO.Pipes" Version="4.3.0" />
+    <PackageReference Include="System.Net.Ping" Version="4.3.0" />
+    <PackageReference Include="System.Net.WebSockets" Version="4.3.0" />
+    <PackageReference Include="System.Security.SecureString" Version="4.3.0" />
+    <PackageReference Include="System.Threading.Thread" Version="4.3.0" />
+    <PackageReference Include="System.Threading.ThreadPool" Version="4.3.0" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">
     <Reference Include="System" />
-    <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.IO.Compression" />
-    <Reference Include="System.IO.Compression.FileSystem" />
-    <Reference Include="System.Security" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="WindowsBase" />
+    <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="Composition\INamedExport.cs" />
-    <Compile Include="Composition\NamedExportLocator.cs" />
-    <Compile Include="Disposables\DisposableBag.cs" />
-    <Compile Include="Enums\YesNo.cs" />
-    <Compile Include="Extensions\ArraySegmentExtensions.cs" />
-    <Compile Include="Extensions\ClipboardExtensions.cs" />
-    <Compile Include="Exceptions\CriticalException.cs" />
-    <Compile Include="Extensions\MatcherExtensions.cs" />
-    <Compile Include="Extensions\MathExtensions.cs" />
-    <Compile Include="Extensions\ReflectionExtensions.cs" />
-    <Compile Include="Extensions\SettingsExtensions.cs" />
-    <Compile Include="Extensions\StreamExtensions.cs" />
-    <Compile Include="Extensions\TaskCompletionSourceExtensions.cs" />
-    <Compile Include="IO\IUserProfileNamedPipeFactory.cs" />
-    <Compile Include="IO\KnownFolderGuids.cs" />
-    <Compile Include="Json\Json.cs" />
-    <Compile Include="Logging\ILoggingPermissions.cs" />
-    <Compile Include="Logging\Implementation\NullLogWriter.cs" />
-    <Compile Include="Logging\Implementation\EventLogLogger.cs" />
-    <Compile Include="Logging\Implementation\EventLogLoggerProvider.cs" />
-    <Compile Include="Logging\LogExtensions.cs" />
-    <Compile Include="Logging\Logger.cs" />
-    <Compile Include="Logging\Implementation\FileLogWriter.cs" />
-    <Compile Include="Logging\IActionLog.cs" />
-    <Compile Include="Logging\IActionLogWriter.cs" />
-    <Compile Include="Logging\Implementation\LoggingPermissions.cs" />
-    <Compile Include="Logging\LogVerbosity.cs" />
-    <Compile Include="Logging\MessageCategory.cs" />
-    <Compile Include="NativeMethods.cs" />
-    <Compile Include="Net\FileDownloader.cs" />
-    <Compile Include="Net\IFileDownloader.cs" />
-    <Compile Include="Net\Network.cs" />
-    <Compile Include="Net\WebSocketHelper.cs" />
-    <Compile Include="OS\ErrorCodeConverter.cs" />
-    <Compile Include="OS\IUserCredentials.cs" />
-    <Compile Include="OS\IUserProfileCreatorResult.cs" />
-    <Compile Include="OS\IUserProfileServices.cs" />
-    <Compile Include="OS\ProcessWaitHandle.cs" />
-    <Compile Include="OS\SafeThreadHandle.cs" />
-    <Compile Include="OS\Win32EnvironmentBlock.cs" />
-    <Compile Include="OS\Win32NativeEnvironmentBlock.cs" />
-    <Compile Include="OS\Win32Process.cs" />
-    <Compile Include="OS\Win32MessageBox.cs" />
-    <Compile Include="OS\Win32ProcessExitEventArgs.cs" />
-    <Compile Include="Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Security\CredentialHandle.cs" />
-    <Compile Include="Security\Credentials.cs" />
-    <Compile Include="Security\ISecurityService.cs" />
-    <Compile Include="Security\SecurityService.cs" />
-    <Compile Include="Security\SecurityUtilities.cs" />
-    <Compile Include="Services\ICoreServices.cs" />
-    <Compile Include="Services\CoreServices.cs" />
-    <Compile Include="Services\IServiceContainer.cs" />
-    <Compile Include="Services\IServiceFactory.cs" />
-    <Compile Include="Services\IServiceManager.cs" />
-    <Compile Include="Services\PropertyDictionary.cs" />
-    <Compile Include="Services\ServiceManager.cs" />
-    <Compile Include="Services\ServiceContainerEventArgs.cs" />
-    <Compile Include="Shell\CoreShellExtensions.cs" />
-    <Compile Include="Shell\IApplicationConstants.cs" />
-    <Compile Include="Shell\IIdleTimeSource.cs" />
-    <Compile Include="Shell\UIColorTheme.cs" />
-    <Compile Include="Shell\IFileDialog.cs" />
-    <Compile Include="Shell\IProgressDialog.cs" />
-    <Compile Include="Shell\MessageType.cs" />
-    <Compile Include="Shell\ProgressDialogData.cs" />
-    <Compile Include="Events\DirtyEventSource.cs" />
-    <Compile Include="Tasks\CancellationTokenUtilities.cs" />
-    <Compile Include="Tasks\TaskCompletionSourceEx.cs" />
-    <Compile Include="Threading\AsyncManualResetEvent.cs" />
-    <Compile Include="Threading\AsyncReaderWriterLock.cs" />
-    <Compile Include="Threading\AsyncReaderWriterLock.ExclusiveReaderLock.cs" />
-    <Compile Include="Threading\AsyncReaderWriterLock.LockSource.cs" />
-    <Compile Include="Threading\AsyncReaderWriterLock.Token.cs" />
-    <Compile Include="Shell\ISettingsStorage.cs" />
-    <Compile Include="Threading\BackgroundThreadAwaitable.cs" />
-    <Compile Include="Threading\BackgroundThreadAwaiter.cs" />
-    <Compile Include="Collections\ListExtensions.cs" />
-    <Compile Include="Diagnostics\RestartManager.cs" />
-    <Compile Include="Disposables\DisposeToken.cs" />
-    <Compile Include="Extensions\CharExtensions.cs" />
-    <Compile Include="Extensions\IOExtensions.cs" />
-    <Compile Include="IO\FileVersionInfo.cs" />
-    <Compile Include="IO\IFileVersionInfo.cs" />
-    <Compile Include="OS\IProcessServices.cs" />
-    <Compile Include="OS\ProcessServices.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Extensions\AssemblyExtensions.cs" />
-    <Compile Include="Collections\DictionaryExtensions.cs" />
-    <Compile Include="Diagnostics\Check.cs" />
-    <Compile Include="Disposables\CountdownDisposable.cs" />
-    <Compile Include="Disposables\DefaultDisposable.cs" />
-    <Compile Include="Disposables\Disposable.cs" />
-    <Compile Include="Enums\YesNoAsk.cs" />
-    <Compile Include="Extensions\CompositionBatchExtensions.cs" />
-    <Compile Include="Extensions\CompositionBatchExtensions.FactoryReflectionComposablePart.cs" />
-    <Compile Include="IO\DirectoryInfoProxy.cs" />
-    <Compile Include="IO\FileInfoProxy.cs" />
-    <Compile Include="IO\FileSystem.cs" />
-    <Compile Include="IO\FileSystemWatcherProxy.cs" />
-    <Compile Include="IO\IDirectoryInfo.cs" />
-    <Compile Include="IO\IFileInfo.cs" />
-    <Compile Include="Collections\EnumerableExtensions.cs" />
-    <Compile Include="Extensions\ExceptionExtensions.cs" />
-    <Compile Include="IO\IFileSystem.cs" />
-    <Compile Include="IO\IFileSystemInfo.cs" />
-    <Compile Include="IO\IFileSystemWatcher.cs" />
-    <Compile Include="Lazy.cs" />
-    <Compile Include="Shell\CoreShell.cs" />
-    <Compile Include="Shell\ICompositionCatalog.cs" />
-    <Compile Include="Shell\ICoreShell.cs" />
-    <Compile Include="Shell\IIdleTimeService.cs" />
-    <Compile Include="Shell\MessageButtons.cs" />
-    <Compile Include="Extensions\StringExtensions.cs" />
-    <Compile Include="Extensions\StringBuilderExtensions.cs" />
-    <Compile Include="Extensions\TaskExtensions.cs" />
-    <Compile Include="OS\IRegistry.cs" />
-    <Compile Include="OS\IRegistryKey.cs" />
-    <Compile Include="OS\RegistryImpl.cs" />
-    <Compile Include="OS\RegistryKeyImpl.cs" />
-    <Compile Include="Tasks\EventTaskSource.cs" />
-    <Compile Include="TaskUtilities.cs" />
-    <Compile Include="Telemetry\ITelemetryRecorder.cs" />
-    <Compile Include="Telemetry\ITelemetryService.cs" />
-    <Compile Include="Telemetry\PropertyNames.cs" />
-    <Compile Include="Telemetry\TelemetryArea.cs" />
-    <Compile Include="Telemetry\TelemetryServiceBase.cs" />
-    <Compile Include="Threading\BinaryAsyncLock.cs" />
-    <Compile Include="Threading\AsyncReaderWriterLock.Queue.cs" />
-    <Compile Include="Threading\DelayedAsyncAction.cs" />
-    <Compile Include="Threading\IAsyncReaderWriterLockToken.cs" />
-    <Compile Include="Threading\MainThreadExtensions.cs" />
-    <Compile Include="Threading\IMainThread.cs" />
-    <Compile Include="Threading\IReentrancyTokenFactory.cs" />
-    <Compile Include="Tasks\ITaskService.cs" />
-    <Compile Include="Threading\MainThreadAwaitable.cs" />
-    <Compile Include="Threading\MainThreadAwaiter.cs" />
-    <Compile Include="Threading\ReentrancyToken.cs" />
-    <Compile Include="UI\Commands\CommandStatus.cs" />
-    <Compile Include="UI\Commands\IAsyncCommand.cs" />
-    <Compile Include="UI\Commands\IAsyncCommandRange.cs" />
-    <Compile Include="Versions\Toolset.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="project.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <FilesToSign Include="$(OutputPath)\$(AssemblyName).dll">
-      <Authenticode>Microsoft</Authenticode>
-      <StrongName>StrongName</StrongName>
-    </FilesToSign>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Import Project="$(SourceDirectory)R.Build.Loc.targets" />
+  <Target Name="BuiltProjectOutputGroup" Condition=" '$(TargetFramework)' == 'net46' " />
+  <Target Name="BuiltProjectOutputGroupDependencies" Condition=" '$(TargetFramework)' == 'net46' " />
+  <Target Name="GetCopyToOutputDirectoryItems" Condition=" '$(TargetFramework)' == 'net46' " />
+  <Target Name="SatelliteDllsProjectOutputGroup" Condition=" '$(TargetFramework)' == 'net46' " />
+  <Target Name="DebugSymbolsProjectOutputGroup" Condition=" '$(TargetFramework)' == 'net46' " />
 </Project>

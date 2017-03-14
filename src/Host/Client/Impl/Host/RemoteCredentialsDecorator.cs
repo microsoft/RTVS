@@ -41,8 +41,7 @@ namespace Microsoft.R.Host.Client.Host {
             await _mainThread.SwitchToAsync(cancellationToken);
 
             try {
-                var credentials = _credentials ?? _securityService.GetUserCredentials(_authority, _workspaceName, cancellationToken);
-                credentials.Save(_authority);
+                var credentials = _credentials ?? _securityService.GetUserCredentials(_authority, _workspaceName);
                 _credentials = credentials;
             } catch (Exception) {
                 token.Dispose();
@@ -56,7 +55,7 @@ namespace Microsoft.R.Host.Client.Host {
 
         public void InvalidateCredentials() {
             _credentials = null;
-            SecurityUtilities.DeleteCredentials(_authority);
+            _securityService.DeleteCredentials(_authority);
         }
     }
 }

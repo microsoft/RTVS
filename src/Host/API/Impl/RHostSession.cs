@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Common.Core;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.IO;
@@ -21,6 +20,7 @@ using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Interpreters;
+using Microsoft.Windows.Core.OS;
 using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client {
@@ -75,7 +75,7 @@ namespace Microsoft.R.Host.Client {
                 url = engine.InstallPath;
             }
 
-            var ci = BrokerConnectionInfo.Create(name, url);
+            var ci = BrokerConnectionInfo.Create(null, name, url);
             var bc = new LocalBrokerClient(name, ci, new CoreServices(), new NullConsole());
             return new RHostSession(new RSession(0, name, bc, new NullLock(), () => { }));
         }
@@ -252,7 +252,6 @@ namespace Microsoft.R.Host.Client {
             public ILoggingPermissions LoggingPermissions => null;
             public IMainThread MainThread => null;
             public IProcessServices Process => new ProcessServices();
-            public IRegistry Registry => new RegistryImpl();
             public ISecurityService Security => null;
             public ITaskService Tasks => null;
             public ITelemetryService Telemetry => null;

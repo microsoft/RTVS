@@ -24,9 +24,6 @@ using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Test.FakeFactories;
 using NSubstitute;
 using Xunit;
-#if VS14
-using Microsoft.VisualStudio.ProjectSystem.Designers;
-#endif
 using static Microsoft.UnitTests.Core.Threading.UIThreadTools;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Repl {

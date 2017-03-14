@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Include>
-  <DirectoryRef Id="MSBuildTargetsInstallFolder">
-    <Component Id="MSBuildTargets" Guid="{EE1B9D9E-53AB-46E4-8650-28CC874D388D}">
-      <File Source="$(var.MSBuildTargetsDir)\Microsoft.R.targets" />
-    </Component>
-  </DirectoryRef>
-</Include>

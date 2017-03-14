@@ -10,12 +10,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
-#if VS14
-using Microsoft.VisualStudio.ProjectSystem.Utilities;
-#endif
-#if VS15
 using Microsoft.VisualStudio.ProjectSystem.Properties;
-#endif
 
 namespace Microsoft.VisualStudio.R.Package {
     [Export(typeof(ProjectProperties))]

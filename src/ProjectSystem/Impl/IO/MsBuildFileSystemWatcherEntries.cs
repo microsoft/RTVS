@@ -6,9 +6,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.Common.Core;
-#if VS14
-using Microsoft.VisualStudio.ProjectSystem.Utilities;
-#endif
 using static Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO.MsBuildFileSystemWatcherEntries.EntryState;
 using static Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO.MsBuildFileSystemWatcherEntries.EntryType;
 
