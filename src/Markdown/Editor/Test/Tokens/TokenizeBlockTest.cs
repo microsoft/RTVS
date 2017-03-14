@@ -40,14 +40,18 @@ block
 @"```{r}
 #comment
 ```
-")]
+", 21)]
+        [InlineData(
+@"```{r}
+
+", 10)]
         [Category.Md.Tokenizer]
-        public void CodeBlock02(string text) {
+        public void CodeBlock02(string text, int length) {
             var tokens = Tokenize(text, new MdTokenizer());
             tokens.Should().HaveCount(1);
             tokens[0].Should().HaveType(MarkdownTokenType.Code);
             tokens[0].Should().BeOfType(typeof(MarkdownCodeToken));
-            tokens[0].Length.Should().Be(21);
+            tokens[0].Length.Should().Be(length);
         }
 
         [CompositeTest]
@@ -68,13 +72,17 @@ block
         }
 
         [CompositeTest]
-        [InlineData(@"```block```")]
-        [InlineData(@"```block")]
-        [InlineData(@"```block` ```")]
+        [InlineData("```block```", 11)]
+        [InlineData("```block", 8)]
+        [InlineData("```block\n", 9)]
+        [InlineData("```block\r", 9)]
+        [InlineData("```block\r\n", 10)]
+        [InlineData("```block` ```", 13)]
         [Category.Md.Tokenizer]
-        public void CodeBlock04(string text) {
+        public void CodeBlock04(string text, int length) {
             var tokens = Tokenize(text, new MdTokenizer());
             tokens.Should().HaveCount(1);
+            tokens[0].Length.Should().Be(length);
 
             var mdct = tokens[0] as MarkdownCodeToken;
             mdct.Should().BeNull();
