@@ -22,14 +22,22 @@ namespace Microsoft.R.Editor.Completion.Providers {
     /// Provides list of files and folder in the current directory
     /// </summary>
     internal sealed class FilesCompletionProvider : IRCompletionListProvider {
+        enum Mode {
+            WorkingDirectory,
+            UserDirectory,
+            Other
+        }
+
         private readonly IImagesProvider _imagesProvider;
         private readonly IRInteractiveWorkflow _workflow;
         private readonly IGlyphService _glyphService;
 
-        private Task<string> _userDirectoryFetchingTask;
-        private string _directory;
-        private string _cachedUserDirectory;
-        private bool _forceR; // for tests
+        private readonly string _enteredDirectory;
+        private readonly bool _forceR; // for tests
+
+        private readonly Task<string> _task;
+        private Mode _mode = Mode.Other;
+        private volatile string _rootDirectory;
 
         public FilesCompletionProvider(string directoryCandidate, IRInteractiveWorkflow workflow, IImagesProvider imagesProvider, IGlyphService glyphService, bool forceR = false) {
             if (directoryCandidate == null) {
@@ -41,35 +49,46 @@ namespace Microsoft.R.Editor.Completion.Providers {
             _glyphService = glyphService;
             _forceR = forceR;
 
-            _directory = ExtractDirectory(directoryCandidate);
+            _enteredDirectory = ExtractDirectory(directoryCandidate);
+            _task = GetRootDirectoryAsync(_enteredDirectory);
+        }
 
-            if (_directory.Length == 0 || _directory.StartsWithOrdinal("~\\")) {
-                _directory = _directory.Length > 1 ? _directory.Substring(2) : _directory;
-                _userDirectoryFetchingTask = _workflow.RSession.GetRUserDirectoryAsync();
+        private Task<string> GetRootDirectoryAsync(string userProvidedDirectory) {
+            if (userProvidedDirectory.Length == 0 || userProvidedDirectory.StartsWithOrdinal(".")) {
+                _mode = Mode.WorkingDirectory;
+                return Task.Run(async () => _rootDirectory = await _workflow.RSession.GetWorkingDirectoryAsync());
+            } else if (_enteredDirectory.StartsWithOrdinal("~\\")) {
+                _mode = Mode.UserDirectory;
+                return Task.Run(async () => _rootDirectory = await _workflow.RSession.GetRUserDirectoryAsync());
             }
+            return Task.FromResult(string.Empty);
         }
 
         #region IRCompletionListProvider
         public bool AllowSorting { get; } = false;
 
         public IReadOnlyCollection<RCompletion> GetEntries(RCompletionContext context) {
-            List<RCompletion> completions = new List<RCompletion>();
-            string directory = null;
-            string userDirectory = null;
-
-            if (_userDirectoryFetchingTask != null) {
-                userDirectory = _userDirectoryFetchingTask.WaitTimeout(500);
-                userDirectory = userDirectory ?? _cachedUserDirectory;
-            }
+            var completions = new List<RCompletion>();
+            string directory = _enteredDirectory;
 
             try {
-                if (!string.IsNullOrEmpty(userDirectory)) {
-                    _cachedUserDirectory = userDirectory;
-                    directory = Path.Combine(userDirectory, _directory);
-                } else {
-                    directory = _directory;
-                }
+                // If we are running async directory fetching, wait a bit
+                _task?.Wait(500);
+            } catch (OperationCanceledException) { }
 
+            try {
+                // If directory is set, then the async task did complete
+                if (!string.IsNullOrEmpty(_rootDirectory)) {
+                    if (_mode == Mode.WorkingDirectory) {
+                        directory = Path.Combine(_rootDirectory, _enteredDirectory);
+                    } else if (_mode == Mode.UserDirectory) {
+                        var subDirectory = _enteredDirectory.Length > 1 ? _enteredDirectory.Substring(2) : _enteredDirectory;
+                        directory = Path.Combine(_rootDirectory, subDirectory);
+                    }
+                }
+            } catch (ArgumentException) { }
+
+            try {
                 if (!string.IsNullOrEmpty(directory)) {
                     IEnumerable<RCompletion> entries = null;
 
@@ -81,7 +100,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
                     }
                     completions.AddRange(entries);
                 }
-            } catch (IOException) { } catch (UnauthorizedAccessException) { }
+            } catch (IOException) { } catch (UnauthorizedAccessException) { } catch (ArgumentException) { }
 
             return completions;
         }
@@ -111,16 +130,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
             });
         }
 
-        private IEnumerable<RCompletion> GetLocalDirectoryItems(string userDirectory) {
-            string directory;
-
-            if (!string.IsNullOrEmpty(userDirectory)) {
-                _cachedUserDirectory = userDirectory;
-                directory = Path.Combine(userDirectory, _directory);
-            } else {
-                directory = Path.Combine(RToolsSettings.Current.WorkingDirectory, _directory);
-            }
-
+        private IEnumerable<RCompletion> GetLocalDirectoryItems(string directory) {
             if (Directory.Exists(directory)) {
                 var folderGlyph = _glyphService.GetGlyphThreadSafe(StandardGlyphGroup.GlyphClosedFolder, StandardGlyphItem.GlyphItemPublic);
 

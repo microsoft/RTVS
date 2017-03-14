@@ -146,9 +146,7 @@ namespace Microsoft.Languages.Editor.Projection {
             }
             // Add the final section after the last span
             span = Span.FromBounds(primaryIndex, diskSnapshot.Length);
-            if (!span.IsEmpty) {
-                spans.Add(new CustomTrackingSpan(diskSnapshot, span, PointTrackingMode.Positive, PointTrackingMode.Positive)); // Markdown
-            }
+            spans.Add(new CustomTrackingSpan(diskSnapshot, span, PointTrackingMode.Positive, PointTrackingMode.Positive)); // Markdown
             return spans;
         }
 
