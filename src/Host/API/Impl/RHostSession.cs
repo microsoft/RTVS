@@ -20,7 +20,6 @@ using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Interpreters;
-using Microsoft.Windows.Core.OS;
 using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client {

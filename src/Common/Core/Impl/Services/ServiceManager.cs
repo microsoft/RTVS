@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Microsoft.Common.Core.Diagnostics;
 
 namespace Microsoft.Common.Core.Services {
@@ -91,7 +92,7 @@ namespace Microsoft.Common.Core.Services {
                 }
 
                 foreach (var key in _deferredServices.Keys) {
-                    if (type.IsAssignableFrom(key)) {
+                    if (type.GetTypeInfo().IsAssignableFrom(key)) {
                         return CreateService(key, _deferredServices[key]) as T;
                     }
                 }

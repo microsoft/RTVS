@@ -87,7 +87,7 @@
       <Project>{8445A4FB-4443-432C-94E8-1408559B7F58}</Project>
       <Name>Microsoft.R.Interpreters</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Windows\Core\Impl\Microsoft.Windows.Core.csproj">
+    <ProjectReference Include="..\..\..\Windows\Core\Impl\Microsoft.Rtvs.Core.Windows.csproj">
       <Project>{01e3d8c2-9c24-492b-b13b-c6d7068b6bf8}</Project>
       <Name>Microsoft.Windows.Core</Name>
     </ProjectReference>

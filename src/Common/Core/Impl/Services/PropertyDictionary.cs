@@ -5,7 +5,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using Microsoft.Common.Core.Diagnostics;
 
 namespace Microsoft.Common.Core.Services {
@@ -14,7 +13,7 @@ namespace Microsoft.Common.Core.Services {
     /// </summary>
     /// <remarks>This collection is synchronized in order to allow access by multiple threads.</remarks>
     public sealed class PropertyDictionary {
-        private readonly Lazy<HybridDictionary> _properties = Lazy.Create(() => new HybridDictionary());
+        private readonly Lazy<Dictionary<object, object>> _properties = Lazy.Create(() => new Dictionary<object, object>());
         private readonly object _lock = new object();
 
         /// <summary>
@@ -55,7 +54,7 @@ namespace Microsoft.Common.Core.Services {
             Check.ArgumentNull(nameof(creator), creator);
 
             lock (_lock) {
-                if (_properties.Value.Contains(key)) {
+                if (_properties.Value.ContainsKey(key)) {
                     return (T)_properties.Value[key];
                 }
 
@@ -67,7 +66,7 @@ namespace Microsoft.Common.Core.Services {
                 // This is bad since thecreator function is getting called twice. Our best option 
                 // is to discard the result created above and return the one that is already 
                 // in the property bag so, at least, we are being consistent.
-                if (_properties.Value.Contains(key)) {
+                if (_properties.Value.ContainsKey(key)) {
                     return (T)_properties.Value[key];
                 }
 
@@ -117,7 +116,7 @@ namespace Microsoft.Common.Core.Services {
 
                 // If item is null, it could mean the dictionary has the key but it is just null.
                 // Check Contains() to figure out whether it is a missing key or a null value.
-                if ((item == null) && !_properties.Value.Contains(key)) {
+                if ((item == null) && !_properties.Value.ContainsKey(key)) {
                     throw new KeyNotFoundException(nameof(key));
                 }
                 return item;
@@ -140,7 +139,7 @@ namespace Microsoft.Common.Core.Services {
 
                     //If item is null, it could mean the dictionary has the key but it is just null.
                     //Check Contains() to figure out whether it is a missing key or a null value.
-                    if ((item != null) || _properties.Value.Contains(key)) {
+                    if ((item != null) || _properties.Value.ContainsKey(key)) {
                         property = (T)item;
                         return true;
                     }
@@ -158,7 +157,7 @@ namespace Microsoft.Common.Core.Services {
         /// <returns><c>true</c> if the property exists, otherwise <c>false</c>.</returns>
         public bool ContainsProperty(object key) {
             lock (_lock) {
-                return _properties.IsValueCreated && _properties.Value.Contains(key);
+                return _properties.IsValueCreated && _properties.Value.ContainsKey(key);
             }
         }
 
@@ -181,7 +180,7 @@ namespace Microsoft.Common.Core.Services {
                 }
                 var propertyList = new List<KeyValuePair<object, object>>();
                 lock (_lock) {
-                    foreach (DictionaryEntry property in _properties.Value) {
+                    foreach (var property in _properties.Value) {
                         propertyList.Add(new KeyValuePair<object, object>(property.Key, property.Value));
                     }
                 }

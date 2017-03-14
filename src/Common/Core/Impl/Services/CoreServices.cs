@@ -26,7 +26,7 @@ namespace Microsoft.Common.Core.Services {
             Security = security;
             Tasks = tasks;
 
-            Process = new ProcessServices();
+            Process = processServices;
             FileSystem = new FileSystem();
             MainThread = mainThread;
 

@@ -5,7 +5,6 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.Common.Core.Services {
-    [ExcludeFromCodeCoverage]
     public class ServiceContainerEventArgs : EventArgs {
         public Type ServiceType { get; }
 

@@ -175,7 +175,7 @@ namespace Microsoft.R.Host.Client.Host {
             var process = _services.Process.Start(psi);
             process.WaitForExit(250);
             if (process.HasExited && process.ExitCode < 0) {
-                var message = _services.ProcessServices.MessageFromExitCode(process.ExitCode);
+                var message = _services.Process.MessageFromExitCode(process.ExitCode);
                 if (!string.IsNullOrEmpty(message)) {
                     throw new RHostDisconnectedException(Resources.Error_UnableToStartBrokerException.FormatInvariant(Name, message), new Win32Exception(message));
                 }
