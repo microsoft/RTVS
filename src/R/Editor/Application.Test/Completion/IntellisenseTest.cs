@@ -528,18 +528,30 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                 await ExecuteRCode(_editorHost.HostScript.Session,
 @"
 d <- list(A = c(1:10), B = c(1:10))
-e <- list(A=d, B=d)
+e <- list(D=d, E=d)
 ");
                 PrimeIntellisenseProviders(script);
                 script.DoIdle(500);
 
-                script.Type("e$A$");
+                script.Type("e$");
 
                 var session = script.GetCompletionSession();
                 session.Should().NotBeNull();
                 script.DoIdle(1000);
 
                 var comps = session.SelectedCompletionSet.Completions;
+                comps.Should().HaveCount(2).And
+                    .Contain(x => x.DisplayText == "D").And
+                    .Contain(x => x.DisplayText == "E");
+                script.DoIdle(100);
+
+                script.Type("D$");
+
+                session = script.GetCompletionSession();
+                session.Should().NotBeNull();
+                script.DoIdle(1000);
+
+                comps = session.SelectedCompletionSet.Completions;
                 comps.Should().HaveCount(2).And
                     .Contain(x => x.DisplayText == "A").And
                     .Contain(x => x.DisplayText == "B");

@@ -85,16 +85,17 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 }
 
                 // May be a package object line mtcars$
-                variableName = TrimToFirstSelector(variableName);
+                var rootVariableName = TrimToFirstSelector(variableName);
+                var memberName = TrimToLastSelector(variableName);
                 var session = Workflow.RSession;
 
                 IReadOnlyList<IREvaluationResultInfo> infoList = null;
                 Task.Run(async () => {
                     try {
-                        var exists = await session.EvaluateAsync<bool>(Invariant($"exists('{variableName}')"), REvaluationKind.Normal);
+                        var exists = await session.EvaluateAsync<bool>(Invariant($"exists('{rootVariableName}')"), REvaluationKind.Normal);
                         if (exists) {
                             infoList = await session.DescribeChildrenAsync(REnvironments.GlobalEnv,
-                                           variableName, HasChildrenProperty | AccessorKindProperty,
+                                           memberName, HasChildrenProperty | AccessorKindProperty,
                                            null, _maxResults);
                         }
                     } catch (Exception) { }
@@ -117,6 +118,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         private static string TrimToFirstSelector(string name) {
             var index = name.IndexOfAny(_selectors);
+            return index >= 0 ? name.Substring(0, index) : name;
+        }
+
+        private static string TrimToLastSelector(string name) {
+            var index = name.LastIndexOfAny(_selectors);
             return index >= 0 ? name.Substring(0, index) : name;
         }
 
