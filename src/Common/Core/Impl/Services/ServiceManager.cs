@@ -32,16 +32,16 @@ namespace Microsoft.Common.Core.Services {
         /// </summary>
         /// <typeparam name="T">Service type</typeparam>
         /// <param name="service">Service instance</param>
-        public virtual IServiceContainer AddService<T>(T service) where T : class {
+        public virtual IServiceManager AddService<T>(T service) where T : class {
             var type = typeof(T);
             lock (_lock) {
                 Check.ArgumentNull(nameof(service), service);
                 Check.InvalidOperation(() => _services.ContainsKey(type));
 
                 _services[type] = service;
-                ServiceAdded?.Invoke(this, new ServiceContainerEventArgs(type));
-                return this;
             }
+            ServiceAdded?.Invoke(this, new ServiceContainerEventArgs(type));
+            return this;
         }
 
         /// <summary>
@@ -50,16 +50,17 @@ namespace Microsoft.Common.Core.Services {
         /// <param name="type">Service type</param>
         /// <param name="factory">Optional creator function. If not provided, reflection with default constructor will be used.</param>
         /// <param name="parameters">Factory parameters</param>
-        public virtual IServiceContainer AddService(Type type, IServiceFactory factory = null, params object[] parameters) {
+        public virtual IServiceManager AddService(Type type, IServiceFactory factory = null, params object[] parameters) {
             Check.ArgumentNull(nameof(type), type);
-            lock (_lock) {
-                Check.InvalidOperation(() => _services.ContainsKey(type));
-                Check.InvalidOperation(() => _deferredServices.ContainsKey(type));
+            Check.InvalidOperation(() => _services.ContainsKey(type));
+            Check.InvalidOperation(() => _deferredServices.ContainsKey(type));
 
+            lock (_lock) {
                 _deferredServices[type] = new ServiceFactory { Factory = factory, Parameters = parameters };
-                ServiceAdded?.Invoke(this, new ServiceContainerEventArgs(type));
-                return this;
             }
+
+            ServiceAdded?.Invoke(this, new ServiceContainerEventArgs(type));
+            return this;
         }
 
         /// <summary>
@@ -109,10 +110,13 @@ namespace Microsoft.Common.Core.Services {
         }
 
         public virtual void RemoveService<T>() where T : class {
+            bool fireEvent = false;
             lock (_lock) {
-                if (_services.Remove(typeof(T)) || _deferredServices.Remove(typeof(T))) {
-                    ServiceRemoved?.Invoke(this, new ServiceContainerEventArgs(typeof(T)));
-                }
+                fireEvent = _services.Remove(typeof(T)) || _deferredServices.Remove(typeof(T));
+            }
+
+            if(fireEvent) {
+                ServiceRemoved?.Invoke(this, new ServiceContainerEventArgs(typeof(T)));
             }
         }
 

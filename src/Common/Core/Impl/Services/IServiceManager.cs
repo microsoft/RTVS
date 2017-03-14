@@ -10,7 +10,7 @@ namespace Microsoft.Common.Core.Services {
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="service">Service instance</param>
-        IServiceContainer AddService<T>(T service) where T : class;
+        IServiceManager AddService<T>(T service) where T : class;
 
         /// <summary>
         /// Adds on-demand created service
@@ -18,7 +18,7 @@ namespace Microsoft.Common.Core.Services {
         /// <param name="type">Service type</param>
         /// <param name="factory">Optional service factory. If not provided, reflection with default constructor will be used.</param>
         /// <param name="factoryParameters">Optional arguments to the factory call.</param>
-        IServiceContainer AddService(Type type, IServiceFactory factory = null, params object[] factoryParameters);
+        IServiceManager AddService(Type type, IServiceFactory factory = null, params object[] factoryParameters);
 
         /// <summary>
         /// Removes service from container
