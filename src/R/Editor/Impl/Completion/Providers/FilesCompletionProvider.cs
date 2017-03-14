@@ -36,7 +36,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
         private readonly bool _forceR; // for tests
 
         private readonly Task<string> _task;
-        private readonly Mode _mode = Mode.Other;
+        private Mode _mode = Mode.Other;
         private volatile string _rootDirectory;
 
         public FilesCompletionProvider(string directoryCandidate, IRInteractiveWorkflow workflow, IImagesProvider imagesProvider, IGlyphService glyphService, bool forceR = false) {
@@ -50,14 +50,18 @@ namespace Microsoft.R.Editor.Completion.Providers {
             _forceR = forceR;
 
             _enteredDirectory = ExtractDirectory(directoryCandidate);
-            if (_enteredDirectory.Length == 0 || _enteredDirectory.StartsWithOrdinal(".")) {
+            _task = GetRootDirectoryAsync(_enteredDirectory);
+        }
+
+        private Task<string> GetRootDirectoryAsync(string userProvidedDirectory) {
+            if (userProvidedDirectory.Length == 0 || userProvidedDirectory.StartsWithOrdinal(".")) {
                 _mode = Mode.WorkingDirectory;
-                _task = Task.Run(async () => _rootDirectory = await _workflow.RSession.GetWorkingDirectoryAsync());
+                return Task.Run(async () => _rootDirectory = await _workflow.RSession.GetWorkingDirectoryAsync());
             } else if (_enteredDirectory.StartsWithOrdinal("~\\")) {
                 _mode = Mode.UserDirectory;
-                _task = Task.Run(async () => _rootDirectory = await _workflow.RSession.GetRUserDirectoryAsync());
+                return Task.Run(async () => _rootDirectory = await _workflow.RSession.GetRUserDirectoryAsync());
             }
-            _task?.DoNotWait();
+            return Task.FromResult(string.Empty);
         }
 
         #region IRCompletionListProvider
