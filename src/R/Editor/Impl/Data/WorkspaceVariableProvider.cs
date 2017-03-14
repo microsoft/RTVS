@@ -92,11 +92,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 IReadOnlyList<IREvaluationResultInfo> infoList = null;
                 Task.Run(async () => {
                     try {
-                        var exists = await session.EvaluateAsync<bool>(Invariant($"exists('{rootVariableName}')"), REvaluationKind.Normal);
-                        if (exists) {
+                        var result = await session.TryEvaluateAndDescribeAsync(memberName, REvaluationResultProperties.None, null);
+                        if (!(result is IRErrorInfo)) {
                             infoList = await session.DescribeChildrenAsync(REnvironments.GlobalEnv,
-                                           memberName, HasChildrenProperty | AccessorKindProperty,
-                                           null, _maxResults);
+                                memberName, HasChildrenProperty | AccessorKindProperty, null, _maxResults);
                         }
                     } catch (Exception) { }
                 }).Wait(_maxWaitTime);
