@@ -15,6 +15,7 @@ using Microsoft.R.Editor.Settings;
 using Microsoft.R.Editor.Snippets;
 using Microsoft.R.Editor.Test.Utility;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Support.Settings;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
@@ -188,6 +189,41 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
 
                 var list = session.SelectedCompletionSet.Completions.ToList();
                 var item = list.FirstOrDefault(x => x.DisplayText == "_rtvs_test_");
+                item.Should().NotBeNull();
+
+                if (Directory.Exists(testFolder)) {
+                    Directory.Delete(testFolder);
+                }
+            }
+        }
+
+        [Test]
+        public async Task R_CompletionFilesWorkingDirectory() {
+            using (var script = await _editorHost.StartScript(ExportProvider, RContentTypeDefinition.ContentType, Workflow.RSessions)) {
+                var myDocs = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                var folder = "_rtvs_test2_";
+
+                var testFolder = Path.Combine(myDocs, folder);
+                if (!Directory.Exists(testFolder)) {
+                    Directory.CreateDirectory(testFolder);
+                }
+
+                await _editorHost.HostScript.Session.ExecuteAsync(Invariant($"setwd('{myDocs.ToRPath()}')"));
+                var wd = await _editorHost.HostScript.Session.GetWorkingDirectoryAsync();
+                wd.Should().Be(myDocs);
+
+                script.DoIdle(100);
+                script.Type("x <- \"./");
+                script.DoIdle(1000);
+                script.Type("{TAB}");
+                script.DoIdle(500);
+
+                var session = script.GetCompletionSession();
+                session.Should().NotBeNull();
+                script.DoIdle(200);
+
+                var list = session.SelectedCompletionSet.Completions.ToList();
+                var item = list.FirstOrDefault(x => x.DisplayText == folder);
                 item.Should().NotBeNull();
 
                 if (Directory.Exists(testFolder)) {
