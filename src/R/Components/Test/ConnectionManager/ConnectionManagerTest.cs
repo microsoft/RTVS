@@ -7,8 +7,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Security;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Stubs.Shell;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -18,10 +16,6 @@ using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
-using NSubstitute;
-using NSubstitute.ExceptionExtensions;
-using NSubstitute.Extensions;
-using Xunit;
 
 namespace Microsoft.R.Components.Test.ConnectionManager {
     [ExcludeFromCodeCoverage]
