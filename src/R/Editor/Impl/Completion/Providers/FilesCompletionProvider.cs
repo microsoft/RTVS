@@ -114,7 +114,6 @@ namespace Microsoft.R.Editor.Completion.Providers {
 
                 try {
                     var folderGlyph = _glyphService.GetGlyphThreadSafe(StandardGlyphGroup.GlyphClosedFolder, StandardGlyphItem.GlyphItemPublic);
-                    var fileGlyph = _glyphService.GetGlyphThreadSafe(StandardGlyphGroup.GlyphClosedFolder, StandardGlyphItem.GlyphItemPublic);
 
                     var rPath = directory.ToRPath().ToRStringLiteral();
                     var files = await session.EvaluateAsync<JArray>(Invariant($"as.list(list.files(path = {rPath}))"), REvaluationKind.Normal);
