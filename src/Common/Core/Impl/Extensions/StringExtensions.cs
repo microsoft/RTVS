@@ -8,45 +8,19 @@ using System.Text;
 
 namespace Microsoft.Common.Core {
     public static class StringExtensions {
-        public static bool EqualsOrdinal(this string s, string other) {
-            return string.Equals(s, other, StringComparison.Ordinal);
-        }
-        public static bool EqualsIgnoreCase(this string s, string other) {
-            return string.Equals(s, other, StringComparison.OrdinalIgnoreCase);
-        }
-        public static bool StartsWithIgnoreCase(this string s, string prefix) {
-            return s.StartsWith(prefix, StringComparison.OrdinalIgnoreCase);
-        }
-        public static bool StartsWithOrdinal(this string s, string prefix) {
-            return s.StartsWith(prefix, StringComparison.Ordinal);
-        }
-        public static bool EndsWithIgnoreCase(this string s, string suffix) {
-            return s.EndsWith(suffix, StringComparison.OrdinalIgnoreCase);
-        }
-        public static bool EndsWithOrdinal(this string s, string suffix) {
-            return s.EndsWith(suffix, StringComparison.Ordinal);
-        }
-        public static bool EndsWith(this string s, char ch) {
-            return s.Length > 0 && s[s.Length-1] == ch;
-        }
-        public static int IndexOfIgnoreCase(this string s, string searchFor) {
-            return s.IndexOf(searchFor, StringComparison.OrdinalIgnoreCase);
-        }
-        public static int IndexOfIgnoreCase(this string s, string searchFor, int startIndex) {
-            return s.IndexOf(searchFor, startIndex, StringComparison.OrdinalIgnoreCase);
-        }
-        public static int IndexOfOrdinal(this string s, string searchFor) {
-            return s.IndexOf(searchFor, StringComparison.Ordinal);
-        }
-        public static int LastIndexOfIgnoreCase(this string s, string searchFor) {
-            return s.LastIndexOf(searchFor, StringComparison.OrdinalIgnoreCase);
-        }
-        public static int LastIndexOfIgnoreCase(this string s, string searchFor, int startIndex) {
-            return s.LastIndexOf(searchFor, startIndex, StringComparison.OrdinalIgnoreCase);
-        }
-        public static bool ContainsIgnoreCase(this string s, string prefix) {
-            return s.IndexOf(prefix, StringComparison.OrdinalIgnoreCase) >= 0;
-        }
+        public static bool EqualsOrdinal(this string s, string other)=> string.Equals(s, other, StringComparison.Ordinal);
+        public static bool EqualsIgnoreCase(this string s, string other)=> string.Equals(s, other, StringComparison.OrdinalIgnoreCase);
+        public static bool StartsWithIgnoreCase(this string s, string prefix)=> s.StartsWith(prefix, StringComparison.OrdinalIgnoreCase);
+        public static bool StartsWithOrdinal(this string s, string prefix)=> s.StartsWith(prefix, StringComparison.Ordinal);
+        public static bool EndsWithIgnoreCase(this string s, string suffix) => s.EndsWith(suffix, StringComparison.OrdinalIgnoreCase);
+        public static bool EndsWithOrdinal(this string s, string suffix) => s.EndsWith(suffix, StringComparison.Ordinal);
+        public static bool EndsWith(this string s, char ch) => s.Length > 0 && s[s.Length - 1] == ch;
+        public static int IndexOfIgnoreCase(this string s, string searchFor) => s.IndexOf(searchFor, StringComparison.OrdinalIgnoreCase);
+        public static int IndexOfIgnoreCase(this string s, string searchFor, int startIndex) => s.IndexOf(searchFor, startIndex, StringComparison.OrdinalIgnoreCase);
+        public static int IndexOfOrdinal(this string s, string searchFor) => s.IndexOf(searchFor, StringComparison.Ordinal);
+        public static int LastIndexOfIgnoreCase(this string s, string searchFor) => s.LastIndexOf(searchFor, StringComparison.OrdinalIgnoreCase);
+        public static int LastIndexOfIgnoreCase(this string s, string searchFor, int startIndex) => s.LastIndexOf(searchFor, startIndex, StringComparison.OrdinalIgnoreCase);
+        public static bool ContainsIgnoreCase(this string s, string prefix) => s.IndexOf(prefix, StringComparison.OrdinalIgnoreCase) >= 0;
 
         public static string TrimQuotes(this string s) {
             if (s.Length > 0) {

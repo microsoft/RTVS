@@ -7,25 +7,17 @@ using System.Linq;
 
 namespace Microsoft.Common.Core {
     public static class EnumerableExtensions {
-        public static List<T> AsList<T>(this IEnumerable<T> source) {
-            return source as List<T> ?? source.ToList();
-        }
-
-        public static T[] AsArray<T>(this IEnumerable<T> source) {
-            return source as T[] ?? source.ToArray();
-        }
+        public static List<T> AsList<T>(this IEnumerable<T> source) => source as List<T> ?? source.ToList();
+        public static T[] AsArray<T>(this IEnumerable<T> source) => source as T[] ?? source.ToArray();
 
         public static IEnumerable<T> Append<T>(this IEnumerable<T> source, T item) {
             foreach (T sourceItem in source) {
                 yield return sourceItem;
             }
-
             yield return item;
         }
 
-        public static IEnumerable<T> ExcludeDefault<T>(this IEnumerable<T> source) {
-            return source.Where(i => !Equals(i, default(T)));
-        }
+        public static IEnumerable<T> ExcludeDefault<T>(this IEnumerable<T> source)=> source.Where(i => !Equals(i, default(T)));
 
         public static void Split<T>(this IEnumerable<T> source, Func<T, bool> predicate, out IList<T> first, out IList<T> second) {
             first = new List<T>();

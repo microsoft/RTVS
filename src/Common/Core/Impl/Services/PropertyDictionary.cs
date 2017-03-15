@@ -51,7 +51,7 @@ namespace Microsoft.Common.Core.Services {
         /// <param name="factory">The delegate used to create the property (if needed).</param>
         /// <returns>The property that was requested.</returns>
         public T GetOrCreateSingletonProperty<T>(object key, Func<T> factory) where T : class {
-            Check.ArgumentNull(nameof(creator), creator);
+            Check.ArgumentNull(nameof(factory), factory);
 
             lock (_lock) {
                 object property;
