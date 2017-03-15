@@ -21,7 +21,7 @@ namespace Microsoft.VisualStudio.R.Packages.Markdown {
     internal sealed class MdPackage : BasePackage<MdLanguageService> {
 
         protected override void Initialize() {
-            VsAppShell.EnsureInitialized();
+            Vsshell.EnsureInitialized();
             base.Initialize();
         }
 

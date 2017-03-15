@@ -9,12 +9,12 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.R.Components.Sql;
 using Microsoft.R.Components.Sql.Publish;
 using Microsoft.VisualStudio.R.Package.Logging;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Telemetry;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -26,13 +26,13 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         private const string DacPacExtension = "dacpac";
 
         private readonly OutputWindowLogWriter _outputWindow;
-        private readonly IApplicationShell _appShell;
+        private readonly ICoreShell _shell;
         private readonly IProjectSystemServices _pss;
         private readonly IFileSystem _fs;
         private readonly IDacPackageServices _dacServices;
 
-        public SProcPublisher(IApplicationShell appShell, IProjectSystemServices pss, IFileSystem fs, IDacPackageServices dacServices) {
-            _appShell = appShell;
+        public SProcPublisher(ICoreShell shell, IProjectSystemServices pss, IFileSystem fs, IDacPackageServices dacServices) {
+            _shell = shell;
             _pss = pss;
             _fs = fs;
             _dacServices = dacServices;

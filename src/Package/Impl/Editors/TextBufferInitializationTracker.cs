@@ -35,7 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
             IVsTextLines textLines,
             Guid languageServiceId,
             List<TextBufferInitializationTracker> trackers) {
-            VsAppShell.Current.CompositionService.SatisfyImportsOnce(this);
+            Vsshell.Current.CompositionService.SatisfyImportsOnce(this);
 
             _documentName = documentName;
             _hierarchy = hierarchy;
@@ -58,7 +58,7 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
         }
 
         public int OnLoadCompleted(int fReload) {
-            var adapterService = VsAppShell.Current.ExportProvider.GetExport<IVsEditorAdaptersFactoryService>().Value;
+            var adapterService = Vsshell.Current.ExportProvider.GetExport<IVsEditorAdaptersFactoryService>().Value;
 
             // Set language service ID as early as possible, since it may change content type of the buffer,
             // e.g. in a weird scenario when someone does "Open With X Editor" on an Y file. Calling this
@@ -71,11 +71,11 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
             try {
                 var editorInstance = ServiceManager.GetService<IEditorInstance>(diskBuffer);
                 if (editorInstance == null) {
-                    var importComposer = new ContentTypeImportComposer<IEditorFactory>(VsAppShell.Current.CompositionService);
+                    var importComposer = new ContentTypeImportComposer<IEditorFactory>(Vsshell.Current.CompositionService);
                     var instancefactory = importComposer.GetImport(diskBuffer.ContentType.TypeName);
                     Debug.Assert(instancefactory != null);
 
-                    var documentFactoryImportComposer = new ContentTypeImportComposer<IVsEditorDocumentFactory>(VsAppShell.Current.CompositionService);
+                    var documentFactoryImportComposer = new ContentTypeImportComposer<IVsEditorDocumentFactory>(Vsshell.Current.CompositionService);
                     var documentFactory = documentFactoryImportComposer.GetImport(diskBuffer.ContentType.TypeName);
                     Debug.Assert(documentFactory != null);
 

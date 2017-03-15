@@ -10,7 +10,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Utility {
     public static class IdleTime {
         public static void DoIdle() {
             TestScript.DoEvents();
-            VsAppShell.Current.DoIdle();
+            Vsshell.Current.DoIdle();
         }
     }
 }

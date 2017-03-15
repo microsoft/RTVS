@@ -28,13 +28,13 @@ namespace Microsoft.Languages.Editor.Outline {
         private long _disposed = 0;
         private readonly object _regionsLock = new object();
 
-        protected OutlineRegionBuilder(ITextBuffer textBuffer, IEditorShell editorShell) {
+        protected OutlineRegionBuilder(ITextBuffer textBuffer, ICoreShell shell) {
             CurrentRegions = new OutlineRegionCollection(0);
 
             TextBuffer = textBuffer;
             TextBuffer.Changed += OnTextBufferChanged;
 
-            BackgroundTask = new IdleTimeAsyncTask(TaskAction, MainThreadAction, editorShell);
+            BackgroundTask = new IdleTimeAsyncTask(TaskAction, MainThreadAction, shell);
             if (IsEnabled) {
                 BackgroundTask.DoTaskOnIdle(300);
             }

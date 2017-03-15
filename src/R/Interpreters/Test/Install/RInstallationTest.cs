@@ -9,6 +9,7 @@ using FluentAssertions;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Registry;
+using Microsoft.Common.Core.UI;
 using Microsoft.UnitTests.Core.XUnit;
 using NSubstitute;
 using Xunit;
@@ -134,14 +135,17 @@ namespace Microsoft.R.Interpreters.Test {
 
             svl = new SupportedRVersionRange(3, 2, 3, 9);
             var coreShell = Substitute.For<ICoreShell>();
+            var es = Substitute.For<IUIServices>();
+            coreShell.Services.GetService<IUIServices>().Returns(es);
 
             e = new RInterpreterInfo(e.Name, e.InstallPath, fs);
             e.VerifyInstallation(svl, fs, coreShell).Should().BeFalse();
-            coreShell.When(x => x.ShowMessage(Arg.Any<string>(), MessageButtons.OK)).Do(x => {
+
+            es.When(x => x.ShowMessage(Arg.Any<string>(), MessageButtons.OK)).Do(x => {
                 var s = x.Args()[0] as string;
                 s.Should().Contain("not compatible");
             });
-            coreShell.Received().ShowMessage(Arg.Any<string>(), MessageButtons.OK);
+            es.Received().ShowMessage(Arg.Any<string>(), MessageButtons.OK);
         }
 
 
@@ -187,16 +191,19 @@ namespace Microsoft.R.Interpreters.Test {
             var e = ri.GetCompatibleEngines(svl).FirstOrDefault();
             e.Should().NotBeNull();
 
+            var es = Substitute.For<IUIServices>();
+            coreShell.Services.GetService<IUIServices>().Returns(es);
+
             e = new RInterpreterInfo(e.Name, e.InstallPath, fs);
             var coreShell = Substitute.For<ICoreShell>();
             fs = Substitute.For<IFileSystem>();
             e.VerifyInstallation(svl, fs, coreShell).Should().BeFalse();
 
-            coreShell.When(x => x.ShowMessage(Arg.Any<string>(), MessageButtons.OK)).Do(x => {
+            es.When(x => x.ShowMessage(Arg.Any<string>(), MessageButtons.OK)).Do(x => {
                 var s = x.Args()[0] as string;
                 s.Should().Contain("Cannot find");
             });
-            coreShell.Received().ShowMessage(Arg.Any<string>(), MessageButtons.OK);
+            es.Received().ShowMessage(Arg.Any<string>(), MessageButtons.OK);
         }
 
         [Test]

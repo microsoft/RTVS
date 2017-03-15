@@ -17,10 +17,10 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
         public PreviewPdfCommand(
             ITextView textView,
             IRInteractiveWorkflowProvider workflowProvider,
-            IApplicationShell appShell,
+            ICoreShell shell,
             IProcessServices pss,
             IFileSystem fs)
-            : base(textView, (int)MdPackageCommandId.icmdPreviewPdf, workflowProvider, appShell, pss, fs) { }
+            : base(textView, (int)MdPackageCommandId.icmdPreviewPdf, workflowProvider, shell, pss, fs) { }
 
         protected override string FileExtension => "pdf";
          protected override PublishFormat Format => PublishFormat.Pdf;
@@ -32,7 +32,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
             if (!await CheckExistsOnPathAsync("pdflatex.exe")) {
                 var session = _workflowProvider.GetOrCreate().RSession;
                 var message = session.IsRemote ? Resources.Error_PdfLatexMissingRemote : Resources.Error_PdfLatexMissingLocal;
-                await AppShell.ShowErrorMessageAsync(message);
+                await shell.ShowErrorMessageAsync(message);
                 Process.Start("http://miktex.org/2.9/setup");
                 return false;
             }

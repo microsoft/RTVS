@@ -31,7 +31,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
         }
 
         private void SetImageBackground() {
-            var theme = _coreShell.GlobalServices.GetService<IThemeUtilities>();
+            var theme = _coreShell.Services.GetService<IThemeUtilities>();
             theme.SetImageBackgroundColor(this, Brushes.ToolWindowBackgroundColorKey);
             theme.SetThemeScrollBars(this);
         }

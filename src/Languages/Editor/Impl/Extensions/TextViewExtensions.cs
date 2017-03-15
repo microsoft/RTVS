@@ -6,12 +6,12 @@ using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.Languages.Editor.Extensions {
+namespace Microsoft.Languages.Editor {
     public static class TextViewExtensions {
         public static bool IsStatementCompletionWindowActive(this ITextView textView) {
             bool result = false;
             if (textView != null) {
-                var completionBroker = EditorShell.Current.GlobalServices.GetService<ICompletionBroker>();
+                var completionBroker = shell.Current.Services.GetService<ICompletionBroker>();
                 result = completionBroker.IsCompletionActive(textView);
             }
             return result;

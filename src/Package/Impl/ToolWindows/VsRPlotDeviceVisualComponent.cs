@@ -13,7 +13,7 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
     [Export(typeof(IRPlotDeviceVisualComponentContainerFactory))]
     internal class VsRPlotDeviceVisualComponentContainerFactory : ToolWindowPaneFactory<PlotDeviceWindowPane>, IRPlotDeviceVisualComponentContainerFactory {
         public IVisualComponentContainer<IRPlotDeviceVisualComponent> GetOrCreate(IRPlotManager plotManager, IRSession session, int instanceId = 0) {
-            return GetOrCreate(instanceId, i => new PlotDeviceWindowPane(plotManager, session, i, RToolsSettings.Current, VsAppShell.Current));
+            return GetOrCreate(instanceId, i => new PlotDeviceWindowPane(plotManager, session, i, RToolsSettings.Current, Vsshell.Current));
         }
     }
 }

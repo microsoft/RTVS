@@ -25,7 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         private readonly IRPlotManagerProvider _plotsProvider;
         private readonly IActiveWpfTextViewTracker _activeTextViewTracker;
         private readonly IDebuggerModeTracker _debuggerModeTracker;
-        private readonly IApplicationShell _shell;
+        private readonly ICoreShell _shell;
         private readonly IRSettings _settings;
 
         private Lazy<IRInteractiveWorkflow> _instanceLazy;
@@ -37,7 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             , IRPlotManagerProvider plotsProvider
             , IActiveWpfTextViewTracker activeTextViewTracker
             , IDebuggerModeTracker debuggerModeTracker
-            , IApplicationShell shell
+            , ICoreShell shell
             , IRSettings settings) {
 
             _connectionsProvider = connectionsProvider;

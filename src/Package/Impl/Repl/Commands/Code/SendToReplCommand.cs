@@ -62,7 +62,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
             // Take focus back if REPL window has stolen it
             if (!TextView.HasAggregateFocus) {
-                IVsEditorAdaptersFactoryService adapterService = VsAppShell.Current.GlobalServices.GetService<IVsEditorAdaptersFactoryService>();
+                IVsEditorAdaptersFactoryService adapterService = Vsshell.Current.Services.GetService<IVsEditorAdaptersFactoryService>();
                 IVsTextView tv = adapterService.GetViewAdapter(TextView);
                 tv.SendExplicitFocus();
             }

@@ -38,14 +38,13 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
     /// services and so on.
     /// </summary>
     [Export(typeof(ICoreShell))]
-    [Export(typeof(IEditorShell))]
-    [Export(typeof(IApplicationShell))]
+    [Export(typeof(ICoreShell))]
     [Export(typeof(IMainThread))]
-    public sealed partial class VsAppShell : IApplicationShell, IMainThread, IIdleTimeSource, IVsShellPropertyEvents, IVsBroadcastMessageEvents, IDisposable {
+    public sealed partial class Vsshell : ICoreShell, IMainThread, IIdleTimeSource, IVsShellPropertyEvents, IVsBroadcastMessageEvents, IDisposable {
         private const int WM_SYSCOLORCHANGE = 0x15;
 
-        private static VsAppShell _instance;
-        private static IApplicationShell _testShell;
+        private static Vsshell _instance;
+        private static ICoreShell _testShell;
 
         private readonly ApplicationConstants _appConstants;
         private readonly ICoreServices _coreServices;
@@ -57,7 +56,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private uint _vsShellBroadcastEventsCookie;
 
         [ImportingConstructor]
-        public VsAppShell(ITelemetryService telemetryService) {
+        public Vsshell(ITelemetryService telemetryService) {
             _appConstants = new ApplicationConstants();
             ProgressDialog = new VsProgressDialog(this);
             FileDialog = new VsFileDialog(this);
@@ -104,7 +103,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             ConfigureIdleSource();
             ConfigureServices();
 
-            EditorShell.Current = this;
+            shell.Current = this;
         }
 
         private void CheckVsStarted() {
@@ -127,11 +126,11 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// such as composition container, export provider, global VS IDE
         /// services and so on.
         /// </summary>
-        public static IApplicationShell Current {
+        public static ICoreShell Current {
             get {
                 if (_testShell == null && _instance == null) {
                     // Try test environment
-                    CoreShell.TryCreateTestInstance("Microsoft.VisualStudio.R.Package.Test.dll", "TestVsAppShell");
+                    CoreShell.TryCreateTestInstance("Microsoft.VisualStudio.R.Package.Test.dll", "TestVsshell");
                 }
 
                 return _testShell ?? GetInstance();
@@ -151,7 +150,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             }
         }
 
-        private static VsAppShell GetInstance() {
+        private static Vsshell GetInstance() {
             if (_instance != null) {
                 return _instance;
             }
@@ -159,7 +158,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             ThreadHelper.ThrowIfNotOnUIThread();
 
             var componentModel = (IComponentModel)VsPackage.GetGlobalService(typeof(SComponentModel));
-            var instance = (VsAppShell)componentModel.DefaultExportProvider.GetExportedValue<IApplicationShell>();
+            var instance = (Vsshell)componentModel.DefaultExportProvider.GetExportedValue<ICoreShell>();
 
             return Interlocked.CompareExchange(ref _instance, instance, null) ?? instance;
         }
@@ -258,7 +257,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 if (target == null) {
                     throw new ArgumentException(Invariant($"{nameof(commandTarget)} must implement ICommandTarget"));
                 }
-                var shell = VsAppShell.Current.GlobalServices.GetService<IVsUIShell>(typeof(SVsUIShell));
+                var shell = Vsshell.Current.Services.GetService<IVsUIShell>(typeof(SVsUIShell));
                 var pts = new POINTS[1];
                 pts[0].x = (short)x;
                 pts[0].y = (short)y;
@@ -316,7 +315,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         #endregion
 
-        #region IEditorShell 
+        #region ICoreShell 
         /// <summary>
         /// Provides shim that implements ICommandTarget over 
         /// application-specific command target. For example, 

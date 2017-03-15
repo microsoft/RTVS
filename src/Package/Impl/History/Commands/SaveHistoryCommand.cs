@@ -16,13 +16,13 @@ using CommandStatus = Microsoft.Common.Core.UI.Commands.CommandStatus;
 
 namespace Microsoft.VisualStudio.R.Package.History.Commands {
     internal class SaveHistoryCommand : ViewCommand {
-        private readonly IApplicationShell _appShell;
+        private readonly ICoreShell _shell;
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
         private readonly IRHistory _history;
 
-        public SaveHistoryCommand(IApplicationShell appShell, ITextView textView, IRHistoryProvider historyProvider, IRInteractiveWorkflow interactiveWorkflow)
+        public SaveHistoryCommand(ICoreShell shell, ITextView textView, IRHistoryProvider historyProvider, IRInteractiveWorkflow interactiveWorkflow)
             : base(textView, RGuidList.RCmdSetGuid, RPackageCommandId.icmdSaveHistory, false) {
-            _appShell = appShell;
+            _shell = shell;
             _interactiveWorkflow = interactiveWorkflow;
             _history = historyProvider.GetAssociatedRHistory(textView);
         }
@@ -35,7 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.History.Commands {
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             var initialPath = RToolsSettings.Current.WorkingDirectory != null ? PathHelper.EnsureTrailingSlash(RToolsSettings.Current.WorkingDirectory) : null;
-            var file = _appShell.FileDialog.ShowSaveFileDialog(Resources.HistoryFileFilter, initialPath, Resources.SaveHistoryAsTitle);
+            var file = _shell.FileDialog.ShowSaveFileDialog(Resources.HistoryFileFilter, initialPath, Resources.SaveHistoryAsTitle);
             if (file != null) {
                 _history.TrySaveToFile(file);
             }

@@ -171,7 +171,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
             if (ErrorHandler.Succeeded(vsTextLines.GetPositionOfLineIndex(ts[0].iStartLine, ts[0].iStartIndex, out startPos)) &&
                 ErrorHandler.Succeeded(vsTextLines.GetPositionOfLineIndex(ts[0].iEndLine, ts[0].iEndIndex, out endPos))) {
                 var textBuffer = vsTextLines.ToITextBuffer();
-                RangeFormatter.FormatRange(TextView, textBuffer, TextRange.FromBounds(startPos, endPos), REditorSettings.FormatOptions, VsAppShell.Current);
+                RangeFormatter.FormatRange(TextView, textBuffer, TextRange.FromBounds(startPos, endPos), REditorSettings.FormatOptions, Vsshell.Current);
             }
             return hr;
         }

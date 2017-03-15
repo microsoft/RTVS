@@ -24,7 +24,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         [Test]
         public void BaseFunctions01() {
             var completionSets = new List<CompletionSet>();
-            RCompletionTestUtilities.GetCompletions(EditorShell, "", 0, completionSets);
+            RCompletionTestUtilities.GetCompletions(shell, "", 0, completionSets);
 
             completionSets.Should().ContainSingle()
                 .Which.Completions.Should().Contain(c => c.DisplayText == "abbreviate")
@@ -34,7 +34,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         [Test]
         public void BaseFunctions02() {
             var completionSets = new List<CompletionSet>();
-            RCompletionTestUtilities.GetCompletions(EditorShell, "FAC", 3, completionSets, new TextRange(0, 3));
+            RCompletionTestUtilities.GetCompletions(shell, "FAC", 3, completionSets, new TextRange(0, 3));
 
             completionSets.Should().ContainSingle();
             completionSets[0].Filter();
@@ -47,7 +47,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         [Test]
         public void Packages01() {
             var completionSets = new List<CompletionSet>();
-            RCompletionTestUtilities.GetCompletions(EditorShell, "lIbrAry(", 8, completionSets);
+            RCompletionTestUtilities.GetCompletions(shell, "lIbrAry(", 8, completionSets);
 
             completionSets.Should().ContainSingle();
 
@@ -58,7 +58,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         [Test]
         public void RtvsPackage() {
             var completionSets = new List<CompletionSet>();
-            RCompletionTestUtilities.GetCompletions(EditorShell, "rtv", 3, completionSets, new TextRange(0, 3));
+            RCompletionTestUtilities.GetCompletions(shell, "rtv", 3, completionSets, new TextRange(0, 3));
 
             completionSets.Should().ContainSingle();
             completionSets[0].Filter();
@@ -76,7 +76,7 @@ namespace Microsoft.R.Editor.Test.Completions {
                 info.Should().NotBeNull();
 
                 var completionSets = new List<CompletionSet>();
-                RCompletionTestUtilities.GetCompletions(EditorShell, content, position, completionSets);
+                RCompletionTestUtilities.GetCompletions(shell, content, position, completionSets);
 
                 completionSets.Should().ContainSingle();
 
@@ -93,7 +93,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         [Test]
         public void CaseSensitiveEntries() {
             var completionSets = new List<CompletionSet>();
-            RCompletionTestUtilities.GetCompletions(EditorShell, "ma", 2, completionSets);
+            RCompletionTestUtilities.GetCompletions(shell, "ma", 2, completionSets);
 
             completionSets.Should().ContainSingle()
                 .Which.Completions.Should()
@@ -104,7 +104,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         [Test]
         public void NoDuplicatesEntries() {
             var completionSets = new List<CompletionSet>();
-            RCompletionTestUtilities.GetCompletions(EditorShell, "r", 1, completionSets);
+            RCompletionTestUtilities.GetCompletions(shell, "r", 1, completionSets);
 
             completionSets.Should().ContainSingle()
                 .Which.Completions
@@ -114,7 +114,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         [Test]
         public void Datasets() {
             var completionSets = new List<CompletionSet>();
-            RCompletionTestUtilities.GetCompletions(EditorShell, "m", 1, completionSets);
+            RCompletionTestUtilities.GetCompletions(shell, "m", 1, completionSets);
 
             completionSets.Should().ContainSingle()
                 .Which.Completions

@@ -10,11 +10,11 @@ using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Commands {
     internal sealed class ImportDataSetTextFileCommand : SessionCommand {
-        private readonly IApplicationShell _appShell;
+        private readonly ICoreShell _shell;
 
-        public ImportDataSetTextFileCommand(IApplicationShell appShell, IRSession session) :
+        public ImportDataSetTextFileCommand(ICoreShell shell, IRSession session) :
             base(session, RGuidList.RCmdSetGuid, RPackageCommandId.icmdImportDatasetTextFile) {
-            _appShell = appShell;
+            _shell = shell;
         }
 
         protected override void SetStatus() {
@@ -24,7 +24,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Commands {
         protected override void Handle() {
             base.Handle();
 
-            string filePath = _appShell.FileDialog.ShowOpenFileDialog(Resources.CsvFileFilter, title: Resources.ImportData_EnterTextFileTitle);
+            string filePath = _shell.FileDialog.ShowOpenFileDialog(Resources.CsvFileFilter, title: Resources.ImportData_EnterTextFileTitle);
 
             if (!string.IsNullOrEmpty(filePath)) {
                 var dlg = new ImportDataWindow(filePath, null);

@@ -14,7 +14,7 @@ namespace Microsoft.VisualStudio.R.Package.Test {
         protected IRSessionProvider SessionProvider { get; }
 
         public InteractiveTest() {
-            var workflow = VsAppShell.Current.GlobalServices.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
+            var workflow = Vsshell.Current.Services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
             SessionProvider = workflow.RSessions;
         }
 

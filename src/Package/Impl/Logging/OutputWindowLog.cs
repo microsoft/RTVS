@@ -23,7 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
         private void EnsurePaneVisible() {
             if (_pane == null) {
                 // TODO: consider using IVsOutputWindow3.CreatePane2 and colorize the output
-                IVsOutputWindow outputWindow = VsAppShell.Current?.GlobalServices.GetService<IVsOutputWindow>(typeof(SVsOutputWindow));
+                IVsOutputWindow outputWindow = Vsshell.Current?.GlobalServices.GetService<IVsOutputWindow>(typeof(SVsOutputWindow));
                 outputWindow?.GetPane(ref _paneGuid, out _pane);
                 if (_pane == null && outputWindow != null) {
                     outputWindow.CreatePane(ref _paneGuid, _windowName, fInitVisible: 1, fClearWithSolution: 1);
@@ -35,7 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
 
             _pane?.Activate();
 
-            DTE dte = VsAppShell.Current?.GlobalServices.GetService<DTE>();
+            DTE dte = Vsshell.Current?.GlobalServices.GetService<DTE>();
             Window window = dte?.Windows.Item(EnvDTE.Constants.vsWindowKindOutput);
             window?.Activate();
         }

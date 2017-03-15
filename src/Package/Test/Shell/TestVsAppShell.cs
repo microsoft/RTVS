@@ -10,7 +10,6 @@ using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Test.Shell;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.R.Components.Controller;
@@ -25,16 +24,16 @@ using NSubstitute;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Shell {
     /// <summary>
-    /// Replacement for VsAppShell in unit tests.
+    /// Replacement for Vsshell in unit tests.
     /// Created via reflection by test code.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    sealed class TestVsAppShell : TestShellBase, IApplicationShell {
+    sealed class TestVsshell : TestShellBase, ICoreShell {
         private readonly VsTestServiceManager _serviceManager;
-        private static TestVsAppShell _instance;
+        private static TestVsshell _instance;
         private static readonly object _shellLock = new object();
 
-        private TestVsAppShell(): base(VsTestCompositionCatalog.Current.ExportProvider) {
+        private TestVsshell(): base(VsTestCompositionCatalog.Current.ExportProvider) {
             CompositionService = VsTestCompositionCatalog.Current.CompositionService;
             ExportProvider = VsTestCompositionCatalog.Current.ExportProvider;
             MainThread = UIThreadHelper.Instance.Thread;
@@ -53,19 +52,19 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
             UIThreadHelper.Instance.Invoke(() => {
                 lock (_shellLock) {
                     if (_instance == null){
-                        _instance = new TestVsAppShell();
+                        _instance = new TestVsshell();
                         RToolsSettings.Current = new TestRToolsSettings();
 
                         var batch = new CompositionBatch()
                             .AddValue<IRSettings>(RToolsSettings.Current)
                             .AddValue(RToolsSettings.Current)
                             .AddValue<ICoreShell>(_instance)
-                            .AddValue<IEditorShell>(_instance)
-                            .AddValue<IApplicationShell>(_instance)
+                            .AddValue<ICoreShell>(_instance)
+                            .AddValue<ICoreShell>(_instance)
                             .AddValue(_instance);
                         VsTestCompositionCatalog.Current.Container.Compose(batch);
 
-                        VsAppShell.Current = _instance;
+                        Vsshell.Current = _instance;
                     }
                 }
             });
@@ -76,7 +75,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
         public ExportProvider ExportProvider { get; private set; }
         #endregion
 
-        #region IApplicationShell
+        #region ICoreShell
         public string BrowseForFileOpen(IntPtr owner, string filter, string initialPath = null, string title = null) {
             return null;
         }
@@ -85,7 +84,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
         }
         #endregion
 
-        #region IEditorShell
+        #region ICoreShell
         public ICommandTarget TranslateCommandTarget(ITextView textView, object commandTarget) {
             return commandTarget as ICommandTarget;
         }

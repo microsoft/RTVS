@@ -37,10 +37,10 @@ namespace Microsoft.Common.Core.Shell {
                 Type[] types = testAssembly.GetTypes();
                 IEnumerable<Type> classes = types.Where(x => x.IsClass);
 
-                Type testAppShell = classes.FirstOrDefault(c => c.Name.Contains(className));
-                Debug.Assert(testAppShell != null);
+                Type testshell = classes.FirstOrDefault(c => c.Name.Contains(className));
+                Debug.Assert(testshell != null);
 
-                MethodInfo mi = testAppShell.GetMethod("Create", BindingFlags.Static | BindingFlags.Public);
+                MethodInfo mi = testshell.GetMethod("Create", BindingFlags.Static | BindingFlags.Public);
                 mi.Invoke(null, null);
             }
         }

@@ -44,10 +44,10 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         private WindowsFormsHost _host;
 
         public HelpVisualComponent() {
-            _codeColorBuilder = VsAppShell.Current.GlobalServices.GetService<IVignetteCodeColorBuilder>();
-            _coreShell = VsAppShell.Current.GlobalServices.GetService<ICoreShell>();
+            _codeColorBuilder = Vsshell.Current.Services.GetService<IVignetteCodeColorBuilder>();
+            _coreShell = Vsshell.Current.Services.GetService<ICoreShell>();
 
-            var workflow = VsAppShell.Current.GlobalServices.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
+            var workflow = Vsshell.Current.Services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
             workflow.RSessions.BrokerStateChanged += OnBrokerStateChanged;
 
             _session = workflow.RSession;
@@ -80,7 +80,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                 Container?.Show(focus: false, immediate: false);
                 NavigateTo(url);
             } else {
-                var wbs = VsAppShell.Current.GlobalServices.GetService<IWebBrowserServices>();
+                var wbs = Vsshell.Current.Services.GetService<IWebBrowserServices>();
                 wbs.OpenBrowser(WebBrowserRole.Shiny, url);
             }
         }
@@ -90,13 +90,13 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
         private void OnRSessionDisconnected(object sender, EventArgs e) {
             // Event fires on a background thread
-            VsAppShell.Current.DispatchOnUIThread(CloseBrowser);
+            Vsshell.Current.DispatchOnUIThread(CloseBrowser);
         }
 
         private void OnBrokerStateChanged(object sender, BrokerStateChangedEventArgs e) {
             if (!e.IsConnected) {
                 // Event mey fire on a background thread
-                VsAppShell.Current.DispatchOnUIThread(CloseBrowser);
+                Vsshell.Current.DispatchOnUIThread(CloseBrowser);
             }
         }
 
@@ -215,7 +215,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             string url = e.Url.ToString();
             if (!IsHelpUrl(url)) {
                 e.Cancel = true;
-                var wbs = VsAppShell.Current.GlobalServices.GetService<IWebBrowserServices>();
+                var wbs = Vsshell.Current.Services.GetService<IWebBrowserServices>();
                 wbs.OpenBrowser(WebBrowserRole.External, url);
             }
         }
@@ -228,7 +228,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
             // Upon navigation we need to ask VS to update UI so 
             // Back/Forward buttons become properly enabled or disabled.
-            IVsUIShell shell = VsAppShell.Current.GlobalServices.GetService<IVsUIShell>(typeof(SVsUIShell));
+            IVsUIShell shell = Vsshell.Current.Services.GetService<IVsUIShell>(typeof(SVsUIShell));
             shell.UpdateCommandUI(0);
         }
 
@@ -243,7 +243,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             if (!ConnectBrowser()) {
                 // The browser document is not ready yet. Create another idle 
                 // time action that will run after few milliseconds.
-                IdleTimeAction.Create(SetThemeColorsWhenReady, 10, new object(), VsAppShell.Current);
+                IdleTimeAction.Create(SetThemeColorsWhenReady, 10, new object(), Vsshell.Current);
             }
         }
 

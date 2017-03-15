@@ -22,20 +22,20 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
     internal class VsRInteractiveWindowComponentContainerFactory : IInteractiveWindowComponentContainerFactory {
         private readonly Lazy<IVsInteractiveWindowFactory> _vsInteractiveWindowFactoryLazy;
         private readonly IContentTypeRegistryService _contentTypeRegistryService;
-        private readonly IApplicationShell _shell;
+        private readonly ICoreShell _shell;
 
         [ImportingConstructor]
         public VsRInteractiveWindowComponentContainerFactory(
             Lazy<IVsInteractiveWindowFactory> vsInteractiveWindowFactory,
             IContentTypeRegistryService contentTypeRegistryService,
-            IApplicationShell shell) {
+            ICoreShell shell) {
             _vsInteractiveWindowFactoryLazy = vsInteractiveWindowFactory;
             _contentTypeRegistryService = contentTypeRegistryService;
             _shell = shell;
         }
 
         public IInteractiveWindowVisualComponent Create(int instanceId, IInteractiveEvaluator evaluator, IRSessionProvider sessionProvider) {
-            VsAppShell.Current.AssertIsOnMainThread();
+            Vsshell.Current.AssertIsOnMainThread();
 
             IVsInteractiveWindow vsWindow;
             var vsf2 = _vsInteractiveWindowFactoryLazy.Value as IVsInteractiveWindowFactory2; // Temporary for VS 2017 RC2
@@ -60,7 +60,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             if (frame != null) {
                 Guid persistenceSlot;
                 if (frame.GetGuidProperty((int)__VSFPROPID.VSFPROPID_GuidPersistenceSlot, out persistenceSlot) >= 0) {
-                    var debugger = _shell.GlobalServices.GetService<SVsShellDebugger>() as IVsDebugger6;
+                    var debugger = _shell.Services.GetService<SVsShellDebugger>() as IVsDebugger6;
                     if (debugger != null) {
                         debugger.RegisterFocusPreservingWindow(persistenceSlot);
                     }

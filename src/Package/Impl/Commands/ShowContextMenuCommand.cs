@@ -5,7 +5,7 @@ using System;
 using System.ComponentModel.Design;
 using System.Diagnostics;
 using Microsoft.Common.Core.UI.Commands;
-using Microsoft.Languages.Editor.Controller.Command;
+using Microsoft.Languages.Editor.Controller.Commands;
 using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -49,7 +49,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
                 if (_menuService == null && !_triedGetMenuService) {
                     _triedGetMenuService = true;
 
-                    IVsShell shell = VsAppShell.Current.GlobalServices.GetService<IVsShell>();
+                    IVsShell shell = Vsshell.Current.Services.GetService<IVsShell>();
                     IVsPackage package;
                     shell.LoadPackage(ref _packageGuid, out package);
                     if (package != null) {

@@ -100,7 +100,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
             await _threadHandling.SwitchToUIThread();
             // Make sure R package is loaded
-            VsAppShell.EnsurePackageLoaded(RGuidList.RPackageGuid);
+            Vsshell.EnsurePackageLoaded(RGuidList.RPackageGuid);
 
             // Verify project is not on a network share and give warning if it is
             CheckRemoteDrive(_projectDirectory);
@@ -166,7 +166,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                         continue;
                     }
 
-                    var solution = VsAppShell.Current.GlobalServices.GetService<IVsSolution>(typeof(SVsSolution));
+                    var solution = Vsshell.Current.Services.GetService<IVsSolution>(typeof(SVsSolution));
                     solution.CloseSolutionElement((uint)__VSSLNCLOSEOPTIONS.SLNCLOSEOPT_UnloadProject, (IVsHierarchy)iVsProject, 0);
                     return;
                 }

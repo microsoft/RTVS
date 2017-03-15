@@ -7,15 +7,15 @@ using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Sql {
     internal sealed class AddDsnCommand : SessionCommand {
-        private readonly IApplicationShell _appShell;
+        private readonly ICoreShell _shell;
 
-        public AddDsnCommand(IApplicationShell appShell, IRInteractiveWorkflow workflow) :
+        public AddDsnCommand(ICoreShell shell, IRInteractiveWorkflow workflow) :
             base(RPackageCommandId.icmdAddDsn, workflow) {
-            _appShell = appShell;
+            _shell = shell;
         }
 
         protected override void Handle() {
-            NativeMethods.SQLConfigDataSource(_appShell.GetDialogOwnerWindow(), NativeMethods.RequestFlags.ODBC_ADD_DSN, "SQL Server", null);
+            NativeMethods.SQLConfigDataSource(_shell.GetDialogOwnerWindow(), NativeMethods.RequestFlags.ODBC_ADD_DSN, "SQL Server", null);
         }
     }
 }

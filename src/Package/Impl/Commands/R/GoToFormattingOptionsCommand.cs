@@ -23,7 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         }
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
-            IVsShell shell = VsAppShell.Current.GlobalServices.GetService<IVsShell>(typeof(SVsShell));
+            IVsShell shell = Vsshell.Current.Services.GetService<IVsShell>(typeof(SVsShell));
             IVsPackage package;
 
             if (VSConstants.S_OK == shell.LoadPackage(RGuidList.RPackageGuid, out package)) {

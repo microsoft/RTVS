@@ -2,18 +2,15 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
-using System.Data.Odbc;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
 using Microsoft.Common.Core.IO;
-using Microsoft.R.Components.Sql;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Sql.Publish;
-using Microsoft.SqlServer.Dac;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Sql.Publish;
 using Microsoft.VisualStudio.Shell.Interop;
 using NSubstitute;
@@ -26,13 +23,13 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
         private const string sqlProjectName = "db.sqlproj";
 
         private readonly PackageTestFilesFixture _files;
-        private readonly IApplicationShell _appShell;
+        private readonly ICoreShell _shell;
         private readonly IProjectSystemServices _pss;
         private readonly IDacPackageServices _dacServices;
 
         public SProcPublisherTest(PackageTestFilesFixture files) {
             _files = files;
-            _appShell = Substitute.For<IApplicationShell>();
+            _shell = Substitute.For<ICoreShell>();
             _pss = Substitute.For<IProjectSystemServices>();
             _dacServices = Substitute.For<IDacPackageServices>();
         }
@@ -60,7 +57,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             _dacServices.GetBuilder().Returns(builder);
 
             var files = new string[] { Path.Combine(_files.DestinationPath, rFile) };
-            var publisher = new SProcPublisher(_appShell, _pss, fs, _dacServices);
+            var publisher = new SProcPublisher(_shell, _pss, fs, _dacServices);
             publisher.Publish(settings, files);
 
             builder.Received(1).Build(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<string>>());

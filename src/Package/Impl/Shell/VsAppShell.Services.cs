@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.R.Package.RClient;
 using VsPackage = Microsoft.VisualStudio.Shell.Package;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
-    public partial class VsAppShell {
+    public partial class Vsshell {
         private VsServiceManager _services;
 
         public IServiceContainer GlobalServices => _services;

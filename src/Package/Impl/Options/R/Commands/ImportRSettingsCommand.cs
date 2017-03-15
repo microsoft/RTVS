@@ -22,8 +22,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
             base(OnCommand, new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.icmdImportRSettings)) { }
 
         public static void OnCommand(object sender, EventArgs args) {
-            if (MessageButtons.Yes == VsAppShell.Current.ShowMessage(Resources.Warning_SettingsReset, MessageButtons.YesNo)) {
-                IVsUIShell shell = VsAppShell.Current.GlobalServices.GetService<IVsUIShell>(typeof(SVsUIShell));
+            if (MessageButtons.Yes == Vsshell.Current.ShowMessage(Resources.Warning_SettingsReset, MessageButtons.YesNo)) {
+                IVsUIShell shell = Vsshell.Current.Services.GetService<IVsUIShell>(typeof(SVsUIShell));
                 Guid group = VSConstants.CMDSETID.StandardCommandSet2K_guid;
 
                 string asmDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetAssemblyPath());

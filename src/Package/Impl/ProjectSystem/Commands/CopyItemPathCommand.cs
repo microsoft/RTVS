@@ -33,7 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
         }
 
         public async Task<bool> TryHandleCommandAsync(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, long commandExecuteOptions, IntPtr variantArgIn, IntPtr variantArgOut) {
-            VsAppShell.Current.AssertIsOnMainThread();
+            Vsshell.Current.AssertIsOnMainThread();
             if (commandId != RPackageCommandId.icmdCopyItemPath) {
                 return false;
             }

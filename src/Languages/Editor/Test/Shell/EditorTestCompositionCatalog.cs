@@ -19,7 +19,7 @@ using Microsoft.UnitTests.Core.Mef;
 namespace Microsoft.Languages.Editor.Test.Shell {
     /// <summary>
     /// Composition catalog that is primarily used in interactive tests.
-    /// It is assigned to EditorShell.Current.CompositionService.
+    /// It is assigned to shell.Current.CompositionService.
     /// In interactive tests catalog that also includes host application
     /// objects such as VS components is not suitable as it may be exporting
     /// objects that cannot be instantiated in a limited test environment.

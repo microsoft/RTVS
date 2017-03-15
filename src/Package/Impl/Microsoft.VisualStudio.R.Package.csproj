@@ -465,7 +465,6 @@
     <Compile Include="Shell\VisualComponentToolWindowAdapter.cs" />
     <Compile Include="Shell\VsAppShell.cs" />
     <Compile Include="Packages\R\REditorFactory.cs" />
-    <Compile Include="Shell\IApplicationShell.cs" />
     <Compile Include="Packages\R\RGuidList.cs" />
     <Compile Include="Packages\R\RLanguageService.cs" />
     <Compile Include="Editors\TextBufferInitializationTracker.cs" />

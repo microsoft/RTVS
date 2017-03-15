@@ -24,7 +24,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
             if (!string.IsNullOrEmpty(path)) {
                 _shell.ShowMessage(Resources.Message_RClientIsAlreadyInstalled, MessageButtons.OK);
             } else {
-                var installer = _shell.GlobalServices.GetService<IMicrosoftRClientInstaller>();
+                var installer = _shell.Services.GetService<IMicrosoftRClientInstaller>();
                 installer.LaunchRClientSetup(_shell);
             }
         }

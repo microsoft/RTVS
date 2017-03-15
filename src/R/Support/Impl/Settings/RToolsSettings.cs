@@ -10,7 +10,7 @@ namespace Microsoft.R.Support.Settings {
         public static IRToolsSettings Current {
             get {
                 if (_settings == null) {
-                    _settings = EditorShell.Current.ExportProvider.GetExport<IRToolsSettings>().Value;
+                    _settings = shell.Current.ExportProvider.GetExport<IRToolsSettings>().Value;
                 }
                 return _settings;
             }

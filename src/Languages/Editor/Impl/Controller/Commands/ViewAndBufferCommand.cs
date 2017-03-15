@@ -5,7 +5,7 @@ using Microsoft.Common.Core.UI.Commands;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.Languages.Editor.Controller.Command {
+namespace Microsoft.Languages.Editor.Controller.Commands {
     /// <summary>
     /// This command works on a buffer of a certain content type within a view.
     ///

@@ -7,7 +7,7 @@ using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Core.Shell.UI.Command;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.Languages.Editor.Controller.Command {
+namespace Microsoft.Languages.Editor.Controller.Commands {
     [ExcludeFromCodeCoverage]
     public class ViewCommand : Command, IDisposable {
         public ITextView TextView { get; set; }

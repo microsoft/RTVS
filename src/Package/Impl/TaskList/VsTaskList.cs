@@ -35,7 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.TaskList {
         }
 
         internal static void StaticFlushTaskList() {
-            IEditorTaskList tasks = ComponentLocator<IEditorTaskList>.Import(VsAppShell.Current.CompositionService);
+            IEditorTaskList tasks = ComponentLocator<IEditorTaskList>.Import(Vsshell.Current.CompositionService);
             tasks.FlushTaskList();
         }
 

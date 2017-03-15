@@ -19,10 +19,10 @@ namespace Microsoft.R.Editor.Outline {
     [TagType(typeof(IOutliningRegionTag))]
     [ContentType(RContentTypeDefinition.ContentType)]
     internal sealed class OutliningTaggerProvider : ITaggerProvider {
-        private readonly IEditorShell _shell;
+        private readonly ICoreShell _shell;
 
         [ImportingConstructor]
-        public OutliningTaggerProvider(IEditorShell shell) {
+        public OutliningTaggerProvider(ICoreShell shell) {
             _shell = shell;
         }
 

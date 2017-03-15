@@ -9,13 +9,11 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using FluentAssertions;
 using Microsoft.Common.Core.OS;
-using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.Common.Core.Services;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Test.Fakes.InteractiveWindow;
-using Microsoft.R.Host.Client.Session;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Commands;
@@ -33,9 +31,9 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
         private readonly TestRInteractiveWorkflowProvider _interactiveWorkflowProvider;
 
         public ProjectCommandsTest() {
-            var connectionsProvider = VsAppShell.Current.GlobalServices.GetService<IConnectionManagerProvider>();
-            var historyProvider = VsAppShell.Current.GlobalServices.GetService<IRHistoryProvider>();
-            var packagesProvider = VsAppShell.Current.GlobalServices.GetService<IRPackageManagerProvider>();
+            var connectionsProvider = Vsshell.Current.Services.GetService<IConnectionManagerProvider>();
+            var historyProvider = Vsshell.Current.Services.GetService<IRHistoryProvider>();
+            var packagesProvider = Vsshell.Current.Services.GetService<IRPackageManagerProvider>();
             _interactiveWorkflowProvider = TestRInteractiveWorkflowProviderFactory.Create(connectionsProvider, historyProvider, packagesProvider);
         }
 

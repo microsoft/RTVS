@@ -13,6 +13,6 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Definitions {
         MarkdownFlavor Flavor { get; }
         string RequiredPackageName { get; }
         bool FormatSupported(PublishFormat format);
-        Task PublishAsync(IRSession session, IApplicationShell coreShell, IFileSystem fs, string inputFilePath, string outputFilePath, PublishFormat publishFormat, Encoding encoding);
+        Task PublishAsync(IRSession session, ICoreShell coreShell, IFileSystem fs, string inputFilePath, string outputFilePath, PublishFormat publishFormat, Encoding encoding);
     }
 }

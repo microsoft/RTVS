@@ -20,16 +20,16 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     internal class SendFileCommandBase {
         private readonly IRInteractiveWorkflowProvider _interactiveWorkflowProvider;
         private readonly IFileSystem _fs;
-        private readonly IApplicationShell _appShell;
+        private readonly ICoreShell _shell;
 
-        protected SendFileCommandBase(IRInteractiveWorkflowProvider interactiveWorkflowProvider, IApplicationShell appShell, IFileSystem fs) {
+        protected SendFileCommandBase(IRInteractiveWorkflowProvider interactiveWorkflowProvider, ICoreShell shell, IFileSystem fs) {
             _interactiveWorkflowProvider = interactiveWorkflowProvider;
-            _appShell = appShell;
+            _shell = shell;
             _fs = fs;
         }
 
         protected Task SendToRemoteAsync(IEnumerable<string> files, string projectDir, string projectName, string remotePath) {
-            _appShell.ProgressDialog.Show(async (p, ct) => await SendToRemoteWorkerAsync(files, projectDir, projectName, remotePath, p, ct), Resources.Info_TransferringFiles, 100, 500);
+            _shell.ProgressDialog.Show(async (p, ct) => await SendToRemoteWorkerAsync(files, projectDir, projectName, remotePath, p, ct), Resources.Info_TransferringFiles, 100, 500);
             return Task.CompletedTask;
         }
 
@@ -93,7 +93,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
             } catch (RHostDisconnectedException rhdex) {
                 console.WriteErrorLine(Resources.Error_CannotTransferNoRSession.FormatInvariant(rhdex.Message));
             } catch (Exception ex) when (ex is UnauthorizedAccessException || ex is IOException) {
-                _appShell.ShowErrorMessage(Resources.Error_CannotTransferFile.FormatInvariant(ex.Message));
+                _shell.ShowErrorMessage(Resources.Error_CannotTransferFile.FormatInvariant(ex.Message));
             }
         }
     }

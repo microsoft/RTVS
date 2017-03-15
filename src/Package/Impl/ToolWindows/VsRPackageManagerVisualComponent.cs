@@ -20,7 +20,7 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
         }
 
         public IVisualComponentContainer<IRPackageManagerVisualComponent> GetOrCreate(IRPackageManager packageManager, int instanceId = 0) {
-            return GetOrCreate(instanceId, i => new PackageManagerWindowPane(packageManager, _searchControlProvider, RToolsSettings.Current, VsAppShell.Current));
+            return GetOrCreate(instanceId, i => new PackageManagerWindowPane(packageManager, _searchControlProvider, RToolsSettings.Current, Vsshell.Current));
         }
     }
 }

@@ -37,20 +37,20 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
         private readonly IProcessServices _pss;
         private readonly IFileSystem _fs;
 
-        protected IApplicationShell AppShell { get; }
+        protected ICoreShell shell { get; }
 
         public PreviewCommand(ITextView textView, int id,
             IRInteractiveWorkflowProvider workflowProvider,
-            IApplicationShell appShell,
+            ICoreShell shell,
             IProcessServices pss,
             IFileSystem fs)
             : base(textView, new CommandId[] { new CommandId(MdPackageCommandId.MdCmdSetGuid, id) }, false) {
             _workflowProvider = workflowProvider;
-            AppShell = appShell;
+            shell = shell;
             _pss = pss;
             _fs = fs;
 
-            IEnumerable<Lazy<IMarkdownFlavorPublishHandler>> handlers = AppShell.ExportProvider.GetExports<IMarkdownFlavorPublishHandler>();
+            IEnumerable<Lazy<IMarkdownFlavorPublishHandler>> handlers = shell.ExportProvider.GetExports<IMarkdownFlavorPublishHandler>();
             foreach (var h in handlers) {
                 _flavorHandlers[h.Value.Flavor] = h.Value;
             }
@@ -87,7 +87,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
                 var packages = await workflow.Packages.GetInstalledPackagesAsync();
                 if (packages.Any(p => p.Package.EqualsIgnoreCase(flavorHandler.RequiredPackageName))) {
                     // Text buffer operations should be performed in UI thread
-                    await AppShell.SwitchToMainThreadAsync();
+                    await shell.SwitchToMainThreadAsync();
                     if (await CheckPrerequisitesAsync()) {
                         var textBuffer = SaveFile();
                         if (textBuffer != null) {
@@ -97,16 +97,16 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
                             try {
                                 _fs.DeleteFile(_outputFilePath);
                             } catch (IOException ex) {
-                                AppShell.ShowErrorMessage(ex.Message);
+                                shell.ShowErrorMessage(ex.Message);
                                 return;
                             }
 
                             var session = workflow.RSession;
-                            await flavorHandler.PublishAsync(session, AppShell, _fs, inputFilePath, _outputFilePath, Format, textBuffer.GetEncoding()).ContinueWith(t => LaunchViewer());
+                            await flavorHandler.PublishAsync(session, shell, _fs, inputFilePath, _outputFilePath, Format, textBuffer.GetEncoding()).ContinueWith(t => LaunchViewer());
                         }
                     }
                 } else {
-                    await AppShell.ShowErrorMessageAsync(Resources.Error_PackageMissing.FormatInvariant(flavorHandler.RequiredPackageName));
+                    await shell.ShowErrorMessageAsync(Resources.Error_PackageMissing.FormatInvariant(flavorHandler.RequiredPackageName));
                 }
             });
 
@@ -117,7 +117,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
             var document = EditorExtensions.FindInProjectedBuffers<MdEditorDocument>(TextView.TextBuffer, MdContentTypeDefinition.ContentType);
             var tb = document.TextBuffer;
             if (!tb.CanBeSavedInCurrentEncoding()) {
-                if (MessageButtons.No == AppShell.ShowMessage(Resources.Warning_SaveInUtf8, MessageButtons.YesNo)) {
+                if (MessageButtons.No == shell.ShowMessage(Resources.Warning_SaveInUtf8, MessageButtons.YesNo)) {
                     return null;
                 }
                 tb.Save(new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
@@ -131,7 +131,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
             if (!await CheckExistsOnPathAsync("pandoc.exe")) {
                 var session = _workflowProvider.GetOrCreate().RSession;
                 var message = session.IsRemote ? Resources.Error_PandocMissingRemote : Resources.Error_PandocMissingLocal;
-                await AppShell.ShowErrorMessageAsync(message);
+                await shell.ShowErrorMessageAsync(message);
                 _pss.Start("http://pandoc.org/installing.html");
                 return false;
             }

@@ -12,7 +12,7 @@ namespace Microsoft.Languages.Editor.Shell {
     /// Host for Web editing component. This interface provides 
     /// application-specific services and settings.
     /// </summary>
-    public interface IEditorShell: ICoreShell {
+    public interface IApplicationEditorSupport {
         /// <summary>
         /// Provides shim that implements ICommandTarget over 
         /// application-specific command target. For example, 
@@ -37,10 +37,5 @@ namespace Microsoft.Languages.Editor.Shell {
         /// <param name="textBuffer">Text buffer</param>
         /// <returns>Undo action instance</returns>
         ICompoundUndoAction CreateCompoundAction(ITextView textView, ITextBuffer textBuffer);
-
-        /// <summary>
-        /// Forces idle time processing
-        /// </summary>
-        void DoIdle();
     }
 }

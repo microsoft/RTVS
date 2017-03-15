@@ -39,7 +39,7 @@ using static Microsoft.VisualStudio.R.Package.Commands.CommandAsyncToOleMenuComm
 namespace Microsoft.VisualStudio.R.Packages.R {
     internal static class PackageCommands {
         public static IEnumerable<MenuCommand> GetCommands(ExportProvider exportProvider) {
-            var appShell = VsAppShell.Current;
+            var shell = Vsshell.Current;
             var interactiveWorkflowProvider = exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
             var interactiveWorkflow = interactiveWorkflowProvider.GetOrCreate();
             var projectServiceAccessor = exportProvider.GetExportedValue<IProjectServiceAccessor>();
@@ -52,20 +52,20 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             var pcsp = exportProvider.GetExportedValue<IProjectConfigurationSettingsProvider>();
             var dbcs = exportProvider.GetExportedValue<IDbConnectionService>();
             var settings = exportProvider.GetExportedValue<IRToolsSettings>();
-            var logPerms = appShell.Services.LoggingPermissions;
+            var logPerms = shell.Services.LoggingPermissions;
             var console = new InteractiveWindowConsole(interactiveWorkflow);
 
             return new List<MenuCommand> {
                 new GoToOptionsCommand(),
                 new GoToEditorOptionsCommand(),
                 new ImportRSettingsCommand(),
-                new InstallRClientCommand(appShell),
-                new SurveyNewsCommand(appShell),
+                new InstallRClientCommand(shell),
+                new SurveyNewsCommand(shell),
                 new SetupRemoteCommand(),
 
-                new ReportIssueCommand(appShell.Services),
-                new SendSmileCommand(appShell.Services),
-                new SendFrownCommand(appShell.Services),
+                new ReportIssueCommand(shell.Services),
+                new SendSmileCommand(shell.Services),
+                new SendFrownCommand(shell.Services),
 
                 CreateRCmdSetCommand(RPackageCommandId.icmdRDocsIntroToR, new OpenDocumentationCommand(interactiveWorkflow, OnlineDocumentationUrls.CranIntro, LocalDocumentationPaths.CranIntro)),
                 CreateRCmdSetCommand(RPackageCommandId.icmdRDocsDataImportExport, new OpenDocumentationCommand(interactiveWorkflow, OnlineDocumentationUrls.CranData, LocalDocumentationPaths.CranData)),
@@ -76,8 +76,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 CreateRCmdSetCommand(RPackageCommandId.icmdCheckForUpdates, new OpenDocumentationCommand(interactiveWorkflow, OnlineDocumentationUrls.CheckForRtvsUpdates)),
                 CreateRCmdSetCommand(RPackageCommandId.icmdMicrosoftRProducts, new OpenDocumentationCommand(interactiveWorkflow, OnlineDocumentationUrls.MicrosoftRProducts)),
 
-                new LoadWorkspaceCommand(appShell, interactiveWorkflow, projectServiceAccessor),
-                new SaveWorkspaceCommand(appShell, interactiveWorkflow, projectServiceAccessor),
+                new LoadWorkspaceCommand(shell, interactiveWorkflow, projectServiceAccessor),
+                new SaveWorkspaceCommand(shell, interactiveWorkflow, projectServiceAccessor),
 
                 new AttachDebuggerCommand(interactiveWorkflow),
                 new AttachToRInteractiveCommand(interactiveWorkflow),
@@ -94,7 +94,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new StopShinyAppCommand(interactiveWorkflow),
 
                 CreateRCmdSetCommand(RPackageCommandId.icmdInterruptR, new InterruptRCommand(interactiveWorkflow, debuggerModeTracker)),
-                CreateRCmdSetCommand(RPackageCommandId.icmdTerminateR, new TerminateRCommand(interactiveWorkflow, appShell)),
+                CreateRCmdSetCommand(RPackageCommandId.icmdTerminateR, new TerminateRCommand(interactiveWorkflow, shell)),
                 CreateRCmdSetCommand(RPackageCommandId.icmdSessionInformation, new SessionInformationCommand(interactiveWorkflow, console)),
                 CreateRCmdSetCommand(RPackageCommandId.icmdDeleteProfile, new DeleteProfileCommand(interactiveWorkflow)),
 
@@ -107,12 +107,12 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new SetDirectoryToProjectCommand(interactiveWorkflow, pss),
                 new SelectWorkingDirectoryCommand(interactiveWorkflow),
 
-                new ImportDataSetTextFileCommand(appShell, interactiveWorkflow.RSession),
+                new ImportDataSetTextFileCommand(shell, interactiveWorkflow.RSession),
                 new ImportDataSetUrlCommand(interactiveWorkflow.RSession),
                 new DeleteAllVariablesCommand(interactiveWorkflow.RSession),
                 new AddDbConnectionCommand(dbcs, pss, pcsp, interactiveWorkflow),
-                new AddDsnCommand(appShell, interactiveWorkflow),
-                new ManageDsnCommand(appShell, interactiveWorkflow),
+                new AddDsnCommand(shell, interactiveWorkflow),
+                new ManageDsnCommand(shell, interactiveWorkflow),
 
                 // Window commands
                 new ShowRInteractiveWindowsCommand(interactiveWorkflowProvider),
@@ -132,8 +132,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 // Plot commands
                 CreateRCmdSetCommand(RPackageCommandId.icmdNewPlotWindow, new PlotDeviceNewCommand(interactiveWorkflow)),
                 CreateRCmdSetCommand(RPackageCommandId.icmdShowPlotWindow, new ShowMainPlotWindowCommand(interactiveWorkflow)),
-                CreateRCmdSetCommand(RPackageCommandId.icmdPlotWindowsDynamicStart, new ShowPlotWindowCommand(appShell, interactiveWorkflow)),
-                new HideAllPlotWindowsCommand(appShell),
+                CreateRCmdSetCommand(RPackageCommandId.icmdPlotWindowsDynamicStart, new ShowPlotWindowCommand(shell, interactiveWorkflow)),
+                new HideAllPlotWindowsCommand(shell),
 
                 // Connection manager commands
                 CreateRCmdSetCommand(RPackageCommandId.icmdReconnect, new ReconnectCommand(interactiveWorkflow)),

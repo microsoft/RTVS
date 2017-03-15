@@ -19,18 +19,18 @@ using StatusBarControl = System.Windows.Controls.Primitives.StatusBar;
 namespace Microsoft.VisualStudio.R.Package.StatusBar {
     [Export(typeof(IStatusBar))]
     internal class VsStatusBar : IStatusBar {
-        private readonly IApplicationShell _shell;
+        private readonly ICoreShell _shell;
         private ItemsControl _itemsControl;
         private Visual _visualRoot;
         private bool _onIdleScheduled;
 
         [ImportingConstructor]
-        public VsStatusBar(IApplicationShell shell) {
+        public VsStatusBar(ICoreShell shell) {
             _shell = shell;
         }
 
         private Visual GetRootVisual() {
-            var shell = _shell.GlobalServices.GetService<IVsUIShell>(typeof(SVsUIShell));
+            var shell = _shell.Services.GetService<IVsUIShell>(typeof(SVsUIShell));
             IntPtr window;
             shell.GetDialogOwnerHwnd(out window);
 

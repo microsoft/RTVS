@@ -3,11 +3,11 @@
 
 using System;
 using System.Windows;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor.Controller.Command;
+using Microsoft.Languages.Editor.Controller.Commands;
 using Microsoft.Languages.Editor.Controller.Constants;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Core.AST;
@@ -21,8 +21,8 @@ namespace Microsoft.R.Editor.Formatting {
     public class FormatOnPasteCommand : EditingCommand {
         internal IClipboardDataProvider ClipboardDataProvider { get; set; }
 
-        public FormatOnPasteCommand(ITextView textView, ITextBuffer textBuffer, IEditorShell editorShell) :
-            base(textView, editorShell, new CommandId(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Paste)) {
+        public FormatOnPasteCommand(ITextView textView, ITextBuffer textBuffer, ICoreShell shell) :
+            base(textView, shell, new CommandId(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Paste)) {
             ClipboardDataProvider = new ClipboardDataProvider();
         }
 
@@ -62,7 +62,7 @@ namespace Microsoft.R.Editor.Formatting {
                         // We don't want to format inside strings
                         if (!document.EditorTree.AstRoot.IsPositionInsideString(insertionPoint)) {
                             RangeFormatter.FormatRange(TextView, document.TextBuffer,
-                                new TextRange(insertionPoint, text.Length), REditorSettings.FormatOptions, EditorShell);
+                                new TextRange(insertionPoint, text.Length), REditorSettings.FormatOptions, shell);
                         }
                     }
                 }

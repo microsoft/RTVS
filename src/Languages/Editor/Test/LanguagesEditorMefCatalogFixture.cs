@@ -50,12 +50,12 @@ namespace Microsoft.Languages.Editor.Test {
             }
 
             public override Task<Task<RunSummary>> InitializeAsync(ITestInput testInput, IMessageBus messageBus) {
-                var editorShell = new TestEditorShell(CompositionContainer, _coreServices);
+                var shell = new Testshell(CompositionContainer, _coreServices);
                 var batch = new CompositionBatch()
                     .AddValue(FileSystemStubFactory.CreateDefault())
-                    .AddValue<ICoreShell>(editorShell)
-                    .AddValue<IEditorShell>(editorShell)
-                    .AddValue(editorShell);
+                    .AddValue<ICoreShell>(shell)
+                    .AddValue<ICoreShell>(shell)
+                    .AddValue(shell);
                 CompositionContainer.Compose(batch);
                 return base.InitializeAsync(testInput, messageBus);
             }

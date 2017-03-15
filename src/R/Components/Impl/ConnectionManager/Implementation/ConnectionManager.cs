@@ -101,7 +101,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 return VisualComponent;
             }
 
-            var visualComponentContainerFactory = _shell.GlobalServices.GetService<IConnectionManagerVisualComponentContainerFactory>();
+            var visualComponentContainerFactory = _shell.Services.GetService<IConnectionManagerVisualComponentContainerFactory>();
             VisualComponent = visualComponentContainerFactory.GetOrCreate(this, instanceId).Component;
             return VisualComponent;
         }

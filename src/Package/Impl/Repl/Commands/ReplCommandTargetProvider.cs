@@ -37,14 +37,14 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 ReplCommandController controller = ReplCommandController.Attach(textView, textView.TextBuffer);
 
                 // Wrap controller into OLE command target
-                target = VsAppShell.Current.TranslateToHostCommandTarget(textView, controller) as IOleCommandTarget;
+                target = Vsshell.Current.TranslateToHostCommandTarget(textView, controller) as IOleCommandTarget;
                 Debug.Assert(target != null);
 
                 ServiceManager.AddService(target, textView, _shell);
 
                 // Wrap next OLE target in the chain into ICommandTarget so we can have 
                 // chain like: OLE Target -> Shim -> ICommandTarget -> Shim -> Next OLE target
-                ICommandTarget nextCommandTarget = VsAppShell.Current.TranslateCommandTarget(textView, nextTarget);
+                ICommandTarget nextCommandTarget = Vsshell.Current.TranslateCommandTarget(textView, nextTarget);
                 controller.ChainedController = nextCommandTarget;
 
                 // We need to listed when R projected buffer is attached and 

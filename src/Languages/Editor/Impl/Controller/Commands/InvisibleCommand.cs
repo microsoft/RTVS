@@ -7,7 +7,7 @@ using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.Languages.Editor.Controller.Command {
+namespace Microsoft.Languages.Editor.Controller.Commands {
     [ExcludeFromCodeCoverage]
     public class InvisibleCommand : ViewCommand, ICommand {
         public InvisibleCommand(ITextView textView, Guid group, int id)

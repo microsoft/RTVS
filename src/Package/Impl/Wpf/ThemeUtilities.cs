@@ -14,7 +14,7 @@ namespace Microsoft.VisualStudio.R.Package.Wpf {
     [Export(typeof(IThemeUtilities))]
     class ThemeUtilities : IThemeUtilities {
         public void SetImageBackgroundColor(DependencyObject o, object themeKey) {
-            if (!VsAppShell.Current.IsUnitTestEnvironment) {
+            if (!Vsshell.Current.IsUnitTestEnvironment) {
                 Color? color = null;
                 if (themeKey is ThemeResourceKey) {
                     // VS theme colors
@@ -36,7 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.Wpf {
         }
 
         public void SetThemeScrollBars(DependencyObject o) {
-            if (!VsAppShell.Current.IsUnitTestEnvironment) {
+            if (!Vsshell.Current.IsUnitTestEnvironment) {
                 ImageThemingUtilities.SetThemeScrollBars(o, true);
             }
         }

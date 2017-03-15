@@ -218,7 +218,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             try {
                 var nodes = await model.GetChildrenAsync(CancellationToken.None);
-                VsAppShell.Current.DispatchOnUIThread(
+                Vsshell.Current.DispatchOnUIThread(
                     () => UpdateChildren(nodes));
             } catch (Exception e) {
                 if (!(e is OperationCanceledException)) {

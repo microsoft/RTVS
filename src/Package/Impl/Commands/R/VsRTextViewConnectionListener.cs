@@ -62,8 +62,8 @@ namespace Microsoft.VisualStudio.R.Package.Commands.R {
 
         protected override void OnTextBufferCreated(ITextView textView, ITextBuffer textBuffer) {
             // Force creations
-            var appShell = VsAppShell.Current;
-            var clh = ContainedLanguageHost.GetHost(textView, textBuffer, appShell);
+            var shell = Vsshell.Current;
+            var clh = ContainedLanguageHost.GetHost(textView, textBuffer, shell);
 
             OleControllerChain.InitEditorInstance(textBuffer);
             base.OnTextBufferCreated(textView, textBuffer);

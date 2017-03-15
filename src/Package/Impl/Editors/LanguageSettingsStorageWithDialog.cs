@@ -30,7 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
         /// Loads settings via language (editor) tools options page
         /// </summary>
         public override void LoadFromStorage() {
-            IVsShell shell = VsAppShell.Current.GlobalServices.GetService<IVsShell>(typeof(SVsShell));
+            IVsShell shell = Vsshell.Current.Services.GetService<IVsShell>(typeof(SVsShell));
             if (shell != null) {
                 IVsPackage package;
                 shell.LoadPackage(ref _packageGuid, out package);

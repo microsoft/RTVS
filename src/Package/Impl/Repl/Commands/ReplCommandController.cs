@@ -30,10 +30,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         private readonly ExpansionsController _snippetController;
 
         public ReplCommandController(ITextView textView, ITextBuffer textBuffer)
-            : base(textView, textBuffer, VsAppShell.Current) {
-            ServiceManager.AddService(this, textView, VsAppShell.Current);
+            : base(textView, textBuffer, Vsshell.Current) {
+            ServiceManager.AddService(this, textView, Vsshell.Current);
 
-            var textManager = VsAppShell.Current.GlobalServices.GetService<IVsTextManager2>(typeof(SVsTextManager));
+            var textManager = Vsshell.Current.Services.GetService<IVsTextManager2>(typeof(SVsTextManager));
             IVsExpansionManager expansionManager;
             textManager.GetExpansionManager(out expansionManager);
 
@@ -55,7 +55,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         }
 
         public override void BuildCommandSet() {
-            if (VsAppShell.Current.CompositionService != null) {
+            if (Vsshell.Current.CompositionService != null) {
                 var factory = new ReplCommandFactory();
                 var commands = factory.GetCommands(TextView, TextBuffer);
                 AddCommandSet(commands);
@@ -135,10 +135,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             }
 
             controller.DismissAllSessions();
-            ICompletionBroker broker = VsAppShell.Current.GlobalServices.GetService<ICompletionBroker>();
+            ICompletionBroker broker = Vsshell.Current.Services.GetService<ICompletionBroker>();
             broker.DismissAllSessions(TextView);
 
-            var interactiveWorkflowProvider = VsAppShell.Current.GlobalServices.GetService<IRInteractiveWorkflowProvider>();
+            var interactiveWorkflowProvider = Vsshell.Current.Services.GetService<IRInteractiveWorkflowProvider>();
             interactiveWorkflowProvider.GetOrCreate().Operations.ExecuteCurrentExpression(TextView, FormatReplDocument);
             return CommandResult.Executed;
         }
@@ -148,7 +148,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             if (document != null) {
                 var tree = document.EditorTree;
                 tree.EnsureTreeReady();
-                FormatOperations.FormatCurrentStatement(textView, textBuffer, VsAppShell.Current);
+                FormatOperations.FormatCurrentStatement(textView, textBuffer, Vsshell.Current);
             }
         }
 
@@ -156,12 +156,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             if (!controller.HasActiveCompletionSession && !controller.HasActiveSignatureSession(TextView)) {
                 Workflow.Operations.CancelAsync().DoNotWait();
                 // Post interrupt command which knows if it can interrupt R or not
-                VsAppShell.Current.PostCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdInterruptR);
+                Vsshell.Current.PostCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdInterruptR);
             }
         }
 
         private void HandleF1Help(RCompletionController controller) {
-            VsAppShell.Current.PostCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpOnCurrent);
+            Vsshell.Current.PostCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpOnCurrent);
         }
 
         /// <summary>
@@ -184,7 +184,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
         private IRInteractiveWorkflow Workflow {
             get {
-                var interactiveWorkflowProvider = VsAppShell.Current.GlobalServices.GetService<IRInteractiveWorkflowProvider>();
+                var interactiveWorkflowProvider = Vsshell.Current.Services.GetService<IRInteractiveWorkflowProvider>();
                 return interactiveWorkflowProvider.GetOrCreate();
             }
         }

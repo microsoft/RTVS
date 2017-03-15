@@ -24,15 +24,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Commands {
         }
 
         protected override void Handle() {
-            if(MessageButtons.No == VsAppShell.Current.ShowMessage(Resources.Warning_DeleteAllVariables, MessageButtons.YesNo)) {
+            if(MessageButtons.No == Vsshell.Current.ShowMessage(Resources.Warning_DeleteAllVariables, MessageButtons.YesNo)) {
                 return;
             }
             try {
                 RSession.ExecuteAsync("rm(list = ls(all = TRUE))").DoNotWait();
             } catch (RException ex) {
-                VsAppShell.Current.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToDeleteVariable, ex.Message));
+                Vsshell.Current.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToDeleteVariable, ex.Message));
             } catch (ComponentBinaryMissingException ex) {
-                VsAppShell.Current.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToDeleteVariable, ex.Message));
+                Vsshell.Current.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToDeleteVariable, ex.Message));
             }
         }
     }

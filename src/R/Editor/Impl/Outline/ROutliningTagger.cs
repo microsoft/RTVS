@@ -11,7 +11,7 @@ using Microsoft.VisualStudio.Text.Tagging;
 namespace Microsoft.R.Editor.Outline {
     internal sealed class ROutliningTagger : OutliningTagger {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
-        public ROutliningTagger(REditorDocument document, IEditorShell shell)
+        public ROutliningTagger(REditorDocument document, ICoreShell shell)
             : base(document.EditorTree.TextBuffer, new ROutlineRegionBuilder(document, shell)) {
             document.DocumentClosing += OnDocumentClosing;
 

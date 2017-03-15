@@ -12,7 +12,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Projection;
 
-namespace Microsoft.Languages.Editor.Extensions {
+namespace Microsoft.Languages.Editor {
     public class TextChangeExtent {
         public TextChangeExtent(int start, int oldEnd, int newEnd) {
             Start = start;
@@ -134,7 +134,7 @@ namespace Microsoft.Languages.Editor.Extensions {
 
         public static void AddBufferDisposedAction(this ITextBuffer textBuffer, ICoreShell shell, Action<ITextBuffer, ICoreShell> callback) {
             if (shell != null) {
-                ITextDocumentFactoryService textDocumentFactoryService = shell.GlobalServices.GetService<ITextDocumentFactoryService>();
+                ITextDocumentFactoryService textDocumentFactoryService = shell.Services.GetService<ITextDocumentFactoryService>();
                 ITextDocument textDocument;
 
                 if (textDocumentFactoryService.TryGetTextDocument(textBuffer, out textDocument)) {

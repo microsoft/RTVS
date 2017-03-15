@@ -30,7 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
 
         public static void Load() {
             IVsExpansionManager expansionManager;
-            var textManager2 = VsAppShell.Current.GlobalServices.GetService<IVsTextManager2>(typeof(SVsTextManager));
+            var textManager2 = Vsshell.Current.Services.GetService<IVsTextManager2>(typeof(SVsTextManager));
             textManager2.GetExpansionManager(out expansionManager);
             _instance = new ExpansionsCache(expansionManager);
         }

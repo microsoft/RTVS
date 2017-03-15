@@ -20,19 +20,19 @@ namespace Microsoft.R.Editor.Comments {
         /// Continues adding commentcharacter even if line is already commented.
         /// # -> ## -> ### and so on. Matches C# behavior.
         /// </summary>
-        public static void CommentBlock(ITextView textView, ITextBuffer textBuffer, ITextRange range, IEditorShell editorShell) {
-            DoActionOnLines(textView, textBuffer, range, editorShell, CommentLine, Resources.CommentSelection);
+        public static void CommentBlock(ITextView textView, ITextBuffer textBuffer, ITextRange range, ICoreShell shell) {
+            DoActionOnLines(textView, textBuffer, range, shell, CommentLine, Resources.CommentSelection);
         }
 
         /// <summary>
         /// Uncomments selected lines or current line if range has zero length.
         /// Only removes single comment. ### -> ## -> # and so on. Matches C# behavior.
         /// </summary>
-        public static void UncommentBlock(ITextView textView, ITextBuffer textBuffer, ITextRange range, IEditorShell editorShell) {
-            DoActionOnLines(textView, textBuffer, range, editorShell, UncommentLine, Resources.UncommentSelection);
+        public static void UncommentBlock(ITextView textView, ITextBuffer textBuffer, ITextRange range, ICoreShell shell) {
+            DoActionOnLines(textView, textBuffer, range, shell, UncommentLine, Resources.UncommentSelection);
         }
 
-        public static void DoActionOnLines(ITextView textView, ITextBuffer textBuffer, ITextRange range, IEditorShell editorShell, Func<ITextSnapshotLine, bool> action, string actionName) {
+        public static void DoActionOnLines(ITextView textView, ITextBuffer textBuffer, ITextRange range, ICoreShell shell, Func<ITextSnapshotLine, bool> action, string actionName) {
             // When user clicks editor margin to select a line, selection actually
             // ends in the beginning of the next line. In order to prevent commenting
             // of the next line that user did not select, we need to shrink span to
@@ -55,7 +55,7 @@ namespace Microsoft.R.Editor.Comments {
             int startLineNumber = textBuffer.CurrentSnapshot.GetLineNumberFromPosition(start);
             int endLineNumber = textBuffer.CurrentSnapshot.GetLineNumberFromPosition(end);
 
-            using (var undoAction = editorShell.CreateCompoundAction(textView, textBuffer)) {
+            using (var undoAction = shell.CreateCompoundAction(textView, textBuffer)) {
                 undoAction.Open(actionName);
                 bool changed = false;
                 for (int i = startLineNumber; i <= endLineNumber; i++) {

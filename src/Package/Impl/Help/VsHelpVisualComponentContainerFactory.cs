@@ -11,7 +11,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
     [Export(typeof(IHelpVisualComponentContainerFactory))]
     internal class VsHelpVisualComponentContainerFactory : ToolWindowPaneFactory<HelpWindowPane>, IHelpVisualComponentContainerFactory {
         public IVisualComponentContainer<IHelpVisualComponent> GetOrCreate(int instanceId) {
-            return GetOrCreate(instanceId, i => new HelpWindowPane(VsAppShell.Current));
+            return GetOrCreate(instanceId, i => new HelpWindowPane(Vsshell.Current));
         }
     }
 }

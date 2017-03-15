@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Shell;
@@ -24,12 +25,12 @@ namespace Microsoft.R.Editor.DragDrop {
     /// </summary>
     internal sealed class DropHandler : IDropHandler {
         private readonly IWpfTextView _wpfTextView;
-        private readonly IEditorShell _editorShell;
+        private readonly ICoreShell _shell;
         private readonly IRInteractiveWorkflowProvider _workflowProvider;
 
-        public DropHandler(IWpfTextView wpfTextView, IEditorShell editorShell, IRInteractiveWorkflowProvider workflowProvider) {
+        public DropHandler(IWpfTextView wpfTextView, ICoreShell shell, IRInteractiveWorkflowProvider workflowProvider) {
             _wpfTextView = wpfTextView;
-            _editorShell = editorShell;
+            _shell = shell;
             _workflowProvider = workflowProvider;
         }
 
@@ -37,7 +38,7 @@ namespace Microsoft.R.Editor.DragDrop {
         public DragDropPointerEffects HandleDataDropped(DragDropInfo dragDropInfo) {
             Task.Run(async () => {
                 var folder = await GetRUserFolder();
-                _editorShell.DispatchOnUIThread(() => HandleDrop(dragDropInfo, folder));
+                _shell.DispatchOnUIThread(() => HandleDrop(dragDropInfo, folder));
             }).DoNotWait();
             return DragDropPointerEffects.None;
         }
@@ -74,12 +75,12 @@ namespace Microsoft.R.Editor.DragDrop {
                 text = text.TrimStart();
             }
 
-            using (var undoAction = EditorShell.Current.CreateCompoundAction(_wpfTextView, textBuffer)) {
+            using (var undoAction = shell.Current.CreateCompoundAction(_wpfTextView, textBuffer)) {
                 undoAction.Open(Resources.DragDropOperation);
                 textBuffer.Replace(new Span(dropPosition, 0), text);
 
                 if (REditorSettings.FormatOnPaste) {
-                    RangeFormatter.FormatRange(_wpfTextView, document.TextBuffer, new TextRange(dropPosition, text.Length), REditorSettings.FormatOptions, _editorShell);
+                    RangeFormatter.FormatRange(_wpfTextView, document.TextBuffer, new TextRange(dropPosition, text.Length), REditorSettings.FormatOptions, _shell);
                 }
 
                 if (_wpfTextView.Selection != null) {

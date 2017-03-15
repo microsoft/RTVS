@@ -52,7 +52,7 @@ namespace Microsoft.R.Support.Help.Functions {
         }
 
         public async Task BuildIndexAsync(IPackageIndex packageIndex = null) {
-            packageIndex = packageIndex ?? _coreShell.GlobalServices.GetService<IPackageIndex>();
+            packageIndex = packageIndex ?? _coreShell.Services.GetService<IPackageIndex>();
             var lockToken = await _buildIndexLock.WaitAsync();
             try {
                 if (!lockToken.IsSet) {

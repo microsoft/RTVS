@@ -70,7 +70,7 @@ namespace Microsoft.R.Editor.Navigation.Peek {
                         // Editor opens external items as plain text. When file opens, change content type to R.
                         IdleTimeAction.Create(() => {
                             if (_result.Span.IsDocumentOpen) {
-                                var rs = _shell.GlobalServices.GetService<IContentTypeRegistryService>();
+                                var rs = _shell.Services.GetService<IContentTypeRegistryService>();
                                 var ct = rs.GetContentType(RContentTypeDefinition.ContentType);
                                 _result.Span.Document.TextBuffer.ChangeContentType(ct, this.GetType());
                                 try { File.Delete(tempFile); } catch (IOException) { } catch (UnauthorizedAccessException) { }
@@ -87,7 +87,7 @@ namespace Microsoft.R.Editor.Navigation.Peek {
         }
 
         private async Task<string> GetFunctionCode(string functionName) {
-            var workflow = _shell.GlobalServices.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
+            var workflow = _shell.Services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
             var rSession = workflow.RSession;
             string functionCode = await rSession.GetFunctionCodeAsync(functionName);
             if (!string.IsNullOrEmpty(functionCode)) {

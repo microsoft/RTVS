@@ -98,7 +98,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                         batch.Clear();
                     }
                 } catch (Exception ex) {
-                    VsAppShell.Current.Services.Log.Write(LogVerbosity.Normal, MessageCategory.Error, "VisualGridScroller exception: " + ex);
+                    Vsshell.Current.Services.Log.Write(LogVerbosity.Normal, MessageCategory.Error, "VisualGridScroller exception: " + ex);
                     batch.Clear();
                 }
             }
@@ -207,7 +207,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             bool suppressNotification,
             CancellationToken token) {
 
-            await VsAppShell.Current.SwitchToMainThreadAsync(token);
+            await Vsshell.Current.SwitchToMainThreadAsync(token);
 
             using (var deferal = Points.DeferChangeNotification(suppressNotification)) {
                 // measure points

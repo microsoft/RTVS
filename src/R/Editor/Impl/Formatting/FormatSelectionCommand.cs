@@ -17,8 +17,8 @@ namespace Microsoft.R.Editor.Formatting {
     internal class FormatSelectionCommand : EditingCommand {
         ITextBuffer _textBuffer;
 
-        internal FormatSelectionCommand(ITextView textView, ITextBuffer textBuffer, IEditorShell editorShell)
-            : base(textView, editorShell, new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.FORMATSELECTION)) {
+        internal FormatSelectionCommand(ITextView textView, ITextBuffer textBuffer, ICoreShell shell)
+            : base(textView, shell, new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.FORMATSELECTION)) {
             _textBuffer = textBuffer;
         }
 
@@ -36,7 +36,7 @@ namespace Microsoft.R.Editor.Formatting {
                                            spanToFormat.Snapshot.TextBuffer,
                                            new TextRange(spanToFormat.Start.Position, spanToFormat.Length),
                                            REditorSettings.FormatOptions,
-                                           EditorShell);
+                                           shell);
             }
 
             return new CommandResult(CommandStatus.Supported, 0);

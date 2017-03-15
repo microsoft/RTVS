@@ -19,13 +19,13 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
     public class PublishOptionsDialogTest {
         [Test(ThreadType.UI)]
         public async Task Constructor() {
-            var appShell = Substitute.For<IApplicationShell>();
+            var shell = Substitute.For<ICoreShell>();
             var pss = Substitute.For<IProjectSystemServices>();
             var pcsp = Substitute.For<IProjectConfigurationSettingsProvider>();
             var fs = Substitute.For<IFileSystem>();
             var s = Substitute.For<ISettingsStorage>();
 
-            var dlg = await SqlPublshOptionsDialog.CreateAsync(appShell, pss, fs, pcsp, s);
+            var dlg = await SqlPublshOptionsDialog.CreateAsync(shell, pss, fs, pcsp, s);
             dlg.Title.Should().Be(Resources.SqlPublishDialog_Title);
             dlg.DataContext.Should().BeOfType(typeof(SqlPublishOptionsDialogViewModel));
 

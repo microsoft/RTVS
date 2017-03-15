@@ -27,7 +27,7 @@ namespace Microsoft.R.Editor.Formatting {
             return ch.IsLineBreak() || ch == '}';
         }
 
-        public static void HandleAutoformat(ITextView textView, IEditorShell editorShell, char typedChar) {
+        public static void HandleAutoformat(ITextView textView, ICoreShell shell, char typedChar) {
             if (!REditorSettings.AutoFormat) {
                 return;
             }
@@ -46,7 +46,7 @@ namespace Microsoft.R.Editor.Formatting {
 
             // Make sure we are not formatting damaging the projected range in R Markdown
             // which looks like ```{r. 'r' should not separate from {.
-            var host = ContainedLanguageHost.GetHost(textView, document.TextBuffer, editorShell);
+            var host = ContainedLanguageHost.GetHost(textView, document.TextBuffer, shell);
             if(host != null && !host.CanFormatLine(textView, document.TextBuffer, document.TextBuffer.CurrentSnapshot.GetLineNumberFromPosition(rPoint.Value))) {
                 return;
             }
@@ -67,9 +67,9 @@ namespace Microsoft.R.Editor.Formatting {
                     var scopeStatement = GetFormatScope(textView, subjectBuffer, ast);
                     // Do not format large scope blocks for performance reasons
                     if (scopeStatement != null && scopeStatement.Length < 200) {
-                        FormatOperations.FormatNode(textView, subjectBuffer, editorShell, scopeStatement);
+                        FormatOperations.FormatNode(textView, subjectBuffer, shell, scopeStatement);
                     } else if(CanFormatLine(textView, subjectBuffer, -1)){
-                        FormatOperations.FormatViewLine(textView, subjectBuffer, -1, editorShell);
+                        FormatOperations.FormatViewLine(textView, subjectBuffer, -1, shell);
                     }
                 }
             } else if (typedChar == ';') {
@@ -79,10 +79,10 @@ namespace Microsoft.R.Editor.Formatting {
                 int positionInLine = rPoint.Value.Position - line.Start;
                 string lineText = line.GetText();
                 if (positionInLine >= lineText.TrimEnd().Length) {
-                    FormatOperations.FormatViewLine(textView, subjectBuffer, 0, editorShell);
+                    FormatOperations.FormatViewLine(textView, subjectBuffer, 0, shell);
                 }
             } else if (typedChar == '}') {
-                FormatOperations.FormatCurrentStatement(textView, subjectBuffer, editorShell, limitAtCaret: true, caretOffset: -1);
+                FormatOperations.FormatCurrentStatement(textView, subjectBuffer, shell, limitAtCaret: true, caretOffset: -1);
             }
         }
 

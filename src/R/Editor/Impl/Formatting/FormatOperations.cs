@@ -3,7 +3,6 @@
 
 using System;
 using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Extensions;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Scopes;
@@ -14,13 +13,15 @@ using Microsoft.R.Editor.Settings;
 using Microsoft.R.Editor.SmartIndent;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.Common.Core.Shell;
+using Microsoft.Languages.Editor.Shell;
 
 namespace Microsoft.R.Editor.Formatting {
     internal static class FormatOperations {
         /// <summary>
         /// Formats statement that the caret is at
         /// </summary>
-        public static void FormatCurrentStatement(ITextView textView, ITextBuffer textBuffer, IEditorShell editorShell, bool limitAtCaret = false, int caretOffset = 0) {
+        public static void FormatCurrentStatement(ITextView textView, ITextBuffer textBuffer, ICoreShell shell, bool limitAtCaret = false, int caretOffset = 0) {
             SnapshotPoint? caretPoint = REditorDocument.MapCaretPositionFromView(textView);
             if (!caretPoint.HasValue) {
                 return;
@@ -30,24 +31,24 @@ namespace Microsoft.R.Editor.Formatting {
                 ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
                 AstRoot ast = document.EditorTree.AstRoot;
                 IAstNode node = ast.GetNodeOfTypeFromPosition<IStatement>(Math.Max(0, caretPoint.Value + caretOffset)) as IAstNode;
-                FormatNode(textView, textBuffer, editorShell, node, limit: caretPoint.Value);
+                FormatNode(textView, textBuffer, shell, node, limit: caretPoint.Value);
             }
         }
 
         /// <summary>
         /// Formats specific AST node 
         /// </summary>
-        public static void FormatNode(ITextView textView, ITextBuffer textBuffer, IEditorShell editorShell, IAstNode node, int limit = -1) {
+        public static void FormatNode(ITextView textView, ITextBuffer textBuffer, ICoreShell shell, IAstNode node, int limit = -1) {
             if (node != null) {
                 if (limit >= 0 && limit < node.Start) {
                     throw new ArgumentException(nameof(limit));
                 }
                 ITextRange range = limit < 0 ? node as ITextRange : TextRange.FromBounds(node.Start, limit);
-                UndoableFormatRange(textView, textBuffer, range, editorShell);
+                UndoableFormatRange(textView, textBuffer, range, shell);
             }
         }
 
-        public static void FormatCurrentScope(ITextView textView, ITextBuffer textBuffer, IEditorShell editorShell, bool indentCaret) {
+        public static void FormatCurrentScope(ITextView textView, ITextBuffer textBuffer, ICoreShell shell, bool indentCaret) {
             // Figure out caret position in the document text buffer
             SnapshotPoint? caretPoint = REditorDocument.MapCaretPositionFromView(textView);
             if (!caretPoint.HasValue) {
@@ -63,10 +64,11 @@ namespace Microsoft.R.Editor.Formatting {
                 // Find scope to format
                 IScope scope = ast.GetNodeOfTypeFromPosition<IScope>(caretPoint.Value);
 
-                using (var undoAction = editorShell.CreateCompoundAction(textView, textView.TextBuffer)) {
+                var es = shell.Services.GetService<IApplicationEditorSupport>();
+                using (var undoAction = es.CreateCompoundAction(textView, textView.TextBuffer)) {
                     undoAction.Open(Resources.AutoFormat);
                     // Now format the scope
-                    bool changed = RangeFormatter.FormatRange(textView, textBuffer, scope, REditorSettings.FormatOptions, editorShell);
+                    bool changed = RangeFormatter.FormatRange(textView, textBuffer, scope, REditorSettings.FormatOptions, shell);
                     if (indentCaret) {
                         // Formatting may change AST and the caret position so we need to reacquire both
                         caretPoint = REditorDocument.MapCaretPositionFromView(textView);
@@ -87,7 +89,7 @@ namespace Microsoft.R.Editor.Formatting {
         /// <summary>
         /// Formats line the caret is currently at
         /// </summary>
-        public static void FormatViewLine(ITextView textView, ITextBuffer textBuffer, int offset, IEditorShell editorShell) {
+        public static void FormatViewLine(ITextView textView, ITextBuffer textBuffer, int offset, ICoreShell shell) {
             SnapshotPoint? caretPoint = REditorDocument.MapCaretPositionFromView(textView);
             if (!caretPoint.HasValue) {
                 return;
@@ -98,13 +100,13 @@ namespace Microsoft.R.Editor.Formatting {
             ITextSnapshotLine line = snapshot.GetLineFromLineNumber(lineNumber + offset);
             ITextRange formatRange = new TextRange(line.Start, line.Length);
 
-            UndoableFormatRange(textView, textBuffer, formatRange, editorShell);
+            UndoableFormatRange(textView, textBuffer, formatRange, shell);
         }
 
-        public static void UndoableFormatRange(ITextView textView, ITextBuffer textBuffer, ITextRange formatRange, IEditorShell editorShell) {
-            using (var undoAction = editorShell.CreateCompoundAction(textView, textView.TextBuffer)) {
+        public static void UndoableFormatRange(ITextView textView, ITextBuffer textBuffer, ITextRange formatRange, ICoreShell shell) {
+            using (var undoAction = shell.CreateCompoundAction(textView, textView.TextBuffer)) {
                 undoAction.Open(Resources.AutoFormat);
-                var result = RangeFormatter.FormatRange(textView, textBuffer, formatRange, REditorSettings.FormatOptions, editorShell);
+                var result = RangeFormatter.FormatRange(textView, textBuffer, formatRange, REditorSettings.FormatOptions, shell);
                 if (result) {
                     undoAction.Commit();
                 }

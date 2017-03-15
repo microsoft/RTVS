@@ -3,14 +3,14 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.Languages.Editor.Controller.Command {
+namespace Microsoft.Languages.Editor.Controller.Commands {
     [ExcludeFromCodeCoverage]
     public class EditingCommand : ViewCommand {
-        protected IEditorShell EditorShell { get; }
+        protected ICoreShell Shell { get; }
 
         public EditingCommand(ITextView textView, Guid group, int id)
             : base(textView, group, id, true) {
@@ -20,9 +20,9 @@ namespace Microsoft.Languages.Editor.Controller.Command {
             : base(textView, Guid.Empty, id, true) {
         }
 
-        public EditingCommand(ITextView textView, IEditorShell editorShell, CommandId id)
+        public EditingCommand(ITextView textView, ICoreShell shell, CommandId id)
             : base(textView, id, true) {
-            EditorShell = editorShell;
+            Shell = shell;
         }
 
         public EditingCommand(ITextView textView, CommandId[] ids)

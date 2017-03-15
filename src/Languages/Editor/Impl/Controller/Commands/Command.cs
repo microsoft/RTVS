@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.Controller;
 
-namespace Microsoft.Languages.Editor.Controller.Command {
+namespace Microsoft.Languages.Editor.Controller.Commands {
     public class Command : ICommand {
         readonly bool _needCheckout;
         readonly CommandId[] _commandIds;

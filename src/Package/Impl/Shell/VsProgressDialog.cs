@@ -9,9 +9,9 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
     internal class VsProgressDialog : IProgressDialog {
-        private readonly IApplicationShell _shell;
+        private readonly ICoreShell _shell;
 
-        public VsProgressDialog(IApplicationShell shell) {
+        public VsProgressDialog(ICoreShell shell) {
             _shell = shell;
         }
 
@@ -50,7 +50,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
 
         private ThreadedWaitDialogHelper.Session StartWaitDialog(string waitMessage, int delayToShowDialogMs) {
-            var dialogFactory = _shell.GlobalServices.GetService<IVsThreadedWaitDialogFactory>(typeof(SVsThreadedWaitDialogFactory));
+            var dialogFactory = _shell.Services.GetService<IVsThreadedWaitDialogFactory>(typeof(SVsThreadedWaitDialogFactory));
             var initialProgress = new ThreadedWaitDialogProgressData(waitMessage, isCancelable: true);
             return dialogFactory.StartWaitDialog(null, initialProgress, TimeSpan.FromMilliseconds(delayToShowDialogMs));
         }

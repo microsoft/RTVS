@@ -9,10 +9,10 @@ using VsPackage = Microsoft.VisualStudio.Shell.Package;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
     internal sealed class VsServiceManager : ServiceManager {
-        private readonly IApplicationShell _appShell;
+        private readonly ICoreShell _shell;
 
-        public VsServiceManager(IApplicationShell appShell) {
-            _appShell = appShell;
+        public VsServiceManager(ICoreShell shell) {
+            _shell = shell;
         }
 
         #region IServiceContainer
@@ -21,11 +21,11 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             var service = base.GetService<T>(type);
             if (service == null) {
                 // First try MEF
-                service = _appShell.ExportProvider.GetExportedValueOrDefault<T>();
+                service = _shell.ExportProvider.GetExportedValueOrDefault<T>();
                 if (service == null) {
                     // Now try VS services. Only allowed on UI thread.
-                    _appShell.AssertIsOnMainThread();
-                    if (_appShell.IsUnitTestEnvironment) {
+                    _shell.AssertIsOnMainThread();
+                    if (_shell.IsUnitTestEnvironment) {
                         service = RPackage.Current.GetService(type ?? typeof(T)) as T;
                     } else {
                         service = VsPackage.GetGlobalService(type ?? typeof(T)) as T;

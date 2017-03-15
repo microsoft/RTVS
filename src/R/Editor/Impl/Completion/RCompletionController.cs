@@ -406,7 +406,7 @@ namespace Microsoft.R.Editor.Completion {
         /// Default signature session dismisses when caret changes position.
         /// </summary>
         public override void TriggerSignatureHelp() {
-            DismissSignatureSession(TextView, EditorShell.Current);
+            DismissSignatureSession(TextView, shell.Current);
             DismissQuickInfoSession(TextView);
             SignatureBroker.TriggerSignatureHelp(TextView);
         }
@@ -430,11 +430,11 @@ namespace Microsoft.R.Editor.Completion {
         //private async Task InsertFunctionBraces(SnapshotPoint position, string name) {
         //    bool function = await IsFunction(name);
         //    if (function) {
-        //        EditorShell.DispatchOnUIThread(() => {
+        //        shell.DispatchOnUIThread(() => {
         //            if (TextView.TextBuffer.CurrentSnapshot.Version.VersionNumber == position.Snapshot.Version.VersionNumber) {
         //                TextView.TextBuffer.Insert(position.Position, "()");
         //                TextView.Caret.MoveTo(new SnapshotPoint(TextView.TextBuffer.CurrentSnapshot, position.Position + 1));
-        //                EditorShell.DispatchOnUIThread(() => TriggerSignatureHelp());
+        //                shell.DispatchOnUIThread(() => TriggerSignatureHelp());
         //            }
         //        });
         //    }

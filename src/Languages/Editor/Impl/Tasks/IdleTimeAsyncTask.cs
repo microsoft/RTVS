@@ -15,7 +15,7 @@ namespace Microsoft.Languages.Editor.Tasks {
     /// Asynchronous task that start on next idle slot
     /// </summary>
     public sealed class IdleTimeAsyncTask : IDisposable {
-        private readonly IEditorShell _shell;
+        private readonly ICoreShell _shell;
         private Func<object> _taskAction;
         private Action<object> _callbackAction;
         private Action<object> _cancelAction;
@@ -28,7 +28,7 @@ namespace Microsoft.Languages.Editor.Tasks {
 
         public object Tag { get; private set; }
 
-        public IdleTimeAsyncTask(IEditorShell shell) {
+        public IdleTimeAsyncTask(ICoreShell shell) {
             _shell = shell;
         }
 
@@ -39,7 +39,7 @@ namespace Microsoft.Languages.Editor.Tasks {
         /// <param name="callbackAction">Callback to invoke when task completes</param>
         /// <param name="cancelAction">Callback to invoke if task is canceled</param>
         /// <param name="shell"></param>
-        public IdleTimeAsyncTask(Func<object> taskAction, Action<object> callbackAction, Action<object> cancelAction, IEditorShell shell)
+        public IdleTimeAsyncTask(Func<object> taskAction, Action<object> callbackAction, Action<object> cancelAction, ICoreShell shell)
             : this(shell) {
             Debug.Assert(taskAction != null);
 
@@ -57,7 +57,7 @@ namespace Microsoft.Languages.Editor.Tasks {
         /// <param name="taskAction">Task to perform in a background thread</param>
         /// <param name="callbackAction">Callback to invoke when task completes</param>
         /// <param name="shell"></param>
-        public IdleTimeAsyncTask(Func<object> taskAction, Action<object> callbackAction, IEditorShell shell)
+        public IdleTimeAsyncTask(Func<object> taskAction, Action<object> callbackAction, ICoreShell shell)
             : this(taskAction, callbackAction, null, shell) {
         }
 
@@ -66,7 +66,7 @@ namespace Microsoft.Languages.Editor.Tasks {
         /// </summary>
         /// <param name="taskAction">Task to perform in a background thread</param>
         /// <param name="shell"></param>
-        public IdleTimeAsyncTask(Func<object> taskAction, IEditorShell shell)
+        public IdleTimeAsyncTask(Func<object> taskAction, ICoreShell shell)
             : this(taskAction, null, null, shell) {
         }
 

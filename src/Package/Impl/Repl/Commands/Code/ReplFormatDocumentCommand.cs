@@ -9,8 +9,8 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     class ReplFormatDocumentCommand : FormatDocumentCommand {
-        public ReplFormatDocumentCommand(ITextView view, ITextBuffer buffer, IEditorShell editorShell) 
-            : base(view, buffer, editorShell) { }
+        public ReplFormatDocumentCommand(ITextView view, ITextBuffer buffer, ICoreShell shell) 
+            : base(view, buffer, shell) { }
 
         public override ITextBuffer TargetBuffer => base.TargetBuffer.GetInteractiveWindow().CurrentLanguageBuffer;
     }

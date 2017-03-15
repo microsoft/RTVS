@@ -25,20 +25,20 @@ namespace Microsoft.R.Editor.Test.Outline {
     public class ROutlineBuilderTest {
         private readonly EditorTestFilesFixture _testFiles;
         private readonly IExportProvider _exportProvider;
-        private readonly IEditorShell _editorShell;
+        private readonly ICoreShell _shell;
 
         public ROutlineBuilderTest(IExportProvider exportProvider, EditorTestFilesFixture testFiles) {
             _exportProvider = exportProvider;
-            _editorShell = _exportProvider.GetExportedValue<IEditorShell>();
+            _shell = _exportProvider.GetExportedValue<ICoreShell>();
             _testFiles = testFiles;
         }
 
         [Test]
         public void ConstructionTest() {
             TextBufferMock textBuffer = new TextBufferMock(string.Empty, RContentTypeDefinition.ContentType);
-            var tree = new EditorTree(textBuffer, _editorShell);
+            var tree = new EditorTree(textBuffer, _shell);
             using (var editorDocument = new EditorDocumentMock(tree)) {
-                using (var ob = new ROutlineRegionBuilder(editorDocument, _editorShell)) {
+                using (var ob = new ROutlineRegionBuilder(editorDocument, _shell)) {
 
                     ob.EditorDocument.Should().NotBeNull();
                     ob.EditorTree.Should().NotBeNull();
@@ -59,7 +59,7 @@ namespace Microsoft.R.Editor.Test.Outline {
 
         [Test(ThreadType.UI)]
         public void EmptyTest() {
-            OutlineRegionCollection rc = OutlineTest.BuildOutlineRegions(_editorShell, "");
+            OutlineRegionCollection rc = OutlineTest.BuildOutlineRegions(_shell, "");
 
             rc.Should().BeEmpty();
             rc.Start.Should().Be(0);
@@ -79,7 +79,7 @@ namespace Microsoft.R.Editor.Test.Outline {
     xnames<- c(0, xnames)
   }
 ";
-            OutlineRegionCollection rc = OutlineTest.BuildOutlineRegions(_editorShell, content);
+            OutlineRegionCollection rc = OutlineTest.BuildOutlineRegions(_shell, content);
 
             rc.Should().HaveCount(3);
 
@@ -99,7 +99,7 @@ namespace Microsoft.R.Editor.Test.Outline {
         [InlineData("01.r")]
         [InlineData("02.r")]
         public void OutlineFile(string name) {
-            Action a = () => OutlineTest.OutlineFile(_editorShell, _testFiles, name);
+            Action a = () => OutlineTest.OutlineFile(_shell, _testFiles, name);
             a.ShouldNotThrow();
         }
 
@@ -119,10 +119,10 @@ x <- 1
             OutlineRegionsChangedEventArgs args = null;
 
             textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            using (var tree = new EditorTree(textBuffer, _editorShell)) {
+            using (var tree = new EditorTree(textBuffer, _shell)) {
                 tree.Build();
                 using (var editorDocument = new EditorDocumentMock(tree)) {
-                    using (var ob = new ROutlineRegionBuilder(editorDocument, _editorShell)) {
+                    using (var ob = new ROutlineRegionBuilder(editorDocument, _shell)) {
                         var rc1 = new OutlineRegionCollection(0);
                         ob.BuildRegions(rc1);
 
@@ -144,7 +144,7 @@ x <- 1
                         // Wait for background/idle tasks to complete
                         var start = DateTime.Now;
                         while (calls == 0 && (DateTime.Now - start).TotalMilliseconds < 2000) {
-                            _editorShell.DoIdle();
+                            _shell.DoIdle();
                         }
 
                         calls.Should().Be(1);

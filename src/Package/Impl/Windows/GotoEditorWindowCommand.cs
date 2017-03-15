@@ -37,7 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.Windows {
         }
 
         private IVsWindowFrame FindDocumentFrame(string filePath) {
-            var uiShell = VsAppShell.Current.GlobalServices.GetService<IVsUIShell>(typeof(SVsUIShell));
+            var uiShell = Vsshell.Current.Services.GetService<IVsUIShell>(typeof(SVsUIShell));
             IVsWindowFrame[] frames = new IVsWindowFrame[1];
             IEnumWindowFrames windowEnum;
             uiShell.GetDocumentWindowEnum(out windowEnum);

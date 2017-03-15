@@ -70,7 +70,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             public HelpSearchTask(uint dwCookie, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback)
                 : base(dwCookie, pSearchQuery, pSearchCallback) {
                 _callback = pSearchCallback;
-                _workflowProvider = VsAppShell.Current.GlobalServices.GetService<IRInteractiveWorkflowProvider>();
+                _workflowProvider = Vsshell.Current.Services.GetService<IRInteractiveWorkflowProvider>();
             }
 
             protected override void OnStartSearch() {

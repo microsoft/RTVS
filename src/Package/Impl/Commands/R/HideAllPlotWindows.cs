@@ -11,13 +11,13 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Commands {
     internal sealed class HideAllPlotWindowsCommand : PackageCommand {
-        private readonly IApplicationShell _appShell;
+        private readonly ICoreShell _shell;
         private readonly IVsUIShell4 _shell;
 
-        public HideAllPlotWindowsCommand(IApplicationShell appShell) :
+        public HideAllPlotWindowsCommand(ICoreShell shell) :
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdPlotWindowsHideAll) {
-            _appShell = appShell;
-            _shell = appShell.GlobalServices.GetService<IVsUIShell4>(typeof(SVsUIShell));
+            _shell = shell;
+            _shell = shell.Services.GetService<IVsUIShell4>(typeof(SVsUIShell));
         }
 
         protected override void SetStatus() {
@@ -40,7 +40,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
                     }
                 }
             } catch (Exception ex) when (!ex.IsCriticalException()) {
-                _appShell.ShowErrorMessage(ex.Message);
+                _shell.ShowErrorMessage(ex.Message);
             }
         }
     }

@@ -32,7 +32,7 @@ namespace Microsoft.VisualStudio.R.Package.History.Commands {
         }
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
-            if (VsAppShell.Current.ShowMessage(Resources.DeleteSelectedHistoryEntries, MessageButtons.YesNo) == MessageButtons.Yes) {
+            if (Vsshell.Current.ShowMessage(Resources.DeleteSelectedHistoryEntries, MessageButtons.YesNo) == MessageButtons.Yes) {
                 _history.DeleteSelectedHistoryEntries();
             }
 

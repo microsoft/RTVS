@@ -24,12 +24,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataSource {
                 return await rSession.EvaluateAsync<GridData>(expr, REvaluationKind.Normal);
             } catch (RException ex) {
                 var message = Invariant($"Grid data evaluation failed:{Environment.NewLine}{ex.Message}");
-                VsAppShell.Current.Services.Log.Write(LogVerbosity.Normal, MessageCategory.Error, message);
+                Vsshell.Current.Services.Log.Write(LogVerbosity.Normal, MessageCategory.Error, message);
                 return null;
             }
         }
 
         public static Task<IGridData<string>> GetGridDataAsync(string expression, GridRange? gridRange, ISortOrder sortOrder = null) =>
-            GetGridDataAsync(VsAppShell.Current.GlobalServices.GetService<IRInteractiveWorkflowProvider>().GetOrCreate().RSession, expression, gridRange, sortOrder);
+            GetGridDataAsync(Vsshell.Current.Services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate().RSession, expression, gridRange, sortOrder);
     }
 }

@@ -17,10 +17,10 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.Languages.Editor.Test.Shell {
     [ExcludeFromCodeCoverage]
-    internal sealed class TestEditorShell : TestShellBase, IEditorShell {
-        private static TestEditorShell _instance;
+    internal sealed class Testshell : TestShellBase, ICoreShell {
+        private static Testshell _instance;
 
-        private TestEditorShell(ICompositionCatalog catalog, Thread mainThread) :
+        private Testshell(ICompositionCatalog catalog, Thread mainThread) :
             base(catalog.ExportProvider) {
             CompositionService = catalog.CompositionService;
             MainThread = mainThread;
@@ -34,8 +34,8 @@ namespace Microsoft.Languages.Editor.Test.Shell {
             // Called via reflection in test cases. Creates instance
             // of the test shell that editor code can access during
             // test run.
-            _instance = new TestEditorShell(EditorTestCompositionCatalog.Current, UIThreadHelper.Instance.Thread);
-            EditorShell.Current = _instance;
+            _instance = new Testshell(EditorTestCompositionCatalog.Current, UIThreadHelper.Instance.Thread);
+            shell.Current = _instance;
         }
 
         #region ICompositionCatalog
@@ -43,7 +43,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
         public ExportProvider ExportProvider { get; private set; }
         #endregion
 
-        #region IEditorShell
+        #region ICoreShell
         public ICommandTarget TranslateCommandTarget(ITextView textView, object commandTarget) {
             return commandTarget as ICommandTarget;
         }

@@ -41,7 +41,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         public event EventHandler LeaveBreakMode;
 
         public bool IsRDebugger() {
-            DTE dte = VsAppShell.Current.GlobalServices.GetService<DTE>();
+            DTE dte = Vsshell.Current.Services.GetService<DTE>();
             var process2 = dte?.Debugger?.CurrentProcess as EnvDTE80.Process2;
             var transportId = process2?.Transport?.ID;
             Guid transportGuid;

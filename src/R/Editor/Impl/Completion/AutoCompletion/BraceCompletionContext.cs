@@ -16,9 +16,9 @@ namespace Microsoft.R.Editor.Completion.AutoCompletion {
     /// such as parsing and formatting.
     /// </summary>
     internal sealed class BraceCompletionContext : IBraceCompletionContext {
-        private readonly IEditorShell _shell;
+        private readonly ICoreShell _shell;
 
-        public BraceCompletionContext(IEditorShell shell) {
+        public BraceCompletionContext(ICoreShell shell) {
             _shell = shell;
         }
 

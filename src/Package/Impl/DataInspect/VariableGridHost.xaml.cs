@@ -29,8 +29,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public VariableGridHost() {
             InitializeComponent();
 
-            _aggregator = VsAppShell.Current.GlobalServices.GetService<IObjectDetailsViewerAggregator>();
-            _rSession = VsAppShell.Current.GlobalServices.GetService<IRInteractiveWorkflowProvider>().GetOrCreate().RSession;
+            _aggregator = Vsshell.Current.Services.GetService<IObjectDetailsViewerAggregator>();
+            _rSession = Vsshell.Current.Services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate().RSession;
             _rSession.Mutated += RSession_Mutated;
         }
 
@@ -52,14 +52,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 var result = await _rSession.TryEvaluateAndDescribeAsync(_evaluation.Expression, properties, null);
                 var wrapper = new VariableViewModel(result, _aggregator);
 
-                VsAppShell.Current.DispatchOnUIThread(() => SetEvaluation(wrapper));
+                Vsshell.Current.DispatchOnUIThread(() => SetEvaluation(wrapper));
             } catch (Exception ex) {
-                VsAppShell.Current.DispatchOnUIThread(() => SetError(ex.Message));
+                Vsshell.Current.DispatchOnUIThread(() => SetError(ex.Message));
             }
         }
 
         internal void SetEvaluation(VariableViewModel wrapper) {
-            VsAppShell.Current.AssertIsOnMainThread();
+            Vsshell.Current.AssertIsOnMainThread();
 
             // Is the variable gone?
             if (wrapper.TypeName == null) {
@@ -82,7 +82,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private void SetError(string text) {
-            VsAppShell.Current.AssertIsOnMainThread();
+            Vsshell.Current.AssertIsOnMainThread();
 
             ErrorTextBlock.Text = text;
             ErrorTextBlock.Visibility = Visibility.Visible;
@@ -90,7 +90,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private void ClearError() {
-            VsAppShell.Current.AssertIsOnMainThread();
+            Vsshell.Current.AssertIsOnMainThread();
 
             ErrorTextBlock.Visibility = Visibility.Collapsed;
             VariableGrid.Visibility = Visibility.Visible;

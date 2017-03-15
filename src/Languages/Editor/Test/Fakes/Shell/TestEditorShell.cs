@@ -10,6 +10,7 @@ using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.Common.Core.Threading;
+using Microsoft.Common.Core.UI;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.R.Components.Controller;
@@ -18,11 +19,11 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.Languages.Editor.Test.Fakes.Shell {
-    public class TestEditorShell : IEditorShell, IMainThread {
+    public class Testshell : ICoreShell, IMainThread {
         private readonly CompositionContainer _container;
         private readonly TestServiceManager _serviceManager;
 
-        public TestEditorShell(CompositionContainer container, ICoreServices coreServices) {
+        public Testshell(CompositionContainer container, ICoreServices coreServices) {
             FileDialog = new TestFileDialog();
             ProgressDialog = new TestProgressDialog();
             _container = container;
@@ -79,7 +80,7 @@ namespace Microsoft.Languages.Editor.Test.Fakes.Shell {
         public void Post(Action action, CancellationToken cancellationToken) => UIThreadHelper.Instance.InvokeAsync(action, cancellationToken).DoNotWait();
         #endregion
 
-        #region IEditorShell
+        #region ICoreShell
         public ICommandTarget TranslateCommandTarget(ITextView textView, object commandTarget) {
             return commandTarget as ICommandTarget;
         }

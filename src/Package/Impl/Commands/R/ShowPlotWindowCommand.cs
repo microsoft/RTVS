@@ -20,9 +20,9 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         private readonly IVsUIShell4 _shell;
         private PlotWindowResult[] _windows;
 
-        public ShowPlotWindowCommand(IApplicationShell appShell, IRInteractiveWorkflow workflow) {
+        public ShowPlotWindowCommand(ICoreShell shell, IRInteractiveWorkflow workflow) {
             _plotManager = workflow.Plots;
-            _shell = appShell.GlobalServices.GetService<IVsUIShell4>(typeof(SVsUIShell));
+            _shell = shell.Services.GetService<IVsUIShell4>(typeof(SVsUIShell));
         }
 
         public CommandStatus GetStatus(int index) {

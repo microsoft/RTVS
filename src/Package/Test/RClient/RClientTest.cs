@@ -13,6 +13,7 @@ using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Core.Test.Registry;
+using Microsoft.Common.Core.UI;
 using Microsoft.R.Interpreters;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.RClient;
@@ -88,14 +89,15 @@ namespace Microsoft.VisualStudio.R.Package.Test.RClient {
             SqlRClientInstallation.GetRClientPath(tr).Should().Be(rClientRPath);
 
             var shell = Substitute.For<ICoreShell>();
-            shell.ShowMessage(Arg.Any<string>(), Arg.Any<MessageButtons>()).Returns(MessageButtons.Yes);
+            var es = shell.Services.GetService<IUIServices>();
+            es.ShowMessage(Arg.Any<string>(), Arg.Any<MessageButtons>()).Returns(MessageButtons.Yes);
             shell.MainThread.Returns(Thread.CurrentThread);
 
             MicrosoftRClient.CheckMicrosoftRClientInstall(shell, tr);
-            shell.Received(1).ShowMessage(Arg.Any<string>(), Arg.Any<MessageButtons>());
+            es.Received(1).ShowMessage(Arg.Any<string>(), Arg.Any<MessageButtons>());
 
             MicrosoftRClient.CheckMicrosoftRClientInstall(shell);
-            shell.Received(1).ShowMessage(Arg.Any<string>(), Arg.Any<MessageButtons>());
+            es.Received(1).ShowMessage(Arg.Any<string>(), Arg.Any<MessageButtons>());
         }
 
         private RegistryKeyMock[] SimulateRegistryMsRClient(string rClientInstallPath, string rClientRPath) {

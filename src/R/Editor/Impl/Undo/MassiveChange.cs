@@ -10,15 +10,14 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
 
 namespace Microsoft.R.Editor.Undo {
-    internal sealed class MassiveChange : IDisposable
-    {
+    internal sealed class MassiveChange : IDisposable {
         private ITextUndoTransaction _transaction;
         private ITextBuffer _textBuffer;
- 
-        public MassiveChange(ITextView textView, ITextBuffer textBuffer, ICompositionCatalog catalog, string description) {
+
+        public MassiveChange(ITextView textView, ITextBuffer textBuffer, ICoreShell shell, string description) {
             _textBuffer = textBuffer;
 
-            var undoManagerProvider = catalog.ExportProvider.GetExportedValue<ITextBufferUndoManagerProvider>();
+            var undoManagerProvider = shell.Services.GetService<ITextBufferUndoManagerProvider>();
             var undoManager = undoManagerProvider.GetTextBufferUndoManager(textView.TextBuffer);
 
             ITextUndoTransaction innerTransaction = undoManager.TextBufferUndoHistory.CreateTransaction(description);
@@ -30,8 +29,7 @@ namespace Microsoft.R.Editor.Undo {
             document?.BeginMassiveChange();
         }
 
-        public void Dispose()
-        {
+        public void Dispose() {
             IREditorDocument document = REditorDocument.TryFromTextBuffer(_textBuffer);
             bool changed = true;
 
@@ -39,12 +37,9 @@ namespace Microsoft.R.Editor.Undo {
                 changed = document.EndMassiveChange();
             }
 
-            if (!changed)
-            {
+            if (!changed) {
                 _transaction.Cancel();
-            }
-            else
-            {
+            } else {
                 _transaction.AddUndo(new EndMassiveChangeUndoUnit(_textBuffer));
                 _transaction.Complete();
             }
@@ -53,44 +48,36 @@ namespace Microsoft.R.Editor.Undo {
         }
     }
 
-    internal class StartMassiveChangeUndoUnit : TextUndoPrimitiveBase
-    {
+    internal class StartMassiveChangeUndoUnit : TextUndoPrimitiveBase {
         public StartMassiveChangeUndoUnit(ITextBuffer textBuffer)
-            : base(textBuffer)
-        {
+            : base(textBuffer) {
         }
 
-        public override void Do()
-        {
+        public override void Do() {
             IREditorDocument document = REditorDocument.TryFromTextBuffer(TextBuffer);
             if (document != null)
                 document.BeginMassiveChange();
         }
 
-        public override void Undo()
-        {
+        public override void Undo() {
             IREditorDocument document = REditorDocument.TryFromTextBuffer(TextBuffer);
             if (document != null)
                 document.EndMassiveChange();
         }
     }
 
-    internal class EndMassiveChangeUndoUnit : TextUndoPrimitiveBase
-    {
+    internal class EndMassiveChangeUndoUnit : TextUndoPrimitiveBase {
         public EndMassiveChangeUndoUnit(ITextBuffer textBuffer)
-            : base(textBuffer)
-        {
+            : base(textBuffer) {
         }
 
-        public override void Do()
-        {
+        public override void Do() {
             var document = REditorDocument.TryFromTextBuffer(TextBuffer);
             if (document != null)
                 document.EndMassiveChange();
         }
 
-        public override void Undo()
-        {
+        public override void Undo() {
             var document = REditorDocument.TryFromTextBuffer(TextBuffer);
             if (document != null)
                 document.BeginMassiveChange();

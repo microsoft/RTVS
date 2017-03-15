@@ -30,7 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
                 return;
             }
 
-            var debugger = VsAppShell.Current.GlobalServices.GetService<IVsDebugger2>(typeof(SVsShellDebugger));
+            var debugger = Vsshell.Current.Services.GetService<IVsDebugger2>(typeof(SVsShellDebugger));
             if (debugger == null) {
                 return;
             }

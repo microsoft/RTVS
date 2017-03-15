@@ -17,14 +17,14 @@ using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
     internal sealed class LoadWorkspaceCommand : PackageCommand {
-        private readonly IApplicationShell _appShell;
+        private readonly ICoreShell _shell;
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
         private readonly IRSession _rSession;
         private readonly IProjectServiceAccessor _projectServiceAccessor;
 
-        public LoadWorkspaceCommand(IApplicationShell appShell, IRInteractiveWorkflow interactiveWorkflow, IProjectServiceAccessor projectServiceAccessor) :
+        public LoadWorkspaceCommand(ICoreShell shell, IRInteractiveWorkflow interactiveWorkflow, IProjectServiceAccessor projectServiceAccessor) :
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdLoadWorkspace) {
-            _appShell = appShell;
+            _shell = shell;
             _interactiveWorkflow = interactiveWorkflow;
             _rSession = interactiveWorkflow.RSession;
             _projectServiceAccessor = projectServiceAccessor;
@@ -45,7 +45,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
             var lastLoadedProject = projectService.LoadedUnconfiguredProjects.LastOrDefault();
 
             var initialPath = lastLoadedProject != null ? lastLoadedProject.GetProjectDirectory() : Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            var file = _appShell.FileDialog.ShowOpenFileDialog(Resources.WorkspaceFileFilter, initialPath, Resources.LoadWorkspaceTitle);
+            var file = _shell.FileDialog.ShowOpenFileDialog(Resources.WorkspaceFileFilter, initialPath, Resources.LoadWorkspaceTitle);
             if (file == null) {
                 return;
             }
@@ -58,7 +58,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
                 await session.LoadWorkspaceAsync(file);
             } catch (RException ex) {
                 var message = string.Format(CultureInfo.CurrentCulture, Resources.LoadWorkspaceFailedMessageFormat, file, ex.Message);
-                VsAppShell.Current.ShowErrorMessage(message);
+                Vsshell.Current.ShowErrorMessage(message);
             } catch (OperationCanceledException) {
             }
         }

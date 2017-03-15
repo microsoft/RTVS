@@ -12,7 +12,7 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
     [Export(typeof(IRPlotHistoryVisualComponentContainerFactory))]
     internal class VsRPlotHistoryVisualComponentContainerFactory : ToolWindowPaneFactory<PlotHistoryWindowPane>, IRPlotHistoryVisualComponentContainerFactory {
         public IVisualComponentContainer<IRPlotHistoryVisualComponent> GetOrCreate(IRPlotManager plotManager, int instanceId = 0) {
-            return GetOrCreate(instanceId, i => new PlotHistoryWindowPane(plotManager, i, RToolsSettings.Current, VsAppShell.Current));
+            return GetOrCreate(instanceId, i => new PlotHistoryWindowPane(plotManager, i, RToolsSettings.Current, Vsshell.Current));
         }
     }
 }

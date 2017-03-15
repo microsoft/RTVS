@@ -17,7 +17,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
         }
 
         protected override void Handle() {
-            VsAppShell.Current.PostCommand(_shellGroup, (int)_shellCmdId);
+            Vsshell.Current.PostCommand(_shellGroup, (int)_shellCmdId);
         }
     }
 }

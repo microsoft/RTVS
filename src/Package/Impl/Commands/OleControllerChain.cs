@@ -38,7 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
                 // nextOleTarget is typically a core editor wrapped into OLE layer.
                 // Create a wrapper that will present OLE target as ICommandTarget to
                 // HTML main controller so controller can operate in platform-agnostic way.
-                ICommandTarget nextCommandTarget = VsAppShell.Current.TranslateCommandTarget(textView, nextOleTarget);
+                ICommandTarget nextCommandTarget = Vsshell.Current.TranslateCommandTarget(textView, nextOleTarget);
                 controller.ChainedController = nextCommandTarget;
             }
             return oleControllerShim;
@@ -53,10 +53,10 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
 
         public static void InitEditorInstance(ITextBuffer textBuffer) {
             if (ServiceManager.GetService<IEditorInstance>(textBuffer) == null) {
-                var importComposer1 = new ContentTypeImportComposer<IEditorFactory>(VsAppShell.Current.CompositionService);
+                var importComposer1 = new ContentTypeImportComposer<IEditorFactory>(Vsshell.Current.CompositionService);
                 var editorInstanceFactory = importComposer1.GetImport(textBuffer.ContentType.TypeName);
 
-                var importComposer2 = new ContentTypeImportComposer<IVsEditorDocumentFactory>(VsAppShell.Current.CompositionService);
+                var importComposer2 = new ContentTypeImportComposer<IVsEditorDocumentFactory>(Vsshell.Current.CompositionService);
                 var documentFactory = importComposer2.GetImport(textBuffer.ContentType.TypeName);
 
                 var editorInstance = editorInstanceFactory.CreateEditorInstance(textBuffer, documentFactory);

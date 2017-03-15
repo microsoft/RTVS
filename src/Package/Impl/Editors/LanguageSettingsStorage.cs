@@ -43,7 +43,7 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
         }
 
         private void HookTextManagerEvents() {
-            IVsTextManager4 textManager = VsAppShell.Current.GlobalServices.GetService<IVsTextManager4>(typeof(SVsTextManager));
+            IVsTextManager4 textManager = Vsshell.Current.Services.GetService<IVsTextManager4>(typeof(SVsTextManager));
             Debug.Assert(textManager != null);
 
             if (textManager != null) {
@@ -58,7 +58,7 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
         protected LANGPREFERENCES3 LangPrefs {
             get {
                 if (!_langPrefs.HasValue) {
-                    IVsTextManager4 textManager = VsAppShell.Current.GlobalServices.GetService<IVsTextManager4>(typeof(SVsTextManager));
+                    IVsTextManager4 textManager = Vsshell.Current.Services.GetService<IVsTextManager4>(typeof(SVsTextManager));
                     Debug.Assert(textManager != null);
 
                     if (textManager != null) {
@@ -85,7 +85,7 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
         }
 
         private void SetLangPrefs(LANGPREFERENCES3 newPreferences) {
-            IVsTextManager4 textManager = VsAppShell.Current.GlobalServices.GetService<IVsTextManager4>(typeof(SVsTextManager));
+            IVsTextManager4 textManager = Vsshell.Current.Services.GetService<IVsTextManager4>(typeof(SVsTextManager));
             Debug.Assert(textManager != null);
 
             if (textManager != null) {

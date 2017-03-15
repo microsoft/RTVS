@@ -117,7 +117,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 IReadOnlyList<IREvaluationResultInfo> children = await valueEvaluation.DescribeChildrenAsync(properties, Repr, MaxChildrenCount);
 
                 result = new List<IRSessionDataObject>();
-                var aggregator = VsAppShell.Current.GlobalServices.GetService<IObjectDetailsViewerAggregator>();
+                var aggregator = Vsshell.Current.Services.GetService<IObjectDetailsViewerAggregator>();
                 for (int i = 0; i < children.Count; i++) {
                     result.Add(new VariableViewModel(children[i], aggregator, index: i, maxChildrenCount: GetMaxChildrenCount(children[i])));
                 }
@@ -154,7 +154,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public string OpenInCsvAppCommandTooltip { get; private set; }
 
         private void OpenInCsvApp(object parameter) {
-            CsvAppFileIO.OpenDataCsvApp(DebugEvaluation, VsAppShell.Current,  new FileSystem(), new ProcessServices()).DoNotWait();
+            CsvAppFileIO.OpenDataCsvApp(DebugEvaluation, Vsshell.Current,  new FileSystem(), new ProcessServices()).DoNotWait();
         }
 
         /// <summary>
@@ -163,7 +163,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public async Task DeleteAsync(string envExpr) {
             if (!_deleted) {
                 _deleted = true;
-                var workflow = VsAppShell.Current.GlobalServices.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
+                var workflow = Vsshell.Current.Services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
                 var session = workflow.RSession;
                 try {
                     using (var e = await session.BeginInteractionAsync(isVisible: false)) {
@@ -171,7 +171,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                         await e.RespondAsync(rmText);
                     }
                 } catch (RException rex) {
-                    VsAppShell.Current.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToDeleteVariable, rex.Message));
+                    Vsshell.Current.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToDeleteVariable, rex.Message));
                 } catch (RHostDisconnectedException) {
                 }
             }

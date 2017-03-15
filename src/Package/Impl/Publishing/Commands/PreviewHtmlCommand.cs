@@ -18,12 +18,12 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
         public PreviewHtmlCommand(
             ITextView textView,
             IRInteractiveWorkflowProvider workflowProvider,
-            IApplicationShell appShell,
+            ICoreShell shell,
             IProcessServices pss,
             IFileSystem fs,
             IWebBrowserServices wbs)
             : base(textView, (int)MdPackageCommandId.icmdPreviewHtml,
-                  workflowProvider, appShell, pss, fs) {
+                  workflowProvider, shell, pss, fs) {
             _wbs = wbs;
         }
 

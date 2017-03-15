@@ -56,7 +56,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         protected virtual async Task<bool> TryHandleCommandAsyncInternal(IProjectTree rDataNode) {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-            MessageButtons messageResult = VsAppShell.Current.ShowMessage(string.Format(CultureInfo.CurrentCulture, Resources.LoadWorkspaceIntoGlobalEnvironment, rDataNode.FilePath), MessageButtons.YesNo);
+            MessageButtons messageResult = Vsshell.Current.ShowMessage(string.Format(CultureInfo.CurrentCulture, Resources.LoadWorkspaceIntoGlobalEnvironment, rDataNode.FilePath), MessageButtons.YesNo);
             if (messageResult == MessageButtons.No) {
                 return true;
             }
@@ -67,7 +67,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             } catch (RException ex) {
                 var message = string.Format(CultureInfo.CurrentCulture, Resources.LoadWorkspaceFailedMessageFormat,
                     rDataNode.FilePath, ex.Message);
-                VsAppShell.Current.ShowErrorMessage(message);
+                Vsshell.Current.ShowErrorMessage(message);
             } catch (OperationCanceledException) {
             }
 

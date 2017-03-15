@@ -39,7 +39,7 @@ namespace Microsoft.R.Editor.Outline {
         internal IREditorDocument EditorDocument { get; }
         internal IEditorTree EditorTree { get; }
 
-        public ROutlineRegionBuilder(IREditorDocument document, IEditorShell shell)
+        public ROutlineRegionBuilder(IREditorDocument document, ICoreShell shell)
             : base(document.EditorTree.TextBuffer, shell) {
             EditorDocument = document;
             EditorDocument.DocumentClosing += OnDocumentClosing;

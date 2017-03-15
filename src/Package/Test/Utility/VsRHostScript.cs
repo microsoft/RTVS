@@ -23,7 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Utility {
                 int time = 0;
                 while (time < ms) {
                     TestScript.DoEvents();
-                    VsAppShell.Current.DoIdle();
+                    Vsshell.Current.DoIdle();
 
                     Thread.Sleep(20);
                     time += 20;

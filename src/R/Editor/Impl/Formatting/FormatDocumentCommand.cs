@@ -3,11 +3,11 @@
 
 using System;
 using System.Diagnostics;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor.Controller.Command;
+using Microsoft.Languages.Editor.Controller.Commands;
 using Microsoft.Languages.Editor.Controller.Constants;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Core.Formatting;
@@ -23,8 +23,8 @@ namespace Microsoft.R.Editor.Formatting {
     internal class FormatDocumentCommand : EditingCommand {
         ITextBuffer _textBuffer;
 
-        internal FormatDocumentCommand(ITextView textView, ITextBuffer textBuffer, IEditorShell editorShell)
-            : base(textView, editorShell, new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.FORMATDOCUMENT)) {
+        internal FormatDocumentCommand(ITextView textView, ITextBuffer textBuffer, ICoreShell shell)
+            : base(textView, shell, new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.FORMATDOCUMENT)) {
             _textBuffer = textBuffer;
         }
 
@@ -47,7 +47,7 @@ namespace Microsoft.R.Editor.Formatting {
                 selectionTracker.StartTracking(automaticTracking: false);
 
                 try {
-                    using (var massiveChange = new MassiveChange(TextView, TargetBuffer, EditorShell, Resources.FormatDocument)) {
+                    using (var massiveChange = new MassiveChange(TextView, TargetBuffer, Shell, Resources.FormatDocument)) {
                         IREditorDocument document = REditorDocument.TryFromTextBuffer(TargetBuffer);
                         if (document != null) {
                             document.EditorTree.Invalidate();
@@ -79,7 +79,7 @@ namespace Microsoft.R.Editor.Formatting {
                             new TextStream(oldText), new TextStream(formattedText),
                             oldTokens, newTokens,
                             TextRange.FromBounds(0, oldText.Length),
-                            Resources.FormatDocument, selectionTracker, EditorShell);
+                            Resources.FormatDocument, selectionTracker, shell);
                     }
                 } finally {
                     selectionTracker.EndTracking();

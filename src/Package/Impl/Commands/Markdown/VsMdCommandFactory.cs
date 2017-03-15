@@ -41,9 +41,9 @@ namespace Microsoft.VisualStudio.R.Package.Commands.MD {
             }
 
             return new ICommand[] {
-                new PreviewHtmlCommand(textView, _workflowProvider, VsAppShell.Current, new ProcessServices(), new FileSystem(), _wbs),
-                new PreviewPdfCommand(textView, _workflowProvider, VsAppShell.Current, new ProcessServices(), new FileSystem()),
-                new PreviewWordCommand(textView, _workflowProvider, VsAppShell.Current, new ProcessServices(), new FileSystem()),
+                new PreviewHtmlCommand(textView, _workflowProvider, Vsshell.Current, new ProcessServices(), new FileSystem(), _wbs),
+                new PreviewPdfCommand(textView, _workflowProvider, Vsshell.Current, new ProcessServices(), new FileSystem()),
+                new PreviewWordCommand(textView, _workflowProvider, Vsshell.Current, new ProcessServices(), new FileSystem()),
                 new ClearReplCommand(textView, workflow),
                 new ShowContextMenuCommand(textView, MdGuidList.MdPackageGuid, MdGuidList.MdCmdSetGuid, (int) MarkdownContextMenuId.MD)
             };

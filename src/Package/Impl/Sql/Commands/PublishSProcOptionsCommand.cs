@@ -18,17 +18,17 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
     [ExportCommandGroup("AD87578C-B324-44DC-A12A-B01A6ED5C6E3")]
     [AppliesTo(ProjectConstants.RtvsProjectCapability)]
     internal sealed class PublishSProcOptionsCommand : IAsyncCommandGroupHandler {
-        private readonly IApplicationShell _appShell;
+        private readonly ICoreShell _shell;
         private readonly IProjectSystemServices _pss;
         private readonly IProjectConfigurationSettingsProvider _pcsp;
         private readonly IDacPackageServicesProvider _dacServicesProvider;
         private readonly ISettingsStorage _settings;
 
         [ImportingConstructor]
-        public PublishSProcOptionsCommand(IApplicationShell appShell, IProjectSystemServices pss, 
+        public PublishSProcOptionsCommand(ICoreShell shell, IProjectSystemServices pss, 
                                           IProjectConfigurationSettingsProvider pcsp, IDacPackageServicesProvider dacServicesProvider,
                                           ISettingsStorage settings) {
-            _appShell = appShell;
+            _shell = shell;
             _pss = pss;
             _pcsp = pcsp;
             _dacServicesProvider = dacServicesProvider;
@@ -45,9 +45,9 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
         public async Task<bool> TryHandleCommandAsync(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, long commandExecuteOptions, IntPtr variantArgIn, IntPtr variantArgOut) {
             if (commandId == RPackageCommandId.icmdPublishSProcOptions) {
                 if (_dacServicesProvider.GetDacPackageServices() != null) {
-                    var dlg = await SqlPublshOptionsDialog.CreateAsync(_appShell, _pss, _pcsp, _settings);
+                    var dlg = await SqlPublshOptionsDialog.CreateAsync(_shell, _pss, _pcsp, _settings);
 
-                    await _appShell.SwitchToMainThreadAsync();
+                    await _shell.SwitchToMainThreadAsync();
                     dlg.ShowModal();
                 } 
                 return true;

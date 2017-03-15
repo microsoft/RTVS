@@ -8,7 +8,6 @@ using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Selection;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Operations;
 
@@ -73,13 +72,13 @@ namespace Microsoft.Languages.Editor.Text {
             ITextRange formatRange,
             string transactionName,
             ISelectionTracker selectionTracker,
-            IEditorShell editorShell,
+            ICoreShell shell,
             Action additionalAction = null) {
 
             Debug.Assert(oldTokens.Count == newTokens.Count);
             if (oldTokens.Count == newTokens.Count) {
                 ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
-                using (CreateSelectionUndo(selectionTracker, editorShell, transactionName)) {
+                using (CreateSelectionUndo(selectionTracker, shell, transactionName)) {
                     using (ITextEdit edit = textBuffer.CreateEdit()) {
                         if (oldTokens.Count > 0) {
                             // Replace whitespace between tokens in reverse so relative positions match
@@ -108,12 +107,12 @@ namespace Microsoft.Languages.Editor.Text {
             }
         }
 
-        private static IDisposable CreateSelectionUndo(ISelectionTracker selectionTracker, IEditorShell editorShell, string transactionName) {
-            if (editorShell.IsUnitTestEnvironment) {
+        private static IDisposable CreateSelectionUndo(ISelectionTracker selectionTracker, ICoreShell shell, string transactionName) {
+            if (shell.IsUnitTestEnvironment) {
                 return Disposable.Empty;
             }
 
-            var textBufferUndoManagerProvider = editorShell.GlobalServices.GetService<ITextBufferUndoManagerProvider>();
+            var textBufferUndoManagerProvider = shell.Services.GetService<ITextBufferUndoManagerProvider>();
             return new SelectionUndo(selectionTracker, textBufferUndoManagerProvider, transactionName, automaticTracking: false);
         }
     }

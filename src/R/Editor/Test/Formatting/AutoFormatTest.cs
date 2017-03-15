@@ -69,7 +69,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
                     if (AutoFormat.IsPostProcessAutoformatTriggerCharacter(ch)) {
                         position = e.Changes[0].OldPosition + 1;
                         textView.Caret.MoveTo(new SnapshotPoint(e.After, position));
-                        FormatOperations.FormatViewLine(textView, textView.TextBuffer, -1, _exportProvider.GetExportedValue<IEditorShell>());
+                        FormatOperations.FormatViewLine(textView, textView.TextBuffer, -1, _exportProvider.GetExportedValue<ICoreShell>());
                     }
                 } else {
                     ITextSnapshotLine line = e.After.GetLineFromPosition(position);

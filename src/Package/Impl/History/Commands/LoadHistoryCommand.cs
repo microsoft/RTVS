@@ -16,13 +16,13 @@ using PathHelper = Microsoft.VisualStudio.ProjectSystem.PathHelper;
 
 namespace Microsoft.VisualStudio.R.Package.History.Commands {
     internal class LoadHistoryCommand : ViewCommand {
-        private readonly IApplicationShell _appShell;
+        private readonly ICoreShell _shell;
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
         private readonly IRHistory _history;
 
-        public LoadHistoryCommand(IApplicationShell appShell, ITextView textView, IRHistoryProvider historyProvider, IRInteractiveWorkflow interactiveWorkflow)
+        public LoadHistoryCommand(ICoreShell shell, ITextView textView, IRHistoryProvider historyProvider, IRInteractiveWorkflow interactiveWorkflow)
             : base(textView, RGuidList.RCmdSetGuid, RPackageCommandId.icmdLoadHistory, false) {
-            _appShell = appShell;
+            _shell = shell;
             _interactiveWorkflow = interactiveWorkflow;
             _history = historyProvider.GetAssociatedRHistory(textView);
         }
@@ -35,7 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.History.Commands {
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             var initialPath = RToolsSettings.Current.WorkingDirectory != null ? PathHelper.EnsureTrailingSlash(RToolsSettings.Current.WorkingDirectory) : null;
-            var file = _appShell.FileDialog.ShowOpenFileDialog(Resources.HistoryFileFilter, initialPath, Resources.LoadHistoryTitle);
+            var file = _shell.FileDialog.ShowOpenFileDialog(Resources.HistoryFileFilter, initialPath, Resources.LoadHistoryTitle);
             if (file != null) {
                 _history.TryLoadFromFile(file);
             }

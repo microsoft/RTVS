@@ -139,9 +139,9 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
                 SetProperty(ref _workingDirectory, newDirectory);
                 UpdateWorkingDirectoryList(newDirectory);
 
-                if (EditorShell.HasShell) {
-                    VsAppShell.Current.DispatchOnUIThread(() => {
-                        IVsUIShell shell = VsAppShell.Current.GlobalServices.GetService<IVsUIShell>(typeof(SVsUIShell));
+                if (shell.HasShell) {
+                    Vsshell.Current.DispatchOnUIThread(() => {
+                        IVsUIShell shell = Vsshell.Current.Services.GetService<IVsUIShell>(typeof(SVsUIShell));
                         shell.UpdateCommandUI(1);
                     });
                 }

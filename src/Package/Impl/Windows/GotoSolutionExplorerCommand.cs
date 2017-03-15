@@ -16,7 +16,7 @@ namespace Microsoft.VisualStudio.R.Package.Windows {
         }
 
         protected override void Handle() {
-            VsAppShell.Current.PostCommand(typeof(VSConstants.VSStd97CmdID).GUID, (int)VSConstants.VSStd97CmdID.ProjectExplorer);
+            Vsshell.Current.PostCommand(typeof(VSConstants.VSStd97CmdID).GUID, (int)VSConstants.VSStd97CmdID.ProjectExplorer);
         }
     }
 }

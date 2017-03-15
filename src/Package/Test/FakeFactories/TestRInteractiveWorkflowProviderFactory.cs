@@ -11,9 +11,6 @@ using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Test.Fakes.InteractiveWindow;
 using Microsoft.R.Components.Test.StubFactories;
-using Microsoft.R.Components.Workspace;
-using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Mocks;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Test.Mocks;
@@ -36,7 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.FakeFactories {
 
             activeTextViewTracker = activeTextViewTracker ?? new ActiveTextViewTrackerMock(string.Empty, RContentTypeDefinition.ContentType);
             debuggerModeTracker = debuggerModeTracker ?? new VsDebuggerModeTracker();
-            shell = shell ?? VsAppShell.Current;
+            shell = shell ?? Vsshell.Current;
             settings = settings ?? RToolsSettings.Current;
 
             return new TestRInteractiveWorkflowProvider(

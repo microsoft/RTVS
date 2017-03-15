@@ -53,7 +53,7 @@ namespace Microsoft.R.Editor.Commands {
                     var snapshot = textView.TextBuffer.CurrentSnapshot;
                     ITextSnapshotLine line = snapshot.GetLineFromPosition(bufferPosition.Value);
 
-                    var tagAggregator = _shell.GlobalServices.GetService<IViewTagAggregatorFactoryService>();
+                    var tagAggregator = _shell.Services.GetService<IViewTagAggregatorFactoryService>();
                     using (var urlClassificationAggregator = tagAggregator.CreateTagAggregator<IUrlTag>(textView)) {
 
                         var tags = urlClassificationAggregator.GetTags(new SnapshotSpan(snapshot, line.Start, line.Length));
