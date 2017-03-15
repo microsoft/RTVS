@@ -21,8 +21,14 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
 
     [Export(typeof(IImagesProvider))]
     internal sealed class ImagesProvider : IImagesProvider {
-        private Dictionary<string, ImageMoniker> _monikerCache = new Dictionary<string, ImageMoniker>();
-        private Lazy<Dictionary<string, string>> _fileExtensionCache = Lazy.Create(() => CreateExtensionCache());
+        private readonly Dictionary<string, ImageMoniker> _monikerCache = new Dictionary<string, ImageMoniker>();
+        private readonly Lazy<Dictionary<string, string>> _fileExtensionCache = Lazy.Create(() => CreateExtensionCache());
+
+        private static IVsImageService2 _imageService;
+
+        public ImagesProvider() {
+            _imageService = _imageService ?? VsAppShell.Current.GetGlobalService<IVsImageService2>(typeof(SVsImageService));
+        }
 
         /// <summary>
         /// Returns image source given name of the image moniker
@@ -42,7 +48,7 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
         /// </summary>
         public ImageSource GetFileIcon(string file) {
             string ext = Path.GetExtension(file);
-            if(_fileExtensionCache.Value.ContainsKey(ext)) {
+            if (_fileExtensionCache.Value.ContainsKey(ext)) {
                 return GetImage(_fileExtensionCache.Value[ext]);
             }
             return GetImage("Document");
@@ -67,7 +73,6 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
         }
 
         public static ImageSource GetIconForImageMoniker(ImageMoniker imageMoniker) {
-            IVsImageService2 imageService = VsAppShell.Current.GetGlobalService<IVsImageService2>(typeof(SVsImageService));
             ImageSource glyph = null;
 
             ImageAttributes imageAttributes = new ImageAttributes();
@@ -78,14 +83,12 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
             imageAttributes.LogicalWidth = 16;// IconWidth,
             imageAttributes.StructSize = Marshal.SizeOf(typeof(ImageAttributes));
 
-            IVsUIObject result = imageService.GetImage(imageMoniker, imageAttributes);
+            IVsUIObject result = _imageService.GetImage(imageMoniker, imageAttributes);
 
             Object data = null;
             if (result.get_Data(out data) == VSConstants.S_OK) {
                 glyph = data as ImageSource;
-                if (glyph != null) {
-                    glyph.Freeze();
-                }
+                glyph?.Freeze();
             }
 
             return glyph;

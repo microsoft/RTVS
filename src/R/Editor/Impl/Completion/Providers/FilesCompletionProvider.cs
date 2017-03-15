@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using Microsoft.Common.Core;
@@ -100,7 +101,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
                     }
                     completions.AddRange(entries);
                 }
-            } catch (IOException) { } catch (UnauthorizedAccessException) { } catch (ArgumentException) { }
+            } catch (IOException) { } catch (UnauthorizedAccessException) { } catch (ArgumentException) { } catch (TimeoutException) { }
 
             return completions;
         }
@@ -112,17 +113,15 @@ namespace Microsoft.R.Editor.Completion.Providers {
                 var completions = new List<RCompletion>();
 
                 try {
+                    var folderGlyph = _glyphService.GetGlyphThreadSafe(StandardGlyphGroup.GlyphClosedFolder, StandardGlyphItem.GlyphItemPublic);
+                    var fileGlyph = _glyphService.GetGlyphThreadSafe(StandardGlyphGroup.GlyphClosedFolder, StandardGlyphItem.GlyphItemPublic);
+
                     var rPath = directory.ToRPath().ToRStringLiteral();
-                    var files = await session.EvaluateAsync<JArray>(Invariant($"as.list(list.files(path = {rPath}, include.dirs = FALSE))"), REvaluationKind.Normal);
+                    var files = await session.EvaluateAsync<JArray>(Invariant($"as.list(list.files(path = {rPath}))"), REvaluationKind.Normal);
                     var dirs = await session.EvaluateAsync<JArray>(Invariant($"as.list(list.dirs(path = {rPath}, full.names = FALSE, recursive = FALSE))"), REvaluationKind.Normal);
 
-                    var folderGlyph = _glyphService.GetGlyphThreadSafe(StandardGlyphGroup.GlyphClosedFolder, StandardGlyphItem.GlyphItemPublic);
-                    foreach (var d in dirs) {
-                        completions.Add(new RCompletion((string)d, (string)d + "/", string.Empty, folderGlyph));
-                    }
-                    foreach (var f in files) {
-                        completions.Add(new RCompletion((string)f, (string)f, string.Empty, folderGlyph));
-                    }
+                    completions.AddRange(dirs.Select(d => new RCompletion((string)d, (string)d + "/", string.Empty, folderGlyph)));
+                    completions.AddRange(files.Except(dirs).Select(f => new RCompletion((string)f, (string)f, string.Empty, _imagesProvider?.GetFileIcon((string)f))));
 
                 } catch (RException) { } catch (OperationCanceledException) { }
 
