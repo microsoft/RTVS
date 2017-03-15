@@ -13,7 +13,7 @@ using Microsoft.Common.Core.Threading;
 
 namespace Microsoft.Common.Core.Services {
     public sealed class CoreServices : ICoreServices {
-        public CoreServices(IApplicationConstants appConstants
+        public CoreServices(string applicationName
             , ITelemetryService telemetry
             , ITaskService tasks
             , IProcessServices processServices
@@ -30,7 +30,7 @@ namespace Microsoft.Common.Core.Services {
             FileSystem = new FileSystem();
             MainThread = mainThread;
 
-            Log = new Logger(appConstants.ApplicationName, Path.GetTempPath(), LoggingPermissions);
+            Log = new Logger(applicationName, Path.GetTempPath(), LoggingPermissions);
         }
 
         public CoreServices(ITelemetryService telemetry

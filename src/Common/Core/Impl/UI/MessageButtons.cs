@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.Common.Core.Shell {
+namespace Microsoft.Common.Core.UI {
 
     /// <summary>
     /// Specifies which buttons to show in a message box.

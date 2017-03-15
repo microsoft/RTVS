@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
 using static System.FormattableString;

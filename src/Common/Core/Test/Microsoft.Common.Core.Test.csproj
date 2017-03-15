@@ -74,7 +74,7 @@
     <Compile Include="Match\MatchAny.cs" />
     <Compile Include="Match\MatchMembers.cs" />
     <Compile Include="Script\EventsPump.cs" />
-    <Compile Include="Fakes\Shell\TestAppConstants.cs" />
+    <Compile Include="Fakes\Shell\TestPlatformServices.cs" />
     <Compile Include="Fakes\Shell\TestCoreShell.cs" />
     <Compile Include="StubFactories\DirectoryInfoStubFactory.cs" />
     <Compile Include="StubFactories\FileInfoStubFactory.cs" />

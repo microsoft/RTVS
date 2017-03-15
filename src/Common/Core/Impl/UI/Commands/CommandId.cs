@@ -2,14 +2,11 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 
-namespace Microsoft.Languages.Editor.Controller.Command {
+namespace Microsoft.Common.Core.UI.Commands {
     /// <summary>
     /// Command identifier
     /// </summary>
-    [SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
-    [ExcludeFromCodeCoverage]
     public struct CommandId {
         public CommandId(Guid group, int id)
             : this() {

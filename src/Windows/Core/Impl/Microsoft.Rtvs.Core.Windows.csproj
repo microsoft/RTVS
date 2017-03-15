@@ -65,7 +65,7 @@
     <Compile Include="Shell\CoreShell.cs" />
     <Compile Include="Shell\CoreShellExtensions.cs" />
     <Compile Include="Shell\ICompositionCatalog.cs" />
-    <Compile Include="Shell\ICoreShell.cs" />
+    <Compile Include="Shell\IPlatformServices.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources.resx">
@@ -80,9 +80,7 @@
       <Name>Microsoft.Common.Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="IO\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="project.json" />
   </ItemGroup>

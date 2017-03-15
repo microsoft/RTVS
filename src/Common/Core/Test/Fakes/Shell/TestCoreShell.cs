@@ -9,6 +9,7 @@ using System.Threading;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Threading;
+using Microsoft.Common.Core.UI;
 using Microsoft.UnitTests.Core.Threading;
 
 namespace Microsoft.Common.Core.Test.Fakes.Shell {
@@ -19,20 +20,25 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
 
         public TestCoreShell(CompositionContainer container, ICoreServices services) {
             _container = container;
-            Services = services;
             _serviceManager = new TestServiceManager(container);
+            _serviceManager
+                .AddService(services)
+                .AddService(new TestFileDialog())
+                .AddService(new TestProgressDialog())
+                .AddService(new TestPlatformServices());
         }
 
-        public IServiceContainer GlobalServices => _serviceManager;
+        public string ApplicationName => "RTVS_Test";
+        public int LocaleId => 1033;
+
+        public IServiceContainer Services => _serviceManager;
 
         public ExportProvider ExportProvider => _container;
         public ICompositionService CompositionService => _container;
 
-        public void DispatchOnUIThread(Action action) {
-            UIThreadHelper.Instance.InvokeAsync(action).DoNotWait();
-        }
+        public void DispatchOnUIThread(Action action) => UIThreadHelper.Instance.InvokeAsync(action).DoNotWait();
 
-        public Thread MainThread => UIThreadHelper.Instance.Thread;
+        public IMainThread MainThread => this;
 
 #pragma warning disable 67
         public event EventHandler<EventArgs> Started;
@@ -58,15 +64,10 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
 
         public void UpdateCommandStatus(bool immediate) { }
 
-        public int LocaleId => 1033;
         public string LastShownMessage { get; private set; }
         public string LastShownErrorMessage { get; private set; }
         public System.ComponentModel.Design.CommandID LastShownContextMenu { get; private set; }
         public bool IsUnitTestEnvironment => true;
-        public IFileDialog FileDialog { get; } = new TestFileDialog();
-        public IProgressDialog ProgressDialog { get; } = new TestProgressDialog();
-        public IApplicationConstants AppConstants { get; } = new TestAppConstants();
-        public ICoreServices Services { get; }
 
         #region IMainThread
 

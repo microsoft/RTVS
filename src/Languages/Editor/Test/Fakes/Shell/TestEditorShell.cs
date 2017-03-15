@@ -69,7 +69,7 @@ namespace Microsoft.Languages.Editor.Test.Fakes.Shell {
         public string LastShownMessage { get; private set; }
         public string LastShownErrorMessage { get; private set; }
         public System.ComponentModel.Design.CommandID LastShownContextMenu { get; private set; }
-        public IApplicationConstants AppConstants => new TestAppConstants();
+        public IApplicationConstants AppConstants => new TestPlatformServices();
         public IProgressDialog ProgressDialog { get; }
         public IFileDialog FileDialog { get; }
         public ICoreServices Services { get; }

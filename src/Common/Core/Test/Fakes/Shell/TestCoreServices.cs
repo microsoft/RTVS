@@ -31,7 +31,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
         }
 
         public static ICoreServices CreateReal() {
-            var appConstants = new TestAppConstants();
+            var appConstants = new TestPlatformServices();
             var telemetryService = new TelemetryTestService();
             var registry = new RegistryImpl();
             var loggingPermissions = new LoggingPermissions(appConstants, telemetryService, registry);

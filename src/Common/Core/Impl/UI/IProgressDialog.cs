@@ -5,7 +5,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.Common.Core.Shell {
+namespace Microsoft.Common.Core.UI {
     public interface IProgressDialog {
         /// <summary>
         /// Shows progress bar that blocks hosting shell

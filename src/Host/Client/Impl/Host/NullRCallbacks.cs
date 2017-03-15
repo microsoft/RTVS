@@ -5,8 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Threading;
+using Microsoft.Common.Core.UI;
 using static Microsoft.R.Host.Client.YesNoCancel;
 
 namespace Microsoft.R.Host.Client.Host {

@@ -17,6 +17,7 @@ using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Tasks;
 using Microsoft.Common.Core.Threading;
+using Microsoft.Common.Core.UI;
 using Microsoft.R.Host.Client.Host;
 using static System.FormattableString;
 

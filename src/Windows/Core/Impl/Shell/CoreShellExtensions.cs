@@ -7,25 +7,26 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Threading;
+using Microsoft.Common.Core.UI;
 
 namespace Microsoft.Common.Core.Shell {
     public static class CoreShellExtensions {
         public static MainThreadAwaitable SwitchToMainThreadAsync(this ICoreShell coreShell, CancellationToken cancellationToken = default(CancellationToken))
-             => ((IMainThread)coreShell).SwitchToAsync(cancellationToken);
+             => coreShell.MainThread.SwitchToAsync(cancellationToken);
 
         public static async Task ShowErrorMessageAsync(this ICoreShell coreShell, string message, CancellationToken cancellationToken = default(CancellationToken)) {
             await coreShell.SwitchToMainThreadAsync(cancellationToken);
-            coreShell.ShowErrorMessage(message);
+            coreShell.Services.GetService<IUIServices>().ShowErrorMessage(message);
         }
 
         public static async Task<MessageButtons> ShowMessageAsync(this ICoreShell coreShell, string message, MessageButtons buttons, CancellationToken cancellationToken = default(CancellationToken)) {
             await coreShell.SwitchToMainThreadAsync(cancellationToken);
-            return coreShell.ShowMessage(message, buttons);
+            return coreShell.Services.GetService<IUIServices>().ShowMessage(message, buttons);
         }
 
         [Conditional("TRACE")]
         public static void AssertIsOnMainThread(this ICoreShell coreShell, [CallerMemberName] string memberName = "", [CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0) {
-            if (coreShell.MainThread.ManagedThreadId != Thread.CurrentThread.ManagedThreadId) {
+            if (coreShell.MainThread.ThreadId != Thread.CurrentThread.ManagedThreadId) {
                 Debug.Fail(FormattableString.Invariant($"{memberName} at {sourceFilePath}:{sourceLineNumber} was incorrectly called from a background thread."));
             }
         }

@@ -92,7 +92,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
 
         #region ICoreShell
         public bool IsUnitTestEnvironment { get; set; } = true;
-        public IApplicationConstants AppConstants => new TestAppConstants();
+        public IApplicationConstants AppConstants => new TestPlatformServices();
         public virtual ICoreServices Services => TestCoreServices.CreateReal();
         public IProgressDialog ProgressDialog { get; }
         public IFileDialog FileDialog { get; }

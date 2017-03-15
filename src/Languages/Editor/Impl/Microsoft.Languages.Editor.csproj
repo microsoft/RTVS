@@ -86,7 +86,6 @@
     <Compile Include="Composition\ContentTypeImportComposer.cs" />
     <Compile Include="Composition\ImportComposer.cs" />
     <Compile Include="Controller\Command\Command.cs" />
-    <Compile Include="Controller\Command\CommandId.cs" />
     <Compile Include="Controller\Command\DisabledCommand.cs" />
     <Compile Include="Controller\Command\EditingCommand.cs" />
     <Compile Include="Controller\Command\InvisibleCommand.cs" />

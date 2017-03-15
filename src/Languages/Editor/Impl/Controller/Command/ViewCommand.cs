@@ -3,6 +3,8 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Common.Core.UI.Commands;
+using Microsoft.Core.Shell.UI.Command;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.Languages.Editor.Controller.Command {

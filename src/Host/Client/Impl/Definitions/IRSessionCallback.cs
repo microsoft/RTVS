@@ -4,7 +4,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI;
 
 namespace Microsoft.R.Host.Client {
     /// <summary>

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI;
 using Microsoft.R.Components.Help;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Settings;
@@ -34,7 +35,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             _coreShell = coreShell;
             _fileSystem = fileSystem;
 
-            var workflowProvider = _coreShell.GlobalServices.GetService<IRInteractiveWorkflowProvider>();
+            var workflowProvider = _coreShell.Services.GetService<IRInteractiveWorkflowProvider>();
             _workflow = workflowProvider.GetOrCreate();
         }
 

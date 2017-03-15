@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.VisualStudio.Text.Editor;
 
