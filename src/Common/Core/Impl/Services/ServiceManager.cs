@@ -9,13 +9,8 @@ using Microsoft.Common.Core.Diagnostics;
 
 namespace Microsoft.Common.Core.Services {
     public class ServiceManager : IServiceManager {
-        class ServiceFactory {
-            public IServiceFactory Factory { get; set; }
-            public object[] Parameters { get; set; }
-        }
-
         private readonly Dictionary<Type, object> _services = new Dictionary<Type, object>();
-        private readonly Dictionary<Type, ServiceFactory> _deferredServices = new Dictionary<Type, ServiceFactory>();
+        private readonly Dictionary<Type, Func<object>> _deferredServices = new Dictionary<Type, Func<object>>();
         private readonly object _lock = new object();
 
         /// <summary>
@@ -34,10 +29,9 @@ namespace Microsoft.Common.Core.Services {
         /// <param name="service">Service instance</param>
         public virtual IServiceManager AddService<T>(T service) where T : class {
             var type = typeof(T);
+            Check.ArgumentNull(nameof(service), service);
             lock (_lock) {
-                Check.ArgumentNull(nameof(service), service);
                 Check.InvalidOperation(() => _services.ContainsKey(type));
-
                 _services[type] = service;
             }
             ServiceAdded?.Invoke(this, new ServiceContainerEventArgs(type));
@@ -50,13 +44,12 @@ namespace Microsoft.Common.Core.Services {
         /// <param name="type">Service type</param>
         /// <param name="factory">Optional creator function. If not provided, reflection with default constructor will be used.</param>
         /// <param name="parameters">Factory parameters</param>
-        public virtual IServiceManager AddService(Type type, IServiceFactory factory = null, params object[] parameters) {
+        public virtual IServiceManager AddService(Type type, Func<object> factory) {
             Check.ArgumentNull(nameof(type), type);
-            Check.InvalidOperation(() => _services.ContainsKey(type));
-            Check.InvalidOperation(() => _deferredServices.ContainsKey(type));
-
             lock (_lock) {
-                _deferredServices[type] = new ServiceFactory { Factory = factory, Parameters = parameters };
+                Check.InvalidOperation(() => _services.ContainsKey(type));
+                Check.InvalidOperation(() => _deferredServices.ContainsKey(type));
+                _deferredServices[type] = factory;
             }
 
             ServiceAdded?.Invoke(this, new ServiceContainerEventArgs(type));
@@ -79,22 +72,20 @@ namespace Microsoft.Common.Core.Services {
 
                 // Try walk through and cast. Perhaps someone is asking for IFoo
                 // that is implemented on class Bar but Bar was added as Bar, not as IFoo
-                foreach (var s in _services.Values) {
-                    T svc = s as T;
-                    if (svc != null) {
-                        return svc;
-                    }
+                service = _services.Values.Where(s => s is T).FirstOrDefault();
+                if (service != null) {
+                    return service as T;
                 }
 
                 // Check deferred
-                ServiceFactory factory;
+                Func<object> factory;
                 if (_deferredServices.TryGetValue(type, out factory)) {
                     return CreateService(type, factory) as T;
                 }
 
                 foreach (var key in _deferredServices.Keys) {
                     if (type.GetTypeInfo().IsAssignableFrom(key)) {
-                        return CreateService(key, _deferredServices[key]) as T;
+                        return CreateService(key, factory) as T;
                     }
                 }
 
@@ -102,8 +93,8 @@ namespace Microsoft.Common.Core.Services {
             }
         }
 
-        private object CreateService(Type type, ServiceFactory factory) {
-            var serviceInstance = factory != null ? factory.Factory.CreateService(factory.Parameters) : Activator.CreateInstance(type, this);
+        private object CreateService(Type type, Func<object> factory) {
+            var serviceInstance = factory != null ? factory() : Activator.CreateInstance(type, this);
             _services[type] = serviceInstance;
             _deferredServices.Remove(type);
             return serviceInstance;
@@ -115,7 +106,7 @@ namespace Microsoft.Common.Core.Services {
                 fireEvent = _services.Remove(typeof(T)) || _deferredServices.Remove(typeof(T));
             }
 
-            if(fireEvent) {
+            if (fireEvent) {
                 ServiceRemoved?.Invoke(this, new ServiceContainerEventArgs(typeof(T)));
             }
         }

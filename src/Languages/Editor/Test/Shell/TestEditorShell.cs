@@ -23,7 +23,6 @@ namespace Microsoft.Languages.Editor.Test.Shell {
         private TestEditorShell(ICompositionCatalog catalog, Thread mainThread) :
             base(catalog.ExportProvider) {
             CompositionService = catalog.CompositionService;
-            ExportProvider = catalog.ExportProvider;
             MainThread = mainThread;
         }
 

@@ -48,29 +48,30 @@ namespace Microsoft.Common.Core.Services {
         /// </summary>
         /// <typeparam name="T">The type of the property.</typeparam>
         /// <param name="key">The key of the property to get or create.</param>
-        /// <param name="creator">The delegate used to create the property (if needed).</param>
+        /// <param name="factory">The delegate used to create the property (if needed).</param>
         /// <returns>The property that was requested.</returns>
-        public T GetOrCreateSingletonProperty<T>(object key, Func<T> creator) where T : class {
+        public T GetOrCreateSingletonProperty<T>(object key, Func<T> factory) where T : class {
             Check.ArgumentNull(nameof(creator), creator);
 
             lock (_lock) {
-                if (_properties.Value.ContainsKey(key)) {
-                    return (T)_properties.Value[key];
+                object property;
+                if (_properties.Value.TryGetValue(key, out property)) {
+                    return property as T;
                 }
 
-                var result = creator();
+                var result = factory();
 
-                // It is possible that executing the creator function had the side-effect of 
+                // It is possible that executing the creator function has the side-effect of 
                 // adding a property with this key to the property bag. The locks only prevents 
                 // access from other threads, not from re-entrant calls by the same thread. 
                 // This is bad since thecreator function is getting called twice. Our best option 
                 // is to discard the result created above and return the one that is already 
                 // in the property bag so, at least, we are being consistent.
-                if (_properties.Value.ContainsKey(key)) {
-                    return (T)_properties.Value[key];
+                if (_properties.Value.TryGetValue(key, out property)) {
+                    return property as T;
                 }
 
-                _properties.Value.Add(key, result);
+                _properties.Value[key] = result;
                 return result;
             }
         }
@@ -112,11 +113,8 @@ namespace Microsoft.Common.Core.Services {
                     throw new KeyNotFoundException(nameof(key));
                 }
 
-                object item = _properties.Value[key];
-
-                // If item is null, it could mean the dictionary has the key but it is just null.
-                // Check Contains() to figure out whether it is a missing key or a null value.
-                if ((item == null) && !_properties.Value.ContainsKey(key)) {
+                object item;
+                if (!_properties.Value.TryGetValue(key, out item)) {
                     throw new KeyNotFoundException(nameof(key));
                 }
                 return item;
@@ -135,17 +133,13 @@ namespace Microsoft.Common.Core.Services {
         public bool TryGetProperty<T>(object key, out T property) {
             lock (_lock) {
                 if (_properties.IsValueCreated) {
-                    object item = _properties.Value[key];
-
-                    //If item is null, it could mean the dictionary has the key but it is just null.
-                    //Check Contains() to figure out whether it is a missing key or a null value.
-                    if ((item != null) || _properties.Value.ContainsKey(key)) {
+                    object item;
+                    if (_properties.Value.TryGetValue(key, out item)) {
                         property = (T)item;
                         return true;
                     }
                 }
             }
-
             property = default(T);
             return false;
         }
