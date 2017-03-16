@@ -125,8 +125,11 @@ namespace Microsoft.R.Host.Client {
         public async Task ShowFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken) 
             => await Console.Error.WriteAsync(Invariant($"ShowFile({fileName}, {tabName}, {deleteFile})"));
 
-        public void PackagesInstalled() {
-            Console.Error.WriteLineAsync("PackagesInstalled").DoNotWait();
+        public void BeforePackagesInstalled() {
+            Console.Error.WriteLineAsync("BeforePackagesInstalled").DoNotWait();
+        }
+        public void AfterPackagesInstalled() {
+            Console.Error.WriteLineAsync("AfterPackagesInstalled").DoNotWait();
         }
 
         public void PackagesRemoved() {

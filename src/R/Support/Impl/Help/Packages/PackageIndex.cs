@@ -16,7 +16,6 @@ using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
 using Newtonsoft.Json.Linq;
 using static System.FormattableString;
@@ -49,8 +48,9 @@ namespace Microsoft.R.Support.Help.Packages {
 
             _interactiveSession = _workflow.RSession;
             _interactiveSession.Connected += OnSessionConnected;
-            _interactiveSession.PackagesInstalled += OnPackagesChanged;
-            _interactiveSession.PackagesRemoved += OnPackagesChanged;
+            _interactiveSession.BeforePackagesInstalled += OnBeforePackagesInstalled;
+            _interactiveSession.AfterPackagesInstalled += OnAfterPackagesInstalled;
+            _interactiveSession.PackagesRemoved += OnPackagesRemoved;
 
             _workflow.RSessions.BrokerStateChanged += OnBrokerStateChanged;
 
@@ -69,8 +69,18 @@ namespace Microsoft.R.Support.Help.Packages {
             }
         }
 
-        private void OnPackagesChanged(object sender, EventArgs e) {
+        private void OnBeforePackagesInstalled(object sender, EventArgs e) {
+            try {
+                _host.StopSessionAsync().Wait(3000);
+            } catch(OperationCanceledException) { }
+        }
+
+        private void OnAfterPackagesInstalled(object sender, EventArgs e) {
             UpdateInstalledPackagesAsync().DoNotWait();
+        }
+
+        private void OnPackagesRemoved(object sender, EventArgs e) {
+            RemovePackagesAsync().DoNotWait();
         }
 
         #region IPackageIndex
@@ -166,8 +176,9 @@ namespace Microsoft.R.Support.Help.Packages {
 
         public void Dispose() {
             if (_interactiveSession != null) {
-                _interactiveSession.PackagesInstalled -= OnPackagesChanged;
-                _interactiveSession.PackagesRemoved -= OnPackagesChanged;
+                _interactiveSession.BeforePackagesInstalled -= OnBeforePackagesInstalled;
+                _interactiveSession.AfterPackagesInstalled -= OnAfterPackagesInstalled;
+                _interactiveSession.PackagesRemoved -= OnPackagesRemoved;
                 _interactiveSession.Connected -= OnSessionConnected;
                 _workflow.RSessions.BrokerStateChanged -= OnBrokerStateChanged;
             }
@@ -176,6 +187,7 @@ namespace Microsoft.R.Support.Help.Packages {
 
         private async Task LoadInstalledPackagesIndexAsync() {
             try {
+                await _host.StartSessionAsync();
                 var packagesFunctions = await _host.Session.InstalledPackagesFunctionsAsync(REvaluationKind.BaseEnv);
                 foreach (var package in packagesFunctions) {
                     var name = package.Value<string>("Package");
@@ -202,7 +214,7 @@ namespace Microsoft.R.Support.Help.Packages {
             }
         }
 
-        private async Task UpdateInstalledPackagesAsync() {
+        private async Task RemovePackagesAsync() {
             var token = await _buildIndexLock.ResetAsync();
             if (!token.IsSet) {
                 try {
@@ -212,6 +224,18 @@ namespace Microsoft.R.Support.Help.Packages {
                     var currentNames = _packages.Keys.ToArray();
                     var removedNames = currentNames.Except(installedNames);
                     _packages.RemoveWhere((kvp) => removedNames.Contains(kvp.Key));
+                } catch (RException) { } catch (OperationCanceledException) { } finally {
+                    token.Reset();
+                }
+            }
+        }
+
+        private async Task UpdateInstalledPackagesAsync() {
+            var token = await _buildIndexLock.ResetAsync();
+            if (!token.IsSet) {
+                try {
+                    var installed = await GetInstalledPackagesAsync();
+                    var currentNames = _packages.Keys.ToArray();
 
                     var added = installed.Where(p => !currentNames.Contains(p.Package));
                     await AddPackagesToIndexAsync(added);

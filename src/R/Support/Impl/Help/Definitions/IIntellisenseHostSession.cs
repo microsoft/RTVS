@@ -19,7 +19,13 @@ namespace Microsoft.R.Support.Help {
         /// Starts intellisense session.
         /// </summary>
         Task StartSessionAsync();
-        
+
+        /// <summary>
+        /// Stops intellisense session.
+        /// </summary>
+        /// <returns></returns>
+        Task StopSessionAsync();
+
         /// <summary>
         /// Given function name returns package the function belongs to.
         /// The package is determined from the interactive R session since

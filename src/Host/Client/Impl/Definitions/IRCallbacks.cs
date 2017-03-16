@@ -90,7 +90,8 @@ namespace Microsoft.R.Host.Client {
         /// <returns></returns>
         Task ViewObject(string expression, string title, CancellationToken cancellationToken);
 
-        void PackagesInstalled();
+        void BeforePackagesInstalled();
+        void AfterPackagesInstalled();
         void PackagesRemoved();
 
         /// <summary>

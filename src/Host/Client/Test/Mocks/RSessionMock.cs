@@ -112,7 +112,8 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
         public event EventHandler<EventArgs> Disposed;
         public event EventHandler<EventArgs> Mutated;
         public event EventHandler<ROutputEventArgs> Output;
-        public event EventHandler<EventArgs> PackagesInstalled;
+        public event EventHandler<EventArgs> BeforePackagesInstalled;
+        public event EventHandler<EventArgs> AfterPackagesInstalled;
         public event EventHandler<EventArgs> PackagesRemoved;
     }
 }

@@ -101,6 +101,21 @@ namespace Microsoft.R.Support.Help {
             }
         }
 
+        public async Task StopSessionAsync() {
+            var token = await _lock.ResetAsync();
+            try {
+                if (!_sessionProvider.HasBroker) {
+                    throw new RHostDisconnectedException();
+                }
+
+                if (Session.IsHostRunning) {
+                    await Session.StopHostAsync();
+                }
+            } finally {
+                token.Set();
+            }
+        }
+
         /// <summary>
         /// Retrieves names of packages loaded into the interactive session.
         /// </summary>

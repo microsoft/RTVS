@@ -38,7 +38,8 @@ namespace Microsoft.R.Host.Client.Session {
         public event EventHandler<EventArgs> Disconnected;
         public event EventHandler<EventArgs> Disposed;
         public event EventHandler<EventArgs> DirectoryChanged;
-        public event EventHandler<EventArgs> PackagesInstalled;
+        public event EventHandler<EventArgs> BeforePackagesInstalled;
+        public event EventHandler<EventArgs> AfterPackagesInstalled;
         public event EventHandler<EventArgs> PackagesRemoved;
 
         /// <summary>
@@ -718,8 +719,12 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
             return callback?.ViewObjectAsync(obj, title, cancellationToken) ?? Task.CompletedTask;
         }
 
-        void IRCallbacks.PackagesInstalled() {
-            PackagesInstalled?.Invoke(this, EventArgs.Empty);
+        void IRCallbacks.BeforePackagesInstalled() {
+            BeforePackagesInstalled?.Invoke(this, EventArgs.Empty);
+        }
+
+        void IRCallbacks.AfterPackagesInstalled() {
+            AfterPackagesInstalled?.Invoke(this, EventArgs.Empty);
         }
 
         void IRCallbacks.PackagesRemoved() {

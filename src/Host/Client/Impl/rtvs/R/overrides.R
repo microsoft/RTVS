@@ -55,8 +55,9 @@ show_file <- function(files, header, title, delete.file) {
 }
 
 install.packages <- function(...) {
+    invisible(rtvs:::send_notification('!BeforePackagesInstalled'))
     utils::install.packages(...)
-    invisible(rtvs:::send_notification('!PackagesInstalled'))
+    invisible(rtvs:::send_notification('!AfterPackagesInstalled'))
 }
 
 remove.packages <- function(...) {
