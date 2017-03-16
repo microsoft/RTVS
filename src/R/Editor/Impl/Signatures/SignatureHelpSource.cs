@@ -42,7 +42,7 @@ namespace Microsoft.R.Editor.Signatures {
             if (document != null) {
                 if (!document.EditorTree.IsReady) {
                     document.EditorTree.InvokeWhenReady((p) => {
-                        var broker = _shell.ExportProvider.GetExportedValue<ISignatureHelpBroker>();
+                        var broker = _shell.GlobalServices.GetService<ISignatureHelpBroker>();
                         broker.DismissAllSessions((ITextView)p);
                         broker.TriggerSignatureHelp((ITextView)p);
                     }, session.TextView, this.GetType(), processNow: true);
@@ -74,7 +74,7 @@ namespace Microsoft.R.Editor.Signatures {
                 }
 
                 if (functionInfo == null) {
-                    var functionIndex = _shell.ExportProvider.GetExportedValue<IFunctionIndex>();
+                    var functionIndex = _shell.GlobalServices.GetService<IFunctionIndex>();
                     // Then try package functions
                     packageName = packageName ?? _packageName;
                     _packageName = null;

@@ -5,7 +5,9 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.R.Components.Controller;
@@ -18,9 +20,9 @@ namespace Microsoft.Languages.Editor.Test.Shell {
     internal sealed class TestEditorShell : TestShellBase, IEditorShell {
         private static TestEditorShell _instance;
 
-        private TestEditorShell(ICompositionCatalog catalog, Thread mainThread) {
+        private TestEditorShell(ICompositionCatalog catalog, Thread mainThread) :
+            base(catalog.ExportProvider) {
             CompositionService = catalog.CompositionService;
-            ExportProvider = catalog.ExportProvider;
             MainThread = mainThread;
         }
 

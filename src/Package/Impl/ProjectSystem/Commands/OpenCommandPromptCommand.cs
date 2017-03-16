@@ -15,7 +15,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     internal sealed class OpenCommandPromptCommand : CommandPromptCommand {
         [ImportingConstructor]
         public OpenCommandPromptCommand(ICoreServices services) :
-            base(RPackageCommandId.icmdOpenCmdPromptHere, services.ProcessServices) { }
+            base(RPackageCommandId.icmdOpenCmdPromptHere, services.Process) { }
 
         protected override void SetFlags(ProcessStartInfo psi, string path) {
             psi.WorkingDirectory = path;

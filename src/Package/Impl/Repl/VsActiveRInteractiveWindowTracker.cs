@@ -51,7 +51,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 return;
             }
 
-            IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+            IVsUIShell shell = VsAppShell.Current.GlobalServices.GetService<IVsUIShell>(typeof(SVsUIShell));
             shell.UpdateCommandUI(1);
         }
 

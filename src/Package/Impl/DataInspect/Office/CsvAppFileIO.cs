@@ -39,7 +39,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
                 return;
             }
 
-            var workflow = appShell.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
+            var workflow = appShell.GlobalServices.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
             var session = workflow.RSession;
 
             var folder = GetTempCsvFilesFolder();
@@ -47,14 +47,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
                 Directory.CreateDirectory(folder);
             }
 
-            var pss = appShell.ExportProvider.GetExportedValue<IProjectSystemServices>();
+            var pss = appShell.GlobalServices.GetService<IProjectSystemServices>();
             var variableName = result.Name ?? _variableNameReplacement;
             var csvFileName = MakeCsvFileName(appShell, pss, variableName);
 
             var file = pss.GetUniqueFileName(folder, csvFileName, "csv", appendUnderscore: true);
 
             string currentStatusText;
-            var statusBar = appShell.GetGlobalService<IVsStatusbar>(typeof(SVsStatusbar));
+            var statusBar = appShell.GlobalServices.GetService<IVsStatusbar>(typeof(SVsStatusbar));
             statusBar.GetText(out currentStatusText);
 
             try {
@@ -114,8 +114,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
             var project = pss.GetActiveProject();
             var projectName = project?.FileName;
 
-            var contentTypeService = appShell.ExportProvider.GetExportedValue<IContentTypeRegistryService>();
-            var viewTracker = appShell.ExportProvider.GetExportedValue<IActiveWpfTextViewTracker>();
+            var contentTypeService = appShell.GlobalServices.GetService<IContentTypeRegistryService>();
+            var viewTracker = appShell.GlobalServices.GetService<IActiveWpfTextViewTracker>();
 
             var activeView = viewTracker.GetLastActiveTextView(contentTypeService.GetContentType(RContentTypeDefinition.ContentType));
             var filePath = activeView.GetFilePath();

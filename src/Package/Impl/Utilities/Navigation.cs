@@ -42,7 +42,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             } else {
                 // This is the main buffer for the view
 
-                IVsTextManager textManager = VsAppShell.Current.GetGlobalService<IVsTextManager>(typeof(SVsTextManager));
+                IVsTextManager textManager = VsAppShell.Current.GlobalServices.GetService<IVsTextManager>(typeof(SVsTextManager));
                 IVsTextBuffer vsTextBuffer = textBuffer.GetBufferAdapter<IVsTextBuffer>();
                 Guid viewType = VSConstants.LOGVIEWID_TextView;
 
@@ -107,7 +107,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
                 IVsWindowFrame frame;
                 uint itemId;
 
-                IVsUIShellOpenDocument openService = VsAppShell.Current.GetGlobalService<IVsUIShellOpenDocument>(typeof(SVsUIShellOpenDocument));
+                IVsUIShellOpenDocument openService = VsAppShell.Current.GlobalServices.GetService<IVsUIShellOpenDocument>(typeof(SVsUIShellOpenDocument));
                 if (openService != null) {
                     int hr = openService.OpenDocumentViaProject(
                         localPath, ref logicalViewGuid, out serviceProvider, out hierarchy, out itemId, out frame);

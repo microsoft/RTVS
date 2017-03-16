@@ -60,7 +60,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             if (frame != null) {
                 Guid persistenceSlot;
                 if (frame.GetGuidProperty((int)__VSFPROPID.VSFPROPID_GuidPersistenceSlot, out persistenceSlot) >= 0) {
-                    var debugger = _shell.GetGlobalService<SVsShellDebugger>() as IVsDebugger6;
+                    var debugger = _shell.GlobalServices.GetService<SVsShellDebugger>() as IVsDebugger6;
                     if (debugger != null) {
                         debugger.RegisterFocusPreservingWindow(persistenceSlot);
                     }

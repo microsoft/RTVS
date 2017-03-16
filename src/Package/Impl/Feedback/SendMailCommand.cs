@@ -59,7 +59,7 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
                     "mailto:rtvsuserfeedback@microsoft.com?subject={0}&body={1}",
                     Uri.EscapeDataString(subject),
                     Uri.EscapeDataString(body));
-                Services.ProcessServices.Start(psi);
+                Services.Process.Start(psi);
             } else {
                 try {
                     MailItem mail = outlookApp.CreateItem(OlItemType.olMailItem) as MailItem;

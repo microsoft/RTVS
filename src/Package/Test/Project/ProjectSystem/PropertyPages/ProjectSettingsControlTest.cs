@@ -87,7 +87,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
             fontSvc.GetDialogFont(Arg.Any<UIDLGLOGFONT[]>()).Returns(VSConstants.S_OK);
 
             var appShell = Substitute.For<IApplicationShell>();
-            appShell.GetGlobalService<IUIHostLocale2>(typeof(SUIHostLocale)).Returns(fontSvc);
+            appShell.GlobalServices.GetService<IUIHostLocale2>(typeof(SUIHostLocale)).Returns(fontSvc);
 
             var control = new SettingsPageControl(_csp, appShell, _fs);
             control.CreateControl();

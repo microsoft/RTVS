@@ -4,7 +4,6 @@
 using System;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
-using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Threading;
 using System.Windows.Threading;
@@ -16,7 +15,6 @@ using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Core.Threading;
-using Microsoft.Languages.Editor.Host;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.R.Components.Controller;
@@ -43,7 +41,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
     [Export(typeof(IEditorShell))]
     [Export(typeof(IApplicationShell))]
     [Export(typeof(IMainThread))]
-    public sealed class VsAppShell : IApplicationShell, IMainThread, IIdleTimeService, IVsShellPropertyEvents, IVsBroadcastMessageEvents, IDisposable {
+    public sealed partial class VsAppShell : IApplicationShell, IMainThread, IIdleTimeSource, IVsShellPropertyEvents, IVsBroadcastMessageEvents, IDisposable {
         private const int WM_SYSCOLORCHANGE = 0x15;
 
         private static VsAppShell _instance;
@@ -52,7 +50,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private readonly ApplicationConstants _appConstants;
         private readonly ICoreServices _coreServices;
         private IRSettings _settings;
-        private IdleTimeSource _idleTimeSource;
         private ExportProvider _exportProvider;
         private ICompositionService _compositionService;
         private IVsShell _vsShell;
@@ -101,13 +98,11 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
             CheckVsStarted();
 
-            _idleTimeSource = new IdleTimeSource();
-            _idleTimeSource.Idle += OnIdle;
-            _idleTimeSource.ApplicationClosing += OnApplicationClosing;
-            _idleTimeSource.ApplicationStarted += OnApplicationStarted;
-
             _settings = _exportProvider.GetExportedValue<IRSettings>();
             _settings.LoadSettings();
+
+            ConfigureIdleSource();
+            ConfigureServices();
 
             EditorShell.Current = this;
         }
@@ -125,14 +120,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 }
             }
             _vsShell.AdviseBroadcastMessages(this, out _vsShellBroadcastEventsCookie);
-        }
-
-        private void OnApplicationStarted(object sender, EventArgs e) {
-            _appConstants.Initialize();
-        }
-
-        private void OnApplicationClosing(object sender, EventArgs e) {
-            Terminating?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -201,23 +188,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         #region ICoreShell
         /// <summary>
-        /// Retrieves Visual Studio global service from global VS service provider.
-        /// This method is not thread safe and should not be called from async methods.
-        /// </summary>
-        /// <typeparam name="T">Service interface type such as IVsUiShell</typeparam>
-        /// <param name="type">Service type if different from T, such as typeof(SVSUiShell)</param>
-        /// <returns>Service instance of null if not found.</returns>
-        public T GetGlobalService<T>(Type type = null) where T : class {
-            this.AssertIsOnMainThread();
-            if (IsUnitTestEnvironment) {
-                System.IServiceProvider sp = RPackage.Current;
-                return sp.GetService(type ?? typeof(T)) as T;
-            }
-
-            return VsPackage.GetGlobalService(type ?? typeof(T)) as T;
-        }
-
-        /// <summary>
         /// Provides a way to execute action on UI thread while
         /// UI thread is waiting for the completion of the action.
         /// May be implemented using ThreadHelper in VS or via
@@ -254,11 +224,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         public event EventHandler<EventArgs> Started;
 
         /// <summary>
-        /// Fires when host application enters idle state.
-        /// </summary>
-        public event EventHandler<EventArgs> Idle;
-
-        /// <summary>
         /// Fires when host application is terminating
         /// </summary>
         public event EventHandler<EventArgs> Terminating;
@@ -272,18 +237,20 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// Displays error message in a host-specific UI
         /// </summary>
         public void ShowErrorMessage(string message) {
-            var shell = GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+            var shell = GlobalServices.GetService<IVsUIShell>(typeof(SVsUIShell));
             int result;
 
             shell.ShowMessageBox(0, Guid.Empty, null, message, null, 0,
                 OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, OLEMSGICON.OLEMSGICON_CRITICAL, 0, out result);
         }
 
-        public void ShowContextMenu(CommandID commandId, int x, int y, object commandTarget = null) {
+        public void ShowContextMenu(System.ComponentModel.Design.CommandID commandId, int x, int y, object commandTarget = null) {
             if (commandTarget == null) {
                 var package = EnsurePackageLoaded(RGuidList.RPackageGuid);
                 if (package != null) {
-                    var menuService = (IMenuCommandService)((IServiceProvider)package).GetService(typeof(IMenuCommandService));
+                    var sp = (IServiceProvider) package;
+                    var menuService = (System.ComponentModel.Design.IMenuCommandService)sp
+                        .GetService(typeof(System.ComponentModel.Design.IMenuCommandService));
                     menuService.ShowContextMenu(commandId, x, y);
                 }
             } else {
@@ -291,7 +258,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 if (target == null) {
                     throw new ArgumentException(Invariant($"{nameof(commandTarget)} must implement ICommandTarget"));
                 }
-                var shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+                var shell = VsAppShell.Current.GlobalServices.GetService<IVsUIShell>(typeof(SVsUIShell));
                 var pts = new POINTS[1];
                 pts[0].x = (short)x;
                 pts[0].y = (short)y;
@@ -303,7 +270,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// Displays question in a host-specific UI
         /// </summary>
         public MessageButtons ShowMessage(string message, MessageButtons buttons, MessageType messageType = MessageType.Information) {
-            var shell = GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+            var shell = GlobalServices.GetService<IVsUIShell>(typeof(SVsUIShell));
             int result;
 
             var oleButtons = GetOleButtonFlags(buttons);
@@ -340,19 +307,13 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         public void UpdateCommandStatus(bool immediate) {
             DispatchOnUIThread(() => {
-                var uiShell = GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+                var uiShell = GlobalServices.GetService<IVsUIShell>(typeof(SVsUIShell));
                 uiShell.UpdateCommandUI(immediate ? 1 : 0);
             });
         }
 
         public bool IsUnitTestEnvironment { get; set; }
 
-        #endregion
-
-        #region IIdleTimeService
-        public void DoIdle() {
-            Idle?.Invoke(this, EventArgs.Empty);
-        }
         #endregion
 
         #region IEditorShell 
@@ -425,10 +386,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             DisconnectFromShellEvents();
             _settings?.Dispose();
             (_coreServices?.Log as IDisposable)?.Dispose();
-        }
-
-        void OnIdle(object sender, EventArgs args) {
-            DoIdle();
         }
 
         private OLEMSGBUTTON GetOleButtonFlags(MessageButtons buttons) {

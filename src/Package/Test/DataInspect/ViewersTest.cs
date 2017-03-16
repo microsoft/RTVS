@@ -34,8 +34,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
         public ViewersTest(TestMethodFixture testMethod) {
             _testMethod = testMethod;
-            _aggregator = VsAppShell.Current.ExportProvider.GetExportedValue<IObjectDetailsViewerAggregator>();
-            _workflow = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
+            _aggregator = VsAppShell.Current.GlobalServices.GetService<IObjectDetailsViewerAggregator>();
+            _workflow = VsAppShell.Current.GlobalServices.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
             _sessionProvider = _workflow.RSessions;
         }
 

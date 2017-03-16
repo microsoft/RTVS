@@ -28,7 +28,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         private bool _isDirty;
 
         public SettingsPageControl() : this(
-            VsAppShell.Current.ExportProvider.GetExportedValue<IProjectConfigurationSettingsProvider>(), 
+            VsAppShell.Current.GlobalServices.GetService<IProjectConfigurationSettingsProvider>(), 
             VsAppShell.Current, new FileSystem()) { }
 
         public SettingsPageControl(IProjectConfigurationSettingsProvider settingsProvider, IApplicationShell appShell, IFileSystem fs) {

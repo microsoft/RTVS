@@ -48,10 +48,6 @@
       <Project>{5EF2AD64-D6FE-446B-B350-8C7F0DF0834D}</Project>
       <Name>Microsoft.UnitTests.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\API\Impl\Microsoft.R.Host.Client.API.csproj">
-      <Project>{1a02711f-3b13-48be-8d45-073386354174}</Project>
-      <Name>Microsoft.R.Host.Client.API</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Client\Impl\Microsoft.R.Host.Client.csproj">
       <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
       <Name>Microsoft.R.Host.Client</Name>

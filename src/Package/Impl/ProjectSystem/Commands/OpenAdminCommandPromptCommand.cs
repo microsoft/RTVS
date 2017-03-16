@@ -16,7 +16,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     internal sealed class OpenAdminCommandPromptCommand : CommandPromptCommand {
         [ImportingConstructor]
         public OpenAdminCommandPromptCommand(ICoreServices services) :
-            base(RPackageCommandId.icmdOpenAdminCmdPromptHere, services.ProcessServices) { }
+            base(RPackageCommandId.icmdOpenAdminCmdPromptHere, services.Process) { }
 
         protected override void SetFlags(ProcessStartInfo psi, string path) {
             psi.Verb = "runas";

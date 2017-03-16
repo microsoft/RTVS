@@ -49,7 +49,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing {
                 uint cookie = 0;
                 IVsStatusbar statusBar = null;
                 appShell.DispatchOnUIThread(() => {
-                    statusBar = appShell.GetGlobalService<IVsStatusbar>(typeof(SVsStatusbar));
+                    statusBar = appShell.GlobalServices.GetService<IVsStatusbar>(typeof(SVsStatusbar));
                     statusBar.GetText(out currentStatusText);
                     statusBar.Progress(ref cookie, 1, "", 0, 0);
                 });

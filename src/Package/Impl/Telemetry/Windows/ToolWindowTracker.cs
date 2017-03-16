@@ -14,7 +14,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry.Windows {
         private uint _reportCount;
 
         public ToolWindowTracker() {
-            _debugger = VsAppShell.Current.GetGlobalService<IVsDebugger>(typeof(IVsDebugger));
+            _debugger = VsAppShell.Current.GlobalServices.GetService<IVsDebugger>(typeof(IVsDebugger));
             if (_debugger != null) {
                 _debugger.AdviseDebuggerEvents(this, out _debuggerEventCookie);
 
@@ -41,7 +41,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry.Windows {
 
         private void ReportWindowLayout() {
             if (_reportCount < 4) {
-                RtvsTelemetry.Current.ReportWindowLayout(VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell)));
+                RtvsTelemetry.Current.ReportWindowLayout(VsAppShell.Current.GlobalServices.GetService<IVsUIShell>(typeof(SVsUIShell)));
                 _reportCount++;
                 if (_reportCount > 4) {
                     _timer?.Stop();

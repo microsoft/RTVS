@@ -29,8 +29,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public VariableGridHost() {
             InitializeComponent();
 
-            _aggregator = VsAppShell.Current.ExportProvider.GetExportedValue<IObjectDetailsViewerAggregator>();
-            _rSession = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate().RSession;
+            _aggregator = VsAppShell.Current.GlobalServices.GetService<IObjectDetailsViewerAggregator>();
+            _rSession = VsAppShell.Current.GlobalServices.GetService<IRInteractiveWorkflowProvider>().GetOrCreate().RSession;
             _rSession.Mutated += RSession_Mutated;
         }
 

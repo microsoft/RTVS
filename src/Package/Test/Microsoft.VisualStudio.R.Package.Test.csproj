@@ -227,15 +227,16 @@
     <Compile Include="Settings\SettingsStorageTest.cs" />
     <Compile Include="Settings\TestSettingsManager.cs" />
     <Compile Include="Settings\TestSettingsStore.cs" />
-    <Compile Include="Shell\VsTestCompositionCatalog.cs" />
     <Compile Include="Cran\CranMirrorListTest.cs" />
     <Compile Include="DataInspect\ObservableTreeNodeTest.cs" />
     <Compile Include="DataInspect\TestNode.cs" />
     <Compile Include="Images\ImagesProviderTest.cs" />
     <Compile Include="Mocks\VsRegisterProjectGeneratorsMock.cs" />
     <Compile Include="Package\RPackageTest.cs" />
-    <Compile Include="Shell\TestVsAppShell.cs" />
     <Compile Include="Mocks\InteractiveWindowComponentContainerFactoryMock.cs" />
+    <Compile Include="Shell\TestVsAppShell.cs" />
+    <Compile Include="Shell\VsTestCompositionCatalog.cs" />
+    <Compile Include="Shell\VsTestServiceManager.cs" />
     <Compile Include="Sql\ExtensionsTest.cs" />
     <Compile Include="Sql\PublishOptionsDialogModelTest.cs" />
     <Compile Include="Sql\SProcPublisherTest.cs" />
@@ -252,10 +253,10 @@
     <Compile Include="Utility\HostBasedInteractiveTest.cs" />
     <Compile Include="Utility\IdleTime.cs" />
     <Compile Include="Utility\InteractiveTest.cs" />
-    <Compile Include="Utility\VsRHostScript.cs" />
-    <Compile Include="Utility\TestInstanceFactory.cs" />
     <Compile Include="Utility\TestPackage.cs" />
     <Compile Include="Utility\TestServiceProvider.cs" />
+    <Compile Include="Utility\VsRHostScript.cs" />
+    <Compile Include="Utility\TestInstanceFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <FilesToSign Include="$(OutputPath)\$(AssemblyName).dll">

@@ -4,10 +4,8 @@
 using System;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
-using System.ComponentModel.Design;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Threading;
@@ -17,11 +15,15 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
     [ExcludeFromCodeCoverage]
     public class TestCoreShell : ICoreShell, IMainThread {
         private readonly CompositionContainer _container;
+        private readonly TestServiceManager _serviceManager;
 
         public TestCoreShell(CompositionContainer container, ICoreServices services) {
             _container = container;
             Services = services;
+            _serviceManager = new TestServiceManager(container);
         }
+
+        public IServiceContainer GlobalServices => _serviceManager;
 
         public ExportProvider ExportProvider => _container;
         public ICompositionService CompositionService => _container;
@@ -42,7 +44,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
             LastShownErrorMessage = message;
         }
 
-        public void ShowContextMenu(CommandID commandId, int x, int y, object commandTaget = null) => LastShownContextMenu = commandId;
+        public void ShowContextMenu(System.ComponentModel.Design.CommandID commandId, int x, int y, object commandTaget = null) => LastShownContextMenu = commandId;
 
         public MessageButtons ShowMessage(string message, MessageButtons buttons, MessageType messageType = MessageType.Information) {
             LastShownMessage = message;
@@ -59,7 +61,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
         public int LocaleId => 1033;
         public string LastShownMessage { get; private set; }
         public string LastShownErrorMessage { get; private set; }
-        public CommandID LastShownContextMenu { get; private set; }
+        public System.ComponentModel.Design.CommandID LastShownContextMenu { get; private set; }
         public bool IsUnitTestEnvironment => true;
         public IFileDialog FileDialog { get; } = new TestFileDialog();
         public IProgressDialog ProgressDialog { get; } = new TestProgressDialog();

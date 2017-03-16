@@ -54,7 +54,6 @@ project.lock.json
 *.nuget.targets
 
 # NuGet project.json files that created from project.*.json depending on VS version
-src/Package/Impl/source.extension.vsixmanifest
 # Windows Azure Build Output
 csx/
 *.build.csdef

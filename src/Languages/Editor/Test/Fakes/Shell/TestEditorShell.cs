@@ -4,7 +4,6 @@
 using System;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
-using System.ComponentModel.Design;
 using System.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
@@ -21,13 +20,17 @@ using Microsoft.VisualStudio.Text.Editor;
 namespace Microsoft.Languages.Editor.Test.Fakes.Shell {
     public class TestEditorShell : IEditorShell, IMainThread {
         private readonly CompositionContainer _container;
+        private readonly TestServiceManager _serviceManager;
 
         public TestEditorShell(CompositionContainer container, ICoreServices coreServices) {
             FileDialog = new TestFileDialog();
             ProgressDialog = new TestProgressDialog();
             _container = container;
             Services = coreServices;
+            _serviceManager = new TestServiceManager(container);
         }
+
+        public IServiceContainer GlobalServices => _serviceManager;
 
         public ExportProvider ExportProvider => _container;
         public ICompositionService CompositionService => _container;
@@ -48,7 +51,7 @@ namespace Microsoft.Languages.Editor.Test.Fakes.Shell {
             LastShownErrorMessage = message;
         }
 
-        public void ShowContextMenu(CommandID commandId, int x, int y, object commandTaget = null) {
+        public void ShowContextMenu(System.ComponentModel.Design.CommandID commandId, int x, int y, object commandTaget = null) {
             LastShownContextMenu = commandId;
         }
 
@@ -65,7 +68,7 @@ namespace Microsoft.Languages.Editor.Test.Fakes.Shell {
 
         public string LastShownMessage { get; private set; }
         public string LastShownErrorMessage { get; private set; }
-        public CommandID LastShownContextMenu { get; private set; }
+        public System.ComponentModel.Design.CommandID LastShownContextMenu { get; private set; }
         public IApplicationConstants AppConstants => new TestAppConstants();
         public IProgressDialog ProgressDialog { get; }
         public IFileDialog FileDialog { get; }

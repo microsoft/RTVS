@@ -20,11 +20,10 @@ namespace Microsoft.Common.Core {
 #endif
         }
 
-        public static bool IsProtocolException(this Exception ex) {
-            return ex is IndexOutOfRangeException ||
+        public static bool IsProtocolException(this Exception ex) =>
+                ex is IndexOutOfRangeException ||
                 ex is ArgumentOutOfRangeException ||
                 ex is InvalidCastException ||
                 ex is FormatException;
-        }
     }
 }

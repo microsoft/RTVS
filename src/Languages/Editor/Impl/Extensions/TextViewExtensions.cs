@@ -11,7 +11,7 @@ namespace Microsoft.Languages.Editor.Extensions {
         public static bool IsStatementCompletionWindowActive(this ITextView textView) {
             bool result = false;
             if (textView != null) {
-                var completionBroker = EditorShell.Current.ExportProvider.GetExportedValue<ICompletionBroker>();
+                var completionBroker = EditorShell.Current.GlobalServices.GetService<ICompletionBroker>();
                 result = completionBroker.IsCompletionActive(textView);
             }
             return result;

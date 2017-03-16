@@ -7,6 +7,7 @@ using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core.Extensions;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.Languages.Editor.Shell;
@@ -18,7 +19,6 @@ using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Test.Utility;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.R.Package.Test.Utility;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using NSubstitute;
@@ -30,16 +30,18 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
     /// </summary>
     [ExcludeFromCodeCoverage]
     sealed class TestVsAppShell : TestShellBase, IApplicationShell {
-        private IServiceProvider _sp;
+        private readonly VsTestServiceManager _serviceManager;
         private static TestVsAppShell _instance;
-        private static object _shellLock = new object();
+        private static readonly object _shellLock = new object();
 
-        private TestVsAppShell() {
+        private TestVsAppShell(): base(VsTestCompositionCatalog.Current.ExportProvider) {
             CompositionService = VsTestCompositionCatalog.Current.CompositionService;
             ExportProvider = VsTestCompositionCatalog.Current.ExportProvider;
             MainThread = UIThreadHelper.Instance.Thread;
-            _sp = new TestServiceProvider();
+            _serviceManager = new VsTestServiceManager(ExportProvider);
         }
+
+        public override IServiceContainer GlobalServices => _serviceManager;
 
         public static void Create() {
             // Called via reflection in test cases. Creates instance
@@ -96,10 +98,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
         #endregion
 
         #region ICoreShell
-        public T GetGlobalService<T>(Type type = null) where T : class {
-            return _sp.GetService(type ?? typeof(T)) as T;
-        }
-
         public ITelemetryService TelemetryService => Substitute.For<ITelemetryService>();
         public IntPtr ApplicationWindowHandle => IntPtr.Zero;
         public IActionLog Logger => Substitute.For<IActionLog>();

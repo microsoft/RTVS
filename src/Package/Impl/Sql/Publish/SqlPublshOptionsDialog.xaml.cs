@@ -71,7 +71,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish
             _model.Settings.Save(_settings);
 
             // Make sure all files are saved and up to date on disk.
-            var dte = _appShell.GetGlobalService<DTE>(typeof(DTE));
+            var dte = _appShell.GlobalServices.GetService<DTE>(typeof(DTE));
             dte.ExecuteCommand("File.SaveAll");
 
             _appShell.PostCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdPublishSProc);

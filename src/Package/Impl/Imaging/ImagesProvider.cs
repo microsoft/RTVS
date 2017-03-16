@@ -67,7 +67,7 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
         }
 
         public static ImageSource GetIconForImageMoniker(ImageMoniker imageMoniker) {
-            IVsImageService2 imageService = VsAppShell.Current.GetGlobalService<IVsImageService2>(typeof(SVsImageService));
+            IVsImageService2 imageService = VsAppShell.Current.GlobalServices.GetService<IVsImageService2>(typeof(SVsImageService));
             ImageSource glyph = null;
 
             ImageAttributes imageAttributes = new ImageAttributes();

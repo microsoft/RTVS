@@ -76,14 +76,14 @@ namespace Microsoft.UnitTests.Core.FluentAssertions {
             }
         }
         
-        public Task<AndConstraint<TAssertions>> BeCompletedAsync(int timeout = 10000, string because = "", params object[] reasonArgs)
+        public Task<AndConstraint<TAssertions>> BeCompletedAsync(int timeout = 30000, string because = "", params object[] reasonArgs)
             => BeInTimeAsync(BeCompletedAsyncContinuation, false, timeout, because:because, reasonArgs:reasonArgs);
         
-        public Task<AndConstraint<TAssertions>> BeCanceledAsync(int timeout = 10000, string because = "", params object[] reasonArgs)
+        public Task<AndConstraint<TAssertions>> BeCanceledAsync(int timeout = 30000, string because = "", params object[] reasonArgs)
             => BeInTimeAsync(BeCanceledAsyncContinuation, false, timeout, because: because, reasonArgs: reasonArgs);
         
-        public Task<AndConstraint<TAssertions>> NotBeCompletedAsync(int timeout = 1000, string because = "", params object[] reasonArgs) 
-            => BeInTimeAsync(NotBeCompletedAsyncContinuation, false, timeout, 1000, because, reasonArgs);
+        public Task<AndConstraint<TAssertions>> NotBeCompletedAsync(int timeout = 5000, string because = "", params object[] reasonArgs) 
+            => BeInTimeAsync(NotBeCompletedAsyncContinuation, false, timeout, 5000, because, reasonArgs);
 
         protected Task<AndConstraint<TAssertions>> BeInTimeAsync<TArg>(Func<Task<Task>, object, AndConstraint<TAssertions>> continuation, TArg argument, int timeout = 10000, int debuggerTimeout = 100000, string because = "", params object[] reasonArgs) {
             Subject.Should().NotBeNull();

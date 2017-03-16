@@ -84,7 +84,7 @@ namespace Microsoft.R.Editor.Document {
         #region Constructors
         public REditorDocument(ITextBuffer textBuffer, ICoreShell shell) {
             _shell = shell;
-            _textDocumentFactoryService = _shell.ExportProvider.GetExportedValue<ITextDocumentFactoryService>();
+            _textDocumentFactoryService = _shell.GlobalServices.GetService<ITextDocumentFactoryService>();
             _textDocumentFactoryService.TextDocumentDisposed += OnTextDocumentDisposed;
 
             TextBuffer = textBuffer;

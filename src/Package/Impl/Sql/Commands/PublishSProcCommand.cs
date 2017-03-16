@@ -64,7 +64,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
                 if (sprocFiles.Any()) {
                     try {
                         // Make sure all files are saved and up to date on disk.
-                        var dte = _appShell.GetGlobalService<DTE>(typeof(DTE));
+                        var dte = _appShell.GlobalServices.GetService<DTE>(typeof(DTE));
                         dte.ExecuteCommand("File.SaveAll");
 
                         var publisher = new SProcPublisher(_appShell, _pss, _fs, _dacServicesProvider.GetDacPackageServices());

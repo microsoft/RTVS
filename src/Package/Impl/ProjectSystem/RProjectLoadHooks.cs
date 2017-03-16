@@ -166,7 +166,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                         continue;
                     }
 
-                    var solution = VsAppShell.Current.GetGlobalService<IVsSolution>(typeof(SVsSolution));
+                    var solution = VsAppShell.Current.GlobalServices.GetService<IVsSolution>(typeof(SVsSolution));
                     solution.CloseSolutionElement((uint)__VSSLNCLOSEOPTIONS.SLNCLOSEOPT_UnloadProject, (IVsHierarchy)iVsProject, 0);
                     return;
                 }

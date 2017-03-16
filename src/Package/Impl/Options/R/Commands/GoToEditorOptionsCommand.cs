@@ -15,7 +15,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
             base(OnCommand, new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.icmdGoToREditorOptions)) { }
 
         public static void OnCommand(object sender, EventArgs args) { 
-            IVsShell shell = VsAppShell.Current.GetGlobalService<IVsShell>(typeof(SVsShell));
+            IVsShell shell = VsAppShell.Current.GlobalServices.GetService<IVsShell>(typeof(SVsShell));
             IVsPackage package;
 
             if (VSConstants.S_OK == shell.LoadPackage(RGuidList.RPackageGuid, out package)) {

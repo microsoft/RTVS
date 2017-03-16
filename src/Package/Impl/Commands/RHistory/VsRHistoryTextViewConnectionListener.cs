@@ -38,7 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.RHistory {
                     // is not specific to VS and does not use OLE, we create OLE-to-managed target shim
                     // and managed target-to-OLE shims. 
 
-                    IVsEditorAdaptersFactoryService adapterService = VsAppShell.Current.ExportProvider.GetExportedValue<IVsEditorAdaptersFactoryService>();
+                    IVsEditorAdaptersFactoryService adapterService = VsAppShell.Current.GlobalServices.GetService<IVsEditorAdaptersFactoryService>();
                     IVsTextView viewAdapter = adapterService.GetViewAdapter(textView);
 
                     if (viewAdapter != null) {

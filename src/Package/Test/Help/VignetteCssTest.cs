@@ -22,9 +22,9 @@ namespace Microsoft.VisualStudio.R.Package.Test.Help {
     public class VignetteCssTest {
         //[Test]
         //public void CssTest() {
-        //    var ctrs = EditorShell.Current.ExportProvider.GetExportedValue<IContentTypeRegistryService>();
-        //    var tbfs = EditorShell.Current.ExportProvider.GetExportedValue<ITextBufferFactoryService>();
-        //    var tef = EditorShell.Current.ExportProvider.GetExportedValue<ITextEditorFactoryService>();
+        //    var ctrs = EditorShell.Current.GlobalServices.GetService<IContentTypeRegistryService>();
+        //    var tbfs = EditorShell.Current.GlobalServices.GetService<ITextBufferFactoryService>();
+        //    var tef = EditorShell.Current.GlobalServices.GetService<ITextEditorFactoryService>();
 
         //    var ct = ctrs.GetContentType(RContentTypeDefinition.ContentType);
         //    var tb = tbfs.CreateTextBuffer();
@@ -39,8 +39,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Help {
         //    var iwfp = Substitute.For<IRInteractiveWorkflowProvider>();
         //    iwfp.GetOrCreate().Returns(iwf);
 
-        //    var cfms = EditorShell.Current.ExportProvider.GetExportedValue<IClassificationFormatMapService>();
-        //    var clstrs = EditorShell.Current.ExportProvider.GetExportedValue<IClassificationTypeRegistryService>();
+        //    var cfms = EditorShell.Current.GlobalServices.GetService<IClassificationFormatMapService>();
+        //    var clstrs = EditorShell.Current.GlobalServices.GetService<IClassificationTypeRegistryService>();
 
         //    var vcb = new VignetteCodeColorBuilder(iwfp, cfms, clstrs);
         //    var cssText = vcb.GetCodeColorsCss();

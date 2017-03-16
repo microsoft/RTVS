@@ -22,7 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
 
         public ShowPlotWindowCommand(IApplicationShell appShell, IRInteractiveWorkflow workflow) {
             _plotManager = workflow.Plots;
-            _shell = appShell.GetGlobalService<IVsUIShell4>(typeof(SVsUIShell));
+            _shell = appShell.GlobalServices.GetService<IVsUIShell4>(typeof(SVsUIShell));
         }
 
         public CommandStatus GetStatus(int index) {

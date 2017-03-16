@@ -43,13 +43,13 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             get {
                 VsAppShell.Current.AssertIsOnMainThread();
                 string text = string.Empty;
-                var statusBar = VsAppShell.Current.GetGlobalService<IVsStatusbar>(typeof(SVsStatusbar));
+                var statusBar = VsAppShell.Current.GlobalServices.GetService<IVsStatusbar>(typeof(SVsStatusbar));
                 ErrorHandler.ThrowOnFailure(statusBar.GetText(out text));
                 return text;
             }
             set {
                 VsAppShell.Current.AssertIsOnMainThread();
-                var statusBar = VsAppShell.Current.GetGlobalService<IVsStatusbar>(typeof(SVsStatusbar));
+                var statusBar = VsAppShell.Current.GlobalServices.GetService<IVsStatusbar>(typeof(SVsStatusbar));
                 statusBar.SetText(value);
             }
         }
@@ -63,7 +63,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         public void UpdateCommandStatus(bool immediate) {
             VsAppShell.Current.DispatchOnUIThread(() => {
-                var shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof (SVsUIShell));
+                var shell = VsAppShell.Current.GlobalServices.GetService<IVsUIShell>(typeof (SVsUIShell));
                 shell.UpdateCommandUI(immediate ? 1 : 0);
             });
         }

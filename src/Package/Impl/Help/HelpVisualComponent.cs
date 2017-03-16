@@ -44,10 +44,10 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         private WindowsFormsHost _host;
 
         public HelpVisualComponent() {
-            _codeColorBuilder = VsAppShell.Current.ExportProvider.GetExportedValue<IVignetteCodeColorBuilder>();
-            _coreShell = VsAppShell.Current.ExportProvider.GetExportedValue<ICoreShell>();
+            _codeColorBuilder = VsAppShell.Current.GlobalServices.GetService<IVignetteCodeColorBuilder>();
+            _coreShell = VsAppShell.Current.GlobalServices.GetService<ICoreShell>();
 
-            var workflow = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
+            var workflow = VsAppShell.Current.GlobalServices.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
             workflow.RSessions.BrokerStateChanged += OnBrokerStateChanged;
 
             _session = workflow.RSession;
@@ -80,7 +80,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                 Container?.Show(focus: false, immediate: false);
                 NavigateTo(url);
             } else {
-                var wbs = VsAppShell.Current.ExportProvider.GetExportedValue<IWebBrowserServices>();
+                var wbs = VsAppShell.Current.GlobalServices.GetService<IWebBrowserServices>();
                 wbs.OpenBrowser(WebBrowserRole.Shiny, url);
             }
         }
@@ -215,7 +215,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             string url = e.Url.ToString();
             if (!IsHelpUrl(url)) {
                 e.Cancel = true;
-                var wbs = VsAppShell.Current.ExportProvider.GetExportedValue<IWebBrowserServices>();
+                var wbs = VsAppShell.Current.GlobalServices.GetService<IWebBrowserServices>();
                 wbs.OpenBrowser(WebBrowserRole.External, url);
             }
         }
@@ -228,7 +228,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
             // Upon navigation we need to ask VS to update UI so 
             // Back/Forward buttons become properly enabled or disabled.
-            IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+            IVsUIShell shell = VsAppShell.Current.GlobalServices.GetService<IVsUIShell>(typeof(SVsUIShell));
             shell.UpdateCommandUI(0);
         }
 

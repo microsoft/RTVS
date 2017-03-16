@@ -33,7 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             : base(textView, textBuffer, VsAppShell.Current) {
             ServiceManager.AddService(this, textView, VsAppShell.Current);
 
-            var textManager = VsAppShell.Current.GetGlobalService<IVsTextManager2>(typeof(SVsTextManager));
+            var textManager = VsAppShell.Current.GlobalServices.GetService<IVsTextManager2>(typeof(SVsTextManager));
             IVsExpansionManager expansionManager;
             textManager.GetExpansionManager(out expansionManager);
 
@@ -135,10 +135,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             }
 
             controller.DismissAllSessions();
-            ICompletionBroker broker = VsAppShell.Current.ExportProvider.GetExportedValue<ICompletionBroker>();
+            ICompletionBroker broker = VsAppShell.Current.GlobalServices.GetService<ICompletionBroker>();
             broker.DismissAllSessions(TextView);
 
-            var interactiveWorkflowProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
+            var interactiveWorkflowProvider = VsAppShell.Current.GlobalServices.GetService<IRInteractiveWorkflowProvider>();
             interactiveWorkflowProvider.GetOrCreate().Operations.ExecuteCurrentExpression(TextView, FormatReplDocument);
             return CommandResult.Executed;
         }
@@ -184,7 +184,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
         private IRInteractiveWorkflow Workflow {
             get {
-                var interactiveWorkflowProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
+                var interactiveWorkflowProvider = VsAppShell.Current.GlobalServices.GetService<IRInteractiveWorkflowProvider>();
                 return interactiveWorkflowProvider.GetOrCreate();
             }
         }

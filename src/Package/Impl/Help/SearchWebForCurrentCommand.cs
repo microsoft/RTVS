@@ -45,7 +45,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                 sb.Append(Uri.EscapeUriString(t));
             }
 
-            var wbs = VsAppShell.Current.ExportProvider.GetExportedValue<IWebBrowserServices>();
+            var wbs = VsAppShell.Current.GlobalServices.GetService<IWebBrowserServices>();
             wbs.OpenBrowser(WebBrowserRole.Help, sb.ToString());
         }
     }

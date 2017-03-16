@@ -50,7 +50,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
 
         private ThreadedWaitDialogHelper.Session StartWaitDialog(string waitMessage, int delayToShowDialogMs) {
-            var dialogFactory = _shell.GetGlobalService<IVsThreadedWaitDialogFactory>(typeof(SVsThreadedWaitDialogFactory));
+            var dialogFactory = _shell.GlobalServices.GetService<IVsThreadedWaitDialogFactory>(typeof(SVsThreadedWaitDialogFactory));
             var initialProgress = new ThreadedWaitDialogProgressData(waitMessage, isCancelable: true);
             return dialogFactory.StartWaitDialog(null, initialProgress, TimeSpan.FromMilliseconds(delayToShowDialogMs));
         }

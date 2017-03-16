@@ -30,6 +30,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataSource {
         }
 
         public static Task<IGridData<string>> GetGridDataAsync(string expression, GridRange? gridRange, ISortOrder sortOrder = null) =>
-            GetGridDataAsync(VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate().RSession, expression, gridRange, sortOrder);
+            GetGridDataAsync(VsAppShell.Current.GlobalServices.GetService<IRInteractiveWorkflowProvider>().GetOrCreate().RSession, expression, gridRange, sortOrder);
     }
 }

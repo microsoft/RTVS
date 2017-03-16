@@ -26,7 +26,7 @@ namespace Microsoft.Common.Core.Services {
             Security = security;
             Tasks = tasks;
 
-            ProcessServices = processServices;
+            Process = processServices;
             FileSystem = new FileSystem();
             MainThread = mainThread;
 
@@ -49,7 +49,7 @@ namespace Microsoft.Common.Core.Services {
             Security = security;
             Tasks = tasks;
 
-            ProcessServices = ps;
+            Process = ps;
             FileSystem = fs;
             MainThread = mainThread;
         }
@@ -57,7 +57,7 @@ namespace Microsoft.Common.Core.Services {
         public IActionLog Log { get; }
         public IFileSystem FileSystem { get; } 
         public ILoggingPermissions LoggingPermissions { get; }
-        public IProcessServices ProcessServices { get; }
+        public IProcessServices Process { get; }
         public ISecurityService Security { get; }
         public ITelemetryService Telemetry { get; }
         public ITaskService Tasks { get; }

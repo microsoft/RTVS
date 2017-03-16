@@ -52,7 +52,7 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
 
             try {
                 zipPath = Path.Combine(Path.GetTempPath(), RtvsLogZipFile);
-                var workflowProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
+                var workflowProvider = VsAppShell.Current.GlobalServices.GetService<IRInteractiveWorkflowProvider>();
                 var rSessionProvider = workflowProvider.GetOrCreate().RSessions;
                 var sessions = rSessionProvider.GetSessions();
                 foreach (var s in sessions) {
@@ -197,7 +197,7 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
                 writer.WriteLine();
 
                 var ri = new RInstallation();
-                var workflow = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
+                var workflow = VsAppShell.Current.GlobalServices.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
                 if (detailed) {
                     var rEngines = ri.GetCompatibleEngines();
                     writer.WriteLine("Installed R Engines (from registry):");

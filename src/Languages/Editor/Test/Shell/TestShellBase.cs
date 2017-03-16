@@ -2,11 +2,10 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.ComponentModel.Design;
+using System.ComponentModel.Composition.Hosting;
 using System.Threading;
 using System.Windows.Threading;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Fakes.Shell;
@@ -15,13 +14,18 @@ using Microsoft.UnitTests.Core.Threading;
 
 namespace Microsoft.Languages.Editor.Test.Shell {
     public class TestShellBase : IMainThread {
+        private readonly TestServiceManager _serviceManager;
+
         public Thread MainThread { get; set; }
 
-        public TestShellBase() {
+        public TestShellBase(ExportProvider exportProvider) {
+            _serviceManager = new TestServiceManager(exportProvider);
             MainThread = Thread.CurrentThread;
             FileDialog = new TestFileDialog();
             ProgressDialog = new TestProgressDialog();
         }
+
+        public virtual IServiceContainer GlobalServices => _serviceManager;
 
         public void ShowErrorMessage(string msg) { }
 
@@ -29,7 +33,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
             return MessageButtons.OK;
         }
 
-        public void ShowContextMenu(CommandID commandId, int x, int y, object commandTaget = null) { }
+        public void ShowContextMenu(System.ComponentModel.Design.CommandID commandId, int x, int y, object commandTaget = null) { }
 
         public string SaveFileIfDirty(string fullPath) => fullPath;
 

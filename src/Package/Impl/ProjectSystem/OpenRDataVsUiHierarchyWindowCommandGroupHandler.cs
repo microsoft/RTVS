@@ -21,7 +21,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             
             // Don't do anything for file preview
-            var uiShellOpenDocument = VsAppShell.Current.GetGlobalService<IVsUIShellOpenDocument3>(typeof(SVsUIShellOpenDocument));
+            var uiShellOpenDocument = VsAppShell.Current.GlobalServices.GetService<IVsUIShellOpenDocument3>(typeof(SVsUIShellOpenDocument));
             if (uiShellOpenDocument != null && ((__VSNEWDOCUMENTSTATE) uiShellOpenDocument.NewDocumentState).HasFlag(__VSNEWDOCUMENTSTATE.NDS_Provisional)) {
                 return true;
             }

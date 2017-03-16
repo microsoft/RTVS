@@ -29,7 +29,7 @@ namespace Microsoft.R.Editor.Commands {
 
                 var url = GetHotUrl(_wpfTextView, e);
                 if (!string.IsNullOrEmpty(url)) {
-                    _shell.Services.ProcessServices.Start(url);
+                    _shell.Services.Process.Start(url);
                     return;
                 }
                 // If this is a Ctrl+Click or double-click then post the select word command.
@@ -53,7 +53,7 @@ namespace Microsoft.R.Editor.Commands {
                     var snapshot = textView.TextBuffer.CurrentSnapshot;
                     ITextSnapshotLine line = snapshot.GetLineFromPosition(bufferPosition.Value);
 
-                    var tagAggregator = _shell.ExportProvider.GetExportedValue<IViewTagAggregatorFactoryService>();
+                    var tagAggregator = _shell.GlobalServices.GetService<IViewTagAggregatorFactoryService>();
                     using (var urlClassificationAggregator = tagAggregator.CreateTagAggregator<IUrlTag>(textView)) {
 
                         var tags = urlClassificationAggregator.GetTags(new SnapshotSpan(snapshot, line.Start, line.Length));

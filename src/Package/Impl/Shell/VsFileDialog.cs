@@ -26,7 +26,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
 
         private static string BrowseForFileOpen(IntPtr owner, string filter, string initialPath = null, string title = null) {
-            IVsUIShell uiShell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+            IVsUIShell uiShell = VsAppShell.Current.GlobalServices.GetService<IVsUIShell>(typeof(SVsUIShell));
             if (uiShell == null) {
                 return null;
             }
@@ -66,7 +66,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 initialPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + Path.DirectorySeparatorChar;
             }
 
-            IVsUIShell uiShell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+            IVsUIShell uiShell = VsAppShell.Current.GlobalServices.GetService<IVsUIShell>(typeof(SVsUIShell));
             if (null == uiShell) {
                 return null;
             }
