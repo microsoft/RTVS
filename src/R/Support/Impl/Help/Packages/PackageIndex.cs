@@ -48,7 +48,7 @@ namespace Microsoft.R.Support.Help.Packages {
 
             _interactiveSession = _workflow.RSession;
             _interactiveSession.Connected += OnSessionConnected;
-            _interactiveSession.BeforePackagesInstalled += OnBeforePackagesInstalled;
+            _interactiveSession.BeforePackagesInstalledAsync += OnBeforePackagesInstalledAsync;
             _interactiveSession.AfterPackagesInstalled += OnAfterPackagesInstalled;
             _interactiveSession.PackagesRemoved += OnPackagesRemoved;
 
@@ -69,10 +69,11 @@ namespace Microsoft.R.Support.Help.Packages {
             }
         }
 
-        private void OnBeforePackagesInstalled(object sender, EventArgs e) {
+        private Task OnBeforePackagesInstalledAsync(object sender, EventArgs e) {
             try {
                 _host.StopSessionAsync().Wait(3000);
             } catch(OperationCanceledException) { }
+            return Task.CompletedTask;
         }
 
         private void OnAfterPackagesInstalled(object sender, EventArgs e) {
@@ -176,7 +177,7 @@ namespace Microsoft.R.Support.Help.Packages {
 
         public void Dispose() {
             if (_interactiveSession != null) {
-                _interactiveSession.BeforePackagesInstalled -= OnBeforePackagesInstalled;
+                _interactiveSession.BeforePackagesInstalledAsync -= OnBeforePackagesInstalledAsync;
                 _interactiveSession.AfterPackagesInstalled -= OnAfterPackagesInstalled;
                 _interactiveSession.PackagesRemoved -= OnPackagesRemoved;
                 _interactiveSession.Connected -= OnSessionConnected;

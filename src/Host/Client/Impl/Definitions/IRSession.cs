@@ -4,6 +4,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Tasks;
 
 namespace Microsoft.R.Host.Client {
     public interface IRSession : IRExpressionEvaluator, IRBlobService, IDisposable {
@@ -28,7 +29,7 @@ namespace Microsoft.R.Host.Client {
 
         event EventHandler<EventArgs> Disposed;
         event EventHandler<EventArgs> DirectoryChanged;
-        event EventHandler<EventArgs> BeforePackagesInstalled;
+        event AsyncEventHandler<EventArgs> BeforePackagesInstalledAsync;
         event EventHandler<EventArgs> AfterPackagesInstalled;
         event EventHandler<EventArgs> PackagesRemoved;
 

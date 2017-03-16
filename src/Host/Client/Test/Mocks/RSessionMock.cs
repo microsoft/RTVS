@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.Common.Core.Tasks;
 
 namespace Microsoft.R.Host.Client.Test.Mocks {
     public sealed class RSessionMock : IRSession {
@@ -112,7 +113,7 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
         public event EventHandler<EventArgs> Disposed;
         public event EventHandler<EventArgs> Mutated;
         public event EventHandler<ROutputEventArgs> Output;
-        public event EventHandler<EventArgs> BeforePackagesInstalled;
+        public event AsyncEventHandler<EventArgs> BeforePackagesInstalledAsync;
         public event EventHandler<EventArgs> AfterPackagesInstalled;
         public event EventHandler<EventArgs> PackagesRemoved;
     }

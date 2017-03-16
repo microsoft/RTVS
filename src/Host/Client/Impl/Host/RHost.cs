@@ -533,7 +533,7 @@ namespace Microsoft.R.Host.Client {
                                 break;
 
                             case "!BeforePackagesInstalled":
-                                _callbacks.BeforePackagesInstalled();
+                                await _callbacks.BeforePackagesInstalledAsync();
                                 break;
 
                             case "!AfterPackagesInstalled":

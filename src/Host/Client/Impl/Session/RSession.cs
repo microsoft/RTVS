@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -38,7 +37,7 @@ namespace Microsoft.R.Host.Client.Session {
         public event EventHandler<EventArgs> Disconnected;
         public event EventHandler<EventArgs> Disposed;
         public event EventHandler<EventArgs> DirectoryChanged;
-        public event EventHandler<EventArgs> BeforePackagesInstalled;
+        public event AsyncEventHandler<EventArgs> BeforePackagesInstalledAsync;
         public event EventHandler<EventArgs> AfterPackagesInstalled;
         public event EventHandler<EventArgs> PackagesRemoved;
 
@@ -719,8 +718,8 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
             return callback?.ViewObjectAsync(obj, title, cancellationToken) ?? Task.CompletedTask;
         }
 
-        void IRCallbacks.BeforePackagesInstalled() {
-            BeforePackagesInstalled?.Invoke(this, EventArgs.Empty);
+        Task IRCallbacks.BeforePackagesInstalledAsync() {
+            return BeforePackagesInstalledAsync.InvokeAsync(this, EventArgs.Empty);
         }
 
         void IRCallbacks.AfterPackagesInstalled() {

@@ -84,10 +84,6 @@ namespace Microsoft.R.Support.Help {
         public async Task StartSessionAsync() {
             var token = await _lock.ResetAsync();
             try {
-                if (!_sessionProvider.HasBroker) {
-                    throw new RHostDisconnectedException();
-                }
-
                 if (Session == null) {
                     Session = _sessionProvider.GetOrCreate(SessionNames.Intellisense);
                 }
@@ -104,10 +100,6 @@ namespace Microsoft.R.Support.Help {
         public async Task StopSessionAsync() {
             var token = await _lock.ResetAsync();
             try {
-                if (!_sessionProvider.HasBroker) {
-                    throw new RHostDisconnectedException();
-                }
-
                 if (Session.IsHostRunning) {
                     await Session.StopHostAsync();
                 }
