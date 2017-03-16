@@ -281,14 +281,6 @@ namespace Microsoft.R.Support.Help.Packages {
             return result.Select(p => p.ToObject<RPackage>());
         }
 
-        private async Task<IEnumerable<string>> GetLoadedPackagesAsync() {
-            try {
-                await _host.StartSessionAsync();
-                return _host.LoadedPackageNames;
-            } catch (RException) { } catch (OperationCanceledException) { }
-            return Enumerable.Empty<string>();
-        }
-
         internal static string CacheFolderPath =>
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"Microsoft\VisualStudio\RTVS\IntelliSense\");
 
