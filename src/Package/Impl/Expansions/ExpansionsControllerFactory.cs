@@ -19,7 +19,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
     [Order(Before = "Default")]
     internal class ExpansionsControllerFactory : IControllerFactory {
         public IEnumerable<ICommandTarget> GetControllers(ITextView textView, ITextBuffer textBuffer) {
-            var textManager = Vsshell.Current.Services.GetService<IVsTextManager2>(typeof(SVsTextManager));
+            var textManager = VsAppShell.Current.Services.GetService<IVsTextManager2>(typeof(SVsTextManager));
 
             IVsExpansionManager expansionManager;
             textManager.GetExpansionManager(out expansionManager);

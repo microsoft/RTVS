@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -47,9 +46,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
             }
         }
 
-        private void OnRSessionDisposed(object sender, EventArgs e) {
-            _cts.Cancel();
-        }
+        private void OnRSessionDisposed(object sender, EventArgs e) => _cts.Cancel();
 
         private Task ReplInitComplete() {
             var iw = _interactiveWorkflow.ActiveWindow?.InteractiveWindow;
@@ -122,14 +119,14 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
 
             _console.WriteError(sb.ToString());
             if (reportTelemetry) {
-                var services = _interactiveWorkflow.Shell.Services;
+                var telemetry = _interactiveWorkflow.Shell.Services.GetService<ITelemetryService>();
                 foreach (var name in aboutHost.Interpreters) {
-                    services.Telemetry.ReportEvent(TelemetryArea.Configuration, "Remote Interpteter", name);
-                    services.Telemetry.ReportEvent(TelemetryArea.Configuration, "Remote OS", aboutHost.OS.VersionString);
-                    services.Telemetry.ReportEvent(TelemetryArea.Configuration, "Remote CPUs", aboutHost.ProcessorCount);
-                    services.Telemetry.ReportEvent(TelemetryArea.Configuration, "Remote RAM", aboutHost.TotalPhysicalMemory);
-                    services.Telemetry.ReportEvent(TelemetryArea.Configuration, "Remote Video Card", aboutHost.VideoCardName);
-                    services.Telemetry.ReportEvent(TelemetryArea.Configuration, "Remote GPU", aboutHost.VideoProcessor);
+                    telemetry.ReportEvent(TelemetryArea.Configuration, "Remote Interpteter", name);
+                    telemetry.ReportEvent(TelemetryArea.Configuration, "Remote OS", aboutHost.OS.VersionString);
+                    telemetry.ReportEvent(TelemetryArea.Configuration, "Remote CPUs", aboutHost.ProcessorCount);
+                    telemetry.ReportEvent(TelemetryArea.Configuration, "Remote RAM", aboutHost.TotalPhysicalMemory);
+                    telemetry.ReportEvent(TelemetryArea.Configuration, "Remote Video Card", aboutHost.VideoCardName);
+                    telemetry.ReportEvent(TelemetryArea.Configuration, "Remote GPU", aboutHost.VideoProcessor);
                 }
             }
         }

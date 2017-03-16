@@ -31,7 +31,7 @@ namespace Microsoft.VisualStudio.R.Package.TaskList {
             _source.BeginUpdatingTasks += OnBeginUpdatingTasks;
             _source.EndUpdatingTasks += OnEndUpdatingTasks;
 
-            Vsshell.Current.Idle += OnIdle;
+            VsAppShell.Current.Idle += OnIdle;
 
             ProviderName = "R Language Service";
             ProviderGuid = _taskListProviderGuid;
@@ -88,7 +88,7 @@ namespace Microsoft.VisualStudio.R.Package.TaskList {
 
         protected override void Dispose(bool disposing) {
             if (_source != null) {
-                Vsshell.Current.Idle -= OnIdle;
+                VsAppShell.Current.Idle -= OnIdle;
 
                 _source.TasksAdded -= OnTasksAdded;
                 _source.TasksRemoved -= OnTasksRemoved;

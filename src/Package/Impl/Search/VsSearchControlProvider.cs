@@ -12,10 +12,10 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace Microsoft.VisualStudio.R.Package.Search {
     [Export(typeof(ISearchControlProvider))]
     internal class VsSearchControlProvider : ISearchControlProvider {
-        private readonly Lazy<IVsWindowSearchHostFactory> _factoryLazy = new Lazy<IVsWindowSearchHostFactory>(() => Vsshell.Current.Services.GetService<IVsWindowSearchHostFactory>(typeof(SVsWindowSearchHostFactory)));
+        private readonly Lazy<IVsWindowSearchHostFactory> _factoryLazy = new Lazy<IVsWindowSearchHostFactory>(() => VsAppShell.Current.Services.GetService<IVsWindowSearchHostFactory>(typeof(SVsWindowSearchHostFactory)));
 
         public ISearchControl Create(FrameworkElement host, ISearchHandler handler, SearchControlSettings settings) {
-            Vsshell.Current.AssertIsOnMainThread();
+            VsAppShell.Current.AssertIsOnMainThread();
 
             var vsWindowSearchHost = _factoryLazy.Value.CreateWindowSearchHost(host);
             return new VsSearchControl(vsWindowSearchHost, handler, settings);

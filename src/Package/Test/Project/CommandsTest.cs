@@ -31,9 +31,9 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
         private readonly TestRInteractiveWorkflowProvider _interactiveWorkflowProvider;
 
         public ProjectCommandsTest() {
-            var connectionsProvider = Vsshell.Current.Services.GetService<IConnectionManagerProvider>();
-            var historyProvider = Vsshell.Current.Services.GetService<IRHistoryProvider>();
-            var packagesProvider = Vsshell.Current.Services.GetService<IRPackageManagerProvider>();
+            var connectionsProvider = VsAppShell.Current.Services.GetService<IConnectionManagerProvider>();
+            var historyProvider = VsAppShell.Current.Services.GetService<IRHistoryProvider>();
+            var packagesProvider = VsAppShell.Current.Services.GetService<IRPackageManagerProvider>();
             _interactiveWorkflowProvider = TestRInteractiveWorkflowProviderFactory.Create(connectionsProvider, historyProvider, packagesProvider);
         }
 

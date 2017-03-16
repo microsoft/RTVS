@@ -23,7 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.Windows {
             }
 
             var instance = factory(instanceId);
-            IVsUIShell vsUiShell = Vsshell.Current.Services.GetService<IVsUIShell>(typeof(SVsUIShell));
+            IVsUIShell vsUiShell = VsAppShell.Current.Services.GetService<IVsUIShell>(typeof(SVsUIShell));
             ToolWindowUtilities.CreateToolWindow(vsUiShell, instance, instanceId);
 
             holder = new ToolWindowPaneHolder(instance, () => RemoveHolder(instanceId));

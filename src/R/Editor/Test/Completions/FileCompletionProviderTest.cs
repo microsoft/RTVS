@@ -7,7 +7,7 @@ using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Editor.Completion.Providers;
+using Microsoft.R.Editor.Completions.Providers;
 using Microsoft.R.Editor.Imaging;
 using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.Mef;

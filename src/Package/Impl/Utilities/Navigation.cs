@@ -42,7 +42,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             } else {
                 // This is the main buffer for the view
 
-                IVsTextManager textManager = Vsshell.Current.Services.GetService<IVsTextManager>(typeof(SVsTextManager));
+                IVsTextManager textManager = VsAppShell.Current.Services.GetService<IVsTextManager>(typeof(SVsTextManager));
                 IVsTextBuffer vsTextBuffer = textBuffer.GetBufferAdapter<IVsTextBuffer>();
                 Guid viewType = VSConstants.LOGVIEWID_TextView;
 
@@ -60,7 +60,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         }
 
         public static bool NavigateToTextView(IVsTextView vsTextView, int start, int length) {
-            IVsEditorAdaptersFactoryService adapterService = ComponentLocator<IVsEditorAdaptersFactoryService>.Import(Vsshell.Current.CompositionService);
+            IVsEditorAdaptersFactoryService adapterService = ComponentLocator<IVsEditorAdaptersFactoryService>.Import(VsAppShell.Current.CompositionService);
             if (adapterService != null) {
                 ITextView textView = adapterService.GetWpfTextView(vsTextView);
 
@@ -107,7 +107,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
                 IVsWindowFrame frame;
                 uint itemId;
 
-                IVsUIShellOpenDocument openService = Vsshell.Current.Services.GetService<IVsUIShellOpenDocument>(typeof(SVsUIShellOpenDocument));
+                IVsUIShellOpenDocument openService = VsAppShell.Current.Services.GetService<IVsUIShellOpenDocument>(typeof(SVsUIShellOpenDocument));
                 if (openService != null) {
                     int hr = openService.OpenDocumentViaProject(
                         localPath, ref logicalViewGuid, out serviceProvider, out hierarchy, out itemId, out frame);

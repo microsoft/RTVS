@@ -25,7 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         private SettingsHolder _holder;
 
         public RToolsOptionsPage() {
-            _settings = Vsshell.Current.Services.GetService<IRSettings>();
+            _settings = VsAppShell.Current.Services.GetService<IRSettings>();
             _holder = new SettingsHolder(_settings);
         }
 

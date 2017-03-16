@@ -40,10 +40,10 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
     [Export(typeof(ICoreShell))]
     [Export(typeof(ICoreShell))]
     [Export(typeof(IMainThread))]
-    public sealed partial class Vsshell : ICoreShell, IMainThread, IIdleTimeSource, IVsShellPropertyEvents, IVsBroadcastMessageEvents, IDisposable {
+    public sealed partial class VsAppShell : ICoreShell, IMainThread, IIdleTimeSource, IVsShellPropertyEvents, IVsBroadcastMessageEvents, IDisposable {
         private const int WM_SYSCOLORCHANGE = 0x15;
 
-        private static Vsshell _instance;
+        private static VsAppShell _instance;
         private static ICoreShell _testShell;
 
         private readonly ApplicationConstants _appConstants;
@@ -56,7 +56,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private uint _vsShellBroadcastEventsCookie;
 
         [ImportingConstructor]
-        public Vsshell(ITelemetryService telemetryService) {
+        public VsAppShell(ITelemetryService telemetryService) {
             _appConstants = new ApplicationConstants();
             ProgressDialog = new VsProgressDialog(this);
             FileDialog = new VsFileDialog(this);
@@ -150,7 +150,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             }
         }
 
-        private static Vsshell GetInstance() {
+        private static VsAppShell GetInstance() {
             if (_instance != null) {
                 return _instance;
             }
@@ -158,7 +158,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             ThreadHelper.ThrowIfNotOnUIThread();
 
             var componentModel = (IComponentModel)VsPackage.GetGlobalService(typeof(SComponentModel));
-            var instance = (Vsshell)componentModel.DefaultExportProvider.GetExportedValue<ICoreShell>();
+            var instance = (VsAppShell)componentModel.DefaultExportProvider.GetExportedValue<ICoreShell>();
 
             return Interlocked.CompareExchange(ref _instance, instance, null) ?? instance;
         }
@@ -257,7 +257,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 if (target == null) {
                     throw new ArgumentException(Invariant($"{nameof(commandTarget)} must implement ICommandTarget"));
                 }
-                var shell = Vsshell.Current.Services.GetService<IVsUIShell>(typeof(SVsUIShell));
+                var shell = VsAppShell.Current.Services.GetService<IVsUIShell>(typeof(SVsUIShell));
                 var pts = new POINTS[1];
                 pts[0].x = (short)x;
                 pts[0].y = (short)y;

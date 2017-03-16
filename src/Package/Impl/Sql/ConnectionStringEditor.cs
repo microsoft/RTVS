@@ -29,7 +29,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
 
         public ConnectionStringEditor() : this(null) { }
         public ConnectionStringEditor(IDbConnectionService dbcs) {
-            _dbcs = dbcs ?? Vsshell.Current.Services.GetService<IDbConnectionService>();
+            _dbcs = dbcs ?? VsAppShell.Current.Services.GetService<IDbConnectionService>();
         }
 
         public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context) => UITypeEditorEditStyle.Modal;

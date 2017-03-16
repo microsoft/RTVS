@@ -40,7 +40,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 var model = tn?.Model?.Content as VariableViewModel;
                 if (model != null) {
                     if (match(model.Name)) {
-                        Vsshell.Current.DispatchOnUIThread(() => _grid.SelectedItem = itemControl);
+                        VsAppShell.Current.DispatchOnUIThread(() => _grid.SelectedItem = itemControl);
                         _callback.ReportComplete(this, 1);
                         return true;
                     }

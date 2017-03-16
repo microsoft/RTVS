@@ -2,11 +2,11 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor.Controller.Command;
+using Microsoft.Languages.Editor.Controller.Commands;
 using Microsoft.Languages.Editor.Controller.Constants;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Editor.Settings;
@@ -32,22 +32,16 @@ namespace Microsoft.R.Editor.Formatting {
             );
 
             foreach (var spanToFormat in rSpans) {
-                RangeFormatter.FormatRange(TextView,
-                                           spanToFormat.Snapshot.TextBuffer,
+                RangeFormatter.FormatRange(TextView, spanToFormat.Snapshot.TextBuffer,
                                            new TextRange(spanToFormat.Start.Position, spanToFormat.Length),
-                                           REditorSettings.FormatOptions,
-                                           shell);
+                                           REditorSettings.FormatOptions, Shell);
             }
 
             return new CommandResult(CommandStatus.Supported, 0);
         }
 
-        public override CommandStatus Status(Guid group, int id) {
-            if (TextView.Selection.Mode == TextSelectionMode.Box)
-                return CommandStatus.NotSupported;
-
-            return CommandStatus.SupportedAndEnabled;
-        }
+        public override CommandStatus Status(Guid group, int id)
+            => TextView.Selection.Mode == TextSelectionMode.Box ? CommandStatus.NotSupported : CommandStatus.SupportedAndEnabled;
         #endregion
     }
 }

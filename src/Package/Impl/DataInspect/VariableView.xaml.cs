@@ -44,7 +44,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private bool _keyDownSeen;
         private ObservableTreeNode _rootNode;
 
-        public VariableView() : this(null, Vsshell.Current) { }
+        public VariableView() : this(null, VsAppShell.Current) { }
 
         public VariableView(IRToolsSettings settings, ICoreShell shell) {
             _settings = settings;
@@ -60,7 +60,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             SortDirection = ListSortDirection.Ascending;
             RootTreeGrid.Sorting += RootTreeGrid_Sorting;
 
-            var workflow = Vsshell.Current.Services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
+            var workflow = VsAppShell.Current.Services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
             _session = workflow.RSession;
 
             _environmentProvider = new REnvironmentProvider(_session, shell.Services.MainThread);

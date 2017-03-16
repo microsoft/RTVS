@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Shell;
@@ -19,13 +20,8 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Formatting {
     internal static class AutoFormat {
-        public static bool IsPreProcessAutoformatTriggerCharacter(char ch) {
-            return ch == ';';
-        }
-
-        public static bool IsPostProcessAutoformatTriggerCharacter(char ch) {
-            return ch.IsLineBreak() || ch == '}';
-        }
+        public static bool IsPreProcessAutoformatTriggerCharacter(char ch) => ch == ';';
+        public static bool IsPostProcessAutoformatTriggerCharacter(char ch) => ch.IsLineBreak() || ch == '}';
 
         public static void HandleAutoformat(ITextView textView, ICoreShell shell, char typedChar) {
             if (!REditorSettings.AutoFormat) {

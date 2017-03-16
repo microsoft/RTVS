@@ -13,7 +13,7 @@ using Microsoft.R.Editor.Document;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 
-namespace Microsoft.R.Editor.Completion {
+namespace Microsoft.R.Editor.Completions {
     using Core.Tokens;
     using Languages.Editor.Services;
 

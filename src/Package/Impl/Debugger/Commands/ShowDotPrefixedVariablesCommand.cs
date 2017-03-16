@@ -23,13 +23,13 @@ namespace Microsoft.VisualStudio.R.Package.Debugger.Commands {
             Checked = _settings.ShowDotPrefixedVariables;
 
             // Only show it in the debugger context menu when debugging R code to avoid clutter.
-            var debugger = Vsshell.Current.Services.GetService<DTE>().Debugger;
+            var debugger = VsAppShell.Current.Services.GetService<DTE>().Debugger;
             Enabled = Visible = debugger.CurrentStackFrame?.Language == RContentTypeDefinition.LanguageName;
         }
 
         protected override void Handle() {
            _settings.ShowDotPrefixedVariables = !_settings.ShowDotPrefixedVariables;
-            Vsshell.Current.Services.GetService<DTE>().Debugger.RefreshVariableViews();
+            VsAppShell.Current.Services.GetService<DTE>().Debugger.RefreshVariableViews();
         }
     }
 }

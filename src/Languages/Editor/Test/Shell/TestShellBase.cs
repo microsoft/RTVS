@@ -7,9 +7,9 @@ using System.Threading;
 using System.Windows.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.Common.Core.Threading;
+using Microsoft.Common.Core.UI;
 using Microsoft.UnitTests.Core.Threading;
 
 namespace Microsoft.Languages.Editor.Test.Shell {
@@ -29,9 +29,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
 
         public void ShowErrorMessage(string msg) { }
 
-        public MessageButtons ShowMessage(string message, MessageButtons buttons, MessageType messageType = MessageType.Information) {
-            return MessageButtons.OK;
-        }
+        public MessageButtons ShowMessage(string message, MessageButtons buttons, MessageType messageType = MessageType.Information)=> MessageButtons.OK;
 
         public void ShowContextMenu(System.ComponentModel.Design.CommandID commandId, int x, int y, object commandTaget = null) { }
 

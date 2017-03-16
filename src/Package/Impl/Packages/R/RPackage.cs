@@ -107,7 +107,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         protected override void Initialize() {
             Current = this;
 
-            Vsshell.EnsureInitialized();
+            VsAppShell.EnsureInitialized();
             if (IsCommandLineMode()) {
                 return;
             }
@@ -120,7 +120,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             ProjectIconProvider.LoadProjectImages();
             LogCleanup.DeleteLogsAsync(DiagnosticLogs.DaysToRetain);
 
-            RtvsTelemetry.Initialize(_packageIndex, Vsshell.Current.Services.GetService<IRSettings>());
+            RtvsTelemetry.Initialize(_packageIndex, VsAppShell.Current.Services.GetService<IRSettings>());
 
             BuildFunctionIndex();
             AdviseExportedWindowFrameEvents<ActiveWpfTextViewTracker>();
@@ -128,7 +128,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             AdviseExportedDebuggerEvents<VsDebuggerModeTracker>();
 
             System.Threading.Tasks.Task.Run(() => RtvsTelemetry.Current.ReportConfiguration());
-            IdleTimeAction.Create(ExpansionsCache.Load, 200, typeof(ExpansionsCache), Vsshell.Current);
+            IdleTimeAction.Create(ExpansionsCache.Load, 200, typeof(ExpansionsCache), VsAppShell.Current);
         }
 
         protected override void Dispose(bool disposing) {
@@ -139,7 +139,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             CsvAppFileIO.Close(new FileSystem());
 
             RtvsTelemetry.Current?.Dispose();
-            Vsshell.Terminate();
+            VsAppShell.Terminate();
 
             base.Dispose(disposing);
         }
@@ -155,7 +155,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         }
 
         protected override IEnumerable<MenuCommand> CreateMenuCommands() {
-            return PackageCommands.GetCommands(Vsshell.Current.ExportProvider);
+            return PackageCommands.GetCommands(VsAppShell.Current.ExportProvider);
         }
 
         protected override object GetAutomationObject(string name) {
@@ -174,17 +174,17 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         #endregion
 
         protected override int CreateToolWindow(ref Guid toolWindowType, int id) {
-            var toolWindowFactory = Vsshell.Current.Services.GetService<RPackageToolWindowProvider>();
+            var toolWindowFactory = VsAppShell.Current.Services.GetService<RPackageToolWindowProvider>();
             return toolWindowFactory.TryCreateToolWindow(toolWindowType, id) ? VSConstants.S_OK : base.CreateToolWindow(ref toolWindowType, id);
         }
 
         protected override WindowPane CreateToolWindow(Type toolWindowType, int id) {
-            var toolWindowFactory = Vsshell.Current.Services.GetService<RPackageToolWindowProvider>();
+            var toolWindowFactory = VsAppShell.Current.Services.GetService<RPackageToolWindowProvider>();
             return toolWindowFactory.CreateToolWindow(toolWindowType, id) ?? base.CreateToolWindow(toolWindowType, id);
         }
 
         private bool IsCommandLineMode() {
-            var shell = Vsshell.Current.Services.GetService<IVsShell>(typeof(SVsShell));
+            var shell = VsAppShell.Current.Services.GetService<IVsShell>(typeof(SVsShell));
             if (shell != null) {
                 object value;
                 shell.GetProperty((int)__VSSPROPID.VSSPROPID_IsInCommandLineMode, out value);
@@ -194,7 +194,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         }
 
         private void BuildFunctionIndex() {
-            _packageIndex = Vsshell.Current.Services.GetService<IPackageIndex>();
+            _packageIndex = VsAppShell.Current.Services.GetService<IPackageIndex>();
         }
 
         private void SavePackageIndex() {

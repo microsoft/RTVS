@@ -8,7 +8,7 @@ using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Editor.Snippets;
 using Microsoft.VisualStudio.Language.Intellisense;
 
-namespace Microsoft.R.Editor.Completion.Providers {
+namespace Microsoft.R.Editor.Completions.Providers {
     /// <summary>
     /// R language code snippets completion provider.
     /// </summary>

@@ -64,8 +64,8 @@ namespace Microsoft.VisualStudio.R.Package.Packages {
                 menuCommandService.AddCommand(commmand);
             }
 
-            var settings = Vsshell.Current.Services.GetService<IRToolsSettings>();
-            var dte = Vsshell.Current.Services.GetService<DTE2>(typeof(DTE));
+            var settings = VsAppShell.Current.Services.GetService<IRToolsSettings>();
+            var dte = VsAppShell.Current.Services.GetService<DTE2>(typeof(DTE));
             _toolbar = new RToolbar(dte, settings);
             _toolbar.Show();
         }
@@ -76,14 +76,14 @@ namespace Microsoft.VisualStudio.R.Package.Packages {
         }
 
         protected void AdviseExportedWindowFrameEvents<T>() where T : class {
-            var windowFrameEvents = Vsshell.Current.Services.GetService<T>() as IVsWindowFrameEvents;
+            var windowFrameEvents = VsAppShell.Current.Services.GetService<T>() as IVsWindowFrameEvents;
             var shell = (IVsUIShell7)GetService(typeof(SVsUIShell));
             var cookie = shell.AdviseWindowFrameEvents(windowFrameEvents);
             _disposables.Add(Disposable.Create(() => shell.UnadviseWindowFrameEvents(cookie)));
         }
 
         protected void AdviseExportedDebuggerEvents<T>() where T : class {
-            var debuggerEvents = Vsshell.Current.Services.GetService<T>() as IVsDebuggerEvents;
+            var debuggerEvents = VsAppShell.Current.Services.GetService<T>() as IVsDebuggerEvents;
             var debugger = (IVsDebugger)GetService(typeof(IVsDebugger));
 
             uint cookie;

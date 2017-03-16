@@ -3,6 +3,8 @@
 
 using System;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Diagnostics;
+using Microsoft.Common.Core.UI;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 
@@ -11,10 +13,7 @@ namespace Microsoft.R.Components.Plots.Commands {
         private readonly IRInteractiveWorkflow _workflow;
 
         public PlotDeviceNewCommand(IRInteractiveWorkflow workflow) {
-            if (workflow == null) {
-                throw new ArgumentNullException(nameof(workflow));
-            }
-
+            Check.ArgumentNull(nameof(workflow), workflow);
             _workflow = workflow;
         }
 
@@ -24,7 +23,7 @@ namespace Microsoft.R.Components.Plots.Commands {
             try {
                 await _workflow.Plots.NewDeviceAsync(-1);
             } catch (RPlotManagerException ex) {
-                _workflow.Shell.ShowErrorMessage(ex.Message);
+                _workflow.Shell.Services.GetService<IUIServices>().ShowErrorMessage(ex.Message);
             } catch (OperationCanceledException) {
             }
         }

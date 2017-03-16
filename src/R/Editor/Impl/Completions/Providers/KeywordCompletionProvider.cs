@@ -10,7 +10,7 @@ using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Snippets;
 using Microsoft.VisualStudio.Language.Intellisense;
 
-namespace Microsoft.R.Editor.Completion.Providers {
+namespace Microsoft.R.Editor.Completions.Providers {
     /// <summary>
     /// R language keyword completion provider.
     /// </summary>

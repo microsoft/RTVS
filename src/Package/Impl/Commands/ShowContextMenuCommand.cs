@@ -49,7 +49,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
                 if (_menuService == null && !_triedGetMenuService) {
                     _triedGetMenuService = true;
 
-                    IVsShell shell = Vsshell.Current.Services.GetService<IVsShell>();
+                    IVsShell shell = VsAppShell.Current.Services.GetService<IVsShell>();
                     IVsPackage package;
                     shell.LoadPackage(ref _packageGuid, out package);
                     if (package != null) {

@@ -17,7 +17,7 @@ using Microsoft.R.Support.Help.Packages;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 
-namespace Microsoft.R.Editor.Completion.Providers {
+namespace Microsoft.R.Editor.Completions.Providers {
     /// <summary>
     /// Provides list of functions from installed packages
     /// </summary>

@@ -15,7 +15,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Images {
         [Test]
         [Category.Project.Services]
         public void ImagesProvider_Test() {
-            IImagesProvider p = Vsshell.Current.Services.GetService<IImagesProvider>();
+            IImagesProvider p = VsAppShell.Current.Services.GetService<IImagesProvider>();
             p.Should().NotBeNull();
 
             p.GetFileIcon("foo.R").Should().NotBeNull();

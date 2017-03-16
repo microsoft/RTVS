@@ -15,7 +15,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         public static IVsEditorAdaptersFactoryService AdaptersFactoryService {
             get {
                 if (_adaptersFactoryService == null) {
-                    _adaptersFactoryService = Vsshell.Current.Services.GetService<IVsEditorAdaptersFactoryService>();
+                    _adaptersFactoryService = VsAppShell.Current.Services.GetService<IVsEditorAdaptersFactoryService>();
                 }
                 return _adaptersFactoryService;
             }
@@ -27,7 +27,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         public static T GetBufferAdapter<T>(this ITextBuffer textBuffer) where T : class {
             var vsTextBuffer = AdaptersFactoryService.GetBufferAdapter(textBuffer);
             if(vsTextBuffer == null) {
-                var sp = Vsshell.Current.Services.GetService<IServiceProvider>();
+                var sp = VsAppShell.Current.Services.GetService<IServiceProvider>();
                 vsTextBuffer = AdaptersFactoryService.CreateVsTextBufferAdapterForSecondaryBuffer(sp, textBuffer);
             }
             return vsTextBuffer as T;

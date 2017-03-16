@@ -38,7 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.RHistory {
             var interactiveWorkflow = _interactiveWorkflowProvider.GetOrCreate();
             var sendToReplCommand = new SendHistoryToReplCommand(textView, _historyProvider, interactiveWorkflow);
             var sendToSourceCommand = new SendHistoryToSourceCommand(textView, _historyProvider, interactiveWorkflow, _contentTypeRegistry, _textViewTracker);
-            var shell = Vsshell.Current;
+            var shell = VsAppShell.Current;
 
             return new ICommand[] {
                 new LoadHistoryCommand(shell, textView, _historyProvider, interactiveWorkflow),

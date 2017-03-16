@@ -15,7 +15,7 @@ using Microsoft.R.Editor.Signatures;
 using Microsoft.R.Support.Help;
 using Microsoft.VisualStudio.Language.Intellisense;
 
-namespace Microsoft.R.Editor.Completion.Providers {
+namespace Microsoft.R.Editor.Completions.Providers {
     /// <summary>
     /// Provides list of parameter names in function parameter completion
     /// in the form of 'name=' so when parameter name is the simiar

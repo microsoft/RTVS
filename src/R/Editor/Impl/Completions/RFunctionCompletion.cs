@@ -10,7 +10,7 @@ using Microsoft.R.Support.Help;
 using Microsoft.VisualStudio.Language.Intellisense;
 using static System.FormattableString;
 
-namespace Microsoft.R.Editor.Completion {
+namespace Microsoft.R.Editor.Completions {
     /// <summary>
     /// Completion function entry in the R intellisense completion set
     /// </summary>

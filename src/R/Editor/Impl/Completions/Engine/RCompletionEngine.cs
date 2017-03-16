@@ -19,7 +19,7 @@ using Microsoft.R.Support.Help;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 
-namespace Microsoft.R.Editor.Completion.Engine {
+namespace Microsoft.R.Editor.Completions.Engine {
     internal static class RCompletionEngine {
         /// <summary>
         /// Provides list of completion entries for a given location in the AST.

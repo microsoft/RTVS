@@ -18,7 +18,7 @@ using Microsoft.VisualStudio.Text.Operations;
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     internal sealed class ReplCommandFactory : ICommandFactory {
         public IEnumerable<ICommand> GetCommands(ITextView textView, ITextBuffer textBuffer) {
-            var shell = Vsshell.Current;
+            var shell = VsAppShell.Current;
             var exportProvider = shell.ExportProvider;
             var interactiveWorkflowProvider = exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
             var interactiveWorkflow = interactiveWorkflowProvider.GetOrCreate();

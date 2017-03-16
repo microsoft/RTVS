@@ -41,29 +41,29 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         public string StatusText
         {
             get {
-                Vsshell.Current.AssertIsOnMainThread();
+                VsAppShell.Current.AssertIsOnMainThread();
                 string text = string.Empty;
-                var statusBar = Vsshell.Current.Services.GetService<IVsStatusbar>(typeof(SVsStatusbar));
+                var statusBar = VsAppShell.Current.Services.GetService<IVsStatusbar>(typeof(SVsStatusbar));
                 ErrorHandler.ThrowOnFailure(statusBar.GetText(out text));
                 return text;
             }
             set {
-                Vsshell.Current.AssertIsOnMainThread();
-                var statusBar = Vsshell.Current.Services.GetService<IVsStatusbar>(typeof(SVsStatusbar));
+                VsAppShell.Current.AssertIsOnMainThread();
+                var statusBar = VsAppShell.Current.Services.GetService<IVsStatusbar>(typeof(SVsStatusbar));
                 statusBar.SetText(value);
             }
         }
 
         public void ShowContextMenu(CommandID commandId, Point position) {
-            Vsshell.Current.DispatchOnUIThread(() => {
+            VsAppShell.Current.DispatchOnUIThread(() => {
                 var point = Component.Control.PointToScreen(position);
-                Vsshell.Current.ShowContextMenu(commandId, (int)point.X, (int)point.Y);
+                VsAppShell.Current.ShowContextMenu(commandId, (int)point.X, (int)point.Y);
             });
         }
 
         public void UpdateCommandStatus(bool immediate) {
-            Vsshell.Current.DispatchOnUIThread(() => {
-                var shell = Vsshell.Current.Services.GetService<IVsUIShell>(typeof (SVsUIShell));
+            VsAppShell.Current.DispatchOnUIThread(() => {
+                var shell = VsAppShell.Current.Services.GetService<IVsUIShell>(typeof (SVsUIShell));
                 shell.UpdateCommandUI(immediate ? 1 : 0);
             });
         }
@@ -73,7 +73,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 return;
             }
 
-            Vsshell.Current.DispatchOnUIThread(() => {
+            VsAppShell.Current.DispatchOnUIThread(() => {
                 ErrorHandler.ThrowOnFailure(VsWindowFrame.Hide());
             });
         }
@@ -84,7 +84,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             }
 
             if (immediate) {
-                Vsshell.Current.AssertIsOnMainThread();
+                VsAppShell.Current.AssertIsOnMainThread();
                 if (focus) {
                     ErrorHandler.ThrowOnFailure(VsWindowFrame.Show());
                     Component.Control?.Focus();
@@ -92,7 +92,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                     ErrorHandler.ThrowOnFailure(VsWindowFrame.ShowNoActivate());
                 }
             } else {
-                Vsshell.Current.DispatchOnUIThread(() => {
+                VsAppShell.Current.DispatchOnUIThread(() => {
                     if (focus) {
                         ErrorHandler.ThrowOnFailure(VsWindowFrame.Show());
                         Component.Control?.Focus();

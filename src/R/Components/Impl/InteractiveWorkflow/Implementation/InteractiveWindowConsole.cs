@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI;
 using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
@@ -42,7 +43,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         public void WriteLine(string text) => Write(text + Environment.NewLine);
 
         public async Task<bool> PromptYesNoAsync(string text, CancellationToken cancellationToken) {
-            var result = await _workflow.Shell.ShowMessageAsync(text, MessageButtons.YesNo, cancellationToken);
+            var result = await _workflow.Shell.Services.GetService<IUIServices>().ShowMessageAsync(text, MessageButtons.YesNo, cancellationToken);
             return result == MessageButtons.Yes;
         }
     }

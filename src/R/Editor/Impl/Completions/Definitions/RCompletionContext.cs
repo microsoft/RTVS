@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.R.Editor.Completion {
+namespace Microsoft.R.Editor.Completions {
     /// <summary>
     /// R completion context. Provides information about current document, 
     /// caret position and other necessary data for the completion engine.

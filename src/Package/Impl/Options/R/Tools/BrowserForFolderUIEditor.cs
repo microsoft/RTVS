@@ -18,7 +18,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
             try {
                 currentDirectory = Path.IsPathRooted(currentDirectory) ? currentDirectory : null;
             } catch(ArgumentException) { }
-            var result = Vsshell.Current.FileDialog.ShowBrowseDirectoryDialog(currentDirectory);
+            var result = VsAppShell.Current.FileDialog.ShowBrowseDirectoryDialog(currentDirectory);
             return !string.IsNullOrEmpty(result) ? result : currentDirectory;
         }
     }

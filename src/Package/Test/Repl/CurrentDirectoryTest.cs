@@ -31,15 +31,15 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
         private readonly IRSessionProvider _sessionProvider;
 
         public CurrentDirectoryTest() {
-            var connectionsProvider = Vsshell.Current.Services.GetService<IConnectionManagerProvider>();
-            var historyProvider = Vsshell.Current.Services.GetService<IRHistoryProvider>();
-            var packagesProvider = Vsshell.Current.Services.GetService<IRPackageManagerProvider>();
-            var plotsProvider = Vsshell.Current.Services.GetService<IRPlotManagerProvider>();
+            var connectionsProvider = VsAppShell.Current.Services.GetService<IConnectionManagerProvider>();
+            var historyProvider = VsAppShell.Current.Services.GetService<IRHistoryProvider>();
+            var packagesProvider = VsAppShell.Current.Services.GetService<IRPackageManagerProvider>();
+            var plotsProvider = VsAppShell.Current.Services.GetService<IRPlotManagerProvider>();
             var activeTextViewTracker = new ActiveTextViewTrackerMock(string.Empty, string.Empty);
             var debuggerModeTracker = new TestDebuggerModeTracker();
             _interactiveWorkflow = UIThreadHelper.Instance.Invoke(() => new RInteractiveWorkflow(
                 connectionsProvider, historyProvider, packagesProvider, plotsProvider, activeTextViewTracker,
-                debuggerModeTracker, Vsshell.Current, RToolsSettings.Current));
+                debuggerModeTracker, VsAppShell.Current, RToolsSettings.Current));
 
             _sessionProvider = _interactiveWorkflow.RSessions;
         }

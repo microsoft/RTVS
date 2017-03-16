@@ -64,7 +64,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
                             .AddValue(_instance);
                         VsTestCompositionCatalog.Current.Container.Compose(batch);
 
-                        Vsshell.Current = _instance;
+                        VsAppShell.Current = _instance;
                     }
                 }
             });

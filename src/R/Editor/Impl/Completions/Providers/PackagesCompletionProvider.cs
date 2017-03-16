@@ -9,7 +9,7 @@ using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Support.Help;
 using Microsoft.VisualStudio.Language.Intellisense;
 
-namespace Microsoft.R.Editor.Completion.Providers {
+namespace Microsoft.R.Editor.Completions.Providers {
     /// <summary>
     /// Provides list of installed packages for completion inside 
     /// library(...) statement. List of packages is  obtained from 

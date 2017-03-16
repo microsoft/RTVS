@@ -35,7 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         public IInteractiveWindowVisualComponent Create(int instanceId, IInteractiveEvaluator evaluator, IRSessionProvider sessionProvider) {
-            Vsshell.Current.AssertIsOnMainThread();
+            VsAppShell.Current.AssertIsOnMainThread();
 
             IVsInteractiveWindow vsWindow;
             var vsf2 = _vsInteractiveWindowFactoryLazy.Value as IVsInteractiveWindowFactory2; // Temporary for VS 2017 RC2

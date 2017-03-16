@@ -16,7 +16,7 @@ namespace Microsoft.VisualStudio.R.Package.Browsers {
         private readonly IProcessServices _ps;
 
         private readonly IVsWebBrowsingService _wbs;
-        private IVsWebBrowsingService WebBrowserService => _wbs ?? Vsshell.Current.Services.GetService<IVsWebBrowsingService>(typeof(SVsWebBrowsingService));
+        private IVsWebBrowsingService WebBrowserService => _wbs ?? VsAppShell.Current.Services.GetService<IVsWebBrowsingService>(typeof(SVsWebBrowsingService));
 
         private readonly IRToolsSettings _settings;
         private IRToolsSettings Settings => _settings ?? RToolsSettings.Current;
@@ -46,7 +46,7 @@ namespace Microsoft.VisualStudio.R.Package.Browsers {
         #endregion
 
         private void OpenVsBrowser(WebBrowserRole role, string url) {
-            Vsshell.Current.DispatchOnUIThread(() => {
+            VsAppShell.Current.DispatchOnUIThread(() => {
                 DoOpenVsBrowser(role, url);
             });
         }
@@ -55,7 +55,7 @@ namespace Microsoft.VisualStudio.R.Package.Browsers {
             if (!string.IsNullOrEmpty(url)) {
                 IdleTimeAction.Create(() => {
                     OpenVsBrowser(role, url);
-                }, 100, typeof(WebBrowserServices), Vsshell.Current);
+                }, 100, typeof(WebBrowserServices), VsAppShell.Current);
             }
         }
 

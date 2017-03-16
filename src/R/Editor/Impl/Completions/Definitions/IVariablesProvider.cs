@@ -4,13 +4,12 @@
 using System.Collections.Generic;
 using Microsoft.R.Support.Help;
 
-namespace Microsoft.R.Editor.Completion {
+namespace Microsoft.R.Editor.Completions {
     /// <summary>
     /// Provides information on variables members or
     /// variables declared in a global scope.
     /// </summary>
-    public interface IVariablesProvider
-    {
+    public interface IVariablesProvider {
         void Initialize();
 
         /// <summary>

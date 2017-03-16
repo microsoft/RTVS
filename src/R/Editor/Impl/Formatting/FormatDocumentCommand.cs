@@ -79,7 +79,7 @@ namespace Microsoft.R.Editor.Formatting {
                             new TextStream(oldText), new TextStream(formattedText),
                             oldTokens, newTokens,
                             TextRange.FromBounds(0, oldText.Length),
-                            Resources.FormatDocument, selectionTracker, shell);
+                            Resources.FormatDocument, selectionTracker, Shell);
                     }
                 } finally {
                     selectionTracker.EndTracking();

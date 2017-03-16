@@ -4,7 +4,7 @@
 using Microsoft.R.Core.Tokens;
 using static System.FormattableString;
 
-namespace Microsoft.R.Editor.Completion.Providers {
+namespace Microsoft.R.Editor.Completions.Providers {
     internal static class CompletionUtilities {
         public static string BacktickName(string name) {
             if (!string.IsNullOrEmpty(name)) {

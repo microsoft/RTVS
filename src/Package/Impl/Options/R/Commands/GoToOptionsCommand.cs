@@ -14,7 +14,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
             base(OnCommand, new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.icmdGoToRToolsOptions)) { }
 
         public static void OnCommand(object sender, EventArgs args) {
-            IVsShell shell = Vsshell.Current.Services.GetService<IVsShell>(typeof(SVsShell));
+            IVsShell shell = VsAppShell.Current.Services.GetService<IVsShell>(typeof(SVsShell));
             IVsPackage package;
 
             if (VSConstants.S_OK == shell.LoadPackage(RGuidList.RPackageGuid, out package)) {

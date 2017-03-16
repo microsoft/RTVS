@@ -11,7 +11,7 @@ using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Completion.Documentation;
-using Microsoft.R.Editor.Completion.Engine;
+using Microsoft.R.Editor.Completions.Engine;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Editor.Signatures;
@@ -19,10 +19,7 @@ using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.R.Editor.Completion {
-    using Languages.Editor.Shell;
-    using Completion = Microsoft.VisualStudio.Language.Intellisense.Completion;
-
+namespace Microsoft.R.Editor.Completions {
     /// <summary>
     /// R-specific completion controller. Initiates, commits or dismisses
     /// completion, signature and parameter help sessions depending 

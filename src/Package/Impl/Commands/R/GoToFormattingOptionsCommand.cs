@@ -3,7 +3,7 @@
 
 using System;
 using Microsoft.Common.Core.UI.Commands;
-using Microsoft.Languages.Editor.Controller.Command;
+using Microsoft.Languages.Editor.Controller.Commands;
 using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.R.Package.Options.R.Editor;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -18,12 +18,10 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
             base(textView, RGuidList.RCmdSetGuid, RPackageCommandId.icmdGoToFormattingOptions, false) {
         }
 
-        public override CommandStatus Status(Guid group, int id) {
-            return CommandStatus.SupportedAndEnabled;
-        }
+        public override CommandStatus Status(Guid group, int id)=> CommandStatus.SupportedAndEnabled;
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
-            IVsShell shell = Vsshell.Current.Services.GetService<IVsShell>(typeof(SVsShell));
+            IVsShell shell = VsAppShell.Current.Services.GetService<IVsShell>(typeof(SVsShell));
             IVsPackage package;
 
             if (VSConstants.S_OK == shell.LoadPackage(RGuidList.RPackageGuid, out package)) {

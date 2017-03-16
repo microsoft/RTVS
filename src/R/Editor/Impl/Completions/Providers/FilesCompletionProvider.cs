@@ -17,7 +17,7 @@ using Microsoft.VisualStudio.Language.Intellisense;
 using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 
-namespace Microsoft.R.Editor.Completion.Providers {
+namespace Microsoft.R.Editor.Completions.Providers {
     /// <summary>
     /// Provides list of files and folder in the current directory
     /// </summary>

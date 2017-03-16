@@ -34,7 +34,7 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
         private bool _encoding;
 
         public BaseEditorFactory(Package package, Guid editorFactoryId, Guid languageServiceId, bool encoding = false) {
-            Vsshell.Current.CompositionService.SatisfyImportsOnce(this);
+            VsAppShell.Current.CompositionService.SatisfyImportsOnce(this);
             Package = package;
             InitializationTrackers = new List<TextBufferInitializationTracker>();
             _editorFactoryId = editorFactoryId;

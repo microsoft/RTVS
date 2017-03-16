@@ -14,7 +14,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
 
             Debug.Assert(textView != null, "Null Text View");
             if (textView != null) {
-                ICompletionBroker completionBroker = Vsshell.Current.ExportProvider.GetExport<ICompletionBroker>().Value;
+                ICompletionBroker completionBroker = VsAppShell.Current.ExportProvider.GetExport<ICompletionBroker>().Value;
                 Debug.Assert(completionBroker != null, "Null completion broker.");
                 if (completionBroker != null) {
                     result = completionBroker.IsCompletionActive(textView);
@@ -29,7 +29,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
 
             Debug.Assert(textView != null, "Null Text View");
             if (textView != null) {
-                ICompletionBroker completionBroker = Vsshell.Current.ExportProvider.GetExport<ICompletionBroker>().Value;
+                ICompletionBroker completionBroker = VsAppShell.Current.ExportProvider.GetExport<ICompletionBroker>().Value;
                 Debug.Assert(completionBroker != null, "Null completion broker.");
                 if (completionBroker != null && completionBroker.IsCompletionActive(textView)) {
                     var completionSessions = completionBroker.GetSessions(textView);

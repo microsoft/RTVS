@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.R.Package.Utilities;
+using Microsoft.Common.Core.UI;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Commands {
     internal sealed class DeleteAllVariablesCommand : SessionCommand {
@@ -24,15 +25,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Commands {
         }
 
         protected override void Handle() {
-            if(MessageButtons.No == Vsshell.Current.ShowMessage(Resources.Warning_DeleteAllVariables, MessageButtons.YesNo)) {
+            if(MessageButtons.No == VsAppShell.Current.ShowMessage(Resources.Warning_DeleteAllVariables, MessageButtons.YesNo)) {
                 return;
             }
             try {
                 RSession.ExecuteAsync("rm(list = ls(all = TRUE))").DoNotWait();
             } catch (RException ex) {
-                Vsshell.Current.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToDeleteVariable, ex.Message));
+                VsAppShell.Current.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToDeleteVariable, ex.Message));
             } catch (ComponentBinaryMissingException ex) {
-                Vsshell.Current.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToDeleteVariable, ex.Message));
+                VsAppShell.Current.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToDeleteVariable, ex.Message));
             }
         }
     }

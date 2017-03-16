@@ -20,12 +20,12 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     [Export(typeof(IProjectSystemServices))]
     internal sealed class ProjectSystemServices : IProjectSystemServices {
         public EnvDTE.Solution GetSolution() {
-            DTE dte = Vsshell.Current.Services.GetService<DTE>();
+            DTE dte = VsAppShell.Current.Services.GetService<DTE>();
             return dte.Solution;
         }
 
         public EnvDTE.Project GetActiveProject() {
-            DTE dte = Vsshell.Current.Services.GetService<DTE>();
+            DTE dte = VsAppShell.Current.Services.GetService<DTE>();
             if (dte.Solution.Projects.Count > 0) {
                 try {
                     return dte.Solution?.Projects?.Cast<EnvDTE.Project>()?.First();
@@ -38,7 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         /// Locates project that is currently active in Solution Explorer
         /// </summary>
         public T GetSelectedProject<T>() where T : class {
-            var monSel = Vsshell.Current.Services.GetService<IVsMonitorSelection>();
+            var monSel = VsAppShell.Current.Services.GetService<IVsMonitorSelection>();
             IntPtr hierarchy = IntPtr.Zero, selectionContainer = IntPtr.Zero;
             uint itemid;
             IVsMultiItemSelect ms;
@@ -63,7 +63,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         public void AddNewItem(string templateName, string name, string extension, string destinationPath) {
             var project = GetSelectedProject<IVsHierarchy>()?.GetDTEProject();
             if (project != null) {
-                DTE dte = Vsshell.Current.Services.GetService<DTE>();
+                DTE dte = VsAppShell.Current.Services.GetService<DTE>();
                 var solution = (Solution2)dte.Solution;
 
                 // Construct name of the compressed template

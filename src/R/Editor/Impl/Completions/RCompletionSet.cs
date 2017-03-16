@@ -8,7 +8,7 @@ using Microsoft.R.Core.Tokens;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 
-namespace Microsoft.R.Editor.Completion {
+namespace Microsoft.R.Editor.Completions {
     using Common.Core;
     using Completion = VisualStudio.Language.Intellisense.Completion;
     using CompletionList = Microsoft.Languages.Editor.Completion.CompletionList;

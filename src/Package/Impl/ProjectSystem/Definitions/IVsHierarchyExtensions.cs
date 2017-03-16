@@ -14,7 +14,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         /// Returns EnvDTE.Project object for the hierarchy
         /// </summary>
         public static EnvDTE.Project GetDTEProject(this IVsHierarchy hierarchy) {
-            Vsshell.Current.AssertIsOnMainThread();
+            VsAppShell.Current.AssertIsOnMainThread();
             object extObject;
             if (ErrorHandler.Succeeded(hierarchy.GetProperty(VSConstants.VSITEMID_ROOT, (int)__VSHPROPID.VSHPROPID_ExtObject, out extObject))) {
                 return extObject as EnvDTE.Project;
@@ -40,7 +40,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         /// Convenient way to get to the UnconfiguredProject from the hierarchy
         /// </summary>
         public static IVsBrowseObjectContext GetBrowseObjectContext(this IVsHierarchy hierarchy) {
-            Vsshell.Current.AssertIsOnMainThread();
+            VsAppShell.Current.AssertIsOnMainThread();
             var context = hierarchy as IVsBrowseObjectContext;
             if (context == null) {
                 var dteProject = hierarchy.GetDTEProject();

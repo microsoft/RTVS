@@ -5,6 +5,7 @@ using System;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
+using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Extensions;

@@ -43,7 +43,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             }, cts.Token);
 
             CommonMessagePumpExitCode exitCode;
-            if (!Vsshell.Current.IsUnitTestEnvironment) {
+            if (!VsAppShell.Current.IsUnitTestEnvironment) {
                 exitCode = msgPump.ModalWaitForHandles(((IAsyncResult)task).AsyncWaitHandle);
             } else {
                 exitCode = CommonMessagePumpExitCode.HandleSignaled;

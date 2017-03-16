@@ -38,7 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.RHistory {
                     // is not specific to VS and does not use OLE, we create OLE-to-managed target shim
                     // and managed target-to-OLE shims. 
 
-                    IVsEditorAdaptersFactoryService adapterService = Vsshell.Current.Services.GetService<IVsEditorAdaptersFactoryService>();
+                    IVsEditorAdaptersFactoryService adapterService = VsAppShell.Current.Services.GetService<IVsEditorAdaptersFactoryService>();
                     IVsTextView viewAdapter = adapterService.GetViewAdapter(textView);
 
                     if (viewAdapter != null) {
@@ -52,7 +52,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.RHistory {
                         // nextOleTarget is typically a core editor wrapped into OLE layer.
                         // Create a wrapper that will present OLE target as ICommandTarget to
                         // HTML main controller so controller can operate in platform-agnostic way.
-                        ICommandTarget nextCommandTarget = Vsshell.Current.TranslateCommandTarget(textView, nextOleTarget);
+                        ICommandTarget nextCommandTarget = VsAppShell.Current.TranslateCommandTarget(textView, nextOleTarget);
 
                         mainController.ChainedController = nextCommandTarget;
                     }

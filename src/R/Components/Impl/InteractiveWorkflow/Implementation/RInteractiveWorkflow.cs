@@ -9,6 +9,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.History;
@@ -168,7 +169,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                     var showConnectionsWindow = Connections.RecentConnections.Any();
                     if (!showConnectionsWindow) {
                         var message = Resources.NoLocalR.FormatInvariant(Environment.NewLine + Environment.NewLine, Environment.NewLine);
-                        showConnectionsWindow = Shell.ShowMessage(message, MessageButtons.YesNo) == MessageButtons.No;
+                        var ui = Shell.Services.GetService<IUIServices>();
+                        showConnectionsWindow = ui.ShowMessage(message, MessageButtons.YesNo) == MessageButtons.No;
                     }
 
                     if (!showConnectionsWindow) {

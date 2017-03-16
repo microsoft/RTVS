@@ -30,5 +30,10 @@ namespace Microsoft.Common.Core.Shell {
                 Debug.Fail(FormattableString.Invariant($"{memberName} at {sourceFilePath}:{sourceLineNumber} was incorrectly called from a background thread."));
             }
         }
+
+        public static void ShowErrorMessage(this ICoreShell shell, string message)
+            => shell.Services.GetService<IUIServices>().ShowErrorMessage(message);
+        public static MessageButtons ShowMessage(this ICoreShell shell, string message, MessageButtons buttons)
+            => shell.Services.GetService<IUIServices>().ShowMessage(message, buttons);
     }
 }

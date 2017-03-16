@@ -104,7 +104,8 @@ namespace Microsoft.R.Editor.Formatting {
         }
 
         public static void UndoableFormatRange(ITextView textView, ITextBuffer textBuffer, ITextRange formatRange, ICoreShell shell) {
-            using (var undoAction = shell.CreateCompoundAction(textView, textView.TextBuffer)) {
+            var es = shell.Services.GetService<IApplicationEditorSupport>();
+            using (var undoAction = es.CreateCompoundAction(textView, textView.TextBuffer)) {
                 undoAction.Open(Resources.AutoFormat);
                 var result = RangeFormatter.FormatRange(textView, textBuffer, formatRange, REditorSettings.FormatOptions, shell);
                 if (result) {

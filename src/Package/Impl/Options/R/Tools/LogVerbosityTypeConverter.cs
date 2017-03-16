@@ -20,7 +20,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
         public LogVerbosityTypeConverter(LogVerbosity maxVerbosity) : base(_permittedSettings) {
             _maxLogLevel = (int)maxVerbosity;
         }
-        public LogVerbosityTypeConverter() : this(Vsshell.Current.Services.LoggingPermissions.MaxVerbosity) { }
+        public LogVerbosityTypeConverter() : this(VsAppShell.Current.Services.LoggingPermissions.MaxVerbosity) { }
 
         public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context) {
             return new StandardValuesCollection(_permittedSettings.Take(_maxLogLevel + 1).ToList());

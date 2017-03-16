@@ -3,7 +3,7 @@
 
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Host.Client;
 
@@ -11,12 +11,12 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
     public sealed class TerminateRCommand : IAsyncCommand {
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
         private readonly IRSession _session;
-        private readonly ICoreShell _coreShell;
+        private readonly IUIServices _ui;
 
-        public TerminateRCommand(IRInteractiveWorkflow interactiveWorkflow, ICoreShell coreShell) {
+        public TerminateRCommand(IRInteractiveWorkflow interactiveWorkflow, IUIServices ui) {
             _interactiveWorkflow = interactiveWorkflow;
             _session = interactiveWorkflow.RSession;
-            _coreShell = coreShell;
+            _ui = ui;
         }
 
         public CommandStatus Status {
@@ -32,7 +32,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
         }
 
         public async Task InvokeAsync() {
-            if (_coreShell.ShowMessage(Resources.Warning_TerminateR, MessageButtons.YesNo) == MessageButtons.Yes) {
+            if (_ui.ShowMessage(Resources.Warning_TerminateR, MessageButtons.YesNo) == MessageButtons.Yes) {
                 foreach (var s in _interactiveWorkflow.RSessions.GetSessions().ToList()) {
                     await s.StopHostAsync();
                 }

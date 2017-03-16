@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Enums;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
@@ -14,13 +14,13 @@ namespace Microsoft.R.Components.ConnectionManager.Commands {
     public class SwitchToConnectionCommand : IAsyncCommandRange {
         private readonly IRSettings _settings;
         private readonly IConnectionManager _connectionManager;
-        private readonly ICoreShell _shell;
+        private readonly IUIServices _ui;
         private ReadOnlyCollection<IConnection> _recentConnections;
 
         public SwitchToConnectionCommand(IRInteractiveWorkflow workflow, IRSettings settings) {
             _settings = settings;
             _connectionManager = workflow.Connections;
-            _shell = workflow.Shell;
+            _ui = workflow.Shell.Services.GetService<IUIServices>();
         }
 
         public CommandStatus GetStatus(int index) {
@@ -52,11 +52,11 @@ namespace Microsoft.R.Components.ConnectionManager.Commands {
                 var activeConnection = _connectionManager.ActiveConnection;
                 if (activeConnection != null && connection.BrokerConnectionInfo == activeConnection.BrokerConnectionInfo) {
                     var text = Resources.ConnectionManager_ConnectionsAreIdentical.FormatCurrent(activeConnection.Name, connection.Name);
-                    _shell.ShowMessage(text, MessageButtons.OK);
+                    _ui.ShowMessage(text, MessageButtons.OK);
                 } else {
                     if (activeConnection != null && _settings.ShowWorkspaceSwitchConfirmationDialog == YesNo.Yes) {
                         var message = Resources.ConnectionManager_SwitchConfirmation.FormatCurrent(activeConnection.Name, connection.Name);
-                        if (_shell.ShowMessage(message, MessageButtons.YesNo) == MessageButtons.No) {
+                        if (_ui.ShowMessage(message, MessageButtons.YesNo) == MessageButtons.No) {
                             return Task.CompletedTask;
                         }
                     }
@@ -64,7 +64,7 @@ namespace Microsoft.R.Components.ConnectionManager.Commands {
                     var progressBarMessage = activeConnection != null
                         ? Resources.ConnectionManager_SwitchConnectionProgressBarMessage.FormatCurrent(activeConnection.Name, connection.Name)
                         : Resources.ConnectionManager_ConnectionToProgressBarMessage.FormatCurrent(connection.Name);
-                    _shell.ProgressDialog.Show(ct => _connectionManager.ConnectAsync(connection, ct), progressBarMessage);
+                    _ui.ProgressDialog.Show(ct => _connectionManager.ConnectAsync(connection, ct), progressBarMessage);
                 }
             }
 

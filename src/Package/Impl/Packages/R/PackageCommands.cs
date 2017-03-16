@@ -39,7 +39,7 @@ using static Microsoft.VisualStudio.R.Package.Commands.CommandAsyncToOleMenuComm
 namespace Microsoft.VisualStudio.R.Packages.R {
     internal static class PackageCommands {
         public static IEnumerable<MenuCommand> GetCommands(ExportProvider exportProvider) {
-            var shell = Vsshell.Current;
+            var shell = VsAppShell.Current;
             var interactiveWorkflowProvider = exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
             var interactiveWorkflow = interactiveWorkflowProvider.GetOrCreate();
             var projectServiceAccessor = exportProvider.GetExportedValue<IProjectServiceAccessor>();

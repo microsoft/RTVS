@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.ObjectModel;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -11,6 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Enums;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI;
 using Microsoft.Common.Wpf.Collections;
 using Microsoft.R.Components.ConnectionManager.ViewModel;
 using Microsoft.R.Components.Settings;
@@ -20,6 +20,7 @@ using Microsoft.R.Interpreters;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
     internal sealed class ConnectionManagerViewModel : ConnectionStatusBaseViewModel, IConnectionManagerViewModel {
+        private readonly IUIServices _ui;
         private readonly IRSettings _settings;
         private readonly BatchObservableCollection<IConnectionViewModel> _localConnections;
         private readonly BatchObservableCollection<IConnectionViewModel> _remoteConnections;
@@ -30,6 +31,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public ConnectionManagerViewModel(IConnectionManager connectionManager, IRSettings settings, ICoreShell shell) :
             base(connectionManager, shell) {
+            _ui = shell.Services.GetService<IUIServices>();
             _settings = settings;
 
             _remoteConnections = new BatchObservableCollection<IConnectionViewModel>();
@@ -66,7 +68,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             // When 'Edit' button is clicked second time, we close the panel.
             // If panel has changes, offer save the changes. 
             if (EditedConnection != null && EditedConnection.HasChanges) {
-                var dialogResult = Shell.ShowMessage(Resources.ConnectionManager_EditedConnectionHasChanges,
+                var dialogResult = _ui.ShowMessage(Resources.ConnectionManager_EditedConnectionHasChanges,
                     MessageButtons.YesNoCancel);
                 switch (dialogResult) {
                     case MessageButtons.Yes:
@@ -126,11 +128,11 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                 } catch (ArgumentException) { } catch (IOException) { }
             }
 
-            var path = Shell.FileDialog.ShowBrowseDirectoryDialog(latestLocalPath);
+            var path = _ui.FileDialog.ShowBrowseDirectoryDialog(latestLocalPath);
             if (path != null) {
                 // Verify path
                 var ri = new RInterpreterInfo(string.Empty, path);
-                if (ri.VerifyInstallation(null, null, Shell)) {
+                if (ri.VerifyInstallation(null, null, _ui)) {
                     connection.Path = path;
                 }
             }
@@ -200,16 +202,16 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
             if ((connectionViewModel.IsRenamed || IsEditingNew) &&
                 ConnectionManager.GetConnection(connectionViewModel.Name) != null) {
-                Shell.ShowMessage(Resources.ConnectionManager_CantSaveWithTheSameName.FormatCurrent(connectionViewModel.Name), MessageButtons.OK);
+                _ui.ShowMessage(Resources.ConnectionManager_CantSaveWithTheSameName.FormatCurrent(connectionViewModel.Name), MessageButtons.OK);
                 return;
             }
 
             if (connectionViewModel.IsConnected) {
-                var confirm = Shell.ShowMessage(Resources.ConnectionManager_RenameActiveConnectionConfirmation.FormatCurrent(connectionViewModel.OriginalName), MessageButtons.YesNo);
+                var confirm = _ui.ShowMessage(Resources.ConnectionManager_RenameActiveConnectionConfirmation.FormatCurrent(connectionViewModel.OriginalName), MessageButtons.YesNo);
                 if (confirm == MessageButtons.Yes) {
                     var message = Resources.ConnectionManager_RenameConnectionProgressBarMessage.FormatInvariant(connectionViewModel.OriginalName, connectionViewModel.Name);
                     try {
-                        Shell.ProgressDialog.Show(ct => ConnectionManager.DisconnectAsync(ct), message);
+                        _ui.ProgressDialog.Show(ct => ConnectionManager.DisconnectAsync(ct), message);
                     } catch (OperationCanceledException) {
                         return;
                     }
@@ -239,14 +241,14 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                 ? Resources.ConnectionManager_RemoveActiveConnectionConfirmation.FormatCurrent(connection.Name)
                 : Resources.ConnectionManager_RemoveConnectionConfirmation.FormatCurrent(connection.Name);
 
-            var confirm = Shell.ShowMessage(confirmMessage, MessageButtons.YesNo);
+            var confirm = _ui.ShowMessage(confirmMessage, MessageButtons.YesNo);
             if (confirm == MessageButtons.No) {
                 return false;
             }
 
             if (connection.IsActive) {
                 try {
-                    Shell.ProgressDialog.Show(ct => ConnectionManager.DisconnectAsync(ct), Resources.ConnectionManager_DeleteConnectionProgressBarMessage.FormatInvariant(connection.Name));
+                    _ui.ProgressDialog.Show(ct => ConnectionManager.DisconnectAsync(ct), Resources.ConnectionManager_DeleteConnectionProgressBarMessage.FormatInvariant(connection.Name));
                 } catch (OperationCanceledException) {
                     return false;
                 }
@@ -275,18 +277,18 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             CancelTestConnection();
 
             if (connection.IsActive && !IsConnected) {
-                Shell.ProgressDialog.Show(ConnectionManager.ReconnectAsync, Resources.ConnectionManager_ReconnectionToProgressBarMessage.FormatInvariant(connection.Name));
+                _ui.ProgressDialog.Show(ConnectionManager.ReconnectAsync, Resources.ConnectionManager_ReconnectionToProgressBarMessage.FormatInvariant(connection.Name));
             } else {
                 var activeConnection = ConnectionManager.ActiveConnection;
                 var connectionToSwitch = ConnectionManager.GetConnection(connection.Name);
                 if (activeConnection != null && connectionToSwitch.BrokerConnectionInfo == activeConnection.BrokerConnectionInfo) {
                     var text = Resources.ConnectionManager_ConnectionsAreIdentical.FormatCurrent(activeConnection.Name, connection.Name);
-                    Shell.ShowMessage(text, MessageButtons.OK);
+                    _ui.ShowMessage(text, MessageButtons.OK);
                 } else {
                     var connect = true;
                     if (activeConnection != null && _settings.ShowWorkspaceSwitchConfirmationDialog == YesNo.Yes) {
                         var message = Resources.ConnectionManager_SwitchConfirmation.FormatCurrent(activeConnection.Name, connection.Name);
-                        if (Shell.ShowMessage(message, MessageButtons.YesNo) == MessageButtons.No) {
+                        if (_ui.ShowMessage(message, MessageButtons.YesNo) == MessageButtons.No) {
                             connect = false;
                         }
                     }
@@ -295,7 +297,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                         var progressBarMessage = activeConnection != null
                             ? Resources.ConnectionManager_SwitchConnectionProgressBarMessage.FormatCurrent(activeConnection.Name, connection.Name)
                             : Resources.ConnectionManager_ConnectionToProgressBarMessage.FormatCurrent(connection.Name);
-                        Shell.ProgressDialog.Show(ct => ConnectionManager.ConnectAsync(connection, ct), progressBarMessage);
+                        _ui.ProgressDialog.Show(ct => ConnectionManager.ConnectAsync(connection, ct), progressBarMessage);
                     }
                 }
             }
@@ -333,8 +335,6 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             };
         }
 
-        protected override void ConnectionStateChanged() {
-            UpdateConnections();
-        }
+        protected override void ConnectionStateChanged() => UpdateConnections();
     }
 }

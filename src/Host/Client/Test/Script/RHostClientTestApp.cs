@@ -4,7 +4,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI;
 using Microsoft.R.Components.Help;
 
 namespace Microsoft.R.Host.Client.Test.Script {
@@ -15,9 +15,7 @@ namespace Microsoft.R.Host.Client.Test.Script {
         public Action<PlotMessage> PlotHandler { get; set; }
         public IHelpVisualComponent HelpComponent { get; set; }
 
-        public virtual string CranUrlFromName(string name) {
-            return "https://cran.rstudio.com";
-        }
+        public virtual string CranUrlFromName(string name) => "https://cran.rstudio.com";
 
         public virtual Task Plot(PlotMessage plot, CancellationToken ct) {
             if (PlotHandler != null) {
@@ -27,48 +25,26 @@ namespace Microsoft.R.Host.Client.Test.Script {
             throw new NotImplementedException();
         }
 
-        public virtual Task ShowErrorMessage(string message, CancellationToken cancellationToken = default(CancellationToken)) {
-            return Task.CompletedTask;
-        }
+        public virtual Task ShowErrorMessage(string message, CancellationToken cancellationToken = default(CancellationToken)) => Task.CompletedTask;
 
         public virtual Task ShowHelpAsync(string url, CancellationToken cancellationToken = default(CancellationToken)) {
             HelpComponent.Navigate(url);
             return Task.CompletedTask;
         }
 
-        public virtual Task<MessageButtons> ShowMessageAsync(string message, MessageButtons buttons, CancellationToken cancellationToken) {
-            return Task.FromResult(MessageButtons.OK);
-        }
-
-        public Task<string> ReadUserInput(string prompt, int maximumLength, CancellationToken ct) {
-            return Task.FromResult("\n");
-        }
-
+        public virtual Task<MessageButtons> ShowMessageAsync(string message, MessageButtons buttons, CancellationToken cancellationToken) => Task.FromResult(MessageButtons.OK);
+        public Task<string> ReadUserInput(string prompt, int maximumLength, CancellationToken ct) => Task.FromResult("\n");
         public Task ViewObjectAsync(string expression, string title, CancellationToken cancellationToken) => Task.CompletedTask;
-
         public Task ViewLibraryAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+        public Task ViewFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken) => Task.CompletedTask;
 
-        public Task ViewFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken) {
-            return Task.CompletedTask;
-        }
+        public Task<LocatorResult> Locator(Guid deviceId, CancellationToken ct)
+            =>  LocatorHandler != null ? Task.FromResult(LocatorHandler()) : throw new NotImplementedException();
 
-        public Task<LocatorResult> Locator(Guid deviceId, CancellationToken ct) {
-            if (LocatorHandler != null) {
-                return Task.FromResult(LocatorHandler());
-            }
-            throw new NotImplementedException();
-        }
+        public Task<string> FetchFileAsync(string remoteFileName, ulong remoteBlobId, string localPath, CancellationToken cancellationToken)=> Task.FromResult(localPath);
 
-        public Task<string> FetchFileAsync(string remoteFileName, ulong remoteBlobId, string localPath, CancellationToken cancellationToken) {
-            return Task.FromResult(localPath);
-        }
-
-        public Task<PlotDeviceProperties> PlotDeviceCreate(Guid deviceId, CancellationToken ct) {
-            if (PlotDeviceCreateHandler != null) {
-                return Task.FromResult(PlotDeviceCreateHandler(deviceId));
-            }
-            throw new NotImplementedException();
-        }
+        public Task<PlotDeviceProperties> PlotDeviceCreate(Guid deviceId, CancellationToken ct) 
+            => PlotDeviceCreateHandler != null ? Task.FromResult(PlotDeviceCreateHandler(deviceId)): throw new NotImplementedException();
 
         public Task PlotDeviceDestroy(Guid deviceId, CancellationToken ct) {
             if (PlotDeviceDestroyHandler != null) {
@@ -78,8 +54,6 @@ namespace Microsoft.R.Host.Client.Test.Script {
             throw new NotImplementedException();
         }
 
-        public string GetLocalizedString(string id) {
-            throw new NotImplementedException();
-        }
+        public string GetLocalizedString(string id)=> throw new NotImplementedException();
     }
 }

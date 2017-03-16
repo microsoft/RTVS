@@ -140,8 +140,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
                 UpdateWorkingDirectoryList(newDirectory);
 
                 if (shell.HasShell) {
-                    Vsshell.Current.DispatchOnUIThread(() => {
-                        IVsUIShell shell = Vsshell.Current.Services.GetService<IVsUIShell>(typeof(SVsUIShell));
+                    VsAppShell.Current.DispatchOnUIThread(() => {
+                        IVsUIShell shell = VsAppShell.Current.Services.GetService<IVsUIShell>(typeof(SVsUIShell));
                         shell.UpdateCommandUI(1);
                     });
                 }

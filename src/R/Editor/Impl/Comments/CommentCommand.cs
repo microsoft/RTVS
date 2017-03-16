@@ -21,14 +21,11 @@ namespace Microsoft.R.Editor.Comments {
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             SnapshotSpan selectionSpan = TextView.Selection.StreamSelectionSpan.SnapshotSpan;
 
-            RCommenter.CommentBlock(TextView, TextView.TextBuffer, new TextRange(selectionSpan.Start.Position, selectionSpan.Length), shell);
-
+            RCommenter.CommentBlock(TextView, TextView.TextBuffer, new TextRange(selectionSpan.Start.Position, selectionSpan.Length), Shell);
             return CommandResult.Executed;
         }
 
-        public override CommandStatus Status(Guid group, int id) {
-            return CommandStatus.SupportedAndEnabled;
-        }
+        public override CommandStatus Status(Guid group, int id) => CommandStatus.SupportedAndEnabled;
         #endregion
     }
 }

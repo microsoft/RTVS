@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.Threading;
 using static System.FormattableString;
+using Microsoft.Common.Core.UI;
 
 namespace Microsoft.R.Host.Client {
     public sealed class DataTransferSession : IDisposable {

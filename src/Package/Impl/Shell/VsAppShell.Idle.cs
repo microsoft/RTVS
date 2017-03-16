@@ -4,7 +4,7 @@
 using System;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
-    public sealed partial class Vsshell {
+    public sealed partial class VsAppShell {
         private IdleTimeSource _idleTimeSource;
 
         private void ConfigureIdleSource() {

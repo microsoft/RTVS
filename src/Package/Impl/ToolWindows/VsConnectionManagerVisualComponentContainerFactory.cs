@@ -12,6 +12,6 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
     [Export(typeof(IConnectionManagerVisualComponentContainerFactory))]
     internal class VsConnectionManagerVisualComponentContainerFactory : ToolWindowPaneFactory<ConnectionManagerWindowPane>, IConnectionManagerVisualComponentContainerFactory {
         public IVisualComponentContainer<IConnectionManagerVisualComponent> GetOrCreate(IConnectionManager connectionManager, int instanceId = 0) 
-            => GetOrCreate(instanceId, i => new ConnectionManagerWindowPane(connectionManager, RToolsSettings.Current, Vsshell.Current));
+            => GetOrCreate(instanceId, i => new ConnectionManagerWindowPane(connectionManager, RToolsSettings.Current, VsAppShell.Current));
     }
 }

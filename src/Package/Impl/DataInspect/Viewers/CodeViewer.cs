@@ -57,7 +57,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
                         sw.Write(functionCode);
                     }
 
-                    await Vsshell.Current.SwitchToMainThreadAsync(cancellationToken);
+                    await VsAppShell.Current.SwitchToMainThreadAsync(cancellationToken);
 
                     FileViewer.ViewFile(tempFile, functionName);
                     try {

@@ -47,7 +47,7 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
 
         int SendMail(string subject, string body, int how) {
             IntPtr vsWindow;
-            IVsUIShell shell = Vsshell.Current.Services.GetService<IVsUIShell>(typeof(SVsUIShell));
+            IVsUIShell shell = VsAppShell.Current.Services.GetService<IVsUIShell>(typeof(SVsUIShell));
             shell.GetDialogOwnerHwnd(out vsWindow);
 
             MapiMessage msg = new MapiMessage();

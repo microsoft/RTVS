@@ -6,6 +6,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.UI;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 
@@ -15,17 +16,10 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
             : base(interactiveWorkflow, visualComponent) {
         }
 
-        public CommandStatus Status {
-            get {
-                if (HasCurrentPlot && !IsInLocatorMode) {
-                    return CommandStatus.SupportedAndEnabled;
-                }
-
-                return CommandStatus.Supported;
-            }
-        }
+        public CommandStatus Status => HasCurrentPlot && !IsInLocatorMode ? CommandStatus.SupportedAndEnabled : CommandStatus.Supported;
 
         public async Task InvokeAsync() {
+            var ui = InteractiveWorkflow.Shell.Services.GetService<IUIServices>();
             string filePath = Path.GetTempFileName();
             try {
                 await InteractiveWorkflow.Plots.ExportToMetafileAsync(
@@ -40,7 +34,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
                         var mf = new System.Drawing.Imaging.Metafile(filePath);
                         Clipboard.SetData(DataFormats.EnhancedMetafile, mf);
                     } catch (Exception e) when (!e.IsCriticalException()) {
-                        InteractiveWorkflow.Shell.ShowErrorMessage(string.Format(Resources.Plots_CopyToClipboardError, e.Message));
+                        ui.ShowErrorMessage(string.Format(Resources.Plots_CopyToClipboardError, e.Message));
                     } finally {
                         try {
                             File.Delete(filePath);
@@ -49,13 +43,11 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
                     }
                 });
             } catch (RPlotManagerException ex) {
-                InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);
+                ui.ShowErrorMessage(ex.Message);
             } catch (OperationCanceledException) {
             }
         }
 
-        private static double PixelsToInches(int pixels) {
-            return pixels / 96.0;
-        }
+        private static double PixelsToInches(int pixels) => pixels / 96.0;
     }
 }

@@ -45,5 +45,8 @@ namespace Microsoft.Common.Core.UI {
         void UpdateCommandStatus(bool immediate = false);
 
         UIColorTheme UIColorTheme { get; }
+
+        IProgressDialog ProgressDialog { get; }
+        IFileDialog FileDialog { get; }
     }
 }

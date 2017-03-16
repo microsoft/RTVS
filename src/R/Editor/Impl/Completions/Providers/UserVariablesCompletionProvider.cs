@@ -10,7 +10,7 @@ using Microsoft.R.Core.AST.DataTypes;
 using Microsoft.R.Core.AST.Scopes;
 using Microsoft.VisualStudio.Language.Intellisense;
 
-namespace Microsoft.R.Editor.Completion.Providers {
+namespace Microsoft.R.Editor.Completions.Providers {
     /// <summary>
     /// Provides list of functions and variables applicable to the current scope and 
     /// the caret position. Enumerates variables and function that appear before the

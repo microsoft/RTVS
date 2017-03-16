@@ -66,7 +66,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.Markdown {
 
         protected override void OnTextBufferCreated(ITextView textView, ITextBuffer textBuffer) {
             // Force creations
-            var shell = Vsshell.Current;
+            var shell = VsAppShell.Current;
             OleControllerChain.InitEditorInstance(textBuffer);
             base.OnTextBufferCreated(textView, textBuffer);
         }

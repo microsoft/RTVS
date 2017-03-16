@@ -19,8 +19,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             var result = await Evaluator.EvaluateAsync(expression, fields, repr, cancellationToken);
             var error = result as IRErrorInfo;
             if (error != null) {
-                await Vsshell.Current.SwitchToMainThreadAsync(cancellationToken);
-                Vsshell.Current.ShowErrorMessage(error.ErrorText);
+                await VsAppShell.Current.SwitchToMainThreadAsync(cancellationToken);
+                VsAppShell.Current.ShowErrorMessage(error.ErrorText);
                 return null;
             }
 

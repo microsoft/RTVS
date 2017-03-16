@@ -62,7 +62,7 @@ namespace Microsoft.R.Editor.Formatting {
                         // We don't want to format inside strings
                         if (!document.EditorTree.AstRoot.IsPositionInsideString(insertionPoint)) {
                             RangeFormatter.FormatRange(TextView, document.TextBuffer,
-                                new TextRange(insertionPoint, text.Length), REditorSettings.FormatOptions, shell);
+                                new TextRange(insertionPoint, text.Length), REditorSettings.FormatOptions, Shell);
                         }
                     }
                 }

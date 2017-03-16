@@ -65,7 +65,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
         public RtvsTelemetry(IPackageIndex packageIndex, IRSettings settings, ITelemetryService service = null) {
             _packageIndex = packageIndex;
             _settings = settings;
-            TelemetryService = service ?? Vsshell.Current.Services.GetService<ITelemetryService>();
+            TelemetryService = service ?? VsAppShell.Current.Services.GetService<ITelemetryService>();
         }
 
         public ITelemetryService TelemetryService { get; }

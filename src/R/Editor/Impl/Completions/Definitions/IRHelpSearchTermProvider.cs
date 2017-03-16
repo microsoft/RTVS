@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace Microsoft.R.Editor.Completion
+namespace Microsoft.R.Editor.Completions
 {
     /// <summary>
     /// An interface implemented by R completion provider that supplies

@@ -9,27 +9,26 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Implementation;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
-using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     internal class SendFileCommandBase {
         private readonly IRInteractiveWorkflowProvider _interactiveWorkflowProvider;
         private readonly IFileSystem _fs;
-        private readonly ICoreShell _shell;
+        private readonly IUIServices _ui;
 
-        protected SendFileCommandBase(IRInteractiveWorkflowProvider interactiveWorkflowProvider, ICoreShell shell, IFileSystem fs) {
+        protected SendFileCommandBase(IRInteractiveWorkflowProvider interactiveWorkflowProvider, IUIServices ui, IFileSystem fs) {
             _interactiveWorkflowProvider = interactiveWorkflowProvider;
-            _shell = shell;
+            _ui = ui;
             _fs = fs;
         }
 
         protected Task SendToRemoteAsync(IEnumerable<string> files, string projectDir, string projectName, string remotePath) {
-            _shell.ProgressDialog.Show(async (p, ct) => await SendToRemoteWorkerAsync(files, projectDir, projectName, remotePath, p, ct), Resources.Info_TransferringFiles, 100, 500);
+            _ui.ProgressDialog.Show(async (p, ct) => await SendToRemoteWorkerAsync(files, projectDir, projectName, remotePath, p, ct), Resources.Info_TransferringFiles, 100, 500);
             return Task.CompletedTask;
         }
 
@@ -93,7 +92,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
             } catch (RHostDisconnectedException rhdex) {
                 console.WriteErrorLine(Resources.Error_CannotTransferNoRSession.FormatInvariant(rhdex.Message));
             } catch (Exception ex) when (ex is UnauthorizedAccessException || ex is IOException) {
-                _shell.ShowErrorMessage(Resources.Error_CannotTransferFile.FormatInvariant(ex.Message));
+                _ui.ShowErrorMessage(Resources.Error_CannotTransferFile.FormatInvariant(ex.Message));
             }
         }
     }
