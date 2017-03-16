@@ -71,10 +71,9 @@ namespace Microsoft.R.Support.Help.Packages {
         }
 
         public Task BeforePackagesInstalledAsync(CancellationToken ct) {
-            try {
-                _host.StopSessionAsync(ct).Wait(3000);
-            } catch(OperationCanceledException) { }
-            return Task.CompletedTask;
+            var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            timeoutCts.CancelAfter(5000);
+            return _host.StopSessionAsync(timeoutCts.Token);
         }
 
         public Task AfterPackagesInstalledAsync(CancellationToken ct) {
