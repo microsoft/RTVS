@@ -25,9 +25,11 @@ namespace Microsoft.R.Host.Client {
         /// Graph app may call Win32 API directly rather than going via R API callbacks.
         /// </summary>
         /// <returns>Pressed button code</returns>
-        Task<MessageButtons> ShowDialog(IReadOnlyList<IRContext> contexts, string s, MessageButtons buttons, CancellationToken ct);
+        Task<MessageButtons> ShowDialog(IReadOnlyList<IRContext> contexts, string s, MessageButtons buttons,
+            CancellationToken ct);
 
-        Task<string> ReadConsole(IReadOnlyList<IRContext> contexts, string prompt, int len, bool addToHistory, CancellationToken ct);
+        Task<string> ReadConsole(IReadOnlyList<IRContext> contexts, string prompt, int len, bool addToHistory,
+            CancellationToken ct);
 
         Task WriteConsoleEx(string buf, OutputType otype, CancellationToken ct);
 
@@ -90,14 +92,15 @@ namespace Microsoft.R.Host.Client {
         /// <returns></returns>
         Task ViewObject(string expression, string title, CancellationToken cancellationToken);
 
-        Task BeforePackagesInstalledAsync();
-        void AfterPackagesInstalled();
+        Task BeforePackagesInstalledAsync(CancellationToken cancellationToken);
+        Task AfterPackagesInstalledAsync(CancellationToken cancellationToken);
         void PackagesRemoved();
 
         /// <summary>
         /// Called when user invokes rtvs:::fetch_file() in R.
         /// </summary>
-        Task<string> FetchFileAsync(string remoteFileName, ulong remoteFileBlobId, string localPath, CancellationToken cancellationToken);
+        Task<string> FetchFileAsync(string remoteFileName, ulong remoteFileBlobId, string localPath,
+            CancellationToken cancellationToken);
 
         /// <summary>
         /// Implements rtvs:::locstr().

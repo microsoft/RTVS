@@ -186,6 +186,8 @@ namespace Microsoft.R.Host.Client {
         }
 
         public string GetLocalizedString(string id) => null;
+        public Task BeforePackagesInstalledAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+        public Task AfterPackagesInstalledAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
         class MaxLoggingPermissions : ILoggingPermissions {
             public LogVerbosity CurrentVerbosity { get; set; } = LogVerbosity.Traffic;

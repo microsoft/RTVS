@@ -59,12 +59,12 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             _disposableBag = DisposableBag.Create<RPackageManager>(dispose)
                 .Add(() => _interactiveWorkflow.RSessions.BrokerChanged -= BrokerChanged)
                 .Add(() => _interactiveWorkflow.RSession.Mutated -= RSessionMutated)
-                .Add(() => _interactiveWorkflow.RSession.AfterPackagesInstalled -= AfterPackagesInstalled)
+                .Add(() => _interactiveWorkflow.RSession.PackagesInstalled -= PackagesInstalled)
                 .Add(() => _interactiveWorkflow.RSession.PackagesRemoved -= PackagesRemoved);
 
             _interactiveWorkflow.RSessions.BrokerChanged += BrokerChanged;
             _interactiveWorkflow.RSession.Mutated += RSessionMutated;
-            _interactiveWorkflow.RSession.AfterPackagesInstalled += AfterPackagesInstalled;
+            _interactiveWorkflow.RSession.PackagesInstalled += PackagesInstalled;
             _interactiveWorkflow.RSession.PackagesRemoved += PackagesRemoved;
         }
 
@@ -208,7 +208,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             _loadedPackagesEvent.FireOnce();
         }
 
-        private void AfterPackagesInstalled(object sender, EventArgs e) {
+        private void PackagesInstalled(object sender, EventArgs e) {
             _installedPackagesEvent.FireOnce();
             _loadedPackagesEvent.FireOnce();
         }

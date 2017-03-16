@@ -29,8 +29,7 @@ namespace Microsoft.R.Host.Client {
 
         event EventHandler<EventArgs> Disposed;
         event EventHandler<EventArgs> DirectoryChanged;
-        event AsyncEventHandler<EventArgs> BeforePackagesInstalledAsync;
-        event EventHandler<EventArgs> AfterPackagesInstalled;
+        event EventHandler<EventArgs> PackagesInstalled;
         event EventHandler<EventArgs> PackagesRemoved;
 
         int Id { get; }

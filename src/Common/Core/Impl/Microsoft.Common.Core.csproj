@@ -95,7 +95,6 @@
     <Compile Include="Shell\MessageType.cs" />
     <Compile Include="Shell\ProgressDialogData.cs" />
     <Compile Include="Events\DirtyEventSource.cs" />
-    <Compile Include="Tasks\AsyncEventHandler.cs" />
     <Compile Include="Tasks\CancellationTokenUtilities.cs" />
     <Compile Include="Tasks\TaskCompletionSourceEx.cs" />
     <Compile Include="Threading\AsyncManualResetEvent.cs" />

@@ -8,12 +8,14 @@ using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Threading;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
@@ -25,6 +27,7 @@ namespace Microsoft.R.Support.Help.Packages {
     /// Index of packages available from the R engine.
     /// </summary>
     [Export(typeof(IPackageIndex))]
+    [Export(typeof(IPackageInstallationNotifications))]
     public sealed class PackageIndex : IPackageIndex {
         private readonly IRInteractiveWorkflow _workflow;
         private readonly IRSession _interactiveSession;
@@ -48,8 +51,6 @@ namespace Microsoft.R.Support.Help.Packages {
 
             _interactiveSession = _workflow.RSession;
             _interactiveSession.Connected += OnSessionConnected;
-            _interactiveSession.BeforePackagesInstalledAsync += OnBeforePackagesInstalledAsync;
-            _interactiveSession.AfterPackagesInstalled += OnAfterPackagesInstalled;
             _interactiveSession.PackagesRemoved += OnPackagesRemoved;
 
             _workflow.RSessions.BrokerStateChanged += OnBrokerStateChanged;
@@ -69,15 +70,16 @@ namespace Microsoft.R.Support.Help.Packages {
             }
         }
 
-        private Task OnBeforePackagesInstalledAsync(object sender, EventArgs e) {
+        public Task BeforePackagesInstalledAsync(CancellationToken ct) {
             try {
-                _host.StopSessionAsync().Wait(3000);
+                _host.StopSessionAsync(ct).Wait(3000);
             } catch(OperationCanceledException) { }
             return Task.CompletedTask;
         }
 
-        private void OnAfterPackagesInstalled(object sender, EventArgs e) {
-            UpdateInstalledPackagesAsync().DoNotWait();
+        public Task AfterPackagesInstalledAsync(CancellationToken ct) {
+            UpdateInstalledPackagesAsync(ct).DoNotWait();
+            return Task.CompletedTask;
         }
 
         private void OnPackagesRemoved(object sender, EventArgs e) {
@@ -177,8 +179,6 @@ namespace Microsoft.R.Support.Help.Packages {
 
         public void Dispose() {
             if (_interactiveSession != null) {
-                _interactiveSession.BeforePackagesInstalledAsync -= OnBeforePackagesInstalledAsync;
-                _interactiveSession.AfterPackagesInstalled -= OnAfterPackagesInstalled;
                 _interactiveSession.PackagesRemoved -= OnPackagesRemoved;
                 _interactiveSession.Connected -= OnSessionConnected;
                 _workflow.RSessions.BrokerStateChanged -= OnBrokerStateChanged;
@@ -231,8 +231,8 @@ namespace Microsoft.R.Support.Help.Packages {
             }
         }
 
-        private async Task UpdateInstalledPackagesAsync() {
-            var token = await _buildIndexLock.ResetAsync();
+        private async Task UpdateInstalledPackagesAsync(CancellationToken ct) {
+            var token = await _buildIndexLock.ResetAsync(ct);
             if (!token.IsSet) {
                 try {
                     var installed = await GetInstalledPackagesAsync();
@@ -276,8 +276,8 @@ namespace Microsoft.R.Support.Help.Packages {
             return list;
         }
 
-        private async Task<IEnumerable<RPackage>> GetInstalledPackagesAsync() {
-            await _host.StartSessionAsync();
+        private async Task<IEnumerable<RPackage>> GetInstalledPackagesAsync(CancellationToken ct = default(CancellationToken)) {
+            await _host.StartSessionAsync(ct);
             var result = await _host.Session.InstalledPackagesAsync();
             return result.Select(p => p.ToObject<RPackage>());
         }

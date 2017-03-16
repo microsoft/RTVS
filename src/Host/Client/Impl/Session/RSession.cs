@@ -37,8 +37,7 @@ namespace Microsoft.R.Host.Client.Session {
         public event EventHandler<EventArgs> Disconnected;
         public event EventHandler<EventArgs> Disposed;
         public event EventHandler<EventArgs> DirectoryChanged;
-        public event AsyncEventHandler<EventArgs> BeforePackagesInstalledAsync;
-        public event EventHandler<EventArgs> AfterPackagesInstalled;
+        public event EventHandler<EventArgs> PackagesInstalled;
         public event EventHandler<EventArgs> PackagesRemoved;
 
         /// <summary>
@@ -718,12 +717,15 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
             return callback?.ViewObjectAsync(obj, title, cancellationToken) ?? Task.CompletedTask;
         }
 
-        Task IRCallbacks.BeforePackagesInstalledAsync() {
-            return BeforePackagesInstalledAsync.InvokeAsync(this, EventArgs.Empty);
+        Task IRCallbacks.BeforePackagesInstalledAsync(CancellationToken cancellationToken) {
+            var callback = _callback;
+            return callback.BeforePackagesInstalledAsync(cancellationToken);
         }
 
-        void IRCallbacks.AfterPackagesInstalled() {
-            AfterPackagesInstalled?.Invoke(this, EventArgs.Empty);
+        Task IRCallbacks.AfterPackagesInstalledAsync(CancellationToken cancellationToken) {
+            PackagesInstalled?.Invoke(this, EventArgs.Empty);
+            var callback = _callback;
+            return callback.AfterPackagesInstalledAsync(cancellationToken);
         }
 
         void IRCallbacks.PackagesRemoved() {

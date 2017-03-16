@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.R.Host.Client;
 
@@ -18,13 +19,13 @@ namespace Microsoft.R.Support.Help {
         /// <summary>
         /// Starts intellisense session.
         /// </summary>
-        Task StartSessionAsync();
+        Task StartSessionAsync(CancellationToken ct = default(CancellationToken));
 
         /// <summary>
         /// Stops intellisense session.
         /// </summary>
         /// <returns></returns>
-        Task StopSessionAsync();
+        Task StopSessionAsync(CancellationToken ct = default(CancellationToken));
 
         /// <summary>
         /// Given function name returns package the function belongs to.
