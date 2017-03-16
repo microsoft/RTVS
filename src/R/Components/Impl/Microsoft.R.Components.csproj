@@ -153,6 +153,7 @@
     <Compile Include="InteractiveWorkflow\Commands\InterruptRCommand.cs" />
     <Compile Include="InteractiveWorkflow\SessionNames.cs" />
     <Compile Include="InteractiveWorkflow\Implementation\CarriageReturnProcessor.cs" />
+    <Compile Include="PackageManager\IPackageInstallationNotifications.cs" />
     <Compile Include="Plots\Commands\ShowMainPlotWindowCommand.cs" />
     <Compile Include="Plots\Implementation\Commands\PlotHistoryCommand.cs" />
     <Compile Include="Plots\Implementation\RPlot.cs" />

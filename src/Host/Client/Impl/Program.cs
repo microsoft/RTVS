@@ -125,10 +125,6 @@ namespace Microsoft.R.Host.Client {
         public async Task ShowFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken) 
             => await Console.Error.WriteAsync(Invariant($"ShowFile({fileName}, {tabName}, {deleteFile})"));
 
-        public void PackagesInstalled() {
-            Console.Error.WriteLineAsync("PackagesInstalled").DoNotWait();
-        }
-
         public void PackagesRemoved() {
             Console.Error.WriteLineAsync("PackagesRemoved").DoNotWait();
         }
@@ -183,6 +179,8 @@ namespace Microsoft.R.Host.Client {
         }
 
         public string GetLocalizedString(string id) => null;
+        public Task BeforePackagesInstalledAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+        public Task AfterPackagesInstalledAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
         class MaxLoggingPermissions : ILoggingPermissions {
             public LogVerbosity CurrentVerbosity { get; set; } = LogVerbosity.Traffic;

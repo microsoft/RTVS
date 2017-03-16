@@ -53,5 +53,7 @@ namespace Microsoft.R.Host.Client {
         public Task ViewObjectAsync(string expression, string title, CancellationToken cancellationToken = default(CancellationToken)) => Task.CompletedTask;
 
         public string GetLocalizedString(string id) => null;
+        public Task BeforePackagesInstalledAsync(CancellationToken ct) => Task.CompletedTask;
+        public Task AfterPackagesInstalledAsync(CancellationToken ct) => Task.CompletedTask;
     }
 }
