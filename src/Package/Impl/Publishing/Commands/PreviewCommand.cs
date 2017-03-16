@@ -12,7 +12,7 @@ using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
-using Microsoft.Languages.Editor.Controller.Command;
+using Microsoft.Languages.Editor.Controller.Commands;
 using Microsoft.Languages.Editor.Extensions;
 using Microsoft.Markdown.Editor.Commands;
 using Microsoft.Markdown.Editor.ContentTypes;
@@ -23,7 +23,6 @@ using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Publishing.Definitions;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using static System.FormattableString;
@@ -37,7 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
         private readonly IProcessServices _pss;
         private readonly IFileSystem _fs;
 
-        protected ICoreShell shell { get; }
+        protected ICoreShell Shell { get; }
 
         public PreviewCommand(ITextView textView, int id,
             IRInteractiveWorkflowProvider workflowProvider,
@@ -46,7 +45,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
             IFileSystem fs)
             : base(textView, new CommandId[] { new CommandId(MdPackageCommandId.MdCmdSetGuid, id) }, false) {
             _workflowProvider = workflowProvider;
-            shell = shell;
+            Shell = shell;
             _pss = pss;
             _fs = fs;
 

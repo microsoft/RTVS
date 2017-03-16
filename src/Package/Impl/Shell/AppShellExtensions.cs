@@ -3,6 +3,7 @@
 
 using System;
 using System.Drawing;
+using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Shell.Interop;
 

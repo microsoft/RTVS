@@ -13,7 +13,7 @@ using Microsoft.R.Core.AST.Arguments;
 using Microsoft.R.Core.AST.Functions;
 using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Core.Tokens;
-using Microsoft.R.Editor.Completion.Providers;
+using Microsoft.R.Editor.Completions.Providers;
 using Microsoft.R.Editor.Imaging;
 using Microsoft.R.Support.Help;
 using Microsoft.VisualStudio.Language.Intellisense;

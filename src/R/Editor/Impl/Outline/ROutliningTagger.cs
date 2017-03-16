@@ -2,9 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Outline;
 using Microsoft.Languages.Editor.Services;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Editor.Document;
 using Microsoft.VisualStudio.Text.Tagging;
 
@@ -25,8 +25,6 @@ namespace Microsoft.R.Editor.Outline {
             ServiceManager.RemoveService<ROutliningTagger>(document.EditorTree.TextBuffer);
         }
 
-        public override OutliningRegionTag CreateTag(OutlineRegion region) {
-            return new ROutliningRegionTag(region);
-        }
+        public override OutliningRegionTag CreateTag(OutlineRegion region) => new ROutliningRegionTag(region);
     }
 }

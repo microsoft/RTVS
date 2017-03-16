@@ -135,17 +135,17 @@ namespace Microsoft.R.Interpreters.Test {
 
             svl = new SupportedRVersionRange(3, 2, 3, 9);
             var coreShell = Substitute.For<ICoreShell>();
-            var es = Substitute.For<IUIServices>();
-            coreShell.Services.GetService<IUIServices>().Returns(es);
+            var ui = Substitute.For<IUIServices>();
+            coreShell.Services.GetService<IUIServices>().Returns(ui);
 
             e = new RInterpreterInfo(e.Name, e.InstallPath, fs);
-            e.VerifyInstallation(svl, fs, coreShell).Should().BeFalse();
+            e.VerifyInstallation(svl, fs, ui).Should().BeFalse();
 
-            es.When(x => x.ShowMessage(Arg.Any<string>(), MessageButtons.OK)).Do(x => {
+            ui.When(x => x.ShowMessage(Arg.Any<string>(), MessageButtons.OK)).Do(x => {
                 var s = x.Args()[0] as string;
                 s.Should().Contain("not compatible");
             });
-            es.Received().ShowMessage(Arg.Any<string>(), MessageButtons.OK);
+            ui.Received().ShowMessage(Arg.Any<string>(), MessageButtons.OK);
         }
 
 
@@ -191,19 +191,19 @@ namespace Microsoft.R.Interpreters.Test {
             var e = ri.GetCompatibleEngines(svl).FirstOrDefault();
             e.Should().NotBeNull();
 
-            var es = Substitute.For<IUIServices>();
-            coreShell.Services.GetService<IUIServices>().Returns(es);
+            var ui = Substitute.For<IUIServices>();
+            fs = Substitute.For<IFileSystem>();
+            var coreShell = Substitute.For<ICoreShell>();
+            coreShell.Services.GetService<IUIServices>().Returns(ui);
 
             e = new RInterpreterInfo(e.Name, e.InstallPath, fs);
-            var coreShell = Substitute.For<ICoreShell>();
-            fs = Substitute.For<IFileSystem>();
-            e.VerifyInstallation(svl, fs, coreShell).Should().BeFalse();
+            e.VerifyInstallation(svl, fs, ui).Should().BeFalse();
 
-            es.When(x => x.ShowMessage(Arg.Any<string>(), MessageButtons.OK)).Do(x => {
+            ui.When(x => x.ShowMessage(Arg.Any<string>(), MessageButtons.OK)).Do(x => {
                 var s = x.Args()[0] as string;
                 s.Should().Contain("Cannot find");
             });
-            es.Received().ShowMessage(Arg.Any<string>(), MessageButtons.OK);
+            ui.Received().ShowMessage(Arg.Any<string>(), MessageButtons.OK);
         }
 
         [Test]

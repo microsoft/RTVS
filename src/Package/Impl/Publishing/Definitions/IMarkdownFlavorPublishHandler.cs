@@ -4,9 +4,9 @@
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Markdown.Editor.Flavor;
 using Microsoft.R.Host.Client;
-using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Publishing.Definitions {
     public interface IMarkdownFlavorPublishHandler {
