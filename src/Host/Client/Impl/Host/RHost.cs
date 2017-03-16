@@ -532,12 +532,14 @@ namespace Microsoft.R.Host.Client {
                                     .DoNotWait();
                                 break;
 
-                            case "!BeforePackagesInstalled":
+                            case "?BeforePackagesInstalled":
                                 await _callbacks.BeforePackagesInstalledAsync(ct);
+                                await RespondAsync(message, ct, true);
                                 break;
 
-                            case "!AfterPackagesInstalled":
+                            case "?AfterPackagesInstalled":
                                 await _callbacks.AfterPackagesInstalledAsync(ct);
+                                await RespondAsync(message, ct, true);
                                 break;
 
                             case "!PackagesRemoved":
