@@ -1479,6 +1479,9 @@
       <Authenticode>Microsoft</Authenticode>
       <StrongName>StrongName</StrongName>
     </FilesToSign>
+    <SignFilesDependsOn Include="GatherLocalizedOutputsForSigning">
+      <InProject>false</InProject>
+    </SignFilesDependsOn>
   </ItemGroup>
   <ItemGroup>
     <FilesToLocalize Include="$(OutputPath)\$(AssemblyName).dll">
@@ -1660,4 +1663,12 @@
   </Target>
   <Import Project="$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\14.3.25420\tools\vssdk\Microsoft.VsSDK.targets" Condition="'$(VisualStudioVersion)'=='14.0' AND Exists('$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\14.3.25420\tools\vssdk\Microsoft.VsSDK.targets')" />
   <Import Project="$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\15.0.25929-RC2\tools\vssdk\Microsoft.VsSDK.targets" Condition="'$(VisualStudioVersion)'=='15.0' AND Exists('$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\15.0.25929-RC2\tools\vssdk\Microsoft.VsSDK.targets')" />
+  <Target Name="GatherLocalizedOutputsForSigning" Condition="'$(LocalizationEnabled)' == 'true'">
+    <ItemGroup>
+      <FilesToSign Include="$(OutputPath)\localize\**\$(AssemblyName).resources.dll">
+        <Authenticode>Microsoft</Authenticode>
+        <StrongName>StrongName</StrongName>
+      </FilesToSign>
+    </ItemGroup>
+  </Target>
 </Project>
