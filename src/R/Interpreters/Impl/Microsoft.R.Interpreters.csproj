@@ -57,6 +57,12 @@
     </FilesToSign>
   </ItemGroup>
   <ItemGroup>
+    <FilesToLocalize Include="$(OutputPath)\$(AssemblyName).dll">
+      <TranslationFile>$(SourceDirectory)..\loc\lcl\{Lang}\$(AssemblyName).lcl</TranslationFile>
+      <SettingsFile>$(LSBuildRoot)\MCP_excludeBaml.lss</SettingsFile>
+    </FilesToLocalize>
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
       <Project>{8D408909-459F-4853-A36C-745118F99869}</Project>
       <Name>Microsoft.Common.Core</Name>

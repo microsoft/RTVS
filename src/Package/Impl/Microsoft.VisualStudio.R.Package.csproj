@@ -1480,7 +1480,12 @@
       <StrongName>StrongName</StrongName>
     </FilesToSign>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <FilesToLocalize Include="$(OutputPath)\$(AssemblyName).dll">
+      <TranslationFile>$(SourceDirectory)..\loc\lcl\{Lang}\$(AssemblyName).lcl</TranslationFile>
+      <SettingsFile>$(LSBuildRoot)\MCP_excludeBaml.lss</SettingsFile>
+    </FilesToLocalize>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\Common\BuildTasks\Microsoft.Common.BuildTasks.targets" />
   <Target Name="AddToVsixSources" AfterTargets="GetVsixSourceItems">

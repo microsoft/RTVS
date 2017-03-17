@@ -114,6 +114,12 @@
     </FilesToSign>
   </ItemGroup>
   <ItemGroup>
+    <FilesToLocalize Include="$(OutputPath)\$(AssemblyName).dll">
+      <TranslationFile>$(SourceDirectory)..\loc\lcl\{Lang}\$(AssemblyName).lcl</TranslationFile>
+      <SettingsFile>$(LSBuildRoot)\MCP_excludeBaml.lss</SettingsFile>
+    </FilesToLocalize>
+  </ItemGroup>
+  <ItemGroup>
     <None Include="App.config" />
     <None Include="project.json" />
   </ItemGroup>
