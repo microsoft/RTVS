@@ -18,6 +18,7 @@ namespace Microsoft.Common.Core.Services {
             , ITaskService tasks
             , IProcessServices processServices
             , ILoggingPermissions loggingPermissions
+            , IFileSystem fileSystem
             , IMainThread mainThread
             , ISecurityService security) {
 
@@ -27,7 +28,7 @@ namespace Microsoft.Common.Core.Services {
             Tasks = tasks;
 
             Process = processServices;
-            FileSystem = new FileSystem();
+            FileSystem = fileSystem;
             MainThread = mainThread;
 
             Log = new Logger(appConstants.ApplicationName, Path.GetTempPath(), LoggingPermissions);

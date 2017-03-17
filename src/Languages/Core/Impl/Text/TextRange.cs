@@ -13,18 +13,14 @@ namespace Microsoft.Languages.Core.Text {
     /// range start positions. 
     /// </summary>
     [DebuggerDisplay("[{Start}...{End}), Length = {Length}")]
-    public class TextRange : IExpandableTextRange, ICloneable {
-        private static TextRange _emptyRange = new TextRange(0, 0);
-
+    public class TextRange : IExpandableTextRange {
         private int _start;
         private int _end;
 
         /// <summary>
         /// Returns an empty, invalid range.
         /// </summary>
-        public static TextRange EmptyRange {
-            get { return _emptyRange; }
-        }
+        public static TextRange EmptyRange { get; } = new TextRange(0, 0);
 
         /// <summary>
         /// Creates text range starting at position 0 and length of 0
@@ -182,7 +178,6 @@ namespace Microsoft.Languages.Core.Text {
         }
         #endregion
 
-        [ExcludeFromCodeCoverage]
         public override string ToString() {
             return String.Format(CultureInfo.InvariantCulture, "[{0}...{1}]", Start, End);
         }
@@ -353,8 +348,8 @@ namespace Microsoft.Languages.Core.Text {
         /// <summary>
         /// Creates copy of the text range object via memberwise cloning
         /// </summary>
-        public virtual object Clone() {
-            return this.MemberwiseClone();
+        public TextRange Clone() {
+            return (TextRange)MemberwiseClone();
         }
     }
 }

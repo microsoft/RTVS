@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Settings;
 using Microsoft.Languages.Editor.Composition;
@@ -39,7 +40,7 @@ namespace Microsoft.Languages.Editor.Shell {
             }
         }
 
-        public static IEditorSettingsStorage GetSettings(ICompositionCatalog compositionCatalog, string contentTypeName) {
+        public static IEditorSettingsStorage GetSettings(ICoreShell shell, string contentTypeName) {
             IEditorSettingsStorage settingsStorage = null;
 
             lock (_settingsLock) {
@@ -49,12 +50,12 @@ namespace Microsoft.Languages.Editor.Shell {
 
                 // Need to find the settings using MEF (don't use MEF inside of other locks, that can lead to deadlock)
 
-                var contentTypeRegistry = compositionCatalog.ExportProvider.GetExportedValue<IContentTypeRegistryService>();
+                var contentTypeRegistry = shell.GlobalServices.GetService<IContentTypeRegistryService>();
 
                 var contentType = contentTypeRegistry.GetContentType(contentTypeName);
                 Debug.Assert(contentType != null, "Cannot find content type object for " + contentTypeName);
 
-                var cs = compositionCatalog.CompositionService;
+                var cs = shell.CompositionService;
                 settingsStorage = ComponentLocatorForOrderedContentType<IWritableEditorSettingsStorage>.FindFirstOrderedComponent(cs, contentType);
 
                 if (settingsStorage == null) {

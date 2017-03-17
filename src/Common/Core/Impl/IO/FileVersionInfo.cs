@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 namespace Microsoft.Common.Core.IO {
-    internal class FileVersionInfo : IFileVersionInfo {
+    public class FileVersionInfo : IFileVersionInfo {
         public FileVersionInfo(int major, int minor) {
             FileMajorPart = major;
             FileMinorPart = minor;
