@@ -17,6 +17,12 @@ namespace Microsoft.Common.Core.Services {
         IEnumerable<Type> Services { get; }
 
         /// <summary>
+        /// Returns collection of services impelementing T
+        /// </summary>
+        /// <typeparam name="T">Service type</typeparam>
+        IEnumerable<T> GetServices<T>() where T : class;
+
+        /// <summary>
         /// Fire when service is added
         /// </summary>
         event EventHandler<ServiceContainerEventArgs> ServiceAdded;

@@ -36,7 +36,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
             var host = string.Empty; 
             try {
                 host = _interactiveWorkflow.Connections.ActiveConnection.Uri.Host;
-                var button = _interactiveWorkflow.Shell.ShowMessage(Resources.DeleteProfile_DeletionWarning.FormatInvariant(host), MessageButtons.YesNo, MessageType.Warning);
+                var ui = _interactiveWorkflow.Shell.Services.GetService<IUIServices>();
+                var button = ui.ShowMessage(Resources.DeleteProfile_DeletionWarning.FormatInvariant(host), MessageButtons.YesNo, MessageType.Warning);
                 if(button == MessageButtons.Yes) {
                     await _interactiveWorkflow.RSessions.Broker.DeleteProfileAsync();
                     OutputWriter.WriteLine(Resources.DeleteProfile_Success.FormatInvariant(host));

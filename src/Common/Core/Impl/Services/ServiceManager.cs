@@ -85,7 +85,7 @@ namespace Microsoft.Common.Core.Services {
 
                 foreach (var key in _deferredServices.Keys) {
                     if (type.GetTypeInfo().IsAssignableFrom(key)) {
-                        return CreateService(key, factory) as T;
+                        return CreateService(key, _deferredServices[key]) as T;
                     }
                 }
 
@@ -117,6 +117,22 @@ namespace Microsoft.Common.Core.Services {
                     var list = _services.Keys.ToList();
                     list.AddRange(_deferredServices.Keys);
                     return list;
+                }
+            }
+        }
+
+        public virtual IEnumerable<T> GetServices<T>() where T : class {
+            lock (_lock) {
+                // Perhaps someone is asking for IFoo that is implemented on class Bar 
+                // but Bar was added as Bar, not as IFoo
+                foreach(var s in _services.Values.Where(s => s is T)) {
+                    yield return s as T;
+                }
+
+                foreach (var key in _deferredServices.Keys) {
+                    if (typeof(T).GetTypeInfo().IsAssignableFrom(key)) {
+                        yield return CreateService(key, _deferredServices[key]) as T;
+                    }
                 }
             }
         }

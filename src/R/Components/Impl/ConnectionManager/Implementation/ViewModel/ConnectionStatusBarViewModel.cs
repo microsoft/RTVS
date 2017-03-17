@@ -3,6 +3,7 @@
 
 using System.Windows;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI;
 using Microsoft.R.Components.ConnectionManager.ViewModel;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {

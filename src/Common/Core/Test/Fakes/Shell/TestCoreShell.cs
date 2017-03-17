@@ -33,12 +33,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
 
         public IServiceContainer Services => _serviceManager;
 
-        public ExportProvider ExportProvider => _container;
-        public ICompositionService CompositionService => _container;
-
         public void DispatchOnUIThread(Action action) => UIThreadHelper.Instance.InvokeAsync(action).DoNotWait();
-
-        public IMainThread MainThread => this;
 
 #pragma warning disable 67
         public event EventHandler<EventArgs> Started;
@@ -61,7 +56,6 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
         }
 
         public string SaveFileIfDirty(string fullPath) => fullPath;
-
         public void UpdateCommandStatus(bool immediate) { }
 
         public string LastShownMessage { get; private set; }
@@ -70,12 +64,10 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
         public bool IsUnitTestEnvironment => true;
 
         #region IMainThread
-
-        public int ThreadId => Services.MainThread.ThreadId;
+        public int ThreadId => UIThreadHelper.Instance.Thread.ManagedThreadId;
 
         public void Post(Action action, CancellationToken cancellationToken) =>
-            Services.MainThread.Post(action, cancellationToken);
-
+            UIThreadHelper.Instance.InvokeAsync(action, cancellationToken).DoNotWait();
         #endregion
     }
 }
