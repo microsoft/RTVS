@@ -48,10 +48,6 @@ namespace Microsoft.Languages.Editor.Outline {
         /// <summary>
         /// Text to display instead of a region when region is collapsed
         /// </summary>
-        public virtual string DisplayText {
-            get {
-                return "...";
-            }
-        }
+        public virtual string DisplayText => "...";
     }
 }

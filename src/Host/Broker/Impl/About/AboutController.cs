@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Management;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.R.Host.Broker.Interpreters;
@@ -28,15 +29,15 @@ namespace Microsoft.R.Host.Broker.About {
         [AllowAnonymous]
         [HttpGet]
         public AboutHost Get() {
-            var a = new AboutHost();
-
-            a.Version = Assembly.GetExecutingAssembly().GetName().Version;
-            a.OS = Environment.OSVersion;
-            a.Is64BitOperatingSystem = Environment.Is64BitOperatingSystem;
-            a.Is64BitProcess = Environment.Is64BitProcess;
-            a.ProcessorCount = Environment.ProcessorCount;
-            a.WorkingSet = Environment.WorkingSet;
-            a.ConnectedUserCount = _sessionManager.GetUsers().Count();
+            var a = new AboutHost {
+                Version = Assembly.GetExecutingAssembly().GetName().Version,
+                OSDescription = RuntimeInformation.OSDescription,
+                Is64BitOperatingSystem = Environment.Is64BitOperatingSystem,
+                Is64BitProcess = Environment.Is64BitProcess,
+                ProcessorCount = Environment.ProcessorCount,
+                WorkingSet = Environment.WorkingSet,
+                ConnectedUserCount = _sessionManager.GetUsers().Count()
+            };
 
             GetMemoryInformation(ref a);
             GetVideoControllerInformation(ref a);

@@ -4,7 +4,7 @@
 using System.IO;
 
 namespace Microsoft.Common.Core.IO {
-    internal sealed class FileSystemWatcherProxy : IFileSystemWatcher {
+    public sealed class FileSystemWatcherProxy : IFileSystemWatcher {
         private readonly FileSystemWatcher _fileSystemWatcher;
 
         public FileSystemWatcherProxy(string path, string filter) {
@@ -16,48 +16,48 @@ namespace Microsoft.Common.Core.IO {
         }
 
         public bool EnableRaisingEvents {
-            get { return _fileSystemWatcher.EnableRaisingEvents; }
-            set { _fileSystemWatcher.EnableRaisingEvents = value; }
+            get => _fileSystemWatcher.EnableRaisingEvents;
+            set => _fileSystemWatcher.EnableRaisingEvents = value;
         }
 
         public bool IncludeSubdirectories {
-            get { return _fileSystemWatcher.IncludeSubdirectories; }
-            set { _fileSystemWatcher.IncludeSubdirectories = value; }
+            get => _fileSystemWatcher.IncludeSubdirectories;
+            set => _fileSystemWatcher.IncludeSubdirectories = value;
         }
 
         public int InternalBufferSize {
-            get { return _fileSystemWatcher.InternalBufferSize; }
-            set { _fileSystemWatcher.InternalBufferSize = value; }
+            get => _fileSystemWatcher.InternalBufferSize;
+            set => _fileSystemWatcher.InternalBufferSize = value;
         }
 
         public NotifyFilters NotifyFilter {
-            get { return _fileSystemWatcher.NotifyFilter; }
-            set { _fileSystemWatcher.NotifyFilter = value; }
+            get => _fileSystemWatcher.NotifyFilter;
+            set => _fileSystemWatcher.NotifyFilter = value;
         }
 
         public event FileSystemEventHandler Changed {
-            add { _fileSystemWatcher.Changed += value; }
-            remove { _fileSystemWatcher.Changed -= value; }
+            add => _fileSystemWatcher.Changed += value;
+            remove => _fileSystemWatcher.Changed -= value;
         }
 
         public event FileSystemEventHandler Created {
-            add { _fileSystemWatcher.Created += value; }
-            remove { _fileSystemWatcher.Created -= value; }
+            add => _fileSystemWatcher.Created += value;
+            remove => _fileSystemWatcher.Created -= value;
         }
 
         public event FileSystemEventHandler Deleted {
-            add { _fileSystemWatcher.Deleted += value; }
-            remove { _fileSystemWatcher.Deleted -= value; }
+            add => _fileSystemWatcher.Deleted += value;
+            remove => _fileSystemWatcher.Deleted -= value;
         }
 
         public event RenamedEventHandler Renamed {
-            add { _fileSystemWatcher.Renamed += value; }
-            remove { _fileSystemWatcher.Renamed -= value; }
+            add => _fileSystemWatcher.Renamed += value;
+            remove => _fileSystemWatcher.Renamed -= value;
         }
 
         public event ErrorEventHandler Error {
-            add { _fileSystemWatcher.Error += value; }
-            remove { _fileSystemWatcher.Error -= value; }
+            add => _fileSystemWatcher.Error += value;
+            remove => _fileSystemWatcher.Error -= value;
         }
     }
 }

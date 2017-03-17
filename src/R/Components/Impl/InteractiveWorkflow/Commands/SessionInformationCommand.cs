@@ -85,7 +85,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
             }
 
             sb.AppendLine("\t" + Resources.Version.FormatInvariant(aboutHost.Version));
-            sb.AppendLine("\t" + Resources.OperatingSystem.FormatInvariant(aboutHost.OS.VersionString));
+            sb.AppendLine("\t" + Resources.OperatingSystem.FormatInvariant(aboutHost.OSDescription));
             sb.AppendLine("\t" + Resources.ProcessorCount.FormatInvariant(aboutHost.ProcessorCount));
             sb.AppendLine("\t" + Resources.PhysicalMemory.FormatInvariant(aboutHost.TotalPhysicalMemory, aboutHost.FreePhysicalMemory));
             sb.AppendLine("\t" + Resources.VirtualMemory.FormatInvariant(aboutHost.TotalVirtualMemory, aboutHost.FreeVirtualMemory));
@@ -125,7 +125,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
                 var services = _interactiveWorkflow.Shell.Services;
                 foreach (var name in aboutHost.Interpreters) {
                     services.Telemetry.ReportEvent(TelemetryArea.Configuration, "Remote Interpteter", name);
-                    services.Telemetry.ReportEvent(TelemetryArea.Configuration, "Remote OS", aboutHost.OS.VersionString);
+                    services.Telemetry.ReportEvent(TelemetryArea.Configuration, "Remote OS", aboutHost.OSDescription);
                     services.Telemetry.ReportEvent(TelemetryArea.Configuration, "Remote CPUs", aboutHost.ProcessorCount);
                     services.Telemetry.ReportEvent(TelemetryArea.Configuration, "Remote RAM", aboutHost.TotalPhysicalMemory);
                     services.Telemetry.ReportEvent(TelemetryArea.Configuration, "Remote Video Card", aboutHost.VideoCardName);

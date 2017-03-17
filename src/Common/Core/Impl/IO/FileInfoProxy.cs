@@ -4,7 +4,7 @@
 using System.IO;
 
 namespace Microsoft.Common.Core.IO {
-    internal sealed class FileInfoProxy : IFileInfo {
+    public sealed class FileInfoProxy : IFileInfo {
         private readonly FileInfo _fileInfo;
 
         public FileInfoProxy(FileInfo fileInfo) {
