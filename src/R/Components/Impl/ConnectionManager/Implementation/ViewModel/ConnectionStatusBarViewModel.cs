@@ -5,6 +5,7 @@ using System;
 using System.Windows;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI;
 using Microsoft.R.Components.ConnectionManager.ViewModel;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
@@ -22,7 +23,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         }
 
         public void ShowContextMenu(Point point) {
-            Shell.ShowContextMenu(ConnectionManagerCommandIds.ContextMenu, (int)point.X, (int)point.Y);
+            var ui = Shell.Services.GetService<IUIServices>();
+            ui.ShowContextMenu(ConnectionManagerCommandIds.ContextMenu, (int)point.X, (int)point.Y);
         }
 
         protected override void ConnectionStateChanged() {

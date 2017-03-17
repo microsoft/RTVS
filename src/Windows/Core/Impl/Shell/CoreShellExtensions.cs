@@ -24,6 +24,11 @@ namespace Microsoft.Common.Core.Shell {
             return coreShell.Services.GetService<IUIServices>().ShowMessage(message, buttons);
         }
 
+        public static MessageButtons ShowMessage(this ICoreShell coreShell, string message, MessageButtons buttons) {
+            coreShell.AssertIsOnMainThread();
+            return coreShell.Services.GetService<IUIServices>().ShowMessage(message, buttons);
+        }
+
         [Conditional("TRACE")]
         public static void AssertIsOnMainThread(this ICoreShell coreShell, [CallerMemberName] string memberName = "", [CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0) {
             if (coreShell.ThreadId != Thread.CurrentThread.ManagedThreadId) {
@@ -31,9 +36,9 @@ namespace Microsoft.Common.Core.Shell {
             }
         }
 
-        public static void ShowErrorMessage(this ICoreShell shell, string message)
-            => shell.Services.GetService<IUIServices>().ShowErrorMessage(message);
-        public static MessageButtons ShowMessage(this ICoreShell shell, string message, MessageButtons buttons)
-            => shell.Services.GetService<IUIServices>().ShowMessage(message, buttons);
+        public static void ShowErrorMessage(this ICoreShell shell, string message) {
+            shell.AssertIsOnMainThread();
+            shell.Services.GetService<IUIServices>().ShowErrorMessage(message);
+        }
     }
 }

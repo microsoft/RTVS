@@ -205,7 +205,8 @@ namespace Microsoft.Languages.Editor.Controller {
         /// needs to access native VS adapters, like IVsTextView.
         /// </summary>
         protected virtual void OnTextViewGotAggregateFocus(ITextView textView, ITextBuffer textBuffer) {
-            var listeners = ComponentLocatorForContentType<ITextViewCreationListener, IComponentContentTypes>.ImportMany(Shell.CompositionService, textBuffer.ContentType);
+            var cs = Shell.Services.GetService<ICompositionService>();
+            var listeners = ComponentLocatorForContentType<ITextViewCreationListener, IComponentContentTypes>.ImportMany(cs, textBuffer.ContentType);
 
             foreach (var listener in listeners) {
                 listener.Value.OnTextViewCreated(textView, textBuffer);
