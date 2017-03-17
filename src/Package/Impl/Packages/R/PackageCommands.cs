@@ -2,9 +2,10 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
-using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Design;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI;
 using Microsoft.R.Components.ConnectionManager.Commands;
 using Microsoft.R.Components.Documentation;
 using Microsoft.R.Components.Documentation.Commands;
@@ -29,7 +30,6 @@ using Microsoft.VisualStudio.R.Package.Repl.Commands;
 using Microsoft.VisualStudio.R.Package.Repl.Debugger;
 using Microsoft.VisualStudio.R.Package.Repl.Shiny;
 using Microsoft.VisualStudio.R.Package.Repl.Workspace;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Sql;
 using Microsoft.VisualStudio.R.Package.ToolWindows;
 using Microsoft.VisualStudio.R.Package.Windows;
@@ -38,21 +38,21 @@ using static Microsoft.VisualStudio.R.Package.Commands.CommandAsyncToOleMenuComm
 
 namespace Microsoft.VisualStudio.R.Packages.R {
     internal static class PackageCommands {
-        public static IEnumerable<MenuCommand> GetCommands(ExportProvider exportProvider) {
-            var shell = VsAppShell.Current;
-            var interactiveWorkflowProvider = exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
+        public static IEnumerable<MenuCommand> GetCommands(ICoreShell shell) {
+            var interactiveWorkflowProvider = shell.GetService<IRInteractiveWorkflowProvider>();
             var interactiveWorkflow = interactiveWorkflowProvider.GetOrCreate();
-            var projectServiceAccessor = exportProvider.GetExportedValue<IProjectServiceAccessor>();
-            var textViewTracker = exportProvider.GetExportedValue<IActiveWpfTextViewTracker>();
-            var replTracker = exportProvider.GetExportedValue<IActiveRInteractiveWindowTracker>();
-            var debuggerModeTracker = exportProvider.GetExportedValue<IDebuggerModeTracker>();
-            var contentTypeRegistryService = exportProvider.GetExportedValue<IContentTypeRegistryService>();
-            var pss = exportProvider.GetExportedValue<IProjectSystemServices>();
-            var wbs = exportProvider.GetExportedValue<IWebBrowserServices>();
-            var pcsp = exportProvider.GetExportedValue<IProjectConfigurationSettingsProvider>();
-            var dbcs = exportProvider.GetExportedValue<IDbConnectionService>();
-            var settings = exportProvider.GetExportedValue<IRToolsSettings>();
-            var logPerms = shell.Services.LoggingPermissions;
+            var projectServiceAccessor = shell.GetService<IProjectServiceAccessor>();
+            var textViewTracker = shell.GetService<IActiveWpfTextViewTracker>();
+            var replTracker = shell.GetService<IActiveRInteractiveWindowTracker>();
+            var debuggerModeTracker = shell.GetService<IDebuggerModeTracker>();
+            var contentTypeRegistryService = shell.GetService<IContentTypeRegistryService>();
+            var pss = shell.GetService<IProjectSystemServices>();
+            var wbs = shell.GetService<IWebBrowserServices>();
+            var pcsp = shell.GetService<IProjectConfigurationSettingsProvider>();
+            var dbcs = shell.GetService<IDbConnectionService>();
+            var settings = shell.GetService<IRToolsSettings>();
+            var logPerms = shell.GetService<ILoggingPermissions>();
+            var ui = shell.GetService<IUIServices>();
             var console = new InteractiveWindowConsole(interactiveWorkflow);
 
             return new List<MenuCommand> {
@@ -63,9 +63,9 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new SurveyNewsCommand(shell),
                 new SetupRemoteCommand(),
 
-                new ReportIssueCommand(shell.Services),
-                new SendSmileCommand(shell.Services),
-                new SendFrownCommand(shell.Services),
+                new ReportIssueCommand(shell),
+                new SendSmileCommand(shell),
+                new SendFrownCommand(shell),
 
                 CreateRCmdSetCommand(RPackageCommandId.icmdRDocsIntroToR, new OpenDocumentationCommand(interactiveWorkflow, OnlineDocumentationUrls.CranIntro, LocalDocumentationPaths.CranIntro)),
                 CreateRCmdSetCommand(RPackageCommandId.icmdRDocsDataImportExport, new OpenDocumentationCommand(interactiveWorkflow, OnlineDocumentationUrls.CranData, LocalDocumentationPaths.CranData)),
@@ -94,7 +94,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new StopShinyAppCommand(interactiveWorkflow),
 
                 CreateRCmdSetCommand(RPackageCommandId.icmdInterruptR, new InterruptRCommand(interactiveWorkflow, debuggerModeTracker)),
-                CreateRCmdSetCommand(RPackageCommandId.icmdTerminateR, new TerminateRCommand(interactiveWorkflow, shell)),
+                CreateRCmdSetCommand(RPackageCommandId.icmdTerminateR, new TerminateRCommand(interactiveWorkflow, ui)),
                 CreateRCmdSetCommand(RPackageCommandId.icmdSessionInformation, new SessionInformationCommand(interactiveWorkflow, console)),
                 CreateRCmdSetCommand(RPackageCommandId.icmdDeleteProfile, new DeleteProfileCommand(interactiveWorkflow)),
 

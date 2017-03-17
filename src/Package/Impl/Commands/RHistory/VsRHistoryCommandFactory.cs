@@ -3,6 +3,8 @@
 
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -39,13 +41,14 @@ namespace Microsoft.VisualStudio.R.Package.Commands.RHistory {
             var sendToReplCommand = new SendHistoryToReplCommand(textView, _historyProvider, interactiveWorkflow);
             var sendToSourceCommand = new SendHistoryToSourceCommand(textView, _historyProvider, interactiveWorkflow, _contentTypeRegistry, _textViewTracker);
             var shell = VsAppShell.Current;
+            var ui = shell.GetService<IUIServices>();
 
             return new ICommand[] {
-                new LoadHistoryCommand(shell, textView, _historyProvider, interactiveWorkflow),
-                new SaveHistoryCommand(shell, textView, _historyProvider, interactiveWorkflow),
+                new LoadHistoryCommand(ui, textView, _historyProvider, interactiveWorkflow),
+                new SaveHistoryCommand(ui, textView, _historyProvider, interactiveWorkflow),
                 sendToReplCommand,
                 sendToSourceCommand,
-                new DeleteSelectedHistoryEntriesCommand(textView, _historyProvider, interactiveWorkflow),
+                new DeleteSelectedHistoryEntriesCommand(textView, _historyProvider, interactiveWorkflow, ui),
                 new DeleteAllHistoryEntriesCommand(textView, _historyProvider, interactiveWorkflow),
                 new HistoryWindowVsStd2KCmdIdReturnCommand(textView, sendToReplCommand, sendToSourceCommand),
                 new HistoryWindowVsStd97CmdIdSelectAllCommand(textView, _historyProvider, interactiveWorkflow),

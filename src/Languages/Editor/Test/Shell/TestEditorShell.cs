@@ -20,9 +20,8 @@ namespace Microsoft.Languages.Editor.Test.Shell {
     internal sealed class Testshell : TestShellBase, ICoreShell {
         private static Testshell _instance;
 
-        private Testshell(ICompositionCatalog catalog, Thread mainThread) :
+        private Testshell(ICompositionCatalog catalog) :
             base(catalog.ExportProvider) {
-            MainThread = mainThread;
         }
 
         /// <summary>

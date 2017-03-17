@@ -11,12 +11,12 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI;
 using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring;
 using Microsoft.VisualStudio.R.Package.Commands;
-using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     [ExportCommandGroup("AD87578C-B324-44DC-A12A-B01A6ED5C6E3")]
@@ -28,7 +28,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
 
         [ImportingConstructor]
         public SendToRemoteCommand(ConfiguredProject configuredProject, IRInteractiveWorkflowProvider interactiveWorkflowProvider, ICoreShell shell) :
-            base(interactiveWorkflowProvider, shell, new FileSystem()) {
+            base(interactiveWorkflowProvider, shell.GetService<IUIServices>(), new FileSystem()) {
             _configuredProject = configuredProject;
             _interactiveWorkflowProvider = interactiveWorkflowProvider;
             _shell = shell;
@@ -50,20 +50,20 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
             }
 
             var properties = _configuredProject.Services.ExportProvider.GetExportedValue<ProjectProperties>();
-            string projectDir = Path.GetDirectoryName(_configuredProject.UnconfiguredProject.FullPath);
+            var projectDir = Path.GetDirectoryName(_configuredProject.UnconfiguredProject.FullPath);
 
-            string fileFilterString = await properties.GetFileFilterAsync();
-            Matcher matcher = new Matcher(StringComparison.OrdinalIgnoreCase);
+            var fileFilterString = await properties.GetFileFilterAsync();
+            var matcher = new Matcher(StringComparison.OrdinalIgnoreCase);
             matcher.AddIncludePatterns(fileFilterString.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries));
 
-            List<string> filteredFiles = new List<string>();
+            var filteredFiles = new List<string>();
             filteredFiles.AddRange(matcher.GetMatchedFiles(nodes.GetAllFolderPaths(_configuredProject.UnconfiguredProject)));
 
             // Add any file that user specifically selected. This can contain a file ignored by the filter.
             filteredFiles.AddRange(nodes.Where(n => n.IsFile()).Select(n => n.FilePath));
 
-            string projectName = properties.GetProjectName();
-            string remotePath = await properties.GetRemoteProjectPathAsync();
+            var projectName = properties.GetProjectName();
+            var remotePath = await properties.GetRemoteProjectPathAsync();
 
             if(filteredFiles.Count > 0) {
                 await SendToRemoteAsync(filteredFiles.Distinct(), projectDir, projectName, remotePath);

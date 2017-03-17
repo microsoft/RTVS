@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using EnvDTE;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -23,7 +24,7 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
         private void EnsurePaneVisible() {
             if (_pane == null) {
                 // TODO: consider using IVsOutputWindow3.CreatePane2 and colorize the output
-                IVsOutputWindow outputWindow = VsAppShell.Current?.GlobalServices.GetService<IVsOutputWindow>(typeof(SVsOutputWindow));
+                var outputWindow = VsAppShell.Current?.GetService<IVsOutputWindow>(typeof(SVsOutputWindow));
                 outputWindow?.GetPane(ref _paneGuid, out _pane);
                 if (_pane == null && outputWindow != null) {
                     outputWindow.CreatePane(ref _paneGuid, _windowName, fInitVisible: 1, fClearWithSolution: 1);
@@ -35,8 +36,8 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
 
             _pane?.Activate();
 
-            DTE dte = VsAppShell.Current?.GlobalServices.GetService<DTE>();
-            Window window = dte?.Windows.Item(EnvDTE.Constants.vsWindowKindOutput);
+            var dte = VsAppShell.Current?.GetService<DTE>();
+            var window = dte?.Windows.Item(EnvDTE.Constants.vsWindowKindOutput);
             window?.Activate();
         }
 

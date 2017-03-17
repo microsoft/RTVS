@@ -32,7 +32,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
             if (!await CheckExistsOnPathAsync("pdflatex.exe")) {
                 var session = _workflowProvider.GetOrCreate().RSession;
                 var message = session.IsRemote ? Resources.Error_PdfLatexMissingRemote : Resources.Error_PdfLatexMissingLocal;
-                await shell.ShowErrorMessageAsync(message);
+                await Shell.ShowErrorMessageAsync(message);
                 Process.Start("http://miktex.org/2.9/setup");
                 return false;
             }

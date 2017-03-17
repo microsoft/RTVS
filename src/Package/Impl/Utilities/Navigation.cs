@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.IO;
 using Microsoft.Common.Core.Shell;
@@ -61,7 +62,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         }
 
         public static bool NavigateToTextView(IVsTextView vsTextView, int start, int length) {
-            var adapterService = ComponentLocator<IVsEditorAdaptersFactoryService>.Import(VsAppShell.Current.CompositionService);
+            var adapterService = ComponentLocator<IVsEditorAdaptersFactoryService>.Import(VsAppShell.Current.GetService<ICompositionService>());
             if (adapterService != null) {
                 var textView = adapterService.GetWpfTextView(vsTextView);
                 if (textView != null) {

@@ -5,9 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Services;
+using Microsoft.VisualStudio.Composition;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Document;
@@ -35,7 +37,8 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
             IVsTextLines textLines,
             Guid languageServiceId,
             List<TextBufferInitializationTracker> trackers) {
-            VsAppShell.Current.CompositionService.SatisfyImportsOnce(this);
+            var cs = VsAppShell.Current.GetService<ICompositionService>();
+            cs.SatisfyImportsOnce(this);
 
             _documentName = documentName;
             _hierarchy = hierarchy;
@@ -54,28 +57,27 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
         #endregion
 
         #region IVsTextBufferDataEvents
-        public void OnFileChanged(uint grfChange, uint dwFileAttrs) {
-        }
+        public void OnFileChanged(uint grfChange, uint dwFileAttrs) { }
 
         public int OnLoadCompleted(int fReload) {
-            var adapterService = VsAppShell.Current.ExportProvider.GetExport<IVsEditorAdaptersFactoryService>().Value;
-
             // Set language service ID as early as possible, since it may change content type of the buffer,
             // e.g. in a weird scenario when someone does "Open With X Editor" on an Y file. Calling this
             // will change content type to the one language service specifies instead of the default one for
             // the file extension, and will ensure that correct editor factory is used.
             _textLines.SetLanguageServiceID(ref _languageServiceGuid);
-            ITextBuffer diskBuffer = adapterService.GetDocumentBuffer(_textLines);
+            var adapterService = VsAppShell.Current.GetService<IVsEditorAdaptersFactoryService>();
+            var diskBuffer = adapterService.GetDocumentBuffer(_textLines);
             Debug.Assert(diskBuffer != null);
 
             try {
                 var editorInstance = ServiceManager.GetService<IEditorInstance>(diskBuffer);
                 if (editorInstance == null) {
-                    var importComposer = new ContentTypeImportComposer<IEditorFactory>(VsAppShell.Current.CompositionService);
+                    var cs = VsAppShell.Current.GetService<ICompositionService>();
+                    var importComposer = new ContentTypeImportComposer<IEditorFactory>(cs);
                     var instancefactory = importComposer.GetImport(diskBuffer.ContentType.TypeName);
                     Debug.Assert(instancefactory != null);
 
-                    var documentFactoryImportComposer = new ContentTypeImportComposer<IVsEditorDocumentFactory>(VsAppShell.Current.CompositionService);
+                    var documentFactoryImportComposer = new ContentTypeImportComposer<IVsEditorDocumentFactory>(cs);
                     var documentFactory = documentFactoryImportComposer.GetImport(diskBuffer.ContentType.TypeName);
                     Debug.Assert(documentFactory != null);
 

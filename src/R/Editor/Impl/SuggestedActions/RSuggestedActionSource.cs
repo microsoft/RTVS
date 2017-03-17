@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -50,7 +51,8 @@ namespace Microsoft.R.Editor.SuggestedActions {
                 if(document == null || document.IsClosed) {
                     return null;
                 }
-                IEnumerable<IRSuggestedActionProvider> suggestedActionProviders = ComponentLocator<IRSuggestedActionProvider>.ImportMany(shell.CompositionService).Select(p => p.Value);
+                IEnumerable<IRSuggestedActionProvider> suggestedActionProviders = 
+                    ComponentLocator<IRSuggestedActionProvider>.ImportMany(shell.GetService<ICompositionService>()).Select(p => p.Value);
                 suggestedActionsSource = new RSuggestedActionSource(textView, textBuffer, suggestedActionProviders, shell);
             }
             return suggestedActionsSource;

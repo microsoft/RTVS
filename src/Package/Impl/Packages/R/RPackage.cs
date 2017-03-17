@@ -156,7 +156,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         }
 
         protected override IEnumerable<MenuCommand> CreateMenuCommands() {
-            return PackageCommands.GetCommands(VsAppShell.Current.ExportProvider);
+            return PackageCommands.GetCommands(VsAppShell.Current);
         }
 
         protected override object GetAutomationObject(string name) {

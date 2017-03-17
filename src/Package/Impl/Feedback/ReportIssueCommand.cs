@@ -7,7 +7,7 @@ using System.Globalization;
 using System.IO;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
-using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Logging;
 using Microsoft.VisualStudio.R.Packages.R;
@@ -18,10 +18,10 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
         private readonly ILoggingPermissions _permissions;
         private readonly IProcessServices _pss;
 
-        public ReportIssueCommand(ICoreServices services)
+        public ReportIssueCommand(ICoreShell shell)
             : base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdReportIssue) {
-            _permissions = services.LoggingPermissions;
-            _pss = services.Process;
+            _permissions = shell.GetService<ILoggingPermissions>();
+            _pss = shell.GetService<IProcessServices>();
         }
 
         protected override void SetStatus() {

@@ -4,6 +4,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.Feedback;
@@ -16,11 +17,11 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
     [Collection(CollectionNames.NonParallel)]
     public class FeedbackCommandTest {
         private readonly ILoggingPermissions _lp;
-        private readonly ICoreServices _services;
+        private readonly ICoreShell _coreShell;
 
         public FeedbackCommandTest() {
             _lp = Substitute.For<ILoggingPermissions>();
-            _services = TestCoreServices.CreateSubstitute(_lp);
+            _coreShell = new TestCoreShell(_lp);
         }
 
         [Test]

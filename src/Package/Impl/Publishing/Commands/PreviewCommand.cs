@@ -11,6 +11,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Controller.Commands;
 using Microsoft.Languages.Editor.Extensions;
@@ -86,7 +87,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
                 var packages = await workflow.Packages.GetInstalledPackagesAsync();
                 if (packages.Any(p => p.Package.EqualsIgnoreCase(flavorHandler.RequiredPackageName))) {
                     // Text buffer operations should be performed in UI thread
-                    await shell.SwitchToMainThreadAsync();
+                    await Shell.SwitchToMainThreadAsync();
                     if (await CheckPrerequisitesAsync()) {
                         var textBuffer = SaveFile();
                         if (textBuffer != null) {
@@ -96,16 +97,16 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
                             try {
                                 _fs.DeleteFile(_outputFilePath);
                             } catch (IOException ex) {
-                                shell.ShowErrorMessage(ex.Message);
+                                Shell.ShowErrorMessage(ex.Message);
                                 return;
                             }
 
                             var session = workflow.RSession;
-                            await flavorHandler.PublishAsync(session, shell, _fs, inputFilePath, _outputFilePath, Format, textBuffer.GetEncoding()).ContinueWith(t => LaunchViewer());
+                            await flavorHandler.PublishAsync(session, Shell, _fs, inputFilePath, _outputFilePath, Format, textBuffer.GetEncoding()).ContinueWith(t => LaunchViewer());
                         }
                     }
                 } else {
-                    await shell.ShowErrorMessageAsync(Resources.Error_PackageMissing.FormatInvariant(flavorHandler.RequiredPackageName));
+                    await Shell.ShowErrorMessageAsync(Resources.Error_PackageMissing.FormatInvariant(flavorHandler.RequiredPackageName));
                 }
             });
 
@@ -116,7 +117,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
             var document = EditorExtensions.FindInProjectedBuffers<MdEditorDocument>(TextView.TextBuffer, MdContentTypeDefinition.ContentType);
             var tb = document.TextBuffer;
             if (!tb.CanBeSavedInCurrentEncoding()) {
-                if (MessageButtons.No == shell.ShowMessage(Resources.Warning_SaveInUtf8, MessageButtons.YesNo)) {
+                if (MessageButtons.No == Shell.ShowMessage(Resources.Warning_SaveInUtf8, MessageButtons.YesNo)) {
                     return null;
                 }
                 tb.Save(new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
@@ -130,7 +131,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
             if (!await CheckExistsOnPathAsync("pandoc.exe")) {
                 var session = _workflowProvider.GetOrCreate().RSession;
                 var message = session.IsRemote ? Resources.Error_PandocMissingRemote : Resources.Error_PandocMissingLocal;
-                await shell.ShowErrorMessageAsync(message);
+                await Shell.ShowErrorMessageAsync(message);
                 _pss.Start("http://pandoc.org/installing.html");
                 return false;
             }

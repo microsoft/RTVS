@@ -50,7 +50,7 @@ namespace Microsoft.Languages.Editor.Test {
             }
 
             public override Task<Task<RunSummary>> InitializeAsync(ITestInput testInput, IMessageBus messageBus) {
-                var shell = new TestShell(CompositionContainer, _coreServices);
+                var shell = new TestCoreShell(CompositionContainer, _coreServices);
                 var batch = new CompositionBatch()
                     .AddValue(FileSystemStubFactory.CreateDefault())
                     .AddValue<ICoreShell>(shell)
