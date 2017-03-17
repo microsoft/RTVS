@@ -10,119 +10,72 @@ namespace Microsoft.Languages.Core.Bytes {
     /// returning zeroes. Useful when parsing UTF-8 strings.
     /// </summary>
     public class ByteStream {
-        private byte[] _text;
-        private int _textLength;
-        private int _index = 0;
-        private int _lastIndex = 0;
+        private readonly byte[] _text;
+        private int _lastIndex;
         private byte _ch;
 
         public ByteStream(byte[] text) {
             _text = text;
-            _textLength = _text.Length;
-            _index = 0;
+            Length = _text.Length;
             _lastIndex = 0;
             _ch = _text.Length > 0 ? _text[0] : (byte)0;
         }
 
-        public bool IsEndOfStream() {
-            return _index >= _textLength;
-        }
-
-        public int DistanceFromEnd {
-            get {
-                return _textLength - _index;
-            }
-        }
+        public bool IsEndOfStream() => Position >= Length;
+        public int DistanceFromEnd => Length - Position;
 
         public byte CurrentChar {
             get {
-                if (_lastIndex != _index) {
+                if (_lastIndex != Position) {
                     if (IsEndOfStream()) {
                         return (byte)0;
                     }
 
-                    _ch = _text[_index];
-                    _lastIndex = _index;
+                    _ch = _text[Position];
+                    _lastIndex = Position;
                 }
 
                 return _ch;
             }
         }
 
-        public byte NextChar {
-            get {
-                return _index < _textLength - 1 ? _text[_index + 1] : (byte)0;
-            }
-        }
-
-        public int Position {
-            get {
-                return _index;
-            }
-
-            set {
-                _index = value;
-            }
-        }
-
-        public int Length {
-            get {
-                return _textLength;
-            }
-        }
+        public byte NextChar => Position < Length - 1 ? _text[Position + 1] : (byte)0;
+        public int Position { get; set; }
+        public int Length { get; }
 
         public bool Advance(int c) {
-            if (_index + c <= _textLength) {
-                _index += c;
+            if (Position + c <= Length) {
+                Position += c;
                 return true;
             } else {
-                _index = _textLength;
+                Position = Length;
             }
 
             return false;
         }
 
-        public bool MoveToNextChar() {
-            return Advance(1);
-        }
-
-        public static bool IsWhiteSpace(char ch) {
-            return ch <= ' ';
-        }
-
-        public bool IsWhiteSpace() {
-            return IsWhiteSpace((char)CurrentChar);
-        }
-
-        public bool IsDigit() {
-            return IsDigit((char)CurrentChar);
-        }
-
-        public static bool IsDigit(Char ch) {
-            return ch >= '0' && ch <= '9';
-        }
-
-        public bool IsNewLineChar() {
-            return CurrentChar == '\n' || CurrentChar == '\r';
-        }
+        public bool MoveToNextChar() => Advance(1);
+        public static bool IsWhiteSpace(char ch) => ch <= ' ';
+        public bool IsWhiteSpace() => IsWhiteSpace((char)CurrentChar);
+        public bool IsDigit() => IsDigit((char)CurrentChar);
+        public static bool IsDigit(Char ch) => ch >= '0' && ch <= '9';
+        public bool IsNewLineChar() => CurrentChar == '\n' || CurrentChar == '\r';
 
         public bool IsCharAt(int offset, byte ch) {
-            return (_index + offset < _textLength) && (_text[_index + offset] == ch);
+            return (Position + offset < Length) && (_text[Position + offset] == ch);
         }
 
-        public bool IsAnsiLetter() {
-            return (CurrentChar >= 'A' && CurrentChar <= 'z');
-        }
+        public bool IsAnsiLetter() => (CurrentChar >= 'A' && CurrentChar <= 'z');
 
         public bool CurrentStringEqualsTo(string s, int length) {
-            if (length > (_text.Length - _index))
+            if (length > (_text.Length - Position))
                 return false;
 
-            if (s.Length < length && length < (_text.Length - _index))
+            if (s.Length < length && length < (_text.Length - Position))
                 return false;
 
-            for (int i = 0; i < s.Length && i + _index < _text.Length; i++) {
-                if (s[i] != _text[i + _index]) {
+            for (int i = 0; i < s.Length && i + Position < _text.Length; i++) {
+                if (s[i] != _text[i + Position]) {
                     return false;
                 }
             }
