@@ -45,7 +45,7 @@ namespace Microsoft.R.Editor.Commands {
                 new SelectWordCommand(textView, textBuffer),
                 new RTypingCommandHandler(textView, _shell),
                 new RCompletionCommandHandler(textView),
-                new PeekDefinitionCommand(textView, textBuffer, _shell.Services.GetService<IPeekBroker>()),
+                new PeekDefinitionCommand(textView, textBuffer, _shell.GetService<IPeekBroker>()),
                 new InsertRoxygenBlockCommand(textView, textBuffer)
             };
 

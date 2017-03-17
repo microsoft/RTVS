@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Controller.Commands;
 using Microsoft.R.Components.Controller;
@@ -21,7 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public override CommandStatus Status(Guid group, int id)=> CommandStatus.SupportedAndEnabled;
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
-            IVsShell shell = VsAppShell.Current.Services.GetService<IVsShell>(typeof(SVsShell));
+            IVsShell shell = VsAppShell.Current.GetService<IVsShell>(typeof(SVsShell));
             IVsPackage package;
 
             if (VSConstants.S_OK == shell.LoadPackage(RGuidList.RPackageGuid, out package)) {

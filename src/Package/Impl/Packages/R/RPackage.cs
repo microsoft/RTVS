@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Settings;
@@ -120,7 +121,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             ProjectIconProvider.LoadProjectImages();
             LogCleanup.DeleteLogsAsync(DiagnosticLogs.DaysToRetain);
 
-            RtvsTelemetry.Initialize(_packageIndex, VsAppShell.Current.Services.GetService<IRSettings>());
+            RtvsTelemetry.Initialize(_packageIndex, VsAppShell.Current.GetService<IRSettings>());
 
             BuildFunctionIndex();
             AdviseExportedWindowFrameEvents<ActiveWpfTextViewTracker>();
@@ -174,17 +175,17 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         #endregion
 
         protected override int CreateToolWindow(ref Guid toolWindowType, int id) {
-            var toolWindowFactory = VsAppShell.Current.Services.GetService<RPackageToolWindowProvider>();
+            var toolWindowFactory = VsAppShell.Current.GetService<RPackageToolWindowProvider>();
             return toolWindowFactory.TryCreateToolWindow(toolWindowType, id) ? VSConstants.S_OK : base.CreateToolWindow(ref toolWindowType, id);
         }
 
         protected override WindowPane CreateToolWindow(Type toolWindowType, int id) {
-            var toolWindowFactory = VsAppShell.Current.Services.GetService<RPackageToolWindowProvider>();
+            var toolWindowFactory = VsAppShell.Current.GetService<RPackageToolWindowProvider>();
             return toolWindowFactory.CreateToolWindow(toolWindowType, id) ?? base.CreateToolWindow(toolWindowType, id);
         }
 
         private bool IsCommandLineMode() {
-            var shell = VsAppShell.Current.Services.GetService<IVsShell>(typeof(SVsShell));
+            var shell = VsAppShell.Current.GetService<IVsShell>(typeof(SVsShell));
             if (shell != null) {
                 object value;
                 shell.GetProperty((int)__VSSPROPID.VSSPROPID_IsInCommandLineMode, out value);
@@ -194,7 +195,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         }
 
         private void BuildFunctionIndex() {
-            _packageIndex = VsAppShell.Current.Services.GetService<IPackageIndex>();
+            _packageIndex = VsAppShell.Current.GetService<IPackageIndex>();
         }
 
         private void SavePackageIndex() {

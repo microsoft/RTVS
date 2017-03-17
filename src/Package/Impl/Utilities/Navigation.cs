@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -20,13 +21,13 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         /// Activates a text view for a text buffer, and sets the cursor to a specific location
         /// </summary>
         public static bool NavigateToTextBuffer(ITextBuffer textBuffer, int start, int length) {
-            IProjectionSnapshot projectionSnapshot = textBuffer.CurrentSnapshot as IProjectionSnapshot;
+            var projectionSnapshot = textBuffer.CurrentSnapshot as IProjectionSnapshot;
 
             if (projectionSnapshot != null) {
                 // Find the main buffer for the view
 
-                SnapshotPoint sourcePoint = new SnapshotPoint();
-                bool success = true;
+                var sourcePoint = new SnapshotPoint();
+                var success = true;
 
                 try {
                     sourcePoint = projectionSnapshot.MapToSourceSnapshot(start, PositionAffinity.Successor);
@@ -42,9 +43,9 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             } else {
                 // This is the main buffer for the view
 
-                IVsTextManager textManager = VsAppShell.Current.Services.GetService<IVsTextManager>(typeof(SVsTextManager));
-                IVsTextBuffer vsTextBuffer = textBuffer.GetBufferAdapter<IVsTextBuffer>();
-                Guid viewType = VSConstants.LOGVIEWID_TextView;
+                var textManager = VsAppShell.Current.GetService<IVsTextManager>(typeof(SVsTextManager));
+                var vsTextBuffer = textBuffer.GetBufferAdapter<IVsTextBuffer>();
+                var viewType = VSConstants.LOGVIEWID_TextView;
 
                 if (vsTextBuffer != null &&
                     ErrorHandler.Succeeded(textManager.NavigateToPosition(vsTextBuffer, ref viewType, start, length))) {
@@ -60,10 +61,9 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         }
 
         public static bool NavigateToTextView(IVsTextView vsTextView, int start, int length) {
-            IVsEditorAdaptersFactoryService adapterService = ComponentLocator<IVsEditorAdaptersFactoryService>.Import(VsAppShell.Current.CompositionService);
+            var adapterService = ComponentLocator<IVsEditorAdaptersFactoryService>.Import(VsAppShell.Current.CompositionService);
             if (adapterService != null) {
-                ITextView textView = adapterService.GetWpfTextView(vsTextView);
-
+                var textView = adapterService.GetWpfTextView(vsTextView);
                 if (textView != null) {
                     return NavigateToTextView(textView, start, length);
                 }
@@ -75,7 +75,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         public static bool NavigateToFrame(IVsWindowFrame frame, int start, int length) {
             int hr = frame.Show();
             if (ErrorHandler.Succeeded(hr)) {
-                IVsTextView vsTextView = VsShellUtilities.GetTextView(frame);
+                var vsTextView = VsShellUtilities.GetTextView(frame);
                 if (vsTextView != null) {
                     return NavigateToTextView(vsTextView, start, length);
                 }
@@ -96,7 +96,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
                 return false;
             }
 
-            __VSNEWDOCUMENTSTATE newState = allowProvisionalTab
+            var newState = allowProvisionalTab
                 ? __VSNEWDOCUMENTSTATE.NDS_Provisional
                 : __VSNEWDOCUMENTSTATE.NDS_Permanent;
 
@@ -107,7 +107,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
                 IVsWindowFrame frame;
                 uint itemId;
 
-                IVsUIShellOpenDocument openService = VsAppShell.Current.Services.GetService<IVsUIShellOpenDocument>(typeof(SVsUIShellOpenDocument));
+                var openService = VsAppShell.Current.GetService<IVsUIShellOpenDocument>(typeof(SVsUIShellOpenDocument));
                 if (openService != null) {
                     int hr = openService.OpenDocumentViaProject(
                         localPath, ref logicalViewGuid, out serviceProvider, out hierarchy, out itemId, out frame);

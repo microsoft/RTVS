@@ -55,8 +55,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             _settings = settings;
             _interactiveWorkflow = interactiveWorkflow;
             _shell = interactiveWorkflow.Shell;
-            _securityService = _shell.Services.GetService<ISecurityService>();
-            _log = _shell.Services.GetService<IActionLog>();
+            _securityService = _shell.GetService<ISecurityService>();
+            _log = _shell.GetService<IActionLog>();
 
             _statusBarViewModel = new ConnectionStatusBarViewModel(this, interactiveWorkflow.Shell);
             _hostLoadIndicatorViewModel = new HostLoadIndicatorViewModel(_sessionProvider, interactiveWorkflow.Shell);
@@ -103,7 +103,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 return VisualComponent;
             }
 
-            var visualComponentContainerFactory = _shell.Services.GetService<IConnectionManagerVisualComponentContainerFactory>();
+            var visualComponentContainerFactory = _shell.GetService<IConnectionManagerVisualComponentContainerFactory>();
             VisualComponent = visualComponentContainerFactory.GetOrCreate(this, instanceId).Component;
             return VisualComponent;
         }

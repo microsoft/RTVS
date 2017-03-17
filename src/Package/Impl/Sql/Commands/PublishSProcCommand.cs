@@ -6,16 +6,15 @@ using System.Collections.Immutable;
 using System.ComponentModel.Composition;
 using System.Globalization;
 using System.Linq;
+using EnvDTE;
 using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.Shell;
+using Microsoft.R.Components.Sql.Publish;
+using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Sql.Publish;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using EnvDTE;
-using Microsoft.R.Components.Sql.Publish;
-using Microsoft.Common.Core.Shell;
-using Microsoft.VisualStudio.ProjectSystem;
 
 namespace Microsoft.VisualStudio.R.Package.Sql {
     [ExportCommandGroup("AD87578C-B324-44DC-A12A-B01A6ED5C6E3")]
@@ -64,7 +63,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
                 if (sprocFiles.Any()) {
                     try {
                         // Make sure all files are saved and up to date on disk.
-                        var dte = _shell.Services.GetService<DTE>(typeof(DTE));
+                        var dte = _shell.GetService<DTE>(typeof(DTE));
                         dte.ExecuteCommand("File.SaveAll");
 
                         var publisher = new SProcPublisher(_shell, _pss, _fs, _dacServicesProvider.GetDacPackageServices());

@@ -6,13 +6,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Components.Help;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -44,10 +42,10 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         private WindowsFormsHost _host;
 
         public HelpVisualComponent() {
-            _codeColorBuilder = VsAppShell.Current.Services.GetService<IVignetteCodeColorBuilder>();
-            _coreShell = VsAppShell.Current.Services.GetService<ICoreShell>();
+            _coreShell = VsAppShell.Current;
 
-            var workflow = VsAppShell.Current.Services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
+            _codeColorBuilder = _coreShell.GetService<IVignetteCodeColorBuilder>();
+            var workflow = _coreShell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
             workflow.RSessions.BrokerStateChanged += OnBrokerStateChanged;
 
             _session = workflow.RSession;
@@ -80,7 +78,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                 Container?.Show(focus: false, immediate: false);
                 NavigateTo(url);
             } else {
-                var wbs = VsAppShell.Current.Services.GetService<IWebBrowserServices>();
+                var wbs = VsAppShell.Current.GetService<IWebBrowserServices>();
                 wbs.OpenBrowser(WebBrowserRole.Shiny, url);
             }
         }
@@ -215,7 +213,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             string url = e.Url.ToString();
             if (!IsHelpUrl(url)) {
                 e.Cancel = true;
-                var wbs = VsAppShell.Current.Services.GetService<IWebBrowserServices>();
+                var wbs = VsAppShell.Current.GetService<IWebBrowserServices>();
                 wbs.OpenBrowser(WebBrowserRole.External, url);
             }
         }
@@ -228,7 +226,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
             // Upon navigation we need to ask VS to update UI so 
             // Back/Forward buttons become properly enabled or disabled.
-            IVsUIShell shell = VsAppShell.Current.Services.GetService<IVsUIShell>(typeof(SVsUIShell));
+            IVsUIShell shell = VsAppShell.Current.GetService<IVsUIShell>(typeof(SVsUIShell));
             shell.UpdateCommandUI(0);
         }
 

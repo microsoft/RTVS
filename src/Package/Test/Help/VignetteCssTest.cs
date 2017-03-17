@@ -2,17 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.Languages.Editor.Shell;
-using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.UnitTests.Core.XUnit;
-using Microsoft.VisualStudio.Editor.Mocks;
-using Microsoft.VisualStudio.R.Package.Help;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Classification;
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Utilities;
-using NSubstitute;
 using Xunit;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Help {

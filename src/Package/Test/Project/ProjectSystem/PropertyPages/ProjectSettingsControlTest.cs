@@ -86,7 +86,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
             fontSvc.GetDialogFont(Arg.Any<UIDLGLOGFONT[]>()).Returns(VSConstants.S_OK);
 
             var shell = Substitute.For<ICoreShell>();
-            shell.Services.GetService<IUIHostLocale2>(typeof(SUIHostLocale)).Returns(fontSvc);
+            shell.GetService<IUIHostLocale2>(typeof(SUIHostLocale)).Returns(fontSvc);
 
             var control = new SettingsPageControl(_csp, shell, _fs);
             control.CreateControl();
@@ -259,7 +259,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
 
             control.IsDirty.Should().BeTrue();
 
-            var uis = shell.Services.GetService<IUIServices>();
+            var uis = shell.GetService<IUIServices>();
             uis.ShowMessage(Resources.SettingsPage_SavePrompt, MessageButtons.YesNoCancel).Returns(MessageButtons.Yes);
             control.FileListCombo.SelectedIndex = 1;
             uis.Received().ShowMessage(Resources.SettingsPage_SavePrompt, MessageButtons.YesNoCancel);

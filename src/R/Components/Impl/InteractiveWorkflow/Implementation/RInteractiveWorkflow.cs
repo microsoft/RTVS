@@ -155,7 +155,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         }
 
         private async Task CreateVisualComponentAsync(int instanceId) {
-            var factory = Shell.Services.GetService<IInteractiveWindowComponentContainerFactory>();
+            var factory = Shell.GetService<IInteractiveWindowComponentContainerFactory>();
             var evaluator = new RInteractiveEvaluator(RSessions, RSession, History, Connections, Shell, _settings, new InteractiveWindowConsole(this));
 
             var window = factory.Create(instanceId, evaluator, RSessions);
@@ -169,12 +169,12 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                     var showConnectionsWindow = Connections.RecentConnections.Any();
                     if (!showConnectionsWindow) {
                         var message = Resources.NoLocalR.FormatInvariant(Environment.NewLine + Environment.NewLine, Environment.NewLine);
-                        var ui = Shell.Services.GetService<IUIServices>();
+                        var ui = Shell.GetService<IUIServices>();
                         showConnectionsWindow = ui.ShowMessage(message, MessageButtons.YesNo) == MessageButtons.No;
                     }
 
                     if (!showConnectionsWindow) {
-                        var installer = Shell.Services.GetService<IMicrosoftRClientInstaller>();
+                        var installer = Shell.GetService<IMicrosoftRClientInstaller>();
                         installer.LaunchRClientSetup(Shell);
                     } else {
                         Connections.GetOrCreateVisualComponent().Container.Show(focus: false, immediate: false);

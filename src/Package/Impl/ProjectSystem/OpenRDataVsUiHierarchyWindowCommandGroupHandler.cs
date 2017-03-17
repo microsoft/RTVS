@@ -3,6 +3,7 @@
 
 using System.ComponentModel.Composition;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -21,7 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             
             // Don't do anything for file preview
-            var uiShellOpenDocument = VsAppShell.Current.Services.GetService<IVsUIShellOpenDocument3>(typeof(SVsUIShellOpenDocument));
+            var uiShellOpenDocument = VsAppShell.Current.GetService<IVsUIShellOpenDocument3>(typeof(SVsUIShellOpenDocument));
             if (uiShellOpenDocument != null && ((__VSNEWDOCUMENTSTATE) uiShellOpenDocument.NewDocumentState).HasFlag(__VSNEWDOCUMENTSTATE.NDS_Provisional)) {
                 return true;
             }

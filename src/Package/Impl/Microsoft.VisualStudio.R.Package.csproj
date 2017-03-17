@@ -218,6 +218,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Shell\VsAppShell.Lifetime.cs" />
+    <Compile Include="Shell\VsEditorSupport.cs" />
     <Compile Include="Shell\VsPlatformServices.cs" />
     <Compile Include="Shell\VsUIServices.cs" />
     <Compile Include="Shell\VsAppShell.Core.cs" />
@@ -510,7 +512,6 @@
     <Compile Include="Utilities\Navigation.cs" />
     <Compile Include="Utilities\ProjectUtilities.cs" />
     <Compile Include="Utilities\TextBufferUtilities.cs" />
-    <Compile Include="Utilities\CompletionUtilities.cs" />
     <Compile Include="Utilities\ToolWindowUtilities.cs" />
     <Compile Include="Utilities\ViewUtilities.cs" />
     <Compile Include="Utilities\ActiveWpfTextViewTracker.cs" />

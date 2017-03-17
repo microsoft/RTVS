@@ -1,10 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Services;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Document;
@@ -37,7 +39,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
                 // nextOleTarget is typically a core editor wrapped into OLE layer.
                 // Create a wrapper that will present OLE target as ICommandTarget to
                 // HTML main controller so controller can operate in platform-agnostic way.
-                var es = VsAppShell.Current.Services.GetService<IApplicationEditorSupport>();
+                var es = VsAppShell.Current.GetService<IApplicationEditorSupport>();
                 var nextCommandTarget = es.TranslateCommandTarget(textView, nextOleTarget);
                 controller.ChainedController = nextCommandTarget;
             }

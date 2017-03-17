@@ -13,6 +13,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Common.Wpf.Extensions;
 using Microsoft.R.Components.Controller;
@@ -37,6 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public partial class VariableView : UserControl, ICommandTarget, IDisposable {
         private readonly IRToolsSettings _settings;
         private readonly ICoreShell _shell;
+        private readonly IUIServices _ui;
         private readonly IRSession _session;
         private readonly IREnvironmentProvider _environmentProvider;
         private readonly IObjectDetailsViewerAggregator _aggregator;
@@ -49,21 +51,22 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public VariableView(IRToolsSettings settings, ICoreShell shell) {
             _settings = settings;
             _shell = shell;
-            _shell.UIThemeChanged += OnUIThemeChanged;
+            _ui = _shell.GetService<IUIServices>();
+            _ui.UIThemeChanged += OnUIThemeChanged;
 
             InitializeComponent();
             SetImageBackground();
 
-            _aggregator = _shell.Services.GetService<IObjectDetailsViewerAggregator>();
+            _aggregator = _shell.GetService<IObjectDetailsViewerAggregator>();
             SetRootNode(VariableViewModel.Ellipsis);
 
             SortDirection = ListSortDirection.Ascending;
             RootTreeGrid.Sorting += RootTreeGrid_Sorting;
 
-            var workflow = VsAppShell.Current.Services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
+            var workflow = VsAppShell.Current.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
             _session = workflow.RSession;
 
-            _environmentProvider = new REnvironmentProvider(_session, shell.Services.MainThread);
+            _environmentProvider = new REnvironmentProvider(_session, shell);
             EnvironmentComboBox.DataContext = _environmentProvider;
             _environmentProvider.RefreshEnvironmentsAsync().DoNotWait();
         }
@@ -73,7 +76,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private void SetImageBackground() {
-            var theme = _shell.Services.GetService<IThemeUtilities>();
+            var theme = _shell.GetService<IThemeUtilities>();
             theme.SetImageBackgroundColor(RootTreeGrid, Brushes.ToolWindowBackgroundColorKey);
             theme.SetThemeScrollBars(RootTreeGrid);
         }
@@ -126,7 +129,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             // Some of the Variable Explorer tool bar buttons are depend on the R Environment (e.g., Delete all Variables button).
             // This will give those UI elements a chance to update state.
-            _shell.UpdateCommandStatus();
+            _ui.UpdateCommandStatus();
         }
 
         private async Task<IRValueInfo> EvaluateAndDescribeAsync(REnvironment env) {
@@ -146,13 +149,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         private ListSortDirection SortDirection { get; set; }
 
-        private int Comparison(ITreeNode left, ITreeNode right) {
-            return VariableNode.Comparison((VariableNode)left, (VariableNode)right, SortDirection);
-        }
+        private int Comparison(ITreeNode left, ITreeNode right)
+            =>VariableNode.Comparison((VariableNode)left, (VariableNode)right, SortDirection);
 
-        private void GridRow_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
-            HandleDefaultAction();
-        }
+        private void GridRow_MouseDoubleClick(object sender, MouseButtonEventArgs e) => HandleDefaultAction();
 
         private void GridRow_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
             var row = sender as DataGridRow;
@@ -206,7 +206,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             if (focus != null) {
                 var pt = focus.PointToScreen(new Point(1, 1));
                 _shell.ShowContextMenu(
-                    new CommandID(RGuidList.RCmdSetGuid, (int)RContextMenuId.VariableExplorer), (int)pt.X, (int)pt.Y, this);
+                    new CommandId(RGuidList.RCmdSetGuid, (int)RContextMenuId.VariableExplorer), (int)pt.X, (int)pt.Y, this);
             }
         }
 

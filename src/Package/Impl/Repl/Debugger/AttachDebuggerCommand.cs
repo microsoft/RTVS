@@ -2,8 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Globalization;
 using System.Runtime.InteropServices;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Debugger;
 using Microsoft.R.Debugger.PortSupplier;
@@ -30,7 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
                 return;
             }
 
-            var debugger = VsAppShell.Current.Services.GetService<IVsDebugger2>(typeof(SVsShellDebugger));
+            var debugger = VsAppShell.Current.GetService<IVsDebugger2>(typeof(SVsShellDebugger));
             if (debugger == null) {
                 return;
             }

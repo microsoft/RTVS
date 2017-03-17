@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using FluentAssertions;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.PackageManager;
@@ -31,9 +32,9 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
         private readonly TestRInteractiveWorkflowProvider _interactiveWorkflowProvider;
 
         public ProjectCommandsTest() {
-            var connectionsProvider = VsAppShell.Current.Services.GetService<IConnectionManagerProvider>();
-            var historyProvider = VsAppShell.Current.Services.GetService<IRHistoryProvider>();
-            var packagesProvider = VsAppShell.Current.Services.GetService<IRPackageManagerProvider>();
+            var connectionsProvider = VsAppShell.Current.GetService<IConnectionManagerProvider>();
+            var historyProvider = VsAppShell.Current.GetService<IRHistoryProvider>();
+            var packagesProvider = VsAppShell.Current.GetService<IRPackageManagerProvider>();
             _interactiveWorkflowProvider = TestRInteractiveWorkflowProviderFactory.Create(connectionsProvider, historyProvider, packagesProvider);
         }
 

@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.TaskList;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -96,7 +97,7 @@ namespace Microsoft.VisualStudio.R.Package.TaskList {
 
                         var endLine = snapshot.GetLineFromPosition(end);
 
-                        var textManager = VsAppShell.Current.Services.GetService<IVsTextManager>(typeof(SVsTextManager));
+                        var textManager = VsAppShell.Current.GetService<IVsTextManager>(typeof(SVsTextManager));
                         var textLines = textView.TextBuffer.GetBufferAdapter<IVsTextLines>();
 
                         textManager.NavigateToLineAndColumn(textLines, VSConstants.LOGVIEWID_TextView,

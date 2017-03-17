@@ -3,6 +3,7 @@
 
 using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -29,7 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.Debugger.DataTips {
             }
 
             VsAppShell.Current.DispatchOnUIThread(() => {
-                var debugger = VsAppShell.Current.Services.GetService<IVsDebugger>();
+                var debugger = VsAppShell.Current.GetService<IVsDebugger>();
                 DataTipTextViewFilter.GetOrCreate(textView, _adaptersFactoryService, debugger);
             });
         }

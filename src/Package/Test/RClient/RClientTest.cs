@@ -89,15 +89,14 @@ namespace Microsoft.VisualStudio.R.Package.Test.RClient {
             SqlRClientInstallation.GetRClientPath(tr).Should().Be(rClientRPath);
 
             var shell = Substitute.For<ICoreShell>();
-            var es = shell.Services.GetService<IUIServices>();
-            es.ShowMessage(Arg.Any<string>(), Arg.Any<MessageButtons>()).Returns(MessageButtons.Yes);
-            shell.MainThread.Returns(Thread.CurrentThread);
+            var ui = shell.GetService<IUIServices>();
+            ui.ShowMessage(Arg.Any<string>(), Arg.Any<MessageButtons>()).Returns(MessageButtons.Yes);
 
             MicrosoftRClient.CheckMicrosoftRClientInstall(shell, tr);
-            es.Received(1).ShowMessage(Arg.Any<string>(), Arg.Any<MessageButtons>());
+            ui.Received(1).ShowMessage(Arg.Any<string>(), Arg.Any<MessageButtons>());
 
             MicrosoftRClient.CheckMicrosoftRClientInstall(shell);
-            es.Received(1).ShowMessage(Arg.Any<string>(), Arg.Any<MessageButtons>());
+            ui.Received(1).ShowMessage(Arg.Any<string>(), Arg.Any<MessageButtons>());
         }
 
         private RegistryKeyMock[] SimulateRegistryMsRClient(string rClientInstallPath, string rClientRPath) {

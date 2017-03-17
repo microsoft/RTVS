@@ -4,7 +4,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Diagnostics;
-using Microsoft.Common.Core.UI;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 
@@ -23,7 +23,7 @@ namespace Microsoft.R.Components.Plots.Commands {
             try {
                 await _workflow.Plots.NewDeviceAsync(-1);
             } catch (RPlotManagerException ex) {
-                _workflow.Shell.Services.GetService<IUIServices>().ShowErrorMessage(ex.Message);
+                _workflow.Shell.ShowErrorMessage(ex.Message);
             } catch (OperationCanceledException) {
             }
         }

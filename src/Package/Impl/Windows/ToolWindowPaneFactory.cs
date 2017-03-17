@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.View;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
@@ -23,7 +24,7 @@ namespace Microsoft.VisualStudio.R.Package.Windows {
             }
 
             var instance = factory(instanceId);
-            IVsUIShell vsUiShell = VsAppShell.Current.Services.GetService<IVsUIShell>(typeof(SVsUIShell));
+            IVsUIShell vsUiShell = VsAppShell.Current.GetService<IVsUIShell>(typeof(SVsUIShell));
             ToolWindowUtilities.CreateToolWindow(vsUiShell, instance, instanceId);
 
             holder = new ToolWindowPaneHolder(instance, () => RemoveHolder(instanceId));
@@ -79,33 +80,13 @@ namespace Microsoft.VisualStudio.R.Package.Windows {
                 return VSConstants.S_OK;
             }
 
-            int IVsWindowFrameNotify.OnSize() {
-                return VSConstants.S_OK;
-            }
-
-            int IVsWindowFrameNotify.OnDockableChange(int fDockable) {
-                return VSConstants.S_OK;
-            }
-
-            int IVsWindowFrameNotify3.OnMove(int x, int y, int w, int h) {
-                return VSConstants.S_OK;
-            }
-
-            int IVsWindowFrameNotify3.OnSize(int x, int y, int w, int h) {
-                return VSConstants.S_OK;
-            }
-
-            int IVsWindowFrameNotify3.OnDockableChange(int fDockable, int x, int y, int w, int h) {
-                return VSConstants.S_OK;
-            }
-
-            int IVsWindowFrameNotify3.OnClose(ref uint pgrfSaveOptions) {
-                return VSConstants.S_OK;
-            }
-
-            int IVsWindowFrameNotify.OnMove() {
-                return VSConstants.S_OK;
-            }
+            int IVsWindowFrameNotify.OnSize() => VSConstants.S_OK;
+            int IVsWindowFrameNotify.OnDockableChange(int fDockable) => VSConstants.S_OK;
+            int IVsWindowFrameNotify3.OnMove(int x, int y, int w, int h) => VSConstants.S_OK;
+            int IVsWindowFrameNotify3.OnSize(int x, int y, int w, int h) => VSConstants.S_OK;
+            int IVsWindowFrameNotify3.OnDockableChange(int fDockable, int x, int y, int w, int h) => VSConstants.S_OK;
+            int IVsWindowFrameNotify3.OnClose(ref uint pgrfSaveOptions)=> VSConstants.S_OK;
+            int IVsWindowFrameNotify.OnMove() => VSConstants.S_OK;
 
             int IVsWindowFrameNotify3.OnShow(int fShow) {
                 OnShow(fShow);

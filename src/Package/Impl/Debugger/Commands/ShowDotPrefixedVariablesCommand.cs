@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using EnvDTE;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Debugger;
 using Microsoft.R.Support.Settings;
@@ -23,13 +24,13 @@ namespace Microsoft.VisualStudio.R.Package.Debugger.Commands {
             Checked = _settings.ShowDotPrefixedVariables;
 
             // Only show it in the debugger context menu when debugging R code to avoid clutter.
-            var debugger = VsAppShell.Current.Services.GetService<DTE>().Debugger;
+            var debugger = VsAppShell.Current.GetService<DTE>().Debugger;
             Enabled = Visible = debugger.CurrentStackFrame?.Language == RContentTypeDefinition.LanguageName;
         }
 
         protected override void Handle() {
            _settings.ShowDotPrefixedVariables = !_settings.ShowDotPrefixedVariables;
-            VsAppShell.Current.Services.GetService<DTE>().Debugger.RefreshVariableViews();
+            VsAppShell.Current.GetService<DTE>().Debugger.RefreshVariableViews();
         }
     }
 }

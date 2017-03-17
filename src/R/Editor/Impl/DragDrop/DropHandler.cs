@@ -75,7 +75,7 @@ namespace Microsoft.R.Editor.DragDrop {
                 text = text.TrimStart();
             }
 
-            var es = _shell.Services.GetService<IApplicationEditorSupport>();
+            var es = _shell.GetService<IApplicationEditorSupport>();
             using (var undoAction = es.CreateCompoundAction(_wpfTextView, textBuffer)) {
                 undoAction.Open(Resources.DragDropOperation);
                 textBuffer.Replace(new Span(dropPosition, 0), text);

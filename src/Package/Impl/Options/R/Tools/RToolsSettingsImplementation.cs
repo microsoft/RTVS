@@ -141,7 +141,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
 
                 if (shell.HasShell) {
                     VsAppShell.Current.DispatchOnUIThread(() => {
-                        IVsUIShell shell = VsAppShell.Current.Services.GetService<IVsUIShell>(typeof(SVsUIShell));
+                        IVsUIShell shell = VsAppShell.Current.GetService<IVsUIShell>(typeof(SVsUIShell));
                         shell.UpdateCommandUI(1);
                     });
                 }

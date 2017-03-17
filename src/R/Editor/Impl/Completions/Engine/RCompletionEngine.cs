@@ -30,7 +30,7 @@ namespace Microsoft.R.Editor.Completions.Engine {
         /// <returns>List of completion entries for a given location in the AST</returns>
         public static IReadOnlyCollection<IRCompletionListProvider> GetCompletionForLocation(RCompletionContext context, bool autoShownCompletion, ICoreShell shell) {
             List<IRCompletionListProvider> providers = new List<IRCompletionListProvider>();
-            var glyphService = shell.Services.GetService<IGlyphService>();
+            var glyphService = shell.GetService<IGlyphService>();
 
             if (context.AstRoot.Comments.Contains(context.Position)) {
                 // No completion in comments
@@ -41,8 +41,8 @@ namespace Microsoft.R.Editor.Completions.Engine {
             string directory;
             if (CanShowFileCompletion(context.AstRoot, context.Position, out directory)) {
                 if (!string.IsNullOrEmpty(directory)) {
-                    var workflowProvider = shell.Services.GetService<IRInteractiveWorkflowProvider>();
-                    var imagesProvider = shell.Services.GetService<IImagesProvider>(); // tests do not export this object
+                    var workflowProvider = shell.GetService<IRInteractiveWorkflowProvider>();
+                    var imagesProvider = shell.GetService<IImagesProvider>(); // tests do not export this object
                     providers.Add(new FilesCompletionProvider(directory, workflowProvider.GetOrCreate(), imagesProvider, glyphService));
                 }
                 return providers;
@@ -88,8 +88,8 @@ namespace Microsoft.R.Editor.Completions.Engine {
                 return providers;
             }
 
-            var variablesProvider = shell.Services.GetService<IVariablesProvider>();
-            var packageIndex = shell.Services.GetService<IPackageIndex>();
+            var variablesProvider = shell.GetService<IVariablesProvider>();
+            var packageIndex = shell.GetService<IPackageIndex>();
 
             if (IsInObjectMemberName(context.AstRoot.TextProvider, context.Position)) {
                 providers.Add(new WorkspaceVariableCompletionProvider(variablesProvider, glyphService));
@@ -100,7 +100,7 @@ namespace Microsoft.R.Editor.Completions.Engine {
                 providers.Add(new PackagesCompletionProvider(packageIndex, glyphService));
             } else {
                 if (IsInFunctionArgumentName<FunctionCall>(context.AstRoot, context.Position)) {
-                    var functionIndex = shell.Services.GetService<IFunctionIndex>();
+                    var functionIndex = shell.GetService<IFunctionIndex>();
                     providers.Add(new ParameterNameCompletionProvider(functionIndex, glyphService));
                 }
 

@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.OS;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -16,7 +17,7 @@ namespace Microsoft.VisualStudio.R.Package.Browsers {
         private readonly IProcessServices _ps;
 
         private readonly IVsWebBrowsingService _wbs;
-        private IVsWebBrowsingService WebBrowserService => _wbs ?? VsAppShell.Current.Services.GetService<IVsWebBrowsingService>(typeof(SVsWebBrowsingService));
+        private IVsWebBrowsingService WebBrowserService => _wbs ?? VsAppShell.Current.GetService<IVsWebBrowsingService>(typeof(SVsWebBrowsingService));
 
         private readonly IRToolsSettings _settings;
         private IRToolsSettings Settings => _settings ?? RToolsSettings.Current;

@@ -3,7 +3,7 @@
 
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Shell;
-using Microsoft.R.Components.Controller;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.History;
 using Microsoft.R.Editor.Commands;
 using Microsoft.VisualStudio.Editor;
@@ -12,7 +12,6 @@ using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.Commands.RHistory {
@@ -38,13 +37,14 @@ namespace Microsoft.VisualStudio.R.Package.Commands.RHistory {
                     // is not specific to VS and does not use OLE, we create OLE-to-managed target shim
                     // and managed target-to-OLE shims. 
 
-                    IVsEditorAdaptersFactoryService adapterService = VsAppShell.Current.Services.GetService<IVsEditorAdaptersFactoryService>();
-                    IVsTextView viewAdapter = adapterService.GetViewAdapter(textView);
+                    var adapterService = VsAppShell.Current.GetService<IVsEditorAdaptersFactoryService>();
+                    var viewAdapter = adapterService.GetViewAdapter(textView);
 
                     if (viewAdapter != null) {
                         // Create OLE shim that wraps main controller ICommandTarget and represents
                         // it as IOleCommandTarget that is accepted by VS IDE.
-                        CommandTargetToOleShim oleController = new CommandTargetToOleShim(textView, mainController);
+                        var oleController = new CommandTargetToOleShim(textView, mainController);
+                        var es = VsAppShell.Current.GetService<IApplicationEditorSupport>();
 
                         IOleCommandTarget nextOleTarget;
                         viewAdapter.AddCommandFilter(oleController, out nextOleTarget);
@@ -52,7 +52,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.RHistory {
                         // nextOleTarget is typically a core editor wrapped into OLE layer.
                         // Create a wrapper that will present OLE target as ICommandTarget to
                         // HTML main controller so controller can operate in platform-agnostic way.
-                        ICommandTarget nextCommandTarget = VsAppShell.Current.TranslateCommandTarget(textView, nextOleTarget);
+                        var nextCommandTarget = es.TranslateCommandTarget(textView, nextOleTarget);
 
                         mainController.ChainedController = nextCommandTarget;
                     }

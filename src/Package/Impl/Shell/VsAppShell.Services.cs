@@ -4,6 +4,8 @@
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Services;
+using Microsoft.R.Components.Settings;
+using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.R.Package.RClient;
 using Microsoft.VisualStudio.R.Package.Telemetry;
 using VsPackage = Microsoft.VisualStudio.Shell.Package;
@@ -18,11 +20,19 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             _services = new VsServiceManager(this);
             var platformServices = new VsPlatformServices();
             var telemetry = new VsTelemetryService();
+            var componentModel = (IComponentModel)VsPackage.GetGlobalService(typeof(SComponentModel));
+
+            var settings = componentModel.DefaultExportProvider.GetExportedValue<IRSettings>();
+            settings.LoadSettings();
 
             _services
+                .AddService(componentModel)
+                .AddService(componentModel.DefaultExportProvider)
                 .AddService(new VsUIServices(this))
                 .AddService(platformServices)
-                .AddService(_settings)
+                .AddService(settings)
+                .AddService(new VsEditorSupport(this))
+                .AddService(telemetry)
                 .AddService(new LoggingPermissions(platformServices, telemetry, new RegistryImpl()))
                 .AddService(typeof(MicrosoftRClientInstaller));
             // TODO: add more

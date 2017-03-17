@@ -7,13 +7,11 @@ using System.ComponentModel.Composition;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Enums;
-using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Shell;
-using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
@@ -22,12 +20,11 @@ using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project;
+using Microsoft.VisualStudio.ProjectSystem.VS;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.SurveyNews;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.Common.Core.Logging;
-using Microsoft.VisualStudio.ProjectSystem.VS;
 using IThreadHandling = Microsoft.VisualStudio.ProjectSystem.IProjectThreadingService;
 
 
@@ -166,7 +163,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                         continue;
                     }
 
-                    var solution = VsAppShell.Current.Services.GetService<IVsSolution>(typeof(SVsSolution));
+                    var solution = VsAppShell.Current.GetService<IVsSolution>(typeof(SVsSolution));
                     solution.CloseSolutionElement((uint)__VSSLNCLOSEOPTIONS.SLNCLOSEOPT_UnloadProject, (IVsHierarchy)iVsProject, 0);
                     return;
                 }

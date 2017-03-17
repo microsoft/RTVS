@@ -19,15 +19,19 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
     public sealed class VsUIServices : IUIServices, IDisposable, IVsBroadcastMessageEvents {
         private const int WM_SYSCOLORCHANGE = 0x15;
 
+        private readonly ICoreShell _coreShell;
+        private readonly IVsShell _vsShell;
+        private readonly IVsUIShell _uiShell;
         private uint _vsShellBroadcastEventsCookie;
-        private IVsShell _vsShell;
 
         public VsUIServices(ICoreShell coreShell) {
             ProgressDialog = new VsProgressDialog(coreShell);
             FileDialog = new VsFileDialog(coreShell);
 
+            _coreShell = coreShell;
             _vsShell = VsPackage.GetGlobalService(typeof(SVsShell)) as IVsShell;
             _vsShell.AdviseBroadcastMessages(this, out _vsShellBroadcastEventsCookie);
+            _uiShell = VsPackage.GetGlobalService(typeof(SVsUIShell)) as IVsUIShell;
         }
 
         #region IUIServices
@@ -46,16 +50,14 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// Displays error message in a host-specific UI
         /// </summary>
         public void ShowErrorMessage(string message) {
-            var shell = VsPackage.GetGlobalService(typeof(SVsUIShell)) as IVsUIShell;
             int result;
-
-            shell.ShowMessageBox(0, Guid.Empty, null, message, null, 0,
+            _uiShell.ShowMessageBox(0, Guid.Empty, null, message, null, 0,
                 OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, OLEMSGICON.OLEMSGICON_CRITICAL, 0, out result);
         }
 
         public void ShowContextMenu(CommandId commandId, int x, int y, object commandTarget = null) {
             if (commandTarget == null) {
-                var package = EnsurePackageLoaded(RGuidList.RPackageGuid);
+                var package = VsAppShell.EnsurePackageLoaded(RGuidList.RPackageGuid);
                 if (package != null) {
                     var sp = (IServiceProvider)package;
                     var menuService = (System.ComponentModel.Design.IMenuCommandService)sp
@@ -67,11 +69,10 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 if (target == null) {
                     throw new ArgumentException(Invariant($"{nameof(commandTarget)} must implement ICommandTarget"));
                 }
-                var shell = VsAppShell.Current.Services.GetService<IVsUIShell>(typeof(SVsUIShell));
                 var pts = new POINTS[1];
                 pts[0].x = (short)x;
                 pts[0].y = (short)y;
-                shell.ShowContextMenu(0, commandId.Group, commandId.Id, pts, new CommandTargetToOleShim(null, target));
+                _uiShell.ShowContextMenu(0, commandId.Group, commandId.Id, pts, new CommandTargetToOleShim(null, target));
             }
         }
 
@@ -79,9 +80,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// Displays question in a host-specific UI
         /// </summary>
         public MessageButtons ShowMessage(string message, MessageButtons buttons, MessageType messageType = MessageType.Information) {
-            var shell = GlobalServices.GetService<IVsUIShell>(typeof(SVsUIShell));
             int result;
-
             var oleButtons = GetOleButtonFlags(buttons);
             OLEMSGICON oleIcon;
 
@@ -97,7 +96,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                     break;
             }
 
-            shell.ShowMessageBox(0, Guid.Empty, null, message, null, 0,
+            _uiShell.ShowMessageBox(0, Guid.Empty, null, message, null, 0,
                 oleButtons, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, oleIcon, 0, out result);
 
             switch (result) {
@@ -111,15 +110,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             return MessageButtons.OK;
         }
 
-        public string SaveFileIfDirty(string fullPath) =>
-            new RunningDocumentTable(RPackage.Current).SaveFileIfDirty(fullPath);
-
-        public void UpdateCommandStatus(bool immediate) {
-            DispatchOnUIThread(() => {
-                var uiShell = GlobalServices.GetService<IVsUIShell>(typeof(SVsUIShell));
-                uiShell.UpdateCommandUI(immediate ? 1 : 0);
-            });
-        }
+        public string SaveFileIfDirty(string fullPath) => new RunningDocumentTable(RPackage.Current).SaveFileIfDirty(fullPath);
+        public void UpdateCommandStatus(bool immediate) => _coreShell.DispatchOnUIThread(() => { _uiShell.UpdateCommandUI(immediate ? 1 : 0); });
         #endregion
 
         #region IVsBroadcastMessageEvents
@@ -141,5 +133,17 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             }
         }
         #endregion
+
+        private static OLEMSGBUTTON GetOleButtonFlags(MessageButtons buttons) {
+            switch (buttons) {
+                case MessageButtons.YesNoCancel:
+                    return OLEMSGBUTTON.OLEMSGBUTTON_YESNOCANCEL;
+                case MessageButtons.YesNo:
+                    return OLEMSGBUTTON.OLEMSGBUTTON_YESNO;
+                case MessageButtons.OKCancel:
+                    return OLEMSGBUTTON.OLEMSGBUTTON_OKCANCEL;
+            }
+            return OLEMSGBUTTON.OLEMSGBUTTON_OK;
+        }
     }
 }

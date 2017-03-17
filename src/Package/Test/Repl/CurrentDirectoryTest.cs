@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -31,10 +32,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
         private readonly IRSessionProvider _sessionProvider;
 
         public CurrentDirectoryTest() {
-            var connectionsProvider = VsAppShell.Current.Services.GetService<IConnectionManagerProvider>();
-            var historyProvider = VsAppShell.Current.Services.GetService<IRHistoryProvider>();
-            var packagesProvider = VsAppShell.Current.Services.GetService<IRPackageManagerProvider>();
-            var plotsProvider = VsAppShell.Current.Services.GetService<IRPlotManagerProvider>();
+            var connectionsProvider = VsAppShell.Current.GetService<IConnectionManagerProvider>();
+            var historyProvider = VsAppShell.Current.GetService<IRHistoryProvider>();
+            var packagesProvider = VsAppShell.Current.GetService<IRPackageManagerProvider>();
+            var plotsProvider = VsAppShell.Current.GetService<IRPlotManagerProvider>();
             var activeTextViewTracker = new ActiveTextViewTrackerMock(string.Empty, string.Empty);
             var debuggerModeTracker = new TestDebuggerModeTracker();
             _interactiveWorkflow = UIThreadHelper.Instance.Invoke(() => new RInteractiveWorkflow(

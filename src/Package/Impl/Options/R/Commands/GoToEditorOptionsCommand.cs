@@ -3,6 +3,7 @@
 
 using System;
 using System.ComponentModel.Design;
+using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Options.R.Editor;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -15,7 +16,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
             base(OnCommand, new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.icmdGoToREditorOptions)) { }
 
         public static void OnCommand(object sender, EventArgs args) { 
-            IVsShell shell = VsAppShell.Current.Services.GetService<IVsShell>(typeof(SVsShell));
+            IVsShell shell = VsAppShell.Current.GetService<IVsShell>(typeof(SVsShell));
             IVsPackage package;
 
             if (VSConstants.S_OK == shell.LoadPackage(RGuidList.RPackageGuid, out package)) {

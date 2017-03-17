@@ -29,14 +29,11 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
 
         public ConnectionStringEditor() : this(null) { }
         public ConnectionStringEditor(IDbConnectionService dbcs) {
-            _dbcs = dbcs ?? VsAppShell.Current.Services.GetService<IDbConnectionService>();
+            _dbcs = dbcs ?? VsAppShell.Current.GetService<IDbConnectionService>();
         }
 
         public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context) => UITypeEditorEditStyle.Modal;
-
-        public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value) {
-            return _dbcs.EditConnectionString(value as string);
-        }
+        public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value) => _dbcs.EditConnectionString(value as string);
 
         /// <summary>
         /// Provides type of the UI editor for database connection strings

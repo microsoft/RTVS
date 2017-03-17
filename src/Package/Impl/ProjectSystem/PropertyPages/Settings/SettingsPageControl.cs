@@ -29,7 +29,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         private bool _isDirty;
 
         public SettingsPageControl() : this(
-            VsAppShell.Current.Services.GetService<IProjectConfigurationSettingsProvider>(), 
+            VsAppShell.Current.GetService<IProjectConfigurationSettingsProvider>(), 
             VsAppShell.Current, new FileSystem()) { }
 
         public SettingsPageControl(IProjectConfigurationSettingsProvider settingsProvider, ICoreShell shell, IFileSystem fs) {

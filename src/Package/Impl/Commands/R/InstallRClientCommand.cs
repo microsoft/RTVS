@@ -3,6 +3,7 @@
 
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI;
 using Microsoft.R.Interpreters;
 using Microsoft.VisualStudio.R.Packages.R;
 
@@ -24,7 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
             if (!string.IsNullOrEmpty(path)) {
                 _shell.ShowMessage(Resources.Message_RClientIsAlreadyInstalled, MessageButtons.OK);
             } else {
-                var installer = _shell.Services.GetService<IMicrosoftRClientInstaller>();
+                var installer = _shell.GetService<IMicrosoftRClientInstaller>();
                 installer.LaunchRClientSetup(_shell);
             }
         }

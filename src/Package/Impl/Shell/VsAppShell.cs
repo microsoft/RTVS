@@ -3,29 +3,14 @@
 
 using System;
 using System.ComponentModel.Composition;
-using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics;
 using System.Threading;
 using System.Windows.Threading;
-using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Threading;
-using Microsoft.Common.Core.UI;
 using Microsoft.Languages.Editor.Shell;
-using Microsoft.Languages.Editor.Undo;
-using Microsoft.R.Components.Controller;
-using Microsoft.R.Components.Settings;
-using Microsoft.VisualStudio.ComponentModelHost;
-using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.R.Package.Interop;
-using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
-using static System.FormattableString;
-using IServiceProvider = System.IServiceProvider;
-using VsPackage = Microsoft.VisualStudio.Shell.Package;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
     /// <summary>
@@ -34,63 +19,10 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
     /// services and so on.
     /// </summary>
     [Export(typeof(ICoreShell))]
-    [Export(typeof(ICoreShell))]
     [Export(typeof(IMainThread))]
-    public sealed partial class VsAppShell : ICoreShell, IMainThread, IIdleTimeSource, IVsShellPropertyEvents, IDisposable {
-
+    public sealed partial class VsAppShell : ICoreShell, IIdleTimeSource, IVsShellPropertyEvents, IDisposable {
         private static VsAppShell _instance;
         private static ICoreShell _testShell;
-
-        private IRSettings _settings;
-        private ExportProvider _exportProvider;
-        private ICompositionService _compositionService;
-        private IVsShell _vsShell;
-        private uint _vsShellEventsCookie;
-
-        public static void EnsureInitialized() {
-            var instance = GetInstance();
-            if (instance.MainThread == null) {
-                instance.Initialize();
-            }
-        }
-
-        public static void Terminate() {
-            _instance?.Dispose();
-        }
-
-        private void Initialize() {
-            MainThread = Thread.CurrentThread;
-            MainThreadDispatcher = Dispatcher.FromThread(MainThread);
-
-            var componentModel = (IComponentModel)VsPackage.GetGlobalService(typeof(SComponentModel));
-            _compositionService = componentModel.DefaultCompositionService;
-            _exportProvider = componentModel.DefaultExportProvider;
-
-            CheckVsStarted();
-
-            _settings = _exportProvider.GetExportedValue<IRSettings>();
-            _settings.LoadSettings();
-
-            ConfigureIdleSource();
-            ConfigureServices();
-
-            shell.Current = this;
-        }
-
-        private void CheckVsStarted() {
-            _vsShell = (IVsShell)VsPackage.GetGlobalService(typeof(SVsShell));
-            object value;
-            _vsShell.GetProperty((int)__VSSPROPID4.VSSPROPID_ShellInitialized, out value);
-            if (value is bool) {
-                if ((bool)value) {
-                    _appConstants.Initialize();
-                    Started?.Invoke(this, EventArgs.Empty);
-                } else {
-                    _vsShell.AdviseShellPropertyChanges(this, out _vsShellEventsCookie);
-                }
-            }
-            _vsShell.AdviseBroadcastMessages(this, out _vsShellBroadcastEventsCookie);
-        }
 
         /// <summary>
         /// Current application shell instance. Provides access to services
@@ -120,41 +52,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 }
             }
         }
-
-        private static VsAppShell GetInstance() {
-            if (_instance != null) {
-                return _instance;
-            }
-
-            ThreadHelper.ThrowIfNotOnUIThread();
-
-            var componentModel = (IComponentModel)VsPackage.GetGlobalService(typeof(SComponentModel));
-            var instance = (VsAppShell)componentModel.DefaultExportProvider.GetExportedValue<ICoreShell>();
-
-            return Interlocked.CompareExchange(ref _instance, instance, null) ?? instance;
-        }
-
-        #region ICompositionCatalog
-        /// <summary>
-        /// Application composition service
-        /// </summary>
-        public ICompositionService CompositionService {
-            get {
-                EnsureInitialized();
-                return _compositionService;
-            }
-        }
-
-        /// <summary>
-        /// Application export provider
-        /// </summary>
-        public ExportProvider ExportProvider {
-            get {
-                EnsureInitialized();
-                return _exportProvider;
-            }
-        }
-        #endregion
 
         #region ICoreShell
         /// <summary>
@@ -198,59 +95,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// </summary>
         public event EventHandler<EventArgs> Terminating;
 
-
         public bool IsUnitTestEnvironment { get; set; }
-
-        #endregion
-
-        #region ICoreShell 
-        /// <summary>
-        /// Provides shim that implements ICommandTarget over 
-        /// application-specific command target. For example, 
-        /// Visual Studio is using IOleCommandTarget.
-        /// </summary>
-        /// <param name="commandTarget">Command target</param>
-        /// <returns>Web components compatible command target</returns>
-        public ICommandTarget TranslateCommandTarget(ITextView textView, object commandTarget) {
-            var managedCommandTarget = commandTarget as ICommandTarget;
-            if (managedCommandTarget != null)
-                return managedCommandTarget;
-
-            var oleCommandTarget = commandTarget as IOleCommandTarget;
-            if (oleCommandTarget != null)
-                return new OleToCommandTargetShim(textView, oleCommandTarget);
-
-            Debug.Fail("Unknown command taget type");
-            return null;
-
-        }
-
-        public object TranslateToHostCommandTarget(ITextView textView, object commandTarget) {
-            var oleToCommandTargetShim = commandTarget as OleToCommandTargetShim;
-            if (oleToCommandTargetShim != null)
-                return oleToCommandTargetShim.OleTarget;
-
-            var managedCommandTarget = commandTarget as ICommandTarget;
-            if (managedCommandTarget != null)
-                return new CommandTargetToOleShim(textView, managedCommandTarget);
-
-            var oleCommandTarget = commandTarget as IOleCommandTarget;
-            if (oleCommandTarget != null)
-                return oleCommandTarget;
-
-            Debug.Fail("Unknown command taget type");
-            return null;
-        }
-
-        /// <summary>
-        /// Creates compound undo action
-        /// </summary>
-        /// <param name="textView">Text view</param>
-        /// <param name="textBuffer">Text buffer</param>
-        /// <returns>Undo action instance</returns>
-        public ICompoundUndoAction CreateCompoundAction(ITextView textView, ITextBuffer textBuffer) {
-            return new CompoundUndoAction(textView, this, addRollbackOnCancel: true);
-        }
         #endregion
 
         #region IMainThread
@@ -266,52 +111,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
             awaiter.OnCompleted(action);
         }
-
         #endregion
-
-        public void Dispose() {
-            DisconnectFromShellEvents();
-            _services?.Dispose();
-        }
-
-        private OLEMSGBUTTON GetOleButtonFlags(MessageButtons buttons) {
-            switch (buttons) {
-                case MessageButtons.YesNoCancel:
-                    return OLEMSGBUTTON.OLEMSGBUTTON_YESNOCANCEL;
-                case MessageButtons.YesNo:
-                    return OLEMSGBUTTON.OLEMSGBUTTON_YESNO;
-                case MessageButtons.OKCancel:
-                    return OLEMSGBUTTON.OLEMSGBUTTON_OKCANCEL;
-            }
-            return OLEMSGBUTTON.OLEMSGBUTTON_OK;
-        }
-
-        public static IVsPackage EnsurePackageLoaded(Guid guidPackage) {
-            var shell = (IVsShell)VsPackage.GetGlobalService(typeof(IVsShell));
-            var guid = guidPackage;
-            IVsPackage package;
-            int hr = ErrorHandler.ThrowOnFailure(shell.IsPackageLoaded(ref guid, out package), VSConstants.E_FAIL);
-            guid = guidPackage;
-            if (hr != VSConstants.S_OK) {
-                ErrorHandler.ThrowOnFailure(shell.LoadPackage(ref guid, out package), VSConstants.E_FAIL);
-            }
-            return package;
-        }
-
-        public int OnShellPropertyChange(int propid, object var) {
-            if (propid == (int)__VSSPROPID4.VSSPROPID_ShellInitialized) {
-                Started?.Invoke(this, EventArgs.Empty);
-            }
-            return VSConstants.S_OK;
-        }
-
-        private void DisconnectFromShellEvents() {
-            if (_vsShell != null) {
-                if (_vsShellEventsCookie != 0) {
-                    _vsShell.UnadviseShellPropertyChanges(_vsShellEventsCookie);
-                    _vsShellEventsCookie = 0;
-                }
-            }
-        }
     }
 }

@@ -22,8 +22,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
         public ConnectionManagerControl(ICoreShell coreShell) {
             InitializeComponent();
 
-            _theme = coreShell.Services.GetService<IThemeUtilities>();
-            var ui = coreShell.Services.GetService<IUIServices>();
+            _theme = coreShell.GetService<IThemeUtilities>();
+            var ui = coreShell.GetService<IUIServices>();
             ui.UIThemeChanged += OnUIThemeChanged;
 
             SetImageBackground();

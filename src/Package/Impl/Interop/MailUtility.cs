@@ -7,6 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
+using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -47,7 +48,7 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
 
         int SendMail(string subject, string body, int how) {
             IntPtr vsWindow;
-            IVsUIShell shell = VsAppShell.Current.Services.GetService<IVsUIShell>(typeof(SVsUIShell));
+            IVsUIShell shell = VsAppShell.Current.GetService<IVsUIShell>(typeof(SVsUIShell));
             shell.GetDialogOwnerHwnd(out vsWindow);
 
             MapiMessage msg = new MapiMessage();

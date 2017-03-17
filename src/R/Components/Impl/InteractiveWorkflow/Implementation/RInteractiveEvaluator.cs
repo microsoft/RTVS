@@ -10,6 +10,7 @@ using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Enums;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.Settings;

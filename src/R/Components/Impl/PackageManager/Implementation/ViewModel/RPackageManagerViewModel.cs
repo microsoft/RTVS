@@ -12,6 +12,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Collections;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Threading;
+using Microsoft.Common.Core.UI;
 using Microsoft.Common.Wpf;
 using Microsoft.Common.Wpf.Collections;
 using Microsoft.R.Components.PackageManager.Model;
@@ -149,7 +150,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 return;
             }
 
-            var confirmUpdate = _coreShell.ShowMessage(string.Format(CultureInfo.CurrentCulture, Resources.PackageManager_PackageUpdateWarning, package.Name), MessageButtons.YesNo);
+            var message = string.Format(CultureInfo.CurrentCulture, Resources.PackageManager_PackageUpdateWarning, package.Name);
+            var confirmUpdate = _coreShell.ShowMessage(message, MessageButtons.YesNo);
             if (confirmUpdate != MessageButtons.Yes) {
                 return;
             }

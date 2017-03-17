@@ -5,6 +5,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -30,6 +31,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataSource {
         }
 
         public static Task<IGridData<string>> GetGridDataAsync(string expression, GridRange? gridRange, ISortOrder sortOrder = null) =>
-            GetGridDataAsync(VsAppShell.Current.Services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate().RSession, expression, gridRange, sortOrder);
+            GetGridDataAsync(VsAppShell.Current.GetService<IRInteractiveWorkflowProvider>().GetOrCreate().RSession, expression, gridRange, sortOrder);
     }
 }

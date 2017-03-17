@@ -24,12 +24,12 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
 
         public static void OnCommand(object sender, EventArgs args) {
             if (MessageButtons.Yes == VsAppShell.Current.ShowMessage(Resources.Warning_SettingsReset, MessageButtons.YesNo)) {
-                IVsUIShell shell = VsAppShell.Current.Services.GetService<IVsUIShell>(typeof(SVsUIShell));
-                Guid group = VSConstants.CMDSETID.StandardCommandSet2K_guid;
+                var shell = VsAppShell.Current.GetService<IVsUIShell>(typeof(SVsUIShell));
+                var group = VSConstants.CMDSETID.StandardCommandSet2K_guid;
 
-                string asmDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetAssemblyPath());
+                var asmDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetAssemblyPath());
                 // Non-versioned setup
-                string settingsFilePath = Path.Combine(asmDirectory, _profilesFolder, _settingsFileName);
+                var settingsFilePath = Path.Combine(asmDirectory, _profilesFolder, _settingsFileName);
                 if (!File.Exists(settingsFilePath)) {
                     // Typically debug setup launched via F5 with profiles under 14.0/15.0 folder
                     settingsFilePath = Path.Combine(asmDirectory, _profilesFolder, Toolset.Version, _settingsFileName);

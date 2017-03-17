@@ -27,7 +27,7 @@ namespace Microsoft.Languages.Editor.BraceMatch {
 
         public GotoBraceCommand(ITextView textView, ITextBuffer textBuffer, ICoreShell shell) :
             base(textView, _commands, false) {
-            var importComposer = new ContentTypeImportComposer<IBraceMatcherProvider>(shell.Services.GetService<ICompositionService>());
+            var importComposer = new ContentTypeImportComposer<IBraceMatcherProvider>(shell.GetService<ICompositionService>());
             _braceMatcherProvider = importComposer.GetImport(textBuffer.ContentType.TypeName);
 
             TextBuffer = textBuffer;

@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel.Composition;
 using System.Threading;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.InteractiveWindow.Shell;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -51,7 +52,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 return;
             }
 
-            IVsUIShell shell = VsAppShell.Current.Services.GetService<IVsUIShell>(typeof(SVsUIShell));
+            var shell = VsAppShell.Current.GetService<IVsUIShell>(typeof(SVsUIShell));
             shell.UpdateCommandUI(1);
         }
 

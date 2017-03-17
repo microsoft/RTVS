@@ -6,6 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.DataInspect;
@@ -20,7 +21,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         private VariableRHostScript _hostScript;
 
         public Task InitializeAsync() {
-            var workflow = VsAppShell.Current.Services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
+            var workflow = VsAppShell.Current.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
             _hostScript = new VariableRHostScript(workflow.RSessions);
             return workflow.Connections.ConnectAsync(workflow.Connections.RecentConnections[0]);
         }

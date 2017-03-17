@@ -12,7 +12,6 @@ using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Wpf.Extensions;
 using Microsoft.R.Components.StatusBar;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using StatusBarControl = System.Windows.Controls.Primitives.StatusBar;
 
@@ -30,7 +29,7 @@ namespace Microsoft.VisualStudio.R.Package.StatusBar {
         }
 
         private Visual GetRootVisual() {
-            var shell = _shell.Services.GetService<IVsUIShell>(typeof(SVsUIShell));
+            var shell = _shell.GetService<IVsUIShell>(typeof(SVsUIShell));
             IntPtr window;
             shell.GetDialogOwnerHwnd(out window);
 

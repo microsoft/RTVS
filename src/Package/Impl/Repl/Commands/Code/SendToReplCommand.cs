@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Controller.Commands;
 using Microsoft.R.Components.Controller;
@@ -62,7 +63,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
             // Take focus back if REPL window has stolen it
             if (!TextView.HasAggregateFocus) {
-                IVsEditorAdaptersFactoryService adapterService = VsAppShell.Current.Services.GetService<IVsEditorAdaptersFactoryService>();
+                IVsEditorAdaptersFactoryService adapterService = VsAppShell.Current.GetService<IVsEditorAdaptersFactoryService>();
                 IVsTextView tv = adapterService.GetViewAdapter(TextView);
                 tv.SendExplicitFocus();
             }

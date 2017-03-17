@@ -4,12 +4,12 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Editor.Data;
@@ -18,7 +18,6 @@ using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.DataInspect.Office;
-using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Shell;
 using static System.FormattableString;
 using static Microsoft.R.DataInspection.REvaluationResultProperties;
@@ -117,7 +116,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 IReadOnlyList<IREvaluationResultInfo> children = await valueEvaluation.DescribeChildrenAsync(properties, Repr, MaxChildrenCount);
 
                 result = new List<IRSessionDataObject>();
-                var aggregator = VsAppShell.Current.Services.GetService<IObjectDetailsViewerAggregator>();
+                var aggregator = VsAppShell.Current.GetService<IObjectDetailsViewerAggregator>();
                 for (int i = 0; i < children.Count; i++) {
                     result.Add(new VariableViewModel(children[i], aggregator, index: i, maxChildrenCount: GetMaxChildrenCount(children[i])));
                 }
@@ -163,7 +162,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public async Task DeleteAsync(string envExpr) {
             if (!_deleted) {
                 _deleted = true;
-                var workflow = VsAppShell.Current.Services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
+                var workflow = VsAppShell.Current.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
                 var session = workflow.RSession;
                 try {
                     using (var e = await session.BeginInteractionAsync(isVisible: false)) {
@@ -171,7 +170,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                         await e.RespondAsync(rmText);
                     }
                 } catch (RException rex) {
-                    VsAppShell.Current.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToDeleteVariable, rex.Message));
+                    VsAppShell.Current.ShowErrorMessage(Resources.Error_UnableToDeleteVariable.FormatInvariant(rex.Message));
                 } catch (RHostDisconnectedException) {
                 }
             }

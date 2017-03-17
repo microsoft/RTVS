@@ -3,6 +3,7 @@
 
 using System.Drawing;
 using System.Windows.Forms;
+using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -36,7 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         /// </summary>
         public static void LoadProjectImages() {
             if (_monikerImageList == null) {
-                IVsImageService2 imageService = VsAppShell.Current.Services.GetService<IVsImageService2>(typeof(SVsImageService));
+                IVsImageService2 imageService = VsAppShell.Current.GetService<IVsImageService2>(typeof(SVsImageService));
 
                 _imageList = new ImageList();
                 foreach (var b in _bitmaps) {

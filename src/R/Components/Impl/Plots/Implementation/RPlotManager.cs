@@ -13,7 +13,6 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
-using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Host.Client;
@@ -433,7 +432,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
 
             // If we have no plot window to reuse, create one
             if (component == null) {
-                var containerFactory = InteractiveWorkflow.Shell.Services.GetService<IRPlotDeviceVisualComponentContainerFactory>();
+                var containerFactory = InteractiveWorkflow.Shell.GetService<IRPlotDeviceVisualComponentContainerFactory>();
                 component = GetOrCreateVisualComponent(containerFactory, GetUnusedInstanceId());
             }
 

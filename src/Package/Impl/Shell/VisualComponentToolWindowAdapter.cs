@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System.ComponentModel.Design;
 using System.Windows;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.View;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -43,18 +43,18 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             get {
                 VsAppShell.Current.AssertIsOnMainThread();
                 string text = string.Empty;
-                var statusBar = VsAppShell.Current.Services.GetService<IVsStatusbar>(typeof(SVsStatusbar));
+                var statusBar = VsAppShell.Current.GetService<IVsStatusbar>(typeof(SVsStatusbar));
                 ErrorHandler.ThrowOnFailure(statusBar.GetText(out text));
                 return text;
             }
             set {
                 VsAppShell.Current.AssertIsOnMainThread();
-                var statusBar = VsAppShell.Current.Services.GetService<IVsStatusbar>(typeof(SVsStatusbar));
+                var statusBar = VsAppShell.Current.GetService<IVsStatusbar>(typeof(SVsStatusbar));
                 statusBar.SetText(value);
             }
         }
 
-        public void ShowContextMenu(CommandID commandId, Point position) {
+        public void ShowContextMenu(CommandId commandId, Point position) {
             VsAppShell.Current.DispatchOnUIThread(() => {
                 var point = Component.Control.PointToScreen(position);
                 VsAppShell.Current.ShowContextMenu(commandId, (int)point.X, (int)point.Y);
@@ -63,7 +63,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         public void UpdateCommandStatus(bool immediate) {
             VsAppShell.Current.DispatchOnUIThread(() => {
-                var shell = VsAppShell.Current.Services.GetService<IVsUIShell>(typeof (SVsUIShell));
+                var shell = VsAppShell.Current.GetService<IVsUIShell>(typeof (SVsUIShell));
                 shell.UpdateCommandUI(immediate ? 1 : 0);
             });
         }

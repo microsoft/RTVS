@@ -112,7 +112,7 @@ namespace Microsoft.Languages.Editor.Text {
                 return Disposable.Empty;
             }
 
-            var textBufferUndoManagerProvider = shell.Services.GetService<ITextBufferUndoManagerProvider>();
+            var textBufferUndoManagerProvider = shell.GetService<ITextBufferUndoManagerProvider>();
             return new SelectionUndo(selectionTracker, textBufferUndoManagerProvider, transactionName, automaticTracking: false);
         }
     }

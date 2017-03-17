@@ -40,7 +40,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
                 return;
             }
 
-            var workflow = shell.Services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
+            var workflow = shell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
             var session = workflow.RSession;
 
             var folder = GetTempCsvFilesFolder();
@@ -48,19 +48,19 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
                 Directory.CreateDirectory(folder);
             }
 
-            var pss = shell.Services.GetService<IProjectSystemServices>();
+            var pss = shell.GetService<IProjectSystemServices>();
             var variableName = result.Name ?? _variableNameReplacement;
             var csvFileName = MakeCsvFileName(shell, pss, variableName);
 
             var file = pss.GetUniqueFileName(folder, csvFileName, "csv", appendUnderscore: true);
 
             string currentStatusText;
-            var statusBar = shell.Services.GetService<IVsStatusbar>(typeof(SVsStatusbar));
+            var statusBar = shell.GetService<IVsStatusbar>(typeof(SVsStatusbar));
             statusBar.GetText(out currentStatusText);
 
             try {
                 statusBar.SetText(Resources.Status_WritingCSV);
-                shell.ProgressDialog.Show(async (p, ct) => await CreateCsvAndStartProcess(result, session, shell, file, fileSystem, p, ct), Resources.Status_WritingCSV, 100, 500);
+                shell.GetProgressDialog().Show(async (p, ct) => await CreateCsvAndStartProcess(result, session, shell, file, fileSystem, p, ct), Resources.Status_WritingCSV, 100, 500);
                 if (fileSystem.FileExists(file)) {
                     processServices.Start(file);
                 }
@@ -115,8 +115,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
             var project = pss.GetActiveProject();
             var projectName = project?.FileName;
 
-            var contentTypeService = shell.Services.GetService<IContentTypeRegistryService>();
-            var viewTracker = shell.Services.GetService<IActiveWpfTextViewTracker>();
+            var contentTypeService = shell.GetService<IContentTypeRegistryService>();
+            var viewTracker = shell.GetService<IActiveWpfTextViewTracker>();
 
             var activeView = viewTracker.GetLastActiveTextView(contentTypeService.GetContentType(RContentTypeDefinition.ContentType));
             var filePath = activeView.GetFilePath();

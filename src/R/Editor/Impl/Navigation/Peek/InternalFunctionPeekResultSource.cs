@@ -6,13 +6,11 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.Editor.Settings;
-using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
@@ -70,7 +68,7 @@ namespace Microsoft.R.Editor.Navigation.Peek {
                         // Editor opens external items as plain text. When file opens, change content type to R.
                         IdleTimeAction.Create(() => {
                             if (_result.Span.IsDocumentOpen) {
-                                var rs = _shell.Services.GetService<IContentTypeRegistryService>();
+                                var rs = _shell.GetService<IContentTypeRegistryService>();
                                 var ct = rs.GetContentType(RContentTypeDefinition.ContentType);
                                 _result.Span.Document.TextBuffer.ChangeContentType(ct, this.GetType());
                                 try { File.Delete(tempFile); } catch (IOException) { } catch (UnauthorizedAccessException) { }
@@ -87,7 +85,7 @@ namespace Microsoft.R.Editor.Navigation.Peek {
         }
 
         private async Task<string> GetFunctionCode(string functionName) {
-            var workflow = _shell.Services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
+            var workflow = _shell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
             var rSession = workflow.RSession;
             string functionCode = await rSession.GetFunctionCodeAsync(functionName);
             if (!string.IsNullOrEmpty(functionCode)) {

@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
@@ -28,7 +29,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         }
 
         protected override void Handle() {
-            IVsUIShell uiShell = VsAppShell.Current.Services.GetService<IVsUIShell>(typeof(SVsUIShell));
+            IVsUIShell uiShell = VsAppShell.Current.GetService<IVsUIShell>(typeof(SVsUIShell));
             IntPtr dialogOwner;
             uiShell.GetDialogOwnerHwnd(out dialogOwner);
 

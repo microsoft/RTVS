@@ -153,7 +153,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
 
             var cmd = new PublishSProcCommand(_shell, _pss, servicesProvider, Substitute.For<ISettingsStorage>());
             cmd.TryHandleCommand(null, RPackageCommandId.icmdPublishSProc, false, 0, IntPtr.Zero, IntPtr.Zero).Should().BeTrue();
-            var es = _shell.Services.GetService<IUIServices>();
+            var es = _shell.GetService<IUIServices>();
             es.Received().ShowErrorMessage(Resources.SqlPublishDialog_NoSProcFiles);
         }
     }

@@ -31,7 +31,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public ConnectionManagerViewModel(IConnectionManager connectionManager, IRSettings settings, ICoreShell shell) :
             base(connectionManager, shell) {
-            _ui = shell.Services.GetService<IUIServices>();
+            _ui = shell.GetService<IUIServices>();
             _settings = settings;
 
             _remoteConnections = new BatchObservableCollection<IConnectionViewModel>();

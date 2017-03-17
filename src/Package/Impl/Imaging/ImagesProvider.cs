@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Media;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Wpf.Imaging;
 using Microsoft.R.Editor.Imaging;
 using Microsoft.VisualStudio.Imaging;
@@ -67,7 +68,7 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
         }
 
         public static ImageSource GetIconForImageMoniker(ImageMoniker imageMoniker) {
-            IVsImageService2 imageService = VsAppShell.Current.Services.GetService<IVsImageService2>(typeof(SVsImageService));
+            IVsImageService2 imageService = VsAppShell.Current.GetService<IVsImageService2>(typeof(SVsImageService));
             ImageSource glyph = null;
 
             ImageAttributes imageAttributes = new ImageAttributes();

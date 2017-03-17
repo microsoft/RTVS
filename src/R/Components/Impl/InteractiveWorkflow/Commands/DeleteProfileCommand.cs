@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.VisualStudio.InteractiveWindow;

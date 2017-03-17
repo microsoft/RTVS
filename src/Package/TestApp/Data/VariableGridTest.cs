@@ -4,8 +4,8 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Controls;
-using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Interactive.Test.Utility;
@@ -94,10 +94,9 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
             DoIdle(100);
 
             var result = await hostScript.EvaluateAsync(expression);
-            VariableViewModel wrapper = new VariableViewModel(result, VsAppShell.Current.Services.GetService<IObjectDetailsViewerAggregator>());
+            VariableViewModel wrapper = new VariableViewModel(result, VsAppShell.Current.GetService<IObjectDetailsViewerAggregator>());
 
             DoIdle(2000);
-
             wrapper.Should().NotBeNull();
 
             UIThreadHelper.Instance.Invoke(() => {

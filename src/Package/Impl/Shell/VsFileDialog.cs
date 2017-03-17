@@ -27,7 +27,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
 
         private static string BrowseForFileOpen(IntPtr owner, string filter, string initialPath = null, string title = null) {
-            IVsUIShell uiShell = VsAppShell.Current.Services.GetService<IVsUIShell>(typeof(SVsUIShell));
+            var uiShell = VsAppShell.Current.GetService<IVsUIShell>(typeof(SVsUIShell));
             if (uiShell == null) {
                 return null;
             }
@@ -67,7 +67,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 initialPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + Path.DirectorySeparatorChar;
             }
 
-            IVsUIShell uiShell = VsAppShell.Current.Services.GetService<IVsUIShell>(typeof(SVsUIShell));
+            var uiShell = VsAppShell.Current.GetService<IVsUIShell>(typeof(SVsUIShell));
             if (null == uiShell) {
                 return null;
             }
@@ -76,7 +76,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 ErrorHandler.ThrowOnFailure(uiShell.GetDialogOwnerHwnd(out owner));
             }
 
-            VSSAVEFILENAMEW[] saveInfo = new VSSAVEFILENAMEW[1];
+            var saveInfo = new VSSAVEFILENAMEW[1];
             saveInfo[0].lStructSize = (uint)Marshal.SizeOf(typeof(VSSAVEFILENAMEW));
             saveInfo[0].dwFlags = 0x00000002; // OFN_OVERWRITEPROMPT
             saveInfo[0].pwzFilter = filter.Replace('|', '\0') + "\0";

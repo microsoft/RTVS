@@ -6,7 +6,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.UI;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 
@@ -19,7 +19,6 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
         public CommandStatus Status => HasCurrentPlot && !IsInLocatorMode ? CommandStatus.SupportedAndEnabled : CommandStatus.Supported;
 
         public async Task InvokeAsync() {
-            var ui = InteractiveWorkflow.Shell.Services.GetService<IUIServices>();
             string filePath = Path.GetTempFileName();
             try {
                 await InteractiveWorkflow.Plots.ExportToMetafileAsync(
@@ -34,7 +33,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
                         var mf = new System.Drawing.Imaging.Metafile(filePath);
                         Clipboard.SetData(DataFormats.EnhancedMetafile, mf);
                     } catch (Exception e) when (!e.IsCriticalException()) {
-                        ui.ShowErrorMessage(string.Format(Resources.Plots_CopyToClipboardError, e.Message));
+                        InteractiveWorkflow.Shell.ShowErrorMessage(Resources.Plots_CopyToClipboardError.FormatInvariant(e.Message));
                     } finally {
                         try {
                             File.Delete(filePath);
@@ -43,7 +42,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
                     }
                 });
             } catch (RPlotManagerException ex) {
-                ui.ShowErrorMessage(ex.Message);
+                InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);
             } catch (OperationCanceledException) {
             }
         }

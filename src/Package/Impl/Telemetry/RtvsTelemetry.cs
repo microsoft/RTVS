@@ -7,7 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Editor.Settings;
@@ -65,7 +65,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
         public RtvsTelemetry(IPackageIndex packageIndex, IRSettings settings, ITelemetryService service = null) {
             _packageIndex = packageIndex;
             _settings = settings;
-            TelemetryService = service ?? VsAppShell.Current.Services.GetService<ITelemetryService>();
+            TelemetryService = service ?? VsAppShell.Current.GetService<ITelemetryService>();
         }
 
         public ITelemetryService TelemetryService { get; }

@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Services;
@@ -30,10 +31,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         private readonly ExpansionsController _snippetController;
 
         public ReplCommandController(ITextView textView, ITextBuffer textBuffer)
-            : base(textView, textBuffer, VsAppShell.Current) {
+            : base(textView, textBuffer, VsAppShell.Current.GetService<ICompositionCatalog>()) {
             ServiceManager.AddService(this, textView, VsAppShell.Current);
 
-            var textManager = VsAppShell.Current.Services.GetService<IVsTextManager2>(typeof(SVsTextManager));
+            var textManager = VsAppShell.Current.GetService<IVsTextManager2>(typeof(SVsTextManager));
             IVsExpansionManager expansionManager;
             textManager.GetExpansionManager(out expansionManager);
 
@@ -135,10 +136,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             }
 
             controller.DismissAllSessions();
-            ICompletionBroker broker = VsAppShell.Current.Services.GetService<ICompletionBroker>();
+            ICompletionBroker broker = VsAppShell.Current.GetService<ICompletionBroker>();
             broker.DismissAllSessions(TextView);
 
-            var interactiveWorkflowProvider = VsAppShell.Current.Services.GetService<IRInteractiveWorkflowProvider>();
+            var interactiveWorkflowProvider = VsAppShell.Current.GetService<IRInteractiveWorkflowProvider>();
             interactiveWorkflowProvider.GetOrCreate().Operations.ExecuteCurrentExpression(TextView, FormatReplDocument);
             return CommandResult.Executed;
         }
@@ -184,7 +185,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
         private IRInteractiveWorkflow Workflow {
             get {
-                var interactiveWorkflowProvider = VsAppShell.Current.Services.GetService<IRInteractiveWorkflowProvider>();
+                var interactiveWorkflowProvider = VsAppShell.Current.GetService<IRInteractiveWorkflowProvider>();
                 return interactiveWorkflowProvider.GetOrCreate();
             }
         }

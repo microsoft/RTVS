@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Host.Client;
@@ -119,7 +120,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
 
             _console.WriteError(sb.ToString());
             if (reportTelemetry) {
-                var telemetry = _interactiveWorkflow.Shell.Services.GetService<ITelemetryService>();
+                var telemetry = _interactiveWorkflow.Shell.GetService<ITelemetryService>();
                 foreach (var name in aboutHost.Interpreters) {
                     telemetry.ReportEvent(TelemetryArea.Configuration, "Remote Interpteter", name);
                     telemetry.ReportEvent(TelemetryArea.Configuration, "Remote OS", aboutHost.OS.VersionString);

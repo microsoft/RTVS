@@ -14,7 +14,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Commands {
 
         public ImportDataSetTextFileCommand(ICoreShell shell, IRSession session) :
             base(session, RGuidList.RCmdSetGuid, RPackageCommandId.icmdImportDatasetTextFile) {
-            _ui = shell.Services.GetService<IUIServices>();
+            _ui = shell.GetService<IUIServices>();
         }
 
         protected override void SetStatus() {

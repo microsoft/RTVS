@@ -2,23 +2,23 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.XUnit;
+using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 using Microsoft.VisualStudio.R.Package.DataInspect;
 using Microsoft.VisualStudio.R.Package.DataInspect.Viewers;
 using Microsoft.VisualStudio.R.Package.Shell;
 using NSubstitute;
 using Xunit;
-using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 
 namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
     [ExcludeFromCodeCoverage]
@@ -34,8 +34,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
         public ViewersTest(TestMethodFixture testMethod) {
             _testMethod = testMethod;
-            _aggregator = VsAppShell.Current.Services.GetService<IObjectDetailsViewerAggregator>();
-            _workflow = VsAppShell.Current.Services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
+            _aggregator = VsAppShell.Current.GetService<IObjectDetailsViewerAggregator>();
+            _workflow = VsAppShell.Current.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
             _sessionProvider = _workflow.RSessions;
         }
 

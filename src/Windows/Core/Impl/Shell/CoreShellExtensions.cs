@@ -16,12 +16,12 @@ namespace Microsoft.Common.Core.Shell {
 
         public static async Task ShowErrorMessageAsync(this ICoreShell coreShell, string message, CancellationToken cancellationToken = default(CancellationToken)) {
             await coreShell.SwitchToMainThreadAsync(cancellationToken);
-            coreShell.Services.GetService<IUIServices>().ShowErrorMessage(message);
+            coreShell.GetService<IUIServices>().ShowErrorMessage(message);
         }
 
         public static async Task<MessageButtons> ShowMessageAsync(this ICoreShell coreShell, string message, MessageButtons buttons, CancellationToken cancellationToken = default(CancellationToken)) {
             await coreShell.SwitchToMainThreadAsync(cancellationToken);
-            return coreShell.Services.GetService<IUIServices>().ShowMessage(message, buttons);
+            return coreShell.GetService<IUIServices>().ShowMessage(message, buttons);
         }
 
         [Conditional("TRACE")]
@@ -30,10 +30,5 @@ namespace Microsoft.Common.Core.Shell {
                 Debug.Fail(FormattableString.Invariant($"{memberName} at {sourceFilePath}:{sourceLineNumber} was incorrectly called from a background thread."));
             }
         }
-
-        public static void ShowErrorMessage(this ICoreShell shell, string message)
-            => shell.Services.GetService<IUIServices>().ShowErrorMessage(message);
-        public static MessageButtons ShowMessage(this ICoreShell shell, string message, MessageButtons buttons)
-            => shell.Services.GetService<IUIServices>().ShowMessage(message, buttons);
     }
 }

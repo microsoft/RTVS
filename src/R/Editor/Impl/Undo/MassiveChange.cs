@@ -17,7 +17,7 @@ namespace Microsoft.R.Editor.Undo {
         public MassiveChange(ITextView textView, ITextBuffer textBuffer, ICoreShell shell, string description) {
             _textBuffer = textBuffer;
 
-            var undoManagerProvider = shell.Services.GetService<ITextBufferUndoManagerProvider>();
+            var undoManagerProvider = shell.GetService<ITextBufferUndoManagerProvider>();
             var undoManager = undoManagerProvider.GetTextBufferUndoManager(textView.TextBuffer);
 
             ITextUndoTransaction innerTransaction = undoManager.TextBufferUndoHistory.CreateTransaction(description);

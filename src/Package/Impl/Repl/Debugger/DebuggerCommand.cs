@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Commands;
@@ -29,7 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
                 return;
             }
 
-            var debugger = VsAppShell.Current.Services.GetService<IVsDebugger>(typeof(SVsShellDebugger));
+            var debugger = VsAppShell.Current.GetService<IVsDebugger>(typeof(SVsShellDebugger));
             if (debugger == null) {
                 return;
             }

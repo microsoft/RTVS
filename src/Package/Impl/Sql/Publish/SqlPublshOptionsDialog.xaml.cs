@@ -8,7 +8,6 @@ using EnvDTE;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
-using Microsoft.R.Components.Extensions;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration;
@@ -16,8 +15,7 @@ using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Wpf;
 using Microsoft.VisualStudio.R.Packages.R;
 
-namespace Microsoft.VisualStudio.R.Package.Sql.Publish
-{
+namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
     /// <summary>
     /// Interaction logic for SqlPublsh.xaml
     /// </summary>
@@ -71,7 +69,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish
             _model.Settings.Save(_settings);
 
             // Make sure all files are saved and up to date on disk.
-            var dte = _shell.Services.GetService<DTE>(typeof(DTE));
+            var dte = _shell.GetService<DTE>(typeof(DTE));
             dte.ExecuteCommand("File.SaveAll");
 
             _shell.PostCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdPublishSProc);

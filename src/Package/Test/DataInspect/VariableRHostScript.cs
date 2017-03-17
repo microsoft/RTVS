@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Editor.Data;
 using Microsoft.R.Host.Client;
@@ -38,7 +39,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                 var result = await frame.TryEvaluateAndDescribeAsync(rScript, properties, RValueRepresentations.Str());
 
                 var globalResult = await frame.TryEvaluateAndDescribeAsync("base::environment()", properties, RValueRepresentations.Str());
-                _globalEnv = new VariableViewModel(globalResult, VsAppShell.Current.Services.GetService<IObjectDetailsViewerAggregator>());
+                _globalEnv = new VariableViewModel(globalResult, VsAppShell.Current.GetService<IObjectDetailsViewerAggregator>());
 
                 return result;
             } finally {

@@ -13,7 +13,6 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Markdown.Editor.Flavor;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Publishing.Definitions;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Publishing {
@@ -49,7 +48,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing {
                 uint cookie = 0;
                 IVsStatusbar statusBar = null;
                 shell.DispatchOnUIThread(() => {
-                    statusBar = shell.Services.GetService<IVsStatusbar>(typeof(SVsStatusbar));
+                    statusBar = shell.GetService<IVsStatusbar>(typeof(SVsStatusbar));
                     statusBar.GetText(out currentStatusText);
                     statusBar.Progress(ref cookie, 1, "", 0, 0);
                 });

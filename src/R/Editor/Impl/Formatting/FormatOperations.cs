@@ -2,8 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor.Extensions;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Scopes;
 using Microsoft.R.Core.AST.Statements;
@@ -13,8 +14,6 @@ using Microsoft.R.Editor.Settings;
 using Microsoft.R.Editor.SmartIndent;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Shell;
 
 namespace Microsoft.R.Editor.Formatting {
     internal static class FormatOperations {
@@ -64,7 +63,7 @@ namespace Microsoft.R.Editor.Formatting {
                 // Find scope to format
                 IScope scope = ast.GetNodeOfTypeFromPosition<IScope>(caretPoint.Value);
 
-                var es = shell.Services.GetService<IApplicationEditorSupport>();
+                var es = shell.GetService<IApplicationEditorSupport>();
                 using (var undoAction = es.CreateCompoundAction(textView, textView.TextBuffer)) {
                     undoAction.Open(Resources.AutoFormat);
                     // Now format the scope
@@ -104,7 +103,7 @@ namespace Microsoft.R.Editor.Formatting {
         }
 
         public static void UndoableFormatRange(ITextView textView, ITextBuffer textBuffer, ITextRange formatRange, ICoreShell shell) {
-            var es = shell.Services.GetService<IApplicationEditorSupport>();
+            var es = shell.GetService<IApplicationEditorSupport>();
             using (var undoAction = es.CreateCompoundAction(textView, textView.TextBuffer)) {
                 undoAction.Open(Resources.AutoFormat);
                 var result = RangeFormatter.FormatRange(textView, textBuffer, formatRange, REditorSettings.FormatOptions, shell);
