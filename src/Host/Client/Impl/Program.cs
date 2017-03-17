@@ -189,14 +189,5 @@ namespace Microsoft.R.Host.Client {
             public bool IsFeedbackPermitted => true;
             public LogVerbosity MaxVerbosity => LogVerbosity.Traffic;
         }
-
-        class AppConstants : IApplicationConstants {
-            public void Initialize() { }
-            public string ApplicationName => "Microsoft.R.Host.Client";
-            public IntPtr ApplicationWindowHandle => IntPtr.Zero;
-            public uint LocaleId => 1033;
-            public string LocalMachineHive => null;
-            public UIColorTheme UIColorTheme => UIColorTheme.Light;
-        }
     }
 }

@@ -115,7 +115,6 @@
     <Compile Include="Services\ServiceManager.cs" />
     <Compile Include="Services\ServiceManagerEventArgs.cs" />
     <Compile Include="Shell\IApplicationEditorSupport.cs" />
-    <Compile Include="Shell\EditorShell.cs" />
     <Compile Include="Settings\CommonSettings.cs" />
     <Compile Include="SuggestedActions\SuggestedActionBase.cs" />
     <Compile Include="TaskList\IEditorTaskList.cs" />

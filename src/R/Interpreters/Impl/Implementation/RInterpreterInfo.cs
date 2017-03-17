@@ -64,7 +64,7 @@ namespace Microsoft.R.Interpreters {
                     var fileVersion = GetRVersionFromBinary(fs, rDllPath);
                     _isValid = IsSameVersion(fileVersion, Version) && svr.IsCompatibleVersion(Version);
                     if (!_isValid.Value) {
-                        coreShell?.ShowMessage(
+                        ui?.ShowMessage(
                             string.Format(CultureInfo.InvariantCulture, Resources.Error_UnsupportedRVersion,
                             Version.Major, Version.Minor, Version.Build, svr.MinMajorVersion, svr.MinMinorVersion, "*",
                             svr.MaxMajorVersion, svr.MaxMinorVersion, "*"), MessageButtons.OK);

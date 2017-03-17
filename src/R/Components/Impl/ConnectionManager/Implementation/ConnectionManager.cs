@@ -29,6 +29,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
         private readonly IRSettings _settings;
         private readonly ICoreShell _shell;
+        private readonly IActionLog _log;
         private readonly IStatusBar _statusBar;
         private readonly IRSessionProvider _sessionProvider;
         private readonly DisposableBag _disposableBag;
@@ -54,7 +55,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             _settings = settings;
             _interactiveWorkflow = interactiveWorkflow;
             _shell = interactiveWorkflow.Shell;
-            _securityService = _shell.Services.Ge;
+            _securityService = _shell.Services.GetService<ISecurityService>();
+            _log = _shell.Services.GetService<IActionLog>();
 
             _statusBarViewModel = new ConnectionStatusBarViewModel(this, interactiveWorkflow.Shell);
             _hostLoadIndicatorViewModel = new HostLoadIndicatorViewModel(_sessionProvider, interactiveWorkflow.Shell);
@@ -282,7 +284,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 var info = new RInterpreterInfo(name, path);
                 return info.VerifyInstallation();
             } catch (Exception ex) when (!ex.IsCriticalException()) {
-                _shell.Services.Log.Write(LogVerbosity.Normal, MessageCategory.Error, ex.Message);
+                _log.Write(LogVerbosity.Normal, MessageCategory.Error, ex.Message);
             }
             return false;
         }
@@ -292,7 +294,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 Uri uri;
                 return Uri.TryCreate(path, UriKind.Absolute, out uri) && !uri.IsFile;
             } catch (Exception ex) when (!ex.IsCriticalException()) {
-                _shell.Services.Log.Write(LogVerbosity.Normal, MessageCategory.Error, ex.Message);
+                _log.Write(LogVerbosity.Normal, MessageCategory.Error, ex.Message);
             }
             return false;
         }

@@ -25,7 +25,7 @@ namespace Microsoft.Languages.Editor.ContainedLanguage {
             if (containedLanguageHost == null) {
                 var containedLanguageHostProvider =
                     ComponentLocatorForOrderedContentType<IContainedLanguageHostProvider>.
-                            FindFirstOrderedComponent(shell, textView.TextDataModel.DocumentBuffer.ContentType.TypeName);
+                            FindFirstOrderedComponent(shell.Services.GetService<ICompositionCatalog>(), textView.TextDataModel.DocumentBuffer.ContentType.TypeName);
 
                 if (containedLanguageHostProvider != null)
                     containedLanguageHost = containedLanguageHostProvider.GetContainedLanguageHost(textView, textBuffer);

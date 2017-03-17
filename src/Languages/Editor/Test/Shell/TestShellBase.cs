@@ -7,35 +7,22 @@ using System.Threading;
 using System.Windows.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.Common.Core.Threading;
-using Microsoft.Common.Core.UI;
 using Microsoft.UnitTests.Core.Threading;
 
 namespace Microsoft.Languages.Editor.Test.Shell {
-    public class TestShellBase : IMainThread {
-        private readonly TestServiceManager _serviceManager;
-
-        public Thread MainThread { get; set; }
+    public class TestShellBase : ICoreShell {
+        protected TestServiceManager ServiceManager { get; }
+        protected Thread CreatorThread { get; }
 
         public TestShellBase(ExportProvider exportProvider) {
-            _serviceManager = new TestServiceManager(exportProvider);
-            MainThread = Thread.CurrentThread;
-            FileDialog = new TestFileDialog();
-            ProgressDialog = new TestProgressDialog();
+            ServiceManager = new TestServiceManager(exportProvider);
+            CreatorThread = UIThreadHelper.Instance.Thread;
+
+            ServiceManager.AddService(new TestUIServices());
         }
-
-        public virtual IServiceContainer GlobalServices => _serviceManager;
-
-        public void ShowErrorMessage(string msg) { }
-
-        public MessageButtons ShowMessage(string message, MessageButtons buttons, MessageType messageType = MessageType.Information)=> MessageButtons.OK;
-
-        public void ShowContextMenu(System.ComponentModel.Design.CommandID commandId, int x, int y, object commandTaget = null) { }
-
-        public string SaveFileIfDirty(string fullPath) => fullPath;
-
-        public void UpdateCommandStatus(bool immediate) { }
 
         public void DoIdle() {
             UIThreadHelper.Instance.Invoke(() => Idle?.Invoke(null, EventArgs.Empty));
@@ -67,8 +54,8 @@ namespace Microsoft.Languages.Editor.Test.Shell {
 
         private Dispatcher GetDispatcher(Thread thread = null) {
             if (thread == null) {
-                if (MainThread != null && MainThread.ManagedThreadId == UIThreadHelper.Instance.Thread.ManagedThreadId) {
-                    return Dispatcher.FromThread(MainThread);
+                if (CreatorThread != null && CreatorThread.ManagedThreadId == UIThreadHelper.Instance.Thread.ManagedThreadId) {
+                    return Dispatcher.FromThread(CreatorThread);
                 }
             } else {
                 return Dispatcher.FromThread(thread);
@@ -80,20 +67,18 @@ namespace Microsoft.Languages.Editor.Test.Shell {
 #pragma warning disable 0067
         public event EventHandler<EventArgs> Started;
         public event EventHandler<EventArgs> Terminating;
-        public event EventHandler<EventArgs> UIThemeChanged;
 #pragma warning restore 0067
 
         #region IMainThread
-        public int ThreadId => MainThread.ManagedThreadId;
+        public int ThreadId => CreatorThread.ManagedThreadId;
         public void Post(Action action, CancellationToken cancellationToken) => UIThreadHelper.Instance.InvokeAsync(action, cancellationToken).DoNotWait();
         #endregion
 
         #region ICoreShell
-        public bool IsUnitTestEnvironment { get; set; } = true;
-        public IApplicationConstants AppConstants => new TestPlatformServices();
-        public virtual ICoreServices Services => TestCoreServices.CreateReal();
-        public IProgressDialog ProgressDialog { get; }
-        public IFileDialog FileDialog { get; }
+        public string ApplicationName => "RTVS_Test";
+        public int LocaleId => 1033;
+        public bool IsUnitTestEnvironment => true;
+        public IServiceContainer Services => ServiceManager;
         #endregion
     }
 }

@@ -22,7 +22,6 @@ namespace Microsoft.Languages.Editor.Test.Shell {
 
         private Testshell(ICompositionCatalog catalog, Thread mainThread) :
             base(catalog.ExportProvider) {
-            CompositionService = catalog.CompositionService;
             MainThread = mainThread;
         }
 
@@ -35,15 +34,15 @@ namespace Microsoft.Languages.Editor.Test.Shell {
             // of the test shell that editor code can access during
             // test run.
             _instance = new Testshell(EditorTestCompositionCatalog.Current, UIThreadHelper.Instance.Thread);
-            shell.Current = _instance;
+            _instance.Current = _instance;
         }
 
-        #region ICompositionCatalog
-        public ICompositionService CompositionService { get; private set; }
-        public ExportProvider ExportProvider { get; private set; }
-        #endregion
-
         #region ICoreShell
+        #endregion
+    }
+
+    class TestAppEditorSupport : IApplicationEditorSupport {
+        #region IApplicationEditorSupport
         public ICommandTarget TranslateCommandTarget(ITextView textView, object commandTarget) {
             return commandTarget as ICommandTarget;
         }

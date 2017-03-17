@@ -8,12 +8,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Windows.Threading;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Logging;
-using Microsoft.Common.Core.OS;
-using Microsoft.Common.Core.Security;
-using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Core.UI;
 using Microsoft.Languages.Editor.Shell;
@@ -41,41 +36,16 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
     [Export(typeof(ICoreShell))]
     [Export(typeof(ICoreShell))]
     [Export(typeof(IMainThread))]
-    public sealed partial class VsAppShell : ICoreShell, IMainThread, IIdleTimeSource, IVsShellPropertyEvents, IVsBroadcastMessageEvents, IDisposable {
-        private const int WM_SYSCOLORCHANGE = 0x15;
+    public sealed partial class VsAppShell : ICoreShell, IMainThread, IIdleTimeSource, IVsShellPropertyEvents, IDisposable {
 
         private static VsAppShell _instance;
         private static ICoreShell _testShell;
 
-        private readonly ApplicationConstants _appConstants;
-        private readonly ICoreServices _coreServices;
         private IRSettings _settings;
         private ExportProvider _exportProvider;
         private ICompositionService _compositionService;
         private IVsShell _vsShell;
         private uint _vsShellEventsCookie;
-        private uint _vsShellBroadcastEventsCookie;
-
-        [ImportingConstructor]
-        public VsAppShell(ITelemetryService telemetryService) {
-            _appConstants = new ApplicationConstants();
-            ProgressDialog = new VsProgressDialog(this);
-            FileDialog = new VsFileDialog(this);
-
-            var loggingPermissions = new LoggingPermissions(_appConstants, telemetryService, new RegistryImpl());
-            _coreServices = new CoreServices(_appConstants, telemetryService, new VsTaskService(), new ProcessServices(), loggingPermissions, this, new SecurityService(this));
-        }
-
-        //private Assembly OnAssemblyResolve(object sender, ResolveEventArgs args) {
-        //    var assemblyName = new AssemblyName(args.Name).Name;
-        //    var thisAsmPath = Assembly.GetExecutingAssembly().GetAssemblyPath();
-        //    var asmPath = Path.Combine(Path.GetDirectoryName(thisAsmPath), assemblyName) + ".dll";
-        //    Assembly asm = null;
-        //    try {
-        //        asm = Assembly.LoadFrom(asmPath);
-        //    } catch(Exception) { }
-        //    return asm;
-        //}
 
         public static void EnsureInitialized() {
             var instance = GetInstance();
@@ -228,89 +198,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// </summary>
         public event EventHandler<EventArgs> Terminating;
 
-        /// <summary>
-        /// Fires when host application UI theme changed.
-        /// </summary>
-        public event EventHandler<EventArgs> UIThemeChanged;
-
-        /// <summary>
-        /// Displays error message in a host-specific UI
-        /// </summary>
-        public void ShowErrorMessage(string message) {
-            var shell = GlobalServices.GetService<IVsUIShell>(typeof(SVsUIShell));
-            int result;
-
-            shell.ShowMessageBox(0, Guid.Empty, null, message, null, 0,
-                OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, OLEMSGICON.OLEMSGICON_CRITICAL, 0, out result);
-        }
-
-        public void ShowContextMenu(System.ComponentModel.Design.CommandID commandId, int x, int y, object commandTarget = null) {
-            if (commandTarget == null) {
-                var package = EnsurePackageLoaded(RGuidList.RPackageGuid);
-                if (package != null) {
-                    var sp = (IServiceProvider) package;
-                    var menuService = (System.ComponentModel.Design.IMenuCommandService)sp
-                        .GetService(typeof(System.ComponentModel.Design.IMenuCommandService));
-                    menuService.ShowContextMenu(commandId, x, y);
-                }
-            } else {
-                var target = commandTarget as ICommandTarget;
-                if (target == null) {
-                    throw new ArgumentException(Invariant($"{nameof(commandTarget)} must implement ICommandTarget"));
-                }
-                var shell = VsAppShell.Current.Services.GetService<IVsUIShell>(typeof(SVsUIShell));
-                var pts = new POINTS[1];
-                pts[0].x = (short)x;
-                pts[0].y = (short)y;
-                shell.ShowContextMenu(0, commandId.Guid, commandId.ID, pts, new CommandTargetToOleShim(null, target));
-            }
-        }
-
-        /// <summary>
-        /// Displays question in a host-specific UI
-        /// </summary>
-        public MessageButtons ShowMessage(string message, MessageButtons buttons, MessageType messageType = MessageType.Information) {
-            var shell = GlobalServices.GetService<IVsUIShell>(typeof(SVsUIShell));
-            int result;
-
-            var oleButtons = GetOleButtonFlags(buttons);
-            OLEMSGICON oleIcon;
-
-            switch (messageType) {
-                case MessageType.Information:
-                    oleIcon = buttons == MessageButtons.OK ? OLEMSGICON.OLEMSGICON_INFO : OLEMSGICON.OLEMSGICON_QUERY;
-                    break;
-                case MessageType.Warning:
-                    oleIcon = OLEMSGICON.OLEMSGICON_WARNING;
-                    break;
-                default:
-                    oleIcon = OLEMSGICON.OLEMSGICON_CRITICAL;
-                    break;
-            }
-
-            shell.ShowMessageBox(0, Guid.Empty, null, message, null, 0,
-                oleButtons, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, oleIcon, 0, out result);
-
-            switch (result) {
-                case NativeMethods.IDYES:
-                    return MessageButtons.Yes;
-                case NativeMethods.IDNO:
-                    return MessageButtons.No;
-                case NativeMethods.IDCANCEL:
-                    return MessageButtons.Cancel;
-            }
-            return MessageButtons.OK;
-        }
-
-        public string SaveFileIfDirty(string fullPath) =>
-            new RunningDocumentTable(RPackage.Current).SaveFileIfDirty(fullPath);
-
-        public void UpdateCommandStatus(bool immediate) {
-            DispatchOnUIThread(() => {
-                var uiShell = GlobalServices.GetService<IVsUIShell>(typeof(SVsUIShell));
-                uiShell.UpdateCommandUI(immediate ? 1 : 0);
-            });
-        }
 
         public bool IsUnitTestEnvironment { get; set; }
 
@@ -384,8 +271,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         public void Dispose() {
             DisconnectFromShellEvents();
-            _settings?.Dispose();
-            (_coreServices?.Log as IDisposable)?.Dispose();
+            _services?.Dispose();
         }
 
         private OLEMSGBUTTON GetOleButtonFlags(MessageButtons buttons) {
@@ -425,25 +311,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                     _vsShell.UnadviseShellPropertyChanges(_vsShellEventsCookie);
                     _vsShellEventsCookie = 0;
                 }
-                if (_vsShellBroadcastEventsCookie != 0) {
-                    _vsShell.UnadviseBroadcastMessages(_vsShellBroadcastEventsCookie);
-                    _vsShellBroadcastEventsCookie = 0;
-                }
             }
         }
-
-        #region IVsBroadcastMessageEvents
-        public int OnBroadcastMessage(uint msg, IntPtr wParam, IntPtr lParam) {
-            if (msg == WM_SYSCOLORCHANGE) {
-                UIThemeChanged?.Invoke(this, EventArgs.Empty);
-            }
-            return VSConstants.S_OK;
-        }
-        #endregion
-
-        public ICoreServices Services => _coreServices;
-        public IApplicationConstants AppConstants => _appConstants;
-        public IProgressDialog ProgressDialog { get; }
-        public IFileDialog FileDialog { get; }
     }
 }

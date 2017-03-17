@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI;
 using Microsoft.R.Components.ConnectionManager.ViewModel;
 using Microsoft.R.Wpf;
 using Microsoft.R.Wpf.Themes;
@@ -15,25 +16,24 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
     /// Interaction logic for ConnectionManagerControl.xaml
     /// </summary>
     public partial class ConnectionManagerControl : UserControl {
-        private readonly ICoreShell _coreShell;
+        private readonly IThemeUtilities _theme;
         private IConnectionManagerViewModel Model => DataContext as IConnectionManagerViewModel;
 
         public ConnectionManagerControl(ICoreShell coreShell) {
             InitializeComponent();
 
-            _coreShell = coreShell;
-            _coreShell.UIThemeChanged += OnUIThemeChanged;
+            _theme = coreShell.Services.GetService<IThemeUtilities>();
+            var ui = coreShell.Services.GetService<IUIServices>();
+            ui.UIThemeChanged += OnUIThemeChanged;
+
             SetImageBackground();
         }
 
-        private void OnUIThemeChanged(object sender, System.EventArgs e) {
-            SetImageBackground();
-        }
+        private void OnUIThemeChanged(object sender, System.EventArgs e) => SetImageBackground();
 
         private void SetImageBackground() {
-            var theme = _coreShell.Services.GetService<IThemeUtilities>();
-            theme.SetImageBackgroundColor(this, Brushes.ToolWindowBackgroundColorKey);
-            theme.SetThemeScrollBars(this);
+            _theme.SetImageBackgroundColor(this, Brushes.ToolWindowBackgroundColorKey);
+            _theme.SetThemeScrollBars(this);
         }
 
         private void ButtonCancel_Click(object sender, RoutedEventArgs e) {
@@ -84,7 +84,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
                 list.SelectedItems.Add(model.EditedConnection);
             }
         }
-        
+
         private void Connection_PreviewKeyUp(object sender, KeyEventArgs e) {
             if (e.Key == Key.Delete && !(e.OriginalSource is TextBox)) {
                 Model?.TryDelete(GetConnection(e));

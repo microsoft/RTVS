@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {

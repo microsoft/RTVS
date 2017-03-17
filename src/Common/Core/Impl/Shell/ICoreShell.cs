@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Threading;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Threading;
 
@@ -12,7 +11,7 @@ namespace Microsoft.Common.Core.Shell {
     /// composition container, export provider, global VS IDE
     /// services and so on.
     /// </summary>
-    public interface ICoreShell: IIdleTimeService {
+    public interface ICoreShell: IIdleTimeService, IMainThread {
         /// <summary>
         /// Application name to use in log, system events, etc.
         /// </summary>
@@ -39,12 +38,6 @@ namespace Microsoft.Common.Core.Shell {
         /// </summary>
         /// <param name="action">Action to execute</param>
         void DispatchOnUIThread(Action action);
-
-        /// <summary>
-        /// Provides access to the application main thread, so users can know if the task they are trying
-        /// to execute is executing from the right thread.
-        /// </summary>
-        IMainThread MainThread { get; }
 
         /// <summary>
         /// Fires when host application has completed it's startup sequence
