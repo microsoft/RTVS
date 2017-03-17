@@ -114,8 +114,8 @@
     </FilesToSign>
   </ItemGroup>
   <ItemGroup>
-    <FilesToLocalize Include="$(OutputPath)\$(AssemblyName).dll">
-      <TranslationFile>$(SourceDirectory)..\loc\lcl\{Lang}\$(AssemblyName).lcl</TranslationFile>
+    <FilesToLocalize Include="$(OutputPath)\$(AssemblyName).exe">
+      <TranslationFile>$(SourceDirectory)..\loc\lcl\{Lang}\$(AssemblyName).exe.lcl</TranslationFile>
       <SettingsFile>$(LSBuildRoot)\MCP_excludeBaml.lss</SettingsFile>
     </FilesToLocalize>
   </ItemGroup>
