@@ -3,6 +3,7 @@
 
 using System;
 using System.Text;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Browsers;

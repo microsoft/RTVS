@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.ComponentModel.Composition;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
@@ -31,7 +32,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         private readonly ExpansionsController _snippetController;
 
         public ReplCommandController(ITextView textView, ITextBuffer textBuffer)
-            : base(textView, textBuffer, VsAppShell.Current.GetService<ICompositionCatalog>()) {
+            : base(textView, textBuffer, VsAppShell.Current) {
             ServiceManager.AddService(this, textView, VsAppShell.Current);
 
             var textManager = VsAppShell.Current.GetService<IVsTextManager2>(typeof(SVsTextManager));
@@ -56,7 +57,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         }
 
         public override void BuildCommandSet() {
-            if (VsAppShell.Current.CompositionService != null) {
+            var cs = VsAppShell.Current.GetService<ICompositionService>();
+            if (cs != null) {
                 var factory = new ReplCommandFactory();
                 var commands = factory.GetCommands(TextView, TextBuffer);
                 AddCommandSet(commands);

@@ -15,7 +15,7 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
         }
 
         protected override void Handle() {
-            string zipPath = DiagnosticLogs.Collect(Shell.GetLog());
+            string zipPath = DiagnosticLogs.Collect(Shell.Log());
 
             var generalData = new StringWriter(CultureInfo.InvariantCulture);
             DiagnosticLogs.WriteGeneralData(generalData, detailed: false);

@@ -8,6 +8,7 @@ using System.Globalization;
 using System.Linq;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
+using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.Extensions;
 using Microsoft.Languages.Editor.Projection;

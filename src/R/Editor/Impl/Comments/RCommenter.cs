@@ -55,7 +55,8 @@ namespace Microsoft.R.Editor.Comments {
             int startLineNumber = textBuffer.CurrentSnapshot.GetLineNumberFromPosition(start);
             int endLineNumber = textBuffer.CurrentSnapshot.GetLineNumberFromPosition(end);
 
-            using (var undoAction = shell.CreateCompoundAction(textView, textBuffer)) {
+            var es = shell.GetService<IApplicationEditorSupport>();
+            using (var undoAction = es.CreateCompoundAction(textView, textBuffer)) {
                 undoAction.Open(actionName);
                 bool changed = false;
                 for (int i = startLineNumber; i <= endLineNumber; i++) {

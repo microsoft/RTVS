@@ -83,9 +83,9 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
             unconfiguredProject.ProjectRenamedOnWriter += ProjectRenamedOnWriter;
             unconfiguredProject.ProjectUnloading += ProjectUnloading;
-            _fileWatcher = new MsBuildFileSystemWatcher(_projectDirectory, "*", 25, 1000, _coreShell.Services.FileSystem, new RMsBuildFileSystemFilter(), coreShell.Services.Log);
+            _fileWatcher = new MsBuildFileSystemWatcher(_projectDirectory, "*", 25, 1000, _coreShell.FileSystem(), new RMsBuildFileSystemFilter(), coreShell.Log());
             _fileWatcher.Error += FileWatcherError;
-            Project = new FileSystemMirroringProject(unconfiguredProject, projectLockService, _fileWatcher, _dependencyProvider, coreShell.Services.Log);
+            Project = new FileSystemMirroringProject(unconfiguredProject, projectLockService, _fileWatcher, _dependencyProvider, coreShell.Log());
         }
 
         [AppliesTo(ProjectConstants.RtvsProjectCapability)]
@@ -122,7 +122,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             // https://github.com/Microsoft/RTVS/issues/2223
             if (!_session.IsRemote) {
                 var rdataPath = Path.Combine(_projectDirectory, DefaultRDataName);
-                bool loadDefaultWorkspace = _coreShell.Services.FileSystem.FileExists(rdataPath) && await GetLoadDefaultWorkspace(rdataPath);
+                bool loadDefaultWorkspace = _coreShell.FileSystem().FileExists(rdataPath) && await GetLoadDefaultWorkspace(rdataPath);
 
                 if (loadDefaultWorkspace) {
                     await _session.LoadWorkspaceAsync(rdataPath);
@@ -145,7 +145,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             try {
                 await _surveyNews.CheckSurveyNewsAsync(false);
             } catch (Exception ex) when (!ex.IsCriticalException()) {
-                _coreShell.Services.Log.Write(LogVerbosity.Normal, MessageCategory.Error, "SurveyNews exception: " + ex.Message);
+                _coreShell.Log().Write(LogVerbosity.Normal, MessageCategory.Error, "SurveyNews exception: " + ex.Message);
             }
         }
 
@@ -193,7 +193,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             _unconfiguredProject.ProjectUnloading -= ProjectUnloading;
             _fileWatcher.Dispose();
 
-            if (!_coreShell.Services.FileSystem.DirectoryExists(_projectDirectory)) {
+            if (!_coreShell.FileSystem().DirectoryExists(_projectDirectory)) {
                 return;
             }
 

@@ -8,6 +8,7 @@ using System.Text;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Application.Core;
 using Microsoft.Languages.Editor.Controller.Constants;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -130,7 +131,7 @@ namespace Microsoft.R.Editor.Application.Test {
 
         public IEditorScript DoIdle(int ms = 100) {
             for (var i = 0; i < ms; i += 20) {
-                _shell.DoIdle();
+                ((IIdleTimeSource)_shell).DoIdle();
                 UIThreadHelper.Instance.DoEvents(20);
             }
             return this;

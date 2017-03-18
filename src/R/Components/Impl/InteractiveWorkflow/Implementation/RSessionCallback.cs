@@ -136,7 +136,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
             try {
                 var message = Resources.Progress_FetchingFile.FormatInvariant(remoteFileName);
-                _coreShell.GetProgressDialog().Show(async (progress, ct) => {
+                _coreShell.ProgressDialog().Show(async (progress, ct) => {
                     using (DataTransferSession dts = new DataTransferSession(_session, _fileSystem)) {
                         await dts.FetchAndDecompressFileAsync(remoteBlobId, localPath, progress, message, cancellationToken);
                     }

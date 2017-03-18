@@ -4,6 +4,7 @@
 using System;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
+using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Scopes;
@@ -42,26 +43,26 @@ namespace Microsoft.R.Editor.Formatting {
                 if (limit >= 0 && limit < node.Start) {
                     throw new ArgumentException(nameof(limit));
                 }
-                ITextRange range = limit < 0 ? node as ITextRange : TextRange.FromBounds(node.Start, limit);
+                var range = limit < 0 ? node as ITextRange : TextRange.FromBounds(node.Start, limit);
                 UndoableFormatRange(textView, textBuffer, range, shell);
             }
         }
 
         public static void FormatCurrentScope(ITextView textView, ITextBuffer textBuffer, ICoreShell shell, bool indentCaret) {
             // Figure out caret position in the document text buffer
-            SnapshotPoint? caretPoint = REditorDocument.MapCaretPositionFromView(textView);
+            var caretPoint = REditorDocument.MapCaretPositionFromView(textView);
             if (!caretPoint.HasValue) {
                 return;
             }
-            IREditorDocument document = REditorDocument.TryFromTextBuffer(textBuffer);
+            var document = REditorDocument.TryFromTextBuffer(textBuffer);
             if (document != null) {
                 // Make sure AST is up to date
                 document.EditorTree.EnsureTreeReady();
                 var ast = document.EditorTree.AstRoot;
-                ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
+                var snapshot = textBuffer.CurrentSnapshot;
 
                 // Find scope to format
-                IScope scope = ast.GetNodeOfTypeFromPosition<IScope>(caretPoint.Value);
+                var scope = ast.GetNodeOfTypeFromPosition<IScope>(caretPoint.Value);
 
                 var es = shell.GetService<IApplicationEditorSupport>();
                 using (var undoAction = es.CreateCompoundAction(textView, textView.TextBuffer)) {
@@ -89,15 +90,15 @@ namespace Microsoft.R.Editor.Formatting {
         /// Formats line the caret is currently at
         /// </summary>
         public static void FormatViewLine(ITextView textView, ITextBuffer textBuffer, int offset, ICoreShell shell) {
-            SnapshotPoint? caretPoint = REditorDocument.MapCaretPositionFromView(textView);
+            var caretPoint = REditorDocument.MapCaretPositionFromView(textView);
             if (!caretPoint.HasValue) {
                 return;
             }
 
-            ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
-            int lineNumber = snapshot.GetLineNumberFromPosition(caretPoint.Value.Position);
-            ITextSnapshotLine line = snapshot.GetLineFromLineNumber(lineNumber + offset);
-            ITextRange formatRange = new TextRange(line.Start, line.Length);
+            var snapshot = textBuffer.CurrentSnapshot;
+            var lineNumber = snapshot.GetLineNumberFromPosition(caretPoint.Value.Position);
+            var line = snapshot.GetLineFromLineNumber(lineNumber + offset);
+            var formatRange = new TextRange(line.Start, line.Length);
 
             UndoableFormatRange(textView, textBuffer, formatRange, shell);
         }
@@ -114,9 +115,9 @@ namespace Microsoft.R.Editor.Formatting {
         }
 
         public static IAstNode GetIndentDefiningNode(AstRoot ast, int position) {
-            IScope scope = ast.GetNodeOfTypeFromPosition<IScope>(position);
+            var scope = ast.GetNodeOfTypeFromPosition<IScope>(position);
             // Scope indentation is defined by its parent statement.
-            IAstNodeWithScope parentStatement = scope.Parent as IAstNodeWithScope;
+            var parentStatement = scope.Parent as IAstNodeWithScope;
             if (parentStatement != null && parentStatement.Scope == scope) {
                 return parentStatement;
             }
@@ -127,18 +128,18 @@ namespace Microsoft.R.Editor.Formatting {
             if (scope == null || scope.OpenCurlyBrace == null) {
                 return;
             }
-            ITextSnapshot rSnapshot = caretBufferPoint.Snapshot;
-            ITextBuffer rTextBuffer = rSnapshot.TextBuffer;
-            int rCaretPosition = caretBufferPoint.Position;
+            var rSnapshot = caretBufferPoint.Snapshot;
+            var rTextBuffer = rSnapshot.TextBuffer;
+            var rCaretPosition = caretBufferPoint.Position;
 
             var caretLine = rSnapshot.GetLineFromPosition(rCaretPosition);
-            int innerIndentSize = SmartIndenter.InnerIndentSizeFromNode(rTextBuffer, scope, options);
+            var innerIndentSize = SmartIndenter.InnerIndentSizeFromNode(rTextBuffer, scope, options);
 
-            int openBraceLineNumber = rSnapshot.GetLineNumberFromPosition(scope.OpenCurlyBrace.Start);
+            var openBraceLineNumber = rSnapshot.GetLineNumberFromPosition(scope.OpenCurlyBrace.Start);
             var braceLine = rSnapshot.GetLineFromLineNumber(openBraceLineNumber);
             var indentLine = rSnapshot.GetLineFromLineNumber(openBraceLineNumber + 1);
 
-            string lineBreakText = braceLine.GetLineBreakText();
+            var lineBreakText = braceLine.GetLineBreakText();
             rTextBuffer.Insert(indentLine.Start, lineBreakText);
 
             // Fetch the line again since snapshot has changed when line break was inserted

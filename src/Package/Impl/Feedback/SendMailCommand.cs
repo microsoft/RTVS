@@ -43,7 +43,7 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
             try {
                 outlookApp = new Application();
             } catch (System.Exception ex) {
-                Shell.GetLog().Write(LogVerbosity.Normal, MessageCategory.Error, "Unable to start Outlook: " + ex.Message);
+                Shell.Log().Write(LogVerbosity.Normal, MessageCategory.Error, "Unable to start Outlook: " + ex.Message);
             }
 
             if (outlookApp == null) {
@@ -69,7 +69,7 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
                     mail.To = "rtvsuserfeedback@microsoft.com";
                     mail.Display(Modal: false);
                 } catch (System.Exception ex) {
-                    Shell.GetLog().Write(LogVerbosity.Normal, MessageCategory.Error, "Error composing Outlook e-mail: " + ex.Message);
+                    Shell.Log().Write(LogVerbosity.Normal, MessageCategory.Error, "Error composing Outlook e-mail: " + ex.Message);
                 }
             }
         }

@@ -17,10 +17,8 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
         public PreviewPdfCommand(
             ITextView textView,
             IRInteractiveWorkflowProvider workflowProvider,
-            ICoreShell shell,
-            IProcessServices pss,
-            IFileSystem fs)
-            : base(textView, (int)MdPackageCommandId.icmdPreviewPdf, workflowProvider, shell, pss, fs) { }
+            ICoreShell shell)
+            : base(textView, (int)MdPackageCommandId.icmdPreviewPdf, workflowProvider, shell) { }
 
         protected override string FileExtension => "pdf";
          protected override PublishFormat Format => PublishFormat.Pdf;

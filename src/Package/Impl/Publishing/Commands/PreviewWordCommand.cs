@@ -14,10 +14,8 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
         public PreviewWordCommand(
             ITextView textView,
             IRInteractiveWorkflowProvider workflowProvider,
-            ICoreShell shell,
-            IProcessServices pss,
-            IFileSystem fs) :
-            base(textView, (int)MdPackageCommandId.icmdPreviewWord, workflowProvider, shell, pss, fs) { }
+            ICoreShell shell) :
+            base(textView, (int)MdPackageCommandId.icmdPreviewWord, workflowProvider, shell) { }
 
         protected override string FileExtension => "docx";
         protected override PublishFormat Format => PublishFormat.Word;

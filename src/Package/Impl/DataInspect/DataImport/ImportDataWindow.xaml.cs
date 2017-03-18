@@ -129,7 +129,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport
         }
 
         private void FileOpenButton_Click(object sender, RoutedEventArgs e) {
-            string filePath = VsAppShell.Current.FileDialog.ShowOpenFileDialog(Package.Resources.CsvFileFilter);
+            string filePath = VsAppShell.Current.FileDialog().ShowOpenFileDialog(Package.Resources.CsvFileFilter);
             if (!string.IsNullOrEmpty(filePath)) {
                 SetFilePath(filePath);
             }

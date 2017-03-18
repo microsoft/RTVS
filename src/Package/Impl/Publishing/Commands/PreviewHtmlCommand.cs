@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using Microsoft.Common.Core.IO;
-using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Markdown.Editor.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -17,14 +15,9 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
 
         public PreviewHtmlCommand(
             ITextView textView,
-            IRInteractiveWorkflowProvider workflowProvider,
-            ICoreShell shell,
-            IProcessServices pss,
-            IFileSystem fs,
-            IWebBrowserServices wbs)
-            : base(textView, (int)MdPackageCommandId.icmdPreviewHtml,
-                  workflowProvider, shell, pss, fs) {
-            _wbs = wbs;
+            IRInteractiveWorkflowProvider workflowProvider, ICoreShell shell)
+            : base(textView, (int)MdPackageCommandId.icmdPreviewHtml, workflowProvider, shell) {
+            _wbs = shell.GetService<IWebBrowserServices>();
         }
 
         protected override string FileExtension=> "html";

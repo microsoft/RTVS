@@ -98,7 +98,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                         batch.Clear();
                     }
                 } catch (Exception ex) {
-                    VsAppShell.Current.Services.Log.Write(LogVerbosity.Normal, MessageCategory.Error, "VisualGridScroller exception: " + ex);
+                    VsAppShell.Current.Log().Write(LogVerbosity.Normal, MessageCategory.Error, "VisualGridScroller exception: " + ex);
                     batch.Clear();
                 }
             }

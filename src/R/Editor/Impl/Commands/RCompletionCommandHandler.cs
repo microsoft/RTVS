@@ -3,7 +3,7 @@
 
 using Microsoft.Languages.Editor.Completion;
 using Microsoft.Languages.Editor.Services;
-using Microsoft.R.Editor.Completion;
+using Microsoft.R.Editor.Completions;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Commands {

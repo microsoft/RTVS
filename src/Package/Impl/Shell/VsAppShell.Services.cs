@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Services;
@@ -34,6 +35,9 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 .AddService(new VsEditorSupport(this))
                 .AddService(telemetry)
                 .AddService(new LoggingPermissions(platformServices, telemetry, new RegistryImpl()))
+                .AddService(new FileSystem())
+                .AddService(new ProcessServices())
+                .AddService(new RegistryImpl())
                 .AddService(typeof(MicrosoftRClientInstaller));
             // TODO: add more
         }

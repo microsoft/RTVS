@@ -13,7 +13,6 @@ using Microsoft.Common.Core.Extensions;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Wpf;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Support.Settings;
@@ -59,7 +58,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [ImportingConstructor]
         public RToolsSettingsImplementation(ISettingsStorage settings, ICoreShell coreShell) {
             _settings = settings;
-            _loggingPermissions = coreShell.Services.LoggingPermissions;
+            _loggingPermissions = coreShell.GetService<ILoggingPermissions>();
             _workingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         }
 

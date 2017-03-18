@@ -7,7 +7,7 @@ using Microsoft.Languages.Editor.Completion;
 using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Components.Controller;
-using Microsoft.R.Editor.Completion;
+using Microsoft.R.Editor.Completions;
 using Microsoft.R.Editor.Formatting;
 using Microsoft.VisualStudio.Text.Editor;
 

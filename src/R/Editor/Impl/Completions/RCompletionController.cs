@@ -39,7 +39,7 @@ namespace Microsoft.R.Editor.Completions {
             : base(textView, subjectBuffers, completionBroker, quickInfoBroker, signatureBroker, shell) {
             _textBuffer = subjectBuffers[0];
 
-            ServiceManager.AddService<RCompletionController>(this, TextView, shell);
+            ServiceManager.AddService(this, TextView, shell);
         }
 
         public override void Detach(ITextView textView) {
@@ -62,8 +62,7 @@ namespace Microsoft.R.Editor.Completions {
         /// may be projected into view. Typically called when document
         /// is closed or buffer is removed from the view buffer graph.
         /// </summary>
-        public override void DisconnectSubjectBuffer(ITextBuffer subjectBuffer) {
-        }
+        public override void DisconnectSubjectBuffer(ITextBuffer subjectBuffer) { }
 
         public static RCompletionController Create(
             ITextView textView,
@@ -82,17 +81,11 @@ namespace Microsoft.R.Editor.Completions {
             return completionController;
         }
 
-        public static RCompletionController FromTextView(ITextView textView) {
-            return ServiceManager.GetService<RCompletionController>(textView);
-        }
+        public static RCompletionController FromTextView(ITextView textView)
+            => ServiceManager.GetService<RCompletionController>(textView);
 
-        protected override bool AutoCompletionEnabled {
-            get { return REditorSettings.CompletionEnabled; }
-        }
-
-        protected override bool AutoSignatureHelpEnabled {
-            get { return REditorSettings.SignatureHelpEnabled; }
-        }
+        protected override bool AutoCompletionEnabled=> REditorSettings.CompletionEnabled;
+        protected override bool AutoSignatureHelpEnabled=> REditorSettings.SignatureHelpEnabled;
 
         /// <summary>
         /// Should this key commit a completion session?
@@ -373,7 +366,7 @@ namespace Microsoft.R.Editor.Completions {
         /// </summary>
         protected override void UpdateInsertionText() {
             if (CompletionSession != null && !IsMuteCharacter(_commitChar)) {
-                Completion curCompletion = CompletionSession.SelectedCompletionSet.SelectionStatus.Completion;
+                var curCompletion = CompletionSession.SelectedCompletionSet.SelectionStatus.Completion;
                 string insertionText = curCompletion.InsertionText;
 
                 if (insertionText[insertionText.Length - 1] == _commitChar) {

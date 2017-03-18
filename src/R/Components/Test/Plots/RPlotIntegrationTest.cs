@@ -9,13 +9,12 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using FluentAssertions;
-using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.Common.Wpf.Imaging;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Plots.Commands;
-using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Test.Fakes.InteractiveWindow;
 using Microsoft.R.Components.Test.Fakes.VisualComponentFactories;
 using Microsoft.R.Host.Client;
@@ -60,7 +59,7 @@ namespace Microsoft.R.Components.Test.Plots {
         }
 
         private TestCoreShell CoreShell => _workflow.Shell as TestCoreShell;
-        private TestFileDialog FileDialog => _workflow.Shell.FileDialog as TestFileDialog;
+        private TestFileDialog FileDialog => _workflow.Shell.FileDialog() as TestFileDialog;
 
         [Test(ThreadType.UI)]
         public async Task AllCommandsDisabledWhenNoPlot() {

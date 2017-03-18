@@ -5,7 +5,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor.Extensions;
+using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Text;
 

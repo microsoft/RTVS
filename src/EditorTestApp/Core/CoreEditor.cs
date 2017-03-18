@@ -63,7 +63,7 @@ namespace Microsoft.Languages.Editor.Application.Core {
         private IEditorInstance _editorIntance;
 
         public CoreEditor(ICoreShell coreShell, string text, string filePath, string contentTypeName) {
-            _compositionService = coreShell.CompositionService;
+            _compositionService = coreShell.GetService<ICompositionService>();
             _compositionService.SatisfyImportsOnce(this);
             _coreShell = coreShell;
             _filePath = filePath;

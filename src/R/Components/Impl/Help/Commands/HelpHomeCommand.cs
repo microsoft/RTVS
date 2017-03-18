@@ -5,16 +5,17 @@ using System;
 using System.ComponentModel.Composition.Hosting;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Components.Help.Commands {
     public sealed class HelpHomeCommand : IAsyncCommand {
-        private readonly ExportProvider _exportProvider;
+        private readonly ICoreShell _coreShell;
 
-        public HelpHomeCommand(ExportProvider exportProvider) {
-            _exportProvider = exportProvider;
+        public HelpHomeCommand(ICoreShell coreShell) {
+            _coreShell = coreShell;
         }
 
         public CommandStatus Status => CommandStatus.SupportedAndEnabled;
@@ -22,7 +23,7 @@ namespace Microsoft.R.Components.Help.Commands {
         public async Task InvokeAsync() {
             await TaskUtilities.SwitchToBackgroundThread();
 
-            var workflow = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
+            var workflow = _coreShell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
             var session = workflow.RSession;
             if (session.IsHostRunning) {
                 try {

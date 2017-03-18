@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using System.Windows.Forms.Integration;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Components.Help;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -187,7 +188,8 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                 cssfileName = VisualTheme;
             } else {
                 // TODO: We can generate CSS from specific VS colors. For now, just do Dark and Light.
-                cssfileName = _coreShell.AppConstants.UIColorTheme == UIColorTheme.Dark ? "Dark.css" : "Light.css";
+                var ui = _coreShell.GetService<IUIServices>();
+                cssfileName = ui.UIColorTheme == UIColorTheme.Dark ? "Dark.css" : "Light.css";
             }
 
             if (!string.IsNullOrEmpty(cssfileName)) {

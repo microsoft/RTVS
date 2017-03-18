@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
@@ -135,7 +136,10 @@ namespace Microsoft.R.Editor.Completions.Engine {
             return false;
         }
 
-        private static IEnumerable<Lazy<IRCompletionListProvider>> GetCompletionProviders(ICoreShell shell) => ComponentLocator<IRCompletionListProvider>.ImportMany(shell.CompositionService);
+        private static IEnumerable<Lazy<IRCompletionListProvider>> GetCompletionProviders(ICoreShell shell) {
+            var cs = shell.GetService<ICompositionService>();
+            return ComponentLocator<IRCompletionListProvider>.ImportMany(cs);
+        }
 
         internal static bool IsPackageListCompletion(ITextBuffer textBuffer, int position) {
             ITextSnapshot snapshot = textBuffer.CurrentSnapshot;

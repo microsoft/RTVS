@@ -7,6 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using FluentAssertions;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
@@ -72,7 +73,7 @@ namespace Microsoft.Languages.Editor.Test.Services {
 
         private void RunThreads() {
             for (int i = 0; i < 10; i++) {
-                _shell.DoIdle();
+                ((IIdleTimeSource)_shell).DoIdle();
                 Thread.Sleep(100);
             }
         }

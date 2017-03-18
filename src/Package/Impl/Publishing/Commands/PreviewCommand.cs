@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition.Hosting;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -40,17 +41,15 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
         protected ICoreShell Shell { get; }
 
         public PreviewCommand(ITextView textView, int id,
-            IRInteractiveWorkflowProvider workflowProvider,
-            ICoreShell shell,
-            IProcessServices pss,
-            IFileSystem fs)
+            IRInteractiveWorkflowProvider workflowProvider, ICoreShell shell)
             : base(textView, new CommandId[] { new CommandId(MdPackageCommandId.MdCmdSetGuid, id) }, false) {
             _workflowProvider = workflowProvider;
             Shell = shell;
-            _pss = pss;
-            _fs = fs;
+            _fs = shell.FileSystem();
+            _pss = shell.Process();
 
-            IEnumerable<Lazy<IMarkdownFlavorPublishHandler>> handlers = shell.ExportProvider.GetExports<IMarkdownFlavorPublishHandler>();
+            var exp = shell.GetService<ExportProvider>();
+            var handlers = exp.GetExports<IMarkdownFlavorPublishHandler>();
             foreach (var h in handlers) {
                 _flavorHandlers[h.Value.Flavor] = h.Value;
             }

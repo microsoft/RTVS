@@ -2,7 +2,11 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.OS;
+using Microsoft.Common.Core.Security;
+using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Core.UI;
 using Microsoft.Common.Core.UI.Commands;
 
@@ -10,17 +14,21 @@ namespace Microsoft.Common.Core.Shell {
     public static class ShellExtensions {
         public static T GetService<T>(this ICoreShell shell, Type type = null) where T: class  => shell.GetService<T>(type);
 
-        public static IActionLog GetLog(this ICoreShell shell) => shell.GetService<IActionLog>();
+        public static IActionLog Log(this ICoreShell shell) => shell.GetService<IActionLog>();
+        public static IFileSystem FileSystem(this ICoreShell shell) => shell.GetService<IFileSystem>();
+        public static IProcessServices Process(this ICoreShell shell) => shell.GetService<IProcessServices>();
+        public static ITelemetryService Telemetry(this ICoreShell shell) => shell.GetService<ITelemetryService>();
+        public static ISecurityService Security(this ICoreShell shell) => shell.GetService<ISecurityService>();
 
         /// <summary>
         /// Displays application-specific modal progress window
         /// </summary>
-        public static IProgressDialog GetProgressDialog(this ICoreShell shell) => shell.GetService<IProgressDialog>();
+        public static IProgressDialog ProgressDialog(this ICoreShell shell) => shell.GetService<IProgressDialog>();
 
         /// <summary>
         /// Displays platform-specific file selection window
         /// </summary>
-        public static IFileDialog GetFileDialog(this ICoreShell shell) => shell.GetService<IFileDialog>();
+        public static IFileDialog FileDialog(this ICoreShell shell) => shell.GetService<IFileDialog>();
 
         /// <summary>
         /// Displays error message in a host-specific UI

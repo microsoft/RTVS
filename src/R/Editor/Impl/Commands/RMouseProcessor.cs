@@ -4,6 +4,7 @@
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.R.Components.Controller;
@@ -29,7 +30,7 @@ namespace Microsoft.R.Editor.Commands {
 
                 var url = GetHotUrl(_wpfTextView, e);
                 if (!string.IsNullOrEmpty(url)) {
-                    _shell.Services.Process.Start(url);
+                    _shell.Services.GetService<IProcessServices>().Start(url);
                     return;
                 }
                 // If this is a Ctrl+Click or double-click then post the select word command.
