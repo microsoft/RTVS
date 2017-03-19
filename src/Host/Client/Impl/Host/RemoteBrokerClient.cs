@@ -12,13 +12,14 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Net;
 using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Host.Client.BrokerServices;
 using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Client.Host {
     internal sealed class RemoteBrokerClient : BrokerClient {
         private readonly IConsole _console;
-        private readonly ICoreServices _services;
+        private readonly ICoreShell _coreShell;
         private readonly object _verificationLock = new object();
         private readonly CancellationToken _cancellationToken;
 
@@ -30,10 +31,10 @@ namespace Microsoft.R.Host.Client.Host {
             ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
         }
 
-        public RemoteBrokerClient(string name, BrokerConnectionInfo connectionInfo, ICoreServices services, IConsole console, CancellationToken cancellationToken)
-            : base(name, connectionInfo, new RemoteCredentialsDecorator(connectionInfo.CredentialAuthority, connectionInfo.Name, services.Security, services.MainThread), services.Log, console) {
+        public RemoteBrokerClient(string name, BrokerConnectionInfo connectionInfo, ICoreShell coreShell, IConsole console, CancellationToken cancellationToken)
+            : base(name, connectionInfo, new RemoteCredentialsDecorator(connectionInfo.CredentialAuthority, connectionInfo.Name, coreShell), coreShell.Log(), console) {
             _console = console;
-            _services = services;
+            _coreShell = coreShell;
             _cancellationToken = cancellationToken;
 
             CreateHttpClient(connectionInfo.Uri);
@@ -58,7 +59,7 @@ namespace Microsoft.R.Host.Client.Host {
                 return null;
             }
 
-            return await WebServer.CreateWebServerAsync(url, HttpClient.BaseAddress.ToString(), Name, _services, _console, cancellationToken);
+            return await WebServer.CreateWebServerAsync(url, HttpClient.BaseAddress.ToString(), Name, _coreShell, _console, cancellationToken);
         }
 
         protected override async Task<Exception> HandleHttpRequestExceptionAsync(HttpRequestException exception) {
@@ -95,7 +96,7 @@ namespace Microsoft.R.Host.Client.Host {
                     Log.Write(LogVerbosity.Minimal, MessageCategory.Warning, Resources.Trace_UntrustedCertificate.FormatInvariant(certificate.Subject));
 
                     var message = Resources.CertificateSecurityWarning.FormatInvariant(ConnectionInfo.Uri.Host);
-                    _certificateValidationResult = _services.Security.ValidateX509Certificate(certificate, message);
+                    _certificateValidationResult = _coreShell.Security().ValidateX509Certificate(certificate, message);
                     if (_certificateValidationResult.Value) {
                         _certificateHash = hashString;
                     }

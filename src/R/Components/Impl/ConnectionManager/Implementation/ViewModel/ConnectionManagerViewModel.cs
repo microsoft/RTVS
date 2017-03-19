@@ -29,10 +29,10 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private bool _isEditingNew;
         private bool _hasLocalConnections;
 
-        public ConnectionManagerViewModel(IConnectionManager connectionManager, IRSettings settings, ICoreShell shell) :
+        public ConnectionManagerViewModel(IConnectionManager connectionManager, ICoreShell shell) :
             base(connectionManager, shell) {
             _ui = shell.GetService<IUIServices>();
-            _settings = settings;
+            _settings = shell.GetService<IRSettings>();
 
             _remoteConnections = new BatchObservableCollection<IConnectionViewModel>();
             RemoteConnections = new ReadOnlyObservableCollection<IConnectionViewModel>(_remoteConnections);

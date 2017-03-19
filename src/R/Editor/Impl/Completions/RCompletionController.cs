@@ -396,7 +396,7 @@ namespace Microsoft.R.Editor.Completions {
         /// Default signature session dismisses when caret changes position.
         /// </summary>
         public override void TriggerSignatureHelp() {
-            DismissSignatureSession(TextView, shell.Current);
+            DismissSignatureSession(TextView, Shell);
             DismissQuickInfoSession(TextView);
             SignatureBroker.TriggerSignatureHelp(TextView);
         }

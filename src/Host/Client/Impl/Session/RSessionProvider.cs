@@ -9,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
-using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Protocol;
@@ -22,7 +22,7 @@ namespace Microsoft.R.Host.Client.Session {
         private readonly AsyncReaderWriterLock _connectArwl = new AsyncReaderWriterLock();
 
         private readonly BrokerClientProxy _brokerProxy;
-        private readonly ICoreServices _services;
+        private readonly ICoreShell _coreShell;
         private readonly IConsole _console;
 
         private volatile bool _isConnected;
@@ -52,10 +52,10 @@ namespace Microsoft.R.Host.Client.Session {
         public event EventHandler<BrokerStateChangedEventArgs> BrokerStateChanged;
         public event EventHandler<HostLoadChangedEventArgs> HostLoadChanged;
 
-        public RSessionProvider(ICoreServices services, IConsole callback = null) {
+        public RSessionProvider(ICoreShell coreShell, IConsole callback = null) {
             _console = callback ?? new NullConsole();
             _brokerProxy = new BrokerClientProxy();
-            _services = services;
+            _coreShell = coreShell;
         }
 
         public IRSession GetOrCreate(string sessionId) {
@@ -75,7 +75,7 @@ namespace Microsoft.R.Host.Client.Session {
             var sessions = GetSessions().ToList();
             var stopHostTasks = sessions.Select(session => session.StopHostAsync(false));
             try {
-                _services.Tasks.Wait(Task.WhenAll(stopHostTasks));
+                _coreShell.Tasks().Wait(Task.WhenAll(stopHostTasks));
             } catch (Exception ex) when (!ex.IsCriticalException()) { }
 
             foreach (var session in sessions) {
@@ -337,7 +337,7 @@ namespace Microsoft.R.Host.Client.Session {
         private IBrokerClient CreateBrokerClient(string name, BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken) {
             if (!connectionInfo.IsValid) {
                 var path = new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath;
-                connectionInfo = BrokerConnectionInfo.Create(_services.Security, connectionInfo.Name, path);
+                connectionInfo = BrokerConnectionInfo.Create(_coreShell.Security(), connectionInfo.Name, path);
             }
 
             if (!connectionInfo.IsValid) {
@@ -345,10 +345,10 @@ namespace Microsoft.R.Host.Client.Session {
             }
 
             if (connectionInfo.IsRemote) {
-                return new RemoteBrokerClient(name, connectionInfo, _services, _console, cancellationToken);
+                return new RemoteBrokerClient(name, connectionInfo, _coreShell, _console, cancellationToken);
             } 
 
-            return new LocalBrokerClient(name, connectionInfo, _services, _console);
+            return new LocalBrokerClient(name, connectionInfo, _coreShell, _console);
         }
 
         private async Task UpdateHostLoadLoopAsync() {

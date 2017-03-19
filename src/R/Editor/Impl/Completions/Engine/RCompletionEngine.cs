@@ -42,9 +42,7 @@ namespace Microsoft.R.Editor.Completions.Engine {
             string directory;
             if (CanShowFileCompletion(context.AstRoot, context.Position, out directory)) {
                 if (!string.IsNullOrEmpty(directory)) {
-                    var workflowProvider = shell.GetService<IRInteractiveWorkflowProvider>();
-                    var imagesProvider = shell.GetService<IImagesProvider>(); // tests do not export this object
-                    providers.Add(new FilesCompletionProvider(directory, workflowProvider.GetOrCreate(), imagesProvider, glyphService));
+                    providers.Add(new FilesCompletionProvider(directory, shell));
                 }
                 return providers;
             }

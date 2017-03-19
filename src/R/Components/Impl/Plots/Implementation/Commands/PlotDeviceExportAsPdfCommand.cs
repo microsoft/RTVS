@@ -24,7 +24,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
         }
 
         public async Task InvokeAsync() {
-            var fd = InteractiveWorkflow.Shell.GetFileDialog();
+            var fd = InteractiveWorkflow.Shell.FileDialog();
             var filePath = fd.ShowSaveFileDialog(Resources.Plots_ExportAsPdfFilter, null, Resources.Plots_ExportAsPdfDialogTitle);
             if (!string.IsNullOrEmpty(filePath)) {
                 try {

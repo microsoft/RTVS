@@ -6,6 +6,7 @@ using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Security;
+using Microsoft.Common.Core.Tasks;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Core.UI;
 using Microsoft.Common.Core.UI.Commands;
@@ -19,6 +20,7 @@ namespace Microsoft.Common.Core.Shell {
         public static IProcessServices Process(this ICoreShell shell) => shell.GetService<IProcessServices>();
         public static ITelemetryService Telemetry(this ICoreShell shell) => shell.GetService<ITelemetryService>();
         public static ISecurityService Security(this ICoreShell shell) => shell.GetService<ISecurityService>();
+        public static ITaskService Tasks(this ICoreShell shell) => shell.GetService<ITaskService>();
 
         /// <summary>
         /// Displays application-specific modal progress window

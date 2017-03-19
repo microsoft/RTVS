@@ -7,21 +7,20 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Security;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.BrokerServices;
 
 namespace Microsoft.R.Host.Client.Host {
     internal class RemoteCredentialsDecorator : ICredentialsDecorator {
-        private readonly ISecurityService _securityService;
-        private readonly IMainThread _mainThread;
+        private readonly ICoreShell _coreShell;
         private volatile Credentials _credentials;
         private readonly AsyncReaderWriterLock _lock;
         private readonly string _authority;
         private readonly string _workspaceName;
 
-        public RemoteCredentialsDecorator(string credentialAuthority, string workspaceName, ISecurityService securityService, IMainThread mainThread) {
-            _securityService = securityService;
-            _mainThread = mainThread;
+        public RemoteCredentialsDecorator(string credentialAuthority, string workspaceName, ICoreShell coreShell) {
+            _coreShell = coreShell;
             _authority = credentialAuthority;
             _lock = new AsyncReaderWriterLock();
             _workspaceName = workspaceName;
@@ -38,10 +37,10 @@ namespace Microsoft.R.Host.Client.Host {
             // the first prompt should be validated and saved, and then the same credentials will be reused for the second session.
             var token = await _lock.WriterLockAsync(cancellationToken);
 
-            await _mainThread.SwitchToAsync(cancellationToken);
+            await _coreShell.SwitchToAsync(cancellationToken);
 
             try {
-                var credentials = _credentials ?? _securityService.GetUserCredentials(_authority, _workspaceName);
+                var credentials = _credentials ?? _coreShell.Security().GetUserCredentials(_authority, _workspaceName);
                 _credentials = credentials;
             } catch (Exception) {
                 token.Dispose();
@@ -55,7 +54,7 @@ namespace Microsoft.R.Host.Client.Host {
 
         public void InvalidateCredentials() {
             _credentials = null;
-            _securityService.DeleteCredentials(_authority);
+            _coreShell.Security().DeleteCredentials(_authority);
         }
     }
 }

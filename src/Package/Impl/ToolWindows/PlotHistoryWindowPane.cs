@@ -23,7 +23,6 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
     [Guid(WindowGuidString)]
     internal class PlotHistoryWindowPane : VisualComponentToolWindow<IRPlotHistoryVisualComponent>, IOleCommandTarget {
         private readonly IRPlotManager _plotManager;
-        private readonly IRSettings _settings;
         private readonly ICoreShell _coreShell;
         private readonly int _instanceId;
         private IOleCommandTarget _commandTarget;
@@ -32,10 +31,9 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
 
         public static Guid WindowGuid { get; } = new Guid(WindowGuidString);
 
-        public PlotHistoryWindowPane(IRPlotManager plotManager, int instanceId, IRSettings settings, ICoreShell coreShell) {
+        public PlotHistoryWindowPane(IRPlotManager plotManager, int instanceId, ICoreShell coreShell) {
             _plotManager = plotManager;
             _instanceId = instanceId;
-            _settings = settings;
             _coreShell = coreShell;
 
             // this value matches with icmdShowPlotWindow's Icon in VSCT file

@@ -29,6 +29,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             _services
                 .AddService(componentModel)
                 .AddService(componentModel.DefaultExportProvider)
+                .AddService(new VsTaskService())
                 .AddService(new VsUIServices(this))
                 .AddService(platformServices)
                 .AddService(settings)

@@ -129,7 +129,6 @@
     <Compile Include="Settings\IRToolsSettings.cs" />
     <Compile Include="Settings\SurveyNewsPolicy.cs" />
     <Compile Include="Settings\WebHelpSearchBrowserType.cs" />
-    <Compile Include="Settings\RToolsSettings.cs" />
     <Compile Include="Utility\AsyncData.cs" />
   </ItemGroup>
   <ItemGroup>

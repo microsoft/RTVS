@@ -7,6 +7,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Imaging;
@@ -23,6 +24,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
     /// </summary>
     internal sealed class FilesCompletionProvider : IRCompletionListProvider {
         private readonly IImagesProvider _imagesProvider;
+        private readonly ICoreShell _coreShell;
         private readonly IRInteractiveWorkflow _workflow;
         private readonly IGlyphService _glyphService;
 
@@ -31,14 +33,15 @@ namespace Microsoft.R.Editor.Completions.Providers {
         private string _cachedUserDirectory;
         private bool _forceR; // for tests
 
-        public FilesCompletionProvider(string directoryCandidate, IRInteractiveWorkflow workflow, IImagesProvider imagesProvider, IGlyphService glyphService, bool forceR = false) {
+        public FilesCompletionProvider(string directoryCandidate, ICoreShell coreShell, bool forceR = false) {
             if (directoryCandidate == null) {
                 throw new ArgumentNullException(nameof(directoryCandidate));
             }
 
-            _imagesProvider = imagesProvider;
-            _workflow = workflow;
-            _glyphService = glyphService;
+            _coreShell = coreShell;
+            _imagesProvider = _coreShell.GetService<IImagesProvider>();
+            _workflow = _coreShell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
+            _glyphService = _coreShell.GetService<IGlyphService>();
             _forceR = forceR;
 
             _directory = ExtractDirectory(directoryCandidate);
@@ -118,7 +121,8 @@ namespace Microsoft.R.Editor.Completions.Providers {
                 _cachedUserDirectory = userDirectory;
                 directory = Path.Combine(userDirectory, _directory);
             } else {
-                directory = Path.Combine(RToolsSettings.Current.WorkingDirectory, _directory);
+                var settings = _coreShell.GetService<IRToolsSettings>();
+                directory = Path.Combine(settings.WorkingDirectory, _directory);
             }
 
             if (Directory.Exists(directory)) {
