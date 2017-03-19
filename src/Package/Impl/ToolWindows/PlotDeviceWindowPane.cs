@@ -7,7 +7,6 @@ using System.Runtime.InteropServices;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Plots.Implementation;
-using Microsoft.R.Components.Settings;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -28,7 +27,7 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
 
         public static Guid WindowGuid { get; } = new Guid(WindowGuidString);
 
-        public PlotDeviceWindowPane(IRPlotManager plotManager, IRSession session, int instanceId, IRSettings settings, ICoreShell coreShell) {
+        public PlotDeviceWindowPane(IRPlotManager plotManager, IRSession session, int instanceId, ICoreShell coreShell) {
             _plotManager = plotManager;
             _instanceId = instanceId;
             _coreShell = coreShell;

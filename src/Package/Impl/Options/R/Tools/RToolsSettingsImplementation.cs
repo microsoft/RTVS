@@ -25,8 +25,9 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
     [Export(typeof(IRToolsSettings))]
     internal sealed class RToolsSettingsImplementation : BindableBase, IRToolsSettings {
         private const int MaxDirectoryEntries = 8;
-        private readonly ISettingsStorage _settings;
+        private readonly ISettingsStorage _settingStorage;
         private readonly ILoggingPermissions _loggingPermissions;
+        private readonly ICoreShell _coreShell;
 
         private string _cranMirror;
         private string _workingDirectory;
@@ -56,8 +57,9 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         private LogVerbosity _logVerbosity = LogVerbosity.Normal;
 
         [ImportingConstructor]
-        public RToolsSettingsImplementation(ISettingsStorage settings, ICoreShell coreShell) {
-            _settings = settings;
+        public RToolsSettingsImplementation(ISettingsStorage settingStorage, ICoreShell coreShell) {
+            _coreShell = coreShell;
+            _settingStorage = settingStorage;
             _loggingPermissions = coreShell.GetService<ILoggingPermissions>();
             _workingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         }
@@ -138,12 +140,10 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
                 SetProperty(ref _workingDirectory, newDirectory);
                 UpdateWorkingDirectoryList(newDirectory);
 
-                if (shell.HasShell) {
-                    VsAppShell.Current.DispatchOnUIThread(() => {
-                        IVsUIShell shell = VsAppShell.Current.GetService<IVsUIShell>(typeof(SVsUIShell));
-                        shell.UpdateCommandUI(1);
-                    });
-                }
+                _coreShell?.DispatchOnUIThread(() => {
+                    IVsUIShell shell = _coreShell.GetService<IVsUIShell>(typeof(SVsUIShell));
+                    shell.UpdateCommandUI(1);
+                });
             }
         }
 
@@ -224,21 +224,21 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
 
         #region IRPersistentSettings
         public void LoadSettings() {
-            _settings.LoadPropertyValues(this);
+            _settingStorage.LoadPropertyValues(this);
             // Correct setting if stored value exceed currently set maximum
             LogVerbosity = MathExtensions.Min<LogVerbosity>(LogVerbosity, _loggingPermissions.MaxVerbosity);
             _loggingPermissions.CurrentVerbosity = LogVerbosity;
         }
 
         public Task SaveSettingsAsync() {
-            _settings.SavePropertyValues(this);
-            return _settings.PersistAsync();
+            _settingStorage.SavePropertyValues(this);
+            return _settingStorage.PersistAsync();
         }
 
         public void Dispose() {
-            if (_settings != null) {
+            if (_settingStorage != null) {
                 SaveSettingsAsync().Wait(5000);
-                ((IDisposable)_settings).Dispose();
+                ((IDisposable)_settingStorage).Dispose();
             }
         }
         #endregion

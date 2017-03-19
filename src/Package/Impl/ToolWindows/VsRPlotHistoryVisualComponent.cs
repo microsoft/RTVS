@@ -5,8 +5,6 @@ using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.View;
-using Microsoft.R.Support.Settings;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Windows;
 
 namespace Microsoft.VisualStudio.R.Package.ToolWindows {

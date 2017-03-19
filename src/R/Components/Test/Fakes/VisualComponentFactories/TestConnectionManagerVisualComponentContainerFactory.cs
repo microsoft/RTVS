@@ -10,16 +10,14 @@ namespace Microsoft.R.Components.Test.Fakes.VisualComponentFactories {
     [ExcludeFromCodeCoverage]
     [Export(typeof(IConnectionManagerVisualComponentContainerFactory))]
     internal sealed class TestConnectionManagerVisualComponentContainerFactory : ContainerFactoryBase<IConnectionManagerVisualComponent>, IConnectionManagerVisualComponentContainerFactory {
-        private readonly IRSettings _settings;
         private readonly ICoreShell _shell;
 
         [ImportingConstructor]
-        public TestConnectionManagerVisualComponentContainerFactory(IRSettings settings, ICoreShell shell) {
-            _settings = settings;
+        public TestConnectionManagerVisualComponentContainerFactory(ICoreShell shell) {
             _shell = shell;
         }
 
         public IVisualComponentContainer<IConnectionManagerVisualComponent> GetOrCreate(IConnectionManager connectionManager, int instanceId = 0)
-            => GetOrCreate(instanceId, container => new ConnectionManagerVisualComponent(connectionManager, container, _settings, _shell));
+            => GetOrCreate(instanceId, container => new ConnectionManagerVisualComponent(connectionManager, container, _shell));
     }
 }

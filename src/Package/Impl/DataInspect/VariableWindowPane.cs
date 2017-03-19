@@ -17,7 +17,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     internal sealed class VariableWindowPane : RToolWindowPane {
         public VariableWindowPane() {
             Caption = Resources.VariableWindowCaption;
-            Content = new VariableView(RToolsSettings.Current, VsAppShell.Current);
+            Content = new VariableView(VsAppShell.Current);
 
             // this value matches with icmdShowVariableExplorerWindow's Icon in VSCT file
             BitmapImageMoniker = KnownMonikers.VariableProperty;

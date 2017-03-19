@@ -42,6 +42,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.RHistory {
             var sendToSourceCommand = new SendHistoryToSourceCommand(textView, _historyProvider, interactiveWorkflow, _contentTypeRegistry, _textViewTracker);
             var shell = VsAppShell.Current;
             var ui = shell.GetService<IUIServices>();
+            var settings = shell.GetService<IRToolsSettings>();
 
             return new ICommand[] {
                 new LoadHistoryCommand(ui, textView, _historyProvider, interactiveWorkflow),
@@ -58,7 +59,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.RHistory {
                 new HistoryWindowVsStd2KCmdIdEnd(textView, _historyProvider), 
                 new HistoryWindowVsStd2KCmdIdPageUp(textView, _historyProvider), 
                 new HistoryWindowVsStd2KCmdIdPageDown(textView, _historyProvider), 
-                new ToggleMultilineHistorySelectionCommand(textView, _historyProvider, interactiveWorkflow, RToolsSettings.Current), 
+                new ToggleMultilineHistorySelectionCommand(textView, _historyProvider, interactiveWorkflow, settings), 
                 new CopySelectedHistoryCommand(textView, _historyProvider, interactiveWorkflow)
             };
         }

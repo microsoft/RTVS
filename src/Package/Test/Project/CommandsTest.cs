@@ -93,8 +93,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
                 c.Args()[0].Should().Be(folder);
             });
 
-            var cs = Substitute.For<ICoreServices>();
-            cs.Process.Returns(ps);
+            var cs = Substitute.For<ICoreShell>();
+            cs.Process().Returns(ps);
 
             var cmd = new OpenCommandPromptCommand(cs);
             CheckSingleNodeCommandStatus(cmd, RPackageCommandId.icmdOpenCmdPromptHere, nodes1, nodes2);

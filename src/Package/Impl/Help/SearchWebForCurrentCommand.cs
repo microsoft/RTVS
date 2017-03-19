@@ -25,6 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
     /// </remarks>
     internal sealed class SearchWebForCurrentCommand : HelpOnCurrentCommandBase {
         private readonly IWebBrowserServices _webBrowserServices;
+        private readonly IRToolsSettings _settings;
 
         public SearchWebForCurrentCommand(
             IRInteractiveWorkflow workflow,
@@ -34,11 +35,12 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSearchWebForCurrent,
                 workflow, textViewTracker, activeReplTracker, Resources.SearchWebFor) {
             _webBrowserServices = webBrowserServices;
+            _settings = workflow.Shell.GetService<IRToolsSettings>();
         }
 
         protected override void Handle(string item) {
             // Bing: search?q=item+site%3Astackoverflow.com
-            var tokens = RToolsSettings.Current.WebHelpSearchString.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+            var tokens = _settings.WebHelpSearchString.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
 
             var sb = new StringBuilder("http://" + Invariant($"www.bing.com/search?q={Uri.EscapeUriString(item)}"));
             foreach (var t in tokens) {

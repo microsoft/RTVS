@@ -32,15 +32,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private string _title;
         private bool _deleted;
 
-        public VariableViewModel() { Index = -1; }
+        public VariableViewModel(ICoreShell coreShell): base(coreShell) { Index = -1; }
 
         /// <summary>
         /// Create new instance of <see cref="VariableViewModel"/>
         /// </summary>
         /// <param name="evaluation">R session's evaluation result</param>
         /// <param name="truncateChildren">true to truncate children returned by GetChildrenAsync</param>
-        public VariableViewModel(IREvaluationResultInfo evaluation, IObjectDetailsViewerAggregator aggregator, int index = -1, int? maxChildrenCount = null) :
-            base(evaluation, maxChildrenCount) {
+        public VariableViewModel(IREvaluationResultInfo evaluation, IObjectDetailsViewerAggregator aggregator, ICoreShell coreShell, int index = -1, int? maxChildrenCount = null) :
+            base(evaluation, coreShell, maxChildrenCount) {
             _aggregator = aggregator;
 
             Index = index;
@@ -68,7 +68,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private static Lazy<VariableViewModel> _ellipsis = Lazy.Create(() => {
-            var instance = new VariableViewModel();
+            var instance = new VariableViewModel(null);
             instance.Name = string.Empty;
             instance.Value = Resources.VariableExplorer_Truncated;
             instance.HasChildren = false;
@@ -80,7 +80,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         public static VariableViewModel Error(string text) {
-            var instance = new VariableViewModel();
+            var instance = new VariableViewModel(null);
             instance.Name = string.Empty;
             instance.Value = text;
             instance.HasChildren = false;
@@ -112,13 +112,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     DimProperty |
                     FlagsProperty |
                     CanCoerceToDataFrameProperty |
-                    (RToolsSettings.Current.EvaluateActiveBindings ? ComputedValueProperty : 0);
+                    (Shell.GetService<IRToolsSettings>().EvaluateActiveBindings ? ComputedValueProperty : 0);
                 IReadOnlyList<IREvaluationResultInfo> children = await valueEvaluation.DescribeChildrenAsync(properties, Repr, MaxChildrenCount);
 
                 result = new List<IRSessionDataObject>();
                 var aggregator = VsAppShell.Current.GetService<IObjectDetailsViewerAggregator>();
                 for (int i = 0; i < children.Count; i++) {
-                    result.Add(new VariableViewModel(children[i], aggregator, index: i, maxChildrenCount: GetMaxChildrenCount(children[i])));
+                    result.Add(new VariableViewModel(children[i], aggregator, Shell, index: i, maxChildrenCount: GetMaxChildrenCount(children[i])));
                 }
 
                 // return children can be less than value's length in some cases e.g. missing parameter

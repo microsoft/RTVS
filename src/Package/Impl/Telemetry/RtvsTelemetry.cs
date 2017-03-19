@@ -28,7 +28,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
     internal sealed class RtvsTelemetry : IRtvsTelemetry {
         private ToolWindowTracker _toolWindowTracker = new ToolWindowTracker();
         private readonly IPackageIndex _packageIndex;
-        private static IRSettings _settings;
+        private static IRToolsSettings _settings;
 
         public static IRtvsTelemetry Current { get; set; }
 
@@ -62,7 +62,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
             }
         }
 
-        public RtvsTelemetry(IPackageIndex packageIndex, IRSettings settings, ITelemetryService service = null) {
+        public RtvsTelemetry(IPackageIndex packageIndex, IRToolsSettings settings, ITelemetryService service = null) {
             _packageIndex = packageIndex;
             _settings = settings;
             TelemetryService = service ?? VsAppShell.Current.GetService<ITelemetryService>();
@@ -140,12 +140,12 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
                 try {
                     TelemetryService.ReportEvent(TelemetryArea.Configuration, SettingEvents.Settings,
                             new {
-                                Cran = RToolsSettings.Current.CranMirror,
-                                Locale = RToolsSettings.Current.RCodePage,
-                                LoadRData = RToolsSettings.Current.LoadRDataOnProjectLoad,
-                                SaveRData = RToolsSettings.Current.SaveRDataOnProjectUnload,
-                                MultilineHistorySelection = RToolsSettings.Current.MultilineHistorySelection,
-                                AlwaysSaveHistory = RToolsSettings.Current.AlwaysSaveHistory,
+                                Cran = _settings.CranMirror,
+                                Locale = _settings.RCodePage,
+                                LoadRData = _settings.LoadRDataOnProjectLoad,
+                                SaveRData = _settings.SaveRDataOnProjectUnload,
+                                MultilineHistorySelection = _settings.MultilineHistorySelection,
+                                AlwaysSaveHistory = _settings.AlwaysSaveHistory,
                                 AutoFormat = REditorSettings.AutoFormat,
                                 CommitOnEnter = REditorSettings.CommitOnEnter,
                                 CommitOnSpace = REditorSettings.CommitOnSpace,
@@ -156,7 +156,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
                                 CompletionEnabled = REditorSettings.CompletionEnabled,
                                 SyntaxCheckInRepl = REditorSettings.SyntaxCheckInRepl,
                                 PartialArgumentNameMatch = REditorSettings.PartialArgumentNameMatch,
-                                RCommandLineArguments = RToolsSettings.Current.LastActiveConnection.RCommandLineArguments
+                                RCommandLineArguments = _settings.LastActiveConnection.RCommandLineArguments
                             });
                 } catch (Exception ex) {
                     Trace.Fail("Telemetry exception: " + ex.Message);

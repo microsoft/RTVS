@@ -34,16 +34,14 @@ namespace Microsoft.VisualStudio.R.Package.Test.RClient {
                      .Do(x => telemetryEvents.Add(x.Args()[1] as string));
 
             var coreShell = Substitute.For<ICoreShell>();
-            var services = Substitute.For<ICoreServices>();
-            services.Telemetry.Returns(telemetry);
+            coreShell.Telemetry().Returns(telemetry);
 
             var ps = Substitute.For<IProcessServices>();
             ps.When(x => x.Start(Arg.Any<string>())).Do(c => {
                 c.Args()[0].Should().NotBeNull();
             });
-            services.Process.Returns(ps);
+            coreShell.Process().Returns(ps);
 
-            coreShell.Services.Returns(services);
             coreShell.ShowMessage(Arg.Any<string>(), Arg.Any<MessageButtons>()).Returns(MessageButtons.Yes);
 
             var downloader = Substitute.For<IFileDownloader>();
@@ -70,7 +68,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.RClient {
             ps.When(x => x.Start(Arg.Any<string>())).Do(c => {
                 throw new Win32Exception((unchecked((int)0x800704C7)));
             });
-            services.Process.Returns(ps);
+            coreShell.Process().Returns(ps);
 
             telemetryEvents.Clear();
             inst.LaunchRClientSetup(coreShell, downloader);

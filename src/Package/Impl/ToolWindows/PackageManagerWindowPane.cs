@@ -26,10 +26,10 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
 
         private IOleCommandTarget _commandTarget;
 
-        public PackageManagerWindowPane(IRPackageManager packageManager, ISearchControlProvider searchControlProvider, IRSettings settings, ICoreShell coreShell) {
+        public PackageManagerWindowPane(IRPackageManager packageManager, ISearchControlProvider searchControlProvider, ICoreShell coreShell) {
             _packageManager = packageManager;
             _searchControlProvider = searchControlProvider;
-            _settings = settings;
+            _settings = coreShell.GetService<IRSettings>();
             _coreShell = coreShell;
             BitmapImageMoniker = KnownMonikers.Package;
             Caption = Resources.PackageManagerWindowCaption;

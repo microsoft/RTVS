@@ -45,10 +45,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private bool _keyDownSeen;
         private ObservableTreeNode _rootNode;
 
-        public VariableView() : this(null, VsAppShell.Current) { }
+        public VariableView() : this(VsAppShell.Current) { }
 
-        public VariableView(IRToolsSettings settings, ICoreShell shell) {
-            _settings = settings;
+        public VariableView(ICoreShell shell) {
+            _settings = shell.GetService<IRToolsSettings>();
             _shell = shell;
             _ui = _shell.GetService<IUIServices>();
             _ui.UIThemeChanged += OnUIThemeChanged;
@@ -62,7 +62,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             SortDirection = ListSortDirection.Ascending;
             RootTreeGrid.Sorting += RootTreeGrid_Sorting;
 
-            var workflow = VsAppShell.Current.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
+            var workflow = _shell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
             _session = workflow.RSession;
 
             _environmentProvider = new REnvironmentProvider(_session, shell);
@@ -115,7 +115,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             if (env.Kind != REnvironmentKind.Error) {
                 try {
                     var result = await EvaluateAndDescribeAsync(env);
-                    var wrapper = new VariableViewModel(result, _aggregator);
+                    var wrapper = new VariableViewModel(result, _aggregator, _shell);
                     _rootNode.Model = new VariableNode(_settings, wrapper);
                 } catch (RException ex) {
                     SetRootNode(VariableViewModel.Error(ex.Message));
@@ -149,7 +149,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private ListSortDirection SortDirection { get; set; }
 
         private int Comparison(ITreeNode left, ITreeNode right)
-            =>VariableNode.Comparison((VariableNode)left, (VariableNode)right, SortDirection);
+            => VariableNode.Comparison((VariableNode)left, (VariableNode)right, SortDirection);
 
         private void GridRow_MouseDoubleClick(object sender, MouseButtonEventArgs e) => HandleDefaultAction();
 
@@ -221,7 +221,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 DeleteCurrentVariableAsync().DoNotWait();
             } else if (e.Key == Key.Apps) {
                 ShowContextMenu();
-            } else if(e.Key == Key.Space) {
+            } else if (e.Key == Key.Space) {
                 var selection = RootTreeGrid?.SelectedItem as ObservableTreeNode;
                 if (selection != null && selection.HasChildren) {
                     selection.IsExpanded = !selection.IsExpanded;

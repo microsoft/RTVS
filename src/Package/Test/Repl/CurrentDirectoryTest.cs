@@ -40,7 +40,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
             var debuggerModeTracker = new TestDebuggerModeTracker();
             _interactiveWorkflow = UIThreadHelper.Instance.Invoke(() => new RInteractiveWorkflow(
                 connectionsProvider, historyProvider, packagesProvider, plotsProvider, activeTextViewTracker,
-                debuggerModeTracker, VsAppShell.Current, RToolsSettings.Current));
+                debuggerModeTracker, VsAppShell.Current));
 
             _sessionProvider = _interactiveWorkflow.RSessions;
         }

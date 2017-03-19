@@ -21,9 +21,6 @@ namespace Microsoft.R.Editor.QuickInfo {
             _shell = shell;
         }
 
-        public IQuickInfoSource TryCreateQuickInfoSource(ITextBuffer textBuffer) {
-            var cs = _shell.GetService<ICompositionService>();
-            return new QuickInfoSource(textBuffer, c);
-        }
+        public IQuickInfoSource TryCreateQuickInfoSource(ITextBuffer textBuffer) => new QuickInfoSource(textBuffer, _shell);
     }
 }

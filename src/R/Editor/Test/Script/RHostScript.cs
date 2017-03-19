@@ -8,7 +8,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Interpreters;
-using Microsoft.R.Support.Settings;
 
 namespace Microsoft.R.Host.Client.Test.Script {
     [ExcludeFromCodeCoverage]

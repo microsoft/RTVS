@@ -55,12 +55,11 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             , IRPlotManagerProvider plotsProvider
             , IActiveWpfTextViewTracker activeTextViewTracker
             , IDebuggerModeTracker debuggerModeTracker
-            , ICoreShell coreShell
-            , IRSettings settings) {
+            , ICoreShell coreShell) {
 
             _activeTextViewTracker = activeTextViewTracker;
             _debuggerModeTracker = debuggerModeTracker;
-            _settings = settings;
+            _settings = coreShell.GetService<IRSettings>();
 
             Shell = coreShell;
             Console = new InteractiveWindowConsole(this);
