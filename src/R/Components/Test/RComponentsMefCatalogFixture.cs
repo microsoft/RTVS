@@ -45,7 +45,7 @@ namespace Microsoft.R.Components.Test {
             }
 
             public override Task<Task<RunSummary>> InitializeAsync(ITestInput testInput, IMessageBus messageBus) {
-                var coreShell = new TestCoreShell(CompositionContainer);
+                var coreShell = new TestCoreShell(new TestCompositionCatalog(CompositionContainer));
                 var batch = new CompositionBatch()
                     .AddValue<IRSettings>(RSettingsStubFactory.CreateForExistingRPath(testInput.FileSytemSafeName))
                     .AddValue<ICoreShell>(coreShell)

@@ -75,7 +75,8 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         public void Navigate(string url) {
             // Filter out localhost help URL from absolute URLs
             // except when the URL is the main landing page.
-            if (RToolsSettings.Current.HelpBrowserType == HelpBrowserType.Automatic && IsHelpUrl(url)) {
+            var settings = _coreShell.GetService<IRToolsSettings>();
+            if (settings.HelpBrowserType == HelpBrowserType.Automatic && IsHelpUrl(url)) {
                 Container?.Show(focus: false, immediate: false);
                 NavigateTo(url);
             } else {

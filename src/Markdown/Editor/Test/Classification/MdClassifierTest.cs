@@ -42,8 +42,8 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
         }
 
         private void ClassifyFile(MarkdownTestFilesFixture fixture, string fileName) {
-            string testFile = fixture.GetDestinationPath(fileName);
-            string content = fixture.LoadDestinationFile(fileName);
+            var testFile = fixture.GetDestinationPath(fileName);
+            var content = fixture.LoadDestinationFile(fileName);
 
             var textBuffer = new TextBufferMock(content, MdContentTypeDefinition.ContentType);
 
@@ -51,8 +51,10 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
             var ctrs = _exportProvider.GetExportedValue<IContentTypeRegistryService>();
             var cnp = _exportProvider.GetExports<IClassificationNameProvider, IComponentContentTypes>();
 
-            MdClassifierProvider classifierProvider = new MdClassifierProvider(crs, ctrs, cnp, _exportProvider.GetExportedValue<ICoreShell>());
-            var cs = _shell.GetService<ICompositionService>();
+            var classifierProvider = new MdClassifierProvider(crs, ctrs, cnp, _exportProvider.GetExportedValue<ICoreShell>());
+
+            var shell = _exportProvider.GetExportedValue<ICoreShell>();
+            var cs = shell.GetService<ICompositionService>();
             cs.SatisfyImportsOnce(classifierProvider);
 
             var cls = classifierProvider.GetClassifier(textBuffer);

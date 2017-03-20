@@ -45,7 +45,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.RHistory {
             var settings = shell.GetService<IRToolsSettings>();
 
             return new ICommand[] {
-                new LoadHistoryCommand(ui, textView, _historyProvider, interactiveWorkflow),
+                new LoadHistoryCommand(shell, textView, _historyProvider, interactiveWorkflow),
                 new SaveHistoryCommand(ui, textView, _historyProvider, interactiveWorkflow),
                 sendToReplCommand,
                 sendToSourceCommand,

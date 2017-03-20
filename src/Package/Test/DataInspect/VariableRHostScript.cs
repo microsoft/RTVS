@@ -39,7 +39,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                 var result = await frame.TryEvaluateAndDescribeAsync(rScript, properties, RValueRepresentations.Str());
 
                 var globalResult = await frame.TryEvaluateAndDescribeAsync("base::environment()", properties, RValueRepresentations.Str());
-                _globalEnv = new VariableViewModel(globalResult, VsAppShell.Current.GetService<IObjectDetailsViewerAggregator>());
+                _globalEnv = new VariableViewModel(globalResult, VsAppShell.Current);
 
                 return result;
             } finally {

@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.ComponentModel.Composition;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.StatusBar;
@@ -13,9 +14,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         private readonly IRSettings _settings;
 
         [ImportingConstructor]
-        public ConnectionManagerProvider(IStatusBar statusBar, IRSettings settings) {
+        public ConnectionManagerProvider(IStatusBar statusBar, ICoreShell coreShell) {
             _statusBar = statusBar;
-            _settings = settings;
+            _settings = coreShell.GetService<IRSettings>();
         }
 
         public IConnectionManager CreateConnectionManager(IRInteractiveWorkflow interactiveWorkflow) {

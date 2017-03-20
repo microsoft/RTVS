@@ -69,8 +69,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             Connections = connectionsProvider.CreateConnectionManager(this);
 
             History = historyProvider.CreateRHistory(this);
-            Packages = packagesProvider.CreateRPackageManager(settings, this);
-            Plots = plotsProvider.CreatePlotManager(settings, this, new FileSystem());
+            Packages = packagesProvider.CreateRPackageManager(_settings, this);
+            Plots = plotsProvider.CreatePlotManager(_settings, this, new FileSystem());
             _operations = new RInteractiveWorkflowOperations(this, _debuggerModeTracker, Shell);
 
             _activeTextViewTracker.LastActiveTextViewChanged += LastActiveTextViewChanged;

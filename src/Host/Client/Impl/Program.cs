@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
@@ -24,43 +25,25 @@ namespace Microsoft.R.Host.Client {
 
             var programName = "Microsoft.R.Host.Client.Program";
             using (var logger = new Logger(programName, Path.GetTempPath(), new MaxLoggingPermissions())) {
-                var services = new CoreServices(null, new MaxLoggingPermissions(), null, null, null, logger, null, null);
-                var localConnector = new LocalBrokerClient(programName, BrokerConnectionInfo.Create(null, "local", args[0]), services, new NullConsole());
+                var shell = new CoreShell(logger);
+                var localConnector = new LocalBrokerClient(programName, BrokerConnectionInfo.Create(null, "local", args[0]), shell, new NullConsole());
                 var host = localConnector.ConnectAsync(new HostConnectionInfo(programName, new Program())).GetAwaiter().GetResult();
                 _evaluator = host;
                 host.Run().GetAwaiter().GetResult();
             }
         }
 
-        private static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e) {
-        }
+        private static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e) { }
 
-        public void Dispose() {
-        }
+        public void Dispose() { }
+        public Task Busy(bool which, CancellationToken ct) => Task.FromResult(true);
+        public Task Connected(string rVersion) => Task.CompletedTask;
+        public Task Disconnected() => Task.CompletedTask;
+        public Task Shutdown(bool savedRData) => Task.CompletedTask;
+        public async Task<string> ReadConsole(IReadOnlyList<IRContext> contexts, string prompt, int len, bool addToHistory, CancellationToken ct)
+            => await ReadLineAsync(prompt, ct) + "\n";
 
-        public Task Busy(bool which, CancellationToken ct) {
-            return Task.FromResult(true);
-        }
-
-        public Task Connected(string rVersion) {
-            return Task.CompletedTask;
-        }
-
-        public Task Disconnected() {
-            return Task.CompletedTask;
-        }
-
-        public Task Shutdown(bool savedRData) {
-            return Task.CompletedTask;
-        }
-
-        public async Task<string> ReadConsole(IReadOnlyList<IRContext> contexts, string prompt, int len, bool addToHistory, CancellationToken ct) {
-            return (await ReadLineAsync(prompt, ct)) + "\n";
-        }
-
-        public async Task ShowMessage(string s, CancellationToken ct) {
-            await Console.Error.WriteLineAsync(s);
-        }
+        public async Task ShowMessage(string s, CancellationToken ct) => await Console.Error.WriteLineAsync(s);
 
         public async Task WriteConsoleEx(string buf, OutputType otype, CancellationToken ct) {
             var writer = otype == OutputType.Output ? Console.Out : Console.Error;
@@ -106,32 +89,26 @@ namespace Microsoft.R.Host.Client {
             }
         }
 
-        public async Task Plot(PlotMessage plot, CancellationToken ct) {
-            await Console.Error.WriteLineAsync(plot.FilePath);
-        }
+        public async Task Plot(PlotMessage plot, CancellationToken ct)
+            => await Console.Error.WriteLineAsync(plot.FilePath);
 
-        public async Task WebBrowser(string url, CancellationToken ct) 
+        public async Task WebBrowser(string url, CancellationToken ct)
             => await Console.Error.WriteLineAsync("Browser: " + url);
 
-        public async void DirectoryChanged() 
+        public async void DirectoryChanged()
             => await Console.Error.WriteLineAsync("Directory changed.");
 
-        public Task ViewObject(string x, string title, CancellationToken cancellationToken) 
+        public Task ViewObject(string x, string title, CancellationToken cancellationToken)
             => Console.Error.WriteLineAsync(Invariant($"ViewObjectAsync({title}): {x}"));
 
-        public async Task ViewLibrary(CancellationToken cancellationToken) 
+        public async Task ViewLibrary(CancellationToken cancellationToken)
             => await Console.Error.WriteLineAsync("ViewLibrary");
 
-        public async Task ShowFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken) 
+        public async Task ShowFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken)
             => await Console.Error.WriteAsync(Invariant($"ShowFile({fileName}, {tabName}, {deleteFile})"));
 
-        public void PackagesInstalled() {
-            Console.Error.WriteLineAsync("PackagesInstalled").DoNotWait();
-        }
-
-        public void PackagesRemoved() {
-            Console.Error.WriteLineAsync("PackagesRemoved").DoNotWait();
-        }
+        public void PackagesInstalled() => Console.Error.WriteLineAsync("PackagesInstalled").DoNotWait();
+        public void PackagesRemoved() => Console.Error.WriteLineAsync("PackagesRemoved").DoNotWait();
 
         public async Task<string> FetchFileAsync(string remoteFileName, ulong remoteBlobId, string localPath, CancellationToken cancellationToken) {
             await Console.Error.WriteAsync(Invariant($"fetch_file({remoteFileName}, {localPath})"));
@@ -188,6 +165,34 @@ namespace Microsoft.R.Host.Client {
             public LogVerbosity CurrentVerbosity { get; set; } = LogVerbosity.Traffic;
             public bool IsFeedbackPermitted => true;
             public LogVerbosity MaxVerbosity => LogVerbosity.Traffic;
+        }
+
+        class CoreShell : ICoreShell {
+            private readonly ServiceManager _serviceManager;
+
+            public CoreShell(IActionLog log) {
+                ThreadId = Thread.CurrentThread.ManagedThreadId;
+                _serviceManager = new ServiceManager();
+                _serviceManager
+                    .AddService(new MaxLoggingPermissions())
+                    .AddService(log);
+            }
+
+            public string ApplicationName => "Program";
+            public int LocaleId => 1033;
+            public IServiceContainer Services => _serviceManager;
+
+            public bool IsUnitTestEnvironment => false;
+            public int ThreadId { get; }
+
+#pragma warning disable 67
+            public event EventHandler<EventArgs> Started;
+            public event EventHandler<EventArgs> Terminating;
+            public event EventHandler<EventArgs> Idle;
+#pragma warning restore 67
+
+            public void DispatchOnUIThread(Action action) => action();
+            public void Post(Action action, CancellationToken cancellationToken = default(CancellationToken)) => action();
         }
     }
 }

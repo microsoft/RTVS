@@ -133,7 +133,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         [InlineData("as.complex")]
         public async Task GridViewerDimLengthTest(string cast) {
             var e = Substitute.For<IDataObjectEvaluator>();
-            var viewer = new GridViewer(_aggregator, e);
+            var viewer = new GridViewer(VsAppShell.Current, e);
             viewer.CanView(null).Should().BeFalse();
 
             using (var hostScript = new RHostScript(_sessionProvider)) {
@@ -190,7 +190,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         [InlineData("setClass('X', representation(x = 'logical'))()")]
         public async Task GridViewerExcludeTest(string expr) {
             var e = Substitute.For<IDataObjectEvaluator>();
-            var viewer = new GridViewer(_aggregator, e);
+            var viewer = new GridViewer(VsAppShell.Current, e);
             viewer.CanView(null).Should().BeFalse();
 
             using (var hostScript = new RHostScript(_sessionProvider)) {

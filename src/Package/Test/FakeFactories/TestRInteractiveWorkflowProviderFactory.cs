@@ -34,11 +34,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.FakeFactories {
             activeTextViewTracker = activeTextViewTracker ?? new ActiveTextViewTrackerMock(string.Empty, RContentTypeDefinition.ContentType);
             debuggerModeTracker = debuggerModeTracker ?? new VsDebuggerModeTracker();
             shell = shell ?? VsAppShell.Current;
-            settings = settings ?? RToolsSettings.Current;
 
             return new TestRInteractiveWorkflowProvider(
                 connectionsProvider, historyProvider, packagesProvider, plotsProvider,
-                activeTextViewTracker, debuggerModeTracker, shell, settings);
+                activeTextViewTracker, debuggerModeTracker, shell);
         }
     }
 }

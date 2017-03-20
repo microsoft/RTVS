@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Windows.Threading;
@@ -11,28 +10,30 @@ using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Common.Core.Threading;
-using Microsoft.Common.Core.UI;
 using Microsoft.UnitTests.Core.Threading;
 using NSubstitute;
 
 namespace Microsoft.Common.Core.Test.Fakes.Shell {
     [ExcludeFromCodeCoverage]
-    public sealed class TestCoreShell : ICoreShell, IIdleTimeSource {
-        private readonly CompositionContainer _container;
-        private readonly TestServiceManager _serviceManager;
+    public class TestCoreShell : ICoreShell, IIdleTimeSource {
+        private readonly ICompositionCatalog _catalog;
         private readonly Thread _creatorThread;
 
-        public TestCoreShell(CompositionContainer container
+        public TestServiceManager ServiceManager { get; }
+
+        public TestCoreShell(ICompositionCatalog catalog
             , IActionLog log = null
             , ILoggingPermissions loggingPermissions = null
             , IFileSystem fs = null
             , IRegistry registry = null
             , IProcessServices ps = null) {
-            _container = container;
+            _catalog = catalog;
             _creatorThread = UIThreadHelper.Instance.Thread;
-            _serviceManager = new TestServiceManager(container);
-            _serviceManager
+            ServiceManager = new TestServiceManager(catalog.ExportProvider);
+            ServiceManager
+                .AddService(catalog)
+                .AddService(catalog.ExportProvider)
+                .AddService(catalog.CompositionService)
                 .AddService(log ?? Substitute.For<IActionLog>())
                 .AddService(loggingPermissions ?? Substitute.For<ILoggingPermissions>())
                 .AddService(fs ?? new FileSystem())
@@ -45,7 +46,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
         public string ApplicationName => "RTVS_Test";
         public int LocaleId => 1033;
 
-        public IServiceContainer Services => _serviceManager;
+        public IServiceContainer Services => ServiceManager;
 
         public void DispatchOnUIThread(Action action) => UIThreadHelper.Instance.InvokeAsync(action).DoNotWait();
 

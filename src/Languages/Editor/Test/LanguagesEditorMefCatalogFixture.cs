@@ -42,7 +42,7 @@ namespace Microsoft.Languages.Editor.Test {
         protected class LanguagesEditorTestExportProvider : TestExportProvider {
             private readonly ICoreShell _coreShell;
             public LanguagesEditorTestExportProvider(CompositionContainer compositionContainer) : base(compositionContainer) {
-                _coreShell = new TestCoreShell(compositionContainer);
+                _coreShell = new TestCoreShell(new TestCompositionCatalog(compositionContainer));
             }
 
             public override Task<Task<RunSummary>> InitializeAsync(ITestInput testInput, IMessageBus messageBus) {

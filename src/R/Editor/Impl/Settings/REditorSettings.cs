@@ -92,7 +92,7 @@ namespace Microsoft.R.Editor.Settings {
         }
 
         public static IndentType IndentType {
-            get { return (IndentType)Storage.GetInteger(CommonSettings.FormatterIndentTypeKey, (int)IndentType.Spaces); }
+            get { return (IndentType)_storage.GetInteger(CommonSettings.FormatterIndentTypeKey, (int)IndentType.Spaces); }
             set { WritableStorage?.SetInteger(CommonSettings.FormatterIndentTypeKey, (int)value); }
         }
 

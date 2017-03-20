@@ -6,6 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Help;
@@ -22,12 +23,12 @@ namespace Microsoft.R.Support.Test.Packages {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
     public class PackageIndexTest : IAsyncLifetime {
-        private readonly ICoreShell _shell;
+        private readonly TestCoreShell _shell = new TestCoreShell(null);
         private readonly IRInteractiveWorkflowProvider _workflowProvider;
         private readonly IRSessionProvider _sessionProvider;
 
         public PackageIndexTest(IExportProvider exportProvider) {
-            _shell = exportProvider.GetExportedValue<ICoreShell>();
+            _shell.ServiceManager.AddService(new TestRToolsSettings());
             _workflowProvider = exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
             _sessionProvider = UIThreadHelper.Instance.Invoke(() => _workflowProvider.GetOrCreate()).RSessions;
         }
@@ -90,7 +91,6 @@ namespace Microsoft.R.Support.Test.Packages {
         [Test]
         [Category.R.Completion]
         public async Task PackageDescriptionTest() {
-            RToolsSettings.Current = new TestRToolsSettings();
             PackageIndex packageIndex;
             using (var host = new IntelliSenseRSession(_shell, _workflowProvider)) {
                 await host.StartSessionAsync();

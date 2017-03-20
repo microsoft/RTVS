@@ -6,14 +6,13 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Completions.Providers;
-using Microsoft.R.Editor.Imaging;
 using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
-using Microsoft.VisualStudio.Language.Intellisense;
 using NSubstitute;
 
 namespace Microsoft.R.Editor.Test.Completions {
@@ -22,17 +21,13 @@ namespace Microsoft.R.Editor.Test.Completions {
     public class FileCompletionProviderTest: IDisposable {
         private const string _testFolderName = "_Rtvs_FileCompletionTest_";
 
+        private readonly ICoreShell _coreShell;
         private readonly IExportProvider _exportProvider;
-
-        private readonly IImagesProvider _imagesProvider;
-        private readonly IGlyphService _glyphService;
         private readonly string _testFolder;
 
         public FileCompletionProviderTest(IExportProvider exportProvider) {
             _exportProvider = exportProvider;
-
-            _imagesProvider = Substitute.For<IImagesProvider>();
-            _glyphService = Substitute.For<IGlyphService>();
+            _coreShell = Substitute.For<ICoreShell>();
 
             var myDocs = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             _testFolder = Path.Combine(myDocs, _testFolderName);
@@ -49,9 +44,8 @@ namespace Microsoft.R.Editor.Test.Completions {
 
         [Test]
         public void LocalFiles() {
-            var workflow = Substitute.For<IRInteractiveWorkflow>();
-
-            var provider = new FilesCompletionProvider(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), workflow, _imagesProvider, _glyphService);
+            var shell = Substitute.For<ICoreShell>();
+            var provider = new FilesCompletionProvider(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), shell);
             var entries = provider.GetEntries(null);
             entries.Should().NotBeEmpty();
             entries.Should().Contain(e => e.DisplayText == _testFolderName);
@@ -63,7 +57,7 @@ namespace Microsoft.R.Editor.Test.Completions {
                 await workflow.RSessions.TrySwitchBrokerAsync(nameof(FileCompletionProviderTest));
                 await workflow.RSession.EnsureHostStartedAsync(new RHostStartupInfo(), null, 50000);
 
-                var provider = new FilesCompletionProvider(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), workflow, _imagesProvider, _glyphService, forceR: true);
+                var provider = new FilesCompletionProvider(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), _coreShell, forceR: true);
                 var entries = provider.GetEntries(null);
                 entries.Should().NotBeEmpty();
                 entries.Should().Contain(e => e.DisplayText == _testFolderName);

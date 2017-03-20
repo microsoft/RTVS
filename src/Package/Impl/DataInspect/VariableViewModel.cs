@@ -117,7 +117,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 result = new List<IRSessionDataObject>();
                 var aggregator = VsAppShell.Current.GetService<IObjectDetailsViewerAggregator>();
                 for (int i = 0; i < children.Count; i++) {
-                    result.Add(new VariableViewModel(children[i], aggregator, Shell, index: i, maxChildrenCount: GetMaxChildrenCount(children[i])));
+                    result.Add(new VariableViewModel(children[i], Shell, i, GetMaxChildrenCount(children[i])));
                 }
 
                 // return children can be less than value's length in some cases e.g. missing parameter

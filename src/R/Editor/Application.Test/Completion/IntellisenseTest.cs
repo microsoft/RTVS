@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Settings;
@@ -150,7 +151,8 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         public async Task R_CompletionFiles() {
             using (var script = await _editorHost.StartScript(ExportProvider, RContentTypeDefinition.ContentType, Workflow.RSessions)) {
                 string asmPath = Assembly.GetExecutingAssembly().GetAssemblyPath();
-                RToolsSettings.Current.WorkingDirectory = Path.GetDirectoryName(asmPath);
+                var settings = Workflow.Shell.GetService<IRToolsSettings>();
+                settings.WorkingDirectory = Path.GetDirectoryName(asmPath);
 
                 script.DoIdle(100);
                 script.Type("x <- \"");

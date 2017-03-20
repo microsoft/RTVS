@@ -115,7 +115,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             if (env.Kind != REnvironmentKind.Error) {
                 try {
                     var result = await EvaluateAndDescribeAsync(env);
-                    var wrapper = new VariableViewModel(result, _aggregator, _shell);
+                    var wrapper = new VariableViewModel(result, _shell);
                     _rootNode.Model = new VariableNode(_settings, wrapper);
                 } catch (RException ex) {
                     SetRootNode(VariableViewModel.Error(ex.Message));

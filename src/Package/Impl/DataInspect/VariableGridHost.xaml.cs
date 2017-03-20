@@ -29,7 +29,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public VariableGridHost() {
             InitializeComponent();
 
-            _aggregator = VsAppShell.Current.GetService<IObjectDetailsViewerAggregator>();
             _rSession = VsAppShell.Current.GetService<IRInteractiveWorkflowProvider>().GetOrCreate().RSession;
             _rSession.Mutated += RSession_Mutated;
         }
@@ -50,7 +49,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 const REvaluationResultProperties properties = ClassesProperty| ExpressionProperty | TypeNameProperty | DimProperty | LengthProperty;
 
                 var result = await _rSession.TryEvaluateAndDescribeAsync(_evaluation.Expression, properties, null);
-                var wrapper = new VariableViewModel(result, _aggregator);
+                var wrapper = new VariableViewModel(result, VsAppShell.Current);
 
                 VsAppShell.Current.DispatchOnUIThread(() => SetEvaluation(wrapper));
             } catch (Exception ex) {
