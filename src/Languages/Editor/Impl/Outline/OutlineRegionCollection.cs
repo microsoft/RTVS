@@ -8,15 +8,14 @@ namespace Microsoft.Languages.Editor.Outline {
     /// <summary>
     /// A collection of outline regions than match specific text buffer version
     /// </summary>
-    public class OutlineRegionCollection : TextRangeCollection<OutlineRegion>, ICloneable {
+    public class OutlineRegionCollection : TextRangeCollection<OutlineRegion> {
         public int TextBufferVersion { get; internal set; }
 
         public OutlineRegionCollection(int textBufferVersion) {
             TextBufferVersion = textBufferVersion;
         }
 
-        #region ICloneable
-        public virtual object Clone() {
+        public OutlineRegionCollection Clone() {
             var clone = new OutlineRegionCollection(TextBufferVersion);
 
             foreach (var item in this)
@@ -24,6 +23,5 @@ namespace Microsoft.Languages.Editor.Outline {
 
             return clone;
         }
-        #endregion
     }
 }

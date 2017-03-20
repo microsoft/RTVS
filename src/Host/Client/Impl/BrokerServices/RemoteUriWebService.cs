@@ -53,7 +53,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             var remoteUri = GetRemoteUri(context.Request.Url, remoteBaseUrl);
             request.Headers.Add(CustomHttpHeaders.RTVSRequestedURL, remoteUri.ToString());
 
-            if (context.Request.InputStream.CanSeek && context.Request.InputStream.Length > 0) {
+            if (context.Request.ContentLength64 > 0) {
                 using (Stream reqStream = await request.GetRequestStreamAsync()) {
                     await context.Request.InputStream.CopyAndFlushAsync(reqStream, null, ct);
                 }

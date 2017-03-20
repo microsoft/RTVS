@@ -94,7 +94,7 @@ namespace Microsoft.Languages.Core.Text {
         /// <param name="ignoreCase">True if search should be case-insensitive</param>
         /// <returns>Character index of the first string appearance or -1 if string was not found</returns>
         public int IndexOf(string stringToFind, int startPosition, bool ignoreCase) {
-            return _text.IndexOf(stringToFind, startPosition, ignoreCase ? StringComparison.InvariantCultureIgnoreCase : StringComparison.InvariantCulture);
+            return _text.IndexOf(stringToFind, startPosition, ignoreCase ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>

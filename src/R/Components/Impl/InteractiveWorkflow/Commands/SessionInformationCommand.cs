@@ -83,7 +83,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
             }
 
             sb.AppendLine("\t" + Resources.Version.FormatInvariant(aboutHost.Version));
-            sb.AppendLine("\t" + Resources.OperatingSystem.FormatInvariant(aboutHost.OS.VersionString));
+            sb.AppendLine("\t" + Resources.OperatingSystem.FormatInvariant(aboutHost.OSDescription));
             sb.AppendLine("\t" + Resources.ProcessorCount.FormatInvariant(aboutHost.ProcessorCount));
             sb.AppendLine("\t" + Resources.PhysicalMemory.FormatInvariant(aboutHost.TotalPhysicalMemory, aboutHost.FreePhysicalMemory));
             sb.AppendLine("\t" + Resources.VirtualMemory.FormatInvariant(aboutHost.TotalVirtualMemory, aboutHost.FreeVirtualMemory));

@@ -11,7 +11,6 @@ namespace Microsoft.Languages.Core.Text {
     /// allowing code that handles text changes to use <seealso cref="ITextProvider"/>
     /// rather than Visual Studio ITextBuffer or some other editor specific types.
     /// </summary>
-    [ExcludeFromCodeCoverage]
     public class TextChangeEventArgs : EventArgs {
         /// <summary>
         /// Start position of the change

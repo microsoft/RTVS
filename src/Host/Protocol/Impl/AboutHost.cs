@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Runtime.InteropServices;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -9,7 +10,7 @@ namespace Microsoft.R.Host.Protocol {
     public class AboutHost {
         [JsonConverter(typeof(VersionConverter))]
         public Version Version { get; set; }
-        public OperatingSystem OS { get; set; }
+        public string OSDescription { get; set; }
         public bool Is64BitOperatingSystem { get; set; }
         public bool Is64BitProcess { get; set; }
         public int ProcessorCount { get; set; }
@@ -33,8 +34,8 @@ namespace Microsoft.R.Host.Protocol {
             get {
                 var a = new AboutHost() {
                     Interpreters = new string[0],
-                    Version = new Version(),
-                    OS = Environment.OSVersion,
+                    Version = new Version(0, 0),
+                    OSDescription = RuntimeInformation.OSDescription,
                     Is64BitOperatingSystem = true,
                     Is64BitProcess = true,
                 };

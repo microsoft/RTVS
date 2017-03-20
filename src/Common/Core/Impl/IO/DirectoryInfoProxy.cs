@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 
 namespace Microsoft.Common.Core.IO {
-    internal sealed class DirectoryInfoProxy : IDirectoryInfo {
+    public sealed class DirectoryInfoProxy : IDirectoryInfo {
         private readonly DirectoryInfo _directoryInfo;
 
         public DirectoryInfoProxy(string directoryPath) {

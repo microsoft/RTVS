@@ -118,9 +118,9 @@ namespace Microsoft.R.Host.Broker.RemoteUri {
                 headers.Remove("Content-Type");
             }
 
-            string valueExcept;
-            if (headers.TryGetValue("Expect", out valueExcept)) {
-                request.Expect = valueExcept;
+            string valueExpect;
+            if (headers.TryGetValue("Expect", out valueExpect)) {
+                request.ServicePoint.Expect100Continue = valueExpect.ContainsIgnoreCase("100-continue");
                 headers.Remove("Expect");
             }
 

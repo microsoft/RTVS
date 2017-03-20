@@ -89,17 +89,17 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 }
 
                 // May be a package object line mtcars$
-                variableName = TrimToTrailingSelector(variableName);
+                var rootVariableName = TrimToFirstSelector(variableName);
+                var memberName = TrimToLastSelector(variableName);
                 var session = Workflow.RSession;
 
                 IReadOnlyList<IREvaluationResultInfo> infoList = null;
                 Task.Run(async () => {
                     try {
-                        var exists = await session.EvaluateAsync<bool>(Invariant($"exists('{variableName}')"), REvaluationKind.Normal);
-                        if (exists) {
+                        var result = await session.TryEvaluateAndDescribeAsync(memberName, REvaluationResultProperties.None, null);
+                        if (!(result is IRErrorInfo)) {
                             infoList = await session.DescribeChildrenAsync(REnvironments.GlobalEnv,
-                                           variableName, HasChildrenProperty | AccessorKindProperty,
-                                           null, _maxResults);
+                                memberName, HasChildrenProperty | AccessorKindProperty, null, _maxResults);
                         }
                     } catch (Exception) { }
                 }).Wait(_maxWaitTime);
@@ -119,14 +119,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
         #endregion
 
-        private static string TrimToTrailingSelector(string name) {
-            int i = name.Length - 1;
-            for (; i >= 0; i--) {
-                if (_selectors.Contains(name[i])) {
-                    return name.Substring(0, i);
-                }
-            }
-            return string.Empty;
+        private static string TrimToFirstSelector(string name) {
+            var index = name.IndexOfAny(_selectors);
+            return index >= 0 ? name.Substring(0, index) : name;
+        }
+
+        private static string TrimToLastSelector(string name) {
+            var index = name.LastIndexOfAny(_selectors);
+            return index >= 0 ? name.Substring(0, index) : name;
         }
 
         private static string TrimLeadingSelector(string name) {
