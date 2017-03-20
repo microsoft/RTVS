@@ -123,7 +123,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
                 var telemetry = _interactiveWorkflow.Shell.GetService<ITelemetryService>();
                 foreach (var name in aboutHost.Interpreters) {
                     telemetry.ReportEvent(TelemetryArea.Configuration, "Remote Interpteter", name);
-                    telemetry.ReportEvent(TelemetryArea.Configuration, "Remote OS", aboutHost.OS.VersionString);
+                    telemetry.ReportEvent(TelemetryArea.Configuration, "Remote OS", aboutHost.Version);
                     telemetry.ReportEvent(TelemetryArea.Configuration, "Remote CPUs", aboutHost.ProcessorCount);
                     telemetry.ReportEvent(TelemetryArea.Configuration, "Remote RAM", aboutHost.TotalPhysicalMemory);
                     telemetry.ReportEvent(TelemetryArea.Configuration, "Remote Video Card", aboutHost.VideoCardName);

@@ -8,7 +8,6 @@ using System.Threading;
 using System.Windows.Threading;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Threading;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
