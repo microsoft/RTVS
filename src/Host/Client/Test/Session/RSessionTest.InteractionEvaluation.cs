@@ -4,12 +4,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Test.Fixtures;
+using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
@@ -23,17 +22,16 @@ namespace Microsoft.R.Host.Client.Test.Session {
     public partial class RSessionTest {
         [Category.R.Session]
         public class InteractionEvaluation : IAsyncLifetime {
-            private readonly CoreServicesFixture _coreServices;
+            private readonly TestCoreShell _coreShell = new TestCoreShell(null);
             private readonly TaskObserverMethodFixture _taskObserver;
             private readonly TestMethodFixture _testMethod;
             private readonly IBrokerClient _brokerClient;
             private readonly RSession _session;
 
-            public InteractionEvaluation(CoreServicesFixture coreServices, TestMethodFixture testMethod, TaskObserverMethodFixture taskObserver) {
-                _coreServices = coreServices;
+            public InteractionEvaluation(TestMethodFixture testMethod, TaskObserverMethodFixture taskObserver) {
                 _taskObserver = taskObserver;
                 _testMethod = testMethod;
-                _brokerClient = CreateLocalBrokerClient(coreServices, nameof(RSessionTest) + nameof(InteractionEvaluation));
+                _brokerClient = CreateLocalBrokerClient(_coreShell, nameof(RSessionTest) + nameof(InteractionEvaluation));
                 _session = new RSession(0, _testMethod.FileSystemSafeName, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
             }
 

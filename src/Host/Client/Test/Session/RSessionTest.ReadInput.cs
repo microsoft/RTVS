@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Test.Fixtures;
+using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
@@ -19,14 +19,15 @@ using Xunit;
 namespace Microsoft.R.Host.Client.Test.Session {
     public partial class RSessionTest {
         public class ReadInput : IAsyncLifetime {
+            private readonly TestCoreShell _coreShell = new TestCoreShell(null);
             private readonly TaskObserverMethodFixture _taskObserver;
             private readonly IBrokerClient _brokerClient;
             private readonly RSession _session;
             private readonly RSessionCallbackStub _callback;
 
-            public ReadInput(CoreServicesFixture coreServices, TestMethodFixture testMethod, TaskObserverMethodFixture taskObserver) {
+            public ReadInput(TestMethodFixture testMethod, TaskObserverMethodFixture taskObserver) {
                 _taskObserver = taskObserver;
-                _brokerClient = CreateLocalBrokerClient(coreServices, nameof(RSessionTest) + nameof(ReadInput));
+                _brokerClient = CreateLocalBrokerClient(_coreShell, nameof(RSessionTest) + nameof(ReadInput));
                 _session = new RSession(0, testMethod.FileSystemSafeName, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
                 _callback = new RSessionCallbackStub();
             }

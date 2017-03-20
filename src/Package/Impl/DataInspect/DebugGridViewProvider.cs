@@ -10,22 +10,20 @@ using Microsoft.R.Debugger;
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     [Export(typeof(IDebugGridViewProvider))]
     internal class DebugGridViewProvider : IDebugGridViewProvider {
-        private readonly IObjectDetailsViewerAggregator _aggregator;
         private readonly ICoreShell _coreShell;
 
         [ImportingConstructor]
-        public DebugGridViewProvider(ICoreShell coreShell, IObjectDetailsViewerAggregator aggregator) {
-            _aggregator = aggregator;
+        public DebugGridViewProvider(ICoreShell coreShell) {
             _coreShell = coreShell;
         }
 
         public bool CanShowDataGrid(IREvaluationResultInfo evaluationResult) {
-            var wrapper = new VariableViewModel(evaluationResult, _aggregator, _coreShell);
+            var wrapper = new VariableViewModel(evaluationResult, _coreShell);
             return wrapper.CanShowDetail;
         }
 
         public void ShowDataGrid(IREvaluationResultInfo evaluationResult) {
-            var wrapper = new VariableViewModel(evaluationResult, _aggregator, _coreShell);
+            var wrapper = new VariableViewModel(evaluationResult, _coreShell);
             if (!wrapper.CanShowDetail) {
                 throw new InvalidOperationException("Cannot show data grid on evaluation result " + evaluationResult);
             }

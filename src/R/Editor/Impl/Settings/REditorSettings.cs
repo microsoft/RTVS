@@ -2,10 +2,11 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Core.Settings;
 using Microsoft.Languages.Editor.Settings;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.Formatting;
 
@@ -22,26 +23,17 @@ namespace Microsoft.R.Editor.Settings {
         public const string PartialArgumentNameMatchKey = "PartialArgumentNameMatch";
         public const string EnableOutliningKey = "EnableOutlining";
 
-        private static bool _initialized = false;
+        private static IEditorSettingsStorage _storage;
         private static RFormatOptions _formatOptions = new RFormatOptions();
 
-        private static IEditorSettingsStorage Storage {
-            get {
-                var storage = shell.GetSettings(shell.Current, RContentTypeDefinition.LanguageName);
-
-                if (!_initialized) {
-                    storage.SettingsChanged += OnSettingsChanged;
-                    _initialized = true;
-                }
-
-                return storage;
-            }
+        public static void Initialize(ICoreShell coreShell) {
+            var cc = coreShell.GetService<ICompositionCatalog>();
+            _storage = CommonSettings.GetSettingsStorage(cc, RContentTypeDefinition.LanguageName);
+            Debug.Assert(_storage != null);
+            _storage.SettingsChanged += OnSettingsChanged;
         }
 
-        public static IWritableEditorSettingsStorage WritableStorage {
-            get { return Storage as IWritableEditorSettingsStorage; }
-        }
-
+        public static IWritableEditorSettingsStorage WritableStorage => _storage as IWritableEditorSettingsStorage;
         public static event EventHandler<EventArgs> Changed;
 
         public static void ResetSettings() {
@@ -49,56 +41,53 @@ namespace Microsoft.R.Editor.Settings {
             _formatOptions = new RFormatOptions();
         }
 
-        private static void OnSettingsChanged(object sender, EventArgs e) {
-            Changed?.Invoke(null, EventArgs.Empty);
-        }
-
-        public static bool CompletionEnabled => CommonSettings.GetCompletionEnabled(Storage);
-        public static bool SignatureHelpEnabled => CommonSettings.GetSignatureHelpEnabled(Storage);
+        private static void OnSettingsChanged(object sender, EventArgs e)=> Changed?.Invoke(null, EventArgs.Empty);
+        public static bool CompletionEnabled => _storage.GetCompletionEnabled();
+        public static bool SignatureHelpEnabled => _storage.GetSignatureHelpEnabled();
 
         public static bool SyntaxCheck {
-            get { return CommonSettings.GetValidationEnabled(Storage); }
+            get { return _storage.GetValidationEnabled(); }
             set { WritableStorage?.SetBoolean(CommonSettings.ValidationEnabledKey, value); }
         }
 
         public static bool InsertMatchingBraces {
-            get { return Storage.GetBoolean(CommonSettings.InsertMatchingBracesKey, true); }
+            get { return _storage.GetBoolean(CommonSettings.InsertMatchingBracesKey, true); }
             set { WritableStorage?.SetBoolean(CommonSettings.InsertMatchingBracesKey, value); }
         }
 
         public static bool FormatOnPaste {
-            get { return Storage.GetBoolean(FormatOnPasteKey, true); }
+            get { return _storage.GetBoolean(FormatOnPasteKey, true); }
             set { WritableStorage?.SetBoolean(FormatOnPasteKey, value); }
         }
 
         public static bool AutoFormat {
-            get { return Storage.GetBoolean(CommonSettings.AutoFormatKey, true); }
+            get { return _storage.GetBoolean(CommonSettings.AutoFormatKey, true); }
             set { WritableStorage?.SetBoolean(CommonSettings.AutoFormatKey, value); }
         }
 
         public static bool FormatScope {
-            get { return Storage.GetBoolean(FormatScopeKey, true); }
+            get { return _storage.GetBoolean(FormatScopeKey, true); }
             set { WritableStorage?.SetBoolean(FormatScopeKey, value); }
         }
 
         public static bool CommitOnSpace {
-            get { return Storage.GetBoolean(CommitOnSpaceKey, false); }
+            get { return _storage.GetBoolean(CommitOnSpaceKey, false); }
             set { WritableStorage?.SetBoolean(CommitOnSpaceKey, value); }
         }
 
         public static bool CommitOnEnter {
-            get { return Storage.GetBoolean(CommitOnEnterKey, false); }
+            get { return _storage.GetBoolean(CommitOnEnterKey, false); }
             set { WritableStorage?.SetBoolean(CommitOnEnterKey, value); }
         }
 
 
         public static bool ShowCompletionOnFirstChar {
-            get { return Storage.GetBoolean(CompletionOnFirstCharKey, true); }
+            get { return _storage.GetBoolean(CompletionOnFirstCharKey, true); }
             set { WritableStorage?.SetBoolean(CompletionOnFirstCharKey, value); }
         }
 
         public static bool ShowCompletionOnTab {
-            get { return Storage.GetBoolean(CompletionOnTabKey, false); }
+            get { return _storage.GetBoolean(CompletionOnTabKey, false); }
             set { WritableStorage?.SetBoolean(CompletionOnTabKey, value); }
         }
 
@@ -108,37 +97,37 @@ namespace Microsoft.R.Editor.Settings {
         }
 
         public static int IndentSize {
-            get { return Storage.GetInteger(CommonSettings.FormatterIndentSizeKey, 4); }
+            get { return _storage.GetInteger(CommonSettings.FormatterIndentSizeKey, 4); }
             set { WritableStorage?.SetInteger(CommonSettings.FormatterIndentSizeKey, value); }
         }
 
         public static IndentStyle IndentStyle {
-            get { return (IndentStyle)Storage.GetInteger(CommonSettings.IndentStyleKey, (int)IndentStyle.Smart); }
+            get { return (IndentStyle)_storage.GetInteger(CommonSettings.IndentStyleKey, (int)IndentStyle.Smart); }
             set { WritableStorage?.SetInteger(CommonSettings.IndentStyleKey, (int)value); }
         }
 
         public static int TabSize {
-            get { return Storage.GetInteger(CommonSettings.FormatterTabSizeKey, 4); }
+            get { return _storage.GetInteger(CommonSettings.FormatterTabSizeKey, 4); }
             set { WritableStorage?.SetInteger(CommonSettings.FormatterTabSizeKey, value); }
         }
 
         public static bool SendToReplOnCtrlEnter {
-            get { return Storage.GetBoolean(REditorSettings.SendToReplOnCtrlEnterKey, true); }
+            get { return _storage.GetBoolean(REditorSettings.SendToReplOnCtrlEnterKey, true); }
             set { WritableStorage?.SetBoolean(REditorSettings.SendToReplOnCtrlEnterKey, value); }
         }
 
         public static bool SyntaxCheckInRepl {
-            get { return Storage.GetBoolean(REditorSettings.SyntaxCheckInReplKey, false); }
+            get { return _storage.GetBoolean(REditorSettings.SyntaxCheckInReplKey, false); }
             set { WritableStorage?.SetBoolean(REditorSettings.SyntaxCheckInReplKey, false); }
         }
 
         public static bool PartialArgumentNameMatch {
-            get { return Storage.GetBoolean(REditorSettings.PartialArgumentNameMatchKey, false); }
+            get { return _storage.GetBoolean(REditorSettings.PartialArgumentNameMatchKey, false); }
             set { WritableStorage?.SetBoolean(REditorSettings.PartialArgumentNameMatchKey, value); }
         }
 
         public static bool EnableOutlining {
-            get { return Storage.GetBoolean(REditorSettings.EnableOutliningKey, true); }
+            get { return _storage.GetBoolean(REditorSettings.EnableOutliningKey, true); }
             set { WritableStorage?.SetBoolean(REditorSettings.EnableOutliningKey, value); }
         }
 

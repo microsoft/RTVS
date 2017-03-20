@@ -1,16 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Test.Fakes.Shell;
-using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.R.DataInspection;
 using Microsoft.R.ExecutionTracing;
 using Microsoft.R.Host.Client;
@@ -29,11 +26,12 @@ namespace Microsoft.R.DataInspection.Test {
     [ExcludeFromCodeCoverage]
     public class ValuesTest : IAsyncLifetime {
         private const REvaluationResultProperties AllFields = unchecked((REvaluationResultProperties)~0);
+        private readonly TestCoreShell _coreShell = new TestCoreShell(null);
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _session;
 
-        public ValuesTest(CoreServicesFixture coreServices, TestMethodFixture testMethod) {
-            _sessionProvider = new RSessionProvider(coreServices);
+        public ValuesTest(TestMethodFixture testMethod) {
+            _sessionProvider = new RSessionProvider(_coreShell);
             _session = _sessionProvider.GetOrCreate(testMethod.FileSystemSafeName);
         }
 

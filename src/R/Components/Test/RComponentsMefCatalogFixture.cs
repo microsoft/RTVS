@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core.Extensions;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Fakes.Shell;
-using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Test.StubFactories;
 using Microsoft.UnitTests.Core.Mef;
@@ -39,16 +38,14 @@ namespace Microsoft.R.Components.Test {
             };
         }
 
-        public IExportProvider Create(CoreServicesFixture coreServices) => new RComponentsTestExportProvider(CreateContainer(), coreServices);
+        public IExportProvider Create() => new RComponentsTestExportProvider(CreateContainer());
 
         private class RComponentsTestExportProvider : TestExportProvider {
-            private readonly CoreServicesFixture _coreServices;
-            public RComponentsTestExportProvider(CompositionContainer compositionContainer, CoreServicesFixture coreServices) : base(compositionContainer) {
-                _coreServices = coreServices;
+            public RComponentsTestExportProvider(CompositionContainer compositionContainer) : base(compositionContainer) {
             }
 
             public override Task<Task<RunSummary>> InitializeAsync(ITestInput testInput, IMessageBus messageBus) {
-                var coreShell = new TestCoreShell(CompositionContainer, _coreServices);
+                var coreShell = new TestCoreShell(CompositionContainer);
                 var batch = new CompositionBatch()
                     .AddValue<IRSettings>(RSettingsStubFactory.CreateForExistingRPath(testInput.FileSytemSafeName))
                     .AddValue<ICoreShell>(coreShell)

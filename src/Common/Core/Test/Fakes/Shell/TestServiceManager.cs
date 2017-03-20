@@ -17,7 +17,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
         public override T GetService<T>(Type type = null) {
             // First try internal services
             var service = base.GetService<T>(type);
-            return service ?? _exportProvider.GetExportedValueOrDefault<T>();
+            return service ?? _exportProvider?.GetExportedValueOrDefault<T>();
         }
         #endregion
     }

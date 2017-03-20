@@ -218,6 +218,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Shell\CompositionCatalog.cs" />
     <Compile Include="Shell\VsAppShell.Lifetime.cs" />
     <Compile Include="Shell\VsEditorSupport.cs" />
     <Compile Include="Shell\VsPlatformServices.cs" />

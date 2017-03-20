@@ -3,7 +3,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core.Logging;
-using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.UnitTests.Core.XUnit;
@@ -21,24 +20,24 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
 
         public FeedbackCommandTest() {
             _lp = Substitute.For<ILoggingPermissions>();
-            _coreShell = new TestCoreShell(_lp);
+            _coreShell = new TestCoreShell(null, null, _lp);
         }
 
         [Test]
         public void ReportIssue() {
-            var cmd = new ReportIssueCommand(_services);
+            var cmd = new ReportIssueCommand(_coreShell);
             TestStatus(cmd);
         }
 
         [Test]
         public void SendFrown() {
-            var cmd = new SendFrownCommand(_services);
+            var cmd = new SendFrownCommand(_coreShell);
             TestStatus(cmd);
         }
 
         [Test]
         public void SendSmile() {
-            var cmd = new SendSmileCommand(_services);
+            var cmd = new SendSmileCommand(_coreShell);
             TestStatus(cmd);
         }
 

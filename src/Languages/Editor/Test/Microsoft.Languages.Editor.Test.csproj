@@ -50,13 +50,10 @@
     <Compile Include="LanguagesEditorMefCatalogFixture.cs" />
     <Compile Include="Shell\AssemblyLocations.cs" />
     <Compile Include="Shell\TestAssemblyResolver.cs" />
-    <Compile Include="Shell\TestShellBase.cs" />
-    <Compile Include="Shell\TestUIServices.cs" />
     <Compile Include="TestFilesFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\ServiceManagerTest.cs" />
     <Compile Include="Shell\EditorTestCompositionCatalog.cs" />
-    <Compile Include="Shell\TestEditorShell.cs" />
     <Compile Include="Text\TextChangesTest.cs" />
     <Compile Include="Text\TextProviderTest.cs" />
     <Compile Include="Text\Typing.cs" />

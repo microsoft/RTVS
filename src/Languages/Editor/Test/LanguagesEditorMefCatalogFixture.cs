@@ -8,11 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core.Extensions;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Fakes.Shell;
-using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.Common.Core.Test.StubBuilders;
-using Microsoft.Languages.Editor.Shell;
-using Microsoft.Languages.Editor.Test.Fakes.Shell;
-using Microsoft.R.Components.Settings;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit.Sdk;
@@ -41,21 +37,18 @@ namespace Microsoft.Languages.Editor.Test {
             };
         }
 
-        public virtual IExportProvider Create(CoreServicesFixture coreServices) => new LanguagesEditorTestExportProvider(CreateContainer(), coreServices);
+        public virtual IExportProvider Create() => new LanguagesEditorTestExportProvider(CreateContainer());
 
         protected class LanguagesEditorTestExportProvider : TestExportProvider {
-            private readonly CoreServicesFixture _coreServices;
-            public LanguagesEditorTestExportProvider(CompositionContainer compositionContainer, CoreServicesFixture coreServices) : base(compositionContainer) {
-                _coreServices = coreServices;
+            private readonly ICoreShell _coreShell;
+            public LanguagesEditorTestExportProvider(CompositionContainer compositionContainer) : base(compositionContainer) {
+                _coreShell = new TestCoreShell(compositionContainer);
             }
 
             public override Task<Task<RunSummary>> InitializeAsync(ITestInput testInput, IMessageBus messageBus) {
-                var shell = new TestCoreShell(CompositionContainer, _coreServices);
                 var batch = new CompositionBatch()
                     .AddValue(FileSystemStubFactory.CreateDefault())
-                    .AddValue<ICoreShell>(shell)
-                    .AddValue<ICoreShell>(shell)
-                    .AddValue(shell);
+                    .AddValue(_coreShell);
                 CompositionContainer.Compose(batch);
                 return base.InitializeAsync(testInput, messageBus);
             }

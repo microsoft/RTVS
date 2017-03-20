@@ -2,29 +2,43 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
+using System.Windows.Threading;
+using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Core.UI;
 using Microsoft.UnitTests.Core.Threading;
+using NSubstitute;
 
 namespace Microsoft.Common.Core.Test.Fakes.Shell {
     [ExcludeFromCodeCoverage]
-    public class TestCoreShell : ICoreShell, IMainThread {
+    public sealed class TestCoreShell : ICoreShell, IIdleTimeSource {
         private readonly CompositionContainer _container;
         private readonly TestServiceManager _serviceManager;
+        private readonly Thread _creatorThread;
 
-        public TestCoreShell(CompositionContainer container, ICoreServices services) {
+        public TestCoreShell(CompositionContainer container
+            , IActionLog log = null
+            , ILoggingPermissions loggingPermissions = null
+            , IFileSystem fs = null
+            , IRegistry registry = null
+            , IProcessServices ps = null) {
             _container = container;
+            _creatorThread = UIThreadHelper.Instance.Thread;
             _serviceManager = new TestServiceManager(container);
             _serviceManager
-                .AddService(services)
-                .AddService(new TestFileDialog())
-                .AddService(new TestProgressDialog())
+                .AddService(log ?? Substitute.For<IActionLog>())
+                .AddService(loggingPermissions ?? Substitute.For<ILoggingPermissions>())
+                .AddService(fs ?? new FileSystem())
+                .AddService(registry ?? new RegistryImpl())
+                .AddService(ps ?? new ProcessServices())
+                .AddService(new TestUIServices())
                 .AddService(new TestPlatformServices());
         }
 
@@ -39,28 +53,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
         public event EventHandler<EventArgs> Started;
         public event EventHandler<EventArgs> Idle;
         public event EventHandler<EventArgs> Terminating;
-        public event EventHandler<EventArgs> UIThemeChanged;
-
-        public void ShowErrorMessage(string message) {
-            LastShownErrorMessage = message;
-        }
-
-        public void ShowContextMenu(System.ComponentModel.Design.CommandID commandId, int x, int y, object commandTaget = null) => LastShownContextMenu = commandId;
-
-        public MessageButtons ShowMessage(string message, MessageButtons buttons, MessageType messageType = MessageType.Information) {
-            LastShownMessage = message;
-            if (buttons == MessageButtons.YesNo || buttons == MessageButtons.YesNoCancel) {
-                return MessageButtons.Yes;
-            }
-            return MessageButtons.OK;
-        }
-
-        public string SaveFileIfDirty(string fullPath) => fullPath;
-        public void UpdateCommandStatus(bool immediate) { }
-
-        public string LastShownMessage { get; private set; }
-        public string LastShownErrorMessage { get; private set; }
-        public System.ComponentModel.Design.CommandID LastShownContextMenu { get; private set; }
+#pragma warning restore 67
         public bool IsUnitTestEnvironment => true;
 
         #region IMainThread
@@ -68,6 +61,39 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
 
         public void Post(Action action, CancellationToken cancellationToken) =>
             UIThreadHelper.Instance.InvokeAsync(action, cancellationToken).DoNotWait();
+        #endregion
+
+        #region IIdleTimeSource
+        public void DoIdle() {
+            UIThreadHelper.Instance.Invoke(() => Idle?.Invoke(null, EventArgs.Empty));
+            DoEvents();
+        }
+
+        public void DoEvents() {
+            var disp = GetDispatcher();
+            if (disp != null) {
+                DispatcherFrame frame = new DispatcherFrame();
+                disp.BeginInvoke(DispatcherPriority.Background,
+                        new DispatcherOperationCallback(ExitFrame), frame);
+                Dispatcher.PushFrame(frame);
+            }
+        }
+
+        public object ExitFrame(object f) {
+            ((DispatcherFrame)f).Continue = false;
+            return null;
+        }
+
+        private Dispatcher GetDispatcher(Thread thread = null) {
+            if (thread == null) {
+                if (_creatorThread != null && _creatorThread.ManagedThreadId == UIThreadHelper.Instance.Thread.ManagedThreadId) {
+                    return Dispatcher.FromThread(_creatorThread);
+                }
+            } else {
+                return Dispatcher.FromThread(thread);
+            }
+            return null;
+        }
         #endregion
     }
 }

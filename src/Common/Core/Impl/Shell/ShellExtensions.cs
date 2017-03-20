@@ -21,6 +21,7 @@ namespace Microsoft.Common.Core.Shell {
         public static ITelemetryService Telemetry(this ICoreShell shell) => shell.GetService<ITelemetryService>();
         public static ISecurityService Security(this ICoreShell shell) => shell.GetService<ISecurityService>();
         public static ITaskService Tasks(this ICoreShell shell) => shell.GetService<ITaskService>();
+        public static IUIServices UI(this ICoreShell shell) => shell.GetService<IUIServices>();
 
         /// <summary>
         /// Displays application-specific modal progress window

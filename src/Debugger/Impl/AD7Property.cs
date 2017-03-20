@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client;
 using Microsoft.R.StackTracing;
@@ -35,6 +36,7 @@ namespace Microsoft.R.Debugger {
 
         private Lazy<IReadOnlyList<IREvaluationResultInfo>> _children;
         private Lazy<string> _reprToString;
+        private IRToolsSettings _settings;
 
         public AD7Property Parent { get; }
         public AD7StackFrame StackFrame { get; }
@@ -55,6 +57,7 @@ namespace Microsoft.R.Debugger {
 
             _children = Lazy.Create(CreateChildren);
             _reprToString = Lazy.Create(GetReprToString);
+            _settings = stackFrame.Engine.Shell.GetService<IRToolsSettings>();
         }
 
         private IReadOnlyList<IREvaluationResultInfo> CreateChildren() =>
@@ -64,7 +67,7 @@ namespace Microsoft.R.Debugger {
                     return new IREvaluationResultInfo[0];
                 }
 
-                REvaluationResultProperties properties = RToolsSettings.Current.EvaluateActiveBindings ? REvaluationResultProperties.ComputedValueProperty : 0;
+                REvaluationResultProperties properties = _settings.EvaluateActiveBindings ? REvaluationResultProperties.ComputedValueProperty : 0;
                 properties |= PrefetchedProperties;
                 var children = await valueResult.DescribeChildrenAsync(properties, Repr, ChildrenMaxCount, ct);
 
@@ -84,7 +87,7 @@ namespace Microsoft.R.Debugger {
         int IDebugProperty2.EnumChildren(enum_DEBUGPROP_INFO_FLAGS dwFields, uint dwRadix, ref Guid guidFilter, enum_DBG_ATTRIB_FLAGS dwAttribFilter, string pszNameFilter, uint dwTimeout, out IEnumDebugPropertyInfo2 ppEnum) {
             IEnumerable<IREvaluationResultInfo> children = _children.Value;
 
-            if (!RToolsSettings.Current.ShowDotPrefixedVariables) {
+            if (!_settings.ShowDotPrefixedVariables) {
                 children = children.Where(v => v.Name != null && !v.Name.StartsWithOrdinal("."));
             }
 

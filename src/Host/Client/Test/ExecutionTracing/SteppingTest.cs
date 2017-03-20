@@ -1,14 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Test.Fakes.Shell;
-using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test;
@@ -22,11 +19,12 @@ namespace Microsoft.R.ExecutionTracing.Test {
     [ExcludeFromCodeCoverage]
     [Category.R.ExecutionTracing]
     public class SteppingTest : IAsyncLifetime {
+        private readonly TestCoreShell _coreShell = new TestCoreShell(null);
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _session;
 
-        public SteppingTest(CoreServicesFixture coreServices, TestMethodFixture testMethod) {
-            _sessionProvider = new RSessionProvider(coreServices);
+        public SteppingTest(TestMethodFixture testMethod) {
+            _sessionProvider = new RSessionProvider(_coreShell);
             _session = _sessionProvider.GetOrCreate(testMethod.FileSystemSafeName);
         }
 

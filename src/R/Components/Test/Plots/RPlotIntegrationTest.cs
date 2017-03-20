@@ -35,6 +35,7 @@ namespace Microsoft.R.Components.Test.Plots {
         private readonly IRPlotHistoryVisualComponentContainerFactory _plotHistoryVisualComponentContainerFactory;
         private readonly MethodInfo _testMethod;
         private readonly TestFilesFixture _testFiles;
+        private readonly TestUIServices _ui;
         private IInteractiveWindowVisualComponent _replVisualComponent;
 
         public RPlotIntegrationTest(IExportProvider exportProvider, TestMethodFixture testMethod, TestFilesFixture testFiles) {
@@ -44,6 +45,7 @@ namespace Microsoft.R.Components.Test.Plots {
             _plotHistoryVisualComponentContainerFactory = exportProvider.GetExportedValue<IRPlotHistoryVisualComponentContainerFactory>();
             _testMethod = testMethod.MethodInfo;
             _testFiles = testFiles;
+            _ui = CoreShell.UI() as TestUIServices;
         }
 
         public async Task InitializeAsync() {
@@ -177,7 +179,7 @@ namespace Microsoft.R.Components.Test.Plots {
             _workflow.Plots.ActiveDevice.Should().Be(device2);
 
             Clipboard.ContainsImage().Should().BeTrue();
-            CoreShell.LastShownErrorMessage.Should().BeNullOrEmpty();
+            _ui.LastShownErrorMessage.Should().BeNullOrEmpty();
 
             var clipboardImage = Clipboard.GetImage();
             clipboardImage.Should().HaveSamePixels(plot1to10);
@@ -246,7 +248,7 @@ namespace Microsoft.R.Components.Test.Plots {
             _workflow.Plots.ActiveDevice.Should().Be(device2);
 
             Clipboard.ContainsData(DataFormats.EnhancedMetafile).Should().BeTrue();
-            CoreShell.LastShownErrorMessage.Should().BeNullOrEmpty();
+            _ui.LastShownErrorMessage.Should().BeNullOrEmpty();
         }
 
         [Test(ThreadType.UI)]
@@ -277,15 +279,14 @@ namespace Microsoft.R.Components.Test.Plots {
             device1Commands.Copy.Should().BeEnabled();
             await device1Commands.Copy.InvokeAsync();
 
-            CoreShell.LastShownErrorMessage.Should().BeNullOrEmpty();
+            _ui.LastShownErrorMessage.Should().BeNullOrEmpty();
 
             device2Commands.Paste.Should().BeEnabled();
             var plotReceivedTask = EventTaskSources.IRPlotDevice.PlotAddedOrUpdated.Create(device2);
             await device2Commands.Paste.InvokeAsync();
             await plotReceivedTask;
 
-            CoreShell.LastShownErrorMessage.Should().BeNullOrEmpty();
-
+            _ui.LastShownErrorMessage.Should().BeNullOrEmpty();
             device2.ActivePlot.Image.Should().HaveSamePixels(plot1to10);
         }
 
@@ -317,7 +318,7 @@ namespace Microsoft.R.Components.Test.Plots {
             device1Commands.Cut.Should().BeEnabled();
             await device1Commands.Cut.InvokeAsync();
 
-            CoreShell.LastShownErrorMessage.Should().BeNullOrEmpty();
+            _ui.LastShownErrorMessage.Should().BeNullOrEmpty();
 
             device2Commands.Paste.Should().BeEnabled();
             var plotReceivedTask = EventTaskSources.IRPlotDevice.PlotAddedOrUpdated.Create(device2);
@@ -326,7 +327,7 @@ namespace Microsoft.R.Components.Test.Plots {
             await plotReceivedTask;
             await plotRemovedTask;
 
-            CoreShell.LastShownErrorMessage.Should().BeNullOrEmpty();
+            _ui.LastShownErrorMessage.Should().BeNullOrEmpty();
 
             device1.ActivePlot.Should().BeNull();
             device2.ActivePlot.Should().NotBeNull();
@@ -364,7 +365,7 @@ namespace Microsoft.R.Components.Test.Plots {
             // Deleting the plots from device 1 should not have changed the active device
             _workflow.Plots.ActiveDevice.Should().Be(device2);
 
-            CoreShell.LastShownErrorMessage.Should().BeNullOrEmpty();
+            _ui.LastShownErrorMessage.Should().BeNullOrEmpty();
 
             device1.ActivePlot.Should().BeNull();
             device2.ActivePlot.Should().NotBeNull();
@@ -404,7 +405,7 @@ namespace Microsoft.R.Components.Test.Plots {
             // Deleting the plot from device 1 should not have changed the active device
             _workflow.Plots.ActiveDevice.Should().Be(device2);
 
-            CoreShell.LastShownErrorMessage.Should().BeNullOrEmpty();
+            _ui.LastShownErrorMessage.Should().BeNullOrEmpty();
 
             device1.ActivePlot.Image.Should().HaveSamePixels(plot1to10);
             device2.ActivePlot.Image.Should().HaveSamePixels(plot2to10);
@@ -485,7 +486,7 @@ namespace Microsoft.R.Components.Test.Plots {
             await deviceCommands.ExportAsPdf.InvokeAsync();
 
             File.Exists(outputFilePath).Should().BeTrue();
-            CoreShell.LastShownErrorMessage.Should().BeNullOrEmpty();
+            _ui.LastShownErrorMessage.Should().BeNullOrEmpty();
         }
 
         [Test(ThreadType.UI)]
@@ -506,7 +507,7 @@ namespace Microsoft.R.Components.Test.Plots {
                 await deviceCommands.ExportAsImage.InvokeAsync();
 
                 File.Exists(outputFilePath).Should().BeTrue();
-                CoreShell.LastShownErrorMessage.Should().BeNullOrEmpty();
+                _ui.LastShownErrorMessage.Should().BeNullOrEmpty();
 
                 var image = BitmapImageFactory.Load(outputFilePath);
                 image.PixelWidth.Should().Be(600);
@@ -536,7 +537,7 @@ namespace Microsoft.R.Components.Test.Plots {
             await deviceCommands.ExportAsImage.InvokeAsync();
 
             File.Exists(FileDialog.SaveFilePath).Should().BeFalse();
-            CoreShell.LastShownErrorMessage.Should().Contain(".unsupportedextension");
+            _ui.LastShownErrorMessage.Should().Contain(".unsupportedextension");
         }
 
         [Test(ThreadType.UI)]
@@ -718,7 +719,7 @@ namespace Microsoft.R.Components.Test.Plots {
 
             await InitializeGraphicsDevice();
 
-            await ExecuteAndWaitForPlotsAsync(new [] {
+            await ExecuteAndWaitForPlotsAsync(new[] {
                 "plot(0:10)",
             });
 
@@ -732,7 +733,7 @@ namespace Microsoft.R.Components.Test.Plots {
             deviceCommands.EndLocator.Should().BeInvisibleAndDisabled();
 
             var firstLocatorModeTask = EventTaskSources.IRPlotDevice.LocatorModeChanged.Create(device);
-            var locatorTask = ExecuteAndDoNotWaitForPlotsAsync(new [] {
+            var locatorTask = ExecuteAndDoNotWaitForPlotsAsync(new[] {
                 "res <- locator()",
             });
             await firstLocatorModeTask;
@@ -885,7 +886,7 @@ namespace Microsoft.R.Components.Test.Plots {
                 await plotReceivedTask;
                 _workflow.Plots.ActiveDevice.ActivePlot.Image.Should().HaveSamePixels(plot1to10);
 
-                CoreShell.LastShownErrorMessage.Should().BeNullOrEmpty();
+                _ui.LastShownErrorMessage.Should().BeNullOrEmpty();
             }
         }
 
@@ -919,14 +920,14 @@ namespace Microsoft.R.Components.Test.Plots {
                 historyCommands.Copy.Should().BeEnabled();
                 await historyCommands.Copy.InvokeAsync();
 
-                CoreShell.LastShownErrorMessage.Should().BeNullOrEmpty();
+                _ui.LastShownErrorMessage.Should().BeNullOrEmpty();
 
                 device2Commands.Paste.Should().BeEnabled();
                 var plotReceivedTask = EventTaskSources.IRPlotDevice.PlotAddedOrUpdated.Create(device2);
                 await device2Commands.Paste.InvokeAsync();
                 await plotReceivedTask;
 
-                CoreShell.LastShownErrorMessage.Should().BeNullOrEmpty();
+                _ui.LastShownErrorMessage.Should().BeNullOrEmpty();
 
                 device2.ActivePlot.Image.Should().HaveSamePixels(plot1.Image);
             }
