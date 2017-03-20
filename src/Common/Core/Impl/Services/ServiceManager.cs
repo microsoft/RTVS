@@ -144,7 +144,7 @@ namespace Microsoft.Common.Core.Services {
 
         public void Dispose() {
             lock (_lock) {
-                foreach (var d in _services.Values.OfType<IDisposable>()) {
+                foreach (var d in _services.Values.OfType<IDisposable>().ToList()) {
                     d.Dispose();
                 }
                 _services.Clear();
