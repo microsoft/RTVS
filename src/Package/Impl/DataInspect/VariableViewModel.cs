@@ -39,10 +39,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// </summary>
         /// <param name="evaluation">R session's evaluation result</param>
         /// <param name="truncateChildren">true to truncate children returned by GetChildrenAsync</param>
-        public VariableViewModel(IREvaluationResultInfo evaluation, IObjectDetailsViewerAggregator aggregator, ICoreShell coreShell, int index = -1, int? maxChildrenCount = null) :
+        public VariableViewModel(IREvaluationResultInfo evaluation, ICoreShell coreShell, int index = -1, int? maxChildrenCount = null) :
             base(evaluation, coreShell, maxChildrenCount) {
-            _aggregator = aggregator;
-
+            _aggregator = coreShell.GetService<IObjectDetailsViewerAggregator>();
             Index = index;
             var result = DebugEvaluation as IRValueInfo;
             if (result != null) {

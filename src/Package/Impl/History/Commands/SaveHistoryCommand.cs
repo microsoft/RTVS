@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI;
 using Microsoft.Languages.Editor.Controller.Commands;
 using Microsoft.R.Components.Controller;
@@ -18,12 +19,14 @@ namespace Microsoft.VisualStudio.R.Package.History.Commands {
     internal class SaveHistoryCommand : ViewCommand {
         private readonly IUIServices _ui;
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
+        private readonly IRToolsSettings _settings;
         private readonly IRHistory _history;
 
         public SaveHistoryCommand(IUIServices ui, ITextView textView, IRHistoryProvider historyProvider, IRInteractiveWorkflow interactiveWorkflow)
             : base(textView, RGuidList.RCmdSetGuid, RPackageCommandId.icmdSaveHistory, false) {
             _ui = ui;
             _interactiveWorkflow = interactiveWorkflow;
+            _settings = _interactiveWorkflow.Shell.GetService<IRToolsSettings>();
             _history = historyProvider.GetAssociatedRHistory(textView);
         }
 
@@ -34,7 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.History.Commands {
         }
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
-            var initialPath = RToolsSettings.Current.WorkingDirectory != null ? PathHelper.EnsureTrailingSlash(RToolsSettings.Current.WorkingDirectory) : null;
+            var initialPath = _settings.WorkingDirectory != null ? PathHelper.EnsureTrailingSlash(_settings.WorkingDirectory) : null;
             var file = _ui.FileDialog.ShowSaveFileDialog(Resources.HistoryFileFilter, initialPath, Resources.SaveHistoryAsTitle);
             if (file != null) {
                 _history.TrySaveToFile(file);

@@ -31,7 +31,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             DoIdle();
         }
 
-        private void OnApplicationStarted(object sender, EventArgs e) => _appConstants.Initialize();
+        private void OnApplicationStarted(object sender, EventArgs e) { }
         private void OnApplicationClosing(object sender, EventArgs e) => Terminating?.Invoke(this, EventArgs.Empty);
     }
 }

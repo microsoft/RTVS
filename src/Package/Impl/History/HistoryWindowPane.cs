@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.History;
@@ -28,15 +29,17 @@ namespace Microsoft.VisualStudio.R.Package.History {
 
         private readonly ITextBuffer _historyTextBuffer;
         private readonly IRHistoryProvider _historyProvider;
+        private readonly ICoreShell _coreShell;
         private readonly ITextEditorFactoryService _textEditorFactory;
         private IOleCommandTarget _commandTarget;
         private IRHistory _history;
         private IRHistoryFiltering _historyFiltering;
 
-        public HistoryWindowPane(ITextBuffer historyTextBuffer, IRHistoryProvider historyProvider, ITextEditorFactoryService textEditorFactory) {
+        public HistoryWindowPane(ITextBuffer historyTextBuffer, IRHistoryProvider historyProvider, ICoreShell coreShell) {
             _historyTextBuffer = historyTextBuffer;
             _historyProvider = historyProvider;
-            _textEditorFactory = textEditorFactory;
+            _coreShell = coreShell;
+            _textEditorFactory = _coreShell.GetService<ITextEditorFactoryService>();
 
             BitmapImageMoniker = KnownMonikers.History;
             Caption = Resources.HistoryWindowCaption;
@@ -95,7 +98,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
         }
 
         public override IVsSearchTask CreateSearch(uint dwCookie, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback) {
-            return new HistorySearchTask(dwCookie, _historyFiltering, pSearchQuery, pSearchCallback);
+            return new HistorySearchTask(dwCookie, _historyFiltering, pSearchQuery, pSearchCallback, _coreShell);
         }
 
         public override void ClearSearch() {
@@ -104,22 +107,25 @@ namespace Microsoft.VisualStudio.R.Package.History {
         }
 
         private void OnHistoryChanged(object sender, EventArgs e) {
-            if (RToolsSettings.Current.ClearFilterOnAddHistory) {
+            var settings = _coreShell.GetService<IRToolsSettings>();
+            if (settings.ClearFilterOnAddHistory) {
                 SearchHost.SearchAsync(null);
             }
         }
 
         private sealed class HistorySearchTask : VsSearchTask {
             private readonly IRHistoryFiltering _historyFiltering;
+            private readonly ICoreShell _coreShell;
 
-            public HistorySearchTask(uint dwCookie, IRHistoryFiltering historyFiltering, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback)
+            public HistorySearchTask(uint dwCookie, IRHistoryFiltering historyFiltering, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback, ICoreShell coreShell)
                 : base(dwCookie, pSearchQuery, pSearchCallback) {
                 _historyFiltering = historyFiltering;
+                _coreShell = coreShell;
             }
 
             protected override void OnStartSearch() {
                 base.OnStartSearch();
-                VsAppShell.Current.DispatchOnUIThread(() => _historyFiltering.Filter(SearchQuery.SearchString));
+                _coreShell.DispatchOnUIThread(() => _historyFiltering.Filter(SearchQuery.SearchString));
             }
         }
     }

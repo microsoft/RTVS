@@ -138,7 +138,7 @@ namespace Microsoft.R.Editor.Data {
         protected virtual List<IRSessionDataObject> EvaluateChildren(IReadOnlyList<IREvaluationResultInfo> children) {
             var result = new List<IRSessionDataObject>();
             for (int i = 0; i < children.Count; i++) {
-                result.Add(new RSessionDataObject(children[i], _coreShell, GetMaxChildrenCount(children[i])));
+                result.Add(new RSessionDataObject(children[i], Shell, GetMaxChildrenCount(children[i])));
             }
             return result;
         }

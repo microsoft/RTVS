@@ -56,7 +56,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
             public const string ToolWindow = "Tool Window";
         }
 
-        public static void Initialize(IPackageIndex packageIndex, IRSettings settings, ITelemetryService service = null) {
+        public static void Initialize(IPackageIndex packageIndex, IRToolsSettings settings, ITelemetryService service = null) {
             if (Current == null) {
                 Current = new RtvsTelemetry(packageIndex, settings, service);
             }
