@@ -31,7 +31,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
 
         [ImportingConstructor]
         public SourceFilesCommand(ConfiguredProject configuredProject, IRInteractiveWorkflowProvider interactiveWorkflowProvider, ICoreShell shell) :
-            base(interactiveWorkflowProvider, shell.GetService<IUIServices>(), new FileSystem()) {
+            base(interactiveWorkflowProvider, shell.UI(), new FileSystem()) {
             _configuredProject = configuredProject;
             _interactiveWorkflowProvider = interactiveWorkflowProvider;
             _shell = shell;

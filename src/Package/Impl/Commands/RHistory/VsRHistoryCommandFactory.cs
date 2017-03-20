@@ -41,7 +41,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.RHistory {
             var sendToReplCommand = new SendHistoryToReplCommand(textView, _historyProvider, interactiveWorkflow);
             var sendToSourceCommand = new SendHistoryToSourceCommand(textView, _historyProvider, interactiveWorkflow, _contentTypeRegistry, _textViewTracker);
             var shell = VsAppShell.Current;
-            var ui = shell.GetService<IUIServices>();
+            var ui = shell.UI();
             var settings = shell.GetService<IRToolsSettings>();
 
             return new ICommand[] {

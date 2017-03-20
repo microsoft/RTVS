@@ -33,6 +33,6 @@ namespace Microsoft.R.Interpreters {
         /// </summary>
         /// <param name="fs"></param>
         /// <returns></returns>
-        bool VerifyInstallation(ISupportedRVersionRange svl = null, IFileSystem fs = null, IUIServices ui = null);
+        bool VerifyInstallation(ISupportedRVersionRange svl = null, IFileSystem fs = null, IUIService ui = null);
     }
 }

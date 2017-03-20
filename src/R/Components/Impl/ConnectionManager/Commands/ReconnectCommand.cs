@@ -11,11 +11,11 @@ using Microsoft.R.Components.InteractiveWorkflow;
 namespace Microsoft.R.Components.ConnectionManager.Commands {
     public class ReconnectCommand : IAsyncCommand {
         private readonly IConnectionManager _connectionManager;
-        private readonly IUIServices _ui;
+        private readonly IUIService _ui;
 
         public ReconnectCommand(IRInteractiveWorkflow workflow) {
             _connectionManager = workflow.Connections;
-            _ui = workflow.Shell.GetService<IUIServices>();
+            _ui = workflow.Shell.UI();
         }
 
         public CommandStatus Status => _connectionManager.IsConnected 

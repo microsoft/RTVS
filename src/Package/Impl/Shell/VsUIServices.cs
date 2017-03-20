@@ -16,7 +16,7 @@ using static System.FormattableString;
 using VsPackage = Microsoft.VisualStudio.Shell.Package;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
-    public sealed class VsUIServices : IUIServices, IDisposable, IVsBroadcastMessageEvents {
+    public sealed class VsUIServices : IUIService, IDisposable, IVsBroadcastMessageEvents {
         private const int WM_SYSCOLORCHANGE = 0x15;
 
         private readonly ICoreShell _coreShell;

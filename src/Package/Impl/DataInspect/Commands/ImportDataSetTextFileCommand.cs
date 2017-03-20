@@ -10,11 +10,11 @@ using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Commands {
     internal sealed class ImportDataSetTextFileCommand : SessionCommand {
-        private readonly IUIServices _ui;
+        private readonly IUIService _ui;
 
         public ImportDataSetTextFileCommand(ICoreShell shell, IRSession session) :
             base(session, RGuidList.RCmdSetGuid, RPackageCommandId.icmdImportDatasetTextFile) {
-            _ui = shell.GetService<IUIServices>();
+            _ui = shell.UI();
         }
 
         protected override void SetStatus() {

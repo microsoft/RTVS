@@ -62,7 +62,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
                 return;
             }
 
-            _interactiveWorkflow.Shell.GetService<IUIServices>().SaveFileIfDirty(filePath);
+            _interactiveWorkflow.Shell.UI().SaveFileIfDirty(filePath);
             activeWindow.Container.Show(focus: false, immediate: false);
 
             var session = _interactiveWorkflow.RSession;

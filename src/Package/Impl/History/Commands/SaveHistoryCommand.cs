@@ -17,12 +17,12 @@ using CommandStatus = Microsoft.Common.Core.UI.Commands.CommandStatus;
 
 namespace Microsoft.VisualStudio.R.Package.History.Commands {
     internal class SaveHistoryCommand : ViewCommand {
-        private readonly IUIServices _ui;
+        private readonly IUIService _ui;
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
         private readonly IRToolsSettings _settings;
         private readonly IRHistory _history;
 
-        public SaveHistoryCommand(IUIServices ui, ITextView textView, IRHistoryProvider historyProvider, IRInteractiveWorkflow interactiveWorkflow)
+        public SaveHistoryCommand(IUIService ui, ITextView textView, IRHistoryProvider historyProvider, IRInteractiveWorkflow interactiveWorkflow)
             : base(textView, RGuidList.RCmdSetGuid, RPackageCommandId.icmdSaveHistory, false) {
             _ui = ui;
             _interactiveWorkflow = interactiveWorkflow;

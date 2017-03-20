@@ -12,16 +12,16 @@ using Microsoft.Common.Core.UI;
 namespace Microsoft.Common.Core.Shell {
     public static class CoreShellExtensions {
         public static MainThreadAwaitable SwitchToMainThreadAsync(this ICoreShell coreShell, CancellationToken cancellationToken = default(CancellationToken))
-             => coreShell.SwitchToAsync(cancellationToken);
+             => MainThreadExtensions.SwitchToMainThreadAsync(coreShell, cancellationToken);
 
         public static async Task ShowErrorMessageAsync(this ICoreShell coreShell, string message, CancellationToken cancellationToken = default(CancellationToken)) {
             await coreShell.SwitchToMainThreadAsync(cancellationToken);
-            coreShell.GetService<IUIServices>().ShowErrorMessage(message);
+            coreShell.UI().ShowErrorMessage(message);
         }
 
         public static async Task<MessageButtons> ShowMessageAsync(this ICoreShell coreShell, string message, MessageButtons buttons, CancellationToken cancellationToken = default(CancellationToken)) {
             await coreShell.SwitchToMainThreadAsync(cancellationToken);
-            return coreShell.GetService<IUIServices>().ShowMessage(message, buttons);
+            return coreShell.UI().ShowMessage(message, buttons);
         }
 
         [Conditional("TRACE")]

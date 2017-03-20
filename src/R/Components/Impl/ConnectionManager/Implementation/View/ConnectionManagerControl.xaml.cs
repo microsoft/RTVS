@@ -23,7 +23,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
             InitializeComponent();
 
             _theme = coreShell.GetService<IThemeUtilities>();
-            var ui = coreShell.GetService<IUIServices>();
+            var ui = coreShell.UI();
             ui.UIThemeChanged += OnUIThemeChanged;
 
             SetImageBackground();

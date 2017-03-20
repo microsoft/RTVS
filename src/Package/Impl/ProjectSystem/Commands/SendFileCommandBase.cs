@@ -19,9 +19,9 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     internal class SendFileCommandBase {
         private readonly IRInteractiveWorkflowProvider _interactiveWorkflowProvider;
         private readonly IFileSystem _fs;
-        private readonly IUIServices _ui;
+        private readonly IUIService _ui;
 
-        protected SendFileCommandBase(IRInteractiveWorkflowProvider interactiveWorkflowProvider, IUIServices ui, IFileSystem fs) {
+        protected SendFileCommandBase(IRInteractiveWorkflowProvider interactiveWorkflowProvider, IUIService ui, IFileSystem fs) {
             _interactiveWorkflowProvider = interactiveWorkflowProvider;
             _ui = ui;
             _fs = fs;

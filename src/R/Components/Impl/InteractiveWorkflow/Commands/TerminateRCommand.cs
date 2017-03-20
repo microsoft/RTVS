@@ -11,9 +11,9 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
     public sealed class TerminateRCommand : IAsyncCommand {
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
         private readonly IRSession _session;
-        private readonly IUIServices _ui;
+        private readonly IUIService _ui;
 
-        public TerminateRCommand(IRInteractiveWorkflow interactiveWorkflow, IUIServices ui) {
+        public TerminateRCommand(IRInteractiveWorkflow interactiveWorkflow, IUIService ui) {
             _interactiveWorkflow = interactiveWorkflow;
             _session = interactiveWorkflow.RSession;
             _ui = ui;

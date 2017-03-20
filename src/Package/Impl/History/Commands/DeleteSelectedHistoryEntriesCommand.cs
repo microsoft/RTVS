@@ -14,11 +14,11 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.R.Package.History.Commands {
     internal class DeleteSelectedHistoryEntriesCommand : ViewCommand {
-        private readonly IUIServices _ui;
+        private readonly IUIService _ui;
         private readonly IRHistory _history;
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
 
-        public DeleteSelectedHistoryEntriesCommand(ITextView textView, IRHistoryProvider historyProvider, IRInteractiveWorkflow interactiveWorkflow, IUIServices ui)
+        public DeleteSelectedHistoryEntriesCommand(ITextView textView, IRHistoryProvider historyProvider, IRInteractiveWorkflow interactiveWorkflow, IUIService ui)
             : base(textView, RGuidList.RCmdSetGuid, RPackageCommandId.icmdDeleteSelectedHistoryEntries, false) {
             _interactiveWorkflow = interactiveWorkflow;
             _history = historyProvider.GetAssociatedRHistory(textView);

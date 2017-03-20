@@ -12,12 +12,12 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Commands {
     internal sealed class HideAllPlotWindowsCommand : PackageCommand {
-        private readonly IUIServices _ui;
+        private readonly IUIService _ui;
         private readonly IVsUIShell4 _vsshell;
 
         public HideAllPlotWindowsCommand(ICoreShell shell) :
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdPlotWindowsHideAll) {
-            _ui = shell.GetService<IUIServices>();
+            _ui = shell.UI();
             _vsshell = shell.GetService<IVsUIShell4>(typeof(SVsUIShell));
         }
 

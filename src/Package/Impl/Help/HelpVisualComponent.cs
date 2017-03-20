@@ -189,7 +189,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                 cssfileName = VisualTheme;
             } else {
                 // TODO: We can generate CSS from specific VS colors. For now, just do Dark and Light.
-                var ui = _coreShell.GetService<IUIServices>();
+                var ui = _coreShell.UI();
                 cssfileName = ui.UIColorTheme == UIColorTheme.Dark ? "Dark.css" : "Light.css";
             }
 

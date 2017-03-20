@@ -15,13 +15,13 @@ namespace Microsoft.R.Components.ConnectionManager.Commands {
     public class SwitchToConnectionCommand : IAsyncCommandRange {
         private readonly IRSettings _settings;
         private readonly IConnectionManager _connectionManager;
-        private readonly IUIServices _ui;
+        private readonly IUIService _ui;
         private ReadOnlyCollection<IConnection> _recentConnections;
 
         public SwitchToConnectionCommand(IRInteractiveWorkflow workflow, IRSettings settings) {
             _settings = settings;
             _connectionManager = workflow.Connections;
-            _ui = workflow.Shell.GetService<IUIServices>();
+            _ui = workflow.Shell.UI();
         }
 
         public CommandStatus GetStatus(int index) {

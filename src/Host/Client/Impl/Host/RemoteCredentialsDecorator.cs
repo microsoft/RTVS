@@ -37,7 +37,7 @@ namespace Microsoft.R.Host.Client.Host {
             // the first prompt should be validated and saved, and then the same credentials will be reused for the second session.
             var token = await _lock.WriterLockAsync(cancellationToken);
 
-            await _coreShell.SwitchToAsync(cancellationToken);
+            await _coreShell.SwitchToMainThreadAsync(cancellationToken);
 
             try {
                 var credentials = _credentials ?? _coreShell.Security().GetUserCredentials(_authority, _workspaceName);

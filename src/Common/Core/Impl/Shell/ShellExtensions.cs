@@ -20,7 +20,7 @@ namespace Microsoft.Common.Core.Shell {
         public static ITelemetryService Telemetry(this ICoreShell shell) => shell.GetService<ITelemetryService>();
         public static ISecurityService Security(this ICoreShell shell) => shell.GetService<ISecurityService>();
         public static ITaskService Tasks(this ICoreShell shell) => shell.GetService<ITaskService>();
-        public static IUIServices UI(this ICoreShell shell) => shell.GetService<IUIServices>();
+        public static IUIService UI(this ICoreShell shell) => shell.GetService<IUIService>();
 
         /// <summary>
         /// Displays application-specific modal progress window
@@ -36,18 +36,18 @@ namespace Microsoft.Common.Core.Shell {
         /// Displays error message in a host-specific UI
         /// </summary>
         public static void ShowErrorMessage(this ICoreShell shell, string message)
-            => shell.GetService<IUIServices>().ShowErrorMessage(message);
+            => shell.UI().ShowErrorMessage(message);
 
         /// <summary>
         /// Shows the context menu with the specified command ID at the specified location
         /// </summary>
         public static void ShowContextMenu(this ICoreShell shell, CommandId commandId, int x, int y, object commandTarget = null)
-            => shell.GetService<IUIServices>().ShowContextMenu(commandId, x, y, commandTarget);
+            => shell.UI().ShowContextMenu(commandId, x, y, commandTarget);
 
         /// <summary>
         /// Displays message with specified buttons in a host-specific UI
         /// </summary>
         public static MessageButtons ShowMessage(this ICoreShell shell, string message, MessageButtons buttons, MessageType messageType = MessageType.Information)
-            => shell.GetService<IUIServices>().ShowMessage(message, buttons, messageType);
+            => shell.UI().ShowMessage(message, buttons, messageType);
     }
 }

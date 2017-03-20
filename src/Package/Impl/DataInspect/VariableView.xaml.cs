@@ -37,7 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public partial class VariableView : UserControl, ICommandTarget, IDisposable {
         private readonly IRToolsSettings _settings;
         private readonly ICoreShell _shell;
-        private readonly IUIServices _ui;
+        private readonly IUIService _ui;
         private readonly IRSession _session;
         private readonly IREnvironmentProvider _environmentProvider;
         private readonly IObjectDetailsViewerAggregator _aggregator;
@@ -50,7 +50,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public VariableView(ICoreShell shell) {
             _settings = shell.GetService<IRToolsSettings>();
             _shell = shell;
-            _ui = _shell.GetService<IUIServices>();
+            _ui = _shell.UI();
             _ui.UIThemeChanged += OnUIThemeChanged;
 
             InitializeComponent();

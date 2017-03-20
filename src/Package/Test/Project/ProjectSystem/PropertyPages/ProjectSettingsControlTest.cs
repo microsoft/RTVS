@@ -259,7 +259,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
 
             control.IsDirty.Should().BeTrue();
 
-            var uis = shell.GetService<IUIServices>();
+            var uis = shell.UI();
             uis.ShowMessage(Resources.SettingsPage_SavePrompt, MessageButtons.YesNoCancel).Returns(MessageButtons.Yes);
             control.FileListCombo.SelectedIndex = 1;
             uis.Received().ShowMessage(Resources.SettingsPage_SavePrompt, MessageButtons.YesNoCancel);

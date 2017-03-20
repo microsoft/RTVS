@@ -39,7 +39,7 @@ namespace Microsoft.R.Interpreters {
             Version = DetermineVersion(fs = fs ?? new FileSystem());
         }
 
-        public bool VerifyInstallation(ISupportedRVersionRange svr = null, IFileSystem fs = null, IUIServices ui = null) {
+        public bool VerifyInstallation(ISupportedRVersionRange svr = null, IFileSystem fs = null, IUIService ui = null) {
             if (_isValid.HasValue) {
                 return _isValid.Value;
             }

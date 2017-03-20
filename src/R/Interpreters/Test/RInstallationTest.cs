@@ -135,8 +135,8 @@ namespace Microsoft.R.Interpreters.Test {
 
             svl = new SupportedRVersionRange(3, 2, 3, 9);
             var coreShell = Substitute.For<ICoreShell>();
-            var ui = Substitute.For<IUIServices>();
-            coreShell.Services.GetService<IUIServices>().Returns(ui);
+            var ui = Substitute.For<IUIService>();
+            coreShell.UI().Returns(ui);
 
             e = new RInterpreterInfo(e.Name, e.InstallPath, fs);
             e.VerifyInstallation(svl, fs, ui).Should().BeFalse();
@@ -191,10 +191,10 @@ namespace Microsoft.R.Interpreters.Test {
             var e = ri.GetCompatibleEngines(svl).FirstOrDefault();
             e.Should().NotBeNull();
 
-            var ui = Substitute.For<IUIServices>();
+            var ui = Substitute.For<IUIService>();
             fs = Substitute.For<IFileSystem>();
             var coreShell = Substitute.For<ICoreShell>();
-            coreShell.Services.GetService<IUIServices>().Returns(ui);
+            coreShell.UI().Returns(ui);
 
             e = new RInterpreterInfo(e.Name, e.InstallPath, fs);
             e.VerifyInstallation(svl, fs, ui).Should().BeFalse();

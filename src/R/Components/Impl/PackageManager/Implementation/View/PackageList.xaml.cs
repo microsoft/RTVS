@@ -19,7 +19,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View {
         private IRPackageManagerViewModel Model => DataContext as IRPackageManagerViewModel;
         private AutomationPeer _peer;
         private ICoreShell _coreShell;
-        private IUIServices _ui;
+        private IUIService _ui;
 
         // Indicates wether check boxes are enabled on packages
         private bool _checkBoxesEnabled;
@@ -44,7 +44,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View {
 
         public void Initialize(ICoreShell coreShell) {
             _coreShell = coreShell;
-            _ui = coreShell.GetService<IUIServices>();
+            _ui = coreShell.UI();
             _ui.UIThemeChanged += OnUIThemeChanged;
             SetImageBackground();
         }

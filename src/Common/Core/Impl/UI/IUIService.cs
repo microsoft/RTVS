@@ -10,7 +10,7 @@ namespace Microsoft.Common.Core.UI {
     /// composition container, export provider, global VS IDE
     /// services and so on.
     /// </summary>
-    public interface IUIServices {
+    public interface IUIService {
         /// <summary>
         /// Fires when host application UI theme changed.
         /// </summary>

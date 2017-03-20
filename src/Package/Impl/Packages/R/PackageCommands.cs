@@ -52,7 +52,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             var dbcs = shell.GetService<IDbConnectionService>();
             var settings = shell.GetService<IRToolsSettings>();
             var logPerms = shell.GetService<ILoggingPermissions>();
-            var ui = shell.GetService<IUIServices>();
+            var ui = shell.UI();
             var console = new InteractiveWindowConsole(interactiveWorkflow);
 
             return new List<MenuCommand> {

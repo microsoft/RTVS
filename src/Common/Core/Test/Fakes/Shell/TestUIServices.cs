@@ -6,7 +6,7 @@ using Microsoft.Common.Core.UI;
 using Microsoft.Common.Core.UI.Commands;
 
 namespace Microsoft.Common.Core.Test.Fakes.Shell {
-    public sealed class TestUIServices: IUIServices {
+    public sealed class TestUIServices: IUIService {
 #pragma warning disable 67
         public event EventHandler<EventArgs> UIThemeChanged;
 #pragma warning restore 67

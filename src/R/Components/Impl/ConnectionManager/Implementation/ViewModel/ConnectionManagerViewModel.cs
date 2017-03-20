@@ -20,7 +20,7 @@ using Microsoft.R.Interpreters;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
     internal sealed class ConnectionManagerViewModel : ConnectionStatusBaseViewModel, IConnectionManagerViewModel {
-        private readonly IUIServices _ui;
+        private readonly IUIService _ui;
         private readonly IRSettings _settings;
         private readonly BatchObservableCollection<IConnectionViewModel> _localConnections;
         private readonly BatchObservableCollection<IConnectionViewModel> _remoteConnections;
@@ -31,7 +31,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public ConnectionManagerViewModel(IConnectionManager connectionManager, ICoreShell shell) :
             base(connectionManager, shell) {
-            _ui = shell.GetService<IUIServices>();
+            _ui = shell.UI();
             _settings = shell.GetService<IRSettings>();
 
             _remoteConnections = new BatchObservableCollection<IConnectionViewModel>();

@@ -87,7 +87,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.RClient {
             SqlRClientInstallation.GetRClientPath(tr).Should().Be(rClientRPath);
 
             var shell = Substitute.For<ICoreShell>();
-            var ui = shell.GetService<IUIServices>();
+            var ui = shell.UI();
             ui.ShowMessage(Arg.Any<string>(), Arg.Any<MessageButtons>()).Returns(MessageButtons.Yes);
 
             MicrosoftRClient.CheckMicrosoftRClientInstall(shell, tr);
