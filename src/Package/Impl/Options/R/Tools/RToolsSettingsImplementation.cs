@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,18 +15,15 @@ using Microsoft.Common.Wpf;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Support.Settings;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.SurveyNews;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R {
-    [Export(typeof(IRSettings))]
-    [Export(typeof(IRToolsSettings))]
     internal sealed class RToolsSettingsImplementation : BindableBase, IRToolsSettings {
         private const int MaxDirectoryEntries = 8;
+        private readonly ICoreShell _coreShell;
         private readonly ISettingsStorage _settingStorage;
         private readonly ILoggingPermissions _loggingPermissions;
-        private readonly ICoreShell _coreShell;
 
         private string _cranMirror;
         private string _workingDirectory;
@@ -56,11 +52,10 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         private BrowserType _markdownBrowserType = BrowserType.External;
         private LogVerbosity _logVerbosity = LogVerbosity.Normal;
 
-        [ImportingConstructor]
-        public RToolsSettingsImplementation(ISettingsStorage settingStorage, ICoreShell coreShell) {
+        public RToolsSettingsImplementation(ICoreShell coreShell, ISettingsStorage settingStorage, ILoggingPermissions loggingPermissions) {
             _coreShell = coreShell;
             _settingStorage = settingStorage;
-            _loggingPermissions = coreShell.GetService<ILoggingPermissions>();
+            _loggingPermissions = loggingPermissions;
             _workingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         }
 
@@ -140,8 +135,9 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
                 SetProperty(ref _workingDirectory, newDirectory);
                 UpdateWorkingDirectoryList(newDirectory);
 
+                
                 _coreShell?.DispatchOnUIThread(() => {
-                    IVsUIShell shell = _coreShell.GetService<IVsUIShell>(typeof(SVsUIShell));
+                    var shell = _coreShell.GetService<IVsUIShell>(typeof(SVsUIShell));
                     shell.UpdateCommandUI(1);
                 });
             }

@@ -29,17 +29,15 @@ namespace Microsoft.VisualStudio.R.Package.History {
 
         private readonly ITextBuffer _historyTextBuffer;
         private readonly IRHistoryProvider _historyProvider;
-        private readonly ICoreShell _coreShell;
         private readonly ITextEditorFactoryService _textEditorFactory;
         private IOleCommandTarget _commandTarget;
         private IRHistory _history;
         private IRHistoryFiltering _historyFiltering;
 
-        public HistoryWindowPane(ITextBuffer historyTextBuffer, IRHistoryProvider historyProvider, ICoreShell coreShell) {
+        public HistoryWindowPane(ITextBuffer historyTextBuffer, IRHistoryProvider historyProvider, ICoreShell coreShell): base(coreShell) {
             _historyTextBuffer = historyTextBuffer;
             _historyProvider = historyProvider;
-            _coreShell = coreShell;
-            _textEditorFactory = _coreShell.GetService<ITextEditorFactoryService>();
+            _textEditorFactory = coreShell.GetService<ITextEditorFactoryService>();
 
             BitmapImageMoniker = KnownMonikers.History;
             Caption = Resources.HistoryWindowCaption;
@@ -98,7 +96,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
         }
 
         public override IVsSearchTask CreateSearch(uint dwCookie, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback) {
-            return new HistorySearchTask(dwCookie, _historyFiltering, pSearchQuery, pSearchCallback, _coreShell);
+            return new HistorySearchTask(dwCookie, _historyFiltering, pSearchQuery, pSearchCallback, Shell);
         }
 
         public override void ClearSearch() {
@@ -107,7 +105,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
         }
 
         private void OnHistoryChanged(object sender, EventArgs e) {
-            var settings = _coreShell.GetService<IRToolsSettings>();
+            var settings = Shell.GetService<IRToolsSettings>();
             if (settings.ClearFilterOnAddHistory) {
                 SearchHost.SearchAsync(null);
             }

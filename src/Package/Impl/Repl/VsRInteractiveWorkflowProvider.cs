@@ -12,7 +12,6 @@ using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Implementation;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Plots;
-using Microsoft.R.Components.Settings;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
     [Export(typeof(IRInteractiveWorkflowProvider))]
@@ -26,7 +25,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         private readonly IActiveWpfTextViewTracker _activeTextViewTracker;
         private readonly IDebuggerModeTracker _debuggerModeTracker;
         private readonly ICoreShell _shell;
-        private readonly IRSettings _settings;
 
         private Lazy<IRInteractiveWorkflow> _instanceLazy;
 
@@ -37,8 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             , IRPlotManagerProvider plotsProvider
             , IActiveWpfTextViewTracker activeTextViewTracker
             , IDebuggerModeTracker debuggerModeTracker
-            , ICoreShell shell
-            , IRSettings settings) {
+            , ICoreShell shell) {
 
             _connectionsProvider = connectionsProvider;
             _historyProvider = historyProvider;
@@ -47,7 +44,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             _activeTextViewTracker = activeTextViewTracker;
             _debuggerModeTracker = debuggerModeTracker;
             _shell = shell;
-            _settings = settings;
 
             _shell.Terminating += OnApplicationTerminating;
         }

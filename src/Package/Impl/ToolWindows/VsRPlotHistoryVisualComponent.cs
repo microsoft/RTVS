@@ -17,8 +17,7 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
             _coreShell = coreShell;
         }
 
-        public IVisualComponentContainer<IRPlotHistoryVisualComponent> GetOrCreate(IRPlotManager plotManager, int instanceId = 0) {
-            return GetOrCreate(instanceId, i => new PlotHistoryWindowPane(plotManager, i, _coreShell));
-        }
+        public IVisualComponentContainer<IRPlotHistoryVisualComponent> GetOrCreate(IRPlotManager plotManager, int instanceId = 0)
+            => GetOrCreate(instanceId, i => new PlotHistoryWindowPane(plotManager, _coreShell));
     }
 }

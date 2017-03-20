@@ -20,13 +20,13 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace Microsoft.VisualStudio.R.Package.Repl {
     [Export(typeof(IInteractiveWindowComponentContainerFactory))]
     internal class VsRInteractiveWindowComponentContainerFactory : IInteractiveWindowComponentContainerFactory {
-        private readonly Lazy<IVsInteractiveWindowFactory> _vsInteractiveWindowFactoryLazy;
+        private readonly Lazy<IVsInteractiveWindowFactory2> _vsInteractiveWindowFactoryLazy;
         private readonly IContentTypeRegistryService _contentTypeRegistryService;
         private readonly ICoreShell _shell;
 
         [ImportingConstructor]
         public VsRInteractiveWindowComponentContainerFactory(
-            Lazy<IVsInteractiveWindowFactory> vsInteractiveWindowFactory,
+            Lazy<IVsInteractiveWindowFactory2> vsInteractiveWindowFactory,
             IContentTypeRegistryService contentTypeRegistryService,
             ICoreShell shell) {
             _vsInteractiveWindowFactoryLazy = vsInteractiveWindowFactory;
@@ -38,7 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             VsAppShell.Current.AssertIsOnMainThread();
 
             IVsInteractiveWindow vsWindow;
-            var vsf2 = _vsInteractiveWindowFactoryLazy.Value as IVsInteractiveWindowFactory2; // Temporary for VS 2017 RC2
+            var vsf2 = _vsInteractiveWindowFactoryLazy.Value;
             vsWindow = vsf2.Create(RGuidList.ReplInteractiveWindowProviderGuid, instanceId, string.Empty, evaluator,
                                    0, RGuidList.RCmdSetGuid, RPackageCommandId.replWindowToolBarId, null);
 
@@ -46,7 +46,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             vsWindow.SetLanguage(RGuidList.RLanguageServiceGuid, contentType);
 
             var toolWindow = (ToolWindowPane)vsWindow;
-            var componentContainer = new VisualComponentToolWindowAdapter<IInteractiveWindowVisualComponent>(toolWindow);
+            var componentContainer = new VisualComponentToolWindowAdapter<IInteractiveWindowVisualComponent>(toolWindow, _shell);
             var component = new RInteractiveWindowVisualComponent(vsWindow.InteractiveWindow, componentContainer, sessionProvider, _shell);
             componentContainer.Component = component;
 

@@ -23,32 +23,28 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
     /// Base editor factory for all Web editors
     /// </summary>
     public class BaseEditorFactory : IVsEditorFactory, IDisposable {
-        [Import]
-        protected IVsEditorAdaptersFactoryService _adaptersFactory = null;
+        private readonly IVsEditorAdaptersFactoryService _adaptersFactory;
+        private readonly Guid _editorFactoryId;
+        private bool _encoding;
 
         protected Microsoft.VisualStudio.Shell.Package Package { get; private set; }
         protected IVsServiceProvider VsServiceProvider { get; private set; }
-        protected List<TextBufferInitializationTracker> InitializationTrackers { get; private set; }
-        protected Guid LanguageServiceId { get; private set; }
-
-        private Guid _editorFactoryId;
-        private bool _encoding;
+        protected List<TextBufferInitializationTracker> InitializationTrackers { get; }
+        protected Guid LanguageServiceId { get; }
 
         public BaseEditorFactory(Package package, Guid editorFactoryId, Guid languageServiceId, bool encoding = false) {
-            var cs = VsAppShell.Current.GetService<ICompositionService>();
-            cs.SatisfyImportsOnce(this);
+            _adaptersFactory = VsAppShell.Current.GetService<IVsEditorAdaptersFactoryService>();
             Package = package;
             InitializationTrackers = new List<TextBufferInitializationTracker>();
             _editorFactoryId = editorFactoryId;
             _encoding = encoding;
             LanguageServiceId = languageServiceId;
-
         }
 
         internal IObjectInstanceFactory InstanceFactory { get; set; }
 
         public void SetEncoding(bool value) {
-            this._encoding = value;
+            _encoding = value;
         }
 
         public virtual int CreateEditorInstance(

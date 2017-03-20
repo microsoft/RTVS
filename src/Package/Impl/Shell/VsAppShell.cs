@@ -33,23 +33,10 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             get {
                 if (_testShell == null && _instance == null) {
                     // Try test environment
-                    CoreShell.TryCreateTestInstance("Microsoft.VisualStudio.R.Package.Test.dll", "TestVsshell");
+                    _testShell = CoreShell.TryCreateTestInstance("Microsoft.VisualStudio.R.Package.Test.dll", "TestVsshell");
                 }
 
                 return _testShell ?? GetInstance();
-            }
-            internal set {
-                // Normally only called in test cases when package
-                // is not loaded and hence shell is not initialized.
-                // In this case test code provides replacement shell
-                // which we then pass to any other shell-type objects
-                // to use.
-                if (_instance != null) {
-                    throw new InvalidOperationException("Cannot set test shell when real one is already there.");
-                }
-                if (_testShell == null) {
-                    _testShell = value;
-                }
             }
         }
 

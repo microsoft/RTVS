@@ -13,13 +13,11 @@ using VsPackage = Microsoft.VisualStudio.Shell.Package;
 namespace Microsoft.VisualStudio.R.Package.Shell {
     internal sealed class VsServiceManager : ServiceManager {
         private readonly ICoreShell _shell;
-        private readonly IComponentModel _componentModel;
         private readonly ICompositionService _compositionService;
         private readonly ExportProvider _exportProvider;
 
         public VsServiceManager(ICoreShell shell) {
             _shell = shell;
-            var cs = _shell.GetService<ICompositionService>();
             var componentModel = (IComponentModel)VsPackage.GetGlobalService(typeof(SComponentModel));
             _compositionService = componentModel.DefaultCompositionService;
             _exportProvider = componentModel.DefaultExportProvider;
@@ -31,8 +29,12 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
             if(type == typeof(ExportProvider)) {
                 return _exportProvider as T;
-            } else if(type == typeof(ICompositionService)) {
+            }
+            if (type == typeof(ICompositionService)) {
                 return _compositionService as T;
+            }
+            if (type == typeof(ICompositionCatalog)) {
+                return (T) (ICompositionCatalog) new CompositionCatalog(_compositionService, _exportProvider);
             }
 
             // First try internal services

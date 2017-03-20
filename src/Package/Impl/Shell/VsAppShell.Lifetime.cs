@@ -33,10 +33,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
             CheckVsStarted();
 
-            ConfigureIdleSource();
             ConfigureServices();
-
-            Current = this;
+            ConfigureIdleSource();
         }
 
         private void CheckVsStarted() {
@@ -45,7 +43,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             _vsShell.GetProperty((int)__VSSPROPID4.VSSPROPID_ShellInitialized, out value);
             if (value is bool) {
                 if ((bool)value) {
-                    ConfigureServices();
                     Started?.Invoke(this, EventArgs.Empty);
                 } else {
                     _vsShell.AdviseShellPropertyChanges(this, out _vsShellEventsCookie);

@@ -12,8 +12,6 @@ using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Implementation;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Plots;
-using Microsoft.R.Components.Settings;
-using Microsoft.R.Components.Workspace;
 using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.Mef;
 

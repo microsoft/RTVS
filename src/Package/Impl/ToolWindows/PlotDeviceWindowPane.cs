@@ -19,7 +19,6 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
     [Guid(WindowGuidString)]
     internal class PlotDeviceWindowPane : VisualComponentToolWindow<IRPlotDeviceVisualComponent>, IOleCommandTarget {
         private readonly IRPlotManager _plotManager;
-        private readonly ICoreShell _coreShell;
         private readonly int _instanceId;
         private IOleCommandTarget _commandTarget;
 
@@ -27,10 +26,9 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
 
         public static Guid WindowGuid { get; } = new Guid(WindowGuidString);
 
-        public PlotDeviceWindowPane(IRPlotManager plotManager, IRSession session, int instanceId, ICoreShell coreShell) {
+        public PlotDeviceWindowPane(IRPlotManager plotManager, IRSession session, int instanceId, ICoreShell coreShell): base(coreShell) {
             _plotManager = plotManager;
             _instanceId = instanceId;
-            _coreShell = coreShell;
 
             // this value matches with icmdShowPlotWindow's Icon in VSCT file
             BitmapImageMoniker = KnownMonikers.LineChart;
@@ -39,7 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
         }
 
         protected override void OnCreate() {
-            Component = new RPlotDeviceVisualComponent(_plotManager, _instanceId, this, _coreShell);
+            Component = new RPlotDeviceVisualComponent(_plotManager, _instanceId, this, Shell);
             _plotManager.RegisterVisualComponent(Component);
 
             var commands = new RPlotDeviceCommands(_plotManager.InteractiveWorkflow, Component);
@@ -70,12 +68,10 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
             base.Dispose(disposing);
         }
 
-        public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText) {
-            return _commandTarget.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
-        }
+        public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
+            => _commandTarget.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
 
-        public int Exec(ref Guid pguidCmdGroup, uint nCmdId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut) {
-            return _commandTarget.Exec(ref pguidCmdGroup, nCmdId, nCmdexecopt, pvaIn, pvaOut);
-        }
+        public int Exec(ref Guid pguidCmdGroup, uint nCmdId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut) 
+            =>_commandTarget.Exec(ref pguidCmdGroup, nCmdId, nCmdexecopt, pvaIn, pvaOut);
     }
 }

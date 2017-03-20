@@ -13,8 +13,7 @@ using Microsoft.Common.Core.UI.Commands;
 
 namespace Microsoft.Common.Core.Shell {
     public static class ShellExtensions {
-        public static T GetService<T>(this ICoreShell shell, Type type = null) where T: class  => shell.GetService<T>(type);
-
+        public static T GetService<T>(this ICoreShell shell, Type type = null) where T: class  => shell.Services.GetService<T>(type);
         public static IActionLog Log(this ICoreShell shell) => shell.GetService<IActionLog>();
         public static IFileSystem FileSystem(this ICoreShell shell) => shell.GetService<IFileSystem>();
         public static IProcessServices Process(this ICoreShell shell) => shell.GetService<IProcessServices>();

@@ -28,7 +28,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
     /// Represents VS user settings collection. 
     /// Provides methods for saving values in VS settings.
     /// </summary>
-    [Export(typeof(ISettingsStorage))]
     internal sealed class VsSettingsStorage : ISettingsStorage, IDisposable {
         /// <summary>
         /// Settings cache. Persisted to storage when package is unloaded.

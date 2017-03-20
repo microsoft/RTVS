@@ -20,7 +20,7 @@ namespace Microsoft.Common.Core.Shell {
         [SuppressMessage("Microsoft.Reliability", "CA2001:AvoidCallingProblematicMethods", 
                          MessageId = "System.Reflection.Assembly.LoadFrom", 
                          Justification ="Needed for test shell creation")]
-        public static void TryCreateTestInstance(string assemblyName, string className) {
+        public static ICoreShell TryCreateTestInstance(string assemblyName, string className) {
             string thisAssembly = Assembly.GetExecutingAssembly().GetAssemblyPath();
             string assemblyLoc = Path.GetDirectoryName(thisAssembly);
             string packageTestAssemblyPath = Path.Combine(assemblyLoc, assemblyName);
@@ -41,8 +41,9 @@ namespace Microsoft.Common.Core.Shell {
                 Debug.Assert(testshell != null);
 
                 MethodInfo mi = testshell.GetMethod("Create", BindingFlags.Static | BindingFlags.Public);
-                mi.Invoke(null, null);
+                return mi.Invoke(null, null) as ICoreShell;
             }
+            return null;
         }
     }
 }

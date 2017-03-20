@@ -5,13 +5,8 @@ using System;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using Microsoft.Common.Core.Shell;
-using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Plots.Implementation;
-using Microsoft.R.Components.Plots.Implementation.Commands;
-using Microsoft.R.Components.Plots.Implementation.ViewModel;
-using Microsoft.R.Components.Plots.ViewModel;
-using Microsoft.R.Components.Settings;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Commands;
@@ -23,18 +18,14 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
     [Guid(WindowGuidString)]
     internal class PlotHistoryWindowPane : VisualComponentToolWindow<IRPlotHistoryVisualComponent>, IOleCommandTarget {
         private readonly IRPlotManager _plotManager;
-        private readonly ICoreShell _coreShell;
-        private readonly int _instanceId;
         private IOleCommandTarget _commandTarget;
 
         public const string WindowGuidString = "336D81C9-CE7F-4405-A7B5-A3A658EA5050";
 
         public static Guid WindowGuid { get; } = new Guid(WindowGuidString);
 
-        public PlotHistoryWindowPane(IRPlotManager plotManager, int instanceId, ICoreShell coreShell) {
+        public PlotHistoryWindowPane(IRPlotManager plotManager, ICoreShell coreShell): base(coreShell) {
             _plotManager = plotManager;
-            _instanceId = instanceId;
-            _coreShell = coreShell;
 
             // this value matches with icmdShowPlotWindow's Icon in VSCT file
             BitmapImageMoniker = KnownMonikers.ChartFilter;
@@ -43,7 +34,7 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
         }
 
         protected override void OnCreate() {
-            var visualComponent = new RPlotHistoryVisualComponent(_plotManager, this, _coreShell);
+            var visualComponent = new RPlotHistoryVisualComponent(_plotManager, this, Shell);
             Component = visualComponent;
 
             var commands = new RPlotHistoryCommands(_plotManager.InteractiveWorkflow, visualComponent);
@@ -68,12 +59,10 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
             base.Dispose(disposing);
         }
 
-        public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText) {
-            return _commandTarget.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
-        }
+        public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
+            =>_commandTarget.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
 
-        public int Exec(ref Guid pguidCmdGroup, uint nCmdId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut) {
-            return _commandTarget.Exec(ref pguidCmdGroup, nCmdId, nCmdexecopt, pvaIn, pvaOut);
-        }
+        public int Exec(ref Guid pguidCmdGroup, uint nCmdId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+            => _commandTarget.Exec(ref pguidCmdGroup, nCmdId, nCmdexecopt, pvaIn, pvaOut);
     }
 }

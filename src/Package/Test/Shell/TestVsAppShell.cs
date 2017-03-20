@@ -18,11 +18,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
     [ExcludeFromCodeCoverage]
     sealed class TestVsShell : TestCoreShell {
         private static TestVsShell _instance;
-        private static readonly object _shellLock = new object();
 
         private TestVsShell(): base(VsTestCompositionCatalog.Current) { }
 
-        public static void Create() {
+        public static object Create() {
             // Called via reflection in test cases. Creates instance
             // of the test shell that code can access during the test run.
             // other shell objects may choose to create their own
@@ -30,7 +29,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
             // need smaller MEF catalog which excludes certain 
             // VS-specific implementations.
             UIThreadHelper.Instance.Invoke(() => {
-                lock (_shellLock) {
                     if (_instance == null){
                         _instance = new TestVsShell();
                         var settings = new TestRToolsSettings();
@@ -41,10 +39,9 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
                             .AddValue(_instance);
 
                         VsTestCompositionCatalog.Current.Container.Compose(batch);
-                        VsAppShell.Current = _instance;
                     }
-                }
             });
+            return _instance;
         }
     }
 }

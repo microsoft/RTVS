@@ -26,10 +26,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         public const string WindowGuidString = "9E909526-A616-43B2-A82B-FD639DCD40CB";
         public static Guid WindowGuid { get; } = new Guid(WindowGuidString);
 
-        private readonly ICoreShell _coreShell;
-
-        public HelpWindowPane(ICoreShell coreShell) {
-            _coreShell = coreShell;
+        public HelpWindowPane(ICoreShell coreShell): base(coreShell) {
             Caption = Resources.HelpWindowCaption;
             BitmapImageMoniker = KnownMonikers.StatusHelp;
             ToolBar = new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.helpWindowToolBarId);
@@ -38,7 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         protected override void OnCreate() {
             Component = new HelpVisualComponent { Container = this };
             var controller = new AsyncCommandController()
-                .AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpHome, new HelpHomeCommand(_coreShell))
+                .AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpHome, new HelpHomeCommand(Shell))
                 .AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpNext, new HelpNextCommand(Component))
                 .AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpPrevious, new HelpPreviousCommand(Component))
                 .AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpRefresh, new HelpRefreshCommand(Component));
