@@ -29,7 +29,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Failed to delete user profile for user {0}\{1}, with Win32 error {2}.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Не удалось удалить каталог профиля для пользователя {0}\{1} с ошибкой Win32 {2}.]]></Val>
+            <Val><![CDATA[Не удалось удалить профиль пользователя {0}\{1} с ошибкой Win32 {2}.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -47,7 +47,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Failed to create user profile for user {0}\{1}, with Win32 error {2}.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Не удалось создать каталог профиля для пользователя {0}\{1} с ошибкой Win32 {2}.]]></Val>
+            <Val><![CDATA[Не удалось создать профиль пользователя {0}\{1} с ошибкой Win32 {2}.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -74,7 +74,7 @@
         <Str Cat="Text">
           <Val><![CDATA[User profile deleted for user {0}\{1}.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Удален профиль для пользователя {0}\{1}.]]></Val>
+            <Val><![CDATA[Удален профиль пользователя {0}\{1}.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -83,7 +83,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Deleting user profile for user {0}\{1}.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Идет удаление профиля для пользователя {0}\{1}.]]></Val>
+            <Val><![CDATA[Идет удаление профиля пользователя {0}\{1}.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -92,7 +92,7 @@
         <Str Cat="Text">
           <Val><![CDATA[User profile already exists for user  {0}\{1}.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Профиль для пользователя {0}\{1} уже существует.]]></Val>
+            <Val><![CDATA[Профиль пользователя {0}\{1} уже существует.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -101,7 +101,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Created user profile for user {0}\{1}.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Создан профиль для пользователя {0}\{1}.]]></Val>
+            <Val><![CDATA[Создан профиль пользователя {0}\{1}.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -110,7 +110,7 @@
         <Str Cat="Text">
           <Val><![CDATA[User profile directory was found for user {0}\{1}, path: {2}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Найден каталог профиля для пользователя {0}\{1}, путь: {2}]]></Val>
+            <Val><![CDATA[Найден каталог профиля пользователя {0}\{1}, путь: {2}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -148,7 +148,7 @@
     <Disp Icon="Ver" Disp="true" LocTbl="false" Path=" \ ;Version \ 8 \ 0" />
     <Item ItemId=";AssemblyVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.0.30227.2212]]></Val>
+        <Val><![CDATA[1.0.30310.2203]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -172,7 +172,7 @@
     </Item>
     <Item ItemId=";FileVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.0.30227.2212]]></Val>
+        <Val><![CDATA[1.0.30310.2203]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -201,14 +201,14 @@
       <Str Cat="Text">
         <Val><![CDATA[R Tools for Visual Studio]]></Val>
         <Tgt Cat="Text" Stat="Loc" Orig="New">
-          <Val><![CDATA[R Tools для Visual Studio]]></Val>
+          <Val><![CDATA[Инструменты R для Visual Studio]]></Val>
         </Tgt>
       </Str>
       <Disp Icon="Str" />
     </Item>
     <Item ItemId=";ProductVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.0.30227.2212]]></Val>
+        <Val><![CDATA[1.0.30310.2203]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>

@@ -25,6 +25,12 @@ namespace Microsoft.Common.Core.Diagnostics {
             }
         }
 
+        public static void Operation(Func<bool> predicate) {
+            if (!predicate()) {
+                throw new InvalidOperationException();
+            }
+        }
+
         public static void InvalidOperation(Func<bool> predicate) {
             if (predicate()) {
                 throw new InvalidOperationException();
