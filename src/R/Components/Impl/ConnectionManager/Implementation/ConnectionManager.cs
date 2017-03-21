@@ -250,6 +250,13 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 }
             }
 
+            // For MRS and MRC always use generated name. These upgrade in place
+            // so keeping old name with old version doesn't make sense.
+            // TODO: handle this better in the future by storing version.
+            foreach (var kvp in connections.Where(c => c.Value.Path.ContainsIgnoreCase("R_SERVER")).ToList()) {
+                connections.Remove(kvp.Key);
+            }
+
             // Add newly installed engines
             foreach (var e in localEngines) {
                 if (!connections.Values.Any(x => x.Path.PathEquals(e.InstallPath))) {

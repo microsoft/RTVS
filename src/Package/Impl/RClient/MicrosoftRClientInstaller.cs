@@ -29,7 +29,7 @@ namespace Microsoft.VisualStudio.R.Package.RClient {
                 new LongAction() {
                     Name = Resources.DownloadingRClientInstaller,
                     Action = (o, ct) => {
-                        downloadError = downloader.Download("http://go.microsoft.com/fwlink/?LinkId=800048", rClientExe, ct);
+                        downloadError = downloader.Download("https://aka.ms/rclient/download", rClientExe, ct);
                     },
                 }, 
             }, coreShell.Services.Log);
