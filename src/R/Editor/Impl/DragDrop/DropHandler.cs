@@ -38,7 +38,7 @@ namespace Microsoft.R.Editor.DragDrop {
         public DragDropPointerEffects HandleDataDropped(DragDropInfo dragDropInfo) {
             Task.Run(async () => {
                 var folder = await GetRUserFolder();
-                _shell.DispatchOnUIThread(() => HandleDrop(dragDropInfo, folder));
+                _shell.MainThread().Post(() => HandleDrop(dragDropInfo, folder));
             }).DoNotWait();
             return DragDropPointerEffects.None;
         }

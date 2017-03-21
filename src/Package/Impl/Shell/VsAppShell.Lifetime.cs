@@ -18,7 +18,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         public static void EnsureInitialized() {
             var instance = GetInstance();
-            if (instance.MainThread == null) {
+            if (instance._vsShell == null) {
                 instance.Initialize();
             }
         }
@@ -28,9 +28,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
 
         private void Initialize() {
-            MainThread = Thread.CurrentThread;
-            MainThreadDispatcher = Dispatcher.FromThread(MainThread);
-
             CheckVsStarted();
 
             ConfigureCore();

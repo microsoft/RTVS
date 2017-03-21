@@ -41,7 +41,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         protected abstract void ConnectionStateChanged();
 
         private void ConnectionStateChanged(object sender, EventArgs e) {
-            Shell.DispatchOnUIThread(ConnectionStateChangedOnMainThread);
+            Shell.MainThread().Post(ConnectionStateChangedOnMainThread);
         }
 
         private void ConnectionStateChangedOnMainThread() {

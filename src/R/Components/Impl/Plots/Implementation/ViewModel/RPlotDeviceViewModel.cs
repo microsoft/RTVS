@@ -137,7 +137,7 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
         }
 
         private void DeviceLocatorModeChanged(object sender, RPlotDeviceEventArgs e) {
-            _shell.DispatchOnUIThread(() => {
+            _shell.MainThread().Post(() => {
                 LocatorMode = e.Device.LocatorMode;
                 LocatorModeChanged?.Invoke(this, EventArgs.Empty);
             });
@@ -156,7 +156,7 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
         }
 
         private void Refresh(IRPlot plot) {
-            _shell.DispatchOnUIThread(() => {
+            _shell.MainThread().Post(() => {
                 if (plot != null) {
                     PlotImage = plot.Image;
                     ShowWatermark = false;

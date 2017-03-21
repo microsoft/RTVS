@@ -46,7 +46,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         }
 
         private void OnBrokerChanged(object sender, BrokerStateChangedEventArgs e) {
-            _shell.DispatchOnUIThread(() => UpdateWindowTitle(e.IsConnected));
+            _shell.MainThread().Post(() => UpdateWindowTitle(e.IsConnected));
         }
 
         private void UpdateWindowTitle(bool isConnected) {

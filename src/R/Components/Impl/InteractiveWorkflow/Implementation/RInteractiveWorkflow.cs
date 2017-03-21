@@ -109,11 +109,11 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             // In VS 2017 and above, this is handled by the debugger itself, via IVsDebugger6.RegisterFocusPreservingWindow.
             if (_debuggerModeTracker.IsFocusStolenOnBreak && !ActiveWindow.TextView.HasAggregateFocus && !string.IsNullOrEmpty(e.New?.TextBuffer?.GetFilePath())) {
                 _replLostFocus = true;
-                Shell.DispatchOnUIThread(CheckPossibleBreakModeFocusChange);
+                Shell.MainThread().Post(CheckPossibleBreakModeFocusChange);
             }
 
             if (ActiveWindow.TextView.HasAggregateFocus) {
-                Shell.DispatchOnUIThread(Operations.PositionCaretAtPrompt);
+                Shell.MainThread().Post(Operations.PositionCaretAtPrompt);
             }
         }
 

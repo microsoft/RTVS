@@ -151,7 +151,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
         private void FileWatcherError(object sender, EventArgs args) {
             _fileWatcher.Error -= FileWatcherError;
-            _coreShell.DispatchOnUIThread(() => {
+            _coreShell.MainThread().Post(() => {
                 foreach (var iVsProjectLazy in _cpsIVsProjects) {
                     IVsProject iVsProject;
                     try {

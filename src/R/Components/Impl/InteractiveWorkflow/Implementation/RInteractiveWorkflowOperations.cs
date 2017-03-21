@@ -168,7 +168,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         public void SourceFiles(IEnumerable<string> files, bool echo) {
             Task.Run(async () => {
                 var shortNames = await _workflow.RSession.MakeRelativeToRUserDirectoryAsync(files);
-                _coreShell.DispatchOnUIThread(() => {
+                _coreShell.MainThread().Post(() => {
                     foreach (var name in shortNames) {
                         EnqueueExpression(GetSourceExpression(name, echo), addNewLine: true);
                     }

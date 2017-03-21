@@ -41,37 +41,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         #region ICoreShell
         /// <summary>
-        /// Provides a way to execute action on UI thread while
-        /// UI thread is waiting for the completion of the action.
-        /// May be implemented using ThreadHelper in VS or via
-        /// SynchronizationContext in all-managed application.
-        /// 
-        /// This can be blocking or non blocking dispatch, preferrably
-        /// non blocking
-        /// </summary>
-        /// <param name="action">Action to execute</param>
-        public void DispatchOnUIThread(Action action) {
-            if (MainThread != null) {
-                Debug.Assert(MainThreadDispatcher != null);
-
-                if (MainThreadDispatcher != null && !MainThreadDispatcher.HasShutdownStarted) {
-                    MainThreadDispatcher.BeginInvoke(action, DispatcherPriority.Normal);
-                }
-            } else {
-                Debug.Assert(false);
-                ThreadHelper.Generic.BeginInvoke(DispatcherPriority.Normal, () => action());
-            }
-        }
-
-        private Dispatcher MainThreadDispatcher { get; set; }
-
-        /// <summary>
-        /// Provides access to the application main thread, so users can know if the task they are trying
-        /// to execute is executing from the right thread.
-        /// </summary>
-        public Thread MainThread { get; private set; }
-
-        /// <summary>
         /// Fires when host application has completed it's startup sequence
         /// </summary>
         public event EventHandler<EventArgs> Started;

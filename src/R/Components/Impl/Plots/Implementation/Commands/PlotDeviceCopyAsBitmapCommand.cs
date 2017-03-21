@@ -38,7 +38,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
                     VisualComponent.Device.PixelHeight,
                     VisualComponent.Device.Resolution);
 
-                InteractiveWorkflow.Shell.DispatchOnUIThread(() => {
+                InteractiveWorkflow.Shell.MainThread().Post(() => {
                     try {
                         var image = BitmapImageFactory.Load(filePath);
                         Clipboard.SetImage(image);

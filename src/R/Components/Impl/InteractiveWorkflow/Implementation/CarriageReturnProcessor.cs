@@ -42,7 +42,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             // making UI non-responsive. So avoid using it unless we need it - and we only need it for FlushOutput,
             // and we only need it to handle CR.
             if (message.Length > 1 && message[0] == '\r' && message[1] != '\n') {
-                _coreShell.DispatchOnUIThread(() => {
+                _coreShell.MainThread().Post(() => {
                     // Make sure output buffer is up to date
                     _interactiveWindow.FlushOutput();
 

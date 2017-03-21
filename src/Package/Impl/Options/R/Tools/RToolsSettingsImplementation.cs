@@ -136,7 +136,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
                 UpdateWorkingDirectoryList(newDirectory);
 
                 
-                _coreShell?.DispatchOnUIThread(() => {
+                _coreShell?.MainThread().Post(() => {
                     var shell = _coreShell.GetService<IVsUIShell>(typeof(SVsUIShell));
                     shell.UpdateCommandUI(1);
                 });

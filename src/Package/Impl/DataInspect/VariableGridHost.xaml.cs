@@ -13,7 +13,6 @@ using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.R.Package.Shell;
 using static Microsoft.R.DataInspection.REvaluationResultProperties;
 
@@ -21,8 +20,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
     /// Control that shows two dimensional R object
     /// </summary>
-    public partial class VariableGridHost : UserControl {
-        private readonly IObjectDetailsViewerAggregator _aggregator;
+    public partial class VariableGridHost {
         private readonly IRSession _rSession;
         private VariableViewModel _evaluation;
 
@@ -51,9 +49,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 var result = await _rSession.TryEvaluateAndDescribeAsync(_evaluation.Expression, properties, null);
                 var wrapper = new VariableViewModel(result, VsAppShell.Current);
 
-                VsAppShell.Current.DispatchOnUIThread(() => SetEvaluation(wrapper));
+                VsAppShell.Current.MainThread().Post(() => SetEvaluation(wrapper));
             } catch (Exception ex) {
-                VsAppShell.Current.DispatchOnUIThread(() => SetError(ex.Message));
+                VsAppShell.Current.MainThread().Post(() => SetError(ex.Message));
             }
         }
 

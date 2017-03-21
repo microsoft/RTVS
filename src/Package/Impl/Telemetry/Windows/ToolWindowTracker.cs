@@ -27,7 +27,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry.Windows {
         }
 
         private void OnElapsed(object sender, ElapsedEventArgs e) {
-            VsAppShell.Current.DispatchOnUIThread(() => {
+            VsAppShell.Current.MainThread().Post(() => {
                 ReportWindowLayout();
             });
         }

@@ -420,11 +420,11 @@ namespace Microsoft.R.Editor.Completions {
         //private async Task InsertFunctionBraces(SnapshotPoint position, string name) {
         //    bool function = await IsFunction(name);
         //    if (function) {
-        //        shell.DispatchOnUIThread(() => {
+        //        shell.MainThread().Post(() => {
         //            if (TextView.TextBuffer.CurrentSnapshot.Version.VersionNumber == position.Snapshot.Version.VersionNumber) {
         //                TextView.TextBuffer.Insert(position.Position, "()");
         //                TextView.Caret.MoveTo(new SnapshotPoint(TextView.TextBuffer.CurrentSnapshot, position.Position + 1));
-        //                shell.DispatchOnUIThread(() => TriggerSignatureHelp());
+        //                shell.MainThread().Post(() => TriggerSignatureHelp());
         //            }
         //        });
         //    }

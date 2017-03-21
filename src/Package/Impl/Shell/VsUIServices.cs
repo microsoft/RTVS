@@ -110,8 +110,10 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             return MessageButtons.OK;
         }
 
-        public string SaveFileIfDirty(string fullPath) => new RunningDocumentTable(RPackage.Current).SaveFileIfDirty(fullPath);
-        public void UpdateCommandStatus(bool immediate) => _coreShell.DispatchOnUIThread(() => { _uiShell.UpdateCommandUI(immediate ? 1 : 0); });
+        public string SaveFileIfDirty(string fullPath) 
+            => new RunningDocumentTable(RPackage.Current).SaveFileIfDirty(fullPath);
+        public void UpdateCommandStatus(bool immediate) 
+            => _coreShell.MainThread().Post(() => { _uiShell.UpdateCommandUI(immediate ? 1 : 0); });
         #endregion
 
         #region IVsBroadcastMessageEvents

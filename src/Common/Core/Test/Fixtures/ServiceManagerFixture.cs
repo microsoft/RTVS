@@ -23,10 +23,11 @@ namespace Microsoft.Common.Core.Test.Fixtures {
         private readonly TestServiceManager _serviceManager;
 
         public ServiceManagerFixture() {
+            _log = new LogProxy();
             _serviceManager = new TestServiceManager(null);
             _serviceManager
                 .AddService(UIThreadHelper.Instance)
-                .AddService(new LogProxy())
+                .AddService(_log)
                 .AddService(new SecurityServiceStub())
                 .AddService(new MaxLoggingPermissions())
                 .AddService(new TelemetryTestService())

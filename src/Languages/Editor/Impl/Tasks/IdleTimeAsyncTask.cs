@@ -146,7 +146,7 @@ namespace Microsoft.Languages.Editor.Tasks {
 
             _taskDoneEvent.Set();
 
-            _shell.DispatchOnUIThread(finalAction);
+            _shell.MainThread().Post(finalAction);
         }
 
         private void UIThreadCompletedCallback(object result) {

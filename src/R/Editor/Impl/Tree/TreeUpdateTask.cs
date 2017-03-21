@@ -426,7 +426,7 @@ namespace Microsoft.R.Editor.Tree {
                     // Queue results for the main thread application. This must be done before 
                     // signaling that the task is complete since if EnsureProcessingComplete 
                     // is waiting it will want to apply changes itself rather than wait for 
-                    // the DispatchOnUIThread to go though and hence it will need all changes
+                    // the MainThread().Post to go though and hence it will need all changes
                     // stored and ready for application.
 
                     _backgroundParsingResults.Enqueue(treeChanges);
@@ -445,7 +445,7 @@ namespace Microsoft.R.Editor.Tree {
                     if (async) {
                         // Post request to apply tree changes to the main thread.
                         // This must NOT block or else task will never enter 'RanToCompletion' state.
-                        _shell.DispatchOnUIThread(ApplyBackgroundProcessingResults);
+                        _shell.MainThread().Post(ApplyBackgroundProcessingResults);
                     } else {
                         // When processing is synchronous, apply changes and fire events right away.
                         ApplyBackgroundProcessingResults();

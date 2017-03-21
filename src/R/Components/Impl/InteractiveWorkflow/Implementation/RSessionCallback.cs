@@ -79,7 +79,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         }
 
         public Task<string> ReadUserInput(string prompt, int maximumLength, CancellationToken ct) {
-            _coreShell.DispatchOnUIThread(() => _interactiveWindow.Write(prompt));
+            _coreShell.MainThread().Post(() => _interactiveWindow.Write(prompt));
             return Task.Run(() => {
                 using (var reader = _interactiveWindow.ReadStandardInput()) {
                     return reader != null ? Task.FromResult(reader.ReadToEnd()) : Task.FromResult("\n");

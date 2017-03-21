@@ -49,7 +49,7 @@ namespace Microsoft.R.Components.Information {
         }
 
         private void OnHostLoadChanged(object sender, HostLoadChangedEventArgs e) {
-            _shell.DispatchOnUIThread(() => {
+            _shell.MainThread().Post(() => {
                 CpuLoad = e.HostLoad.CpuLoad;
                 MemoryLoad = e.HostLoad.MemoryLoad;
                 NetworkLoad = e.HostLoad.NetworkLoad;

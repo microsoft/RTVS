@@ -28,18 +28,6 @@ namespace Microsoft.Common.Core.Shell {
         IServiceContainer Services { get; }
 
         /// <summary>
-        /// Provides a way to execute action on UI thread while
-        /// UI thread is waiting for the completion of the action.
-        /// May be implemented using ThreadHelper in VS or via
-        /// SynchronizationContext in all-managed application.
-        /// 
-        /// This can be blocking or non blocking dispatch, preferrably
-        /// non blocking
-        /// </summary>
-        /// <param name="action">Action to execute</param>
-        void DispatchOnUIThread(Action action);
-
-        /// <summary>
         /// Fires when host application has completed it's startup sequence
         /// </summary>
         event EventHandler<EventArgs> Started;

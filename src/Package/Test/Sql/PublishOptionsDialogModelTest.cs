@@ -230,7 +230,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             });
             _pss.GetSelectedProject<IVsHierarchy>().Returns(hier);
 
-            _coreShell.When(cs => cs.DispatchOnUIThread(Arg.Any<Action>())).Do(c => {
+            _coreShell.When(cs => cs.MainThread().Post(Arg.Any<Action>())).Do(c => {
                 var action = (Action)c.Args()[0];
                 action();
             });

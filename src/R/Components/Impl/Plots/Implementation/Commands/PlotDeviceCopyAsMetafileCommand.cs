@@ -28,7 +28,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
                     PixelsToInches(VisualComponent.Device.PixelHeight),
                     VisualComponent.Device.Resolution);
 
-                InteractiveWorkflow.Shell.DispatchOnUIThread(() => {
+                InteractiveWorkflow.Shell.MainThread().Post(() => {
                     try {
                         var mf = new System.Drawing.Imaging.Metafile(filePath);
                         Clipboard.SetData(DataFormats.EnhancedMetafile, mf);

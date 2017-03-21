@@ -18,12 +18,10 @@ namespace Microsoft.R.ExecutionTracing.Test {
     [ExcludeFromCodeCoverage]
     [Category.R.ExecutionTracing]
     public class BreakpointsTest : IAsyncLifetime {
-        private readonly ServiceManagerFixture _services;
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _session;
 
         public BreakpointsTest(ServiceManagerFixture services, TestMethodFixture testMethod) {
-            _services = services;
             _sessionProvider = new RSessionProvider(services);
             _session = _sessionProvider.GetOrCreate(testMethod.FileSystemSafeName);
         }

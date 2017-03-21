@@ -146,20 +146,20 @@ namespace Microsoft.R.Components.Plots.Implementation {
         }
 
         private void ViewModel_LocatorModeChanged(object sender, EventArgs e) {
-            _shell.DispatchOnUIThread(() => {
+            _shell.MainThread().Post(() => {
                 UpdateCaption();
                 UpdateStatus();
             });
         }
 
         private void ViewModel_DeviceNameChanged(object sender, EventArgs e) {
-            _shell.DispatchOnUIThread(() => {
+            _shell.MainThread().Post(() => {
                 UpdateCaption();
             });
         }
 
         private void PlotManager_ActiveDeviceChanged(object sender, EventArgs e) {
-            _shell.DispatchOnUIThread(() => {
+            _shell.MainThread().Post(() => {
                 UpdateCaption();
             });
         }

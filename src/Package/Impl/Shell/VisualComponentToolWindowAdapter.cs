@@ -57,14 +57,14 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
 
         public void ShowContextMenu(CommandId commandId, Point position) {
-            _coreShell.DispatchOnUIThread(() => {
+            _coreShell.MainThread().Post(() => {
                 var point = Component.Control.PointToScreen(position);
                 _coreShell.ShowContextMenu(commandId, (int)point.X, (int)point.Y);
             });
         }
 
         public void UpdateCommandStatus(bool immediate) {
-            _coreShell.DispatchOnUIThread(() => {
+            _coreShell.MainThread().Post(() => {
                 var shell = _coreShell.GetService<IVsUIShell>(typeof (SVsUIShell));
                 shell.UpdateCommandUI(immediate ? 1 : 0);
             });
@@ -75,7 +75,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 return;
             }
 
-            _coreShell.DispatchOnUIThread(() => {
+            _coreShell.MainThread().Post(() => {
                 ErrorHandler.ThrowOnFailure(VsWindowFrame.Hide());
             });
         }
@@ -94,7 +94,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                     ErrorHandler.ThrowOnFailure(VsWindowFrame.ShowNoActivate());
                 }
             } else {
-                _coreShell.DispatchOnUIThread(() => {
+                _coreShell.MainThread().Post(() => {
                     if (focus) {
                         ErrorHandler.ThrowOnFailure(VsWindowFrame.Show());
                         Component.Control?.Focus();

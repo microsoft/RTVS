@@ -26,7 +26,7 @@ namespace Microsoft.R.Components.Test.Information {
         };
 
         public HostLoadIndicatorViewModelTest() {
-            _coreShell.When(x => x.DispatchOnUIThread(Arg.Any<Action>())).Do(c => ((Action)c.Args()[0])());
+            _coreShell.When(x => x.MainThread().Post(Arg.Any<Action>())).Do(c => ((Action)c.Args()[0])());
         }
 
         [Test]

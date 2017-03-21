@@ -100,7 +100,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
         }
 
         public override void ClearSearch() {
-            VsAppShell.Current.DispatchOnUIThread(() => _historyFiltering.ClearFilter());
+            VsAppShell.Current.MainThread().Post(() => _historyFiltering.ClearFilter());
             base.ClearSearch();
         }
 
@@ -123,7 +123,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
 
             protected override void OnStartSearch() {
                 base.OnStartSearch();
-                _coreShell.DispatchOnUIThread(() => _historyFiltering.Filter(SearchQuery.SearchString));
+                _coreShell.MainThread().Post(() => _historyFiltering.Filter(SearchQuery.SearchString));
             }
         }
     }

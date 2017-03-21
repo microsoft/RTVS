@@ -147,7 +147,7 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
         }
 
         private void DeviceRemoved(object sender, RPlotDeviceEventArgs e) {
-            _shell.DispatchOnUIThread(() => {
+            _shell.MainThread().Post(() => {
                 RemoveAll(e.Device.DeviceId);
             });
             UnsubscribeDeviceEvents(e.Device);
@@ -172,13 +172,13 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
         }
 
         private void PlotRemoved(object sender, RPlotEventArgs e) {
-            _shell.DispatchOnUIThread(() => {
+            _shell.MainThread().Post(() => {
                 Remove(e.Plot.PlotId);
             });
         }
 
         private void DeviceNumChanged(object sender, EventArgs e) {
-            _shell.DispatchOnUIThread(() => {
+            _shell.MainThread().Post(() => {
                 var device = (IRPlotDevice)sender;
                 foreach (var entry in Entries.Where(entry => entry.Plot.ParentDevice == device)) {
                     entry.RefreshDeviceName();
@@ -187,7 +187,7 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
         }
 
         private void ActivePlotChanged(object sender, EventArgs e) {
-            _shell.DispatchOnUIThread(() => {
+            _shell.MainThread().Post(() => {
                 var device = (IRPlotDevice)sender;
                 var plot = device.ActivePlot;
                 if (plot != null) {
@@ -197,7 +197,7 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
         }
 
         private void DeviceCleared(object sender, EventArgs e) {
-            _shell.DispatchOnUIThread(() => {
+            _shell.MainThread().Post(() => {
                 var device = (IRPlotDevice)sender;
                 RemoveAll(device.DeviceId);
             });

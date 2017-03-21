@@ -82,7 +82,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
 
         private void TargetTypeList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             _model.SelectTargetTypeAsync(TargetTypeList.SelectedIndex).ContinueWith(t => {
-                _shell.DispatchOnUIThread(() => {
+                _shell.MainThread().Post(() => {
                     TargetList.SelectedIndex = _model.SelectedTargetIndex;
                     _model.SelectTarget(TargetList.SelectedIndex);
                 });

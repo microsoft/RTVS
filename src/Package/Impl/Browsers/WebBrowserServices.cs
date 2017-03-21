@@ -42,7 +42,7 @@ namespace Microsoft.VisualStudio.R.Package.Browsers {
         #endregion
 
         private void OpenVsBrowser(WebBrowserRole role, string url) {
-            VsAppShell.Current.DispatchOnUIThread(() => {
+            VsAppShell.Current.MainThread().Post(() => {
                 DoOpenVsBrowser(role, url);
             });
         }

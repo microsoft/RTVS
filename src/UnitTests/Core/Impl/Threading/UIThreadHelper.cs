@@ -273,9 +273,8 @@ namespace Microsoft.UnitTests.Core.Threading {
             public ExceptionDispatchInfo Exception { get; set; }
         }
 
-
+        #region IMainThread
         int IMainThread.ThreadId => Thread.ManagedThreadId;
-
         void IMainThread.Post(Action action, CancellationToken cancellationToken) {
             var bl = _blockingLoop.Value;
             if (bl != null) {
@@ -284,6 +283,7 @@ namespace Microsoft.UnitTests.Core.Threading {
                 InvokeAsync(action, cancellationToken).DoNotWait();
             }
         }
+        #endregion
 
         private class BlockingLoop {
             private readonly Func<Task> _func;

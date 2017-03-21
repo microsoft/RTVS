@@ -356,7 +356,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         private void SaveActiveConnectionToSettings() {
-            _shell.DispatchOnUIThread(() => _settings.LastActiveConnection = ActiveConnection == null
+            _shell.MainThread().Post(() => _settings.LastActiveConnection = ActiveConnection == null
                 ? null
                 : new ConnectionInfo(ActiveConnection));
         }

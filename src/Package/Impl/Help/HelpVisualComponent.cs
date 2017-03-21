@@ -90,13 +90,13 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
         private void OnRSessionDisconnected(object sender, EventArgs e) {
             // Event fires on a background thread
-            VsAppShell.Current.DispatchOnUIThread(CloseBrowser);
+            VsAppShell.Current.MainThread().Post(CloseBrowser);
         }
 
         private void OnBrokerStateChanged(object sender, BrokerStateChangedEventArgs e) {
             if (!e.IsConnected) {
                 // Event mey fire on a background thread
-                VsAppShell.Current.DispatchOnUIThread(CloseBrowser);
+                VsAppShell.Current.MainThread().Post(CloseBrowser);
             }
         }
 

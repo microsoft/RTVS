@@ -2,8 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Windows;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -40,7 +40,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 var model = tn?.Model?.Content as VariableViewModel;
                 if (model != null) {
                     if (match(model.Name)) {
-                        VsAppShell.Current.DispatchOnUIThread(() => _grid.SelectedItem = itemControl);
+                        VsAppShell.Current.MainThread().Post(() => _grid.SelectedItem = itemControl);
                         _callback.ReportComplete(this, 1);
                         return true;
                     }

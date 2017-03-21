@@ -191,7 +191,6 @@ namespace Microsoft.R.Host.Client {
             public event EventHandler<EventArgs> Idle;
 #pragma warning restore 67
 
-            public void DispatchOnUIThread(Action action) => action();
             public void Post(Action action, CancellationToken cancellationToken = default(CancellationToken)) => action();
         }
     }

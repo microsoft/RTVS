@@ -245,7 +245,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             }
 
             if (_evaluatorRequest.Count == 0 && e.AddToHistory && e.IsVisible) {
-                _coreShell.DispatchOnUIThread(() => {
+                _coreShell.MainThread().Post(() => {
                     if (CurrentWindow == null || CurrentWindow.IsResetting) {
                         return;
                     }
@@ -261,7 +261,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 return;
             }
 
-            _coreShell.DispatchOnUIThread(() => {
+            _coreShell.MainThread().Post(() => {
                 if (CurrentWindow == null || CurrentWindow.IsRunning) {
                     return;
                 }

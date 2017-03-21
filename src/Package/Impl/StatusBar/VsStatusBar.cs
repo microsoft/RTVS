@@ -46,7 +46,7 @@ namespace Microsoft.VisualStudio.R.Package.StatusBar {
             EnsureItemsControlCreated();
 
             _itemsControl.Items.Insert(0, element);
-            return Disposable.Create(() => _shell.DispatchOnUIThread(() => _itemsControl.Items.Remove(element)));
+            return Disposable.Create(() => _shell.MainThread().Post(() => _itemsControl.Items.Remove(element)));
         }
 
         private bool TryAddItemsControlToVisualRoot() {

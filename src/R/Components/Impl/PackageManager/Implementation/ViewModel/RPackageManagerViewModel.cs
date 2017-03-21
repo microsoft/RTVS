@@ -606,7 +606,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
 
         private int Search(IList<IRPackageViewModel> packages, string searchString, CancellationToken cancellationToken) {
             if (string.IsNullOrEmpty(searchString)) {
-                _coreShell.DispatchOnUIThread(() => ApplySearch(packages, cancellationToken));
+                _coreShell.MainThread().Post(() => ApplySearch(packages, cancellationToken));
                 return packages.Count;
             }
 
@@ -635,7 +635,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 }
             }
 
-            _coreShell.DispatchOnUIThread(() => ApplySearch(result, cancellationToken));
+            _coreShell.MainThread().Post(() => ApplySearch(result, cancellationToken));
             return result.Count;
         }
 

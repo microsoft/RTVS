@@ -29,7 +29,7 @@ namespace Microsoft.VisualStudio.R.Package.Debugger.DataTips {
                 return;
             }
 
-            VsAppShell.Current.DispatchOnUIThread(() => {
+            VsAppShell.Current.MainThread().Post(() => {
                 var debugger = VsAppShell.Current.GetService<IVsDebugger>();
                 DataTipTextViewFilter.GetOrCreate(textView, _adaptersFactoryService, debugger);
             });

@@ -21,7 +21,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
         public ConnectionStatusBarViewModelTest() {
             _cm = Substitute.For<IConnectionManager>();
             _shell = Substitute.For<ICoreShell>();
-            _shell.When(x => x.DispatchOnUIThread(Arg.Any<Action>())).Do(c => ((Action)c.Args()[0])());
+            _shell.When(x => x.MainThread().Post(Arg.Any<Action>())).Do(c => ((Action)c.Args()[0])());
          }
 
         [Test]

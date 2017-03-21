@@ -47,7 +47,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing {
                 string currentStatusText = string.Empty;
                 uint cookie = 0;
                 IVsStatusbar statusBar = null;
-                shell.DispatchOnUIThread(() => {
+                shell.MainThread().Post(() => {
                     statusBar = shell.GetService<IVsStatusbar>(typeof(SVsStatusbar));
                     statusBar.GetText(out currentStatusText);
                     statusBar.Progress(ref cookie, 1, "", 0, 0);
@@ -55,15 +55,15 @@ namespace Microsoft.VisualStudio.R.Package.Publishing {
                 
                 try {
                     // TODO: progress and cancellation handling
-                    shell.DispatchOnUIThread(() => { statusBar?.Progress(ref cookie, 1, Resources.Info_MarkdownSendingInputFile.FormatInvariant(Path.GetFileName(inputFilePath)), 0, 3); });
+                    shell.MainThread().Post(() => { statusBar?.Progress(ref cookie, 1, Resources.Info_MarkdownSendingInputFile.FormatInvariant(Path.GetFileName(inputFilePath)), 0, 3); });
                     var rmd = await fts.SendFileAsync(inputFilePath, true, null, CancellationToken.None);
-                    shell.DispatchOnUIThread(() => { statusBar?.Progress(ref cookie, 1, Resources.Info_MarkdownPublishingFile.FormatInvariant(Path.GetFileName(inputFilePath)), 1, 3); });
+                    shell.MainThread().Post(() => { statusBar?.Progress(ref cookie, 1, Resources.Info_MarkdownPublishingFile.FormatInvariant(Path.GetFileName(inputFilePath)), 1, 3); });
                     var publishResult = await session.EvaluateAsync<ulong>($"rtvs:::rmarkdown_publish(blob_id = {rmd.Id}, output_format = {format.ToRStringLiteral()}, encoding = 'cp{codePage}')", REvaluationKind.Normal);
-                    shell.DispatchOnUIThread(() => { statusBar?.Progress(ref cookie, 1, Resources.Info_MarkdownGetOutputFile.FormatInvariant(Path.GetFileName(outputFilePath)), 2, 3); });
+                    shell.MainThread().Post(() => { statusBar?.Progress(ref cookie, 1, Resources.Info_MarkdownGetOutputFile.FormatInvariant(Path.GetFileName(outputFilePath)), 2, 3); });
                     await fts.FetchFileAsync(new RBlobInfo(publishResult), outputFilePath, true, null, CancellationToken.None);
-                    shell.DispatchOnUIThread(() => { statusBar?.Progress(ref cookie, 1, Resources.Info_MarkdownPublishComplete.FormatInvariant(Path.GetFileName(outputFilePath)), 3, 3); });
+                    shell.MainThread().Post(() => { statusBar?.Progress(ref cookie, 1, Resources.Info_MarkdownPublishComplete.FormatInvariant(Path.GetFileName(outputFilePath)), 3, 3); });
                 } finally {
-                    shell.DispatchOnUIThread(() => {
+                    shell.MainThread().Post(() => {
                         statusBar?.Progress(ref cookie, 0, "", 0, 0);
                         statusBar?.SetText(currentStatusText);
                     });

@@ -195,7 +195,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
             _locatorTcs = new TaskCompletionSource<LocatorResult>();
             _locatorCancelTokenRegistration = cancellationToken.Register(() => CancelLocatorMode(device));
 
-            _shell.DispatchOnUIThread(() => {
+            _shell.MainThread().Post(() => {
                 var visualComponent = GetVisualComponentForDevice(deviceId);
                 visualComponent?.Container.Show(focus: false, immediate: true);
             });
