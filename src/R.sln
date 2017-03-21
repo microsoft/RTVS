@@ -72,8 +72,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Debugger", "Deb
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Common.Wpf", "Common\Wpf\Impl\Microsoft.Common.Wpf.csproj", "{9DE5E0B5-C8BD-482C-85C3-B8E20F08453B}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Microsoft.R.Host", "Host\Process\src\Microsoft.R.Host.vcxproj", "{131842CE-DAF9-4C0E-8409-4A26EF7961A7}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.VisualStudio.R.Interactive.Test", "Package\TestApp\Microsoft.VisualStudio.R.Interactive.Test.csproj", "{0D80F608-CF60-42F8-A5E1-4E0ACFA384AF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Components.Test", "R\Components\Test\Microsoft.R.Components.Test.csproj", "{2AA8762F-3A84-4CD5-9AA0-77829A766769}"
@@ -500,18 +498,6 @@ Global
 		{9DE5E0B5-C8BD-482C-85C3-B8E20F08453B}.Release|x64.Build.0 = Release|Any CPU
 		{9DE5E0B5-C8BD-482C-85C3-B8E20F08453B}.Release|x86.ActiveCfg = Release|Any CPU
 		{9DE5E0B5-C8BD-482C-85C3-B8E20F08453B}.Release|x86.Build.0 = Release|Any CPU
-		{131842CE-DAF9-4C0E-8409-4A26EF7961A7}.Debug|Any CPU.ActiveCfg = Debug|x64
-		{131842CE-DAF9-4C0E-8409-4A26EF7961A7}.Debug|Any CPU.Build.0 = Debug|x64
-		{131842CE-DAF9-4C0E-8409-4A26EF7961A7}.Debug|x64.ActiveCfg = Debug|x64
-		{131842CE-DAF9-4C0E-8409-4A26EF7961A7}.Debug|x64.Build.0 = Debug|x64
-		{131842CE-DAF9-4C0E-8409-4A26EF7961A7}.Debug|x86.ActiveCfg = Debug|Win32
-		{131842CE-DAF9-4C0E-8409-4A26EF7961A7}.Debug|x86.Build.0 = Debug|Win32
-		{131842CE-DAF9-4C0E-8409-4A26EF7961A7}.Release|Any CPU.ActiveCfg = Release|x64
-		{131842CE-DAF9-4C0E-8409-4A26EF7961A7}.Release|Any CPU.Build.0 = Release|x64
-		{131842CE-DAF9-4C0E-8409-4A26EF7961A7}.Release|x64.ActiveCfg = Release|x64
-		{131842CE-DAF9-4C0E-8409-4A26EF7961A7}.Release|x64.Build.0 = Release|x64
-		{131842CE-DAF9-4C0E-8409-4A26EF7961A7}.Release|x86.ActiveCfg = Release|Win32
-		{131842CE-DAF9-4C0E-8409-4A26EF7961A7}.Release|x86.Build.0 = Release|Win32
 		{0D80F608-CF60-42F8-A5E1-4E0ACFA384AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0D80F608-CF60-42F8-A5E1-4E0ACFA384AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0D80F608-CF60-42F8-A5E1-4E0ACFA384AF}.Debug|x64.ActiveCfg = Debug|Any CPU

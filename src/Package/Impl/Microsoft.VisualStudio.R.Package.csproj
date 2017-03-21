@@ -1116,11 +1116,6 @@
       <Project>{E09D3BDA-2E6B-47B5-87AC-B6FC2D33DFAB}</Project>
       <Name>Microsoft.R.Host.Client</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Host\Process\src\Microsoft.R.Host.vcxproj">
-      <SetPlatform>Platform=x64</SetPlatform>
-      <Project>{131842ce-daf9-4c0e-8409-4a26ef7961a7}</Project>
-      <Name>Microsoft.R.Host</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Languages\Core\Impl\Microsoft.Languages.Core.csproj">
       <Project>{25cd8690-6208-4740-b123-6dbce6b9444a}</Project>
       <Name>Microsoft.Languages.Core</Name>
@@ -1604,7 +1599,7 @@
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.CodeAnalysis.CSharp.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.CodeAnalysis.dll" />
       <VSIXSourceItem Include="$(OutputPath)\libuv.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\zip.dll" />
+      <!--<VSIXSourceItem Include="$(OutputPath)\zip.dll" />-->
       <VSIXSourceItem Include="$(OutputPath)\ItemTemplates\**\*.*">
         <VSIXSubPath>ItemTemplates</VSIXSubPath>
       </VSIXSourceItem>
@@ -1612,12 +1607,12 @@
         <VSIXSubPath>ProjectTemplates</VSIXSubPath>
       </VSIXSourceItem>
     </ItemGroup>
-    <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <!--<ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
       <VSIXSourceItem Include="$(OutputPath)\zlibd.dll" />
     </ItemGroup>
     <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
       <VSIXSourceItem Include="$(OutputPath)\zlib.dll" />
-    </ItemGroup>
+    </ItemGroup>-->
   </Target>
   <Target Name="AfterBuild">
     <ItemGroup>
