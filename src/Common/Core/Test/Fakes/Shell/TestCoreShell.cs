@@ -10,6 +10,7 @@ using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Test.Stubs.Shell;
 using Microsoft.UnitTests.Core.Threading;
 using NSubstitute;
 
@@ -35,6 +36,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
                 .AddService(catalog.ExportProvider)
                 .AddService(catalog.CompositionService)
                 .AddService(log ?? Substitute.For<IActionLog>())
+                .AddService(new SecurityServiceStub())
                 .AddService(loggingPermissions ?? Substitute.For<ILoggingPermissions>())
                 .AddService(fs ?? new FileSystem())
                 .AddService(registry ?? new RegistryImpl())
