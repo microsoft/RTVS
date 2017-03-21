@@ -26,7 +26,7 @@
         <Str Cat="Text">
           <Val><![CDATA[The security certificate presented by the Remote R Services does not allow us to prove that you are indeed connecting to the machine {0}.]D;]A;]D;]A;This should never happen with a production Remote R Services, so please check with your server administrator.]D;]A;]D;]A;If you are using a test Remote R Server with a self-signed certificate and are certain about the remote machine security, click Yes, otherwise click NO to terminate the connection.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[リモート R Services で提示されるセキュリティ証明書では、ユーザーがコンピューター {0} に確かに接続していることを証明できません。]D;]A;]D;]A;これは実稼働のリモート R Services では生じないはずのため、サーバー管理者にお問い合わせください。]D;]A;]D;]A;自己署名証明書でテスト リモート R サーバーを使用しており、リモート コンピューターのセキュリティが確保されていると確信している場合は [はい]5D; をクリックし、そうでない場合は [いいえ]5D; をクリックして接続を終了します。]]></Val>
+            <Val><![CDATA[リモート R Services で提示されるセキュリティ証明書では、ユーザーがコンピューター {0} に確かに接続していることを証明できません。]D;]A;]D;]A;これは実稼働のリモート R Services では生じないはずのため、サーバー管理者にお問い合わせください。]D;]A;]D;]A;自己署名証明書でテスト リモート R サーバーを使用しており、リモート マシンのセキュリティが確保されていると確信している場合は [はい]5D; をクリックし、そうでない場合は [いいえ]5D; をクリックして接続を終了します。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -116,7 +116,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Remote machine '{0}' does not have certificate installed for the TLS with the Remote R Service.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[リモート コンピューター '{0}' には、リモート R Service によって TLS 用に証明書がインストールされていません。]]></Val>
+            <Val><![CDATA[リモート マシン '{0}' には、リモート R Service によって TLS 用に証明書がインストールされていません。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -170,7 +170,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Version of R Services on the remote machine ({0})]D;]A;is higher than the version of R Tools on the local computer ({1}). ]D;]A;Please upgrade local R Tools installation to match.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[リモート コンピューター ({0}) 上の R Services のバージョンは]D;]A;ローカル コンピューター ({1}) の R Tools より高いバージョンです。 ]D;]A;インストールされているローカル R Tools をアップグレードして適合させてください。]]></Val>
+            <Val><![CDATA[リモート マシン ({0}) 上の R Services のバージョンは]D;]A;ローカル コンピューター ({1}) の R Tools より高いバージョンです。 ]D;]A;インストールされているローカル R Tools をアップグレードして適合させてください。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -179,7 +179,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Version of R Services on the remote machine ({0})]D;]A;is lower than the version of R Tools on the local computer ({1}). ]D;]A;Please upgrade remote R Services installation to match.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[リモート コンピューター ({0}) 上の R Services のバージョンは]D;]A;ローカル コンピューター ({1}) の R Tools より低いバージョンです。 ]D;]A;インストールされているリモート R Services をアップグレードして適合させてください。]]></Val>
+            <Val><![CDATA[リモート マシン ({0}) 上の R Services のバージョンは]D;]A;ローカル コンピューター ({1}) の R Tools より低いバージョンです。 ]D;]A;インストールされているリモート R Services をアップグレードして適合させてください。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -361,7 +361,7 @@
     <Disp Icon="Ver" Disp="true" LocTbl="false" Path=" \ ;Version \ 8 \ 0" />
     <Item ItemId=";AssemblyVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.0.30227.2212]]></Val>
+        <Val><![CDATA[1.0.30310.2203]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -382,7 +382,7 @@
     </Item>
     <Item ItemId=";FileVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.0.30227.2212]]></Val>
+        <Val><![CDATA[1.0.30310.2203]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -418,7 +418,7 @@
     </Item>
     <Item ItemId=";ProductVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.0.30227.2212]]></Val>
+        <Val><![CDATA[1.0.30310.2203]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
