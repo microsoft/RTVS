@@ -33,7 +33,7 @@ namespace Microsoft.R.Debugger {
         private Guid _programId;
         private bool _firstContinue = true;
         private bool? _sentContinue = null;
-        private IRInteractiveWorkflow _workflow;
+        private readonly IRInteractiveWorkflow _workflow;
         private volatile RBrowseEventArgs _currentBrowseEventArgs;
         private readonly object _browseLock = new object();
 
@@ -44,7 +44,7 @@ namespace Microsoft.R.Debugger {
         internal IRSession Session { get; private set; }
         internal IRExecutionTracer Tracer { get; private set; }
         internal AD7Thread MainThread { get; private set; }
-        internal ICoreShell Shell => _workflow?.Shell;
+        internal ICoreShell Shell => _workflow.Shell;
 
         [Import]
         private IRInteractiveWorkflowProvider WorkflowProvider { get; set; }
