@@ -4,7 +4,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Test.Fakes.Shell;
+using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.UnitTests.Core.XUnit;
@@ -18,13 +18,17 @@ namespace Microsoft.VisualStudio.R.Package.Test.Options {
     [Category.Repl]
     [Collection(CollectionNames.NonParallel)]
     public class EncodingsTest {
-        private readonly TestCoreShell _coreShell = new TestCoreShell(null);
+        private readonly ServiceManagerFixture _services;
+
+        public EncodingsTest(ServiceManagerFixture services) {
+            _services = services;
+        }
 
         [Test]
         public async Task ValidateEncodings() {
             var etc = new EncodingTypeConverter();
             var codePages = etc.GetStandardValues();
-            using (var sessionProvider = new RSessionProvider(_coreShell.Services)) {
+            using (var sessionProvider = new RSessionProvider(_services)) {
                 await sessionProvider.TrySwitchBrokerAsync(nameof(ValidateEncodings));
                 using (var script = new VsRHostScript(sessionProvider)) {
                     foreach (var cp in codePages) {

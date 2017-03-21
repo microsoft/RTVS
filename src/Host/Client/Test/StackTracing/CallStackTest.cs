@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Test.Fakes.Shell;
+using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.R.DataInspection;
 using Microsoft.R.ExecutionTracing;
 using Microsoft.R.Host.Client;
@@ -20,12 +20,11 @@ using Xunit;
 namespace Microsoft.R.StackTracing.Test {
     [ExcludeFromCodeCoverage]
     public class CallStackTest : IAsyncLifetime {
-        private readonly TestCoreShell _coreShell = new TestCoreShell(null);
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _session;
 
-        public CallStackTest(TestMethodFixture testMethod) {
-            _sessionProvider = new RSessionProvider(_coreShell.Services);
+        public CallStackTest(ServiceManagerFixture services, TestMethodFixture testMethod) {
+            _sessionProvider = new RSessionProvider(services);
             _session = _sessionProvider.GetOrCreate(testMethod.FileSystemSafeName);
         }
 

@@ -7,8 +7,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Shell;
-using Microsoft.Common.Core.Test.Fakes.Shell;
+using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
@@ -21,13 +21,12 @@ using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 
 namespace Microsoft.R.Host.Client.Test.Session {
     public partial class RSessionTest : IDisposable {
-        private readonly TestCoreShell _coreShell = new TestCoreShell(null);
         private readonly TestMethodFixture _testMethod;
         private readonly IBrokerClient _brokerClient;
 
-        public RSessionTest(TestMethodFixture testMethod) {
+        public RSessionTest(ServiceManagerFixture services, TestMethodFixture testMethod) {
             _testMethod = testMethod;
-            _brokerClient = CreateLocalBrokerClient(_coreShell, nameof(RSessionTest));
+            _brokerClient = CreateLocalBrokerClient(services, nameof(RSessionTest));
         }
 
         public void Dispose() {
@@ -242,10 +241,10 @@ namespace Microsoft.R.Host.Client.Test.Session {
         }
 
 
-        private static IBrokerClient CreateLocalBrokerClient(ICoreShell coreShell, string name) 
+        private static IBrokerClient CreateLocalBrokerClient(IServiceContainer services, string name) 
             => new LocalBrokerClient(name, 
                 BrokerConnectionInfo.Create(null, "Test", new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath),
-                coreShell.Services, 
+                services, 
                 new NullConsole());
 
         private static Task<int> GetRSessionProcessId(IRSession session) 

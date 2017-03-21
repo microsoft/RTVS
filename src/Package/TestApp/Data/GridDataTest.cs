@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Test.Fakes.Shell;
+using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Script;
@@ -28,13 +28,11 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
             public override string ToString() => $"[{Y}, {X}] = {Value}";
         }
 
-        private readonly TestCoreShell _coreShell;
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _session;
 
-        public GridDataTest(TestMethodFixture testMethod) {
-            _coreShell = new TestCoreShell(null);
-            _sessionProvider = new RSessionProvider(_coreShell.Services);
+        public GridDataTest(ServiceManagerFixture services, TestMethodFixture testMethod) {
+            _sessionProvider = new RSessionProvider(services);
             _session = _sessionProvider.GetOrCreate(testMethod.FileSystemSafeName);
         }
 

@@ -7,8 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Test.Fakes.Shell;
-using Microsoft.R.DataInspection;
+using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.R.ExecutionTracing;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
@@ -26,12 +25,13 @@ namespace Microsoft.R.DataInspection.Test {
     [ExcludeFromCodeCoverage]
     public class ValuesTest : IAsyncLifetime {
         private const REvaluationResultProperties AllFields = unchecked((REvaluationResultProperties)~0);
-        private readonly TestCoreShell _coreShell = new TestCoreShell(null);
+        private readonly ServiceManagerFixture _services;
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _session;
 
-        public ValuesTest(TestMethodFixture testMethod) {
-            _sessionProvider = new RSessionProvider(_coreShell.Services);
+        public ValuesTest(ServiceManagerFixture services, TestMethodFixture testMethod) {
+            _services = services;
+            _sessionProvider = new RSessionProvider(services);
             _session = _sessionProvider.GetOrCreate(testMethod.FileSystemSafeName);
         }
 

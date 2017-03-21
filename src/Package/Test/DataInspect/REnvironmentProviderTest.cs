@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Test.Fakes.Shell;
+using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Script;
@@ -22,12 +22,11 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]   // required for tests using R Host 
     public class REnvironmentProviderTest : IAsyncLifetime {
-        private readonly TestCoreShell _coreShell = new TestCoreShell(null);
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _session;
 
-        public REnvironmentProviderTest(TestMethodFixture testMethod) {
-            _sessionProvider = new RSessionProvider(_coreShell.Services);
+        public REnvironmentProviderTest(ServiceManagerFixture services, TestMethodFixture testMethod) {
+            _sessionProvider = new RSessionProvider(services);
             _session = _sessionProvider.GetOrCreate(testMethod.FileSystemSafeName);
         }
 

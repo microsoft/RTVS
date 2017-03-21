@@ -4,7 +4,7 @@
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Test.Fakes.Shell;
+using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
@@ -15,12 +15,11 @@ using Xunit;
 namespace Microsoft.R.Host.Client.Test.Session {
     public partial class RSessionTest {
         public class Output : IAsyncLifetime {
-            private readonly TestCoreShell _coreShell = new TestCoreShell(null);
             private readonly IBrokerClient _brokerClient;
             private readonly RSession _session;
 
-            public Output(TestMethodFixture testMethod) {
-                _brokerClient = CreateLocalBrokerClient(_coreShell, nameof(RSessionTest) + nameof(Output));
+            public Output(ServiceManagerFixture services, TestMethodFixture testMethod) {
+                _brokerClient = CreateLocalBrokerClient(services, nameof(RSessionTest) + nameof(Output));
                 _session = new RSession(0, testMethod.FileSystemSafeName, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
             }
 

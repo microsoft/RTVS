@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Test.Fakes.Shell;
+using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
@@ -22,16 +23,15 @@ namespace Microsoft.R.Host.Client.Test.Session {
     public partial class RSessionTest {
         [Category.R.Session]
         public class InteractionEvaluation : IAsyncLifetime {
-            private readonly TestCoreShell _coreShell = new TestCoreShell(null);
             private readonly TaskObserverMethodFixture _taskObserver;
             private readonly TestMethodFixture _testMethod;
             private readonly IBrokerClient _brokerClient;
             private readonly RSession _session;
 
-            public InteractionEvaluation(TestMethodFixture testMethod, TaskObserverMethodFixture taskObserver) {
+            public InteractionEvaluation(ServiceManagerFixture services, TestMethodFixture testMethod, TaskObserverMethodFixture taskObserver) {
                 _taskObserver = taskObserver;
                 _testMethod = testMethod;
-                _brokerClient = CreateLocalBrokerClient(_coreShell, nameof(RSessionTest) + nameof(InteractionEvaluation));
+                _brokerClient = CreateLocalBrokerClient(services, nameof(RSessionTest) + nameof(InteractionEvaluation));
                 _session = new RSession(0, _testMethod.FileSystemSafeName, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
             }
 
