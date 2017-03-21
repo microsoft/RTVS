@@ -68,7 +68,11 @@ namespace Microsoft.R.Interpreters {
             var list = new List<IRInterpreterInfo>();
 
             foreach (var path in installLocations) {
-                var value = microsoftEngines.Where(e => e.InstallPath.EqualsIgnoreCase(path)).OrderByDescending(e => e.Version).First();
+                var value = microsoftEngines
+                    .Where(e => e.InstallPath.TrimTrailingSlash().EqualsIgnoreCase(path))
+                    .OrderByDescending(e => e.Version)
+                    .First();
+
                 list.Add(value);
             }
 
