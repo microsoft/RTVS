@@ -371,7 +371,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Downloading Microsoft R Client setup application...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Descargando la aplicación de instalación del cliente de Microsoft R...]]></Val>
+            <Val><![CDATA[Descargando la aplicación de instalación de Microsoft R Client...]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -548,7 +548,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Unable to download Microsoft R Client. Exception {0}.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[No se puede descargar el cliente de Microsoft R. Excepción {0}.]]></Val>
+            <Val><![CDATA[No se puede descargar Microsoft R Client. Excepción {0}.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -557,7 +557,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Timeout downloading Microsoft R Client installer executable.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Se ha agotado el tiempo de espera al descargar el archivo ejecutable de instalación del cliente de Microsoft R.]]></Val>
+            <Val><![CDATA[Se ha agotado el tiempo de espera al descargar el archivo ejecutable de instalación de Microsoft R Client.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1196,7 +1196,7 @@
         <Str Cat="Text">
           <Val><![CDATA[R Markdown]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Markdown de R]]></Val>
+            <Val><![CDATA[R Markdown]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1205,7 +1205,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Microsoft R Client is already installed.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[El cliente de Microsoft R ya está instalado.]]></Val>
+            <Val><![CDATA[Microsoft R Client ya está instalado.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1214,7 +1214,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Current R engine is already set to the Microsoft R Client.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[El motor de R actual ya está establecido en el cliente de Microsoft R.]]></Val>
+            <Val><![CDATA[El motor de R actual ya está establecido en Microsoft R Client.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1331,7 +1331,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Microsoft R Client setup is about to start. Please close Visual Studio now and reopen it when setup is complete.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[La instalación del cliente de Microsoft R está a punto de comenzar. Cierre Visual Studio ahora y vuelva a abrirlo cuando se haya completado la instalación.]]></Val>
+            <Val><![CDATA[La instalación de Microsoft R Client está a punto de comenzar. Cierre Visual Studio ahora y vuelva a abrirlo cuando se haya completado la instalación.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1403,7 +1403,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Visual Studio detected that Microsoft R Client was recently installed. Would you like to start using R from the Microsoft R Client?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Visual Studio ha detectado que el cliente de Microsoft R se ha instalado hace poco. ¿Quiere empezar a usar R desde el cliente de Microsoft R?]]></Val>
+            <Val><![CDATA[Visual Studio ha detectado que Microsoft R Client se ha instalado hace poco. ¿Quiere empezar a usar R desde Microsoft R Client?]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1412,7 +1412,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Microsoft R Client is not installed. Click Yes if you would you like to start installation of the Microsoft R Client now. Please close Visual Studio when the setup application starts and reopen it when Microsoft R Client installation is complete.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[El cliente de Microsoft R aún no está instalado. Haga clic en Sí si quiere empezar la instalación del cliente de Microsoft R ahora. Cierre Visual Studio cuando se inicie la aplicación de instalación y vuelva a abrirlo cuando se haya completado la instalación del cliente de Microsoft R.]]></Val>
+            <Val><![CDATA[Microsoft R Client aún no está instalado. Haga clic en Sí si quiere empezar la instalación de Microsoft R Client ahora. Cierre Visual Studio cuando se inicie la aplicación de instalación y vuelva a abrirlo cuando se haya completado la instalación de Microsoft R Client.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1511,7 +1511,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Please briefly describe what you were doing that led to the issue, if applicable:]D;]A;]D;]A;...]D;]A;]D;]A;If you have any screenshots demonstrating the issue, please include them as well to help us diagnose it better.]D;]A;]D;]A;A detailed diagnostic log has been created at {0}, and a Windows Explorer window has been opened for that location with the log file selected. To improve our ability to diagnose the issue, you can attach that file to the email. However, be aware that the log may contain sensitive information, including information about installed packages and their contents, your complete R Interactive command history and outputs, and values of variables in your present and past sessions.]D;]A;]D;]A;]D;]A;]D;]A;Additional information:]D;]A;]D;]A;{1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Describa de forma breve lo que estaba haciendo cuando se produjo el error, si procede:]D;]A;]D;]A;...]D;]A;]D;]A;Si tiene alguna captura de pantalla que muestre el problema, inclúyala para ayudarnos a diagnosticarlo mejor.]D;]A;]D;]A;Se ha creado un registro de diagnóstico detallado en {0} y se ha abierto una ventana del Explorador de Windows de esa ubicación con el archivo de registro seleccionado. Para que podamos diagnosticar mejor el problema, puede adjuntar ese archivo al correo electrónico, pero tenga en cuenta que ese registro puede contener información confidencial, entre la que se incluye información sobre los paquetes instalados y su contenido, sus salidas e historial de comandos interactivos de R completo y valores de variables de las sesiones pasadas y presentes.]D;]A;]D;]A;]D;]A;]D;]A;Información adicional:]D;]A;]D;]A;{1}]]></Val>
+            <Val><![CDATA[Describa de forma breve lo que estaba haciendo cuando se produjo el error, si procede:]D;]A;]D;]A;...]D;]A;]D;]A;Si tiene alguna captura de pantalla que muestre el problema, inclúyala para ayudarnos a diagnosticarlo mejor.]D;]A;]D;]A;Se ha creado un registro de diagnóstico detallado en {0} y se ha abierto una ventana del Explorador de Windows de esa ubicación con el archivo de registro seleccionado. Para que podamos diagnosticar mejor el problema, puede adjuntar ese archivo al correo electrónico, pero tenga en cuenta que ese registro puede contener información confidencial, entre la que se incluye información sobre los paquetes instalados y su contenido, sus salidas e historial de comandos de R interactivo completo y valores de variables de las sesiones pasadas y presentes.]D;]A;]D;]A;]D;]A;]D;]A;Información adicional:]D;]A;]D;]A;{1}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1979,7 +1979,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Defines if generated R Markdown pages should be opened in internal Visual Studio browser or in the external Web browser.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Define si las páginas de Markdown de R generadas deberían abrirse en el explorador interno de Visual Studio o en el externo.]]></Val>
+            <Val><![CDATA[Define si las páginas de R Markdown generadas deberían abrirse en el explorador interno de Visual Studio o en el externo.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2006,7 +2006,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Single click in R history window selects the entire fragment that was sent to R. Up/Down arrows in the R Interactive Window navigate through chunks instead of single lines.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Al hacer un solo clic en la ventana del historial de R, se selecciona todo el fragmento que se ha enviado a R. Las flechas arriba y abajo de la ventana interactiva de R navegan por los fragmentos en vez de hacerlo por líneas únicas.]]></Val>
+            <Val><![CDATA[Al hacer un solo clic en la ventana Historial de R, se selecciona todo el fragmento que se ha enviado a R. Las flechas arriba y abajo de la ventana de R inreactivo navegan por los fragmentos en vez de hacerlo por líneas únicas.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3400,7 +3400,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Send selected to R Interactive Window]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Enviar seleccionado a la ventana interactiva de R]]></Val>
+              <Val><![CDATA[Enviar seleccionado a la ventana de R interactivo]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -3658,7 +3658,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Install Microsoft &R Client...]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Instalar cliente de Microsoft &R...]]></Val>
+              <Val><![CDATA[Instalar Microsoft &R Client...]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -3667,7 +3667,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Install Microsoft R Client]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Instalar cliente de Microsoft R]]></Val>
+              <Val><![CDATA[Instalar Microsoft R Client]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5461,7 +5461,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Show R Interactive Window]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Mostrar ventana interactiva de R]]></Val>
+              <Val><![CDATA[Mostrar ventana de R interactivo]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5768,7 +5768,7 @@
         <Str Cat="Text">
           <Val><![CDATA[R Markdown]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Markdown de R]]></Val>
+            <Val><![CDATA[R Markdown]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -5858,7 +5858,7 @@
         <Str Cat="Text">
           <Val><![CDATA[R Markdown]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Markdown de R]]></Val>
+            <Val><![CDATA[R Markdown]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -5939,7 +5939,7 @@
         <Str Cat="Text">
           <Val><![CDATA[R Markdown is an authoring format that enables easy creation of dynamic documents, presentations, and reports from R]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Markdown de R es un formato de creación que le permite crear fácilmente documentos, presentaciones e informes dinámicos desde R.]]></Val>
+            <Val><![CDATA[R Markdown es un formato de creación que le permite crear fácilmente documentos, presentaciones e informes dinámicos desde R.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
